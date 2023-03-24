@@ -40,11 +40,13 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchFacetsTest extends AbstractSolrEnabledTest {
@@ -353,10 +355,10 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals("FIELD1:a", result.get(0));
         Assert.assertEquals("FIELD2:b", result.get(1));
         Assert.assertEquals("YEAR:[c TO d] AND YEAR:[e TO f]", result.get(2));
-        
+
         DataManager.getInstance().getConfiguration().overrideValue("search.facets.field(1)[@multiValueOperator]", "OR");
-        Assert.assertEquals("OR",DataManager.getInstance().getConfiguration().getMultiValueOperatorForField("YEAR"));
-        
+        Assert.assertEquals("OR", DataManager.getInstance().getConfiguration().getMultiValueOperatorForField("YEAR"));
+
         result = facets.generateSimpleFacetFilterQueries(true);
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("FIELD1:a", result.get(0));
@@ -513,7 +515,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         //        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":2018", false));
         //        facets.getAvailableFacets().put(SolrConstants._CALENDAR_YEAR, facetItems);
 
-//        String[] values = { "-20", "-10", "10", "2018" };
+        //        String[] values = { "-20", "-10", "10", "2018" };
         SortedMap<String, Long> values = new TreeMap<>(Map.of("-20", 1l, "-10", 1l, "10", 1l, "2018", 1l));
         facets.populateAbsoluteMinMaxValuesForField(SolrConstants.CALENDAR_YEAR, values);
         Assert.assertEquals("-20", facets.getAbsoluteMinRangeValue(SolrConstants.CALENDAR_YEAR));
@@ -568,5 +570,40 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
                 Collections.singletonList(filterQueryString), null, null, null, Locale.GERMANY, 0);
         assertEquals(2, hits.size());
 
+    }
+
+    /**
+     * @see SearchFacets#isUnselectedValuesAvailable()
+     * @verifies return true if a facet field has selectable values
+     */
+    @Test
+    public void isUnselectedValuesAvailable_shouldReturnTrueIfAFacetFieldHasSelectableValues() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> facetItems = new ArrayList<>(2);
+        facetItems.add(new FacetItem("FIELD:foo", "Foo", false));
+        facetItems.add(new FacetItem("FIELD:bar", "Bar", false));
+        facets.getAvailableFacets().put("FIELD", facetItems);
+        Assert.assertEquals(2, facets.getAvailableFacetsForField("FIELD", true).size());
+
+        facets.setActiveFacetString("FIELD:foo;;");
+        Assert.assertEquals(1, facets.getAvailableFacetsForField("FIELD", true).size());
+        Assert.assertTrue(facets.isUnselectedValuesAvailable());
+    }
+
+    /**
+     * @see SearchFacets#isUnselectedValuesAvailable()
+     * @verifies return false of no selectable values found
+     */
+    @Test
+    public void isUnselectedValuesAvailable_shouldReturnFalseOfNoSelectableValuesFound() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> facetItems = new ArrayList<>(2);
+        facetItems.add(new FacetItem("FIELD:foo", "Foo", false));
+        facetItems.add(new FacetItem("FIELD:bar", "Bar", false));
+        facets.getAvailableFacets().put("FIELD", facetItems);
+        Assert.assertEquals(2, facets.getAvailableFacetsForField("FIELD", true).size());
+
+        facets.setActiveFacetString("FIELD:foo;;FIELD:bar;;");
+        Assert.assertFalse(facets.isUnselectedValuesAvailable());
     }
 }
