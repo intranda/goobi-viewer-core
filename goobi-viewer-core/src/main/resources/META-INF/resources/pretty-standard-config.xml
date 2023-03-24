@@ -1140,20 +1140,6 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
-
-	<url-mapping id="cmsOpenPageWithCollection">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<query-param name="collection">#{cmsBean.currentPage.collection.topVisibleElement}</query-param>
-	</url-mapping>
-	<url-mapping id="cmsOpenPagePreviewWithCollection">
-		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<query-param name="collection">#{cmsBean.currentPage.collection.topVisibleElement}</query-param>
-	</url-mapping>
 	<!-- Deprecated. Keep for backward compatibility -->
 	<url-mapping id="cmsOpenPageWithCollection">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />

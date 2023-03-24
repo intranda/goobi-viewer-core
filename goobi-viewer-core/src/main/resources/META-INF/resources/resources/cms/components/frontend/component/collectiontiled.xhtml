@@ -33,7 +33,7 @@
 
 				<div class="tpl-collection-tiled__wrapper">
 					<viewerComponent:collectionViewTiled id="collection"
-						collection="#{collectionViewBean.getCollection(cc.attrs.component.firstContentItem.content, cc.attrs.collectionBaseLevels, cc.attrs.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy)}" />
+						collection="#{collectionViewBean.getCollection(cc.attrs.component.firstContentItem.content, cc.attrs.collectionBaseLevels, cc.attrs.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy, request.getParameter('collection'))}" />
 				</div>
 
 			</div>

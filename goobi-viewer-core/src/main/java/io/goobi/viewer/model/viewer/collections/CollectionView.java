@@ -988,6 +988,7 @@ public class CollectionView implements Serializable {
             String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest())
                     .map(view -> view.getApplicationUrl() + "/" + view.getPagePath().toString())
                     .orElse("");
+            baseUri = StringTools.appendTrailingSlash(baseUri);
             try {
                 String ret = new URIBuilder(baseUri).addParameter("collection", collection.getName()).build().toString();
                 logger.trace("COLLECTION new window url: {}", ret);
