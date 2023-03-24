@@ -96,7 +96,7 @@
 		<normdataimporter.version>1.10.0</normdataimporter.version>
 
 		<!-- other libraries -->
-		<cds.version>2.0.SP1</cdi.version>
+		<cdi.version>2.0.SP1</cdi.version>
 		<citationstyles.version>23.2</citationstyles.version>
 		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
 		<commons-codec.version>1.15</commons-codec.version>
