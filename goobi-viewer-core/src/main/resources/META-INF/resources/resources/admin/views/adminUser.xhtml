@@ -24,8 +24,13 @@
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="adminUser">
+			    <ui:fragment rendered="#{adminBean.currentUser == null}">
+			        <div class="admin__boxed-entry -no-actions -w33 -warning">
+			            #{msg.errLoginInactive}
+			        </div>
+			    </ui:fragment>
 				<h:panelGroup id="adminUserGroup"
-					rendered="#{userBean.admin == true and adminBean.currentUser != null}">
+					rendered="#{userBean.admin and adminBean.currentUser != null}">
 					<div class="admin__title-bar">
 						<ui:fragment rendered="#{adminBean.currentUser.id == null}">
 							<h1 class="admin__title">#{msg.admin__user_create_new}</h1>
