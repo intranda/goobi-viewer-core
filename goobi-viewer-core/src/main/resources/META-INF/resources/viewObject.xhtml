@@ -126,7 +126,7 @@
                     </c:forEach>
                 </c:forEach>
 
-					<!-- USER GENERATED CONTENT -->
+				<!-- USER GENERATED CONTENT -->
  				<h:panelGroup rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}"> 
 					<div id="view_image_user_generated_content">
 						<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
