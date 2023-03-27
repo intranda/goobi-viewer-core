@@ -15,7 +15,7 @@
 			<f:event type="preRenderView"
 				listener="#{navigationHelper.setCurrentPageAdmin( (adminBean.currentUser.id == null) ? 'adminUserNew' : 'adminUserEdit')}" />
 			<f:viewAction onPostback="false"
-				action="#{adminBean.currentUser.backupFields}" />
+				action="#{adminBean.currentUser.backupFields}" if="#{adminBean.currentUser != null}" />
 			<f:viewParam name="deleteData"
 				value="#{adminBean.deleteUserContributions}" />
 		</f:metadata>
