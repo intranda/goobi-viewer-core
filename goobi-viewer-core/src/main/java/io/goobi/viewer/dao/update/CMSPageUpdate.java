@@ -62,8 +62,7 @@ public class CMSPageUpdate implements IModelUpdate {
     CMSContentConverter contentConverter;
     CMSTemplateManager templateManager;
 
-    public CMSPageUpdate(CMSTemplateManager templateManager) {
-        this.templateManager = templateManager;
+    public CMSPageUpdate() {
     }
 
     @Override
@@ -74,7 +73,8 @@ public class CMSPageUpdate implements IModelUpdate {
         }
         
         dao.executeUpdate("ALTER TABLE cms_pages MODIFY template_id varchar(255)"); //allow NULL values in cms_pages.template_id
-
+        
+        this.templateManager = templateManager;
         this.contentConverter = new CMSContentConverter(dao);
 
         List<Map<String, Object>> languageVersions = getTableData(dao, "cms_page_language_versions");
