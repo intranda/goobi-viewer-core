@@ -937,7 +937,9 @@ public class SearchBean implements SearchInterface, Serializable {
                 default:
                     this.activeSearchType = activeSearchType;
             }
-            facets.resetActiveFacetString();
+            // Resetting facet string here will result in collection listings returning all records in the index, if the collection page doesn't set
+            // activeSearchType=0 beforehand
+            // facets.resetActiveFacetString();
         }
         logger.trace("activeSearchType: {}", activeSearchType);
     }
