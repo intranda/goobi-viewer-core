@@ -391,6 +391,10 @@ public class GeoMap implements Serializable {
         this.featureSets.add(set);
     }
     
+    public void removeFeatureSet(FeatureSet set) {
+        this.featureSets.remove(set);
+    }
+    
     public boolean hasFeatures() {
         return this.featureSets.stream().anyMatch(FeatureSet::hasFeatures);
     }

@@ -309,14 +309,18 @@ public class IndexResource {
             finalQuery =
                     new StringBuilder().append("+(")
                             .append(filterQuery)
-                            .append(") ")
+                            .append(") +(-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:* *:*)")
                             .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
                             .toString();
         } else {
             //search query. Ignore all polygon results or the heatmap will have hits everywhere
-            finalQuery = finalQuery.substring(0, finalQuery.length() - 1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
-        }
+            if(finalQuery.endsWith(")")) {                
+                finalQuery = finalQuery.substring(0, finalQuery.length() - 1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
+            } else {
+                finalQuery = finalQuery+ " -MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
 
+            }
+        }
         return DataManager.getInstance()
                 .getSearchIndex()
                 .getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);

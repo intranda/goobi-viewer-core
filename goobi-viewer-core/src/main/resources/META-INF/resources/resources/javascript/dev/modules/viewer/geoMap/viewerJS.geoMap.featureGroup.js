@@ -81,6 +81,14 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.featureGroup.prototype.init = function(features) {
+		this.initFeatures(features);
+		if(this.config.heatmap.enabled) {	        	    
+			this.initHeatmap();
+		}
+	}
+		
+	viewer.GeoMap.featureGroup.prototype.initFeatures = function(features) {
+
         console.log("init featureGroup with ", features);
         this.markerIdCounter = 1;
         this.markers = [];
@@ -176,9 +184,10 @@ var viewerJS = ( function( viewer ) {
             	this.addMarker(feature);
             })
         }
-        
-        //display search results as heatmap
-    	if(this.config.heatmap.enabled) {	        	    
+    }
+    
+viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
+
         	let heatmapUrl = this.config.heatmap.heatmapUrl;
         	let featureUrl = this.config.heatmap.featureUrl;
         	
@@ -189,9 +198,7 @@ var viewerJS = ( function( viewer ) {
         	    labelField: this.config.heatmap.labelField,
         	    queryAdapter: "goobiViewer"    
         	});
-        	this.heatmap.addTo(this.geoMap.map);
-    	} 
-        
+        	this.heatmap.addTo(this.geoMap.map);        
     }
 
     viewer.GeoMap.featureGroup.prototype.isEmpty = function() {
@@ -424,9 +431,9 @@ var viewerJS = ( function( viewer ) {
         this.markers.splice(index, 1);
     }
     
-    viewer.GeoMap.featureGroup.prototype.removeAllMarkers = function(feature) {
+    viewer.GeoMap.featureGroup.prototype.removeAllMarkers = function() {
     	this.markers.forEach(m => m.remove());
-    	this.init();
+    	this.initFeatures();
     }
     
 

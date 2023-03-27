@@ -269,6 +269,13 @@ public class GeoMapBean implements Serializable {
         }
     }
     
+    public void removeFeatureSet(GeoMap map, FeatureSet set) {
+        if(map != null && map.getFeatureSets().contains(set)) {
+            map.removeFeatureSet(set);
+        }
+    }
+
+    
     public boolean isSolrQueryMap(GeoMap map) {
         if(map != null && !map.getFeatureSets().isEmpty()) {
             return map.getFeatureSets().get(0).isQueryResultSet();

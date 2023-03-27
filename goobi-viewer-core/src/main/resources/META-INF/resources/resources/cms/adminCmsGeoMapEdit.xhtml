@@ -131,6 +131,10 @@
 								<div class="cms__geomap__featureset_input" style="padding: 5px; border:1px solid black">
 									<div>
 										<h4>Featureset #{status.index+1}</h4>
+										<button jsf:action="#{geoMapBean.removeFeatureSet(geoMapBean.currentMap, featureSet)}">
+											<i class="fa fa-trash"></i>
+											<f:ajax execute="featureSetsPanel" render="mapPanel featureSetsPanel"></f:ajax>
+										</button>
 									</div>
 									<div>
 										<!-- MARKER -->
@@ -292,7 +296,7 @@
 					            	    			markerIcon : #{featureSet.markerAsJSON},
 					            	    			<c:if test="#{featureSet.queryResultSet}">
 					            	    			heatmap: {
-					            	                	enabled: true,
+					            	                	enabled: #{configurationBean.useHeatmapForCMSMaps()},
 					            	                	heatmapUrl:  "#{geoMapBean.heatmapUrl}",
 								    		          	featureUrl:  "#{geoMapBean.featureUrl}",
 					            	                	filterQuery: "BOOL_WKT_COORDS:*",
@@ -303,7 +307,11 @@
 							    		      	    </c:if>
 
 					            	    	}
-					            	    	mapEditor.geoMap.addFeatureGroup(config, #{featureSet.featuresAsString});
+					            	    	if(#{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()}) {	
+					            	    		mapEditor.geoMap.addFeatureGroup(config, []);
+					            	    	} else {
+					            	    		mapEditor.geoMap.addFeatureGroup(config, featureSet.featuresAsString);
+					            	    	}
 					            	    }
 					            	    
 					            	    </c:forEach>
