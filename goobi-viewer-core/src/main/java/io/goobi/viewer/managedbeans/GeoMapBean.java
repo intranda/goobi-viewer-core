@@ -39,6 +39,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -125,6 +126,7 @@ public class GeoMapBean implements Serializable {
      */
     public void saveCurrentMap() throws DAOException {
         boolean saved = false;
+        boolean redirect = false;
         if (this.currentMap == null) {
             throw new IllegalArgumentException("No map selected. Cannot save");
         } else if (this.currentMap.getId() == null) {
@@ -132,6 +134,7 @@ public class GeoMapBean implements Serializable {
             this.currentMap.setDateUpdated(LocalDateTime.now());
             this.currentMap.setCreator(BeanUtils.getUserBean().getUser());
             saved = DataManager.getInstance().getDao().addGeoMap(this.currentMap);
+            redirect = true;
         } else {
             this.currentMap.setDateUpdated(LocalDateTime.now());
             saved = DataManager.getInstance().getDao().updateGeoMap(this.currentMap);
@@ -142,6 +145,9 @@ public class GeoMapBean implements Serializable {
             Messages.error("notify__save_map__error");
         }
         this.loadedMaps = null;
+        if(redirect) {
+            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.currentMap.getId()));
+        }
     }
 
     public void deleteMap(GeoMap map) throws DAOException {

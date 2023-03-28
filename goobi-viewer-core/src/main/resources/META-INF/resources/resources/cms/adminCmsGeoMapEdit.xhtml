@@ -328,6 +328,7 @@
                             	<f:ajax execute="@none" render="@all"/>
                             </h:commandLink>
                         	<h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{geoMapBean.saveCurrentMap}">
+                        		<f:ajax render="@form :messages" execute="@form"></f:ajax>
                         	</h:commandButton>
                         </div>
                         
