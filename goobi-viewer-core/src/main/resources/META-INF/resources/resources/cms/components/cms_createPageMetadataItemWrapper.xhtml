@@ -277,6 +277,9 @@
 				                        <f:ajax event="change" render="subthemeDiscriminatorGroup" />
 				                    </h:selectOneMenu>
 				                </div>
+				                <ui:fragment rendered="#{!searchBean.solrIndexReachable}">
+				                    #{msg.errIndexUnreachableTitle}
+				                </ui:fragment>
 				            </h:panelGroup>
 				            <!-- INLINE HELP -->
 				            <span class="cms-module__option-control-helptext">#{msg.cms_page_subtheme_discriminator_help}</span>

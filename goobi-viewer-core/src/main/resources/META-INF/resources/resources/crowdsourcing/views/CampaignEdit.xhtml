@@ -36,7 +36,7 @@
 	    	    "crowdsourcing__campaign_tooltip_back_to_overview", "button__save_page", "action__submit_page_for_review", "action__accept_page_review", "action__reject_page_review", "prevImage", "nextImage", "rotateLeft", "rotateRight", "ADDRESS"];
 	        var user = {
 	                id : "#{userBean.user.idAsURI}",
-	                name : "#{userBean.user.displayName}"
+	                name : "#{userBean.user.displayNameEscaped}"
 	        }
 	        Crowdsourcing.user = user;
 	        Crowdsourcing.setFrameColors(["#e74c3c","#2980b9","#2ecc71","#f1c40f","#e67e22", "#a569bd", "#7fb3d5", "#229954"]);
@@ -50,7 +50,7 @@
 					nextitemurl:"#{crowdsourcingBean.getNextItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetStatus)}",
 					itemstatus:"#{crowdsourcingBean.targetStatus}",
 					currentuserid:"#{userBean.user.id}",
-					currentusername:"#{userBean.user.displayName}",
+					currentusername:"#{userBean.user.displayNameEscaped}",
 					currentuseravatar:"#{userBean.user.avatarUrl}",
 					geomap: {
 					    tilesource: "#{configurationBean.campaignGeomapTilesource}",

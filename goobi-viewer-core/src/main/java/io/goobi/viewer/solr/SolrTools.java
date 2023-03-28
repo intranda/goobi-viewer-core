@@ -790,4 +790,47 @@ public class SolrTools {
 
         return null;
     }
+
+    /**
+     * Escapes all special characters used by SOLR (as detailed here:
+     * https://solr.apache.org/guide/7_3/the-standard-query-parser.html#escaping-special-characters) as well as the characters '<' and '>' by adding a
+     * '\' before them. Special characters which already are escaped by '\' are not escaped any further making this method idempotent
+     * 
+     * @param the string to escape
+     * @return the escaped string. if the original string is null, null is also returned
+     */
+    public static String escapeSpecialCharacters(String string) {
+        if (StringUtils.isNotBlank(string)) {
+            return string.replaceAll("(?<!\\\\)([<>+\\-&||!(){}\\[\\]^\"~*?:/])", "\\\\$1");
+        }
+        return string;
+    }
+
+    /**
+     * reverts the operation of {@link #escapeSpecialCharacters(String)}
+     * 
+     * @param string the string to unescape
+     * @return the unescaped string
+     */
+    public static String unescapeSpecialCharacters(String string) {
+        if (StringUtils.isNotBlank(string)) {
+            return string.replaceAll("\\\\([<>+\\-&||!(){}\\[\\]^\\\"~*?:\\/])", "$1");
+        }
+        return string;
+    }
+
+    /**
+     * 
+     * @param query
+     * @return cleaned up query
+     * @should remove braces
+     * @should keep join parameter
+     */
+    public static String cleanUpQuery(String query) {
+        if (StringUtils.isBlank(query)) {
+            return query;
+        }
+
+        return query.replaceAll("[{}]", "").replace("!join from=PI_TOPSTRUCT to=PI", "{!join from=PI_TOPSTRUCT to=PI}");
+    }
 }
