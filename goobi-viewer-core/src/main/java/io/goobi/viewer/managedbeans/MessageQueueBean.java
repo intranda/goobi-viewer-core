@@ -278,7 +278,7 @@ public class MessageQueueBean implements Serializable {
             }
         });
         model.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
-        model.setFilters("all");
+        model.getFilter("all");
         return model;
     }
 

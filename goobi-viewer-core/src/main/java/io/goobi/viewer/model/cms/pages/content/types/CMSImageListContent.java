@@ -114,7 +114,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
                 .getDao()
                 .getAllCategories()
                 .stream()
-                .map(cat -> new CheckboxSelectable<>(this.categories, cat, c -> c.getName()))
+                .map(cat -> new CheckboxSelectable<>(this.categories, cat, CMSCategory::getName))
                 .collect(Collectors.toList());
     }
 
