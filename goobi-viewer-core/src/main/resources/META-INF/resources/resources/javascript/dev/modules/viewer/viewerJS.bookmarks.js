@@ -66,6 +66,9 @@ var viewerJS = ( function( viewer ) {
                     this.prepareBookmarksPopup();
                     this.renderBookmarksNavigationList();
                 })
+                .catch(e => {
+					console.error("Error loading bookmark lists: ", e);
+				})
             },
             
             updateAddedStatus: function() {

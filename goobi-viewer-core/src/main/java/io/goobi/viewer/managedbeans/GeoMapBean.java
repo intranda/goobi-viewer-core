@@ -40,6 +40,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -63,6 +64,8 @@ public class GeoMapBean implements Serializable {
     private static final long serialVersionUID = 2602901072184103402L;
 
     private GeoMap currentMap = null;
+    
+    private ManualFeatureSet activeFeatureSet = null;
 
     private String selectedLanguage;
 
@@ -90,6 +93,8 @@ public class GeoMapBean implements Serializable {
      */
     public void setCurrentMap(GeoMap currentMap) {
         this.currentMap = new GeoMap(currentMap);
+        this.activeFeatureSet = this.currentMap.getFeatureSets().stream().filter(s -> !s.isQueryResultSet()).findFirst().map(ManualFeatureSet.class::cast).orElse(null);
+        
     }
 
     /**
@@ -100,7 +105,9 @@ public class GeoMapBean implements Serializable {
      */
     public void setCurrentMapId(Long mapId) throws DAOException {
         GeoMap orig = DataManager.getInstance().getDao().getGeoMap(mapId);
-        this.currentMap = new GeoMap(orig);
+        if(orig != null) {
+            setCurrentMap(orig);            
+        }
     }
 
     public Long getCurrentMapId() {
@@ -260,7 +267,9 @@ public class GeoMapBean implements Serializable {
         if(map != null && type != null) {            
             switch(type) {
                 case "MANUAL":
-                    map.addFeatureSet(new ManualFeatureSet());
+                    ManualFeatureSet featureSet = new ManualFeatureSet();
+                    map.addFeatureSet(featureSet);
+                    this.setActiveFeatureSet(featureSet);
                     break;
                 case "SOLR_QUERY":
                     map.addFeatureSet(new SolrFeatureSet());
@@ -273,19 +282,6 @@ public class GeoMapBean implements Serializable {
         if(map != null && map.getFeatureSets().contains(set)) {
             map.removeFeatureSet(set);
         }
-    }
-
-    
-    public boolean isSolrQueryMap(GeoMap map) {
-        if(map != null && !map.getFeatureSets().isEmpty()) {
-            return map.getFeatureSets().get(0).isQueryResultSet();
-        } else {
-            return false;
-        }
-    }
-    
-    public GeoMapType getCurrentGeoMapType() {
-        return Optional.ofNullable(currentMap).map(this::isSolrQueryMap).map(b -> b ? GeoMapType.SOLR_QUERY : GeoMapType.MANUAL).orElse(null);
     }
     
     public void setCurrentGeoMapType(GeoMapType type) {
@@ -300,6 +296,28 @@ public class GeoMapBean implements Serializable {
                     featureSet = new SolrFeatureSet();
             }
             currentMap.setFeatureSets(Collections.singletonList(featureSet));
+        }
+    }
+    
+    public FeatureSet getActiveFeatureSet() {
+        return activeFeatureSet;
+    }
+    
+    public void setActiveFeatureSet(ManualFeatureSet activeFeatureSet) {
+        this.activeFeatureSet = activeFeatureSet;
+    }
+    
+    public String getActiveFeatureSetAsString() throws PresentationException {
+        if(this.activeFeatureSet != null) {
+            return this.activeFeatureSet.getFeaturesAsString();
+        } else {
+            return "";
+        }
+    }
+    
+    public void setActiveFeatureSetAsString(String features) {
+        if(this.activeFeatureSet != null) {
+            this.activeFeatureSet.setFeaturesAsString(features);
         }
     }
 }

@@ -246,7 +246,7 @@
 								</h:selectOneMenu>
 								<button jsf:action="#{geoMapBean.addFeatureSet(geoMapBean.currentMap, featureSetType)}">
 								<i class="fa fa-plus"></i>
-								<f:ajax execute="featureSetsPanel" render="mapPanel featureSetsPanel"></f:ajax>
+								<f:ajax execute="featureSetsPanel mapPanel" render="mapPanel featureSetsPanel"></f:ajax>
 								</button>
 							</div>
 														
@@ -263,30 +263,20 @@
 		                        		<h3 data-metadata="title"></h3>
 		                        		<span data-metadata="description"></span>
 		                        	</popover>
-		                        	<ui:fragment rendered="#{!geoMapBean.isSolrQueryMap(geoMapBean.currentMap)}">
 		                        		<div>#{msg.cms__geomaps__map_token__help}</div>
-		                        	</ui:fragment>
-<!-- 		                        	<h:inputHidden id="featuresInput" value="#{geoMapBean.currentMap.featureSets[0].featuresAsString}"></h:inputHidden> -->
+		                        	<h:inputHidden id="featuresInput" value="#{geoMapBean.activeFeatureSetAsString}"></h:inputHidden>
 		                        	<h:inputHidden id="viewInput" value="#{geoMapBean.currentMap.initialView}"></h:inputHidden>
 			            	</div>
 			            	<br/>
 			            	<div class="admin__content-inner-content__empty_form" id="featureForm">
-				            	<ui:fragment rendered="#{!geoMapBean.isSolrQueryMap(geoMapBean.currentMap)}">
 					            	<metadataEditor/>
-				            	</ui:fragment>
 				            	<script>
 				            	$(document).ready(() => {
 				            	    if($("#geomap").length > 0) {				            	        
-					            	    let editable = #{!geoMapBean.isSolrQueryMap(geoMapBean.currentMap)};
 					            	    mapEditor.geoMap.config.popover = "#geoMapPopoverTemplate";
 					            	    
-					            	    if(!editable) {					            	        
-						            	    if(#{geoMapBean.isSolrQueryMap(geoMapBean.currentMap) and geoMapBean.currentMap.featureSets[0].markerTitleField == ''}) {
-						            	        mapEditor.geoMap.config.popover = undefined;
-						            	    }
-					            	    }
 					            	    mapEditor.init(window.storedView);
-					            	    mapEditor.setAllowEditFeatures(editable);
+					            	    mapEditor.setAllowEditFeatures(true);
 
 					            	    <c:forEach var="featureSet" items="#{geoMapBean.currentMap.featureSets}">
 					            	    {
@@ -310,7 +300,11 @@
 					            	    	if(#{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()}) {	
 					            	    		mapEditor.geoMap.addFeatureGroup(config, []);
 					            	    	} else {
-					            	    		mapEditor.geoMap.addFeatureGroup(config, featureSet.featuresAsString);
+					            	    		let featureGroup = mapEditor.geoMap.addFeatureGroup(config, #{featureSet.featuresAsString});
+					            	    		if(#{featureSet == geoMapBean.activeFeatureSet}) {
+					            	    				mapEditor.activeFeatureGroup = featureGroup;
+					            	    				console.log("set aciveFeatureGroup ", featureGroup);
+					            	    		}
 					            	    	}
 					            	    }
 					            	    
@@ -333,7 +327,8 @@
                             <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{geoMapBean.resetCurrentMap}">
                             	<f:ajax execute="@none" render="@all"/>
                             </h:commandLink>
-                        	<h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{geoMapBean.saveCurrentMap}"></h:commandButton>
+                        	<h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{geoMapBean.saveCurrentMap}">
+                        	</h:commandButton>
                         </div>
                         
                     </h:form>

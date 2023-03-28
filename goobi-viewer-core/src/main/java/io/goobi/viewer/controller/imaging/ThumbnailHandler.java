@@ -316,9 +316,13 @@ public class ThumbnailHandler {
      */
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
-        IPageLoader pageLoader = AbstractPageLoader.create(struct);
-        return pageLoader.getPage(order);
+        if(doc != null) {
+            StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+            IPageLoader pageLoader = AbstractPageLoader.create(struct);
+            return pageLoader.getPage(order);
+        } else {
+            return null;
+        }
     }
 
     /**
