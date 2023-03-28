@@ -406,11 +406,12 @@ public class SearchFacets implements Serializable {
      * @should return false of no selectable values found
      */
     public boolean isUnselectedValuesAvailable() {
-        for (String field : getAllAvailableFacets().keySet()) {
-            if (!getLimitedFacetListForField(field).isEmpty()) {
+        for (String field : getAvailableFacets().keySet()) {
+            if (!getAvailableFacetsForField(field, true).isEmpty()) {
                 return true;
             }
         }
+        
         return false;
     }
 

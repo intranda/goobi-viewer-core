@@ -31,7 +31,7 @@
 				</ui:fragment>
 
 				<div id="collectionList" class="content-component__collection-list-wrapper">
-						<viewerComponent:collectionView id="collection" collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection').content, cc.attrs.collectionBaseLevels, cc.attrs.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy)}" />
+						<viewerComponent:collectionView id="collection" collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection').content, cc.attrs.collectionBaseLevels, cc.attrs.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy, request.getParameter('collection'))}" />
 				</div>
 
 			</div>

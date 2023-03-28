@@ -21,8 +21,6 @@
  */
 package io.goobi.viewer.controller;
 
-import static org.junit.Assert.assertEquals;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,8 +29,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 public class StringToolsTest {
 
@@ -93,6 +89,8 @@ public class StringToolsTest {
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT src=\"http://dangerousscript.js\"/> bar"));
+        Assert.assertEquals("foo  bar", StringTools.stripJS("foo <svG onLoad=alert(\"Hello_XSS_World\")></svG> bar"));
+        Assert.assertEquals("foo  bar", StringTools.stripJS("foo <svG onLoad=alert(\"Hello_XSS_World\")/> bar"));
     }
 
     /**
