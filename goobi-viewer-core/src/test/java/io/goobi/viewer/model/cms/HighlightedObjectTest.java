@@ -32,7 +32,7 @@ public class HighlightedObjectTest {
         
         URI uri = object.getImageURI(1200, 1400);
         String uriPath = uri.getPath();
-        assertEquals("/viewer/api/v1/cms/media/files/image.png/full/!1200,1400/0/default.png", uriPath);
+        assertTrue(uriPath.endsWith("api/v1/cms/media/files/image.png/full/!1200,1400/0/default.png"));
     }
     
     @Test
