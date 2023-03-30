@@ -17,10 +17,10 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.HighlightedObjectData.ImageMode;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
-class HighlightedObjectTest {
+public class HighlightedObjectTest {
 
     @Test
-    void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    public void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
         
         HighlightedObject object = new HighlightedObject(new HighlightedObjectData(), thumbs);
@@ -36,7 +36,7 @@ class HighlightedObjectTest {
     }
     
     @Test
-    void test_getCorrectImageURI_recordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    public void test_getCorrectImageURI_recordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
         
         HighlightedObject object = new HighlightedObject(new HighlightedObjectData(), thumbs);
@@ -49,7 +49,7 @@ class HighlightedObjectTest {
     }
     
     @Test
-    void test_alwayActive() {
+    public void test_alwayActive() {
         HighlightedObject object = new HighlightedObject(new HighlightedObjectData());
         object.getData().setDateStart(null);
         object.getData().setDateEnd(null);
@@ -59,7 +59,7 @@ class HighlightedObjectTest {
     }
     
     @Test
-    void test_isPresent() {
+    public void test_isPresent() {
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
         HighlightedObject object = new HighlightedObject(new HighlightedObjectData());
         
@@ -84,7 +84,7 @@ class HighlightedObjectTest {
     }
     
     @Test
-    void test_isFuture() {
+    public void test_isFuture() {
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         HighlightedObject object = new HighlightedObject(new HighlightedObjectData());
         
@@ -103,7 +103,7 @@ class HighlightedObjectTest {
     }
     
     @Test
-    void test_isPast() {
+    public void test_isPast() {
         LocalDateTime now = LocalDate.of(2023, 5, 15).atStartOfDay();
         HighlightedObject object = new HighlightedObject(new HighlightedObjectData());
         
