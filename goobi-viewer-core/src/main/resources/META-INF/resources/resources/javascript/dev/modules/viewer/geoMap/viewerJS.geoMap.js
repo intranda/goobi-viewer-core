@@ -180,7 +180,6 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.prototype.addFeatureGroup = function(featureGroupConfig, features) {
-		console.log("add feature group", featureGroupConfig, features);
 		let featureGroup = new viewer.GeoMap.featureGroup(this, featureGroupConfig);
 		this.layers.push(featureGroup);
 		if(this.initialized) {

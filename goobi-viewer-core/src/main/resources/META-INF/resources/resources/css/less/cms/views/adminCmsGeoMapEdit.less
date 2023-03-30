@@ -105,6 +105,20 @@
         }
       }
     }
+    .cms__geomap {
+		&__featureset_panel {
+			padding: 5px; 
+			margin: 5px 0;
+			border: 1px solid black;
+			z-index: 0;
+			&.-active {
+				border-color: limegreen;
+			}
+			select {
+				z-index: 10;
+			}
+		}
+	}
   }
 
   .input_form {

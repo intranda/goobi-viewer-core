@@ -131,6 +131,18 @@ var cmsJS = ( function( cms ) {
         
     }
     
+    cms.GeoMapEditor.prototype.addFeatureGroup = function(config, features) {
+		let featureGroup = this.geoMap.addFeatureGroup(config, features);
+		featureGroup.onFeatureClick
+	        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures))
+	        .subscribe(geojson => this.setCurrentFeature(geojson, true));
+	    featureGroup.onFeatureMove
+	        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map(geojson => this.setCurrentFeature(geojson)))
+	        .subscribe(() => this.saveFeatures());
+	    return featureGroup;
+	};
+
+    
     cms.GeoMapEditor.prototype.addFeature = function(geojson) {
 		console.log("add feature ", geojson, " to ", this.activeFeatureGroup);
         if(this.activeFeatureGroup) {

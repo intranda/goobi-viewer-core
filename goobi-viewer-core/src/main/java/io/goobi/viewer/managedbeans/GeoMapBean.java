@@ -27,12 +27,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.omnifaces.util.Faces;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -325,5 +325,22 @@ public class GeoMapBean implements Serializable {
         if(this.activeFeatureSet != null) {
             this.activeFeatureSet.setFeaturesAsString(features);
         }
+    }
+    
+    public void setActiveFeatureSet() {
+        Integer index = Faces.getRequestParameter("index", Integer.class);
+        if(this.currentMap != null && index != null && index >= 0 && index < this.currentMap.getFeatureSets().size()) {
+            FeatureSet newActiveSet = this.currentMap.getFeatureSets().get(index);
+            if(newActiveSet instanceof ManualFeatureSet) {                
+                setActiveFeatureSet((ManualFeatureSet) newActiveSet);
+            }
+        } else {
+            setActiveFeatureSet(null);
+        }
+    }
+
+    
+    public boolean isActiveFeatureSet(FeatureSet featureSet) {
+        return this.activeFeatureSet != null && this.activeFeatureSet.equals(featureSet);
     }
 }

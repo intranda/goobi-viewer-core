@@ -6,6 +6,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:c="http://java.sun.com/jsp/jstl/core" 
+    xmlns:o="http://omnifaces.org/ui"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
@@ -128,10 +129,10 @@
 						<h:panelGroup id="featureSetsPanel">
 						
 							<ui:repeat var="featureSet" value="#{geoMapBean.currentMap.featureSets}" varStatus="status">
-								<div class="cms__geomap__featureset_input" style="padding: 5px; border:1px solid black">
+								<div id="panelFeatureSet_#{status.index}" class="cms__geomap__featureset_panel #{geoMapBean.isActiveFeatureSet(featureSet) ? '-active' : '' }">
 									<div>
 										<h4>Featureset #{status.index+1}</h4>
-										<button jsf:action="#{geoMapBean.removeFeatureSet(geoMapBean.currentMap, featureSet)}">
+										<button onclick="event.stopPropagation();" jsf:action="#{geoMapBean.removeFeatureSet(geoMapBean.currentMap, featureSet)}">
 											<i class="fa fa-trash"></i>
 											<f:ajax execute="featureSetsPanel" render="mapPanel featureSetsPanel"></f:ajax>
 										</button>
@@ -148,6 +149,7 @@
 				                            <div class="input_form__option_control">
 				                            	<div class="custom-control custom-control--select">
 								                    <h:selectOneMenu
+								                    	onclick="event.stopPropagation();"
 								                        id="mapMarker"
 								                        styleClass="form-control" 
 								                        value="#{featureSet.marker}"
@@ -252,7 +254,7 @@
 														
 						
 						</h:panelGroup>
-						
+						<o:commandScript name="setActiveFeatureSet" action="#{geoMapBean.setActiveFeatureSet}" execute="viewInput featuresInput" render="featureSetsPanel mapPanel"/>
                         <h:panelGroup id="mapPanel" >
 	                        
                         	<div class="admin__content-inner-content__input_form">
@@ -278,13 +280,13 @@
 					            	    mapEditor.init(window.storedView);
 					            	    mapEditor.setAllowEditFeatures(true);
 
-					            	    <c:forEach var="featureSet" items="#{geoMapBean.currentMap.featureSets}">
+					            	    <ui:repeat var="featureSet" value="#{geoMapBean.currentMap.featureSets}" varStatus="status">
 					            	    {
 					            	    	let config = {
 					            	    			clusterMarkers : #{featureSet.queryResultSet},
 					            	    			popoverOnHover : #{featureSet.queryResultSet},
 					            	    			markerIcon : #{featureSet.markerAsJSON},
-					            	    			<c:if test="#{featureSet.queryResultSet}">
+					            	    			<ui:fragment rendered="#{featureSet.queryResultSet}">
 					            	    			heatmap: {
 					            	                	enabled: #{configurationBean.useHeatmapForCMSMaps()},
 					            	                	heatmapUrl:  "#{geoMapBean.heatmapUrl}",
@@ -294,21 +296,27 @@
 					            	    		        filterQuery: "#{featureSet.solrQueryEncoded}",
 								    		      	    labelField:  "#{featureSet.markerTitleField}",
 					            	                },
-							    		      	    </c:if>
+							    		      	    </ui:fragment>
 
 					            	    	}
 					            	    	if(#{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()}) {	
 					            	    		mapEditor.geoMap.addFeatureGroup(config, []);
 					            	    	} else {
-					            	    		let featureGroup = mapEditor.geoMap.addFeatureGroup(config, #{featureSet.featuresAsString});
+					            	    		let featureGroup = mapEditor.addFeatureGroup(config, #{featureSet.featuresAsString});
 					            	    		if(#{featureSet == geoMapBean.activeFeatureSet}) {
 					            	    				mapEditor.activeFeatureGroup = featureGroup;
-					            	    				console.log("set aciveFeatureGroup ", featureGroup);
 					            	    		}
+					            	    	}
+					            	    	//change active featureSet
+					            	    	if(!#{featureSet.queryResultSet}) {					            	    		
+						            	    	let inputPanel = document.getElementById("panelFeatureSet_#{status.index}");
+						            	    	$(inputPanel).off("click");
+						            	    	$(inputPanel).on("click", () => setActiveFeatureSet({index: #{status.index}}));
+						            	    	console.log("panel element for FeautureSet #{status.index} is ", inputPanel);						            	    	
 					            	    	}
 					            	    }
 					            	    
-					            	    </c:forEach>
+					            	    </ui:repeat>
 					            	    
 					            	    viewerJS.jsfAjax.begin.subscribe((e) => {
 					            	        if(e.source.id === "mapMarker" || e.source.id === "popupContent") {					            	            
@@ -328,7 +336,7 @@
                             	<f:ajax execute="@none" render="@all"/>
                             </h:commandLink>
                         	<h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{geoMapBean.saveCurrentMap}">
-                        		<f:ajax render="@form :messages" execute="@form"></f:ajax>
+                        		<f:ajax execute="@all" render=":messages"/>
                         	</h:commandButton>
                         </div>
                         
