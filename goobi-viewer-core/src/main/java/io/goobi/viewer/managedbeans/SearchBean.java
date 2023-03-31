@@ -2210,6 +2210,99 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return "";
     }
+    
+    /**
+     * <p>
+     * exportSearchAsRisAction.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public String exportSearchAsRisAction() throws IndexUnreachableException {
+        logger.trace("exportSearchAsRisAction");
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+
+        String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        Locale locale = navigationHelper.getLocale();
+        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
+
+        BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
+            if (!facesContext.getResponseComplete()) {
+                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, proximitySearchDistance, locale)) {
+                    if (wb == null) {
+                        job.setError("Failed to create excel sheet");
+                    } else if (Thread.interrupted()) {
+                        job.setError("Execution cancelled");
+                    } else {
+                        Callable<Boolean> download = new Callable<Boolean>() {
+
+                            @Override
+                            public Boolean call() {
+                                try {
+                                    logger.debug("Writing excel");
+                                    ExcelExport export = new ExcelExport();
+                                    export.setWorkbook(wb);
+                                    return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
+                                } catch (IOException e) {
+                                    logger.error(e.getMessage(), e);
+                                    return false;
+                                } finally {
+                                    facesContext.responseComplete();
+                                }
+                            }
+                        };
+
+                        downloadComplete = new FutureTask<>(download);
+                        executor.submit(downloadComplete);
+                        downloadComplete.get(timeout, TimeUnit.SECONDS);
+                    }
+                } catch (TimeoutException e) {
+                    job.setError("Timeout for excel download");
+                } catch (InterruptedException e) {
+                    job.setError("Timeout for excel download");
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException | ViewerConfigurationException e) {
+                    logger.error(e.getMessage(), e);
+                    job.setError("Failed to create excel sheet");
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            } else {
+                job.setError("Response is already committed");
+            }
+        };
+
+        try {
+            Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
+            Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
+            Future<?> ready = DataManager.getInstance()
+                    .getRestApiJobManager()
+                    .triggerTaskInThread(jobId, (HttpServletRequest) facesContext.getExternalContext().getRequest());
+            ready.get(timeout, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            logger.debug("Download interrupted");
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            logger.debug("Download execution error", e);
+            Messages.error("download_internal_error");
+        } catch (TimeoutException e) {
+            logger.debug("Downloadtimed out");
+            Messages.error("download_timeout");
+
+        } finally {
+            if (downloadReady != null && !downloadReady.isDone()) {
+                downloadReady.cancel(true);
+            }
+            if (downloadComplete != null && !downloadComplete.isDone()) {
+                downloadComplete.cancel(true);
+            }
+            this.downloadComplete = null;
+            this.downloadReady = null;
+        }
+        return "";
+    }
 
     /**
      * <p>

@@ -84,6 +84,7 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -3140,6 +3141,75 @@ public final class SearchHelper {
                             locale, proximitySearchDistance);
 
             for (SearchHit hit : batch) {
+                // Create row
+                currentCellIndex = 0;
+                row = currentSheet.createRow(currentRowIndex++);
+                for (ExportFieldConfiguration field : exportFields) {
+                    SXSSFCell cell = row.createCell(currentCellIndex++);
+                    String value = hit.getExportMetadata().get(field.getField());
+                    cell.setCellValue(new XSSFRichTextString(value != null ? value : ""));
+                }
+            }
+        }
+    }
+    
+    public static void exportSearchAsRIS(String finalQuery, String exportQuery, List<StringPair> sortFields,
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits,
+            int proximitySearchDistance, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+
+        SXSSFSheet currentSheet = wb.createSheet("Goobi_viewer_search");
+        CellStyle styleBold = wb.createCellStyle();
+        Font font2 = wb.createFont();
+        font2.setFontHeightInPoints((short) 10);
+        font2.setBold(true);
+        styleBold.setFont(font2);
+
+        int currentRowIndex = 0;
+        int currentCellIndex = 0;
+
+        // Query row
+        {
+            SXSSFRow row = currentSheet.createRow(currentRowIndex++);
+            SXSSFCell cell = row.createCell(currentCellIndex++);
+            cell.setCellStyle(styleBold);
+            cell.setCellValue(new XSSFRichTextString("Query:"));
+            cell = row.createCell(currentCellIndex);
+            cell.setCellValue(new XSSFRichTextString(exportQuery));
+            currentCellIndex = 0;
+        }
+
+        // Title row
+        SXSSFRow row = currentSheet.createRow(currentRowIndex++);
+        for (ExportFieldConfiguration field : DataManager.getInstance().getConfiguration().getSearchExcelExportFields()) {
+            SXSSFCell cell = row.createCell(currentCellIndex++);
+            cell.setCellStyle(styleBold);
+            cell.setCellValue(new XSSFRichTextString(ViewerResourceBundle.getTranslation(field.getField(), locale)));
+        }
+
+        List<ExportFieldConfiguration> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
+        List<String> exportFieldNames = new ArrayList<>(exportFields.size());
+        for (ExportFieldConfiguration field : exportFields) {
+            exportFieldNames.add(field.getField());
+        }
+        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
+        int batchSize = 100;
+        int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
+        for (int i = 0; i < totalBatches; ++i) {
+            int first = i * batchSize;
+            int max = first + batchSize - 1;
+            if (max > totalHits) {
+                max = (int) (totalHits - 1);
+                batchSize = (int) (totalHits - first);
+            }
+            logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
+            List<SearchHit> batch =
+                    searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFieldNames,
+                            locale, proximitySearchDistance);
+
+            for (SearchHit hit : batch) {
+                
+                String ris = MetadataTools.generateRIS(hit.getBrowseElement().getDocStructType(), hit.getBrowseElement().getMetadataList());
                 // Create row
                 currentCellIndex = 0;
                 row = currentSheet.createRow(currentRowIndex++);

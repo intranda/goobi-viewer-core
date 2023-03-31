@@ -72,7 +72,7 @@ public class RisResourceBuilder {
      * @throws ContentLibException
      */
     public StreamingOutput writeRIS(StructElement se)
-            throws IndexUnreachableException, DAOException, ContentNotFoundException, ContentLibException {
+            throws IndexUnreachableException, DAOException, ContentLibException {
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
         response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
