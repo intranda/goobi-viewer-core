@@ -706,6 +706,8 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (SolrConstants.BOOKMARKS.equals(queryItem.getField()) && !userBean.isLoggedIn()) {
                         // Session bookmark list value
                         sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
+                    } else if (queryItem.isRange()) {
+                        sbInfo.append('[').append(queryItem.getValue()).append(" - ").append(queryItem.getValue2()).append(']');
                     } else {
                         sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     }
