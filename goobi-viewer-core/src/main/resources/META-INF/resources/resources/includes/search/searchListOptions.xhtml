@@ -61,9 +61,9 @@
 	        
 	        <!-- SEARCH EXPORT (RIS) -->
             <h:panelGroup rendered="#{configurationBean.searchRisExportEnabled}">
-                <div class="search-list__excel-export">
-                    <h:form id="slExportSearchForm" prependId="false">
-                        <h:commandLink id="excelDownloadButton" styleClass="btn btn--icon excel-export-trigger" action="#{searchBean.exportSearchAsRisAction()}" title="#{msg.searchExportExcel}">
+                <div class="search-list__ris-export">
+                    <h:form id="risExportSearchForm" prependId="false">
+                        <h:commandLink id="risDownloadButton" styleClass="btn btn--icon ris-export-trigger" action="#{searchBean.exportSearchAsRisAction()}" title="#{msg.searchExportRis}">
                             <i class="fa fa-table" aria-hidden="true"></i>
                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
                             <f:passThroughAttribute name="data-placement" value="top" />
@@ -71,8 +71,8 @@
                         </h:commandLink>
     
                         <span class="excel-export-loader">
-                            #{msg.searchExportExcelLoading}
-                            <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" alt="Excel Export Loader" />
+                            #{msg.searchExportRisLoading}
+                            <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" alt="RIS Export Loader" />
                         </span>
                     </h:form>
                 </div>

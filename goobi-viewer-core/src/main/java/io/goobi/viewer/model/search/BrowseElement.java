@@ -138,6 +138,8 @@ public class BrowseElement implements Serializable {
     private String contextObject;
     private String url;
     @JsonIgnore
+    private String risExport;
+    @JsonIgnore
     private String sidebarPrevUrl;
     @JsonIgnore
     private String sidebarNextUrl;
@@ -241,6 +243,10 @@ public class BrowseElement implements Serializable {
             if (topStructElement != null && topStructElement.isLidoRecord()) {
                 populateEvents(topStructElement, searchTerms);
             }
+        }
+
+        if (DataManager.getInstance().getConfiguration().isSearchRisExportEnabled()) {
+            risExport = MetadataTools.generateRIS(structElement);
         }
 
         if (navigationHelper == null) {
@@ -1344,6 +1350,13 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @return the risExport
+     */
+    public String getRisExport() {
+        return risExport;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>metadataList</code>.
      * </p>
@@ -1553,10 +1566,9 @@ public class BrowseElement implements Serializable {
     public DocType getDocType() {
         return docType;
     }
-    
+
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
     }
-
 
 }
