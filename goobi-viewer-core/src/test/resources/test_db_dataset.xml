@@ -221,7 +221,7 @@
     <cms_highlighted_objects highlighted_object_id="2" enabled="true" name="Objekt des Monats Februar" record_identifier="PPN67890" 
     	date_start="2023-02-01 00:00:00.000000000" date_end="2023-03-01 00:00:00.000000000" image_mode="RECORD_REPRESENTATIVE"/>
     <cms_highlighted_objects highlighted_object_id="3" enabled="false" name="Deaktiviertes Objekt" record_identifier="PPN00000" 
-    	date_start="2023-03-01 00:00:00.000000000" date_end="2023-04-01 00:00:00.000000000" image_mode="NO_IMAGE"/>
+    	date_start="2023-03-01 00:00:00.000000000" date_end="2099-04-01 00:00:00.000000000" image_mode="NO_IMAGE"/>
     	
     <download_jobs download_job_id="1" type="pdf" identifier="187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a" pi="PI_1"
         status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
