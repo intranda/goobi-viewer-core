@@ -304,9 +304,9 @@ public class HighlightedObjectBean implements Serializable {
             return null;
         }
     }
-
+    
     public List<HighlightedObject> getCurrentObjects() throws DAOException {
-        return this.dao.getHighlightedObjectsForDate(LocalDateTime.now()).stream().map(HighlightedObject::new).collect(Collectors.toList());
+        return this.getCurrentObjectsProvider().getPaginatorList();
     }
 
 }
