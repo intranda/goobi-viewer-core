@@ -9,6 +9,7 @@
     xmlns:o="http://omnifaces.org/ui"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
     <ui:define name="metadata">
@@ -127,6 +128,7 @@
 						</div>
 						
 						<h:panelGroup id="featureSetsPanel">
+						<viewerForms:inputFormBlock>
 						
 							<ui:repeat var="featureSet" value="#{geoMapBean.currentMap.featureSets}" varStatus="status">
 								<div id="panelFeatureSet_#{status.index}" class="cms__geomap__featureset_panel #{geoMapBean.isActiveFeatureSet(featureSet) ? '-active' : '' }">
@@ -239,18 +241,19 @@
 				                    </ui:fragment>
 				                </div>
 							</ui:repeat>
-						
-							<div>
+				
+							<viewerForms:inputFormField label="#{msg.cms__geomap__add_featureset}">
 								<ui:param name="featureSetType" value="#{MANUAL}"/>
 								<h:selectOneMenu value="#{featureSetType}">
-									<f:selectItem itemValue = "MANUAL" itemLabel = "MANUAL" /> 
-	   								<f:selectItem itemValue = "SOLR_QUERY" itemLabel = "SOLR_QUERY" /> 
+									<f:selectItem itemValue = "MANUAL" itemLabel = "#{msg.select__geomap_type__MANUAL}" /> 
+	   								<f:selectItem itemValue = "SOLR_QUERY" itemLabel = "#{msg.select__geomap_type__SOLR_QUERY}" /> 
 								</h:selectOneMenu>
 								<button jsf:action="#{geoMapBean.addFeatureSet(geoMapBean.currentMap, featureSetType)}">
 								<i class="fa fa-plus"></i>
 								<f:ajax execute="featureSetsPanel mapPanel" render="mapPanel featureSetsPanel"></f:ajax>
 								</button>
-							</div>
+							</viewerForms:inputFormField>
+						</viewerForms:inputFormBlock>
 														
 						
 						</h:panelGroup>
@@ -286,6 +289,7 @@
 					            	    			clusterMarkers : #{featureSet.queryResultSet},
 					            	    			popoverOnHover : #{featureSet.queryResultSet},
 					            	    			markerIcon : #{featureSet.markerAsJSON},
+					            	    			allowMovingFeatures: #{geoMapBean.isActiveFeatureSet(featureSet)},
 					            	    			<ui:fragment rendered="#{featureSet.queryResultSet}">
 					            	    			heatmap: {
 					            	                	enabled: #{configurationBean.useHeatmapForCMSMaps()},
@@ -303,7 +307,7 @@
 					            	    		mapEditor.geoMap.addFeatureGroup(config, []);
 					            	    	} else {
 					            	    		let featureGroup = mapEditor.addFeatureGroup(config, #{featureSet.featuresAsString});
-					            	    		if(#{featureSet == geoMapBean.activeFeatureSet}) {
+					            	    		if(#{geoMapBean.isActiveFeatureSet(featureSet)}) {
 					            	    				mapEditor.activeFeatureGroup = featureGroup;
 					            	    		}
 					            	    	}
