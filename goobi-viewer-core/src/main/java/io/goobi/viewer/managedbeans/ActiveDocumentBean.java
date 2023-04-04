@@ -789,7 +789,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setLogid(String logid) throws PresentationException {
         synchronized (this) {
-            if ("-".equals(logid)) {
+            if ("-".equals(logid) || StringUtils.isEmpty(logid)) {
                 this.logid = "";
             } else if (StringUtils.isNotBlank(logid) && logid.matches("[\\w-]+")) {
                 this.logid = SolrTools.escapeSpecialCharacters(logid);

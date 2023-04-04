@@ -38,7 +38,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.HighlightedObjectData.ImageMode;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.translations.TranslatedText;
-import jnr.ffi.Struct.size_t;
 
 public class HighlightedObjectDataTest extends AbstractDatabaseEnabledTest {
 
@@ -163,7 +162,7 @@ public class HighlightedObjectDataTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void getPasteObjects() throws DAOException {
+    public void getPastObjects() throws DAOException {
         assertEquals(0, dao.getPastHighlightedObjectsForDate(0, 100, "dateStart", true, null, LocalDate.of(2022,12,1).atStartOfDay()).size());
         assertEquals(1, dao.getPastHighlightedObjectsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,2,15).atStartOfDay()).size());
         assertEquals(3, dao.getPastHighlightedObjectsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,5,1).atStartOfDay()).size());
