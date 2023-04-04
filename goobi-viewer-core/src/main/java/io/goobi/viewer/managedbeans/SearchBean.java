@@ -581,7 +581,7 @@ public class SearchBean implements SearchInterface, Serializable {
             if (sbInfo.length() > 1) {
                 sbInfo.append(' ');
             }
-            sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + advancedSearchQueryGroup.getOperator().name(),
+            sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + queryItem.getOperator().name(),
                     BeanUtils.getLocale()))
                     .append(' ');
 
@@ -713,7 +713,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                     break;
                 case NOT:
-                    sbInfo.append("NOT: (").append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale())).append(")");
+                    sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     break;
                 default:
                     if (queryItem.isRange()) {
