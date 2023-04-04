@@ -205,7 +205,9 @@ var viewerJS = ( function( viewer ) {
 					viewer.notifications.confirm(undefined, undefined, undefined, e.currentTarget.dataset.confirmationText)
 					.then(() => {
 						//if this event has been dispatched from the code below, the action has been confirmed and may be carried out
-						if(element.originalEvent) {
+						if(element.dataset.confirmationTarget) {
+							document.querySelector(element.dataset.confirmationTarget).click();
+						} else if(element.originalEvent) {
 							//if an original  (jsf) event exists, carry it out
 							element.originalEvent(e);
 						} else {

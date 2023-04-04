@@ -134,8 +134,15 @@
 								<div id="panelFeatureSet_#{status.index}" class="cms__geomap__featureset_panel #{geoMapBean.isActiveFeatureSet(featureSet) ? '-active' : '' }">
 									<div>
 										<h4>Featureset #{status.index+1}</h4>
-										<button onclick="event.stopPropagation();" jsf:action="#{geoMapBean.removeFeatureSet(geoMapBean.currentMap, featureSet)}">
+										<button
+											data-require-confirmation="true"
+											data-confirmation-text="#{msg.cms__geomap__delete_featureset__confirm}"
+											data-confirmation-target="[data-delete-button-index='#{status.index}']">
 											<i class="fa fa-trash"></i>
+										</button>
+										<button class="d-none" aria-hidden="true" jsf:action="#{geoMapBean.removeFeatureSet(geoMapBean.currentMap, featureSet)}"
+											data-delete-button-index='#{status.index}'>
+											<o:skipValidators />
 											<f:ajax execute="featureSetsPanel" render="mapPanel featureSetsPanel"></f:ajax>
 										</button>
 									</div>
@@ -151,7 +158,6 @@
 				                            <div class="input_form__option_control">
 				                            	<div class="custom-control custom-control--select">
 								                    <h:selectOneMenu
-								                    	onclick="event.stopPropagation();"
 								                        id="mapMarker"
 								                        styleClass="form-control" 
 								                        value="#{featureSet.marker}"
@@ -232,11 +238,11 @@
 								                </div>
 				                            </div>
 				                            <div class="input_form__option_help">
-				                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="popupContentHelp" aria-label="inline help icon">
+				                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="popupContentHelp_#{status.index}" aria-label="inline help icon">
 				                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 				                                </button>
 				                            </div>
-				                            <div id="popupContentHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__popup_content__help}</div>
+				                            <div id="popupContentHelp_#{status.index}" class="input_form__option_control_helptext">#{msg.cms__geomaps__popup_content__help}</div>
 				                        </div>
 				                    </ui:fragment>
 				                </div>
@@ -249,8 +255,9 @@
 	   								<f:selectItem itemValue = "SOLR_QUERY" itemLabel = "#{msg.select__geomap_type__SOLR_QUERY}" /> 
 								</h:selectOneMenu>
 								<button jsf:action="#{geoMapBean.addFeatureSet(geoMapBean.currentMap, featureSetType)}">
-								<i class="fa fa-plus"></i>
-								<f:ajax execute="featureSetsPanel mapPanel" render="mapPanel featureSetsPanel"></f:ajax>
+									<i class="fa fa-plus"></i>
+									<f:ajax execute="featureSetsPanel mapPanel" render="mapPanel featureSetsPanel"></f:ajax>
+									<o:skipValidators />
 								</button>
 							</viewerForms:inputFormField>
 						</viewerForms:inputFormBlock>
@@ -295,8 +302,6 @@
 					            	                	enabled: #{configurationBean.useHeatmapForCMSMaps()},
 					            	                	heatmapUrl:  "#{geoMapBean.heatmapUrl}",
 								    		          	featureUrl:  "#{geoMapBean.featureUrl}",
-					            	                	filterQuery: "BOOL_WKT_COORDS:*",
-					            	    		        labelField: "LABEL",
 					            	    		        filterQuery: "#{featureSet.solrQueryEncoded}",
 								    		      	    labelField:  "#{featureSet.markerTitleField}",
 					            	                },
@@ -315,8 +320,12 @@
 					            	    	if(!#{featureSet.queryResultSet}) {					            	    		
 						            	    	let inputPanel = document.getElementById("panelFeatureSet_#{status.index}");
 						            	    	$(inputPanel).off("click");
-						            	    	$(inputPanel).on("click", () => setActiveFeatureSet({index: #{status.index}}));
-						            	    	console.log("panel element for FeautureSet #{status.index} is ", inputPanel);						            	    	
+						            	    	$(inputPanel).on("click", e => {
+						            	    		let inputElement = $(e.target).closest("button, input, select").length > 0;
+						            	    		if(!inputElement) {						            	    			
+						            	    			setActiveFeatureSet({index: #{status.index}});
+						            	    		}
+						            	    	});
 					            	    	}
 					            	    }
 					            	    
