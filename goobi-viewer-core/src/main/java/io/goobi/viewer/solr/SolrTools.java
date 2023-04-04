@@ -46,6 +46,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
@@ -817,6 +818,20 @@ public class SolrTools {
             return string.replaceAll("\\\\([<>+\\-&||!(){}\\[\\]^\\\"~*?:\\/])", "$1");
         }
         return string;
+    }
+
+    /**
+     * Escapes Solr query reserved characters in the given string (while also avoiding NPE).
+     * 
+     * @param s
+     * @return
+     */
+    public static String escapeQueryChars(String s) {
+        if (StringUtils.isEmpty(s)) {
+            return s;
+        }
+
+        return ClientUtils.escapeQueryChars(s);
     }
 
     /**

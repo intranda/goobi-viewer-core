@@ -2400,7 +2400,7 @@ public final class SearchHelper {
         // Add a boost query to promote anchors and works to the top of the list (Extended DisMax query parser is required for this)
         params.put("defType", "edismax");
         params.put("uf", "* _query_");
-        String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) : null;
+        String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", SolrTools.escapeQueryChars(termQuery)) : null;
         if (bq != null) {
             params.put("bq", bq);
             logger.trace("bq: {}", bq);
