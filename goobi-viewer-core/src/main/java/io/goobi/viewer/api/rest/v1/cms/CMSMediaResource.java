@@ -70,6 +70,7 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -121,15 +122,15 @@ public class CMSMediaResource {
     protected HttpServletResponse servletResponse;
     @Context
     private IDAO dao;
-    
+
     public CMSMediaResource() {
-        
+
     }
-    
+
     public CMSMediaResource(IDAO dao) {
         this.dao = dao;
     }
-    
+
     /**
      * <p>
      * getMediaByTag.
@@ -390,17 +391,17 @@ public class CMSMediaResource {
         if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
         }
-        Optional<User> user = getUser();
-        if (!user.isPresent()) {
-            return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
-        } else if (!user.get().isCmsAdmin()) {
-            return Response.status(Status.FORBIDDEN).entity("User has no permission to upload media files").build();
-        } else {
+        Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+        Path mediaFile = cmsMediaFolder.resolve(filename);
+        try {
+            Optional<User> user = getUser();
+            if (!user.isPresent()) {
+                return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
+            } else if (!user.get().isCmsAdmin()) {
+                return Response.status(Status.FORBIDDEN).entity("User has no permission to upload media files").build();
+            } else {
 
-            Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                    DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-            Path mediaFile = cmsMediaFolder.resolve(filename);
-            try {
                 Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(user.get());
 
                 if (!Files.exists(cmsMediaFolder)) {
@@ -437,18 +438,18 @@ public class CMSMediaResource {
                     Files.delete(mediaFile);
                 }
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
-            } catch (AccessDeniedException e) {
-                return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
-            } catch (FileAlreadyExistsException e) {
-                String message =
-                        Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                return Response.status(Status.CONFLICT).entity(message).build();
-            } catch (IOException | DAOException e) {
-                logger.error("Error uploading media file", e);
-                String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(),
-                        e.getMessage());
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
             }
+        } catch (AccessDeniedException e) {
+            return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
+        } catch (FileAlreadyExistsException e) {
+            String message =
+                    Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
+            return Response.status(Status.CONFLICT).entity(message).build();
+        } catch (IOException | DAOException e) {
+            logger.error("Error uploading media file", e);
+            String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(),
+                    e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
         }
     }
 
@@ -519,7 +520,6 @@ public class CMSMediaResource {
             logger.trace("Unable to get user: No user found in session store UserBean instance");
             return Optional.empty();
         }
-        // logger.trace("Found user {}", user);
         return Optional.of(user);
     }
 
