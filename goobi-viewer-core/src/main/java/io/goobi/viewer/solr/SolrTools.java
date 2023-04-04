@@ -821,20 +821,6 @@ public class SolrTools {
     }
 
     /**
-     * Escapes Solr query reserved characters in the given string (while also avoiding NPE).
-     * 
-     * @param s
-     * @return
-     */
-    public static String escapeQueryChars(String s) {
-        if (StringUtils.isEmpty(s)) {
-            return s;
-        }
-
-        return ClientUtils.escapeQueryChars(s);
-    }
-
-    /**
      * 
      * @param query
      * @return cleaned up query

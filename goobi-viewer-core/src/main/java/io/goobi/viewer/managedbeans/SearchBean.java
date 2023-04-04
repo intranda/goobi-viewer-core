@@ -602,7 +602,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         continue;
                     }
                     if (!usedFieldValuePairs.contains(queryItem.getField() + ":" + queryItem.getValue())) {
-                        facetItem.setLink(queryItem.getField() + ":" + queryItem.getValueEscaped());
+                        facetItem.setLink(queryItem.getField() + ":" + queryItem.getValue());
                         usedFieldValuePairs.add(facetItem.getLink());
                         usedHierarchicalFields.add(queryItem.getField());
                         // logger.trace("reuse facet item: {}", facetItem);
@@ -613,7 +613,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
                 if (!skipQueryItem) {
                     String itemQuery =
-                            new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValueEscaped().trim()).toString();
+                            new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).toString();
                     // logger.trace("item query: {}", itemQuery);
 
                     // Check whether this combination already exists and skip, if that's the case

@@ -280,14 +280,6 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     */
-    public String getValueEscaped() {
-        return SolrTools.escapeQueryChars(value);
-    }
-
-    /**
      * <p>
      * Getter for the field <code>value</code>.
      * </p>
@@ -310,14 +302,6 @@ public class SearchQueryItem implements Serializable {
         //        if(StringUtils.isNotBlank(this.value) && !this.value.contains(" ")) {
         //            this.value = SearchHelper.addFuzzySearchToken(this.value);
         //        }
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public String getValue2Escaped() {
-        return SolrTools.escapeQueryChars(value2);
     }
 
     /**
@@ -483,7 +467,7 @@ public class SearchQueryItem implements Serializable {
 
         // Phrase search operator: just the whole value in quotation marks
         if (phrase) {
-            String useValue = SolrTools.escapeQueryChars(value.trim());
+            String useValue = value.trim();
             int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
             logger.trace("proximity distance: {}", proximitySearchDistance);
             boolean additionalField = false;
@@ -518,7 +502,7 @@ public class SearchQueryItem implements Serializable {
         // AND/OR: e.g. '(FIELD:value1 AND/OR FIELD:"value2" AND/OR -FIELD:value3)' for each query item
         else {
             if (!value.trim().isEmpty()) {
-                String[] valueSplit = SolrTools.escapeQueryChars(value.trim()).split(" ");
+                String[] valueSplit = value.trim().split(" ");
                 boolean moreThanOneField = false;
                 for (String f : fields) {
                     if (moreThanOneField) {
