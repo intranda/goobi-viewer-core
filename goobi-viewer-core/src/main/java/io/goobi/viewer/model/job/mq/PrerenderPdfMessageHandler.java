@@ -103,19 +103,24 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
             } else if (imageFiles.size() == pdfFiles.size() && !force) {
                 logger.trace("PDF files already exist. Abandoning task");
             } else {
-                if (!Files.exists(pdfFolder)) {
-                    try {
-                        Files.createDirectories(pdfFolder);
-                    } catch (IOException e) {
-                        logger.error("Cannot create pdf directory: {}", e.toString());
-                        return false;
-                    }
-                }
-                for (Path imagePath : imageFiles) {
-                    if (!createPdfFile(imagePath, pdfFolder, altoFolder, configVariant)) {
-                        return false;
-                    }
-                }
+                return createPdfFiles(configVariant, pdfFolder, altoFolder, imageFiles);
+            }
+        }
+        return true;
+    }
+
+    private boolean createPdfFiles(String configVariant, Path pdfFolder, Path altoFolder, List<Path> imageFiles) {
+        if (!Files.exists(pdfFolder)) {
+            try {
+                Files.createDirectories(pdfFolder);
+            } catch (IOException e) {
+                logger.error("Cannot create pdf directory: {}", e.toString());
+                return false;
+            }
+        }
+        for (Path imagePath : imageFiles) {
+            if (!createPdfFile(imagePath, pdfFolder, altoFolder, configVariant)) {
+                return false;
             }
         }
         return true;
