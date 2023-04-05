@@ -36,7 +36,6 @@ public class SearchExcelExportHandler implements MessageHandler<MessageStatus> {
 
     @Override
     public MessageStatus call(ViewerMessage message) {
-        // TODO add logic, seems to be ignored so far
         return MessageStatus.FINISH;
     }
 

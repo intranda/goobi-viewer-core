@@ -24,9 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -43,8 +41,6 @@ import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import io.goobi.viewer.controller.DAOSearchFunction;
-import io.goobi.viewer.controller.DAOSearchFunction;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
@@ -54,7 +50,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.HighlightedObject;
@@ -82,7 +77,7 @@ public class HighlightedObjectBean implements Serializable {
 
     private transient HighlightedObject selectedObject = null;
     private MetadataElement metadataElement = null;
-    private final Random random = new Random();
+    private final Random random = new Random(); //NOSONAR   generated numbers have no security relevance
 
     @Inject
     private NavigationHelper navigationHelper;
@@ -305,7 +300,7 @@ public class HighlightedObjectBean implements Serializable {
         }
     }
     
-    public List<HighlightedObject> getCurrentObjects() throws DAOException {
+    public List<HighlightedObject> getCurrentObjects() {
         return this.getCurrentObjectsProvider().getPaginatorList();
     }
 
