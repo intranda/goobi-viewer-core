@@ -342,7 +342,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         }
 
         sb.generateAdvancedSearchString();
-        Assert.assertEquals("AND (All fields: foo bar) AND (Title: bla \"blup\" -nein)",
+        Assert.assertEquals("OR (All fields: foo bar) AND (Title: bla &quot;blup&quot; -nein)",
                 sb.getAdvancedSearchQueryInfo());
     }
 

@@ -139,7 +139,8 @@ public class CmsBean implements Serializable {
     private HashMap<Long, Boolean> editablePages = new HashMap<>();
     private List<String> solrSortFields = null;
     private List<String> solrGroupFields = null;
-
+    private String test = "";
+    
     private List<String> luceneFields = null;
 
     public CmsBean() {
@@ -235,7 +236,7 @@ public class CmsBean implements Serializable {
                 }
             });
             lazyModelPages.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
-            lazyModelPages.addFilter(CMSPAGES_FILTER);
+            lazyModelPages.getFilter(CMSPAGES_FILTER);
             //            lazyModelPages.addFilter("CMSCategory", "name");
         }
     }
@@ -1788,4 +1789,12 @@ public class CmsBean implements Serializable {
         return EnumSet.allOf(HitListView.class);
     }
 
+    public String getTest() {
+        return test;
+    }
+    
+    public void setTest(String test) {
+        System.out.println("set test");
+        this.test = test;
+    }
 }

@@ -135,7 +135,7 @@ public class UserDataBean implements Serializable {
             }
         });
         model.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        model.setFilters("targetPI_body_campaign_dateCreated");
+        model.getFilter("targetPI_body_campaign_dateCreated");
         return model;
     }
 

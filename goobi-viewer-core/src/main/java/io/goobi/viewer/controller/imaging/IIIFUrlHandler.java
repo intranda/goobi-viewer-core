@@ -45,6 +45,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 
@@ -66,6 +67,10 @@ public class IIIFUrlHandler {
 
     public IIIFUrlHandler(AbstractApiUrlManager urls) {
         this.urls = urls;
+    }
+    
+    public IIIFUrlHandler(URI apiUrl) {
+        this.urls = new ApiUrls(apiUrl.toString());
     }
 
     public IIIFUrlHandler() {

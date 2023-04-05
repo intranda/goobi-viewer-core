@@ -1124,6 +1124,22 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 
+	<!-- CMS HIGHLIGHTED OBJECTS -->
+    <url-mapping id="adminCmsHighlightedObjects">
+        <pattern value="/admin/cms/highlightedobjects/" />
+        <view-id value="/resources/cms/adminCmsHighlightedObjects.xhtml" />
+    </url-mapping>
+    <url-mapping id="adminCmsHighlightedObjectsNew">
+        <pattern value="/admin/cms/highlightedobjects/new/" />
+        <view-id value="/resources/cms/adminCmsHighlightedObjectsEdit.xhtml" />
+        <action onPostback="false">#{highlightedObjectBean.setNewSelectedObject()}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsHighlightedObjectsEdit">
+        <pattern value="/admin/cms/highlightedobjects/edit/#{selectedObjectId}/" />
+        <view-id value="/resources/cms/adminCmsHighlightedObjectsEdit.xhtml" />
+        <action onPostback="false">#{highlightedObjectBean.setSelectedObjectId(selectedObjectId)}</action>
+    </url-mapping>
+
 	<!-- CMS -->
 	<url-mapping id="cmsOpenPage1">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/" />
@@ -1148,13 +1164,14 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
-
+	<!-- Deprecated. Keep for backward compatibility -->
 	<url-mapping id="cmsOpenPageWithCollection">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+	<!-- Deprecated. Keep for backward compatibility -->
 	<url-mapping id="cmsOpenPagePreviewWithCollection">
 		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />

@@ -22,11 +22,7 @@
 
 package io.goobi.viewer.controller.mq;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import javax.jms.BytesMessage;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -34,7 +30,6 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnection;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.logging.log4j.LogManager;
@@ -51,105 +46,114 @@ public class DefaultQueueListener {
 
     private final MessageQueueManager messageBroker;
     private Thread thread;
-    private ActiveMQConnection conn;
-    private MessageConsumer consumer;
     private volatile boolean shouldStop = false;
 
     public DefaultQueueListener(MessageQueueManager messageBroker) {
         this.messageBroker = messageBroker;
     }
 
-    public void register(String username, String password, String queueType) throws JMSException {
-        conn = this.messageBroker.getConnection();
+    public void register(String queueType) throws JMSException {
+        ActiveMQConnection conn = this.messageBroker.getConnection();
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
         prefetchPolicy.setAll(0);
         conn.setPrefetchPolicy(prefetchPolicy);
         RedeliveryPolicy policy = conn.getRedeliveryPolicy();
         policy.setMaximumRedeliveries(0);
-        final Session sess = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-        final Destination dest = sess.createQueue(queueType);
-
-        consumer = sess.createConsumer(dest);
-
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                while (!shouldStop) {
-                    try {
-                        Message message = consumer.receive();
-                        Optional<ViewerMessage> optTicket = Optional.empty();
-                        if (message instanceof TextMessage) {
-                            TextMessage tm = (TextMessage) message;
-                            optTicket = Optional.of(ViewerMessage.parseJSON(tm.getText()));
-                        }
-                        if (message instanceof BytesMessage) {
-                            BytesMessage bm = (BytesMessage) message;
-                            byte[] bytes = new byte[(int) bm.getBodyLength()];
-                            bm.readBytes(bytes);
-                            optTicket = Optional.of(ViewerMessage.parseJSON(new String(bytes)));
-                        }
-                        if (optTicket.isPresent()) {
-                            log.debug("Handling ticket {}", optTicket.get());
-                            ViewerMessage ticket = optTicket.get();
-                            try {
-                                ViewerMessage retry = DataManager.getInstance().getDao().getViewerMessageByMessageID(message.getJMSMessageID());
-                                if (retry != null) {
-                                    ticket = retry;
-                                    ticket.setRetryCount(ticket.getRetryCount() + 1);
-                                }
-                            } catch (DAOException e) {
-                                log.error(e);
-                            }
-
-                            ticket.setMessageId(message.getJMSMessageID());
-
-                            try {
-                                MessageStatus result = messageBroker.handle(ticket);
-                                
-                                if (result != MessageStatus.ERROR) {
-                                    //acknowledge message, it is done
-                                    message.acknowledge();
-                                } else {
-                                    //error or wait => put back to queue and retry by redeliveryPolicy
-                                    sess.recover();
-                                }
-                            } catch (Exception t) {
-                                log.error("Error handling ticket " + message.getJMSMessageID() + ": ", t);
-                                sess.recover();
-                            } finally {
-                                MessageQueueManager.notifyMessageQueueStateUpdate();
-                            }
-                            
-                        }
-                    } catch (JMSException | JsonProcessingException e) {
-                        if (!shouldStop) {
-                            // back off a little bit, maybe we have a problem with the connection or we are shutting down
-                            try {
-                                Thread.sleep(1500);
-                            } catch (InterruptedException e1) {
-                                Thread.currentThread().interrupt();
-                            }
-                            if (!shouldStop) {
-                                log.error(e);
-                            }
-                        }
-                    }
-                }
-
-            }
-        };
-        thread = new Thread(run);
+        thread = new Thread(() -> startMessageLoop(queueType, conn));
         thread.setDaemon(true);
-
-        conn.start();
         thread.start();
     }
 
+    void startMessageLoop(String queueType, ActiveMQConnection conn) {
+        try {
+            conn.start();
+            startListener(queueType, conn);
+            log.info("Exiting listener thread for message queue {}", queueType);
+        } catch (JMSException e) {
+            log.error("Error starting listener for queue {}. Aborting listerner startup", e.toString(), e);
+        }
+    }
 
-    public void close() throws JMSException {
+    void startListener(String queueType, ActiveMQConnection conn) throws JMSException {
+        try (Session sess = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+                MessageConsumer consumer = sess.createConsumer(sess.createQueue(queueType));) {
+            while (!shouldStop) {
+                waitForMessage(sess, consumer);
+                if(Thread.interrupted()) {
+                    log.info("Queue listener for queue {} interrupted: exiting listener", queueType);
+                    return;
+                }
+            }
+        }
+    }
+
+    void waitForMessage(Session sess, MessageConsumer consumer) {
+        try {
+            Message message = consumer.receive();
+            ViewerMessage ticket = null;
+            if (message instanceof TextMessage) {
+                TextMessage tm = (TextMessage) message;
+                ticket = ViewerMessage.parseJSON(tm.getText());
+            }
+            if (message instanceof BytesMessage) {
+                BytesMessage bm = (BytesMessage) message;
+                byte[] bytes = new byte[(int) bm.getBodyLength()];
+                bm.readBytes(bytes);
+                ticket = ViewerMessage.parseJSON(new String(bytes));
+            }
+            if (ticket != null) {
+                handleTicket(sess, message, ticket);
+            }
+        } catch (JMSException | JsonProcessingException e) {
+            if (!shouldStop) {
+                // back off a little bit, maybe we have a problem with the connection or we are shutting down
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                if (!shouldStop) {
+                    log.error("Message listener has encountered an error. Attempting to resume listener", e);
+                }
+            }
+        }
+    }
+
+    void handleTicket(final Session sess, Message message, ViewerMessage ticket) throws JMSException {
+        log.debug("Handling ticket {}", ticket);
+        try {
+            ViewerMessage retry = DataManager.getInstance().getDao().getViewerMessageByMessageID(message.getJMSMessageID());
+            if (retry != null) {
+                ticket = retry;
+                ticket.setRetryCount(ticket.getRetryCount() + 1);
+            }
+        } catch (DAOException e) {
+            log.error(e);
+        }
+
+        ticket.setMessageId(message.getJMSMessageID());
+
+        try {
+            MessageStatus result = messageBroker.handle(ticket);
+
+            if (result != MessageStatus.ERROR) {
+                //acknowledge message, it is done
+                message.acknowledge();
+            } else {
+                //error or wait => put back to queue and retry by redeliveryPolicy
+                sess.recover();
+            }
+        } catch (Exception t) {
+            log.error("Error handling ticket {}: ", message.getJMSMessageID(), t);
+            sess.recover();
+        } finally {
+            MessageQueueManager.notifyMessageQueueStateUpdate();
+        }
+    }
+
+    public void close() {
         this.shouldStop = true;
-        this.consumer.close();
-        this.conn.close();
         try {
             this.thread.join(1000);
         } catch (InterruptedException e) {
@@ -157,5 +161,5 @@ public class DefaultQueueListener {
             Thread.currentThread().interrupt();
         }
     }
-    
+
 }

@@ -112,6 +112,7 @@ import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -464,11 +465,11 @@ public class ActiveDocumentBean implements Serializable {
                 new StructElement(topDocumentIddoc);
                 String query = new StringBuilder("+")
                         .append(SolrConstants.LOGID)
-                        .append(':')
+                        .append(":\"")
                         .append(logid)
-                        .append(" +")
+                        .append("\" +")
                         .append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
+                        .append(":")
                         .append(viewManager.getPi())
                         .append(" +")
                         .append(SolrConstants.DOCTYPE)
@@ -743,16 +744,26 @@ public class ActiveDocumentBean implements Serializable {
      * Setter for the field <code>imageToShow</code>.
      * </p>
      *
-     * @param imageToShow the imageToShow to set
+     * @param imageToShow Single page number (1) or range (2-3)
+     * @throws PresentationException
      */
-    public void setImageToShow(String imageToShow) {
+    public void setImageToShow(String imageToShow) throws PresentationException {
         synchronized (lock) {
-            this.imageToShow = imageToShow;
+            if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^[0-9]+(-[0-9]+)?$")) {
+                this.imageToShow = imageToShow;
+            } else {
+                throw new PresentationException(
+                        "The passed image number " + imageToShow + " contains illegal characters");
+            }
             if (viewManager != null) {
-                viewManager.setDropdownSelected(String.valueOf(imageToShow));
+                viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
             }
             // Reset LOGID (the LOGID setter is called later by PrettyFaces, so if a value is passed, it will still be set)
-            setLogid("");
+            try {
+                setLogid("");
+            } catch (PresentationException e) {
+                //cannot be thrown here
+            }
             logger.trace("imageToShow: {}", this.imageToShow);
         }
     }
@@ -776,13 +787,16 @@ public class ActiveDocumentBean implements Serializable {
      * </p>
      *
      * @param logid the logid to set
+     * @throws PresentationException
      */
-    public void setLogid(String logid) {
+    public void setLogid(String logid) throws PresentationException {
         synchronized (this) {
-            if ("-".equals(logid)) {
+            if ("-".equals(logid) || StringUtils.isEmpty(logid)) {
                 this.logid = "";
+            } else if (StringUtils.isNotBlank(logid) && logid.matches("[\\w-]+")) {
+                this.logid = SolrTools.escapeSpecialCharacters(logid);
             } else {
-                this.logid = logid;
+                throw new PresentationException("The passed logId " + SolrTools.escapeSpecialCharacters(logid) + " contains illegal characters");
             }
         }
     }
@@ -870,7 +884,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setAction(String action) {
         synchronized (this) {
-            logger.trace("setAction: " + action);
+            logger.trace("setAction: {}", action);
             this.action = action;
             if (searchBean != null && action != null) {
                 switch (action) {
@@ -903,14 +917,14 @@ public class ActiveDocumentBean implements Serializable {
     public void setPersistentIdentifier(String persistentIdentifier)
             throws PresentationException, RecordNotFoundException, IndexUnreachableException {
         synchronized (this) {
-            logger.trace("setPersistentIdentifier: {}", persistentIdentifier);
-            lastReceivedIdentifier = persistentIdentifier;
+            logger.trace("setPersistentIdentifier: {}", StringTools.stripPatternBreakingChars(persistentIdentifier));
             if (!PIValidator.validatePi(persistentIdentifier)) {
                 logger.warn("Invalid identifier '{}'.", persistentIdentifier);
                 reset();
                 return;
                 // throw new RecordNotFoundException("Illegal identifier: " + persistentIdentifier);
             }
+            lastReceivedIdentifier = persistentIdentifier;
             if (!"-".equals(persistentIdentifier) && (viewManager == null || !persistentIdentifier.equals(viewManager.getPi()))) {
                 long id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
                 if (id > 0) {
@@ -921,7 +935,6 @@ public class ActiveDocumentBean implements Serializable {
                 } else {
                     logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
                     reset();
-                    return;
                     // throw new RecordNotFoundException(new StringBuilder(persistentIdentifier).toString());
                 }
             }
@@ -2164,6 +2177,11 @@ public class ActiveDocumentBean implements Serializable {
             // logger.trace("page type: {}", currentPageType.getName());
             // logger.trace("current url: {}", navigationHelper.getCurrentUrl());
             String currentUrl = navigationHelper.getCurrentUrl();
+
+            if (currentUrl.contains(SolrTools.unescapeSpecialCharacters(getLogid()))) {
+                currentUrl = currentUrl.replace(SolrTools.unescapeSpecialCharacters(getLogid()), getLogid());
+            }
+
             if (currentUrl.contains("!" + currentPageType.getName())) {
                 // Preferred view - add regular view URL
                 sb.append("\n<link rel=\"canonical\" href=\"")

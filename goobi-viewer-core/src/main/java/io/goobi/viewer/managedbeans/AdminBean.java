@@ -181,7 +181,7 @@ public class AdminBean implements Serializable {
             }
         });
         lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelUsers.setFilters("firstName_lastName_nickName_email");
+        lazyModelUsers.getFilter("firstName_lastName_nickName_email");
     }
     //
     // User

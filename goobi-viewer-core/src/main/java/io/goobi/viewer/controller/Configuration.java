@@ -227,7 +227,7 @@ public class Configuration extends AbstractConfiguration {
 
         if (StringUtils.isEmpty(stopwordsFilePath)) {
             logger.warn("'stopwordsFile' not configured. Stop words cannot be filtered from search queries.");
-            return Collections.emptySet();
+            return new HashSet<>();
         }
 
         Set<String> ret = new HashSet<>();
@@ -390,7 +390,7 @@ public class Configuration extends AbstractConfiguration {
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
         if (templateList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>(); // must be a mutable list!
         }
 
         return getMetadataForTemplate(template, templateList, true, true);
@@ -409,7 +409,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("Old <mainMetadataList> configuration found - please migrate to <metadataView>.");
                 return Collections.singletonList(new MetadataView());
             }
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<MetadataView> ret = new ArrayList<>(metadataPageList.size());
@@ -445,7 +445,7 @@ public class Configuration extends AbstractConfiguration {
                 if (templateList != null) {
                     logger.warn("Old <mainMetadataList> configuration found - please migrate to <metadataView>.");
                 } else {
-                    return Collections.emptyList();
+                    return new ArrayList<>();
                 }
             }
         }
@@ -465,7 +465,7 @@ public class Configuration extends AbstractConfiguration {
     public List<Metadata> getSidebarMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.sideBarMetadataList.template");
         if (templateList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         return getMetadataForTemplate(template, templateList, false, false);
@@ -484,7 +484,7 @@ public class Configuration extends AbstractConfiguration {
     private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration<ImmutableNode>> templateList,
             boolean fallbackToDefaultTemplate, boolean topstructValueFallbackDefaultValue) {
         if (templateList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
@@ -503,7 +503,7 @@ public class Configuration extends AbstractConfiguration {
             usingTemplate = defaultTemplate;
         }
         if (usingTemplate == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         return getMetadataForTemplate(usingTemplate, topstructValueFallbackDefaultValue);
@@ -519,12 +519,12 @@ public class Configuration extends AbstractConfiguration {
     private static List<Metadata> getMetadataForTemplate(HierarchicalConfiguration<ImmutableNode> usingTemplate,
             boolean topstructValueFallbackDefaultValue) {
         if (usingTemplate == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         List<HierarchicalConfiguration<ImmutableNode>> elements = usingTemplate.configurationsAt("metadata");
         if (elements == null) {
             logger.warn("Template '{}' contains no metadata elements.", usingTemplate.getRootElementName());
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<Metadata> ret = new ArrayList<>(elements.size());
@@ -613,7 +613,7 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getNormdataFieldsForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.normdataList.template");
         if (templateList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
@@ -624,7 +624,7 @@ public class Configuration extends AbstractConfiguration {
             }
         }
         if (usingTemplate == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         return getLocalList(usingTemplate, null, "field", null);
@@ -643,7 +643,7 @@ public class Configuration extends AbstractConfiguration {
     public List<Metadata> getTocLabelConfiguration(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("toc.labelConfig.template");
         if (templateList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         return getMetadataForTemplate(template, templateList, true, false);
@@ -735,7 +735,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return all configured values
      */
     public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
-        return getLocalList("sidebar.sidebarWidgetUsage.citationRecommendation.styles.style", Collections.emptyList());
+        return getLocalList("sidebar.sidebarWidgetUsage.citationRecommendation.styles.style", new ArrayList<>());
     }
 
     /**
@@ -773,7 +773,7 @@ public class Configuration extends AbstractConfiguration {
     public List<CitationLink> getSidebarWidgetUsageCitationLinks() {
         List<HierarchicalConfiguration<ImmutableNode>> links = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.citationLinks.links.link");
         if (links == null || links.isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<CitationLink> ret = new ArrayList<>();
@@ -805,7 +805,7 @@ public class Configuration extends AbstractConfiguration {
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.page.downloadOptions.option");
         if (configs == null || configs.isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<DownloadOption> ret = new ArrayList<>(configs.size());
@@ -882,7 +882,7 @@ public class Configuration extends AbstractConfiguration {
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
         List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("metadata.browsingMenu.field");
         if (fields == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<BrowsingMenuFieldConfig> ret = new ArrayList<>(fields.size());
@@ -1012,7 +1012,7 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getCollectionBlacklist(String field) {
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
         if (collection == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         return getLocalList(collection, null, "blacklist.collection", Collections.<String> emptyList());
     }
@@ -1270,7 +1270,7 @@ public class Configuration extends AbstractConfiguration {
     public List<Integer> getSearchHitsPerPageValues() {
         List<String> values = getLocalList("search.hitsPerPage.value");
         if (values.isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<Integer> ret = new ArrayList<>(values.size());
@@ -1342,7 +1342,7 @@ public class Configuration extends AbstractConfiguration {
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
         List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
         if (fieldList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
@@ -1433,7 +1433,7 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("type may not be null");
         }
         if (fields == null || fields.isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<String> ret = new ArrayList<>();
@@ -1922,7 +1922,7 @@ public class Configuration extends AbstractConfiguration {
     public List<SecurityQuestion> getSecurityQuestions() {
         List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt("user.securityQuestions.question");
         if (nodes == null || nodes.isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<SecurityQuestion> ret = new ArrayList<>(nodes.size());
@@ -1932,7 +1932,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("Security question key not found, skipping...");
                 continue;
             }
-            List<Object> answerNodes = node.getList("allowedAnswer", Collections.emptyList());
+            List<Object> answerNodes = node.getList("allowedAnswer", new ArrayList<>());
             if (answerNodes.isEmpty()) {
                 logger.warn("Security question '{}' has no configured answers, skipping...", questionKey);
                 continue;
@@ -2656,12 +2656,12 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getPriorityValuesForFacetField(String field) {
         if (StringUtils.isBlank(field)) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         String priorityValues = getPropertyForFacetField(field, "[@priorityValues]", "");
         if (priorityValues == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         String[] priorityValuesSplit = priorityValues.split(";");
 
@@ -3781,7 +3781,7 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getDocstructNavigationTypes(String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("viewer.docstructNavigation.template");
         if (templateList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
@@ -3800,13 +3800,13 @@ public class Configuration extends AbstractConfiguration {
             usingTemplate = defaultTemplate;
         }
         if (usingTemplate == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         String[] ret = usingTemplate.getStringArray("docstruct");
         if (ret == null) {
             logger.warn("Template '{}' contains no docstruct elements.", usingTemplate.getRootElementName());
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         return Arrays.asList(ret);
@@ -3869,7 +3869,7 @@ public class Configuration extends AbstractConfiguration {
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("toc.volumeSortFields.template");
         if (templateList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
         for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
@@ -3889,12 +3889,12 @@ public class Configuration extends AbstractConfiguration {
             usingTemplate = defaultTemplate;
         }
         if (usingTemplate == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<HierarchicalConfiguration<ImmutableNode>> fields = usingTemplate.configurationsAt("field");
         if (fields == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<StringPair> ret = new ArrayList<>(fields.size());
@@ -4162,7 +4162,7 @@ public class Configuration extends AbstractConfiguration {
     public List<Map<String, String>> getWebApiFields() {
         List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("webapi.fields.field");
         if (elements == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<Map<String, String>> ret = new ArrayList<>(elements.size());
@@ -4459,7 +4459,7 @@ public class Configuration extends AbstractConfiguration {
      */
     List<ExportFieldConfiguration> getExportConfigurations(String path) {
         if (path == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt(path);
@@ -4506,11 +4506,11 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<String> getRestrictedImageUrls() {
-        return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.emptyList());
+        return getLocalList("viewer.externalContent.restrictedUrls.url", new ArrayList<>());
     }
 
     public List<String> getIIIFLicenses() {
-        return getLocalList("webapi.iiif.license", Collections.emptyList());
+        return getLocalList("webapi.iiif.license", new ArrayList<>());
     }
 
     /**
@@ -4521,7 +4521,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<String> getIIIFMetadataFields() {
-        return getLocalList("webapi.iiif.metadataFields.field", Collections.emptyList());
+        return getLocalList("webapi.iiif.metadataFields.field", new ArrayList<>());
     }
 
     /**
@@ -4534,7 +4534,7 @@ public class Configuration extends AbstractConfiguration {
      *         all events
      */
     public List<String> getIIIFEventFields() {
-        List<String> fields = getLocalList("webapi.iiif.metadataFields.event", Collections.emptyList());
+        List<String> fields = getLocalList("webapi.iiif.metadataFields.event", new ArrayList<>());
         fields = fields.stream().map(field -> field.contains("/") ? field : "/" + field).collect(Collectors.toList());
         return fields;
     }
@@ -4796,7 +4796,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<String> getConfiguredCollections() {
-        return getLocalList("collections.collection[@field]", Collections.emptyList());
+        return getLocalList("collections.collection[@field]", new ArrayList<>());
 
     }
 
@@ -4974,7 +4974,7 @@ public class Configuration extends AbstractConfiguration {
             if (value.equals(content)) {
                 String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
                 String[] icons = config.getStringArray("icon");
-                return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : Collections.emptyList());
+                return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : new ArrayList<>());
             }
         }
 
@@ -5396,7 +5396,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return all configured elements
      */
     public List<String> getConfigEditorDirectories() {
-        return getLocalList("configEditor.directory", Collections.emptyList());
+        return getLocalList("configEditor.directory", new ArrayList<>());
     }
 
     /**

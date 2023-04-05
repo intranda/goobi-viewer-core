@@ -51,7 +51,9 @@
 
 						<!-- COMMENT METADATA -->
 						<div class="user-comments__comment-metadata">
-							<span class="user-comments__comment-metadata-creator">#{comment.creator.displayName}</span>
+							<span class="user-comments__comment-metadata-creator">
+							    #{comment.creator.displayNameEscaped}
+							</span>
 							<span class="user-comments__comment-metadata-date">#{navigationHelper.getLocalDate(comment.dateCreated)}</span>
 						</div>
 
@@ -77,7 +79,8 @@
 
 								<!-- COMMENT TEXT -->
 								<div class="user-comments__comment-content-text in">
-									#{comment.displayText}</div>
+									<h:outputText value="#{comment.displayText}" escape="true" />
+								</div>
 
 									<!-- EDIT COMMENT -->
 									<ui:fragment

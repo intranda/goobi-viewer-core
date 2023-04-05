@@ -46,38 +46,26 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
 import javax.jms.QueueSession;
 import javax.jms.Session;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 
 import org.apache.activemq.ActiveMQConnection;
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.jmx.QueueViewMBean;
-import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
-
-import com.fasterxml.jackson.core.JacksonException;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
@@ -86,7 +74,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
-import io.goobi.viewer.model.job.TaskType;
 
 @Named
 @ApplicationScoped
@@ -140,6 +127,16 @@ public class MessageQueueBean implements Serializable {
             }
         }
 
+    }
+    
+    @PreDestroy
+    public void close() throws JMSException {
+        if (this.queueSession != null) {
+            this.queueSession.close();
+        }
+        if(this.connection != null) {
+            this.connection.close();
+        }
     }
 
     public Map<String, Integer> getQueueContent() {
@@ -242,9 +239,6 @@ public class MessageQueueBean implements Serializable {
     private TableDataProvider<ViewerMessage> initLazyModel() {
         TableDataProvider<ViewerMessage> model = new TableDataProvider<>(new TableDataSource<ViewerMessage>() {
 
-            private Optional<Long> numCreatedPages = Optional.empty();
-
-            @SuppressWarnings("unchecked")
             @Override
             public List<ViewerMessage> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
                     Map<String, String> filters) {
@@ -274,11 +268,11 @@ public class MessageQueueBean implements Serializable {
 
             @Override
             public void resetTotalNumberOfRecords() {
-                numCreatedPages = Optional.empty();
+                //empty
             }
         });
         model.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
-        model.setFilters("all");
+        model.getFilter("all");
         return model;
     }
 

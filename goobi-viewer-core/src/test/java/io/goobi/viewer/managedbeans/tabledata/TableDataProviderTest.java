@@ -21,8 +21,6 @@
  */
 package io.goobi.viewer.managedbeans.tabledata;
 
-import static org.junit.Assert.fail;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +34,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSourceException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 
 /**
@@ -91,7 +86,8 @@ public class TableDataProviderTest {
                 this.totalDataSize = Optional.empty();
             }
         });
-        provider.setFilters("MIN", "MAX");
+        provider.getFilter("MIN");
+        provider.getFilter("MAX");
         provider.setEntriesPerPage(10);
     }
 
@@ -180,15 +176,15 @@ public class TableDataProviderTest {
     @Test
     public void testFilter() {
         provider.resetAll();
-        provider.getFilterAsOptional("MIN").ifPresent(filter -> filter.setValue("100"));
-        Assert.assertEquals("100", provider.getFilterAsOptional("MIN").map(filter -> filter.getValue()).orElse("x"));
+        provider.getFilterIfPresent("MIN").ifPresent(filter -> filter.setValue("100"));
+        Assert.assertEquals("100", provider.getFilterIfPresent("MIN").map(filter -> filter.getValue()).orElse("x"));
         provider.update();
         Assert.assertEquals(2005 - 99, provider.getSizeOfDataList());
         List<Integer> list = provider.getPaginatorList();
         Assert.assertEquals(100, list.get(0), 0);
 
-        provider.getFilterAsOptional("MAX").ifPresent(filter -> filter.setValue("200"));
-        Assert.assertEquals("200", provider.getFilterAsOptional("MAX").map(filter -> filter.getValue()).orElse("x"));
+        provider.getFilterIfPresent("MAX").ifPresent(filter -> filter.setValue("200"));
+        Assert.assertEquals("200", provider.getFilterIfPresent("MAX").map(filter -> filter.getValue()).orElse("x"));
         provider.update();
         Assert.assertEquals(101, provider.getSizeOfDataList());
         list = provider.getPaginatorList();
@@ -199,8 +195,8 @@ public class TableDataProviderTest {
         list = provider.getPaginatorList();
         Assert.assertEquals(100, list.get(0), 0);
 
-        provider.getFilterAsOptional("MIN").ifPresent(filter -> filter.setValue(""));
-        Assert.assertEquals("", provider.getFilterAsOptional("MIN").map(filter -> filter.getValue()).orElse("x"));
+        provider.getFilterIfPresent("MIN").ifPresent(filter -> filter.setValue(""));
+        Assert.assertEquals("", provider.getFilterIfPresent("MIN").map(filter -> filter.getValue()).orElse("x"));
         provider.update();
         Assert.assertEquals(200, provider.getSizeOfDataList());
         list = provider.getPaginatorList();

@@ -32,31 +32,40 @@ public enum DefaultWidgetType implements WidgetContentType {
     /**
      * Browsing or "Stöbern" widget, containing all browse terms which are configured in the viewer-config
      */
-    WIDGET_BROWSING("browseTitle", "cms_widget__browse__description", "widget_browsing.xhtml"),
+    WIDGET_BROWSING("browseTitle", "cms_widget__browse__description", "fa fa-list-alt", "widget_browsing.xhtml"),
     /**
      * Displays search facetting for a page with search functionality. Always displays the facet fields configured in viewer-config Also includes
      * chronology-facetting (by year) and geospatial facetting (on a map) which are displayed as independent widgets in the GUI
      */
-    WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "widget_searchFacets.xhtml"),
+    WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "fa fa-list-ul", "widget_searchFacets.xhtml"),
     /**
      * Displays a search input field and link to advanced search
      */
-    WIDGET_SEARCH("navigationSearch", "cms_widget__search__description", "widget_searchField.xhtml"),
+    WIDGET_SEARCH("navigationSearch", "cms_widget__search__description", "fa fa-search", "widget_searchField.xhtml"),
     /**
      * Display the total number of records available in the viewer
      */
-    WIDGET_WORKCOUNT("totalNumberOfVolumes", "cms_widget__total_number_of_volumes__description", "widget_workCount.xhtml");
+    WIDGET_WORKCOUNT("totalNumberOfVolumes", "cms_widget__total_number_of_volumes__description", "fa fa-circle-o", "widget_workCount.xhtml");
+    
+//    WIDGET_HIGHLIGHTED_OBJECT("cms_widget__highlighted_object__label", "cms_widget__highlighted_object__description", "fa fa-star", "widget_highlightedobject.xhtml");
 
     private final String label;
     private final String description;
     private final String filename;
+    private final String iconClass;
 
-    private DefaultWidgetType(String label, String description, String filename) {
+    private DefaultWidgetType(String label, String description, String iconClass, String filename) {
         this.label = label;
         this.description = description;
         this.filename = filename;
+        this.iconClass = iconClass;
     }
 
+    @Override
+    public String getIconClass() {
+        return this.iconClass;
+    }
+    
     public String getLabel() {
         return label;
     }
