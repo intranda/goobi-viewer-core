@@ -338,7 +338,6 @@ public class MetadataTools {
                     risTag = "J2";
                     break;
                 case "MD_AUTHOR":
-                case "MD_CREATOR":
                     risTag = "AU";
                     break;
                 case "MD_EDITION":
@@ -363,7 +362,7 @@ public class MetadataTools {
                     risTag = "N1";
                     break;
                 case "MD_PLACEPUBLISH":
-                    risTag = "PP";
+                    risTag = "CY";
                     break;
                 case "MD_PUBLISHER":
                     risTag = "PB";
