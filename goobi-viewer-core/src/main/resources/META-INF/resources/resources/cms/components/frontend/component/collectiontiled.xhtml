@@ -24,8 +24,6 @@
 	<composite:implementation>
 
 		<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
-
-
 			<div id="templateCollectionTiled"
 				class="tpl-collection-tiled content-component content-component__collection.tiled
 						-width-100 #{cc.attrs.hideOnScreenSizes}
@@ -35,7 +33,7 @@
 
 				<div class="tpl-collection-tiled__wrapper">
 					<viewerComponent:collectionViewTiled id="collection"
-						collection="#{collectionViewBean.getCollection(cc.attrs.component.firstContentItem.content, cc.attrs.collectionBaseLevels, cc.attrs.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy)}" />
+						collection="#{collectionViewBean.getCollection(cc.attrs.component.firstContentItem.content, cc.attrs.collectionBaseLevels, cc.attrs.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy, request.getParameter('collection'))}" />
 				</div>
 
 			</div>

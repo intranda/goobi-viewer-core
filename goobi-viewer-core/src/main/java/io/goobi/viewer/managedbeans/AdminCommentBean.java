@@ -152,7 +152,7 @@ public class AdminCommentBean implements Serializable {
 
             });
             lazyModelComments.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
-            lazyModelComments.setFilters("body_targetPI");
+            lazyModelComments.getFilter("body_targetPI");
         }
     }
 

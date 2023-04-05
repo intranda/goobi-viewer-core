@@ -83,5 +83,11 @@
                 <ignoreVersion type="regex">6.*</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="jakarta" artifactId="jakarta.jms-api">
+            <ignoreVersions>
+                <ignoreVersion type="regex">3.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+
     </rules>
 </ruleset>

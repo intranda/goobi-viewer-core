@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.viewer.collections;
 
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -954,8 +956,9 @@ public class CollectionView implements Serializable {
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
+     * @throws URISyntaxException 
      */
-    public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
+    public String getCollectionUrl(HierarchicalBrowseDcElement collection){
         return getCollectionUrl(collection, field, getSearchUrl());
     }
 
@@ -967,6 +970,7 @@ public class CollectionView implements Serializable {
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @throws URISyntaxException 
      * @should return identifier resolver url if single record and pi known
      * @should escape critical url chars in collection name
      */
@@ -984,9 +988,15 @@ public class CollectionView implements Serializable {
             String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest())
                     .map(view -> view.getApplicationUrl() + "/" + view.getPagePath().toString())
                     .orElse("");
-            String ret = baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
-            logger.trace("COLLECTION new window url: {}", ret);
-            return ret;
+            baseUri = StringTools.appendTrailingSlash(baseUri);
+            try {
+                String ret = new URIBuilder(baseUri).addParameter("collection", collection.getName()).build().toString();
+                logger.trace("COLLECTION new window url: {}", ret);
+                return ret;
+            } catch (URISyntaxException e) {
+                logger.error("Error creating collection url ", e);
+                return "";
+            }
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
             // Link directly to single record, if record PI known
             if (collection.getSingleRecordUrl() != null) {

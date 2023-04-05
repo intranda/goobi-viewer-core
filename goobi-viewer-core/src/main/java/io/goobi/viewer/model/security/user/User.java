@@ -49,6 +49,7 @@ import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.Part;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.Index;
@@ -333,6 +334,14 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
 
         return NetTools.scrambleEmailAddress(email);
+    }
+
+    /**
+     * 
+     * @return HTML-escapted value of <code>getDisplayName()</code>
+     */
+    public String getDisplayNameEscaped() {
+       return StringEscapeUtils.escapeHtml4(getDisplayName());
     }
 
     /**
@@ -720,7 +729,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return allLicenses.stream()
                 .anyMatch(license -> LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName()) && license.isPrivCmsAllTemplates());
     }
-    
+
     /**
      * <p>
      * hasPrivilegesForTemplate.
@@ -732,7 +741,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      */
     public boolean hasPrivilegesForTemplate(CMSPageTemplate template) {
         //if there is no template, assume you have all privileges
-        if(template == null) {
+        if (template == null) {
             return true;
         }
         // Abort if user not a CMS admin
@@ -771,7 +780,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
         return false;
     }
-
 
     /**
      * <p>

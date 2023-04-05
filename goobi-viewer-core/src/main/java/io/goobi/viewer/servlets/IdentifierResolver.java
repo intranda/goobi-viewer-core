@@ -202,6 +202,7 @@ public class IdentifierResolver extends HttpServlet {
                     if (!found) {
                         try {
                             doPageSearch(fieldValue, request, response);
+                            return;
                         } catch (IOException | ServletException e) {
                             logger.error(e.getMessage());
                         }
@@ -218,6 +219,15 @@ public class IdentifierResolver extends HttpServlet {
                 // 3.2 show multiple match, that indicates corrupted index
                 try {
                     redirectToError(HttpServletResponse.SC_CONFLICT, fieldValue, request, response);
+                } catch (IOException | ServletException e) {
+                    logger.error(e.getMessage());
+                }
+                return;
+            }
+
+            if (hits.getNumFound() == 0) {
+                try {
+                    redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
                 } catch (IOException | ServletException e) {
                     logger.error(e.getMessage());
                 }
@@ -434,6 +444,7 @@ public class IdentifierResolver extends HttpServlet {
         if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
             String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
             try {
+                logger.trace("Redirecting to: {}", absoluteUrl);
                 response.sendRedirect(absoluteUrl);
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);

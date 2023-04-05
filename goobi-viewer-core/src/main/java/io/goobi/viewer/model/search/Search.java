@@ -335,7 +335,7 @@ public class Search implements Serializable {
         }
         String currentQuery = SearchHelper.prepareQuery(this.query);
 
-        List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
+        List<String> allFacetFields = SearchHelper.facetifyList(DataManager.getInstance().getConfiguration().getAllFacetFields());
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
         if (facets.getGeoFacetting().isActive()) {

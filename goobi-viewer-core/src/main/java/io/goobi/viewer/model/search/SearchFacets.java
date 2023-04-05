@@ -38,8 +38,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-import org.apache.commons.configuration2.HierarchicalConfiguration;
-import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -213,7 +211,11 @@ public class SearchFacets implements Serializable {
             }
             StringBuilder sbQuery = queries.computeIfAbsent(facetItem.getField(), k -> new StringBuilder());
             if (sbQuery.length() > 0) {
-                sbQuery.append(' ');
+                if ("OR".equalsIgnoreCase(DataManager.getInstance().getConfiguration().getMultiValueOperatorForField(facetItem.getField()))) {
+                    sbQuery.append(' ');
+                } else {
+                    sbQuery.append(SolrConstants.SOLR_QUERY_AND);
+                }
             }
             sbQuery.append(facetItem.getQueryEscapedLink());
         }
@@ -394,6 +396,23 @@ public class SearchFacets implements Serializable {
         }
 
         return facetItems;
+    }
+
+    /**
+     * Checks whether there are still selectable values across all available facet fields.
+     * 
+     * @return true if any available facet field has at least one unselected value; false otherwise
+     * @should return true if a facet field has selectable values
+     * @should return false of no selectable values found
+     */
+    public boolean isUnselectedValuesAvailable() {
+        for (String field : getAvailableFacets().keySet()) {
+            if (!getAvailableFacetsForField(field, true).isEmpty()) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**
@@ -784,7 +803,7 @@ public class SearchFacets implements Serializable {
         }
         return new ArrayList<>(valueRanges.get(field).keySet());
     }
-    
+
     public String getValueRangeAsJsonMap(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {
             return "[]";
@@ -1000,12 +1019,10 @@ public class SearchFacets implements Serializable {
     public List<String> getAllRangeFacetFields() {
         return DataManager.getInstance().getConfiguration().getRangeFacetFields();
     }
-    
+
     public String getRangeFacetStyle(String field) {
         return DataManager.getInstance().getConfiguration().getFacetFieldStyle(field);
     }
-    
-
 
     /**
      * <p>

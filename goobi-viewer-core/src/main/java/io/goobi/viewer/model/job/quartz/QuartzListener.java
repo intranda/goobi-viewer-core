@@ -139,7 +139,7 @@ public class QuartzListener implements ServletContextListener {
 
     private Map<String, Object> getParams(TaskType taskType, boolean runInQueue, ServletContext servletContext) {
         Map<String, Object> params = new HashMap<>();
-        params.put("taskType", taskType);
+        params.put("taskType", taskType.toString());
         params.put("runInQueue", runInQueue);
         switch(taskType) {
             case UPDATE_SITEMAP:

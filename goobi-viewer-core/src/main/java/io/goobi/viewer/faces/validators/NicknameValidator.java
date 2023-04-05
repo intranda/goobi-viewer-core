@@ -35,7 +35,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Syntax validator for nicknames.
+ * "Already taken" validator for user nicknames.
  */
 @FacesValidator("nicknameValidator")
 public class NicknameValidator implements Validator<String> {

@@ -289,7 +289,9 @@ public class StringTools {
         }
 
         return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "")
-                .replaceAll("(?i)<script[\\s\\S]*/>", "");
+                .replaceAll("(?i)<script[\\s\\S]*\\/?>", "")
+                .replaceAll("(?i)<svg[\\s\\w()\"=]*\\/?>", "")
+                .replaceAll("(?i)<\\/svg>", "");
     }
 
     /**

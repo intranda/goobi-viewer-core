@@ -271,6 +271,7 @@
     }
     &__info-text {
         margin-bottom: 3rem;
+		max-width: 1300px;
         .badge {
         	background-color: @white;
             margin-right: 0;
@@ -866,14 +867,17 @@
 				opacity: 0.35;
 			}
 		}
-	}
+//		&.-isActive {
+//			background: fade(@greenBar, 15%);
+//		}
+	} 
 	&__table-img {
         margin-right: 2rem;
 		flex: 0 0 80px;
 		img {
 			max-width: 100%;
 			max-height: 80px;
-		}
+			}
 	}
 	&__table-data {
 		display: flex;
@@ -2266,15 +2270,6 @@
 		color: #1a321a;
 	}
 
-
-
-
-
-
-
-
-
-
 	&__tasks-table-row {
 		&.-error {
 			background: #fdbcb0;
@@ -2390,6 +2385,24 @@
 	.msgUnfinishedIdentifier, #msgUnfinishedIdentifier  {
 		span {
 			display: none;
+		}
+	}
+	&__date-picker-group {}
+	&__date-picker {
+		width: 100%;
+		position: relative;
+		input {
+//			width: 100%;
+//			border: 1px solid #ced4da;
+//			padding: 0.2rem 2.2rem 0.2rem 0.4rem;
+		}
+		&::after {
+			content: "\f133";
+			font-family: FontAwesome;
+			position: absolute;
+			right: 0.7rem;
+			top: 50%;
+			transform: translate(0%, -52%);
 		}
 	}
 

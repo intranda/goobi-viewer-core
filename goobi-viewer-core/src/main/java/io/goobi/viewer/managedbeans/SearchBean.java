@@ -61,6 +61,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -580,7 +581,7 @@ public class SearchBean implements SearchInterface, Serializable {
             if (sbInfo.length() > 1) {
                 sbInfo.append(' ');
             }
-            sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + advancedSearchQueryGroup.getOperator().name(),
+            sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + queryItem.getOperator().name(),
                     BeanUtils.getLocale()))
                     .append(' ');
 
@@ -705,12 +706,14 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (SolrConstants.BOOKMARKS.equals(queryItem.getField()) && !userBean.isLoggedIn()) {
                         // Session bookmark list value
                         sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
+                    } else if (queryItem.isRange()) {
+                        sbInfo.append('[').append(queryItem.getValue()).append(" - ").append(queryItem.getValue2()).append(']');
                     } else {
                         sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     }
                     break;
                 case NOT:
-                    sbInfo.append("NOT: (").append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale())).append(")");
+                    sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     break;
                 default:
                     if (queryItem.isRange()) {
@@ -936,7 +939,9 @@ public class SearchBean implements SearchInterface, Serializable {
                 default:
                     this.activeSearchType = activeSearchType;
             }
-            facets.resetActiveFacetString();
+            // Resetting facet string here will result in collection listings returning all records in the index, if the collection page doesn't set
+            // activeSearchType=0 beforehand
+            // facets.resetActiveFacetString();
         }
         logger.trace("activeSearchType: {}", activeSearchType);
     }
@@ -2390,9 +2395,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * </p>
      *
      * @return the advancedSearchQueryInfo
+     * @should html escape string
      */
     public String getAdvancedSearchQueryInfo() {
-        return advancedSearchQueryInfo;
+        return StringEscapeUtils.escapeHtml4(advancedSearchQueryInfo);
     }
 
     /** {@inheritDoc} */

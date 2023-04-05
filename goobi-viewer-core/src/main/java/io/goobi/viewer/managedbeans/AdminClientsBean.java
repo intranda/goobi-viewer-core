@@ -290,7 +290,7 @@ public class AdminClientsBean implements Serializable {
         
         
         provider.setEntriesPerPage(entriesPerPage);
-        provider.setFilters(DEFAULT_TABLE_FILTER);
+        provider.getFilter(DEFAULT_TABLE_FILTER);
         return provider;
     }
 
