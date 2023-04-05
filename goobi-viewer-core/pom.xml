@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>23.03-SNAPSHOT</version>
+	<version>23.04-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -89,7 +89,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.9</alto.version>
-		<ics.version>3.9.0-SNAPSHOT</ics.version>
+		<ics.version>3.9.0</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.4.2</iiif-api-model.version>
@@ -160,6 +160,7 @@
 		<reflections.version>0.10.2</reflections.version>
 		<quartz.version>2.3.2</quartz.version>
 		<cron-expression-descriptor.version>1.2.6</cron-expression-descriptor.version>
+		<slf4j.version>2.0.6</slf4j.version>
 	</properties>
 
 
@@ -744,7 +745,13 @@
 			<groupId>jakarta.jms</groupId>
 			<artifactId>jakarta.jms-api</artifactId>
 			<version>${jakarta.jms-api.version}</version>
-		 </dependency>
+		</dependency>
+		<!-- SLF4J nop is needed to get rid of logging spam -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
 	</dependencies>
 
 
@@ -829,6 +836,13 @@
 
 								<!-- H2 is used as database for unit tests -->
 								<ignoredUnusedDeclaredDependency>com.h2database:h2</ignoredUnusedDeclaredDependency>
+
+								<!-- SLF4J nop is needed to get rid of logging spam like this
+									SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+									SLF4J: Defaulting to no-operation (NOP) logger implementation
+									SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+								-->
+								<ignoredUnusedDeclaredDependency>org.slf4j:slf4j-nop</ignoredUnusedDeclaredDependency>
 
 								<!-- activemq libs -->
 									<!-- KahaDB is the used file based persistence database and declared in the config file  -->
