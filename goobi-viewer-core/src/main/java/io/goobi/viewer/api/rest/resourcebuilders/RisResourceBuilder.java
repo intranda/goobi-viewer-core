@@ -24,24 +24,28 @@ package io.goobi.viewer.api.rest.resourcebuilders;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.metadata.MetadataTools;
+import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -60,6 +64,43 @@ public class RisResourceBuilder {
     public RisResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
+    }
+
+    public StreamingOutput writeRIS(List<SearchHit> searchHits) throws ContentLibException {
+
+        String fileName = "SEARCH" + ".ris";
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+
+        Path tempFile = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), fileName);
+        for (SearchHit searchHit : searchHits) {
+            String ris = searchHit.getBrowseElement().getRisExport();
+            if (ris == null) {
+                logger.warn("No RIS generated for '{}'", searchHit.getBrowseElement().getPi());
+                continue;
+            }
+            try {
+                Files.write(tempFile, ris.getBytes());
+            } catch (IOException e) {
+                if (Files.exists(tempFile)) {
+                    FileUtils.deleteQuietly(tempFile.toFile());
+                }
+                throw new ContentLibException("Could not create RIS file " + tempFile.toAbsolutePath().toString());
+            }
+        }
+
+        return out -> {
+            try (FileInputStream in = new FileInputStream(tempFile.toFile())) {
+                FileTools.copyStream(out, in);
+            } catch (IOException e) {
+                logger.error("Error reading RIS from file {}", tempFile, e);
+            } finally {
+                out.flush();
+                out.close();
+                if (Files.exists(tempFile)) {
+                    FileUtils.deleteQuietly(tempFile.toFile());
+                }
+            }
+        };
     }
 
     /**
@@ -100,11 +141,11 @@ public class RisResourceBuilder {
             throw new ContentLibException("Could not create RIS file " + tempFile.toAbsolutePath().toString());
         }
 
-        return (out) -> {
+        return out -> {
             try (FileInputStream in = new FileInputStream(tempFile.toFile())) {
                 FileTools.copyStream(out, in);
             } catch (IOException e) {
-                logger.error("Error reading RIS from file " + tempFile, e);
+                logger.error("Error reading RIS from file {}", tempFile, e);
             } finally {
                 out.flush();
                 out.close();

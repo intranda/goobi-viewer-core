@@ -21,7 +21,10 @@
  */
 package io.goobi.viewer.api.rest.v1.search;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -35,12 +38,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.search.SearchHitChildList;
+import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -48,7 +55,12 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.search.SearchAggregationType;
+import io.goobi.viewer.model.search.SearchFacets;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
+import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * <p>
@@ -116,6 +128,48 @@ public class SearchResultResource {
         }
 
         servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "IDDOC " + hitId + " is not in the current search result set.");
+        return null;
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_RIS_FILE)
+    @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(tags = { "search" }, summary = "Download current search as RIS export file")
+    @AccessConditionBinding
+    public String getRISAsFile(@PathParam("query") String query, @PathParam("sortString") String sortString,
+            @PathParam("activeFacetString") String activeFacetString, @PathParam("proximitySearchDistance") int proximitySearchDistance)
+            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, ViewerConfigurationException {
+        String currentQuery = SearchHelper.prepareQuery(query);
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        Locale locale = Locale.ENGLISH;
+        // navigationHelper.getLocale(); // TODO
+
+        Search search = new Search();
+        search.setSortString(sortString);
+
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString(activeFacetString);
+        List<String> filterQueries = facets.generateFacetFilterQueries(true);
+
+        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
+        int batchSize = 100;
+        int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
+        List<SearchHit> searchHits = new ArrayList<>((int) totalHits); // TODO
+        for (int i = 0; i < totalBatches; ++i) {
+            int first = i * batchSize;
+            int max = first + batchSize - 1;
+            if (max > totalHits) {
+                max = (int) (totalHits - 1);
+                batchSize = (int) (totalHits - first);
+            }
+            logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
+            List<SearchHit> batch =
+                    SearchHelper.searchWithAggregation(finalQuery, first, batchSize, search.getAllSortFields(), null, filterQueries, null, null,
+                            null, locale, proximitySearchDistance);
+            searchHits.addAll(batch);
+        }
+
+        new RisResourceBuilder(servletRequest, servletResponse).writeRIS(searchHits);
         return null;
     }
 }

@@ -70,13 +70,16 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
+import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -2212,7 +2215,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return "";
     }
-    
+
     /**
      * <p>
      * exportSearchAsRisAction.
@@ -2232,10 +2235,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
-                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, proximitySearchDistance, locale)) {
-                    if (wb == null) {
-                        job.setError("Failed to create excel sheet");
-                    } else if (Thread.interrupted()) {
+                try {
+                    if (Thread.interrupted()) {
                         job.setError("Execution cancelled");
                     } else {
                         Callable<Boolean> download = new Callable<Boolean>() {
@@ -2243,11 +2244,12 @@ public class SearchBean implements SearchInterface, Serializable {
                             @Override
                             public Boolean call() {
                                 try {
-                                    logger.debug("Writing excel");
-                                    ExcelExport export = new ExcelExport();
-                                    export.setWorkbook(wb);
-                                    return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
-                                } catch (IOException e) {
+                                    SearchHelper.exportSearchAsRIS(finalQuery, "", currentSearch.getAllSortFields(),
+                                            facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance, request,
+                                            (HttpServletResponse) facesContext.getExternalContext().getResponse());
+                                    return true;
+                                } catch (IndexUnreachableException | DAOException | PresentationException | ViewerConfigurationException
+                                        | ContentLibException e) {
                                     logger.error(e.getMessage(), e);
                                     return false;
                                 } finally {
@@ -2261,15 +2263,13 @@ public class SearchBean implements SearchInterface, Serializable {
                         downloadComplete.get(timeout, TimeUnit.SECONDS);
                     }
                 } catch (TimeoutException e) {
-                    job.setError("Timeout for excel download");
+                    job.setError("Timeout for RIS download");
                 } catch (InterruptedException e) {
-                    job.setError("Timeout for excel download");
+                    job.setError("Timeout for RIS download");
                     Thread.currentThread().interrupt();
-                } catch (ExecutionException | ViewerConfigurationException e) {
+                } catch (ExecutionException e) {
                     logger.error(e.getMessage(), e);
-                    job.setError("Failed to create excel sheet");
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
+                    job.setError("Failed to create RIS export");
                 }
             } else {
                 job.setError("Response is already committed");
@@ -2416,9 +2416,7 @@ public class SearchBean implements SearchInterface, Serializable {
             Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
             HttpServletRequest request = BeanUtils.getRequest(facesContext);
-            if (request == null) {
-                request = BeanUtils.getRequest();
-            }
+
             String termQuery = null;
             if (searchTerms != null) {
                 termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
@@ -2426,7 +2424,7 @@ public class SearchBean implements SearchInterface, Serializable {
             Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
             SXSSFWorkbook wb = new SXSSFWorkbook(25); //NOSONAR try-with-resources in the calling method
             SearchHelper.exportSearchAsExcel(wb, finalQuery, exportQuery, currentSearch.getAllSortFields(), facets.generateFacetFilterQueries(true),
-                    params, searchTerms, locale, true, proximitySearchDistance, request);
+                    params, searchTerms, locale, proximitySearchDistance);
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }

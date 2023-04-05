@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +69,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -84,7 +87,6 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
-import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -2697,7 +2699,7 @@ public final class SearchHelper {
                 }
                 if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
                     term = term.replace("\\\"", "\""); // unescape quotation marks
-                    term = SearchHelper.addProximitySearchToken(term, proximitySearchDistance);
+                    term = addProximitySearchToken(term, proximitySearchDistance);
                 }
                 // logger.trace("term: {}", term);
                 sbInner.append(term);
@@ -3075,8 +3077,6 @@ public final class SearchHelper {
      * @param params a {@link java.util.Map} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param locale a {@link java.util.Locale} object.
-     * @param aggregateHits a boolean.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -3084,8 +3084,7 @@ public final class SearchHelper {
      * @should create excel workbook correctly
      */
     public static void exportSearchAsExcel(SXSSFWorkbook wb, String finalQuery, String exportQuery, List<StringPair> sortFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits,
-            int proximitySearchDistance, HttpServletRequest request)
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, int proximitySearchDistance)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (wb == null) {
             throw new IllegalArgumentException("wb may not be null");
@@ -3152,49 +3151,16 @@ public final class SearchHelper {
             }
         }
     }
-    
+
     public static void exportSearchAsRIS(String finalQuery, String exportQuery, List<StringPair> sortFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits,
-            int proximitySearchDistance, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale,
+            int proximitySearchDistance, HttpServletRequest request, HttpServletResponse response)
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException, ContentLibException {
 
-        SXSSFSheet currentSheet = wb.createSheet("Goobi_viewer_search");
-        CellStyle styleBold = wb.createCellStyle();
-        Font font2 = wb.createFont();
-        font2.setFontHeightInPoints((short) 10);
-        font2.setBold(true);
-        styleBold.setFont(font2);
-
-        int currentRowIndex = 0;
-        int currentCellIndex = 0;
-
-        // Query row
-        {
-            SXSSFRow row = currentSheet.createRow(currentRowIndex++);
-            SXSSFCell cell = row.createCell(currentCellIndex++);
-            cell.setCellStyle(styleBold);
-            cell.setCellValue(new XSSFRichTextString("Query:"));
-            cell = row.createCell(currentCellIndex);
-            cell.setCellValue(new XSSFRichTextString(exportQuery));
-            currentCellIndex = 0;
-        }
-
-        // Title row
-        SXSSFRow row = currentSheet.createRow(currentRowIndex++);
-        for (ExportFieldConfiguration field : DataManager.getInstance().getConfiguration().getSearchExcelExportFields()) {
-            SXSSFCell cell = row.createCell(currentCellIndex++);
-            cell.setCellStyle(styleBold);
-            cell.setCellValue(new XSSFRichTextString(ViewerResourceBundle.getTranslation(field.getField(), locale)));
-        }
-
-        List<ExportFieldConfiguration> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
-        List<String> exportFieldNames = new ArrayList<>(exportFields.size());
-        for (ExportFieldConfiguration field : exportFields) {
-            exportFieldNames.add(field.getField());
-        }
         long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
         int batchSize = 100;
         int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
+        List<SearchHit> searchHits = new ArrayList<>((int) totalHits); // TODO
         for (int i = 0; i < totalBatches; ++i) {
             int first = i * batchSize;
             int max = first + batchSize - 1;
@@ -3204,22 +3170,12 @@ public final class SearchHelper {
             }
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch =
-                    searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFieldNames,
+                    searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, null,
                             locale, proximitySearchDistance);
-
-            for (SearchHit hit : batch) {
-                
-                String ris = MetadataTools.generateRIS(hit.getBrowseElement().getDocStructType(), hit.getBrowseElement().getMetadataList());
-                // Create row
-                currentCellIndex = 0;
-                row = currentSheet.createRow(currentRowIndex++);
-                for (ExportFieldConfiguration field : exportFields) {
-                    SXSSFCell cell = row.createCell(currentCellIndex++);
-                    String value = hit.getExportMetadata().get(field.getField());
-                    cell.setCellValue(new XSSFRichTextString(value != null ? value : ""));
-                }
-            }
+            searchHits.addAll(batch);
         }
+        
+        new RisResourceBuilder(request, response).writeRIS(searchHits);
     }
 
     /**
