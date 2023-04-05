@@ -3359,4 +3359,5 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(dao.getRecurringTaskTriggers().isEmpty());
         
     }
+    
 }

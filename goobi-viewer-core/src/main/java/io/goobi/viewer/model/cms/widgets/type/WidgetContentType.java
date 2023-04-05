@@ -23,6 +23,8 @@ package io.goobi.viewer.model.cms.widgets.type;
 
 public interface WidgetContentType {
 
+    public String getIconClass();
+    
     /**
      * Get a message key providing a label for this widget
      * 

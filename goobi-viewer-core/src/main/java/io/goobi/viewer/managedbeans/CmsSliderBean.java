@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
@@ -49,7 +50,7 @@ public class CmsSliderBean implements Serializable {
     /**
      * We actually only need a filter String, but we use a complete {@link TableDataFilter} so we can utilize the dataTableColumnFilter component
      */
-    private TableDataFilter filter = new TableDataFilter("name_description", "", null);
+    private TableDataFilter filter = new TableDataFilter("name_description");
 
     /**
      *

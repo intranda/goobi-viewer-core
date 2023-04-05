@@ -194,7 +194,7 @@ public class CmsRecordNotesBean implements Serializable {
             }
         });
         dataProvider.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        dataProvider.addFilter(PI_TITLE_FILTER);
+        dataProvider.getFilter(PI_TITLE_FILTER);
         //            lazyModelPages.addFilter("CMSCategory", "name");
     }
 

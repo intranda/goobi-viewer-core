@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.dao.impl;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -66,6 +67,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.HighlightedObjectData;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -6993,4 +6995,235 @@ public class JPADAO implements IDAO {
         }
     }
 
+    @Override
+    public boolean addHighlightedObject(HighlightedObjectData object) throws DAOException {
+        return addEntity(object);
+    }
+
+    @Override
+    public boolean updateHighlightedObject(HighlightedObjectData object) throws DAOException {
+        return updateEntity(object);
+    }
+    
+    @Override
+    public boolean deleteHighlightedObject(Long id) throws DAOException {
+        return deleteEntity(id, HighlightedObjectData.class);
+    }
+
+    @Override
+    public HighlightedObjectData getHighlightedObject(Long id) throws DAOException {
+        return getEntity(id, HighlightedObjectData.class);
+    }
+
+    @Override
+    public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException {
+        return getAllEntities(HighlightedObjectData.class);
+    }
+
+    @Override
+    public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException {
+        return getMatchingEntities(HighlightedObjectData.class,
+                "(:date BETWEEN o.dateStart AND o.dateEnd)"
+                + " OR "
+                + "(o.dateStart IS NULL AND :date < o.dateEnd)"
+                + " OR "
+                + "(o.dateEnd IS NULL AND :date > o.dateStart)"
+                + " OR "
+                + "(o.dateStart IS NULL AND o.dateEnd IS NULL)", Map.of("date", date));
+    }
+    
+    @Override
+    public List<HighlightedObjectData> getPastHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters, LocalDateTime date) throws DAOException {
+        List<HighlightedObjectData> data = getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
+        return data;
+    }
+    
+    @Override
+    public List<HighlightedObjectData> getFutureHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters, LocalDateTime date) throws DAOException {
+        List<HighlightedObjectData> data = getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
+        return data;
+    }
+    
+
+    @Override
+    public List<HighlightedObjectData> getHighlightedObjects(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters) throws DAOException {
+        return getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters);
+    }
+    
+    private boolean addEntity(Serializable obj) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(obj);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error adding object to database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+    
+    private boolean updateEntity(Serializable obj) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(obj);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error updating object in database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+    
+    private <T> T getEntity(Long id, Class<T> clazz) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(clazz, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T> List<T> getAllEntities(Class<T> clazz) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(String.format("SELECT o FROM %s o", clazz.getSimpleName())).getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e.toString(), clazz.getSimpleName());
+            return new ArrayList<>();
+        } finally {
+            close(em);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T> List<T> getMatchingEntities(Class<T> clazz, String whereClause, Map<String, Object> params) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery(String.format("SELECT o FROM %s o WHERE %s", clazz.getSimpleName(), whereClause));
+            params.forEach((name, value) -> q.setParameter(name, value));
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e.toString(), clazz.getSimpleName());
+            return new ArrayList<>();
+        } finally {
+            close(em);
+        }
+    }
+    
+    private <T> boolean deleteEntity(Long id, Class<T> clazz) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            T o = em.getReference(clazz, id);
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error deleting {}", clazz.getSimpleName(), e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> List<T> getEntities(Class<T> clazz, int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        return getEntities(clazz, first, pageSize, sortField, descending, filters, null, Collections.emptyMap());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T> List<T> getEntities(Class<T> clazz, int first, int pageSize, String sortField, boolean descending, Map<String, String> filters, String whereClause, Map<String, Object> whereClauseParams)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        Character entityVariable = 'a';
+        try {
+            StringBuilder sbQuery = new StringBuilder(String.format("SELECT %c FROM %s %c", entityVariable, clazz.getSimpleName(), entityVariable));
+            Map<String, Object> params = new HashMap<>();
+
+            if (filters != null && !filters.isEmpty()) {
+                String filterQuery = addFilterQueries(filters, params, entityVariable);
+                sbQuery.append(" WHERE (").append(filterQuery).append(")");
+            }
+
+            if(StringUtils.isNotBlank(whereClause)) {
+                if (filters != null && !filters.isEmpty()) {
+                    sbQuery.append(" AND ");
+                } else {
+                    sbQuery.append(" WHERE ");
+                }
+                sbQuery.append("(").append(whereClause).append(")");
+                whereClauseParams.forEach((key, value) -> params.put(key, value));
+            }
+            
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    sbQuery.append(QUERY_ELEMENT_DESC);
+                }
+            }
+            logger.trace(sbQuery);
+            Query q = em.createQuery(sbQuery.toString());
+            for (Entry<String, Object> entry : params.entrySet()) {
+                q.setParameter(entry.getKey(), entry.getValue());
+            }
+
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+
+            return (List<T>) q.getResultList().stream().distinct().collect(Collectors.toList());
+        } finally {
+            close(em);
+        }
+    }
+    
+    private String addFilterQueries(Map<String, String> filters, Map<String, Object> params, Character entityVariable) {
+        Stream<String> queries = filters.entrySet().stream().map(entry -> getFilterQuery(entry.getKey(), entry.getValue(), params, entityVariable));
+        return "(" + queries.collect(Collectors.joining(") OR (")) + ")";
+    }
+    
+    /**
+     * returns  String in the form "a.field LIKE :field if filterValue is a string or "a.field = :field" otherwise
+     * @param filterField   A field name to search in
+     * @param filterValue   The value to search for
+     * @param params        a parameter
+     * @param entityVariable
+     * @return
+     */
+    private String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {
+        if(filterValue != null && filterValue instanceof String) {            
+            String query = String.format("%c.%s LIKE :%s", entityVariable, filterField, filterField);
+            params.put(filterField, "%"+filterValue+"%");
+            return query;
+        } else if(filterValue != null) {
+            String query = String.format("%c.%s = :%s", entityVariable, filterField, filterField);
+            params.put(filterField, filterValue);
+            return query;
+        } else {
+            return "";
+        }
+    }
 }

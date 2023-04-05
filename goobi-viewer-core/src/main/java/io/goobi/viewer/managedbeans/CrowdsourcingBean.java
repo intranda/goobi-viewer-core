@@ -187,7 +187,7 @@ public class CrowdsourcingBean implements Serializable {
                 }
             });
             lazyModelCampaigns.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelCampaigns.setFilters("name");
+            lazyModelCampaigns.getFilter("name");
         }
 
     }
@@ -221,7 +221,8 @@ public class CrowdsourcingBean implements Serializable {
     public String filterCampaignsAction(CampaignVisibility visibility) {
         lazyModelCampaigns.resetFilters();
         if (visibility != null) {
-            lazyModelCampaigns.addFilter(new TableDataFilter("visibility", visibility.name(), lazyModelCampaigns));
+            TableDataFilter filter = new TableDataFilter(lazyModelCampaigns, "visibility");
+            lazyModelCampaigns.addFilter(filter);
         }
 
         return "";

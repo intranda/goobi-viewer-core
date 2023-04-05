@@ -61,12 +61,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  * Class for retrieving usage statistics for a day or a range of days
+ * 
  * @author florian
  *
  */
 @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE)
 public class UsageStatisticsResource {
-    
+
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String SCV_VALUE_SEPARATOR = ",";
     private static final Logger logger = LogManager.getLogger(UsageStatisticsResource.class);
@@ -78,7 +79,7 @@ public class UsageStatisticsResource {
     private ContainerRequestContext requestContext;
     @Context
     private ContainerResponseContext responseContext;
-    
+
     @GET
     @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
@@ -87,25 +88,32 @@ public class UsageStatisticsResource {
             @Parameter(description = "date to observe, in format yyyy-mm-dd") @PathParam("date") String date,
             @Parameter(description = "additional SOLR query to filter records which should be counted. "
                     + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery,
-            @Parameter(description="the format in which to return the data. May be json, text or csv. Default is json")@QueryParam("format") String format) throws DAOException, IndexUnreachableException, PresentationException {
-        
-        if(StringUtils.isBlank(format)) {
+            @Parameter(
+                    description = "the format in which to return the data. May be json, text or csv. Default is json") @QueryParam("format") String format)
+            throws DAOException, IndexUnreachableException, PresentationException {
+
+        if (StringUtils.isBlank(format)) {
             format = servletRequest.getHeader("Accept");
         }
 
-        
-        StatisticsSummary summary = new StatisticsSummaryBuilder().loadSummary(StatisticsSummaryFilter.of(getLocalDate(date), getLocalDate(date), recordFilterQuery));
-        if("text/csv".equals(format) || "csv".equals(format)) {
-            return Response.status(Response.Status.OK).entity(summary.getAsCsv(servletRequest.getLocale(), SCV_VALUE_SEPARATOR)).type("text/csv").build();
-        } else if("text/plain".equals(format) || "text".equals(format)) {
-            return Response.status(Response.Status.OK).entity(summary.getAsCsv(servletRequest.getLocale(), SCV_VALUE_SEPARATOR)).type("text/plain").build();
+        StatisticsSummary summary =
+                new StatisticsSummaryBuilder().loadSummary(StatisticsSummaryFilter.of(getLocalDate(date), getLocalDate(date), recordFilterQuery));
+        if ("text/csv".equals(format) || "csv".equals(format)) {
+            return Response.status(Response.Status.OK)
+                    .entity(summary.getAsCsv(servletRequest.getLocale(), SCV_VALUE_SEPARATOR))
+                    .type("text/csv")
+                    .build();
+        } else if ("text/plain".equals(format) || "text".equals(format)) {
+            return Response.status(Response.Status.OK)
+                    .entity(summary.getAsCsv(servletRequest.getLocale(), SCV_VALUE_SEPARATOR))
+                    .type("text/plain")
+                    .build();
         } else {
             this.servletResponse.setContentType("application/json");
             return Response.status(Response.Status.OK).entity(summary).type(MediaType.APPLICATION_JSON).build();
         }
     }
 
-    
     @GET
     @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE_RANGE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
@@ -115,52 +123,58 @@ public class UsageStatisticsResource {
             @Parameter(description = "last date to observer, in format yyyy-mm-dd") @PathParam("endDate") String end,
             @Parameter(description = "additional SOLR query to filter records which should be counted. "
                     + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery,
-            @Parameter(description="the format in which to return the data. May be json, text or csv. Default is json")@QueryParam("format") String format,
-            @Parameter(description="the number of time units (default: days) each statistics should span")@QueryParam("step") Integer step,
-            @Parameter(description="The time unit to use for 'step' paramter. May be years, months, weeks or days")@QueryParam("stepUnit") String stepUnit) 
-                    throws DAOException, IndexUnreachableException, PresentationException, JsonProcessingException {
-        
-        if(StringUtils.isBlank(format)) {
+            @Parameter(
+                    description = "the format in which to return the data. May be json, text or csv. Default is json") @QueryParam("format") String format,
+            @Parameter(description = "the number of time units (default: days) each statistics should span") @QueryParam("step") Integer step,
+            @Parameter(
+                    description = "The time unit to use for 'step' paramter. May be years, months, weeks or days") @QueryParam("stepUnit") String stepUnit)
+            throws DAOException, IndexUnreachableException, PresentationException, JsonProcessingException {
+
+        if (StringUtils.isBlank(format)) {
             format = servletRequest.getHeader("Accept");
         }
-        
+
         step = step != null ? step : 1;
         Period stepPeriod = getPeriod(step, stepUnit);
-        
+
         LocalDate startDate = getLocalDate(start);
         LocalDate endDate = getLocalDate(end);
-        if(LocalDate.now().isBefore(endDate)) {
+        if (LocalDate.now().isBefore(endDate)) {
             endDate = LocalDate.now();
         }
-        if(endDate.isBefore(startDate)) {
+        if (endDate.isBefore(startDate)) {
             return Response.status(Response.Status.REQUESTED_RANGE_NOT_SATISFIABLE).build();
         } else {
             List<StatisticsSummary> items = createSummaryItems(recordFilterQuery, stepPeriod, startDate, endDate);
-            StatisticsSummary summary = items.stream().reduce(StatisticsSummary.empty(), (s1,s2) -> s1.add(s2));
-            UsageStatisticsInformation summaryInfo = new UsageStatisticsInformation(summary.calculateStartDate(), summary.calculateEndDate(), recordFilterQuery);
+            StatisticsSummary summary = items.stream().reduce(StatisticsSummary.empty(), (s1, s2) -> s1.add(s2));
+            UsageStatisticsInformation summaryInfo =
+                    new UsageStatisticsInformation(summary.calculateStartDate(), summary.calculateEndDate(), recordFilterQuery);
             summary.setInformation(summaryInfo);
             UsageStatisticsResponse response = new UsageStatisticsResponse(summary, items);
-            
-            if("text/csv".equals(format) || "csv".equals(format)) {
+
+            if ("text/csv".equals(format) || "csv".equals(format)) {
                 return Response.status(Response.Status.OK).entity(response.getAsCsv(servletRequest.getLocale(), ",", "\n")).type("text/csv").build();
-            } else if("text/plain".equals(format) || "text".equals(format)) {
-                return Response.status(Response.Status.OK).entity(response.getAsCsv(servletRequest.getLocale(), ",", "\n")).type("text/plain").build();
+            } else if ("text/plain".equals(format) || "text".equals(format)) {
+                return Response.status(Response.Status.OK)
+                        .entity(response.getAsCsv(servletRequest.getLocale(), ",", "\n"))
+                        .type("text/plain")
+                        .build();
             } else {
                 this.servletResponse.setContentType("application/json");
                 return Response.status(Response.Status.OK).entity(response).type(MediaType.APPLICATION_JSON).build();
             }
         }
-        
-    }
 
+    }
 
     private List<StatisticsSummary> createSummaryItems(String recordFilterQuery, Period stepPeriod, LocalDate startDate, LocalDate endDate)
             throws DAOException, IndexUnreachableException, PresentationException {
         LocalDate date = startDate;
         List<StatisticsSummary> items = new ArrayList<>();
-        while(date.isBefore(endDate.plus(stepPeriod))) {
-            StatisticsSummary item = new StatisticsSummaryBuilder().loadSummary(StatisticsSummaryFilter.of(date, date.plus(stepPeriod).minusDays(1), recordFilterQuery));        
-            if(!item.isEmpty()) {
+        while (date.isBefore(endDate.plus(stepPeriod))) {
+            StatisticsSummary item = new StatisticsSummaryBuilder()
+                    .loadSummary(StatisticsSummaryFilter.of(date, date.plus(stepPeriod).minusDays(1), recordFilterQuery));
+            if (!item.isEmpty()) {
                 UsageStatisticsInformation itemInfo = new UsageStatisticsInformation(item.calculateStartDate(), item.calculateEndDate(), null);
                 item.setInformation(itemInfo);
                 items.add(item);
@@ -170,17 +184,16 @@ public class UsageStatisticsResource {
         return items;
     }
 
-
     private Period getPeriod(Integer step, String stepUnit) {
         ChronoUnit unit;
-        try {            
+        try {
             unit = ChronoUnit.valueOf(stepUnit.toUpperCase());
-        } catch(NullPointerException | IllegalArgumentException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             unit = ChronoUnit.DAYS;
         }
         Period stepPeriod;
-        switch(unit) {
-            case YEARS: 
+        switch (unit) {
+            case YEARS:
                 stepPeriod = Period.ofYears(step);
                 break;
             case MONTHS:
@@ -195,7 +208,6 @@ public class UsageStatisticsResource {
         return stepPeriod;
     }
 
-    
     LocalDate getLocalDate(String date) {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT));
     }

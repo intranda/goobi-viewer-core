@@ -212,8 +212,8 @@ public class CmsMediaBean implements Serializable {
 
                 });
         dp.setEntriesPerPage(ENTRIES_PER_PAGE);
-        dp.addFilter(GENERAL_FILTER);
-        dp.addFilter(FILENAME_FILTER);
+        dp.getFilter(GENERAL_FILTER);
+        dp.getFilter(FILENAME_FILTER);
         return dp;
     }
 
