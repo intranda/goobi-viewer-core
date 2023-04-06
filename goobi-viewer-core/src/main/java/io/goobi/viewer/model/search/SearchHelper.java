@@ -3152,31 +3152,7 @@ public final class SearchHelper {
         }
     }
 
-    public static void exportSearchAsRIS(String finalQuery, String exportQuery, List<StringPair> sortFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale,
-            int proximitySearchDistance, HttpServletRequest request, HttpServletResponse response)
-            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException, ContentLibException {
 
-        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
-        int batchSize = 100;
-        int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
-        List<SearchHit> searchHits = new ArrayList<>((int) totalHits); // TODO
-        for (int i = 0; i < totalBatches; ++i) {
-            int first = i * batchSize;
-            int max = first + batchSize - 1;
-            if (max > totalHits) {
-                max = (int) (totalHits - 1);
-                batchSize = (int) (totalHits - first);
-            }
-            logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
-            List<SearchHit> batch =
-                    searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, null,
-                            locale, proximitySearchDistance);
-            searchHits.addAll(batch);
-        }
-        
-        new RisResourceBuilder(request, response).writeRIS(searchHits);
-    }
 
     /**
      * <p>

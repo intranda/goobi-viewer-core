@@ -224,12 +224,10 @@ public class BrowseElement implements Serializable {
         // If the topstruct is a volume of any kind or a subelement, add the anchor and volume labels to
         if (!structElement.isAnchor() && topStructElement != null) {
             // Add anchor label to volumes
-            if (!structElement.isAnchor()) {
-                anchorStructElement = topStructElement.getParent();
-                if (anchorStructElement != null) {
-                    // Add anchor to the docstruct hierarchy
-                    structElements.add(anchorStructElement.createStub());
-                }
+            anchorStructElement = topStructElement.getParent();
+            if (anchorStructElement != null) {
+                // Add anchor to the docstruct hierarchy
+                structElements.add(anchorStructElement.createStub());
             }
         }
 

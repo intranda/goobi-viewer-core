@@ -75,7 +75,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
-import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -91,6 +90,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.export.ExcelExport;
+import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
@@ -2244,12 +2244,18 @@ public class SearchBean implements SearchInterface, Serializable {
                             @Override
                             public Boolean call() {
                                 try {
-                                    SearchHelper.exportSearchAsRIS(finalQuery, "", currentSearch.getAllSortFields(),
+                                    RISExport export = new RISExport();
+                                    export.executeSearch(finalQuery, "", currentSearch.getAllSortFields(),
                                             facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance, request,
                                             (HttpServletResponse) facesContext.getExternalContext().getResponse());
-                                    return true;
+                                    if (export.isHasResults()) {
+                                        ((HttpServletResponse) facesContext.getExternalContext().getResponse())
+                                        .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + export.getFileName() + "\"");
+                                        return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
+                                    }
+                                    return false;
                                 } catch (IndexUnreachableException | DAOException | PresentationException | ViewerConfigurationException
-                                        | ContentLibException e) {
+                                        | ContentLibException | IOException e) {
                                     logger.error(e.getMessage(), e);
                                     return false;
                                 } finally {
@@ -2336,7 +2342,7 @@ public class SearchBean implements SearchInterface, Serializable {
                             @Override
                             public Boolean call() {
                                 try {
-                                    logger.debug("Writing excel");
+                                    logger.debug("Writing Excel...");
                                     ExcelExport export = new ExcelExport();
                                     export.setWorkbook(wb);
                                     return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
@@ -2432,7 +2438,7 @@ public class SearchBean implements SearchInterface, Serializable {
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext()
                     .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                            + LocalDateTime.now().format(DateTools.formatterISO8601DateTime)
+                            + LocalDateTime.now().format(DateTools.formatterFileName)
                             + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException | DAOException | PresentationException e) {

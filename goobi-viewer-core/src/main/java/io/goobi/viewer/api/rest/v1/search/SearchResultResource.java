@@ -55,6 +55,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -150,26 +151,12 @@ public class SearchResultResource {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString(activeFacetString);
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
-
-        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
-        int batchSize = 100;
-        int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
-        List<SearchHit> searchHits = new ArrayList<>((int) totalHits); // TODO
-        for (int i = 0; i < totalBatches; ++i) {
-            int first = i * batchSize;
-            int max = first + batchSize - 1;
-            if (max > totalHits) {
-                max = (int) (totalHits - 1);
-                batchSize = (int) (totalHits - first);
-            }
-            logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
-            List<SearchHit> batch =
-                    SearchHelper.searchWithAggregation(finalQuery, first, batchSize, search.getAllSortFields(), null, filterQueries, null, null,
-                            null, locale, proximitySearchDistance);
-            searchHits.addAll(batch);
+        
+        RISExport export = new RISExport();
+        export.executeSearch(finalQuery, query, null, filterQueries, null, null, locale, proximitySearchDistance, servletRequest, servletResponse);
+        if(export.isHasResults()) {
+        new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
         }
-
-        new RisResourceBuilder(servletRequest, servletResponse).writeRIS(searchHits);
         return null;
     }
 }
