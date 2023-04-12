@@ -1767,15 +1767,30 @@ public class ViewManager implements Serializable {
      *
      * @return DFG Viewer link
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should construct default url correctly
+     * @should construct url from custom field correctly
      */
     public String getLinkForDFGViewer() throws IndexUnreachableException {
         if (topStructElement != null && SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat()) && isHasPages()) {
+            String metsUrl = getMetsResolverUrl();
+            
+            String urlField = DataManager.getInstance().getConfiguration().getDfgViewerSourcefileField();
+            if (StringUtils.isNotBlank(urlField)) {
+                // If there's a configured metadata field containing the DfG Viewer record URL, embed the custom URL instead
+                String url = topStructElement.getMetadataValue(DataManager.getInstance().getConfiguration().getDfgViewerSourcefileField());
+                if (StringUtils.isNotBlank(url)) {
+                    logger.trace("Found DfG Viewer URL: {}", url);
+                    metsUrl = url;
+                }
+            }
+            
             try {
-                StringBuilder sbPath = new StringBuilder();
-                sbPath.append(DataManager.getInstance().getConfiguration().getDfgViewerUrl());
-                sbPath.append(URLEncoder.encode(getMetsResolverUrl(), "utf-8"));
-                sbPath.append("&set[image]=").append(currentImageOrder);
-                return sbPath.toString();
+                return new StringBuilder()
+                        .append(DataManager.getInstance().getConfiguration().getDfgViewerUrl())
+                        .append(URLEncoder.encode(metsUrl, "utf-8"))
+                        .append("&set[image]=")
+                        .append(currentImageOrder)
+                        .toString();
             } catch (UnsupportedEncodingException e) {
                 logger.error("error while encoding url", e);
                 return null;

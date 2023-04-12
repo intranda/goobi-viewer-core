@@ -377,6 +377,16 @@ public class Configuration extends AbstractConfiguration {
     public String getDfgViewerUrl() {
         return getLocalString("urls.dfg-viewer", "https://dfg-viewer.de/v2?set[mets]=");
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getDfgViewerSourcefileField() {
+        return getLocalString("urls.dfg-viewer[@sourcefileField]");
+    }
+
 
     /**
      * Returns the list of configured metadata for search hit elements.
@@ -716,10 +726,10 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @should return correct value
      */
-    public boolean isDisplayWidgetUsage() {
+    public boolean isDisplaySidebarWidgetUsage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@enabled]", true);
     }
-
+    
     /**
      *
      * @return Boolean value
