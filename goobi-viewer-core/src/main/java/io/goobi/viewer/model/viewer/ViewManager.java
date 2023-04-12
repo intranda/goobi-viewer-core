@@ -573,6 +573,7 @@ public class ViewManager implements Serializable {
             pageType = PageType.viewObject;
         }
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(getCurrentPage(), scale));
+        logger.trace("Master image URL: {}", sb);
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
