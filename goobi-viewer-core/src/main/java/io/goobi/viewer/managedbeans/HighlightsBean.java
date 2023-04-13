@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +34,10 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -78,6 +81,7 @@ public class HighlightsBean implements Serializable {
     private transient Highlight selectedObject = null;
     private MetadataElement metadataElement = null;
     private final Random random = new Random(); //NOSONAR   generated numbers have no security relevance
+    private EditStatus editStatus = EditStatus.SELECT_TARGET;
 
     @Inject
     private NavigationHelper navigationHelper;
@@ -86,6 +90,12 @@ public class HighlightsBean implements Serializable {
     @Inject
     private ImageDeliveryBean imaging;
 
+    public enum EditStatus {
+        SELECT_TARGET,
+        CREATE,
+        EDIT;
+    }
+    
     public HighlightsBean() {
         
     }
@@ -125,9 +135,22 @@ public class HighlightsBean implements Serializable {
         return currentObjectsProvider;
     }
 
-    public String getRecordUrl(Highlight object) {
+    public String getUrl(Highlight object) {
         if (object != null) {
-            return navigationHelper.getImageUrl() + "/" + object.getData().getRecordIdentifier() + "/";
+            switch(object.getData().getTargetType()) {
+                case RECORD:
+                    return navigationHelper.getImageUrl() + "/" + object.getData().getRecordIdentifier() + "/";
+                case URL:
+                    try {                        
+                        URI uri = new URI(object.getData().getTargetUrl());
+                        if(!uri.isAbsolute()) {
+                            uri = UriBuilder.fromPath("/").path(object.getData().getTargetUrl()).scheme("https").build();
+                        }
+                        return uri.toString();
+                    } catch(URISyntaxException e) {
+                        logger.error("Highlight target url {} is not a valid url", object.getData().getTargetUrl());
+                    }
+            }
         }
         return "";
     }
@@ -151,6 +174,11 @@ public class HighlightsBean implements Serializable {
         this.metadataElement = null;
         if (this.selectedObject != null) {
             this.selectedObject.setSelectedLocale(BeanUtils.getDefaultLocale());
+            if(this.selectedObject.getData().getId() == null) {
+                setEditStatus(EditStatus.SELECT_TARGET);
+            } else {
+                setEditStatus(EditStatus.EDIT);
+            }
         }
     }
 
@@ -193,7 +221,7 @@ public class HighlightsBean implements Serializable {
             Messages.error("Failed to save object " + object);
         }
         if (redirect) {
-            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlight", object.getData().getId()));
+            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightsEdit", object.getData().getId()));
         }
     }
 
@@ -302,6 +330,14 @@ public class HighlightsBean implements Serializable {
     
     public List<Highlight> getCurrentObjects() {
         return this.getCurrentObjectsProvider().getPaginatorList();
+    }
+    
+    public EditStatus getEditStatus() {
+        return editStatus;
+    }
+    
+    public void setEditStatus(EditStatus editStatus) {
+        this.editStatus = editStatus;
     }
 
 }

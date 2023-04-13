@@ -67,7 +67,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     @Override
     public boolean isEmpty(Locale locale) {
-        return this.data.getName().isEmpty();
+        return this.data.getName().isEmpty(locale);
     }
 
     @Override

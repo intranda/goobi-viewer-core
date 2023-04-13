@@ -18,7 +18,7 @@
 
 					<!-- CONDITION: DOES AN OBJECT IMAGE EXIST? YES: RENDER LINK + IMAGE + IMAGE TITLE -->
 					<ui:fragment rendered="#{highlight.hasImageURI()}">
-						<a class="highlighted-object__link" href ="#{highlightsBean.getRecordUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}" >
+						<a class="highlighted-object__link" href ="#{highlightsBean.getUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}" >
 							<figure class="highlighted-object__figure">
 								<img class="highlighted-object__image"
 									alt="#{highlight.data.name.textOrDefault}" 
@@ -31,7 +31,7 @@
 
 					<!-- CONDITION: DOES AN OBJECT IMAGE EXIST? NO: RENDER LINK ONLY -->
 					<ui:fragment rendered="#{!highlight.hasImageURI()}">
-						<a class="highlighted-object__no-image-link" href="#{highlightsBean.getRecordUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}">#{highlight.data.name.textOrDefault}</a>
+						<a class="highlighted-object__no-image-link" href="#{highlightsBean.getUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}">#{highlight.data.name.textOrDefault}</a>
 					</ui:fragment>
 
 		</h:panelGroup>

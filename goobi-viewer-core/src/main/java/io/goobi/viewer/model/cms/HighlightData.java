@@ -69,6 +69,9 @@ public class HighlightData implements Serializable {
 
     @Column(name = "record_identifier")
     private String recordIdentifier;
+    
+    @Column(name = "target_url")
+    private String targetUrl;
 
     @Column(name = "date_start")
     @JsonIgnore
@@ -84,7 +87,16 @@ public class HighlightData implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "image_mode")
     private ImageMode imageMode = ImageMode.RECORD_REPRESENTATIVE;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_type")
+    private TargetType targetType = TargetType.RECORD;
 
+    public enum TargetType {
+        RECORD,
+        URL;
+    }
+    
     public enum ImageMode {
         NO_IMAGE,
         UPLOADED_IMAGE,
@@ -104,6 +116,8 @@ public class HighlightData implements Serializable {
         this.mediaItem = source.mediaItem;
         this.name = new TranslatedText(source.getName());
         this.recordIdentifier = source.recordIdentifier;
+        this.targetType = source.targetType;
+        this.targetUrl = source.targetUrl;
     }
 
     public Long getId() {
@@ -176,6 +190,25 @@ public class HighlightData implements Serializable {
 
     public void setImageMode(ImageMode imageMode) {
         this.imageMode = imageMode;
+    }
+    
+    public TargetType getTargetType() {
+        return targetType;
+    }
+    
+    public void setTargetType(TargetType targetType) {
+        this.targetType = targetType;
+        if(TargetType.URL == this.targetType && this.imageMode == ImageMode.RECORD_REPRESENTATIVE) {
+            this.imageMode = ImageMode.UPLOADED_IMAGE;
+        }
+    }
+    
+    public String getTargetUrl() {
+        return targetUrl;
+    }
+    
+    public void setTargetUrl(String targetUrl) {
+        this.targetUrl = targetUrl;
     }
     
     @Override
