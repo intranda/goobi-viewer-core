@@ -11,12 +11,12 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlightedObjects')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlights')}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <div id="highlightedObjects" class="admin__highlighted-objects">
+        <div id="highlights" class="admin__highlights">
             <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
                 <h:form prependId="false">
 
@@ -27,7 +27,7 @@
                         <!-- CREATE NEW HIGHLIGHTED OBJECT -->
                         <!-- TO DO AK: Functionality add new object-->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <a href="#{navigationHelper.applicationUrl}admin/cms/highlightedobjects/new/" class="btn btn--default admin__title-bar-action">
+                            <a href="#{navigationHelper.applicationUrl}admin/cms/highlights/new/" class="btn btn--default admin__title-bar-action">
                                 <span>#{msg.add}</span>
                             </a>
                         </ui:fragment>

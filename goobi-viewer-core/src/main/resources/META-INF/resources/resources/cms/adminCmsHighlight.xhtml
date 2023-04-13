@@ -14,8 +14,8 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin( highlightsBean.newObject ? 'adminCmsHighlightedObjectsNew':'adminCmsHighlightedObjectsEdit')}" />
-<!-- 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlightedObjects')}" /> -->
+				listener="#{navigationHelper.setCurrentPageAdmin( highlightsBean.newObject ? 'adminCmsHighlightsNew':'adminCmsHighlightsEdit')}" />
+<!-- 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlights')}" /> -->
 		</f:metadata>
 	</ui:define>
 
@@ -24,7 +24,7 @@
 	<ui:define name="content">
 
 
-		<div id="highlightedObjectEdit" class="admin__highlighted-objects-single">
+		<div id="highlightEdit" class="admin__highlights-single">
 
 		<f:view contentType="text/html" encoding="utf-8">
 
@@ -56,9 +56,9 @@
 								</h2>
 								
 
-								<h:panelGroup id="highlightedObjectMainGroup" layout="block">
+								<h:panelGroup id="highlightMainGroup" layout="block">
 								<div class="admin__language-tabs">
-									<viewerComponent:localeSelector render="highlightedObjectMainGroup" object="#{object}"/>
+									<viewerComponent:localeSelector render="highlightMainGroup" object="#{object}"/>
 								</div>
 								<div class="admin__default-block">
 
@@ -270,7 +270,7 @@
 									class="row no-gutters justify-content-end admin__final-actions">
 
 									<a class="btn btn--cancel"
-										href="#{navigationHelper.applicationUrl}admin/cms/highlightedobjects/">#{msg.button__abort}
+										href="#{navigationHelper.applicationUrl}admin/cms/highlights/">#{msg.button__abort}
 									</a>
 									<button class="btn btn--success"
 										jsf:action="#{highlightsBean.saveObject(object)}">

@@ -17,7 +17,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.HighlightData.ImageMode;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
-public class HighlightedObjectTest {
+public class HighlightTest {
 
     @Test
     public void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {

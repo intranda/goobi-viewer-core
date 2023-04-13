@@ -1126,7 +1126,7 @@
         <view-id value="/resources/cms/adminCmsHighlight.xhtml" />
         <action onPostback="false">#{highlightsBean.setNewSelectedObject()}</action>
     </url-mapping>
-    <url-mapping id="adminCmsHighlightedObjectsEdit">
+    <url-mapping id="adminCmsHighlightsEdit">
         <pattern value="/admin/cms/highlights/edit/#{selectedObjectId}/" />
         <view-id value="/resources/cms/adminCmsHighlight.xhtml" />
         <action onPostback="false">#{highlightsBean.setSelectedObjectId(selectedObjectId)}</action>

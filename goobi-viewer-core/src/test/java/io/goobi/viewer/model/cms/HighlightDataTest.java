@@ -39,7 +39,7 @@ import io.goobi.viewer.model.cms.HighlightData.ImageMode;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.translations.TranslatedText;
 
-public class HighlightedObjectDataTest extends AbstractDatabaseEnabledTest {
+public class HighlightDataTest extends AbstractDatabaseEnabledTest {
 
     private IDAO dao;
 
