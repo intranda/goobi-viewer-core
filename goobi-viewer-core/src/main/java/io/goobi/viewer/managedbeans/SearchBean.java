@@ -307,6 +307,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (resetParameters) {
             resetSearchParameters();
             facets.resetSliderRange();
+            setActiveResultGroupName("-");
         }
         if (resetFacets) {
             facets.resetActiveFacetString();
