@@ -79,7 +79,6 @@ public class HighlightsBean implements Serializable {
     private TableDataProvider<Highlight> currentObjectsProvider;
 
     private transient Highlight selectedObject = null;
-    private MetadataElement metadataElement = null;
     private final Random random = new Random(); //NOSONAR   generated numbers have no security relevance
     private EditStatus editStatus = EditStatus.SELECT_TARGET;
 
@@ -171,7 +170,6 @@ public class HighlightsBean implements Serializable {
 
     public void setSelectedObject(Highlight selectedObject) {
         this.selectedObject = selectedObject;
-        this.metadataElement = null;
         if (this.selectedObject != null) {
             this.selectedObject.setSelectedLocale(BeanUtils.getDefaultLocale());
             if(this.selectedObject.getData().getId() == null) {
@@ -226,77 +224,23 @@ public class HighlightsBean implements Serializable {
     }
 
     public MetadataElement getMetadataElement() {
-        if (this.metadataElement == null && this.selectedObject != null) {
-            try {
-                SolrDocument solrDoc = loadSolrDocument(this.selectedObject.getData().getRecordIdentifier());
-                if (solrDoc != null) {
-                    this.metadataElement = loadMetadataElement(solrDoc, 0);
-                    if (this.selectedObject.getData().getName().isEmpty()) {
-                        this.selectedObject.getData().setName(createRecordTitle(solrDoc));
-                    }
-                }
+        if(this.selectedObject != null) {
+            try {                
+                return this.selectedObject.getMetadataElement();
             } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", getSelectedObject().getData().getName().getTextOrDefault(),
+                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", this.getSelectedObject().getData().getName().getTextOrDefault(),
                         e.getMessage());
                 Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}",
                         getSelectedObject().getData().getName().getTextOrDefault(), e.getMessage());
+                return null;
             }
-        }
-        return this.metadataElement;
-    }
-
-    /**
-     * @param recordPi
-     * @param index Metadata view index
-     * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    private MetadataElement loadMetadataElement(SolrDocument solrDoc, int index) throws PresentationException, IndexUnreachableException {
-        StructElement structElement = new StructElement(solrDoc);
-        return new MetadataElement().init(structElement, index, BeanUtils.getLocale())
-                .setSelectedRecordLanguage(this.selectedObject.getSelectedLocale().getLanguage());
-
-    }
-
-    SolrDocument loadSolrDocument(String recordPi) throws IndexUnreachableException, PresentationException {
-        if (StringUtils.isBlank(recordPi)) {
-            return null;
-        }
-
-        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(recordPi);
-        if (solrDoc == null) {
-            return null;
-        }
-        return solrDoc;
-    }
-
-    /**
-     * @param note2
-     * @param metadataElement2
-     */
-    private TranslatedText createRecordTitle(SolrDocument solrDoc) {
-        IMetadataValue label = TocMaker.buildTocElementLabel(solrDoc);
-        TranslatedText text = createRecordTitle(label);
-        text.setSelectedLocale(IPolyglott.getDefaultLocale());
-        return text;
-    }
-
-    /**
-     * @param label
-     * @return
-     */
-    private TranslatedText createRecordTitle(IMetadataValue label) {
-        if (label instanceof MultiLanguageMetadataValue) {
-            MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
-            return new TranslatedText(mLabel);
         } else {
-            TranslatedText title = new TranslatedText();
-            title.setValue(label.getValue().orElse(""), IPolyglott.getDefaultLocale());
-            return title;
+            return null;
         }
     }
+
+
+
 
     public Highlight getCurrentHighlight() throws DAOException {
         List<Highlight> currentObjects = dao.getHighlightsForDate(LocalDateTime.now())
