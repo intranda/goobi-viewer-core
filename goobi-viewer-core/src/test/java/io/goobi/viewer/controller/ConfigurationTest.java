@@ -2622,6 +2622,15 @@ public class ConfigurationTest extends AbstractTest {
     public void getDfgViewerUrl_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("dfg-viewer_value", DataManager.getInstance().getConfiguration().getDfgViewerUrl());
     }
+    
+    /**
+     * @see Configuration#getDfgViewerSourcefileField()
+     * @verifies return correct value
+     */
+    @Test
+    public void getDfgViewerSourcefileField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD2_DFGVIEWERURL", DataManager.getInstance().getConfiguration().getDfgViewerSourcefileField());
+    }
 
     /**
      * @see Configuration#isDisplayCrowdsourcingModuleLinks()
@@ -2771,12 +2780,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplayWidgetUsage()
+     * @see Configuration#isDisplaySidebarWidgetUsage()
      * @verifies return correct value
      */
     @Test
-    public void isDisplayWidgetUsage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsage());
+    public void isDisplaySidebarWidgetUsage_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsage());
     }
 
     /**
