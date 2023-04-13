@@ -439,7 +439,7 @@ public class Search implements Serializable {
                     facets.getAvailableFacets()
                             .put(fieldName,
                                     FacetItem
-                                            .generateFilterLinkList(fieldName, facetResult,
+                                            .generateFilterLinkList(facets.getAvailableFacets().get(fieldName), fieldName, facetResult,
                                                     DataManager.getInstance()
                                                             .getConfiguration()
                                                             .getHierarchicalFacetFields()
@@ -514,7 +514,8 @@ public class Search implements Serializable {
                 }
                 facets.getAvailableFacets()
                         .put(defacetifiedFieldName,
-                                FacetItem.generateFilterLinkList(defacetifiedFieldName, facetResult,
+                                FacetItem.generateFilterLinkList(facets.getAvailableFacets().get(defacetifiedFieldName), defacetifiedFieldName,
+                                        facetResult,
                                         DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(defacetifiedFieldName),
                                         DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
                                         facets.getLabelMap()));
@@ -670,8 +671,8 @@ public class Search implements Serializable {
                 // Facets where all values are permanently displayed, no matter the current filters
                 facets.getAvailableFacets()
                         .put(defacetifiedFieldName,
-                                FacetItem.generateFilterLinkList(defacetifiedFieldName, counts,
-                                        hierarchicalFacetFields.contains(defacetifiedFieldName),
+                                FacetItem.generateFilterLinkList(facets.getAvailableFacets().get(defacetifiedFieldName), defacetifiedFieldName,
+                                        counts, hierarchicalFacetFields.contains(defacetifiedFieldName),
                                         DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
                                         facets.getLabelMap()));
             }
