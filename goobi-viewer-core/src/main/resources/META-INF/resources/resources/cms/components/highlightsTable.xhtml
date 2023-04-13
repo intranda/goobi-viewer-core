@@ -25,7 +25,7 @@
 		                            <!-- FILTER -->
 		                            <!-- TO DO AK: Functionality search in columns/filter -->
 		                            <div class="admin__table-filter">
-		                                <viewerComponent:dataTableColumnFilter key="admin__highlighted_objects__search"
+		                                <viewerComponent:dataTableColumnFilter key="admin__highlights__search"
 		                                filter="#{cc.attrs.dataProvider.getFilter('name', 'recordIdentifier')}"/>
 		                            </div>
 		                        </div>
@@ -33,23 +33,23 @@
 
 
 	                        <!-- HIGHLIGHTED OBJECTS TABLE -->
-	                        <div id="tableWrapper_#{cc.clientId}" class="admin__table-content" role="grid" aria-label="#{msg.admin__highlighted_objects__title}: #{msg.aria_label__table__actions}">
+	                        <div id="tableWrapper_#{cc.clientId}" class="admin__table-content" role="grid" aria-label="#{msg.admin__highlights__title}: #{msg.aria_label__table__actions}">
 	                            
 	                            <!-- TITLE ROW -->
 	                            <div class="row no-gutters admin__table-title" role="row">
 	
 	                                <!-- PAGE COL -->
 	                                <div class="col-6 d-flex" role="columnheader">
-	                                	#{msg.admin__highlighted_objects__table_header}
+	                                	#{msg.admin__highlights__table_header}
 	                                </div>
 	                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-	                                	#{msg.admin__highlighted_objects__table_from}
+	                                	#{msg.admin__highlights__table_from}
 	                                </div>
 	                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-	                                	#{msg.admin__highlighted_objects__table_until}
+	                                	#{msg.admin__highlights__table_until}
 	                                </div>
 	                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-	                                	#{msg.admin__highlighted_objects__table_active}
+	                                	#{msg.admin__highlights__table_active}
 	                                </div>
 	
 	                            </div>
@@ -78,17 +78,17 @@
 	
 	                                                <!-- PREVIEW -->
 	                                                	<a
-	                                                    class="admin__table-action-link" target="_blank" href="#{highlightedObjectBean.getRecordUrl(object)}"
+	                                                    class="admin__table-action-link" target="_blank" href="#{highlightsBean.getRecordUrl(object)}"
 	                                                    aria-label="#{msg.title__preview}: #{object.data.name.textOrDefault}">#{msg.show}
 	                                                  </a>
 	
 		                                           <!-- DELETE -->
 		                                           <button
 		                                               class="admin__table-action-link -redlink"
-		                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlighted_objects__delete_confirmation, object.data.name.textOrDefault)}"
+		                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlights__delete_confirmation, object.data.name.textOrDefault)}"
 		                                               data-require-confirmation="true"
-		                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlighted_objects__delete_confirmation, object.data.name.textOrDefault)}"
-		                                               jsf:action="#{highlightedObjectBean.deleteObject(object)}"
+		                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlights__delete_confirmation, object.data.name.textOrDefault)}"
+		                                               jsf:action="#{highlightsBean.deleteObject(object)}"
 		                                               aria-label="#{msg.delete}" >
 		                                               #{msg.delete}
 		                                           </button>

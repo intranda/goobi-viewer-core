@@ -33,14 +33,14 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 
-public class HighlightedObjectBeanTest extends AbstractDatabaseEnabledTest {
+public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
 
-    HighlightedObjectBean bean;
+    HighlightsBean bean;
     
     @Before
     public void setup() throws Exception {
         super.setUp();
-        bean = new HighlightedObjectBean(DataManager.getInstance().getDao());
+        bean = new HighlightsBean(DataManager.getInstance().getDao());
         bean.init();
     }
     

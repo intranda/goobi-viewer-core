@@ -50,14 +50,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cms_highlighted_objects")
-public class HighlightedObjectData implements Serializable {
+@Table(name = "cms_highlights")
+public class HighlightData implements Serializable {
 
     private static final long serialVersionUID = 2632497568590266830L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "highlighted_object_id")
+    @Column(name = "highlight_id")
     private Long id;
 
     @Column(name = "enabled")
@@ -91,11 +91,11 @@ public class HighlightedObjectData implements Serializable {
         RECORD_REPRESENTATIVE
     }
 
-    public HighlightedObjectData() {
+    public HighlightData() {
         //empty
     }
     
-    HighlightedObjectData(HighlightedObjectData source) {
+    HighlightData(HighlightData source) {
         this.id = source.id;
         this.dateStart = source.dateStart;
         this.dateEnd = source.dateEnd;
@@ -186,7 +186,7 @@ public class HighlightedObjectData implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if(obj != null && obj.getClass().equals(this.getClass())) {
-            HighlightedObjectData other = (HighlightedObjectData)obj;
+            HighlightData other = (HighlightData)obj;
             return Objects.equals(this.id, other.id) &&
                     Objects.equals(this.recordIdentifier, other.recordIdentifier) &&
                     Objects.equals(this.dateStart, other.dateStart) && 

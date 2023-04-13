@@ -14,7 +14,7 @@ import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.cms.HighlightedObjectData.ImageMode;
+import io.goobi.viewer.model.cms.HighlightData.ImageMode;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 public class HighlightedObjectTest {
@@ -23,7 +23,7 @@ public class HighlightedObjectTest {
     public void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
         
-        HighlightedObject object = new HighlightedObject(new HighlightedObjectData(), thumbs);
+        Highlight object = new Highlight(new HighlightData(), thumbs);
         object.getData().setImageMode(ImageMode.UPLOADED_IMAGE);
         
         CMSMediaItem mediaItem = new CMSMediaItem();
@@ -39,7 +39,7 @@ public class HighlightedObjectTest {
     public void test_getCorrectImageURI_recordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
         
-        HighlightedObject object = new HighlightedObject(new HighlightedObjectData(), thumbs);
+        Highlight object = new Highlight(new HighlightData(), thumbs);
         object.getData().setImageMode(ImageMode.RECORD_REPRESENTATIVE);
         object.getData().setRecordIdentifier("PPN12345");
         
@@ -50,7 +50,7 @@ public class HighlightedObjectTest {
     
     @Test
     public void test_alwayActive() {
-        HighlightedObject object = new HighlightedObject(new HighlightedObjectData());
+        Highlight object = new Highlight(new HighlightData());
         object.getData().setDateStart(null);
         object.getData().setDateEnd(null);
         assertFalse(object.isPast());
@@ -61,7 +61,7 @@ public class HighlightedObjectTest {
     @Test
     public void test_isPresent() {
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
-        HighlightedObject object = new HighlightedObject(new HighlightedObjectData());
+        Highlight object = new Highlight(new HighlightData());
         
         object.getData().setDateStart(LocalDate.of(2023, 4, 1));
         object.getData().setDateEnd(LocalDate.of(2023, 5, 1));
@@ -86,7 +86,7 @@ public class HighlightedObjectTest {
     @Test
     public void test_isFuture() {
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
-        HighlightedObject object = new HighlightedObject(new HighlightedObjectData());
+        Highlight object = new Highlight(new HighlightData());
         
         object.getData().setDateStart(LocalDate.of(2023, 4, 1));
         object.getData().setDateEnd(LocalDate.of(2023, 5, 1));
@@ -105,7 +105,7 @@ public class HighlightedObjectTest {
     @Test
     public void test_isPast() {
         LocalDateTime now = LocalDate.of(2023, 5, 15).atStartOfDay();
-        HighlightedObject object = new HighlightedObject(new HighlightedObjectData());
+        Highlight object = new Highlight(new HighlightData());
         
         object.getData().setDateStart(LocalDate.of(2023, 4, 1));
         object.getData().setDateEnd(LocalDate.of(2023, 5, 1));

@@ -13,25 +13,25 @@
 
     <composite:implementation>
     	<!-- CONDITION: IS ANY HIGHLIGHTED OBJECT SET UP FOR THE CURRENT DATE? -->
-		<h:panelGroup styleClass="highlighted-object" layout="block" rendered="#{object != null}">
-			<c:set scope="request" var="object" value="#{highlightedObjectBean.currentHighlightedObject}"/>
+		<c:set scope="request" var="highlight" value="#{highlightsBean.currentHighlight}"/>
+		<h:panelGroup styleClass="highlighted-object" layout="block" rendered="#{highlight != null}">
 
 					<!-- CONDITION: DOES AN OBJECT IMAGE EXIST? YES: RENDER LINK + IMAGE + IMAGE TITLE -->
-					<ui:fragment rendered="#{object.hasImageURI()}">
-						<a class="highlighted-object__link" href ="#{highlightedObjectBean.getRecordUrl(object)}" title="#{msg.action__open_record}: #{object.data.name.textOrDefault}" >
+					<ui:fragment rendered="#{highlight.hasImageURI()}">
+						<a class="highlighted-object__link" href ="#{highlightsBean.getRecordUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}" >
 							<figure class="highlighted-object__figure">
 								<img class="highlighted-object__image"
-									alt="#{object.data.name.textOrDefault}" 
-									title="#{msg.image}: #{object.data.name.textOrDefault}"
-									src="#{object.getImageURI(cc.attrs.imageSizeWidth, cc.attrs.imageSizeHeight)}" />
-								<figcaption class="highlighted-object__image-title">#{object.data.name.textOrDefault}</figcaption>
+									alt="#{highlight.data.name.textOrDefault}" 
+									title="#{msg.image}: #{highlight.data.name.textOrDefault}"
+									src="#{highlight.getImageURI(cc.attrs.imageSizeWidth, cc.attrs.imageSizeHeight)}" />
+								<figcaption class="highlighted-object__image-title">#{highlight.data.name.textOrDefault}</figcaption>
 							</figure>
 						</a>
 					</ui:fragment>
 
 					<!-- CONDITION: DOES AN OBJECT IMAGE EXIST? NO: RENDER LINK ONLY -->
-					<ui:fragment rendered="#{!object.hasImageURI()}">
-						<a class="highlighted-object__no-image-link" href="#{highlightedObjectBean.getRecordUrl(object)}" title="#{msg.action__open_record}: #{object.data.name.textOrDefault}">#{object.data.name.textOrDefault}</a>
+					<ui:fragment rendered="#{!highlight.hasImageURI()}">
+						<a class="highlighted-object__no-image-link" href="#{highlightsBean.getRecordUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}">#{highlight.data.name.textOrDefault}</a>
 					</ui:fragment>
 
 		</h:panelGroup>

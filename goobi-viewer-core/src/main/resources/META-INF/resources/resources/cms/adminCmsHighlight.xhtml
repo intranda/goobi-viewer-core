@@ -14,12 +14,12 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin( highlightedObjectBean.newObject ? 'adminCmsHighlightedObjectsNew':'adminCmsHighlightedObjectsEdit')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin( highlightsBean.newObject ? 'adminCmsHighlightedObjectsNew':'adminCmsHighlightedObjectsEdit')}" />
 <!-- 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlightedObjects')}" /> -->
 		</f:metadata>
 	</ui:define>
 
-	<ui:param name="object" value="#{highlightedObjectBean.selectedObject}"></ui:param>
+	<ui:param name="object" value="#{highlightsBean.selectedObject}"></ui:param>
 
 	<ui:define name="content">
 
@@ -31,7 +31,7 @@
 			<h:panelGroup id="mainGroup" layout="block" rendered="#{userBean.user.cmsAdmin}">
 				<!-- TITLE -->
 				<div class="admin__title-bar">
-					<h1 class="admin__title">#{highlightedObjectBean.newObject ? msg.admin__highlighted_objects__new_title : msg.admin__highlighted_objects__edit_title}</h1>
+					<h1 class="admin__title">#{highlightsBean.newObject ? msg.admin__highlights__new_title : msg.admin__highlights__edit_title}</h1>
 				</div>
 				
 				<viewerComponent:adminBreadcrumbs />
@@ -64,7 +64,7 @@
 
 									<div class="form-group form-row">
 											<div class="col-12 col-lg-2 control-label admin__form-label">
-												<label>#{msg.admin__highlighted_objects__naming}:</label>
+												<label>#{msg.admin__highlights__naming}:</label>
 											</div>
 			                            	<h:panelGroup id="inputNameBlock" layout="block" class="col-11 col-lg-9 admin__form-input">
 												<h:inputText id="inputObjectName" tabindex="1"
@@ -79,7 +79,7 @@
 									<div class="form-group form-row #{object.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 								
 											<div class="col-12 col-lg-2 control-label admin__form-label">
-												<label for="inputObjectIdentifier">#{msg.admin__highlighted_objects__new_pi}:</label>
+												<label for="inputObjectIdentifier">#{msg.admin__highlights__new_pi}:</label>
 											</div>
 			                            	<h:panelGroup id="recordIdentifierInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
 
@@ -107,7 +107,7 @@
 									<div class="form-group form-row #{object.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 								
 											<div class="col-12 col-lg-2 control-label admin__form-label">
-												<label for="inputObjectEndDate">#{msg.admin__highlighted_objects__period}:</label>
+												<label for="inputObjectEndDate">#{msg.admin__highlights__period}:</label>
 											</div>
 			                            	<div class="col-11 col-lg-9 admin__form-input">
 
@@ -130,7 +130,7 @@
                                                 		disabled="#{!object.isDefaultLocaleSelected()}">
                                                 		<f:passThroughAttribute name="data-target" value="datePickerStart" />
 														<f:passThroughAttribute name="placeholder"
-															value="#{msg.admin__highlighted_objects__date_from}"
+															value="#{msg.admin__highlights__date_from}"
 															 /> 
                                                 	</h:inputText>
                                                 </div>
@@ -153,7 +153,7 @@
 															 />
 															 
 														<f:passThroughAttribute name="placeholder"
-															value="#{msg.admin__highlighted_objects__date_until}"
+															value="#{msg.admin__highlights__date_until}"
 															 /> 
 													</h:inputText>
 												</div>
@@ -193,28 +193,28 @@
 								</h:panelGroup>
 								
                         <!-- IMAGE -->
-                        <h2>#{msg.admin__highlighted_objects__image}</h2>
+                        <h2>#{msg.admin__highlights__image}</h2>
                         <div class="admin__default-block">
-                            <p class="admin__boxed-entry-description">#{msg.admin__highlighted_objects__image_desc}</p>
+                            <p class="admin__boxed-entry-description">#{msg.admin__highlights__image_desc}</p>
                             
                             <h:panelGroup layout="block" id="imageModeGroup" styleClass="admin__cms-edit-collection-image-actions-wrapper">
                             
                             	<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
                             		<div class="connected-top">
 		                            	<h:selectOneRadio group="imageModeRadio" value="#{object.data.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="NO_IMAGE" itemLabel="#{msg.admin__highlighted_objects__no_image}" />
+		                                	<f:selectItem itemValue="NO_IMAGE" itemLabel="#{msg.admin__highlights__no_image}" />
 		                                	<f:ajax render="imageModeGroup" />
 		                            	</h:selectOneRadio>
 	                            	</div>
 	                            	<div class="connected-middle">
 		                            	<h:selectOneRadio group="imageModeRadio" value="#{object.data.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__highlighted_objects__media_image}" />
+		                                	<f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__highlights__media_image}" />
 		                                	<f:ajax render="imageModeGroup" />
 		                            	</h:selectOneRadio>
 	                            	</div>
 	                            	<div class="connected-bottom">
 		                            	<h:selectOneRadio group="imageModeRadio" value="#{object.data.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="RECORD_REPRESENTATIVE" itemLabel="#{msg.admin__highlighted_objects__record_image}" />
+		                                	<f:selectItem itemValue="RECORD_REPRESENTATIVE" itemLabel="#{msg.admin__highlights__record_image}" />
 		                                	<f:ajax render="imageModeGroup" />
 		                            	</h:selectOneRadio>
 	                            	</div>
@@ -273,7 +273,7 @@
 										href="#{navigationHelper.applicationUrl}admin/cms/highlightedobjects/">#{msg.button__abort}
 									</a>
 									<button class="btn btn--success"
-										jsf:action="#{highlightedObjectBean.saveObject(object)}">
+										jsf:action="#{highlightsBean.saveObject(object)}">
 										#{msg.button__save}
 										<f:ajax render="@form :messages :noteInfoGroup" execute="@form"></f:ajax>
 									</button> 
@@ -314,10 +314,10 @@
 								<!-- OVERRIDE ACTIVE YES / NO -->
 								<div class="admin__default-block">
 										<div class="admin__record-notes-visibility">
-											<h2>#{msg.admin__highlighted_objects__sidebar_status}</h2>
-											<div class="admin__form-help-text in mb-2">#{msg.admin__highlighted_objects__sidebar_status_help}</div>
+											<h2>#{msg.admin__highlights__sidebar_status}</h2>
+											<div class="admin__form-help-text in mb-2">#{msg.admin__highlights__sidebar_status_help}</div>
 											<div class="mb-1 d-flex justify-content-between">
-												<label>#{msg.admin__highlighted_objects__sidebar_status_toggle}: </label>
+												<label>#{msg.admin__highlights__sidebar_status_toggle}: </label>
 												<viewerComponent:toggleSwitch name="showThisNote" value="#{object.data.enabled}" />
 											</div>
 										</div>
@@ -334,7 +334,7 @@
 										</div>
 											<div class="row">
 												<div class="col-12 d-flex justify-content-center">
-													<a class="btn btn--default" target="_blank" href="#{highlightedObjectBean.getRecordUrl(object)}">#{msg.show}</a>
+													<a class="btn btn--default" target="_blank" href="#{highlightsBean.getRecordUrl(object)}">#{msg.show}</a>
 					                            </div>
 											</div>
 									</h:panelGroup>
@@ -345,15 +345,15 @@
 										<div class="admin__record-notes-info-box">
 											<div class="admin__record-notes-image-wrapper">
 												<img class="admin__record-notes-image"
-													alt="#{highlightedObjectBean.metadataElement.label}"
-													title="#{highlightedObjectBean.metadataElement.label}"
-													src="#{highlightedObjectBean.getRecordRepresentativeURI(350, 420)}" />
+													alt="#{highlightsBean.metadataElement.label}"
+													title="#{highlightsBean.metadataElement.label}"
+													src="#{highlightsBean.getRecordRepresentativeURI(350, 420)}" />
 											</div>
 											<div class="admin__record-notes-metadata">
 												<ui:include
 													src="/resources/includes/metadata/metadataElement.xhtml">
 													<ui:param name="metadataElement"
-														value="#{highlightedObjectBean.metadataElement}" />
+														value="#{highlightsBean.metadataElement}" />
 												</ui:include>
 											</div>
 										</div>

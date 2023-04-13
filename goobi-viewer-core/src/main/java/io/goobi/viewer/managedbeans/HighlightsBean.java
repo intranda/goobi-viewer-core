@@ -52,8 +52,8 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.cms.HighlightedObject;
-import io.goobi.viewer.model.cms.HighlightedObjectData;
+import io.goobi.viewer.model.cms.Highlight;
+import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -62,20 +62,20 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 @Named
 @SessionScoped
-public class HighlightedObjectBean implements Serializable {
+public class HighlightsBean implements Serializable {
 
     private static final long serialVersionUID = -6647395682752991930L;
-    private static final Logger logger = LogManager.getLogger(HighlightedObjectBean.class);
+    private static final Logger logger = LogManager.getLogger(HighlightsBean.class);
     private static final int NUM_ITEMS_PER_PAGE = 12;
     private static final String ALL_OBJECTS_SORT_FIELD = "dateStart";
     private static final SortOrder ALL_OBJECTS_SORT_ORDER = SortOrder.DESCENDING;
     private static final String CURRENT_OBJECTS_SORT_FIELD = "dateStart";
     private static final SortOrder CURRENT_OBJECTS_SORT_ORDER = SortOrder.ASCENDING;
 
-    private TableDataProvider<HighlightedObject> allObjectsProvider;
-    private TableDataProvider<HighlightedObject> currentObjectsProvider;
+    private TableDataProvider<Highlight> allObjectsProvider;
+    private TableDataProvider<Highlight> currentObjectsProvider;
 
-    private transient HighlightedObject selectedObject = null;
+    private transient Highlight selectedObject = null;
     private MetadataElement metadataElement = null;
     private final Random random = new Random(); //NOSONAR   generated numbers have no security relevance
 
@@ -86,11 +86,11 @@ public class HighlightedObjectBean implements Serializable {
     @Inject
     private ImageDeliveryBean imaging;
 
-    public HighlightedObjectBean() {
+    public HighlightsBean() {
         
     }
     
-    public HighlightedObjectBean(IDAO dao) {
+    public HighlightsBean(IDAO dao) {
         this.dao = dao;
     }
     
@@ -105,48 +105,48 @@ public class HighlightedObjectBean implements Serializable {
     void initProviders(LocalDateTime now) {
         allObjectsProvider = TableDataProvider.initDataProvider(NUM_ITEMS_PER_PAGE, ALL_OBJECTS_SORT_FIELD, ALL_OBJECTS_SORT_ORDER,
                 (first, pageSize, sortField, descending, filters) -> dao
-                        .getHighlightedObjects(first, pageSize, sortField, descending, filters)
+                        .getHighlights(first, pageSize, sortField, descending, filters)
                         .stream()
-                        .map(HighlightedObject::new)
+                        .map(Highlight::new)
                         .collect(Collectors.toList()));
         currentObjectsProvider = TableDataProvider.initDataProvider(Integer.MAX_VALUE, CURRENT_OBJECTS_SORT_FIELD, CURRENT_OBJECTS_SORT_ORDER,
                 (first, pageSize, sortField, descending, filters) -> dao
-                .getHighlightedObjectsForDate(now)
+                .getHighlightsForDate(now)
                 .stream()
-                .map(HighlightedObject::new)
+                .map(Highlight::new)
                 .collect(Collectors.toList()));
     }
 
-    public TableDataProvider<HighlightedObject> getAllObjectsProvider() {
+    public TableDataProvider<Highlight> getAllObjectsProvider() {
         return allObjectsProvider;
     }
     
-    public TableDataProvider<HighlightedObject> getCurrentObjectsProvider() {
+    public TableDataProvider<Highlight> getCurrentObjectsProvider() {
         return currentObjectsProvider;
     }
 
-    public String getRecordUrl(HighlightedObject object) {
+    public String getRecordUrl(Highlight object) {
         if (object != null) {
             return navigationHelper.getImageUrl() + "/" + object.getData().getRecordIdentifier() + "/";
         }
         return "";
     }
 
-    public void deleteObject(HighlightedObject object) {
+    public void deleteObject(Highlight object) {
         try {
-            dao.deleteHighlightedObject(object.getData().getId());
-            Messages.info("cms___highlighted_objects__delete__success");
+            dao.deleteHighlight(object.getData().getId());
+            Messages.info("cms___highlights__delete__success");
         } catch (DAOException e) {
             logger.error("Error deleting object", e);
-            Messages.error("cms___highlighted_objects__delete__error");
+            Messages.error("cms___highlights__delete__error");
         }
     }
 
-    public HighlightedObject getSelectedObject() {
+    public Highlight getSelectedObject() {
         return selectedObject;
     }
 
-    public void setSelectedObject(HighlightedObject selectedObject) {
+    public void setSelectedObject(Highlight selectedObject) {
         this.selectedObject = selectedObject;
         this.metadataElement = null;
         if (this.selectedObject != null) {
@@ -157,9 +157,9 @@ public class HighlightedObjectBean implements Serializable {
     public void setSelectedObjectId(long id) {
 
         try {
-            HighlightedObjectData data = dao.getHighlightedObject(id);
+            HighlightData data = dao.getHighlight(id);
             if (data != null) {
-                setSelectedObject(new HighlightedObject(data));
+                setSelectedObject(new Highlight(data));
             } else {
                 setSelectedObject(null);
             }
@@ -170,21 +170,21 @@ public class HighlightedObjectBean implements Serializable {
     }
 
     public void setNewSelectedObject() {
-        HighlightedObjectData data = new HighlightedObjectData();
-        setSelectedObject(new HighlightedObject(data));
+        HighlightData data = new HighlightData();
+        setSelectedObject(new Highlight(data));
     }
 
     public boolean isNewObject() {
         return this.selectedObject != null && this.selectedObject.getData().getId() != null;
     }
 
-    public void saveObject(HighlightedObject object) throws DAOException {
+    public void saveObject(Highlight object) throws DAOException {
         boolean saved = false;
         boolean redirect = false;
         if (object != null && object.getData().getId() != null) {
-            saved = dao.updateHighlightedObject(object.getData());
+            saved = dao.updateHighlight(object.getData());
         } else if (object != null) {
-            saved = dao.addHighlightedObject(object.getData());
+            saved = dao.addHighlight(object.getData());
             redirect = true;
         }
         if (saved) {
@@ -193,7 +193,7 @@ public class HighlightedObjectBean implements Serializable {
             Messages.error("Failed to save object " + object);
         }
         if (redirect) {
-            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightedObjectsEdit", object.getData().getId()));
+            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlight", object.getData().getId()));
         }
     }
 
@@ -270,11 +270,11 @@ public class HighlightedObjectBean implements Serializable {
         }
     }
 
-    public HighlightedObject getCurrentHighlightedObject() throws DAOException {
-        List<HighlightedObject> currentObjects = dao.getHighlightedObjectsForDate(LocalDateTime.now())
+    public Highlight getCurrentHighlight() throws DAOException {
+        List<Highlight> currentObjects = dao.getHighlightsForDate(LocalDateTime.now())
                 .stream()
-                .filter(HighlightedObjectData::isEnabled)
-                .map(HighlightedObject::new)
+                .filter(HighlightData::isEnabled)
+                .map(Highlight::new)
                 .collect(Collectors.toList());
         if (!currentObjects.isEmpty()) {
             int randomIndex = random.nextInt(currentObjects.size());
@@ -300,7 +300,7 @@ public class HighlightedObjectBean implements Serializable {
         }
     }
     
-    public List<HighlightedObject> getCurrentObjects() {
+    public List<Highlight> getCurrentObjects() {
         return this.getCurrentObjectsProvider().getPaginatorList();
     }
 

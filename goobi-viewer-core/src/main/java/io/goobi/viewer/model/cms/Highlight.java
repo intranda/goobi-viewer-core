@@ -38,20 +38,20 @@ import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.translations.IPolyglott;
 
-public class HighlightedObject implements CMSMediaHolder, IPolyglott {
+public class Highlight implements CMSMediaHolder, IPolyglott {
 
-    private final HighlightedObjectData data;
+    private final HighlightData data;
     private final ThumbnailHandler thumbs;
 
-    public HighlightedObject(HighlightedObjectData data, ThumbnailHandler thumbs) {
+    public Highlight(HighlightData data, ThumbnailHandler thumbs) {
         if (data == null || thumbs == null) {
             throw new NullPointerException("Constructor arguments may not be null");
         }
-        this.data = new HighlightedObjectData(data);
+        this.data = new HighlightData(data);
         this.thumbs = thumbs;
     }
 
-    public HighlightedObject(HighlightedObjectData data) {
+    public Highlight(HighlightData data) {
         this(data, BeanUtils.getImageDeliveryBean().getThumbs());
     }
 
@@ -115,7 +115,7 @@ public class HighlightedObject implements CMSMediaHolder, IPolyglott {
         return null;
     }
 
-    public HighlightedObjectData getData() {
+    public HighlightData getData() {
         return data;
     };
 
@@ -170,7 +170,7 @@ public class HighlightedObject implements CMSMediaHolder, IPolyglott {
     }
     
     /**
-     * Check if the object is active now. Mutually exclusive with {@link HighlightedObject#isPast()} and {@link #isFuture()}
+     * Check if the object is active now. Mutually exclusive with {@link Highlight#isPast()} and {@link #isFuture()}
      * @return  true if startTime is before now (or null) and endTime is after now (or null)
      */
     public boolean isCurrent() {
