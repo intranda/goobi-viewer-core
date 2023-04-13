@@ -58,7 +58,7 @@
 		                            			<div class="form-row">
 					                            	<div data-target="#{highlight.data.targetType == 'RECORD' ? 'isChecked' : 'blurIfUnchecked'}" class="admin__highlights-radio-select control-label admin__form-label">
 						                            	<h:selectOneRadio group="targetTypeSelect" value="#{highlight.data.targetType}" immediate="true" >
-						                                	<f:selectItem itemValue="RECORD" itemLabel="#{msg.cms__highlights__target_type_record}" />
+						                                	<f:selectItem itemValue="RECORD" itemLabel="#{msg.admin__highlights__target_type_record}" />
 						                                	<f:ajax render="@form" />
 						                            	</h:selectOneRadio>
 					                            	</div>
@@ -78,7 +78,7 @@
 															<f:validator validatorId="piInSolrValidator"
 																for="select_inputRecordIdentifier" />
 														</h:inputText>
-														<span class="admin__form-help-text">#{msg.cms__highlights__target_type_record__help}</span>
+														<span class="admin__form-help-text">#{msg.admin__highlights__target_type_record__help}</span>
 													</div>
 					                            </div>
 					                        </div>
@@ -87,7 +87,7 @@
 					                            	<div class="form-row">
 						                            	<div data-target="#{highlight.data.targetType == 'URL' ? 'isChecked' : 'blurIfUnchecked'}" class="admin__highlights-radio-select control-label admin__form-label">
 							                            	<h:selectOneRadio group="targetTypeSelect" value="#{highlight.data.targetType}" immediate="true" >
-							                                	<f:selectItem itemValue="URL" itemLabel="#{msg.cms__highlights__target_type_url}" />
+							                                	<f:selectItem itemValue="URL" itemLabel="#{msg.admin__highlights__target_type_url}" />
 							                                	<f:ajax render="@form" />
 							                            	</h:selectOneRadio>
 						                            	</div>
@@ -104,7 +104,7 @@
 																required="#{highlight.data.targetType eq 'URL'}"
 																value="#{highlight.data.targetUrl}">
 															</h:inputText>
-															<span class="admin__form-help-text">#{msg.cms__highlights__target_type_url__help}</span>
+															<span class="admin__form-help-text">#{msg.admin__highlights__target_type_url__help}</span>
 														</div>
 					                            	</div>
 					                        	</div>

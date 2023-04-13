@@ -203,7 +203,7 @@ public class HighlightsBean implements Serializable {
     }
 
     public boolean isNewObject() {
-        return this.selectedObject != null && this.selectedObject.getData().getId() != null;
+        return this.selectedObject != null && this.selectedObject.getData().getId() == null;
     }
 
     public void saveObject(Highlight object) throws DAOException {
