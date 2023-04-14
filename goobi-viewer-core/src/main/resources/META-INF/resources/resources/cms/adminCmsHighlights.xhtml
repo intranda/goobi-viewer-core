@@ -11,23 +11,23 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlightedObjects')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlights')}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <div id="highlightedObjects" class="admin__highlighted-objects">
+        <div id="highlights" class="admin__highlights">
             <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
                 <h:form prependId="false">
 
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h1 class="admin__title">#{msg.admin__highlighted_objects__title}</h1>
+                        <h1 class="admin__title">#{msg.admin__highlights__title}</h1>
                         
                         <!-- CREATE NEW HIGHLIGHTED OBJECT -->
                         <!-- TO DO AK: Functionality add new object-->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <a href="#{navigationHelper.applicationUrl}admin/cms/highlightedobjects/new/" class="btn btn--default admin__title-bar-action">
+                            <a href="#{navigationHelper.applicationUrl}admin/cms/highlights/new/" class="btn btn--default admin__title-bar-action">
                                 <span>#{msg.add}</span>
                             </a>
                         </ui:fragment>
@@ -36,11 +36,11 @@
 					<viewerComponent:adminBreadcrumbs />
 
                     <div class="admin__content-inner-content">
-	                    <div class="admin__info-text">#{msg.admin__highlighted_objects__description}</div>
-	                    <h2>#{msg.admin__highlighted_objects__current_table_title}</h2>
-	                    <cmsComponent:highlightedObjectTable dataProvider="#{highlightedObjectBean.getCurrentObjectsProvider()}" showPaginator="false"/>
-	                    <h2>#{msg.admin__highlighted_objects__all_table_title}</h2>
-						<cmsComponent:highlightedObjectTable dataProvider="#{highlightedObjectBean.getAllObjectsProvider()}"/>
+	                    <div class="admin__info-text">#{msg.admin__highlights__description}</div>
+	                    <h2>#{msg.admin__highlights__current_table_title}</h2>
+	                    <cmsComponent:highlightsTable dataProvider="#{highlightsBean.getCurrentObjectsProvider()}" showPaginator="false"/>
+	                    <h2>#{msg.admin__highlights__all_table_title}</h2>
+						<cmsComponent:highlightsTable dataProvider="#{highlightsBean.getAllObjectsProvider()}"/>
                     </div>
                 </h:form>
             </h:panelGroup>

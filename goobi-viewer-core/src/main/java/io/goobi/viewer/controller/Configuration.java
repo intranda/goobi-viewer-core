@@ -64,6 +64,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -377,6 +378,16 @@ public class Configuration extends AbstractConfiguration {
     public String getDfgViewerUrl() {
         return getLocalString("urls.dfg-viewer", "https://dfg-viewer.de/v2?set[mets]=");
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getDfgViewerSourcefileField() {
+        return getLocalString("urls.dfg-viewer[@sourcefileField]");
+    }
+
 
     /**
      * Returns the list of configured metadata for search hit elements.
@@ -389,6 +400,24 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
+        if (templateList == null) {
+            return new ArrayList<>(); // must be a mutable list!
+        }
+
+        return getMetadataForTemplate(template, templateList, true, true);
+    }
+    
+    /**
+     * Returns the list of configured metadata for {@link Highlight}s which reference a record.
+     *
+     * @param template a {@link java.lang.String} object.
+     * @should return correct template configuration
+     * @should return default template configuration if requested not found
+     * @should return default template if template is null
+     * @return a {@link java.util.List} object.
+     */
+    public List<Metadata> getHighlightMetadataForTemplate(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.highlightMetadataList.template");
         if (templateList == null) {
             return new ArrayList<>(); // must be a mutable list!
         }
@@ -716,10 +745,10 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @should return correct value
      */
-    public boolean isDisplayWidgetUsage() {
+    public boolean isDisplaySidebarWidgetUsage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@enabled]", true);
     }
-
+    
     /**
      *
      * @return Boolean value

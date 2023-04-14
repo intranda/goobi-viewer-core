@@ -102,14 +102,14 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>                        
-<!--                         <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}"> -->
-<!--                             <li class="#{navigationHelper.currentPage == 'adminCmsHighlightedObjects' ? 'active' : ''}"> -->
-<!--                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsHighlightedObjects')}/"> -->
-<!--                                     <i class="fa fa-star" aria-hidden="true"></i> -->
-<!--                                     <span>#{msg.admin__highlighted_objects__title}</span> -->
-<!--                                 </h:outputLink> -->
-<!--                             </li> -->
-<!--                         </ui:fragment> -->
+                         <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsHighlights' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsHighlights')}/">
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <span>#{msg.admin__highlights__title}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
                     </ul>
                 </h:form>
             </div>

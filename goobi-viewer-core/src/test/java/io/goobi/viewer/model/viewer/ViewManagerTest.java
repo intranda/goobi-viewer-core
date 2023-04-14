@@ -23,7 +23,6 @@ package io.goobi.viewer.model.viewer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mockitoSession;
 
 import java.awt.Dimension;
 import java.io.IOException;
@@ -38,8 +37,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.ibm.icu.impl.UResource.Array;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
@@ -321,7 +318,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testDisplayDownloadWidget() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+    public void testDisplayDownloadWidget() throws IndexUnreachableException, PresentationException, DAOException {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
@@ -338,7 +335,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     public void testListDownloadLinksForWork()
-            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, IOException {
+            throws IndexUnreachableException, PresentationException, DAOException, IOException {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
@@ -354,7 +351,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+    public void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException {
 
         String pi = "PPN123";
         String docstructType = "Catalogue";
@@ -403,7 +400,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     public void test_setCurrentImageOrderString()
-            throws IndexUnreachableException, PresentationException, IDDOCNotFoundException, DAOException, ViewerConfigurationException {
+            throws IndexUnreachableException, PresentationException, IDDOCNotFoundException, DAOException {
         StructElement se = new StructElement(iddocKleiuniv);
         Assert.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
@@ -442,7 +439,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     private static ViewManager createViewManager(String pi, String docstructType, String pageFilename)
-            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+            throws IndexUnreachableException, PresentationException {
         StructElement se = new StructElement(123L);
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
@@ -459,7 +456,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void test_getElementsAroundPage() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+    public void test_getElementsAroundPage() throws IndexUnreachableException, PresentationException, DAOException {
         StructElement se = new StructElement(iddocKleiuniv);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
         assertEquals(16, viewManager.getAllPages().size());
@@ -556,6 +553,33 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String test2 = String.format(test + "&%s=%s&%s=%s", "queryA", "a", "queryB", "b");
         String link2 = viewManager.getPdfDownloadLink(List.of(List.of("usePdfSource", "true"), List.of("queryA", "a"), List.of("queryB", "b")));
         assertEquals(test2, link2);
+    }
+
+    /**
+     * @see ViewManager#getLinkForDFGViewer()
+     * @verifies construct default url correctly
+     */
+    @Test
+    public void getLinkForDFGViewer_shouldConstructDefaultUrlCorrectly() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        Assert.assertEquals("dfg-viewer_valuesourcefile_valuePPN517154005&set[image]=-1", viewManager.getLinkForDFGViewer());
+    }
+
+    /**
+     * @see ViewManager#getLinkForDFGViewer()
+     * @verifies construct url from custom field correctly
+     */
+    @Test
+    public void getLinkForDFGViewer_shouldConstructUrlFromCustomFieldCorrectly() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        se.metadataFields.put("MD2_DFGVIEWERURL", Collections.singletonList("https://foo.bar/PPN517154004.xml"));
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        Assert.assertEquals("dfg-viewer_valuehttps%3A%2F%2Ffoo.bar%2FPPN517154004.xml&set[image]=-1", viewManager.getLinkForDFGViewer());
     }
 
 }

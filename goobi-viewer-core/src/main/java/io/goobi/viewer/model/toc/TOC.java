@@ -272,56 +272,73 @@ public class TOC implements Serializable {
         }
     }
 
-    private TOCElement getElement(List<TOCElement> list, Long iddoc) {
-        TOCElement currentElement = list.stream().filter(ele -> ele.getIddoc().equals(iddoc.toString())).findAny().orElse(null);
-        return currentElement;
+    /**
+     * 
+     * @param list
+     * @param iddoc
+     * @return
+     */
+    private static TOCElement getElement(List<TOCElement> list, Long iddoc) {
+        return list.stream().filter(ele -> ele.getIddoc().equals(iddoc.toString())).findAny().orElse(null);
     }
 
-    private TOCElement getElement(List<TOCElement> list, int id) {
-        TOCElement currentElement = list.stream().filter(ele -> ele.getID() == id).findAny().orElse(null);
-        return currentElement;
+    /**
+     * 
+     * @param list
+     * @param id
+     * @return
+     */
+    private static TOCElement getElement(List<TOCElement> list, int id) {
+        return list.stream().filter(ele -> ele.getID() == id).findAny().orElse(null);
     }
 
+    /**
+     * 
+     * @param collapseThreshold
+     * @param lowestLevelToCollapse
+     */
     private void collapseTocForLength(int collapseThreshold, int lowestLevelToCollapse) {
-        if (collapseThreshold > 0 && tocElementMap != null) {
-            //        long start = System.nanoTime();
-            int index = 0;
-            int hideLevel = -1;
-            boolean hide = false;
-            for (index = 0; index < tocElementMap.get(DEFAULT_GROUP).size(); index++) {
-                TOCElement tocElem = tocElementMap.get(DEFAULT_GROUP).get(index);
+        if (collapseThreshold <= 0 || tocElementMap == null) {
+            return;
+        }
 
-                if (tocElem.getLevel() < hideLevel || tocElem.getLevel() < lowestLevelToCollapse) {
-                    //if we return above the hidden level, reset flags
-                    hide = false;
-                    hideLevel = -1;
-                } else if (hide) {
-                    //if hide flag is set from previous sibling, hide and collapse this element
-                    tocElem.setExpanded(false);
-                    tocElem.setVisible(false);
-                } else {
-                    //else check if we need to hide this and following siblings
-                    int levelLength = 0;
-                    for (int i = index; i < tocElementMap.get(DEFAULT_GROUP).size(); i++) {
-                        TOCElement tempElem = tocElementMap.get(DEFAULT_GROUP).get(i);
-                        if (tempElem.getLevel() < tocElem.getLevel()) {
-                            break;
-                        } else if (tempElem.getLevel() == tocElem.getLevel()) {
-                            levelLength++;
-                        }
-                    }
-                    if (levelLength > collapseThreshold) {
-                        tocElementMap.get(DEFAULT_GROUP).get(index - 1).setExpanded(false); //collapse parent
-                        hideLevel = tocElem.getLevel();
-                        hide = true;
-                        tocElem.setExpanded(false);
-                        tocElem.setVisible(false);
+        //        long start = System.nanoTime();
+        int index = 0;
+        int hideLevel = -1;
+        boolean hide = false;
+        for (index = 0; index < tocElementMap.get(DEFAULT_GROUP).size(); index++) {
+            TOCElement tocElem = tocElementMap.get(DEFAULT_GROUP).get(index);
+
+            if (tocElem.getLevel() < hideLevel || tocElem.getLevel() < lowestLevelToCollapse) {
+                //if we return above the hidden level, reset flags
+                hide = false;
+                hideLevel = -1;
+            } else if (hide) {
+                //if hide flag is set from previous sibling, hide and collapse this element
+                tocElem.setExpanded(false);
+                tocElem.setVisible(false);
+            } else {
+                //else check if we need to hide this and following siblings
+                int levelLength = 0;
+                for (int i = index; i < tocElementMap.get(DEFAULT_GROUP).size(); i++) {
+                    TOCElement tempElem = tocElementMap.get(DEFAULT_GROUP).get(i);
+                    if (tempElem.getLevel() < tocElem.getLevel()) {
+                        break;
+                    } else if (tempElem.getLevel() == tocElem.getLevel()) {
+                        levelLength++;
                     }
                 }
+                if (levelLength > collapseThreshold) {
+                    tocElementMap.get(DEFAULT_GROUP).get(index - 1).setExpanded(false); //collapse parent
+                    hideLevel = tocElem.getLevel();
+                    hide = true;
+                    tocElem.setExpanded(false);
+                    tocElem.setVisible(false);
+                }
             }
-            //        long end = System.nanoTime();
-            //          logger.trace("Time for length collapse: {} ns", (end - start))
         }
+        //        long end = System.nanoTime();
+        //          logger.trace("Time for length collapse: {} ns", (end - start))
     }
 
     /**
@@ -377,7 +394,7 @@ public class TOC implements Serializable {
      * @param parentId
      */
     private void expandTree(int parentId) {
-        logger.trace("expandTree: {}", parentId);
+        // logger.trace("expandTree: {}", parentId);
         if (tocElementMap != null) {
             int level = tocElementMap.get(DEFAULT_GROUP).get(parentId).getLevel();
             for (int i = parentId + 1; i < tocElementMap.get(DEFAULT_GROUP).size(); i++) {

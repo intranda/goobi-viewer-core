@@ -67,7 +67,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
-import io.goobi.viewer.model.cms.HighlightedObjectData;
+import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -6996,33 +6996,33 @@ public class JPADAO implements IDAO {
     }
 
     @Override
-    public boolean addHighlightedObject(HighlightedObjectData object) throws DAOException {
+    public boolean addHighlight(HighlightData object) throws DAOException {
         return addEntity(object);
     }
 
     @Override
-    public boolean updateHighlightedObject(HighlightedObjectData object) throws DAOException {
+    public boolean updateHighlight(HighlightData object) throws DAOException {
         return updateEntity(object);
     }
     
     @Override
-    public boolean deleteHighlightedObject(Long id) throws DAOException {
-        return deleteEntity(id, HighlightedObjectData.class);
+    public boolean deleteHighlight(Long id) throws DAOException {
+        return deleteEntity(id, HighlightData.class);
     }
 
     @Override
-    public HighlightedObjectData getHighlightedObject(Long id) throws DAOException {
-        return getEntity(id, HighlightedObjectData.class);
+    public HighlightData getHighlight(Long id) throws DAOException {
+        return getEntity(id, HighlightData.class);
     }
 
     @Override
-    public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException {
-        return getAllEntities(HighlightedObjectData.class);
+    public List<HighlightData> getAllHighlights() throws DAOException {
+        return getAllEntities(HighlightData.class);
     }
 
     @Override
-    public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException {
-        return getMatchingEntities(HighlightedObjectData.class,
+    public List<HighlightData> getHighlightsForDate(LocalDateTime date) throws DAOException {
+        return getMatchingEntities(HighlightData.class,
                 "(:date BETWEEN o.dateStart AND o.dateEnd)"
                 + " OR "
                 + "(o.dateStart IS NULL AND :date < o.dateEnd)"
@@ -7033,24 +7033,24 @@ public class JPADAO implements IDAO {
     }
     
     @Override
-    public List<HighlightedObjectData> getPastHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+    public List<HighlightData> getPastHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightedObjectData> data = getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
+        List<HighlightData> data = getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
         return data;
     }
     
     @Override
-    public List<HighlightedObjectData> getFutureHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+    public List<HighlightData> getFutureHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightedObjectData> data = getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
+        List<HighlightData> data = getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
         return data;
     }
     
 
     @Override
-    public List<HighlightedObjectData> getHighlightedObjects(int first, int pageSize, String sortField, boolean descending,
+    public List<HighlightData> getHighlights(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters) throws DAOException {
-        return getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters);
+        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters);
     }
     
     private boolean addEntity(Serializable obj) throws DAOException {

@@ -50,14 +50,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cms_highlighted_objects")
-public class HighlightedObjectData implements Serializable {
+@Table(name = "cms_highlights")
+public class HighlightData implements Serializable {
 
     private static final long serialVersionUID = 2632497568590266830L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "highlighted_object_id")
+    @Column(name = "highlight_id")
     private Long id;
 
     @Column(name = "enabled")
@@ -69,6 +69,9 @@ public class HighlightedObjectData implements Serializable {
 
     @Column(name = "record_identifier")
     private String recordIdentifier;
+    
+    @Column(name = "target_url")
+    private String targetUrl;
 
     @Column(name = "date_start")
     @JsonIgnore
@@ -84,18 +87,27 @@ public class HighlightedObjectData implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "image_mode")
     private ImageMode imageMode = ImageMode.RECORD_REPRESENTATIVE;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_type")
+    private TargetType targetType = TargetType.RECORD;
 
+    public enum TargetType {
+        RECORD,
+        URL;
+    }
+    
     public enum ImageMode {
         NO_IMAGE,
         UPLOADED_IMAGE,
         RECORD_REPRESENTATIVE
     }
 
-    public HighlightedObjectData() {
+    public HighlightData() {
         //empty
     }
     
-    HighlightedObjectData(HighlightedObjectData source) {
+    HighlightData(HighlightData source) {
         this.id = source.id;
         this.dateStart = source.dateStart;
         this.dateEnd = source.dateEnd;
@@ -104,6 +116,8 @@ public class HighlightedObjectData implements Serializable {
         this.mediaItem = source.mediaItem;
         this.name = new TranslatedText(source.getName());
         this.recordIdentifier = source.recordIdentifier;
+        this.targetType = source.targetType;
+        this.targetUrl = source.targetUrl;
     }
 
     public Long getId() {
@@ -178,6 +192,25 @@ public class HighlightedObjectData implements Serializable {
         this.imageMode = imageMode;
     }
     
+    public TargetType getTargetType() {
+        return targetType;
+    }
+    
+    public void setTargetType(TargetType targetType) {
+        this.targetType = targetType;
+        if(TargetType.URL == this.targetType && this.imageMode == ImageMode.RECORD_REPRESENTATIVE) {
+            this.imageMode = ImageMode.UPLOADED_IMAGE;
+        }
+    }
+    
+    public String getTargetUrl() {
+        return targetUrl;
+    }
+    
+    public void setTargetUrl(String targetUrl) {
+        this.targetUrl = targetUrl;
+    }
+    
     @Override
     public int hashCode() {
         return recordIdentifier == null ? 0 : recordIdentifier.hashCode();
@@ -186,7 +219,7 @@ public class HighlightedObjectData implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if(obj != null && obj.getClass().equals(this.getClass())) {
-            HighlightedObjectData other = (HighlightedObjectData)obj;
+            HighlightData other = (HighlightData)obj;
             return Objects.equals(this.id, other.id) &&
                     Objects.equals(this.recordIdentifier, other.recordIdentifier) &&
                     Objects.equals(this.dateStart, other.dateStart) && 
