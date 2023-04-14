@@ -99,8 +99,10 @@ public class HighlightsBean implements Serializable {
         
     }
     
-    public HighlightsBean(IDAO dao) {
+    public HighlightsBean(IDAO dao, NavigationHelper navigationHelper, ImageDeliveryBean imaging) {
         this.dao = dao;
+        this.navigationHelper = navigationHelper;
+        this.imaging = imaging;
     }
     
     @PostConstruct

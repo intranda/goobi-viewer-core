@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -19,11 +21,14 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 public class HighlightTest {
 
+    Configuration config = DataManager.getInstance().getConfiguration();
+
+    
     @Test
     public void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
         
-        Highlight object = new Highlight(new HighlightData(), thumbs);
+        Highlight object = new Highlight(new HighlightData(), thumbs, config);
         object.getData().setImageMode(ImageMode.UPLOADED_IMAGE);
         
         CMSMediaItem mediaItem = new CMSMediaItem();
@@ -39,7 +44,7 @@ public class HighlightTest {
     public void test_getCorrectImageURI_recordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
         
-        Highlight object = new Highlight(new HighlightData(), thumbs);
+        Highlight object = new Highlight(new HighlightData(), thumbs, config);
         object.getData().setImageMode(ImageMode.RECORD_REPRESENTATIVE);
         object.getData().setRecordIdentifier("PPN12345");
         
@@ -120,5 +125,5 @@ public class HighlightTest {
         assertFalse(object.isFuture(now));
         
     }
-    
+
 }
