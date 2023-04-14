@@ -95,9 +95,6 @@ var cmsJS = ( function( cms ) {
     }
     
     cms.GeoMapEditor.prototype.init = function(defaultView) {
-		console.log("init ", this);
-//        let features = JSON.parse($(this.config.featuresInput).val());
-//        features = features.filter(f => f.geometry);
         this.geoMap.init(this.getView(defaultView))
         .then( () => {
 	        
@@ -122,6 +119,7 @@ var cmsJS = ( function( cms ) {
     }
     
     cms.GeoMapEditor.prototype.addFeatureGroup = function(config, features) {
+		console.log("add features", config, features);
 		let featureGroup = this.geoMap.addFeatureGroup(config, features);
 		featureGroup.onFeatureClick
 	        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures),

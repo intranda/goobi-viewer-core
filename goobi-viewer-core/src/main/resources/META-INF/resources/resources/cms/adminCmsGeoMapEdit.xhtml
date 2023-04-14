@@ -332,8 +332,6 @@
 								<script>
 				            	$(document).ready(() => {
 				            	    if($("#geomap").length > 0) {				            	        
-					            	    mapEditor.geoMap.config.popover = "#geoMapPopoverTemplate";
-					            	    
 					            	    mapEditor.init(window.storedView);
 					            	    mapEditor.setAllowEditFeatures(true);
 
@@ -342,6 +340,7 @@
 					            	    	let config = {
 					            	    			clusterMarkers : #{featureSet.queryResultSet},
 					            	    			popoverOnHover : #{featureSet.queryResultSet},
+					            	    			popover: "#geoMapPopoverTemplate",
 					            	    			markerIcon : #{featureSet.markerAsJSON},
 					            	    			allowMovingFeatures: #{geoMapBean.isActiveFeatureSet(featureSet)},
 					            	    			<ui:fragment rendered="#{featureSet.queryResultSet}">
