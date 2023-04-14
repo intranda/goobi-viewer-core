@@ -851,7 +851,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (activeResultGroup != null) {
             currentSearch.setResultGroups(Collections.singletonList(activeResultGroup));
         }
-        
+
         currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
     }
 
@@ -1553,8 +1553,9 @@ public class SearchBean implements SearchInterface, Serializable {
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
             facets.removeFacetAction(facetQuery, "");
-            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:cmsOpenPage6", oPath.get().getCmsPage().getId(), this.getExactSearchString(),
-                    oPath.get().getCmsPage().getListPage(), this.getSortString(), this.getFacets().getActiveFacetString());
+            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:cmsOpenPage6", oPath.get().getCmsPage().getId(), getActiveResultGroupName(),
+                    this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(),
+                    this.getFacets().getActiveFacetString());
             logger.trace("redirecting to url: {}", url);
             PrettyUrlTools.redirectToUrl(url);
             return "";
