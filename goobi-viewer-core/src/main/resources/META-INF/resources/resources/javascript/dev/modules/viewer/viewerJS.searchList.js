@@ -25,7 +25,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = false;
+    var _debug = true;
     var _promise = null;
     var _childHits = null;
     var _searchListStyle = '';
@@ -130,9 +130,10 @@ var viewerJS = ( function( viewer ) {
 			}
             
             // load thumbnails before appying search list style
-            //console.log("Load search hits with style " + _searchListStyle);
+            console.log("Load search hits with style " + _searchListStyle);
             switch ( _searchListStyle ) { 
                 case 'default':
+				case 'details':
                     $( '.search-list__views button' ).removeClass( 'active' );
                     $( '[data-view="search-list-default"]' ).addClass( 'active' );
                     $( '.search-list__hits' ).removeClass( 'grid' ).removeClass( 'list-view' ).fadeTo(300,1);
