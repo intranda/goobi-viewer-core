@@ -27,8 +27,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Locale;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,6 +39,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
@@ -94,6 +98,44 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         
         CMSShortTextContent clonedTextContent = (CMSShortTextContent)cloned.getPersistentComponents().get(0).getContentItems().get(0);
         assertEquals("Entered Text", clonedTextContent.getText().getText(Locale.ENGLISH));
+    }
+
+    /**
+     * @see CMSPage#exportAsXml()
+     * @verifies create doc correctly
+     */
+    @Test
+    public void exportAsXml_shouldCreateDocCorrectly() throws Exception {
+        CMSPage page = new CMSPage();
+        page.getTitleTranslations().setValue("Title", Locale.ENGLISH);
+        page.addCategory(new CMSCategory("foo"));
+        page.addCategory(new CMSCategory("bar"));
+        
+        CMSComponent textComponent = contentManager.getComponent("text").orElse(null);
+        assertNotNull(textComponent);
+        PersistentCMSComponent textComponentInPage = page.addComponent(textComponent);
+        CMSShortTextContent textContent = (CMSShortTextContent) textComponentInPage.getContentItems().get(0);
+        textContent.getText().setText("Entered Text", Locale.ENGLISH);
+        
+        
+        Document doc = page.exportAsXml();
+        assertNotNull(doc);
+        assertEquals("cmsPage", doc.getRootElement().getName());
+        assertEquals("Title", doc.getRootElement().getChildText("title"));
+        
+        
+        assertNotNull(doc.getRootElement().getChildText("categories"));
+        List<Element> eleListCategory = doc.getRootElement().getChild("categories").getChildren("category");
+        assertNotNull(eleListCategory);
+        assertEquals(2, eleListCategory.size());
+        assertEquals("foo", eleListCategory.get(0).getText());
+        assertEquals("bar", eleListCategory.get(1).getText());
+        
+        List<Element> eleListText = doc.getRootElement().getChildren("text");
+        assertNotNull(eleListText);
+        assertEquals(1, eleListText.size());
+        assertEquals("en", eleListText.get(0).getAttributeValue("lang"));
+        assertEquals("Entered Text", eleListText.get(0).getText());
     }
 
 }

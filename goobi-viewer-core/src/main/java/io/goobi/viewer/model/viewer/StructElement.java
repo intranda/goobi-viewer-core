@@ -227,6 +227,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             if (docStructType != null) {
                 docStructType.intern();
             }
+            cmsPage = "cms_page".equals(docStructType);
             volumeNo = getMetadataValue(SolrConstants.CURRENTNO);
             volumeNoSort = getMetadataValue(SolrConstants.CURRENTNOSORT);
             dataRepository = getMetadataValue(SolrConstants.DATAREPOSITORY);
@@ -771,6 +772,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         ret.setWork(work);
         ret.setAnchor(anchor);
         ret.setVolume(volume);
+        ret.setCmsPage(cmsPage);
         ret.setLabel(label);
         ret.setMetadataFields(metadataFields);
 

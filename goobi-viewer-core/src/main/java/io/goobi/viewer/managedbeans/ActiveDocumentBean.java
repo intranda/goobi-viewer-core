@@ -1675,7 +1675,7 @@ public class ActiveDocumentBean implements Serializable {
             TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
                 String label = null;
-                String labelTemplate = "_DEFAULT";
+                String labelTemplate = StringConstants.DEFAULT_NAME;
                 if (getViewManager() != null) {
                     labelTemplate = getViewManager().getTopStructElement().getDocStructType();
                 }

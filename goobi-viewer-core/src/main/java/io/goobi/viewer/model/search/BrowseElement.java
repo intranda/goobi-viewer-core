@@ -112,6 +112,8 @@ public class BrowseElement implements Serializable {
     @JsonIgnore
     private boolean anchor = false;
     @JsonIgnore
+    private boolean cmsPage = false;
+    @JsonIgnore
     private boolean hasImages = false;
     @JsonIgnore
     private boolean hasMedia = false;
@@ -182,7 +184,8 @@ public class BrowseElement implements Serializable {
      * @param metadataList
      * @param locale
      * @param fulltext
-     * @param
+     * @param searchTerms
+     * @param thumbs
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -252,6 +255,7 @@ public class BrowseElement implements Serializable {
         }
 
         anchor = structElement.isAnchor();
+        cmsPage = structElement.isCmsPage();
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
         dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
@@ -335,7 +339,7 @@ public class BrowseElement implements Serializable {
                 && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("application")
                         || this.mimeType.startsWith("text")/*sandboxed*/);
 
-        showThumbnail = hasImages || hasMedia || isAnchor();
+        showThumbnail = hasImages || hasMedia || isAnchor() || cmsPage;
 
         //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
@@ -586,7 +590,8 @@ public class BrowseElement implements Serializable {
             boolean skip = false;
             for (Metadata md : metadataList) {
                 if (md.getLabel().equals(termsFieldName)) {
-                    continue;
+                    skip = true;
+                    break;
                 }
             }
             if (skip) {
@@ -669,7 +674,7 @@ public class BrowseElement implements Serializable {
                                     additionalMetadataList
                                             .add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", highlightedValue));
                                     existingMetadataFields.add(docFieldName);
-                                    logger.trace("added existing field: {}", docFieldName);
+                                    // logger.trace("added existing field: {}", docFieldName);
                                 }
                             }
                         }
@@ -1106,6 +1111,20 @@ public class BrowseElement implements Serializable {
      */
     public boolean isGroup() {
         return DocType.GROUP.equals(docType);
+    }
+
+    /**
+     * @return the cmsPage
+     */
+    public boolean isCmsPage() {
+        return cmsPage;
+    }
+
+    /**
+     * @param cmsPage the cmsPage to set
+     */
+    public void setCmsPage(boolean cmsPage) {
+        this.cmsPage = cmsPage;
     }
 
     /**
@@ -1553,10 +1572,9 @@ public class BrowseElement implements Serializable {
     public DocType getDocType() {
         return docType;
     }
-    
+
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
     }
-
 
 }

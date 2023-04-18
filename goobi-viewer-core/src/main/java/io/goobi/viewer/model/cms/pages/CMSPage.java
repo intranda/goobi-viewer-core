@@ -47,6 +47,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue.ValuePair;
@@ -206,6 +208,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     @Column(name = "wrapper_element_class")
     private String wrapperElementClass = "";
+
+    /** If true, text contents of this page are exported for indexing. */
+    @Column(name = "searchable", nullable = false, columnDefinition = "boolean default false")
+    private boolean searchable;
 
     @Transient
     private String sidebarElementString = null;
@@ -1048,6 +1054,20 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
+     * @return the searchable
+     */
+    public boolean isSearchable() {
+        return searchable;
+    }
+
+    /**
+     * @param searchable the searchable to set
+     */
+    public void setSearchable(boolean searchable) {
+        this.searchable = searchable;
+    }
+
+    /**
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
      *
      * @return Number of deleted files
@@ -1147,6 +1167,45 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             }
         }
         return ret;
+    }
+
+    /**
+     * Exports relevant page contents as JDOM2 document for indexing
+     * 
+     * @return {@link Document}
+     * @should create doc correctly
+     */
+    public Document exportAsXml() {
+        Document doc = new Document();
+        doc.setRootElement(new Element("cmsPage").setAttribute("id", "CMS" + getId()));
+        doc.getRootElement().addContent(new Element("title").setText(getTitle()));
+
+        // Categories
+        Element eleCategories = new Element("categories");
+        doc.getRootElement().addContent(eleCategories);
+        for (CMSCategory cat : getCategories()) {
+            eleCategories.addContent(new Element("category").setText(cat.getName()));
+        }
+
+        // Texts from content items
+        List<TranslatedText> texts = getComponents()
+                .stream()
+                .map(CMSComponent::getTranslatableContentItems)
+                .flatMap(List::stream)
+                .map(CMSContentItem::getContent)
+                .map(TranslatableCMSContent.class::cast)
+                .map(TranslatableCMSContent::getText)
+                .collect(Collectors.toList());
+
+        for (TranslatedText text : texts) {
+            for (ValuePair pair : text.getValues()) {
+                if (StringUtils.isNotBlank(pair.getValue())) {
+                    doc.getRootElement().addContent(new Element("text").setText(pair.getValue()).setAttribute("lang", pair.getLanguage()));
+                }
+            }
+        }
+
+        return doc;
     }
 
     /**

@@ -76,6 +76,7 @@ import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
@@ -120,8 +121,6 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_SEARCH_SORTING_FIELD = "search.sorting.field";
     private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
-
-    private static final String VALUE_DEFAULT = "_DEFAULT";
 
     public static final String CONFIG_FILE_NAME = "config_viewer.xml";
 
@@ -522,7 +521,7 @@ public class Configuration extends AbstractConfiguration {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
-            } else if (VALUE_DEFAULT.equals(subElement.getString(XML_PATH_ATTRIBUTE_NAME))) {
+            } else if (StringConstants.DEFAULT_NAME.equals(subElement.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 defaultTemplate = subElement;
             }
         }
@@ -3819,7 +3818,7 @@ public class Configuration extends AbstractConfiguration {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
-            } else if (VALUE_DEFAULT.equals(subElement.getString(XML_PATH_ATTRIBUTE_NAME))) {
+            } else if (StringConstants.DEFAULT_NAME.equals(subElement.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 defaultTemplate = subElement;
             }
         }
@@ -3907,7 +3906,7 @@ public class Configuration extends AbstractConfiguration {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;
                     break;
-                } else if (VALUE_DEFAULT.equals(templateName)) {
+                } else if (StringConstants.DEFAULT_NAME.equals(templateName)) {
                     defaultTemplate = subElement;
                 }
             }
@@ -3956,7 +3955,7 @@ public class Configuration extends AbstractConfiguration {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;
                     break;
-                } else if (VALUE_DEFAULT.equals(templateName)) {
+                } else if (StringConstants.DEFAULT_NAME.equals(templateName)) {
                     defaultTemplate = subElement;
                 }
             }
@@ -5178,7 +5177,7 @@ public class Configuration extends AbstractConfiguration {
             if (name.equalsIgnoreCase(subConf.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 conf = subConf;
                 break;
-            } else if (VALUE_DEFAULT.equalsIgnoreCase(subConf.getString(XML_PATH_ATTRIBUTE_NAME))) {
+            } else if (StringConstants.DEFAULT_NAME.equalsIgnoreCase(subConf.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 defaultConf = subConf;
             }
         }
@@ -5315,6 +5314,42 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getAllowedFacetsForExpandQuery() {
         return getLocalList("search.useFacetsAsExpandQuery.facetQuery");
+    }
+
+    /**
+     *
+     * @return
+     * @should return correct value
+     */
+    public boolean isSearchResultGroupsEnabled() {
+        return getLocalBoolean("search.resultGroups[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all configured elements
+     */
+    public List<SearchResultGroup> getSearchResultGroups() {
+        List<SearchResultGroup> ret = new ArrayList<>();
+
+        List<HierarchicalConfiguration<ImmutableNode>> groupNodes = getLocalConfigurationsAt("search.resultGroups.group");
+        for (HierarchicalConfiguration<ImmutableNode> groupNode : groupNodes) {
+            String name = groupNode.getString(XML_PATH_ATTRIBUTE_NAME);
+            if (StringUtils.isBlank(name)) {
+                logger.warn("search/resultGroups/group/@name may not be empty.");
+                continue;
+            }
+            String query = groupNode.getString("[@query]");
+            if (StringUtils.isBlank(query)) {
+                logger.warn("search/resultGroups/group/@query may not be empty.");
+                continue;
+            }
+            int previewHitCount = groupNode.getInt("[@previewHitCount]", 10);
+            ret.add(new SearchResultGroup(name, query, previewHitCount));
+        }
+
+        return ret;
     }
 
     /**

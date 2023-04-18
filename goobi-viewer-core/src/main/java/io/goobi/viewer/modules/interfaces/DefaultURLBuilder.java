@@ -73,6 +73,8 @@ public class DefaultURLBuilder implements IURLBuilder {
                     url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType);
                     break;
             }
+        } else if (ele.isCmsPage() && ele.getPi().startsWith("CMS")) {
+            url = "cms/" + ele.getPi().substring(3) + "/";
         } else {
             PageType pageType = getPageType(ele);
             url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType);

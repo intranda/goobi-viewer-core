@@ -3,6 +3,7 @@ package io.goobi.viewer.controller;
 public class StringConstants {
 
     public static final String DEFAULT = "default";
+    public static final String DEFAULT_NAME = "_DEFAULT";
 
     public static final String MIMETYPE_TEXT_PLAIN = "text/plain";
 

@@ -55,7 +55,7 @@
     <annotationFolder>annotations</annotationFolder>
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
-	<hotfolder>hotfolder</hotfolder>
+	<hotfolder>target/hotfolder</hotfolder>
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
     <!-- umlautsFile: location of the goobi_opacUmlaut.txt file for process title creation -->
@@ -527,6 +527,13 @@
             <facetQuery>(FACET_DC:"foo" OR FACET_DC:foo.*)</facetQuery>
             <facetQuery>(FACET_DC:"bar" OR FACET_DC:bar.*)</facetQuery>
         </useFacetsAsExpandQuery>
+        
+        <!--  -->
+        <resultGroups enabled="true">
+            <group name="lido_objects" query="SOURCEDOCFORMAT:LIDO" />
+            <group name="monographs" query="DOCSTRCT:monograph" />
+            <group name="stories" query="+DOCSTRCT:&quot;cms_page&quot; +MD_CATEGORY:&quot;story&quot;" />
+        </resultGroups>
 	</search>
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->

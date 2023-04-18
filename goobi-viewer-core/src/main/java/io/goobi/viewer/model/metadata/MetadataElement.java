@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
@@ -50,7 +51,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class MetadataElement implements Serializable {
 
     private static final long serialVersionUID = 222226787503688100L;
-    
+
     /**
      * Wrapper class for the metadata type numerical value. Needed only for retrieving the proper message key for each type...
      */
@@ -61,7 +62,6 @@ public class MetadataElement implements Serializable {
         private static final String KEY_ROOT = "metadataTab";
 
         private int type;
-        
 
         public MetadataType() {
             this.type = 0;
@@ -242,7 +242,7 @@ public class MetadataElement implements Serializable {
         List<Metadata> sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(docStructType);
         if (sidebarMetadataTempList.isEmpty()) {
             // Use default if no elements are defined for the current docstruct
-            sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
+            sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(StringConstants.DEFAULT_NAME);
         }
         if (sidebarMetadataTempList.isEmpty()) {
             return this;
