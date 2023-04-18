@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.exceptions.IllegalArgumentException;
@@ -29,10 +32,10 @@ import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.Point;
 import io.goobi.viewer.model.maps.Polygon;
-import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -60,13 +63,15 @@ public class GeoCoordinateConverter {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, List<String> coordinateFields, String markerTitleField)
+    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, List<String> coordinateFields, String markerTitleField, boolean aggregateResults)
             throws PresentationException, IndexUnreachableException {
-        List<SolrDocument> docs = StringUtils.isNotBlank(query) ? getSolrDocuments(query, filterQueries, coordinateFields, markerTitleField) : Collections.emptyList();
+        Map<SolrDocument, SolrDocumentList> docs = StringUtils.isNotBlank(query) ? getSolrDocuments(query, filterQueries, coordinateFields, markerTitleField, aggregateResults) : Collections.emptyMap();
         List<GeoMapFeature> features = new ArrayList<>();
-        for (SolrDocument doc : docs) {
+        for (Entry<SolrDocument, SolrDocumentList> entry : docs.entrySet()) {
+            SolrDocument doc = entry.getKey();
+            SolrDocumentList children = entry.getValue();
             for (String field : coordinateFields) {
-                Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, field, markerTitleField, null);
+                Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, children, field, markerTitleField, null);
                 features.addAll(tempFeatures);
             }
         }
@@ -87,9 +92,8 @@ public class GeoCoordinateConverter {
         return features;
     }
 
-    static List<SolrDocument> getSolrDocuments(String query, List<String> filterQueries, List<String> coordinateFields, String markerTitleField)
+    static Map<SolrDocument, SolrDocumentList> getSolrDocuments(String query, List<String> filterQueries, List<String> coordinateFields, String markerTitleField, boolean aggregateResults)
             throws PresentationException, IndexUnreachableException {
-        List<SolrDocument> docs;
         List<String> fieldList = new ArrayList<>(coordinateFields);
         fieldList.add(markerTitleField);
         String coordinateFieldsQuery = coordinateFields.stream().map(s -> s + ":*").collect(Collectors.joining(" "));
@@ -98,8 +102,25 @@ public class GeoCoordinateConverter {
             query = String.format("+(%s)", query);
         }
         String finalQuery = String.format("%s +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
-        docs = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null, fieldList, filterQueries, null).getResults();
-        return docs;
+        Map<String, String> params = new HashMap<>();
+        if(aggregateResults) {            
+            String expandQuery = "DOCTYPE:METADATA";
+            params.putAll(SearchHelper.getExpandQueryParams(expandQuery));
+        }
+        QueryResponse response = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null, aggregateResults ? null : fieldList, filterQueries, params);
+        SolrDocumentList docs = response.getResults();
+        Map<String, SolrDocumentList> expandedResults = response.getExpandedResults();
+        if(expandedResults == null) {
+            return docs.stream().collect(Collectors.toMap(doc -> doc, doc -> new SolrDocumentList()));
+        } else {     
+            for (SolrDocument doc : docs) {
+                String pi = doc.getFieldValue(SolrConstants.PI).toString();
+                String iddoc = doc.getFieldValue(SolrConstants.IDDOC).toString();
+                SolrDocumentList children = expandedResults.get(pi);
+                System.out.println(children);
+            }
+            return docs.stream().collect(Collectors.toMap(doc -> doc, doc -> expandedResults.getOrDefault(doc.getFieldValue(SolrConstants.PI), new SolrDocumentList())));
+        }
     }
     
     /**
@@ -109,11 +130,13 @@ public class GeoCoordinateConverter {
      * @param titleField    solr field containing a title for the coordinates
      * @param descriptionField    solr field containing a description for the coordinates
      */
-    public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField, String titleField, String descriptionField) {
+    public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, SolrDocumentList children, String metadataField, String titleField, String descriptionField) {
         String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
         String desc = StringUtils.isBlank(descriptionField) ? null : SolrTools.getSingleFieldStringValue(doc, descriptionField);
         List<GeoMapFeature> docFeatures = new ArrayList<>();
-        List<String> points = SolrTools.getMetadataValues(doc, metadataField);
+        List<String> points = new ArrayList<>();
+        points.addAll(SolrTools.getMetadataValues(doc, metadataField));
+        points.addAll(children.stream().map(c -> SolrTools.getMetadataValues(c, metadataField)).flatMap(List::stream).collect(Collectors.toList()));
         for (String point : points) {
             try {
                 if (point.matches(POINT_LAT_LNG_PATTERN)) { //NOSONAR  no catastrophic backtracking detected
@@ -159,8 +182,16 @@ public class GeoCoordinateConverter {
                 logger.error("Encountered non-json feature: {}", point);
             }
         }
+                
+        //add metadata property
+        for (String field : doc.getFieldNames()) {
+            Map<String, List<String>> SolrTools.getFieldValueMap(doc)
+        }
+        
         return docFeatures;
     }
+    
+    public void 
     
     /**
      * Parse geo-coordinates from all fields of the given name fromt the given list of SOLR documents

@@ -21,11 +21,23 @@
  */
 package io.goobi.viewer.model.maps;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import io.goobi.viewer.controller.JsonTools;
 
 /**
  * @author florian
@@ -40,6 +52,7 @@ public class GeoMapFeature {
     private int count = 1;
     //This is used to identify the feature with a certain document, specifically a LOGID of a TOC element
     private String documentId = null;
+    private Map<String, List<IMetadataValue>> metadata = new HashMap<>();
 
     public GeoMapFeature() {
     }
@@ -135,6 +148,25 @@ public class GeoMapFeature {
         this.count = count;
     }
 
+    /**
+     * Adds the metadata entry of the given name if none exists yet; otherwise add the given values to the list of values 
+     * mapped to the given metadata name
+     * @param name
+     * @param values
+     */
+    public void addMetadata(String name, List<IMetadataValue> values) {
+        List<IMetadataValue> existingValues = this.metadata.get(name);
+        if(existingValues == null) {
+            existingValues = new ArrayList<>();
+            this.metadata.put(name, existingValues);            
+        }
+        existingValues.addAll(values);
+    }
+        
+    public Map<String, List<IMetadataValue>> getMetadata() {
+        return Collections.unmodifiableMap(metadata);
+    }
+    
     public JSONObject getJsonObject() {
 
         JSONObject object = new JSONObject(this.json);
@@ -156,6 +188,23 @@ public class GeoMapFeature {
         }
         if (StringUtils.isNotBlank(this.documentId)) {
             properties.put("documentId", this.documentId);
+        }
+        if(!this.metadata.isEmpty()) {
+            JSONObject jsonMetadata = new JSONObject();
+            for (Entry<String, List<IMetadataValue>> entry : this.metadata.entrySet()) {
+                try {                    
+                    String name = entry.getKey();
+                    List<IMetadataValue> values = entry.getValue();
+                    JSONArray array = new JSONArray();
+                    for (IMetadataValue value : values) {
+                        JSONObject o = JsonTools.getAsJson(value);
+                        array.put(o);
+                    }
+                    jsonMetadata.put(name, array);
+                } catch(JsonProcessingException e) {
+                    //ignore
+                }
+            }
         }
         properties.put("count", this.count);
         return object;

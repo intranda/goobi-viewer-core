@@ -145,6 +145,11 @@ public class JsonTools {
         }
         return object;
     }
+    
+    public static JSONObject getAsJson(Object object) throws JsonProcessingException {
+        String json = mapper.writeValueAsString(object);
+        return new JSONObject(json);
+    }
 
     /**
      * @param locale

@@ -81,6 +81,8 @@ public class SolrTools {
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
 
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
+    private static final String SUFFIX_LANGUAGE_REGEX = SolrConstants.MIDFIX_LANG + "([A-Z]{2,3})$";
+
 
     /**
      * 
@@ -498,7 +500,7 @@ public class SolrTools {
      * @param fieldName
      * @return
      */
-    private static boolean isLanguageCodedField(String fieldName) {
+    public static boolean isLanguageCodedField(String fieldName) {
         return StringUtils.isNotBlank(fieldName) && fieldName.matches(MULTILANGUAGE_FIELD_REGEX);
     }
 
@@ -833,5 +835,35 @@ public class SolrTools {
         }
 
         return query.replaceAll("[{}]", "").replace("!join from=PI_TOPSTRUCT to=PI", "{!join from=PI_TOPSTRUCT to=PI}");
+    }
+    
+    public static String getBaseFieldName(String fieldName) {
+        if(StringUtils.isNotBlank(fieldName)) {
+            return fieldName.replaceAll(SUFFIX_LANGUAGE_REGEX, "");
+        } else {
+            return fieldName;
+        }
+    }
+
+    public static String getLanguage(String fieldName) {
+        if(StringUtils.isNotBlank(fieldName)) {
+            Matcher matcher = Pattern.compile(SUFFIX_LANGUAGE_REGEX).matcher(fieldName);
+            if(matcher.find()) {
+                return matcher.group(1);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    
+    public static Locale getLocale(String fieldName) {
+        String language = getLanguage(fieldName);
+        if(StringUtils.isNotBlank(language)) {
+            return Locale.forLanguageTag(language.toLowerCase());
+        } else {
+            return null;
+        }
     }
 }

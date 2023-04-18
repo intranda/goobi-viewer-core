@@ -29,6 +29,8 @@ public class SolrFeatureSet extends FeatureSet {
     
     @Column(name = "solr_query")
     private String solrQuery = null;
+    
+    private boolean aggregateResults = true;
 
     /**
      * SOLR-Field to create the marker title from if the features are generated from a SOLR query
@@ -77,7 +79,7 @@ public class SolrFeatureSet extends FeatureSet {
         }
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
         Collection<GeoMapFeature> featuresFromSolr =
-                GeoCoordinateConverter.getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), coordinateFields, getMarkerTitleField());
+                GeoCoordinateConverter.getFeaturesFromSolrQuery(getSolrQuery(isAggregateResults()), Collections.emptyList(), coordinateFields, getMarkerTitleField(), isAggregateResults());
         String ret = featuresFromSolr.stream()
                 .distinct()
                 .map(GeoMapFeature::getJsonObject)
@@ -88,10 +90,16 @@ public class SolrFeatureSet extends FeatureSet {
 
     }
 
-
-    
     public String getSolrQuery() {
-        return solrQuery;
+        return this.solrQuery;
+    }
+    
+    public String getSolrQuery(boolean aggregateResults) {
+        if(aggregateResults) {
+            return String.format("{!join from=PI_TOPSTRUCT to=PI} %s", this.solrQuery);
+        } else {            
+            return solrQuery;
+        }
     }
     
     public String getSolrQueryEncoded() {
@@ -132,5 +140,13 @@ public class SolrFeatureSet extends FeatureSet {
     @Override
     public boolean isQueryResultSet() {
         return true;
+    }
+    
+    public boolean isAggregateResults() {
+        return aggregateResults;
+    }
+    
+    public void setAggregateResults(boolean aggregateResults) {
+        this.aggregateResults = aggregateResults;
     }
 }

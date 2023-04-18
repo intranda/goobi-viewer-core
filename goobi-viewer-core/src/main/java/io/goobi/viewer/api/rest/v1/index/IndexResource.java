@@ -361,7 +361,7 @@ public class IndexResource {
         }
 
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
-        String objects = GeoCoordinateConverter.getFeaturesFromSolrQuery(finalQuery, facetQueries, coordinateFields, labelField)
+        String objects = GeoCoordinateConverter.getFeaturesFromSolrQuery(finalQuery, facetQueries, coordinateFields, labelField, false)
                 .stream()
                 .map(GeoMapFeature::getJsonObject)
                 .map(Object::toString)
