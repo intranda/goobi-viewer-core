@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.metadata;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +37,7 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -47,7 +49,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class ComplexMetadata {
 
-    private static final List<String> IGNORE_METADATA_FIELDS = List.of(SolrConstants.DOCTYPE, SolrConstants.LABEL, SolrConstants.METADATATYPE, SolrConstants.IDDOC_OWNER, SolrConstants.PI_TOPSTRUCT, SolrConstants.GROUPFIELD);
+    private static final List<String> IGNORE_METADATA_FIELDS = List.of(SolrConstants.DOCTYPE, SolrConstants.LABEL, SolrConstants.METADATATYPE, SolrConstants.IDDOC_OWNER, SolrConstants.PI_TOPSTRUCT, SolrConstants.GROUPFIELD, SolrConstants.IDDOC, "MD_REFID");
     private static final String IGNORE_METADATA_REGEX = String.format("(%s|%s).*", SolrConstants.PREFIX_FACET, SolrConstants.PREFIX_SORT);
     
     /**
@@ -62,6 +64,12 @@ public class ComplexMetadata {
      * IDDOC_OWNER
      */
     private final Long ownerId;
+    
+    /**
+     * IDDOC
+     */
+    private final Long id;
+    
     /**
      * PI_TOPSTRUCT
      */
@@ -77,6 +85,7 @@ public class ComplexMetadata {
         this.type = SolrTools.getSingleFieldStringValue(doc, SolrConstants.METADATATYPE);
         this.ownerId = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC_OWNER)).map(Long.class::cast).orElse(null);
         this.topStructIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
+        this.id = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Long.class::cast).orElse(null);
     }
     
     public static ComplexMetadata getFromSolrDoc(SolrDocument doc) {
@@ -110,21 +119,20 @@ public class ComplexMetadata {
             if(SolrTools.isLanguageCodedField(fieldName)) {
                 baseFieldName = SolrTools.getBaseFieldName(fieldName);
                 locale = SolrTools.getLocale(fieldName);
-            }
-            List<IMetadataValue> mdValues = metadata.get(baseFieldName);
-            if(mdValues == null) {
-                mdValues = new ArrayList<>();
-                metadata.put(baseFieldName, mdValues);
+            } else if("VALUE".equals(fieldName)) {
+                baseFieldName = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
             }
             for (String strValue : values) {
-                IMetadataValue existingValue = metadata.get(baseFieldName).get(values.indexOf(strValue));
+                int valueIndex = values.indexOf(strValue);
+                List<IMetadataValue> existingValues = metadata.get(baseFieldName);
+                IMetadataValue existingValue = existingValues == null || existingValues.size() <= valueIndex ? null : existingValues.get(valueIndex);
                 if(existingValue == null) {
                     if(locale == null) {
                         IMetadataValue value = new SimpleMetadataValue(strValue);
-                        metadata.get(baseFieldName).add(value);
+                        metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
                     } else {
-                        IMetadataValue value = new MultiLanguageMetadataValue(Map.of(locale.getLanguage(), strValue));
-                        metadata.get(baseFieldName).add(value);
+                        IMetadataValue value = new MultiLanguageMetadataValue(new HashMap<>(Map.of(locale.getLanguage(), strValue)));
+                        metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
                     }
                 } else {
                     if(locale == null) {                        
@@ -155,5 +163,33 @@ public class ComplexMetadata {
         return topStructIdentifier;
     }
     
+    public Long getId() {
+        return id;
+    }
+    
+    public Map<String, List<IMetadataValue>> getMetadata() {
+        return Collections.unmodifiableMap(metadata);
+    }
+    
+    public List<String> getMetadataFields() {
+        return new ArrayList<>(metadata.keySet());
+    }
+    
+    public List<IMetadataValue> getValues(String fieldName) {
+        return this.metadata.get(fieldName);
+    }
+    
+    public IMetadataValue getFirstValue(String fieldName) {
+        return Optional.ofNullable(getValues(fieldName)).filter(list -> !list.isEmpty()).map(list -> list.get(0)).orElse(null);
+    }
+    
+    public List<String> getValues(String fieldName, Locale locale) {
+        return Optional.ofNullable(getValues(fieldName)).orElse(Collections.emptyList()).stream().map(v -> v.getValueOrFallback(locale)).collect(Collectors.toList());
+    }
+    
+    public String getFirstValue(String fieldName, Locale locale) {
+        return Optional.ofNullable(getValues(fieldName, locale)).filter(list -> !list.isEmpty()).map(list -> list.get(0)).orElse("");
+
+    }
 
 }
