@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -32,14 +36,16 @@ import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.Point;
 import io.goobi.viewer.model.maps.Polygon;
+import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Utility methods for converting geo-coordinated between different formats
+ * 
  * @author florian
  *
  */
@@ -48,24 +54,28 @@ public class GeoCoordinateConverter {
     private static final Logger logger = LogManager.getLogger(GeoCoordinateConverter.class);
     protected static final String POINT_LAT_LNG_PATTERN = "([\\dE.-]+)[\\s/]*([\\dE.-]+)";
     protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\dE.-]+[\\s/]*[\\dE.-]+[,\\s]*)+\\)\\)"; //NOSONAR
-    
+    private static final String METADATA_TO_IGNORE_REGEX = "FACET_.*|NORM_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|";
+
     private GeoCoordinateConverter() {
-        
+
     }
-    
+
     /**
      * Collect all point coordinate in the given coordinate fields from solr documents returned by the given solr query
-     * @param query     Solr query to get documents
-     * @param filterQueries     filter for solr query
-     * @param coordinateFields  fields containing the coordinate points to collect
-     * @param markerTitleField  solr field containing a title for the coordinates
-     * @return  a list of {@link GeoMapFeature} 
+     * 
+     * @param query Solr query to get documents
+     * @param filterQueries filter for solr query
+     * @param coordinateFields fields containing the coordinate points to collect
+     * @param markerTitleField solr field containing a title for the coordinates
+     * @return a list of {@link GeoMapFeature}
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, List<String> coordinateFields, String markerTitleField, boolean aggregateResults)
+    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, List<String> coordinateFields,
+            String markerTitleField, boolean aggregateResults)
             throws PresentationException, IndexUnreachableException {
-        Map<SolrDocument, SolrDocumentList> docs = StringUtils.isNotBlank(query) ? getSolrDocuments(query, filterQueries, coordinateFields, markerTitleField, aggregateResults) : Collections.emptyMap();
+        Map<SolrDocument, SolrDocumentList> docs = StringUtils.isNotBlank(query)
+                ? getSolrDocuments(query, filterQueries, coordinateFields, markerTitleField, aggregateResults) : Collections.emptyMap();
         List<GeoMapFeature> features = new ArrayList<>();
         for (Entry<SolrDocument, SolrDocumentList> entry : docs.entrySet()) {
             SolrDocument doc = entry.getKey();
@@ -92,7 +102,8 @@ public class GeoCoordinateConverter {
         return features;
     }
 
-    static Map<SolrDocument, SolrDocumentList> getSolrDocuments(String query, List<String> filterQueries, List<String> coordinateFields, String markerTitleField, boolean aggregateResults)
+    static Map<SolrDocument, SolrDocumentList> getSolrDocuments(String query, List<String> filterQueries, List<String> coordinateFields,
+            String markerTitleField, boolean aggregateResults)
             throws PresentationException, IndexUnreachableException {
         List<String> fieldList = new ArrayList<>(coordinateFields);
         fieldList.add(markerTitleField);
@@ -103,34 +114,34 @@ public class GeoCoordinateConverter {
         }
         String finalQuery = String.format("%s +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
         Map<String, String> params = new HashMap<>();
-        if(aggregateResults) {            
-            String expandQuery = "DOCTYPE:METADATA";
+        if (aggregateResults) {
+            String expandQuery = query.replaceAll("\\{\\!join[^}]+}", "");
             params.putAll(SearchHelper.getExpandQueryParams(expandQuery));
         }
-        QueryResponse response = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null, aggregateResults ? null : fieldList, filterQueries, params);
+        QueryResponse response = DataManager.getInstance()
+                .getSearchIndex()
+                .search(finalQuery, 0, 10_000, null, null, aggregateResults ? null : fieldList, filterQueries, params);
         SolrDocumentList docs = response.getResults();
         Map<String, SolrDocumentList> expandedResults = response.getExpandedResults();
-        if(expandedResults == null) {
+        if (expandedResults == null) {
             return docs.stream().collect(Collectors.toMap(doc -> doc, doc -> new SolrDocumentList()));
-        } else {     
-            for (SolrDocument doc : docs) {
-                String pi = doc.getFieldValue(SolrConstants.PI).toString();
-                String iddoc = doc.getFieldValue(SolrConstants.IDDOC).toString();
-                SolrDocumentList children = expandedResults.get(pi);
-                System.out.println(children);
-            }
-            return docs.stream().collect(Collectors.toMap(doc -> doc, doc -> expandedResults.getOrDefault(doc.getFieldValue(SolrConstants.PI), new SolrDocumentList())));
+        } else {
+            return docs.stream()
+                    .collect(Collectors.toMap(doc -> doc,
+                            doc -> expandedResults.getOrDefault(doc.getFieldValue(SolrConstants.PI), new SolrDocumentList())));
         }
     }
-    
+
     /**
      * Collect all point coordinate in the given metadata field within the given solr document
-     * @param doc   the document containing the coordinates
-     * @param metadataField     The name of the solr field to search in
-     * @param titleField    solr field containing a title for the coordinates
-     * @param descriptionField    solr field containing a description for the coordinates
+     * 
+     * @param doc the document containing the coordinates
+     * @param metadataField The name of the solr field to search in
+     * @param titleField solr field containing a title for the coordinates
+     * @param descriptionField solr field containing a description for the coordinates
      */
-    public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, SolrDocumentList children, String metadataField, String titleField, String descriptionField) {
+    public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, SolrDocumentList children, String metadataField, String titleField,
+            String descriptionField) {
         String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
         String desc = StringUtils.isBlank(descriptionField) ? null : SolrTools.getSingleFieldStringValue(doc, descriptionField);
         List<GeoMapFeature> docFeatures = new ArrayList<>();
@@ -141,8 +152,8 @@ public class GeoCoordinateConverter {
             try {
                 if (point.matches(POINT_LAT_LNG_PATTERN)) { //NOSONAR  no catastrophic backtracking detected
                     GeoMapFeature feature = new GeoMapFeature();
-                    feature.setTitle(title);
-                    feature.setDescription(desc);
+                    feature.setTitle(new SimpleMetadataValue(title));
+                    feature.setDescription(new SimpleMetadataValue(desc));
 
                     Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
                     matcher.find();
@@ -157,10 +168,10 @@ public class GeoCoordinateConverter {
                     json.put("geometry", geom);
                     feature.setJson(json.toString());
                     docFeatures.add(feature);
-                } else if(point.matches(POLYGON_LAT_LNG_PATTERN)){
+                } else if (point.matches(POLYGON_LAT_LNG_PATTERN)) {
                     GeoMapFeature feature = new GeoMapFeature();
-                    feature.setTitle(title);
-                    feature.setDescription(desc);
+                    feature.setTitle(new SimpleMetadataValue(title));
+                    feature.setDescription(new SimpleMetadataValue(desc));
 
                     Matcher matcher = Pattern.compile(POLYGON_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
                     matcher.find();
@@ -182,22 +193,34 @@ public class GeoCoordinateConverter {
                 logger.error("Encountered non-json feature: {}", point);
             }
         }
-                
-        //add metadata property
-        for (String field : doc.getFieldNames()) {
-            Map<String, List<String>> SolrTools.getFieldValueMap(doc)
-        }
+
+        addMetadataToFeature(doc, children, docFeatures);
+        docFeatures.forEach(f -> {
+            List<IMetadataValue> titleValues = f.getMetadata().get(titleField);
+            if(!titleValues.isEmpty()) {
+                f.setTitle(titleValues.get(0));                
+            }
+        });
+        
         
         return docFeatures;
     }
-    
-    public void 
-    
+
+    private static void addMetadataToFeature(SolrDocument doc, SolrDocumentList children, List<GeoMapFeature> docFeatures) {
+            Map<String, List<IMetadataValue>> translatedMetadata = SolrTools.getTranslatedMetadata(doc, name -> !name.matches(METADATA_TO_IGNORE_REGEX));
+            docFeatures.forEach(f -> translatedMetadata.entrySet().forEach(e -> f.addMetadata(e.getKey(), e.getValue())));
+
+            List<ComplexMetadata> childDocs = ComplexMetadata.getMetadataFromDocuments(children);
+            List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).collect(Collectors.toList());
+            docFeatures.forEach(f -> allChildDocValues.forEach(entry -> f.addMetadata(entry.getKey(), entry.getValue())));
+    }
+
     /**
      * Parse geo-coordinates from all fields of the given name fromt the given list of SOLR documents
-     * @param solrFieldName     Name of the SOLR fields to parse
-     * @param results   Documents to parse
-     * @return  A list of geo-coordinates as {@link Location}
+     * 
+     * @param solrFieldName Name of the SOLR fields to parse
+     * @param results Documents to parse
+     * @return A list of geo-coordinates as {@link Location}
      */
     public static List<Location> getLocations(String solrFieldName, SolrDocumentList results) {
         List<Location> locations = new ArrayList<>();
@@ -225,8 +248,9 @@ public class GeoCoordinateConverter {
 
     /**
      * Parse geo-coordinates from the value of a SOLR field
+     * 
      * @param a SOLR field value
-     * @return  a list of {@link IArea} representing the locations from the given value
+     * @return a list of {@link IArea} representing the locations from the given value
      */
     public static List<IArea> getLocations(Object o) {
         List<IArea> locs = new ArrayList<>();
@@ -287,9 +311,7 @@ public class GeoCoordinateConverter {
         }
         throw new IllegalArgumentException(String.format("Unable to parse objects %s, %s to double array", x, y));
     }
-    
 
-    
     private static List<GeoMapFeature> createFeaturesFromJson(String title, String desc, String point) {
         List<GeoMapFeature> features = new ArrayList<>();
         JSONObject json = new JSONObject(point);
@@ -302,8 +324,8 @@ public class GeoCoordinateConverter {
                         JSONObject jsonObj = (JSONObject) f;
                         String jsonString = jsonObj.toString();
                         GeoMapFeature feature = new GeoMapFeature(jsonString);
-                        feature.setTitle(title);
-                        feature.setDescription(desc);
+                        feature.setTitle(new SimpleMetadataValue(title));
+                        feature.setDescription(new SimpleMetadataValue(desc));
                         if (!features.contains(feature)) {
                             features.add(feature);
                         }
@@ -312,11 +334,11 @@ public class GeoCoordinateConverter {
             }
         } else if ("Feature".equalsIgnoreCase(type)) {
             GeoMapFeature feature = new GeoMapFeature(json.toString());
-            feature.setTitle(title);
-            feature.setDescription(desc);
+            feature.setTitle(new SimpleMetadataValue(title));
+            feature.setDescription(new SimpleMetadataValue(desc));
             features.add(feature);
         }
         return features;
     }
-    
+
 }

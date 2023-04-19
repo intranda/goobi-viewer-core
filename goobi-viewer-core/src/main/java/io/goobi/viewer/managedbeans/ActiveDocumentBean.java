@@ -2350,7 +2350,7 @@ public class ActiveDocumentBean implements Serializable {
                     for (String coordinateField : coordinateFields) {
                         String docType = solrDocument.getFieldValue(SolrConstants.DOCTYPE).toString();
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
-                        docFeatures.addAll(GeoCoordinateConverter.getGeojsonPoints(solrDocument, coordinateField, labelField, null));
+                        docFeatures.addAll(GeoCoordinateConverter.getGeojsonPoints(solrDocument, null, coordinateField, labelField, null));
                     }
                     if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT")) {
                         docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));

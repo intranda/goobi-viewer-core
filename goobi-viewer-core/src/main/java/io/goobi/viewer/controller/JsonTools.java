@@ -146,9 +146,33 @@ public class JsonTools {
         return object;
     }
     
-    public static JSONObject getAsJson(Object object) throws JsonProcessingException {
-        String json = mapper.writeValueAsString(object);
-        return new JSONObject(json);
+    public static String getAsJson(Object object) throws JsonProcessingException {
+        return mapper.writeValueAsString(object);
+    }
+    
+
+    public static Object getAsObjectForJson(Object value) {
+        if(value == null) {
+            return null;
+        }
+        try {
+            String s = getAsJson(value);
+            if(StringUtils.isBlank(s)) {
+                return null;
+            } else if(s.startsWith("{")) {
+                return new JSONObject(s);
+            } else if(s.matches("(?i)true|false")) {
+                return Boolean.parseBoolean(s);
+            } else if(s.matches("\\d+")) {
+                return Long.parseLong(s);
+            } else if(s.matches("[\\d.]+")) {
+                return Double.parseDouble(s);
+            } else {
+                return s;
+            }
+        } catch (JsonProcessingException e) {
+            return value.toString();
+        }
     }
 
     /**

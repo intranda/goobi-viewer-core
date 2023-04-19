@@ -35,9 +35,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.gson.JsonObject;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
@@ -45,8 +47,8 @@ import io.goobi.viewer.controller.JsonTools;
  */
 public class GeoMapFeature {
 
-    private String title;
-    private String description;
+    private IMetadataValue title;
+    private IMetadataValue description;
     private String link;
     private String json;
     private int count = 1;
@@ -67,28 +69,28 @@ public class GeoMapFeature {
     /**
      * @return the title
      */
-    public String getTitle() {
+    public IMetadataValue getTitle() {
         return title;
     }
 
     /**
      * @param title the title to set
      */
-    public void setTitle(String title) {
+    public void setTitle(IMetadataValue title) {
         this.title = title;
     }
 
     /**
      * @return the description
      */
-    public String getDescription() {
+    public IMetadataValue getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(IMetadataValue description) {
         this.description = description;
     }
 
@@ -177,11 +179,11 @@ public class GeoMapFeature {
             properties = new JSONObject();
             object.put("properties", properties);
         }
-        if (StringUtils.isNotBlank(this.title)) {
-            properties.put("title", this.title);
+        if (this.title != null && !this.title.isEmpty()) {
+            properties.put("title", JsonTools.getAsObjectForJson(this.title));
         }
-        if (StringUtils.isNotBlank(this.description)) {
-            properties.put("description", this.description);
+        if (this.description != null && !this.description.isEmpty()) {
+            properties.put("description", JsonTools.getAsObjectForJson(this.description));
         }
         if (StringUtils.isNotBlank(this.link)) {
             properties.put("link", this.link);
@@ -191,14 +193,19 @@ public class GeoMapFeature {
         }
         if(!this.metadata.isEmpty()) {
             JSONObject jsonMetadata = new JSONObject();
+            properties.put("metadata", jsonMetadata);
             for (Entry<String, List<IMetadataValue>> entry : this.metadata.entrySet()) {
                 try {                    
                     String name = entry.getKey();
                     List<IMetadataValue> values = entry.getValue();
                     JSONArray array = new JSONArray();
                     for (IMetadataValue value : values) {
-                        JSONObject o = JsonTools.getAsJson(value);
-                        array.put(o);
+                        String o = JsonTools.getAsJson(value);
+                        if(o.startsWith("{")) {
+                            array.put(new JSONObject(o));
+                        } else {                            
+                            array.put(o);
+                        }
                     }
                     jsonMetadata.put(name, array);
                 } catch(JsonProcessingException e) {

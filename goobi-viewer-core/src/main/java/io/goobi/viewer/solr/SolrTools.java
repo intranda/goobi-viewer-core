@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -46,7 +47,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
@@ -55,6 +55,7 @@ import org.jdom2.JDOMException;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
@@ -866,4 +867,46 @@ public class SolrTools {
             return null;
         }
     }
+    
+    public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Function<String, Boolean> fieldNameFilter) {
+        return getTranslatedMetadata(doc, new HashMap<>(), null, fieldNameFilter);
+    }
+
+    
+    public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata, Locale locale, Function<String, Boolean> fieldNameFilter) {
+//        List<String> fieldNames = doc.getFieldNames().stream().filter(name -> !IGNORE_METADATA_FIELDS.contains(name)).filter(name -> !name.matches(IGNORE_METADATA_REGEX)).collect(Collectors.toList());
+        List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).collect(Collectors.toList());
+        for (String fieldName : fieldNames) {
+            List<String> values = SolrTools.getMetadataValues(doc, fieldName);
+            String baseFieldName = fieldName;
+            if(SolrTools.isLanguageCodedField(fieldName)) {
+                baseFieldName = SolrTools.getBaseFieldName(fieldName);
+                locale = SolrTools.getLocale(fieldName);
+            } else if("MD_VALUE".equals(fieldName)) {
+                baseFieldName = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
+            }
+            for (String strValue : values) {
+                int valueIndex = values.indexOf(strValue);
+                List<IMetadataValue> existingValues = metadata.get(baseFieldName);
+                IMetadataValue existingValue = existingValues == null || existingValues.size() <= valueIndex ? null : existingValues.get(valueIndex);
+                if(existingValue == null) {
+                    if(locale == null) {
+                        IMetadataValue value = new SimpleMetadataValue(strValue);
+                        metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
+                    } else {
+                        IMetadataValue value = new MultiLanguageMetadataValue(new HashMap<>(Map.of(locale.getLanguage(), strValue)));
+                        metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
+                    }
+                } else {
+                    if(locale == null) {                        
+                        existingValue.setValue(strValue);
+                    } else {
+                        existingValue.setValue(strValue, locale);
+                    }
+                }
+            }
+        }
+        return metadata;
+    }
+
 }
