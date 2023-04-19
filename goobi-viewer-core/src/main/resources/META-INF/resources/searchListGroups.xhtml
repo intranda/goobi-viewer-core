@@ -1,0 +1,201 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/template.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('searchlist', false, true)}" />
+<!--             <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.searchList,1)}" /> -->
+            <f:event type="preRenderView" listener="#{searchBean.resetCurrentHitIndex}" />
+<!--             <f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbsForSearchHits}" /> -->
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="breadcrumbs">
+        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="searchList">
+                <!-- SEARCH LIST -->
+                <div class="search-list">
+                
+                    <!-- ENTITY SELECTION -->
+                    <ui:repeat value="#{confiturationBean.searchresultGroupNames}" var="groupName">
+                        <h:outputLink rendered="#{configurationBean.isTranslateFacetFieldLabels(field.key)}"
+                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                            #{msg[groupName]}
+                            <f:passThroughAttribute name="aria-label" value="#{msg[groupName]}" />
+                        </h:outputLink>
+                    </ui:repeat>
+                    
+                    <h:form id="searchAdvancedForm" prependId="false" styleClass="search-advanced__form">
+                        <h2 class="search-advanced__entry-area-title">#{msg.search__search_query}</h2>
+                        <div class="search-advanced__entry-area">
+                            <!-- AJAX LOADER -->
+                            <div class="search-advanced__loader"></div>
+                            <!-- SEARCH ADVANCED INPUT GROUP -->
+                        
+                                            
+                            <!-- PERSONS -->
+                            <ui:fragment rendered="#{searchBean.activeResultGroupName eq 'person'}">
+                        
+                        <c:forEach var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
+                            <div id="searchAdvancedInputGroup-0-#{status.count}" class="search-advanced__input-group">
+                                 
+                                <ui:fragment rendered="#{queryItem.resultGroup eq resultGroup}">
+                                   
+    
+                                            <!-- FIELD SELECT -->
+                                            <div class="search-advanced__input-col">
+                                                <div class="custom-control custom-control--select search-advanced__custom-control">
+                                                    <h:selectOneMenu id="advsearch_field_0-#{status.count}" styleClass="search-advanced__select-values" value="#{queryItem.field}"
+                                                        valueChangeListener="#{queryItem.selectOneMenuListener}">
+                                                        <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
+                                                            <f:passThroughAttribute name="aria-label" value="#{msg.searchIn}"/>
+                                                            <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
+                                                            <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
+                                                        </c:forEach>
+                                                        <f:ajax render=":searchAdvancedInputGroup-0-#{status.count} :advsearch_value_group_0-#{status.count}" />
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div>
+
+                                    
+                                        <!-- INPUT FIELD -->
+                                        <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.count}">
+                                                <!-- DROP-DOWN -->
+                                                <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
+                                                    <h:commandLink action="#{queryItem.setValue(item.one)}">#{item.two}</h:commandLink>
+                                                </c:forEach>
+                                        </h:panelGroup>
+
+                                </ui:fragment>
+                            </div>
+                         </c:forEach>
+                         
+                            </ui:fragment>
+                        
+                    </div>
+
+                <!-- ADDITIONAL OPTIONS FOR ADV SEARCH -->
+                <div class="search-advanced__additional-options-area">
+                    <!-- SEARCH LIST SORTING -->
+                    <h2 class="search-advanced__additional-options-title">#{msg.search__search_output}</h2>
+                    <div class="search-advanced__nav-helper-box">
+                            <div class="search-advanced__nav-helper-item">
+                                <div class="search-advanced__nav-helper-label">
+                                    <label for="hitsPerPageSelect" id="searchListSortingLabel">#{msg.search__hits_per_page}:</label>
+                                </div>
+                                <div class="custom-control custom-control--select search-advanced__custom-control">
+                                     <h:selectOneMenu id="hitsPerPageSelect" value="#{searchBean.hitsPerPage}">
+                                         <f:selectItems var="value" value="#{configurationBean.searchHitsPerPageValues}" styleClass="search-advanced__select-values"
+                                             itemLabel="#{value}" itemValue="#{value}" />
+                                         <f:passThroughAttribute name="aria-labelledby" value="searchListSortingLabel"/>
+                                         <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
+                                     </h:selectOneMenu>
+                                     <h:commandButton style="display: none" action="#{search.search(cmsBean.currentPage.subThemeDiscriminatorValue)}">
+                                         <f:passThroughAttribute name="data-hits-per-page" value="reload"/>
+                                         <f:passThroughAttribute name="type" value="button"/>
+                                     </h:commandButton>
+                                </div>
+                            </div>
+        
+                            <div class="search-advanced__nav-helper-item" >
+                                <div class="search-advanced__nav-helper-label">
+                                    <label for="sortSelect">#{msg.sortBy}:</label>
+                                </div>
+                                <div class="custom-control custom-control--select search-advanced__custom-control">
+                                    <h:selectOneMenu value="#{searchBean.searchSortingOption}" id="sortSelect" converter="searchSortingOptionConverter">
+                                        <f:selectItems value="#{searchBean.searchSortingOptions}"
+                                            var="option"
+                                            itemLabel="#{option.label}"
+                                            itemValue="#{option}"/>
+                                    </h:selectOneMenu>                                
+                                </div>
+                            </div>
+
+                   </div>
+                </div>
+
+                <!-- SEARCH ADVANCED ACTION -->
+                <div class="search-advanced__action">
+                    <div class="search-advanced__action-submit-button-wrapper small-button-loader__wrapper">
+                
+                        <h:commandButton styleClass="btn btn--full search-advanced__action-search-button" value="#{msg.search}" action="#{search.searchAdvanced}">
+                            <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
+                            <f:passThroughAttribute name="data-target" value="buttonLoaderClickEvent" />
+                        </h:commandButton>
+                        
+                        <div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
+                    
+                    </div>
+                    
+                    <button
+                        class="btn btn--default search-advanced__action-reset-button"
+                        jsf:action="#{search.resetSearch}">
+                        #{msg.reset}
+                    </button>
+                </div>
+
+                <script>
+                
+                window.addEventListener("unload", (event) => {
+                        $('[data-target="buttonLoader"]').hide();
+                        $('[data-target="buttonLoaderClickEvent').css('opacity', '1');
+                  });
+                
+                    $('[data-target="buttonLoaderClickEvent"]').on('click', function(e) {
+                        $('[data-target="buttonLoader"]').fadeIn('fast');
+                        $('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
+                    });
+                
+                </script>
+
+            </h:form>
+                    
+                    <!-- GROUPS -->
+                    <ui:fragment rendered="#{searchBean.activeResultGroupName eq 'group'}">
+                    </ui:fragment>
+                    
+                    <!-- EVENTS -->
+                    <ui:fragment rendered="#{searchBean.activeResultGroupName eq 'event'}">
+                    </ui:fragment>
+                    
+                    <!-- AWARDS -->
+                    <ui:fragment rendered="#{searchBean.activeResultGroupName eq 'award'}">
+                    </ui:fragment>
+
+					<!-- SEARCH HEADER -->
+                     <ui:include src="/resources/includes/search/searchHeader.xhtml">
+				 		<ui:param name="title" value="#{searchBean.activeSearchType == 0 ? msg.searchResults : msg.searchResultsAdvanced}:"></ui:param>
+                     </ui:include>
+
+                    <!-- SEARCH LIST -->
+                    <div class="search-list">
+                        <ui:include src="/resources/includes/search/searchHitList.xhtml">
+                            <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
+                        </ui:include>
+                    </div>
+            	</div>
+        	</div>
+        </f:view>
+    </ui:define>
+
+    <ui:define name="sidebar">
+        <!-- OPTIONAL FACETS HEADING -->
+        <div class="search-list__facets-heading">
+            <h2>#{msg.searchListOptionalHeading}</h2>
+        </div>
+        <widgetComponent:widget_searchFacets />
+    </ui:define>
+
+</ui:composition>
