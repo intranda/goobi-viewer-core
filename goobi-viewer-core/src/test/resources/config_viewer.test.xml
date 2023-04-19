@@ -439,17 +439,19 @@
 			<defaultItemNumber>3</defaultItemNumber>
 			<!-- advancedSearchFields: index fields to be used in advanced search -->
 			<searchFields>
-				<field hierarchical="true" visible="true">DC</field>
-				<field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
-				<field>MD_CREATOR</field>
-				<field>MD_PUBLISHER</field>
-				<field>MD_PLACEPUBLISH</field>
-				<field range="true">MD_YEARPUBLISH</field>
-				<field>MD_SHELFMARK</field>
-				<field label="-----">#SEPARATOR1#</field>
-				<field>MD_FOO_LANG_EN</field>
-				<field>MD_FOO_LANG_DE</field>
-				<field>MD_FOO_LANG_ES</field>
+                <template name="_DEFAULT">
+				    <field hierarchical="true" visible="true">DC</field>
+				    <field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
+				    <field>MD_CREATOR</field>
+				    <field>MD_PUBLISHER</field>
+				    <field>MD_PLACEPUBLISH</field>
+				    <field range="true">MD_YEARPUBLISH</field>
+				    <field>MD_SHELFMARK</field>
+				    <field label="-----">#SEPARATOR1#</field>
+				    <field>MD_FOO_LANG_EN</field>
+				    <field>MD_FOO_LANG_DE</field>
+				    <field>MD_FOO_LANG_ES</field>
+                </template>
 			</searchFields>
 		</advanced>
         <!-- @enabled: Enables the timeline search (default is true) -->

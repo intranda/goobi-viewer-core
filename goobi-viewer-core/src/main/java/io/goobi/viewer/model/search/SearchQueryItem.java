@@ -71,6 +71,7 @@ public class SearchQueryItem implements Serializable {
     private static final Logger logger = LogManager.getLogger(SearchQueryItem.class);
 
     private SearchBean searchBean;
+    private final String template;
     private String field;
     /** This operator now describes the relation of this item with the other items rather than between terms within this item's query! */
     private SearchItemOperator operator = SearchItemOperator.AND;
@@ -79,10 +80,17 @@ public class SearchQueryItem implements Serializable {
     volatile boolean displaySelectItems = false;
 
     /**
-     * Empty constructor
+     * Zero-argument constructor.
      */
     public SearchQueryItem() {
-        //
+        this(null);
+    }
+
+    /**
+     * @param template
+     */
+    public SearchQueryItem(String template) {
+        this.template = template;
     }
 
     /* (non-Javadoc)
@@ -164,7 +172,7 @@ public class SearchQueryItem implements Serializable {
             List<StringPair> ret = searchBean.getAdvancedSearchSelectItems(field, language, isHierarchical());
             if (ret == null) {
                 ret = new ArrayList<>();
-                logger.warn("No drop-down values found for field: {}", field);
+                logger.warn("No values found for field: {}", field);
             }
             return ret;
         }
@@ -193,7 +201,7 @@ public class SearchQueryItem implements Serializable {
      * @return true or false
      */
     public boolean isHierarchical() {
-        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(field);
+        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(field, template, true);
     }
 
     /**
@@ -204,7 +212,7 @@ public class SearchQueryItem implements Serializable {
      * @return true or false
      */
     public boolean isRange() {
-        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(field);
+        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(field, template, true);
     }
 
     /**
@@ -215,7 +223,7 @@ public class SearchQueryItem implements Serializable {
      * @return true or false
      */
     public boolean isUntokenizeForPhraseSearch() {
-        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(field);
+        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(field, template, true);
     }
 
     /**
@@ -231,7 +239,7 @@ public class SearchQueryItem implements Serializable {
      * @return
      */
     public int getDisplaySelectItemsThreshold() {
-        return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDisplaySelectItemsThreshold(field);
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDisplaySelectItemsThreshold(field, template, false);
     }
 
     /**

@@ -1526,7 +1526,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
-        List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
+        List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true);
         Assert.assertEquals(11, result.size());
         Assert.assertTrue(result.get(0).isHierarchical());
         Assert.assertTrue(result.get(0).isVisible());
@@ -1543,7 +1543,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldHierarchical_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(SolrConstants.DC));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(SolrConstants.DC, null, true));
     }
 
     /**
@@ -1552,8 +1552,8 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldRange_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(SolrConstants.DC));
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange("MD_YEARPUBLISH"));
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(SolrConstants.DC, null, true));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange("MD_YEARPUBLISH", null, true));
     }
 
     /**
@@ -1562,8 +1562,8 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldUntokenizeForPhraseSearch_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC));
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch("MD_TITLE"));
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC, null, true));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch("MD_TITLE", null, true));
     }
 
     /**
@@ -1572,7 +1572,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getAdvancedSearchFieldSeparatorLabel_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("-----", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSeparatorLabel("#SEPARATOR1#"));
+        Assert.assertEquals("-----", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSeparatorLabel("#SEPARATOR1#", null, true));
     }
 
     /**
@@ -2622,7 +2622,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getDfgViewerUrl_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("dfg-viewer_value", DataManager.getInstance().getConfiguration().getDfgViewerUrl());
     }
-    
+
     /**
      * @see Configuration#getDfgViewerSourcefileField()
      * @verifies return correct value

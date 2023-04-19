@@ -78,6 +78,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -90,7 +91,6 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.export.ExcelExport;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
-import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
@@ -164,6 +164,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private Map<String, Set<String>> searchTerms = new HashMap<>();
 
     private SearchResultGroup activeResultGroup;
+    /** Selected advanced search field configuration template. */
+    private String advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
     private boolean phraseSearch = false;
     /** Current search result page. */
     private int currentPage = 1;
@@ -178,7 +180,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
     /** Group of query item clusters for the advanced search. */
     private final SearchQueryGroup advancedSearchQueryGroup =
-            new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+            new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(advancedSearchFieldTemplate, true),
+                    advancedSearchFieldTemplate);
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
 
@@ -537,7 +540,8 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     protected void resetAdvancedSearchParameters() {
         logger.trace("resetAdvancedSearchParameters");
-        advancedSearchQueryGroup.init(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        advancedSearchQueryGroup.init(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(advancedSearchFieldTemplate, true),
+                advancedSearchFieldTemplate);
         // If currentCollection is set, pre-select it in the advanced search menu
         mirrorAdvancedSearchCurrentHierarchicalFacets();
     }
@@ -798,7 +802,8 @@ public class SearchBean implements SearchInterface, Serializable {
         // Create SearchQueryGroup from query
         if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED && advancedSearchQueryGroup.isBlank()) {
             SearchQueryGroup parsedGroup =
-                    SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getActiveFacetString());
+                    SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getActiveFacetString(),
+                            advancedSearchFieldTemplate);
             advancedSearchQueryGroup.injectItems(parsedGroup.getQueryItems());
         }
 
@@ -1446,6 +1451,9 @@ public class SearchBean implements SearchInterface, Serializable {
             for (SearchResultGroup resultGroup : DataManager.getInstance().getConfiguration().getSearchResultGroups()) {
                 if (resultGroup.getName().equals(activeResultGroupName)) {
                     activeResultGroup = resultGroup;
+                    if (resultGroup.isUseAsAdvancedSearchTemplate()) {
+                        this.advancedSearchFieldTemplate = resultGroup.getName();
+                    }
                     return;
                 }
             }
@@ -1453,6 +1461,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         activeResultGroup = null;
+        this.advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
     }
 
     /**
@@ -2040,7 +2049,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return List of allowed advanced search fields
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields() {
-        return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString());
+        return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString(), advancedSearchFieldTemplate);
     }
 
     /**
@@ -2048,11 +2057,12 @@ public class SearchBean implements SearchInterface, Serializable {
      * locale are omitted.
      *
      * @param language Optional language code for filtering language-specific fields
+     * @param template
      * @return List of allowed advanced search fields
      * @should omit languaged fields for other languages
      */
-    public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(String language) {
-        List<AdvancedSearchFieldConfiguration> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
+    public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(String language, String template) {
+        List<AdvancedSearchFieldConfiguration> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, false);
         if (fields == null) {
             return Collections.emptyList();
         }
