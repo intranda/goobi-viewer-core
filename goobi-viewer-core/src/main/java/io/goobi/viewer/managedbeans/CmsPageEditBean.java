@@ -92,11 +92,11 @@ public class CmsPageEditBean implements Serializable {
     transient CmsNavigationBean navigationBean;
     @Inject
     transient CMSSidebarWidgetsBean widgetsBean;
-    @Inject 
+    @Inject
     transient CollectionViewBean collectionViewBean;
     @Inject
     transient FacesContext facesContext;
-    
+
     private CMSPage selectedPage = null;
     private boolean editMode = false;
     private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
@@ -131,10 +131,10 @@ public class CmsPageEditBean implements Serializable {
                 this.editMode = false;
                 this.setNewSelectedPage();
             }
-            if(!this.editMode && StringUtils.isNotBlank(title)) {
+            if (!this.editMode && StringUtils.isNotBlank(title)) {
                 this.selectedPage.getTitleTranslations().setValue(title, IPolyglott.getDefaultLocale());
             }
-            if(!this.editMode && StringUtils.isNotBlank(relatedPi)) {
+            if (!this.editMode && StringUtils.isNotBlank(relatedPi)) {
                 this.selectedPage.setRelatedPI(relatedPi);
             }
         } catch (NullPointerException | NumberFormatException e) {
@@ -159,7 +159,7 @@ public class CmsPageEditBean implements Serializable {
 
     public void savePageAndForwardToEdit() throws DAOException {
         this.saveSelectedPage();
-        if(this.selectedPage.getId() != null) {            
+        if (this.selectedPage.getId() != null) {
             String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsEditPage", this.selectedPage.getId());
             try {
                 facesContext.getExternalContext().redirect(url);
@@ -168,7 +168,7 @@ public class CmsPageEditBean implements Serializable {
             }
         }
     }
-    
+
     /**
      * Adds the current page to the database, if it doesn't exist or updates it otherwise
      *
@@ -209,13 +209,18 @@ public class CmsPageEditBean implements Serializable {
             logger.trace("update pages");
             cmsBean.getLazyModelPages().update();
 
-            // Re-index related record
-            if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
-                try {
-                    IndexerTools.reIndexRecord(selectedPage.getRelatedPI());
-                    Messages.info("admin_recordReExported");
-                } catch (RecordNotFoundException e) {
-                    logger.error(e.getMessage());
+            if (selectedPage.isSearchable()) {
+                // Re-index related record text as part of the record
+                if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
+                    try {
+                        IndexerTools.reIndexRecord(selectedPage.getRelatedPI());
+                        Messages.info("admin_recordReExported");
+                    } catch (RecordNotFoundException e) {
+                        logger.error(e.getMessage());
+                    }
+                } else {
+                    // Index CMS page metadata and texts as standalone docs
+                    IndexerTools.triggerReIndexCMSPage(selectedPage, null);
                 }
             }
         } else {
@@ -348,17 +353,17 @@ public class CmsPageEditBean implements Serializable {
      * @throws PresentationException
      */
     public String createAndOpenNewPage(String title, String relatedPI) throws PresentationException, IndexUnreachableException, DAOException {
-        
+
         String createPageUrl = PrettyUrlTools.getAbsolutePageUrl("adminCmsNewPage");
         URI uri = UriBuilder.fromUri(createPageUrl).queryParam("title", title).queryParam("relatedPi", relatedPI).build();
         return uri.toString();
-        
-//        CMSPage page = new CMSPage();
-//        page.getTitleTranslations().setValue(title, IPolyglott.getDefaultLocale());
-//        page.setRelatedPI(relatedPI);
-//        setUserRestrictedValues(page, userBean.getUser());
-//        setSelectedPage(page);
-//        return "pretty:adminCmsNewPage";
+
+        //        CMSPage page = new CMSPage();
+        //        page.getTitleTranslations().setValue(title, IPolyglott.getDefaultLocale());
+        //        page.setRelatedPI(relatedPI);
+        //        setUserRestrictedValues(page, userBean.getUser());
+        //        setSelectedPage(page);
+        //        return "pretty:adminCmsNewPage";
     }
 
     private static void setSidebarElementOrder(CMSPage page) {
@@ -512,12 +517,11 @@ public class CmsPageEditBean implements Serializable {
     }
 
     public void addComponent() {
-        if(addComponent(getSelectedPage(), getSelectedComponent())) {
+        if (addComponent(getSelectedPage(), getSelectedComponent())) {
             setSelectedComponent(null);
         }
     }
 
-    
     private boolean addComponent(CMSPage page, String componentFilename) {
         if (page != null) {
             if (StringUtils.isNotBlank(componentFilename)) {

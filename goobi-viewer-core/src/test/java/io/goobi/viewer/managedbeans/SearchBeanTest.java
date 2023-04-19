@@ -708,6 +708,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void findCurrentHitIndex_shouldSetCurrentHitIndexCorrectly() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.resultGroups[@enabled]", false);
         SearchBean sb = new SearchBean();
         sb.setCurrentSearch(new Search());
         sb.getCurrentSearch().setPage(1);

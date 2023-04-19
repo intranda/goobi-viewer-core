@@ -51,6 +51,7 @@ import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
@@ -150,12 +151,13 @@ public class ConfigurationBean implements Serializable {
     public boolean useTiles(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType));
     }
-    
+
     /**
      * whether to show a navigator element in the openseadragon viewe
-     * @param pageType  get settings for this pageType
-     * @param mimeType  get settings for this image type
-     * @return  true if navigator should be shown
+     * 
+     * @param pageType get settings for this pageType
+     * @param mimeType get settings for this image type
+     * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
     public boolean showImageNavigator(String pageType, String mimeType) throws ViewerConfigurationException {
@@ -1362,6 +1364,19 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * 
+     * @return List of names of the configured search result groups
+     */
+    public List<String> getSearchResultGroupNames() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getSearchResultGroups()
+                .stream()
+                .map(SearchResultGroup::getName)
+                .collect(Collectors.toList());
+    }
+
+    /**
      *
      * @param facetField
      * @return
@@ -1377,7 +1392,7 @@ public class ConfigurationBean implements Serializable {
     public GeoMapMarker getMarkerForMapSearch() {
         return DataManager.getInstance().getConfiguration().getMarkerForMapSearch();
     }
-    
+
     public String getSelectionColorForMapSearch() {
         return DataManager.getInstance().getConfiguration().getSelectionColorForMapSearch();
     }
@@ -1389,7 +1404,7 @@ public class ConfigurationBean implements Serializable {
     public GeoMapMarker getMarkerForFacetting() {
         return DataManager.getInstance().getConfiguration().getMarkerForFacetting();
     }
-    
+
     public String getSelectionColorForFacetting() {
         return DataManager.getInstance().getConfiguration().getSelectionColorForFacetting();
     }

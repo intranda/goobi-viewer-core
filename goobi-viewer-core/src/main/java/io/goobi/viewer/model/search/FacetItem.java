@@ -214,6 +214,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Constructs facet items from the list of given field:value combinations. Always sorted by the label translation.
      *
+     * @param existingFacetsItems List of previously generated items (e.g. via other result groups) to combine with new items
      * @param field Facet field
      * @param values Map containing facet values and their counts
      * @param hierarchical true if facet field is hierarchical; false otherwise
@@ -224,11 +225,11 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should add priority values first
      * @should set label from separate field if configured and found
      * @should group values by starting character correctly
+     * @should augment existing items with new values
      */
-    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, int groupToLength,
-            Locale locale,  Map<String, String> labelMap) {
+    public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, Map<String, Long> values,
+            boolean hierarchical, int groupToLength, Locale locale, Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field);
-        List<IFacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
 
@@ -246,7 +247,18 @@ public class FacetItem implements Serializable, IFacetItem {
             }
         }
 
+        List<IFacetItem> retList = new ArrayList<>();
         Map<String, FacetItem> existingItems = new HashMap<>();
+        // Add supplied existing items
+        if (existingFacetsItems != null) {
+            for (IFacetItem item : existingFacetsItems) {
+                if (item instanceof FacetItem) {
+                    retList.add(item);
+                    existingItems.put(item.getLink(), (FacetItem) item);
+                }
+            }
+        }
+
         for (Entry<String, Long> entry : values.entrySet()) {
             // Skip reversed values
             if (entry.getKey().charAt(0) == 1) {

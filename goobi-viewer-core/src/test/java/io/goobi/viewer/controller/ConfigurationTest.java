@@ -53,6 +53,7 @@ import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleTyp
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
@@ -299,7 +300,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getHotfolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("hotfolder", DataManager.getInstance().getConfiguration().getHotfolder());
+        Assert.assertEquals("target/hotfolder", DataManager.getInstance().getConfiguration().getHotfolder());
     }
 
     /**
@@ -3135,6 +3136,25 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("(FACET_DC:\"foo\" OR FACET_DC:foo.*)", result.get(0));
         Assert.assertEquals("(FACET_DC:\"bar\" OR FACET_DC:bar.*)", result.get(1));
+    }
+
+    /**
+     * @see Configuration#isSearchResultGroupsEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSearchResultGroupsEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled());
+    }
+
+    /**
+     * @see Configuration#getSearchResultGroups()
+     * @verifies return all configured elements
+     */
+    @Test
+    public void getSearchResultGroups_shouldReturnAllConfiguredElements() throws Exception {
+        List<SearchResultGroup> groups = DataManager.getInstance().getConfiguration().getSearchResultGroups();
+        Assert.assertEquals(3, groups.size());
     }
 
     /**

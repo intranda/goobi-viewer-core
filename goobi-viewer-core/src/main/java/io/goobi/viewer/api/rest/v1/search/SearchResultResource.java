@@ -49,6 +49,7 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.search.SearchResultGroup;
 
 /**
  * <p>
@@ -97,25 +98,103 @@ public class SearchResultResource {
         if (nh != null) {
             locale = nh.getLocale();
         }
-        List<SearchHit> searchHits = searchBean.getCurrentSearch().getHits();
-        if (searchHits != null) {
-            for (SearchHit searchHit : searchHits) {
-                if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
-                    // logger.trace("found: {}", hitId);
-                    if (searchHit.getHitsPopulated() < numChildren) {
-                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale,
-                                servletRequest, BeanUtils.getImageDeliveryBean().getThumbs());
-                    }
-                    Collections.sort(searchHit.getChildren());
-                    SearchHitChildList searchHitChildren =
-                            new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit.isHasMoreChildren());
-                    // logger.trace("children: {}", searchHit.getChildren().size());
-                    return searchHitChildren;
-                }
+
+        for (SearchResultGroup resultGroup : searchBean.getCurrentSearch().getResultGroups()) {
+            SearchHitChildList ret = getSearchHitChildren(resultGroup.getHits(), hitId, numChildren, locale, servletRequest);
+            if (ret != null) {
+                return ret;
             }
         }
 
         servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "IDDOC " + hitId + " is not in the current search result set.");
+        return null;
+    }
+
+    /**
+     * 
+     * @param hitId IDDOC of the main search hit
+     * @param numChildren Number of child hits to load
+     * @param resultGroupName Requested result group name
+     * @return
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws IOException
+     * @throws ViewerConfigurationException
+     */
+    @GET
+    @Path(ApiUrls.SEARCH_HIT_CHILDREN_GROUP)
+    @Produces({ MediaType.APPLICATION_JSON })
+    public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren,
+            @PathParam("resultGroup") String resultGroupName)
+            throws DAOException, PresentationException, IndexUnreachableException, IOException, ViewerConfigurationException {
+        // logger.trace("/search/hit/{}/{}/", hitId, numChildren);
+        SearchBean searchBean = BeanUtils.getSearchBean();
+        if (searchBean == null) {
+            servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "No instance of SearchBean found in the user session. Execute a search first.");
+            return null;
+        }
+        Locale locale = null;
+        NavigationHelper nh = BeanUtils.getNavigationHelper();
+        if (nh != null) {
+            locale = nh.getLocale();
+        }
+
+        SearchResultGroup group = null;
+        for (SearchResultGroup g : searchBean.getCurrentSearch().getResultGroups()) {
+            if (g.getName().equals(resultGroupName)) {
+                group = g;
+                break;
+            }
+        }
+
+        if (group == null) {
+            servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "Result group configuration '" + resultGroupName + "' was not found.");
+            return null;
+        }
+
+        List<SearchHit> searchHits = group.getHits();
+        if (searchHits != null) {
+            return getSearchHitChildren(searchHits, hitId, numChildren, locale, servletRequest);
+        }
+
+        servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "IDDOC " + hitId + " is not in the current search result set.");
+        return null;
+    }
+
+    /**
+     * 
+     * @param searchHits
+     * @param hitId
+     * @param numChildren
+     * @param locale
+     * @param servletRequest
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     * @should return null if searchHits null
+     */
+    static SearchHitChildList getSearchHitChildren(List<SearchHit> searchHits, String hitId, int numChildren, Locale locale,
+            HttpServletRequest servletRequest)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        if (searchHits == null) {
+            return null;
+        }
+        for (SearchHit searchHit : searchHits) {
+            if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
+                // logger.trace("found: {}", hitId);
+                if (searchHit.getHitsPopulated() < numChildren) {
+                    searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale,
+                            servletRequest, BeanUtils.getImageDeliveryBean().getThumbs());
+                }
+                Collections.sort(searchHit.getChildren());
+                return new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit.isHasMoreChildren());
+            }
+        }
+
         return null;
     }
 }
