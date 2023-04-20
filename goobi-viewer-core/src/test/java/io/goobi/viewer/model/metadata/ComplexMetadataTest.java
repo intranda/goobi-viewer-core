@@ -1,14 +1,14 @@
 package io.goobi.viewer.model.metadata;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.solr.common.SolrDocument;
-import org.bouncycastle.jcajce.provider.symmetric.AES.PBEWithMD5And128BitAESCBCOpenSSL;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
