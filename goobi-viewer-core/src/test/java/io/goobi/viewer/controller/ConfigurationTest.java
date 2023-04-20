@@ -3155,6 +3155,10 @@ public class ConfigurationTest extends AbstractTest {
     public void getSearchResultGroups_shouldReturnAllConfiguredElements() throws Exception {
         List<SearchResultGroup> groups = DataManager.getInstance().getConfiguration().getSearchResultGroups();
         Assert.assertEquals(3, groups.size());
+        
+        Assert.assertEquals("lido_objects", groups.get(0).getName());
+        Assert.assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
+        Assert.assertTrue(groups.get(0).isUseAsAdvancedSearchTemplate());
     }
 
     /**
