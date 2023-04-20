@@ -13,7 +13,7 @@ import org.junit.Test;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
-class ComplexMetadataTest {
+public class ComplexMetadataTest {
 
     private static final String YEAR = "1972";
     private static final String TITLE_EN = "The title";
@@ -24,7 +24,7 @@ class ComplexMetadataTest {
     private static final Long IDDOC_OWNER = 123l;
 
     @Test
-    void testSingleDoc() {
+    public void testSingleDoc() {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.PI_TOPSTRUCT, PI);
         doc.setField(SolrConstants.IDDOC, IDDOC.toString());
@@ -48,7 +48,7 @@ class ComplexMetadataTest {
     }
     
     @Test
-    void testMultiDoc() {
+    public void testMultiDoc() {
         List<SolrDocument> docs = new ArrayList<>();
         {
             SolrDocument doc = new SolrDocument();
@@ -85,7 +85,7 @@ class ComplexMetadataTest {
     }
     
     @Test
-    void testMultiMetadata() {
+    public void testMultiMetadata() {
         List<SolrDocument> docs = new ArrayList<>();
         
         {
