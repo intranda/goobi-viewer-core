@@ -101,18 +101,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isBookshelvesEnabled.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isBookshelvesEnabled() {
-        return isBookmarksEnabled();
-    }
-
-    /**
-     * <p>
      * isBookmarksEnabled.
      * </p>
      *
