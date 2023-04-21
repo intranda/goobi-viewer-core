@@ -84,7 +84,6 @@ public class SolrTools {
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
     private static final String SUFFIX_LANGUAGE_REGEX = SolrConstants.MIDFIX_LANG + "([A-Z]{2,3})$";
 
-
     /**
      * 
      */
@@ -837,60 +836,56 @@ public class SolrTools {
 
         return query.replaceAll("[{}]", "").replace("!join from=PI_TOPSTRUCT to=PI", "{!join from=PI_TOPSTRUCT to=PI}");
     }
-    
+
     public static String getBaseFieldName(String fieldName) {
-        if(StringUtils.isNotBlank(fieldName)) {
+        if (StringUtils.isNotBlank(fieldName)) {
             return fieldName.replaceAll(SUFFIX_LANGUAGE_REGEX, "");
-        } else {
-            return fieldName;
         }
+        return fieldName;
     }
 
     public static String getLanguage(String fieldName) {
-        if(StringUtils.isNotBlank(fieldName)) {
+        if (StringUtils.isNotBlank(fieldName)) {
             Matcher matcher = Pattern.compile(SUFFIX_LANGUAGE_REGEX).matcher(fieldName);
-            if(matcher.find()) {
+            if (matcher.find()) {
                 return matcher.group(1);
-            } else {
-                return null;
             }
-        } else {
             return null;
         }
+        return null;
     }
-    
+
     public static Locale getLocale(String fieldName) {
         String language = getLanguage(fieldName);
-        if(StringUtils.isNotBlank(language)) {
+        if (StringUtils.isNotBlank(language)) {
             return Locale.forLanguageTag(language.toLowerCase());
-        } else {
-            return null;
         }
+        return null;
     }
-    
+
     public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Function<String, Boolean> fieldNameFilter) {
         return getTranslatedMetadata(doc, new HashMap<>(), null, fieldNameFilter);
     }
 
-    
-    public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata, Locale locale, Function<String, Boolean> fieldNameFilter) {
-//        List<String> fieldNames = doc.getFieldNames().stream().filter(name -> !IGNORE_METADATA_FIELDS.contains(name)).filter(name -> !name.matches(IGNORE_METADATA_REGEX)).collect(Collectors.toList());
+    public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata, Locale locale,
+            Function<String, Boolean> fieldNameFilter) {
+        //        List<String> fieldNames = doc.getFieldNames().stream().filter(name -> !IGNORE_METADATA_FIELDS.contains(name)).filter(name -> !name.matches(IGNORE_METADATA_REGEX)).collect(Collectors.toList());
         List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).collect(Collectors.toList());
         for (String fieldName : fieldNames) {
             List<String> values = SolrTools.getMetadataValues(doc, fieldName);
             String baseFieldName = fieldName;
-            if(SolrTools.isLanguageCodedField(fieldName)) {
+            if (SolrTools.isLanguageCodedField(fieldName)) {
                 baseFieldName = SolrTools.getBaseFieldName(fieldName);
                 locale = SolrTools.getLocale(fieldName);
-            } else if("MD_VALUE".equals(fieldName)) {
+            } else if ("MD_VALUE".equals(fieldName)) {
                 baseFieldName = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
             }
             for (String strValue : values) {
                 int valueIndex = values.indexOf(strValue);
                 List<IMetadataValue> existingValues = metadata.get(baseFieldName);
                 IMetadataValue existingValue = existingValues == null || existingValues.size() <= valueIndex ? null : existingValues.get(valueIndex);
-                if(existingValue == null) {
-                    if(locale == null) {
+                if (existingValue == null) {
+                    if (locale == null) {
                         IMetadataValue value = new SimpleMetadataValue(strValue);
                         metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
                     } else {
@@ -898,7 +893,7 @@ public class SolrTools {
                         metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
                     }
                 } else {
-                    if(locale == null) {                        
+                    if (locale == null) {
                         existingValue.setValue(strValue);
                     } else {
                         existingValue.setValue(strValue, locale);
