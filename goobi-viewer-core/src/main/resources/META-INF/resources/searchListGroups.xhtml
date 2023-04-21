@@ -31,8 +31,13 @@
                     <!-- ENTITY SELECTION -->
                     <c:forEach items="#{configurationBean.searchResultGroupNames}" var="groupName">
                         <h:outputLink
-                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}">
-                            #{msg[groupName]}
+                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/-/1/-/-/">
+                            <ui:fragment rendered="#{groupName == searchBean.activeResultGroupName}">
+                                <div><strong>#{msg[groupName]}</strong></div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{groupName != searchBean.activeResultGroupName}">
+                                <div>#{msg[groupName]}</div>
+                            </ui:fragment>
                             <f:passThroughAttribute name="aria-label" value="#{msg[groupName]}" />
                         </h:outputLink>
                     </c:forEach>
@@ -103,7 +108,8 @@
                 <div class="search-advanced__action">
                     <div class="search-advanced__action-submit-button-wrapper small-button-loader__wrapper">
                 
-                        <h:commandButton styleClass="btn btn--full search-advanced__action-search-button" value="#{msg.search}" action="#{search.searchAdvanced}">
+                        <h:commandButton styleClass="btn btn--full search-advanced__action-search-button"
+                            value="#{msg.search}" action="#{searchBean.searchAdvanced}">
                             <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
                             <f:passThroughAttribute name="data-target" value="buttonLoaderClickEvent" />
                         </h:commandButton>
@@ -112,11 +118,6 @@
                     
                     </div>
                     
-                    <button
-                        class="btn btn--default search-advanced__action-reset-button"
-                        jsf:action="#{search.resetSearch}">
-                        #{msg.reset}
-                    </button>
                 </div>
 
                 <script>

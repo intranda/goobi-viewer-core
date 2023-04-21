@@ -323,6 +323,7 @@
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
     </url-mapping>
     <url-mapping id="searchAdvanced4">
+        <!-- TODO is searchStringForUrl correct for advanced search?! -->
         <pattern value="/searchadvanced/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
         <!-- TODO replace with correct page -->
         <view-id value="/searchListGroups.xhtml" />
