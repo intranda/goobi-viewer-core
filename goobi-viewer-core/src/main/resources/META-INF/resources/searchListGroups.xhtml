@@ -49,10 +49,12 @@
                             <div id="searchAdvancedInputGroup-0-#{status.count}" class="search-advanced__input-group">
                                  
                                 <h3>#{msg[queryItem.field]}</h3>
-                                    
+                                        
                                         <!-- INPUT FIELD -->
-                                        <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.count}">
-                                                <!-- DROP-DOWN -->
+                                        <h:panelGroup rendered="#{!queryItem.displaySelectItems}" layout="block" id="advsearch_value_group_0-#{status.count}">
+                                            <div class="search-advanced__input-group-field">
+                                                <ui:fragment rendered="#{queryItem.displaySelectItems}">
+                                                <!-- BADGES -->
                                                 <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
                                                     <h:commandLink action="#{queryItem.setValue(item.one)}">
                                                         <!-- TODO: highlight selected value(s) -->
@@ -65,6 +67,30 @@
                                                     <f:ajax render="@form" />
                                                     </h:commandLink>
                                                 </c:forEach>
+                                                </ui:fragment> 
+                                                <ui:fragment rendered="#{!queryItem.displaySelectItems}">
+                                                        <ui:fragment rendered="#{queryItem.range}">
+                                                            <div class="search-advanced__year-span-from d-none d-lg-inline-block">#{msg.searchAdvanced_range_value1}</div>
+                                                            <h:inputText id="advsearchValue1Text_0-#{status.count}"
+                                                                styleClass="form-control value-text -with-right-border search-advanced__input-value" value="#{queryItem.value}">
+                                                                <f:passThroughAttribute name="placeholder" value="#{msg.year}" />
+                                                            </h:inputText>
+                                                            <i class="fa fa-arrows-h search-advanced__between-arrow d-lg-none" aria-hidden="true"></i>
+                                                            <div class="search-advanced__year-span-to d-none d-lg-inline-block">#{msg.searchAdvanced_range_value2}</div>
+                                                            <h:inputText id="advsearchValue2Text_0-#{status.count}"
+                                                                styleClass="form-control value-text -with-right-border search-advanced__input-value" value="#{queryItem.value2}">
+                                                                <f:passThroughAttribute name="placeholder" value="#{msg.year}" />
+                                                            </h:inputText>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{!queryItem.range}">
+                                                            <h:inputText id="advsearchValueText_0-#{status.count}"
+                                                                styleClass="form-control value-text search-advanced__input-value" value="#{queryItem.value}">
+                                                                <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+                                                                <f:passThroughAttribute name="aria-label" value="#{msg.searchFieldDemoText}" />
+                                                            </h:inputText>
+                                                        </ui:fragment>
+                                                </ui:fragment>
+                                            </div>
                                         </h:panelGroup>
 
                             </div>

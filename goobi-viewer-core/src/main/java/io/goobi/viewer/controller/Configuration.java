@@ -1387,6 +1387,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate) {
+        logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate);
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("search.advanced.searchFields.template");
         if (templateList == null) {
             return new ArrayList<>();
