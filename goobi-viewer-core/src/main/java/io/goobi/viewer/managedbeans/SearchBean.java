@@ -1312,10 +1312,6 @@ public class SearchBean implements SearchInterface, Serializable {
         if ("-".equals(inSearchString)) {
             inSearchString = "";
             searchString = "";
-            // Reset advanced search query items
-            if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
-                resetAdvancedSearchParameters();
-            }
         }
         searchStringInternal = inSearchString;
         // First apply regular URL decoder
@@ -1452,11 +1448,17 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param activeResultGroupName
      */
     public void setActiveResultGroupName(String activeResultGroupName) {
+        // Reset advanced search query items
+        if (activeResultGroupName != null && !activeResultGroupName.equals(this.advancedSearchFieldTemplate)) {
+            resetAdvancedSearchParameters();
+        }
+
         if (!"-".equals(activeResultGroupName)) {
             for (SearchResultGroup resultGroup : DataManager.getInstance().getConfiguration().getSearchResultGroups()) {
                 if (resultGroup.getName().equals(activeResultGroupName)) {
                     activeResultGroup = resultGroup;
                     if (resultGroup.isUseAsAdvancedSearchTemplate()) {
+
                         this.advancedSearchFieldTemplate = resultGroup.getName();
                     }
                     return;
