@@ -1305,7 +1305,6 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param inSearchString a {@link java.lang.String} object.
      * @should perform double unescaping if necessary
-     * @should reset advanced search query items if query empty
      */
     public void setExactSearchString(String inSearchString) {
         logger.debug("setExactSearchString: {}", inSearchString);
@@ -1446,10 +1445,11 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * 
      * @param activeResultGroupName
+     * @should reset advanced search query items if new name set
      */
     public void setActiveResultGroupName(String activeResultGroupName) {
         // Reset advanced search query items
-        if (activeResultGroupName != null && !activeResultGroupName.equals(this.advancedSearchFieldTemplate)) {
+        if (activeResultGroupName != null && !activeResultGroupName.equals(getActiveResultGroupName())) {
             resetAdvancedSearchParameters();
         }
 
@@ -1458,13 +1458,12 @@ public class SearchBean implements SearchInterface, Serializable {
                 if (resultGroup.getName().equals(activeResultGroupName)) {
                     activeResultGroup = resultGroup;
                     if (resultGroup.isUseAsAdvancedSearchTemplate()) {
-
                         this.advancedSearchFieldTemplate = resultGroup.getName();
                     }
                     return;
                 }
             }
-            logger.warn("Search result group name not found: {}", activeResultGroupName);
+            logger.error("Search result group name not found: {}", activeResultGroupName);
         }
 
         activeResultGroup = null;
