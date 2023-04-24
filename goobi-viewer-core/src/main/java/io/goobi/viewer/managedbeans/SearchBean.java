@@ -1446,27 +1446,36 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * 
      * @param activeResultGroupName
-     * @should reset advanced search query items if new name set
+     * @should select result group correctly
+     * @should reset result group if new name not configured
+     * @should reset result group if empty name given
+     * @should reset advanced search query items if new group used as field template
+     * @should reset advanced search query items if old group used as field template
      */
     public void setActiveResultGroupName(String activeResultGroupName) {
-        // Reset advanced search query items, if group changed
-        if (activeResultGroupName != null && !activeResultGroupName.equals(getActiveResultGroupName())) {
-            resetAdvancedSearchParameters();
+        if (activeResultGroup != null && activeResultGroup.getName().equals(activeResultGroupName)) {
+            return;
         }
 
-        if (!"-".equals(activeResultGroupName)) {
+        if (activeResultGroupName != null && !"-".equals(activeResultGroupName)) {
             for (SearchResultGroup resultGroup : DataManager.getInstance().getConfiguration().getSearchResultGroups()) {
                 if (resultGroup.getName().equals(activeResultGroupName)) {
                     activeResultGroup = resultGroup;
                     if (resultGroup.isUseAsAdvancedSearchTemplate()) {
                         this.advancedSearchFieldTemplate = resultGroup.getName();
+                        // Reset query items
+                        resetAdvancedSearchParameters();
                     }
                     return;
                 }
             }
-            logger.error("Search result group name not found: {}", activeResultGroupName);
+            logger.warn("Search result group name not found: {}", activeResultGroupName);
         }
 
+        // Reset query items if active group is used as item field template
+        if (activeResultGroup != null && activeResultGroup.isUseAsAdvancedSearchTemplate()) {
+            resetAdvancedSearchParameters();
+        }
         activeResultGroup = null;
         this.advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
     }
