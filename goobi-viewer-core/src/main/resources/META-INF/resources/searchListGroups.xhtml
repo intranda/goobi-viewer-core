@@ -29,7 +29,7 @@
                 <div class="search-list">
                 
                     <!-- ENTITY SELECTION -->
-                    <c:forEach items="#{configurationBean.searchResultGroupNames}" var="groupName">
+                    <ui:repeat value="#{configurationBean.searchResultGroupNames}" var="groupName">
                         <h:outputLink
                             value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/-/1/-/-/">
                             <ui:fragment rendered="#{groupName == searchBean.activeResultGroupName}">
@@ -40,7 +40,7 @@
                             </ui:fragment>
                             <f:passThroughAttribute name="aria-label" value="#{msg[groupName]}" />
                         </h:outputLink>
-                    </c:forEach>
+                    </ui:repeat>
                     
                     <h:form id="searchAdvancedForm" prependId="false" styleClass="search-advanced__form">
                         <h2 class="search-advanced__entry-area-title">#{msg.search__search_query}</h2>

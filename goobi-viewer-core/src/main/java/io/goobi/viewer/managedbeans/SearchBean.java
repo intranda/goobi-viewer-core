@@ -235,6 +235,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * <p>
      * clearSearchItemLists.
      * </p>
+     * TODO Is this even in use?
      */
     public void clearSearchItemLists() {
         advancedSearchSelectItems.clear();
@@ -1448,7 +1449,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should reset advanced search query items if new name set
      */
     public void setActiveResultGroupName(String activeResultGroupName) {
-        // Reset advanced search query items
+        // Reset advanced search query items, if group changed
         if (activeResultGroupName != null && !activeResultGroupName.equals(getActiveResultGroupName())) {
             resetAdvancedSearchParameters();
         }
@@ -1932,7 +1933,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Check for pre-generated items
-        String key = new StringBuilder(language).append('_').append(field).toString();
+        String key = new StringBuilder(getActiveResultGroupName()).append('_').append(language).append('_').append(field).toString();
         List<StringPair> ret = advancedSearchSelectItems.get(key);
         if (ret != null) {
             return ret;
@@ -1995,6 +1996,9 @@ public class SearchBean implements SearchInterface, Serializable {
             advancedSearchSelectItems.put(key, ret);
         } else {
             String suffix = SearchHelper.getAllSuffixes();
+            if (activeResultGroup != null) {
+                suffix = suffix + "+(" + activeResultGroup.getQuery() + ")";
+            }
 
             List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 1);
             for (String value : values) {

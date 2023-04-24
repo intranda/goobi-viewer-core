@@ -411,7 +411,7 @@ public class SearchFacets implements Serializable {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -804,12 +804,16 @@ public class SearchFacets implements Serializable {
         return new ArrayList<>(valueRanges.get(field).keySet());
     }
 
-    public String getValueRangeAsJsonMap(String field) throws PresentationException, IndexUnreachableException {
+    /**
+     * 
+     * @param field
+     * @return
+     */
+    public String getValueRangeAsJsonMap(String field) {
         if (!maxValues.containsKey(field)) {
             return "[]";
-        } else {
-            return new JSONObject(valueRanges.get(field)).toString();
         }
+        return new JSONObject(valueRanges.get(field)).toString();
     }
 
     /**
