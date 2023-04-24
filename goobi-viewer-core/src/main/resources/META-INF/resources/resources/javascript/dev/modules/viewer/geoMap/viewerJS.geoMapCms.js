@@ -77,7 +77,7 @@
 	            });
 	        }
 		});
-	    this.geoMap.init(view);
+	    return this.geoMap.init(view);
 	}
 	
 	return viewer;

@@ -249,7 +249,7 @@ public class GeoMapBean implements Serializable {
                 .getConfig()
                 .getMappingById("newSearch5")
                 .getPatternParser()
-                .getMappedURL(query, "1", "-", "-");
+                .getMappedURL("-", query, "1", "-", "-");
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -37,6 +38,7 @@ import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.Point;
 import io.goobi.viewer.model.maps.Polygon;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
+import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -95,6 +97,7 @@ public class GeoCoordinateConverter {
                 .map(e -> {
                     GeoMapFeature f = e.getKey();
                     f.setCount(e.getValue().size());
+                    f.setEntities(e.getValue().stream().flatMap(f1 -> f1.getEntities().stream()).collect(Collectors.toList()));
                     return f;
                 })
                 .collect(Collectors.toList());
@@ -196,7 +199,7 @@ public class GeoCoordinateConverter {
 
         addMetadataToFeature(doc, children, docFeatures);
         docFeatures.forEach(f -> {
-            List<IMetadataValue> titleValues = f.getMetadata().get(titleField);
+            List<IMetadataValue> titleValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault(titleField, Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
             if(!titleValues.isEmpty()) {
                 f.setTitle(titleValues.get(0));                
             }
@@ -208,11 +211,17 @@ public class GeoCoordinateConverter {
 
     private static void addMetadataToFeature(SolrDocument doc, SolrDocumentList children, List<GeoMapFeature> docFeatures) {
             Map<String, List<IMetadataValue>> translatedMetadata = SolrTools.getTranslatedMetadata(doc, name -> !name.matches(METADATA_TO_IGNORE_REGEX));
-            docFeatures.forEach(f -> translatedMetadata.entrySet().forEach(e -> f.addMetadata(e.getKey(), e.getValue())));
+            MetadataContainer entity = new MetadataContainer(
+                    SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), 
+                    Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL)).orElse(Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_VALUE)).orElse("")));
+            
+            translatedMetadata.entrySet().forEach(e -> entity.put(e.getKey(), e.getValue()));
 
             List<ComplexMetadata> childDocs = ComplexMetadata.getMetadataFromDocuments(children);
             List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).collect(Collectors.toList());
-            docFeatures.forEach(f -> allChildDocValues.forEach(entry -> f.addMetadata(entry.getKey(), entry.getValue())));
+            allChildDocValues.forEach(e -> entity.addAll(e.getKey(),  e.getValue()));
+            
+            docFeatures.forEach(f -> f.addEntity(entity));
     }
 
     /**

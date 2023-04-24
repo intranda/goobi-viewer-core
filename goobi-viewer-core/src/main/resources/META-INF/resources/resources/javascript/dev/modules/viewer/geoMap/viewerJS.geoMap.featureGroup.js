@@ -117,7 +117,7 @@ var viewerJS = ( function( viewer ) {
                 let marker = L.marker(latlng, {
                     draggable: this.config.allowMovingFeatures,
                     icon: this.getMarkerIcon(geoJsonPoint.properties),
-                    count: geoJsonPoint.properties?.count ? geoJsonPoint.properties.count : 1
+                    count: this.getCount(geoJsonPoint.properties)
                 });
                 return marker; 
             }.bind(this),
@@ -136,6 +136,7 @@ var viewerJS = ( function( viewer ) {
                 .pipe(rxjs.operators.map(() => this.openPopup(layer)), rxjs.operators.map(() => this.updatePosition(layer)))
                 .subscribe(this.onFeatureMove);
                 rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
+
 
 				let title = viewerJS.getMetadataValue(feature.properties.title, this.config.language);
        			let desc = viewerJS.getMetadataValue(feature.properties.description, this.config.language);      
@@ -243,7 +244,8 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
     }
     
     viewer.GeoMap.featureGroup.prototype.getClusterCount = function(cluster) { 
-	  	let count = cluster.getAllChildMarkers().map(child => child.options?.count ? child.options.count : 0).reduce((a, b) => a + b, 0)
+	  	let count = cluster.getAllChildMarkers().map(child => this.getCount(child.feature.properties)).reduce((a, b) => a + b, 0)
+	  	console.log("cluster count", cluster, count);
 	  	return count;
 	  }
     
@@ -306,8 +308,7 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
     
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(properties) {
     	
-    	let count = properties?.count;
-	    count = count ? count : 1;
+    	let count = this.getCount(properties);
     	let highlighted = properties?.highlighted;
         
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
@@ -339,6 +340,15 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
         }
     }
 
+	viewer.GeoMap.featureGroup.prototype.getCount = function(properties) {
+		if(properties.entities) {
+			return properties.entities.filter(e => e.visible !== false).length;
+		} else if(properties.count){
+			return properties.count;
+		} else {
+			return 1;
+		}
+	}
     
     viewer.GeoMap.featureGroup.prototype.updatePosition = function(marker) {
         marker.feature.geometry = marker.toGeoJSON().geometry;

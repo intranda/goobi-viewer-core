@@ -353,4 +353,5 @@ public class SolrConstants {
     public static final String SOLR_QUERY_AND = " AND ";
     public static final String SOLR_QUERY_OR = " OR ";
     public static final String SOLR_QUERY_TRUE = ":true";
+    public static final String MD_VALUE = "MD_VALUE";
 }

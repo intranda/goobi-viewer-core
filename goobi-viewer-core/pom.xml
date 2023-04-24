@@ -92,7 +92,7 @@
 		<ics.version>3.9.0</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
-		<iiif-api-model.version>2.4.2</iiif-api-model.version>
+		<iiif-api-model.version>2.5.0-SNAPSHOT</iiif-api-model.version>
 		<normdataimporter.version>1.10.1</normdataimporter.version>
 
 		<!-- other libraries -->

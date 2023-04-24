@@ -23,7 +23,6 @@ package io.goobi.viewer.model.maps;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,12 +33,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.gson.JsonObject;
-
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.solr.SolrTools;
+import io.goobi.viewer.model.metadata.MetadataContainer;
 
 /**
  * @author florian
@@ -54,7 +50,7 @@ public class GeoMapFeature {
     private int count = 1;
     //This is used to identify the feature with a certain document, specifically a LOGID of a TOC element
     private String documentId = null;
-    private Map<String, List<IMetadataValue>> metadata = new HashMap<>();
+    private List<MetadataContainer> entities = new ArrayList<>();
 
     public GeoMapFeature() {
     }
@@ -150,32 +146,25 @@ public class GeoMapFeature {
         this.count = count;
     }
 
-    /**
-     * Adds the metadata entry of the given name if none exists yet; otherwise add the given values to the list of values 
-     * mapped to the given metadata name
-     * @param name
-     * @param values
-     */
-    public void addMetadata(String name, List<IMetadataValue> values) {
-        List<IMetadataValue> existingValues = this.metadata.get(name);
-        if(existingValues == null) {
-            existingValues = new ArrayList<>();
-            this.metadata.put(name, existingValues);            
-        }
-        existingValues.addAll(values);
+    public List<MetadataContainer> getEntities() {
+        return Collections.unmodifiableList(entities);
     }
-        
-    public Map<String, List<IMetadataValue>> getMetadata() {
-        return Collections.unmodifiableMap(metadata);
+
+    public void setEntities(List<MetadataContainer> entities) {
+        this.entities = entities;
     }
-    
+
+    public void addEntity(MetadataContainer entity) {
+        this.entities.add(entity);
+    }
+
     public JSONObject getJsonObject() {
 
         JSONObject object = new JSONObject(this.json);
         JSONObject properties;
         try {
             properties = object.getJSONObject("properties");
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             properties = new JSONObject();
             object.put("properties", properties);
         }
@@ -191,25 +180,22 @@ public class GeoMapFeature {
         if (StringUtils.isNotBlank(this.documentId)) {
             properties.put("documentId", this.documentId);
         }
-        if(!this.metadata.isEmpty()) {
-            JSONObject jsonMetadata = new JSONObject();
-            properties.put("metadata", jsonMetadata);
-            for (Entry<String, List<IMetadataValue>> entry : this.metadata.entrySet()) {
-                try {                    
+        if (!this.entities.isEmpty()) {
+            JSONArray entities = new JSONArray();
+            properties.put("entities", entities);
+            for (MetadataContainer entity : this.entities) {
+                JSONObject jsonMetadata = new JSONObject();
+                entities.put(jsonMetadata);
+                for (Entry<String, List<IMetadataValue>> entry : entity.getMetadata().entrySet()) {
                     String name = entry.getKey();
-                    List<IMetadataValue> values = entry.getValue();
-                    JSONArray array = new JSONArray();
-                    for (IMetadataValue value : values) {
-                        String o = JsonTools.getAsJson(value);
-                        if(o.startsWith("{")) {
-                            array.put(new JSONObject(o));
-                        } else {                            
-                            array.put(o);
+                    if (name != null) {
+                        List<IMetadataValue> values = entry.getValue();
+                        JSONArray array = new JSONArray();
+                        for (IMetadataValue value : values) {
+                            array.put(JsonTools.getAsObjectForJson(value));
                         }
+                        jsonMetadata.put(name, array);
                     }
-                    jsonMetadata.put(name, array);
-                } catch(JsonProcessingException e) {
-                    //ignore
                 }
             }
         }
@@ -237,7 +223,7 @@ public class GeoMapFeature {
             return false;
         }
         if (obj.getClass().equals(this.getClass())) {
-            GeoMapFeature other = (GeoMapFeature)obj;
+            GeoMapFeature other = (GeoMapFeature) obj;
             return Objects.equals(this.json, other.json) &&
                     Objects.equals(this.title, other.title) &&
                     Objects.equals(this.link, other.link);

@@ -29,6 +29,8 @@
 				<h3 data-metadata="title"></h3>
 				<span data-metadata="description"></span> 
 		</popover>
+		<div id="featureList_#{cc.attrs.mapId}" class="geomap__featurelist"></div>
+		<div id="featureFilters_#{cc.attrs.mapId}" class="geomap__featureFilters"></div>
 		<script>
 		
 		$(document).ready(() => {   
@@ -49,10 +51,11 @@
 				           		clusterMarkers: #{cc.attrs.clusterMarkers},
 				           		markerIcon: (icon => icon)(#{featureSet.markerAsJSON}),
 				           		search: {
-					            	searchUrlTemplate : "#{featureSet.queryResultSet ? geoMapBean.getCoordinateSearchQueryTemplate(featureSet) : ''}",			           			
+					            	searchUrlTemplate : '#{featureSet.queryResultSet ? geoMapBean.getCoordinateSearchQueryTemplate(featureSet) : ""}',			           			
 					            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and featureSet.queryResultSet},
 					            	linkTarget : "#{cc.attrs.linkTarget}",
-					            	loader: "##{cc.attrs.mapId} .ajax_loader"
+					            	loader: "##{cc.attrs.mapId} .ajax_loader",
+					            	openSearchOnMarkerClick: false,
 				           		},
 					            heatmap: {
 					            	enabled: #{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()},
@@ -67,9 +70,28 @@
 		            },
 		    }
 	    	let geomap = new viewerJS.GeoMapCms(config);
-
+			window.geomap = geomap;
 		    let view = #{cc.attrs.geoMap.initialView};
-	    	geomap.init(view);
+	    	geomap.init(view)
+	    	.then((map) => {
+	    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
+	    			featureGroups: map.layers,
+	    			title: "Personen geboren in",
+	    			locale: "#{navigationHelper.locale}",
+	    			labelField: "MD_CREATOR",
+	    		})
+	    		riot.mount(document.getElementById("featureFilters_#{cc.attrs.mapId}"), "featuresetfilter", {
+	    			filters: [{
+	    				field: "MD_ROLE",
+	    				featureGroup: map.layers[0],
+	    			}],
+    				geomap: map,
+	    			locale: "#{navigationHelper.locale}",
+	    		})
+	    	})
+	    	.catch(e => {
+	    		console.error("Error initializing map ", e);
+	    	})
     	})    
 
 		</script>

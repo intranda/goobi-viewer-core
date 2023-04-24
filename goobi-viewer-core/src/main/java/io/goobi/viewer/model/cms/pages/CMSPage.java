@@ -191,7 +191,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * A {@link CMSPageTemplate} used to create this page. Must be null if the page hasn't been created using a template. Used to apply user
      * privileges for templates to pages derived from that template as well as determining if a page may be edited by a user
      */
-    @JoinColumn(name = "page_template_id")
+    @Column(name = "page_template_id")
     private Long templateId = null;
     @Transient
     private CMSPageTemplate template = null;
