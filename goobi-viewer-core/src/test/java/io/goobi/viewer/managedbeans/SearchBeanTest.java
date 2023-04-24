@@ -822,6 +822,26 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#setExactSearchString(String)
+     * @verifies reset advanced search query items if query empty
+     */
+    @Test
+    public void setExactSearchString_shouldResetAdvancedSearchQueryItemsIfQueryEmpty() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.advanced[@enabled]", true);
+        
+        SearchBean sb = new SearchBean();
+        sb.setActiveSearchType(SearchHelper.SEARCH_TYPE_ADVANCED);
+        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
+        Assert.assertFalse(items.isEmpty());
+        items.get(0).setOperator(SearchItemOperator.NOT);
+        items.get(0).setValue("foo bar");
+        Assert.assertEquals(SearchHelper.SEARCH_TYPE_ADVANCED, sb.getActiveSearchType());
+        sb.setExactSearchString("-");
+        Assert.assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
+        Assert.assertNull(items.get(0).getValue());
+    }
+
+    /**
      * @see SearchBean#getSearchSortingOptions()
      * @verifies return options correctly
      */

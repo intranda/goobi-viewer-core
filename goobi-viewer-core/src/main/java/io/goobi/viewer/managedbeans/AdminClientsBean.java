@@ -27,10 +27,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -38,9 +36,9 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSourceException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
@@ -67,11 +65,12 @@ public class AdminClientsBean implements Serializable {
     private final IDAO dao;
 
     private ClientApplication selectedClient = null;
-    
+
     private TableDataProvider<ClientApplication> configuredClientsModel;
-        
+
     /**
      * Constructor for testing
+     * 
      * @param dao
      * @param listEntriesPerPage
      */
@@ -79,7 +78,7 @@ public class AdminClientsBean implements Serializable {
         this.dao = dao;
         configuredClientsModel = createDataTableProvider(listEntriesPerPage);
     }
-    
+
     /**
      * Publi no-args constructor
      */
@@ -92,56 +91,60 @@ public class AdminClientsBean implements Serializable {
             throw new IllegalStateException("Cannot initialize bean without connection to dao");
         }
     }
-    
+
     /**
-     * Get the model used for paginated listing configured clients 
+     * Get the model used for paginated listing configured clients
+     * 
      * @return the configuredClientsModel
      */
     public TableDataProvider<ClientApplication> getConfiguredClientsModel() {
         return configuredClientsModel;
     }
-    
+
     /**
-     * Set the client currently being edited by its database id. 
-     * @param id    database id. If null or not matching an existing client, the selected client will be null
+     * Set the client currently being edited by its database id.
+     * 
+     * @param id database id. If null or not matching an existing client, the selected client will be null
      * @throws DAOException
      */
-    public void setSelectedClientId(Long id) throws DAOException  {
-        if(id != null) {
+    public void setSelectedClientId(Long id) throws DAOException {
+        if (id != null) {
             this.setSelectedClient(dao.getClientApplication(id));
         } else {
             this.setSelectedClient(null);
         }
     }
-    
+
     /**
      * Get the id of the client currently being edited
-     * @return  client database id or null if no client is selected
+     * 
+     * @return client database id or null if no client is selected
      */
     public Long getSelectedClientId() {
-        if(this.selectedClient != null) {
+        if (this.selectedClient != null) {
             return this.selectedClient.getId();
-        } else {
-            return null;
         }
+        return null;
     }
-    
+
     /**
      * Set the currently edited client
+     * 
      * @param selectedClient the selectedClient to set
      */
     public void setSelectedClient(ClientApplication selectedClient) {
         this.selectedClient = selectedClient;
     }
-    
+
     /**
      * Get the currently edited client
+     * 
      * @return the selectedClient
      */
     public ClientApplication getSelectedClient() {
         return selectedClient;
     }
-    
+
     /**
      * 'Accept' a registered client by setting its {@link ClientApplication#getAccessStatus()} to {@link AccessStatus#GRANTED}
      * 
@@ -152,11 +155,12 @@ public class AdminClientsBean implements Serializable {
         client.initializeSubnetMask();
         save(client);
     }
-    
+
     /**
      * 'Regect a registered client by calling {@link #delete(ClientApplication)} on it
+     * 
      * @param client
-     * @return  pretty url of admin/clients overview page
+     * @return pretty url of admin/clients overview page
      */
     public String reject(ClientApplication client) {
         delete(client);
@@ -165,34 +169,36 @@ public class AdminClientsBean implements Serializable {
 
     /**
      * Save the given client to database
+     * 
      * @param client
      */
     public void save(ClientApplication client) {
-        try {            
-            if(dao.saveClientApplication(client)) {
+        try {
+            if (dao.saveClientApplication(client)) {
                 Messages.info(null, "admin__clients__save_client__success", client.getClientIdentifier());
             } else {
                 Messages.error(null, "admin__clients__save_client__error", client.getClientIdentifier());
             }
-        } catch(DAOException e) {
+        } catch (DAOException e) {
             logger.error(e.toString(), e);
             Messages.error(null, "admin__clients__save_client__error", client.getClientIdentifier());
         }
     }
-    
+
     /**
      * Delete given client from database
+     * 
      * @param client
      * @return
      */
     public String delete(ClientApplication client) {
-        try {            
-            if(dao.deleteClientApplication(client.getId())) {
+        try {
+            if (dao.deleteClientApplication(client.getId())) {
                 Messages.info(null, "admin__clients__delete_client__success", client.getClientIdentifier());
             } else {
                 Messages.error(null, "admin__clients__delete_client__error", client.getClientIdentifier());
             }
-        } catch(DAOException e) {
+        } catch (DAOException e) {
             logger.error(e.toString(), e);
             Messages.error(null, "admin__clients__delete_client__error", client.getClientIdentifier());
         }
@@ -203,7 +209,7 @@ public class AdminClientsBean implements Serializable {
         TableDataProvider<ClientApplication> provider = new TableDataProvider<ClientApplication>(new TableDataSource<ClientApplication>() {
 
             private long totalNumberOfRecords = 0;
-            
+
             @Override
             public List<ClientApplication> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters)
                     throws TableDataSourceException {
@@ -214,56 +220,54 @@ public class AdminClientsBean implements Serializable {
                     stream = list.stream()
                             .filter(c -> AccessStatus.NON_APPLICABLE != c.getAccessStatus())
                             .filter(c -> AccessStatus.REQUESTED != c.getAccessStatus());
-                    
+
                     //filters
-                    for (String  filterName : filters.keySet()) {
+                    for (String filterName : filters.keySet()) {
                         String filterValue = filters.get(filterName);
-                        if(StringUtils.isNotBlank(filterValue)) {                            
+                        if (StringUtils.isNotBlank(filterValue)) {
                             stream = stream.filter(c -> matchesFilter(c, filterName, filterValue));
                         }
                     }
-                                        
+
                     //sorting
                     int sortDirectionFactor = SortOrder.DESCENDING.equals(sortOrder) ? -1 : 1; // desc - asc
                     if ("name".equals(sortField)) {
-                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getName(), c2.getName()))
-                                       .sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIdentifier(), c2.getClientIdentifier()));
-                    } else if("ip".equals(sortField)) {
-                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIp(), c2.getClientIp()));
-                    } else if("dateRegistered".equals(sortField)) {
-                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * c1.getDateRegistered().compareTo(c2.getDateRegistered()));
-                    } else if("dateLastAccess".equals(sortField)) {
-                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * c1.getDateLastAccess().compareTo(c2.getDateLastAccess()));
+                        stream = stream.sorted((c1, c2) -> sortDirectionFactor * StringUtils.compare(c1.getName(), c2.getName()))
+                                .sorted((c1, c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIdentifier(), c2.getClientIdentifier()));
+                    } else if ("ip".equals(sortField)) {
+                        stream = stream.sorted((c1, c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIp(), c2.getClientIp()));
+                    } else if ("dateRegistered".equals(sortField)) {
+                        stream = stream.sorted((c1, c2) -> sortDirectionFactor * c1.getDateRegistered().compareTo(c2.getDateRegistered()));
+                    } else if ("dateLastAccess".equals(sortField)) {
+                        stream = stream.sorted((c1, c2) -> sortDirectionFactor * c1.getDateLastAccess().compareTo(c2.getDateLastAccess()));
                     }
-                    
+
                     //from-to
                     stream = stream.skip(first).limit(pageSize);
-                    
+
                     return stream.collect(Collectors.toList());
-                    
+
                 } catch (DAOException e) {
                     throw new TableDataSourceException(e);
                 }
 
             }
 
-
-
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
-                if(totalNumberOfRecords == 0) {
+                if (totalNumberOfRecords == 0) {
                     Stream<ClientApplication> stream;
                     try {
                         stream = dao.getAllClientApplications().stream();
-                        
+
                         //filters
                         for (String filterName : filters.keySet()) {
                             String filterValue = filters.get(filterName);
-                            if(StringUtils.isNotBlank(filterValue)) {                            
+                            if (StringUtils.isNotBlank(filterValue)) {
                                 stream = stream.filter(c -> matchesFilter(c, filterName, filterValue));
                             }
                         }
-                        
+
                         this.totalNumberOfRecords = stream.count();
                     } catch (DAOException e) {
                         throw new TableDataSourceException(e);
@@ -276,19 +280,17 @@ public class AdminClientsBean implements Serializable {
             public void resetTotalNumberOfRecords() {
                 this.totalNumberOfRecords = 0;
             }
-            
+
             private boolean matchesFilter(ClientApplication client, String filterName, String filterValue) {
-                if(filterName.equals(DEFAULT_TABLE_FILTER)) {
-                    return Optional.ofNullable(client.getName()).map(value -> value.contains(filterValue)).orElse(false) || 
-                           Optional.ofNullable(client.getClientIp()).map(value -> value.contains(filterValue)).orElse(false) ||
-                           Optional.ofNullable(client.getClientIdentifier()).map(value -> value.contains(filterValue)).orElse(false);
-                } else {
-                    return true;
+                if (filterName.equals(DEFAULT_TABLE_FILTER)) {
+                    return Optional.ofNullable(client.getName()).map(value -> value.contains(filterValue)).orElse(false) ||
+                            Optional.ofNullable(client.getClientIp()).map(value -> value.contains(filterValue)).orElse(false) ||
+                            Optional.ofNullable(client.getClientIdentifier()).map(value -> value.contains(filterValue)).orElse(false);
                 }
+                return true;
             }
         });
-        
-        
+
         provider.setEntriesPerPage(entriesPerPage);
         provider.getFilter(DEFAULT_TABLE_FILTER);
         return provider;
@@ -296,6 +298,7 @@ public class AdminClientsBean implements Serializable {
 
     /**
      * Get a list of all clients with {@link AccessStatus#REQUESTED}
+     * 
      * @return
      * @throws DAOException
      */
@@ -305,9 +308,10 @@ public class AdminClientsBean implements Serializable {
                 .filter(c -> c.getAccessStatus().equals(AccessStatus.REQUESTED))
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * Get a list of all clients with {@link AccessStatus#GRANTED}
+     * 
      * @return
      * @throws DAOException
      */
@@ -317,9 +321,10 @@ public class AdminClientsBean implements Serializable {
                 .filter(c -> c.getAccessStatus().equals(AccessStatus.GRANTED))
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * Get a list of all clients with {@link AccessStatus#GRANTED} pr {@link AccessStatus#DENIED}
+     * 
      * @return
      * @throws DAOException
      */
@@ -329,12 +334,12 @@ public class AdminClientsBean implements Serializable {
                 .filter(c -> c.getAccessStatus().equals(AccessStatus.DENIED) || c.getAccessStatus().equals(AccessStatus.GRANTED))
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * Get the internally created client representing all clients for access rights purposes
      * 
      * @return the allClients
-     * @throws DAOException 
+     * @throws DAOException
      */
     public ClientApplication getAllClients() throws DAOException {
         return DataManager.getInstance().getClientManager().getAllClients();
@@ -342,30 +347,32 @@ public class AdminClientsBean implements Serializable {
 
     /**
      * Check if the current session is with a client application, i.e. if client requests contain the client-application-id header
-     * @return  true if session belongs to a client application
+     * 
+     * @return true if session belongs to a client application
      */
     public boolean isClientLoggedIn() {
         return !ClientApplicationManager.getClientFromSession(BeanUtils.getSession()).isEmpty();
     }
-    
+
     /**
      * Check if a client application is logged in that is applicable for access privileges
-     * @return  true if the session contains a clientApplication with the accessStatus {@link AccessStatus#GRANTED} and if the request ip matches the client's subnet mask
+     * 
+     * @return true if the session contains a clientApplication with the accessStatus {@link AccessStatus#GRANTED} and if the request ip matches the
+     *         client's subnet mask
      */
     public boolean isLoggedInClientAccessGranted() {
         return ClientApplicationManager.getClientFromRequest(BeanUtils.getRequest())
                 .map(client -> client.isAccessGranted())
                 .orElse(false);
     }
-    
+
     public boolean isLoggedInClientFromAllowedIP() {
         HttpServletRequest request = BeanUtils.getRequest();
-        if(request != null) {            
+        if (request != null) {
             return ClientApplicationManager.getClientFromRequest(BeanUtils.getRequest())
                     .map(client -> client.matchIp(NetTools.getIpAddress(request)))
                     .orElse(false);
-        } else {
-            return false;
         }
+        return false;
     }
 }

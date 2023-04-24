@@ -106,4 +106,13 @@ public class ConfigurationBeanTest extends AbstractTest {
     public void isSidebarFulltextLinkVisible_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, bean.isSidebarFulltextLinkVisible());
     }
+
+    /**
+     * @see ConfigurationBean#getSearchResultGroupNames()
+     * @verifies return all values
+     */
+    @Test
+    public void getSearchResultGroupNames_shouldReturnAllValues() throws Exception {
+        Assert.assertEquals(3, bean.getSearchResultGroupNames().size());
+    }
 }

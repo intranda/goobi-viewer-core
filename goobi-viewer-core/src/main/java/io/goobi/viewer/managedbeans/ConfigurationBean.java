@@ -101,18 +101,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isBookshelvesEnabled.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isBookshelvesEnabled() {
-        return isBookmarksEnabled();
-    }
-
-    /**
-     * <p>
      * isBookmarksEnabled.
      * </p>
      *
@@ -1366,8 +1354,10 @@ public class ConfigurationBean implements Serializable {
     /**
      * 
      * @return List of names of the configured search result groups
+     * @should return all values
      */
     public List<String> getSearchResultGroupNames() {
+        logger.trace("getSearchResultGroupNames");
         return DataManager.getInstance()
                 .getConfiguration()
                 .getSearchResultGroups()

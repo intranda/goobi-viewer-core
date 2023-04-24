@@ -1692,7 +1692,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getPreviousView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = "/";//getApplicationUrl();
+            previousUrl = "/";
         }
         return previousUrl;
     }
@@ -1728,7 +1728,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = "/";//getApplicationUrl();
+            previousUrl = "/";
         }
         return previousUrl;
     }
@@ -1737,7 +1737,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request).map(ViewerPath::getCombinedPrettyfiedUrl).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = "/";//getApplicationUrl();
+            previousUrl = "/";
         } else if (previousUrl.endsWith("/")) {
             previousUrl = previousUrl.substring(0, previousUrl.length() - 1);
         }

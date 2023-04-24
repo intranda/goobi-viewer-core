@@ -1305,12 +1305,17 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param inSearchString a {@link java.lang.String} object.
      * @should perform double unescaping if necessary
+     * @should reset advanced search query items if query empty
      */
     public void setExactSearchString(String inSearchString) {
         logger.debug("setExactSearchString: {}", inSearchString);
         if ("-".equals(inSearchString)) {
             inSearchString = "";
             searchString = "";
+            // Reset advanced search query items
+            if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
+                resetAdvancedSearchParameters();
+            }
         }
         searchStringInternal = inSearchString;
         // First apply regular URL decoder
