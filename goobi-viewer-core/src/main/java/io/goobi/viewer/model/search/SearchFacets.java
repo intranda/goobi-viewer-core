@@ -839,11 +839,10 @@ public class SearchFacets implements Serializable {
      * alphanumeric comparator.
      *
      * @param field
-     * @param resultGroupName
      * @should populate values correctly
      * @should add all values to list
      */
-    void populateAbsoluteMinMaxValuesForField(String field, SortedMap<String, Long> counts, String resultGroupName) {
+    void populateAbsoluteMinMaxValuesForField(String field, SortedMap<String, Long> counts) {
         if (field == null) {
             return;
         }

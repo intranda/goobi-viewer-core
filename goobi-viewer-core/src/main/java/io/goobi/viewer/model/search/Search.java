@@ -615,7 +615,7 @@ public class Search implements Serializable {
                 String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (rangeFacetFields.contains(facetField.getName())) {
                     // Slider range
-                    facets.populateAbsoluteMinMaxValuesForField(defacetifiedFieldName, counts, resultGroup != null ? resultGroup.getName() : null);
+                    facets.populateAbsoluteMinMaxValuesForField(defacetifiedFieldName, counts);
                 }
             }
         }
