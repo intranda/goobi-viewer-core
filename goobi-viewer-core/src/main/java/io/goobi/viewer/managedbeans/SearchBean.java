@@ -1453,6 +1453,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should reset advanced search query items if old group used as field template
      */
     public void setActiveResultGroupName(String activeResultGroupName) {
+        logger.trace("setActiveResultGroupName: {}", activeResultGroupName);
         if (activeResultGroup != null && activeResultGroup.getName().equals(activeResultGroupName)) {
             return;
         }
@@ -1465,6 +1466,8 @@ public class SearchBean implements SearchInterface, Serializable {
                         this.advancedSearchFieldTemplate = resultGroup.getName();
                         // Reset query items
                         resetAdvancedSearchParameters();
+                        // Reset slider ranges
+                        facets.resetSliderRange();
                     }
                     return;
                 }
@@ -1472,9 +1475,10 @@ public class SearchBean implements SearchInterface, Serializable {
             logger.warn("Search result group name not found: {}", activeResultGroupName);
         }
 
-        // Reset query items if active group is used as item field template
+        // Reset query items and slider ranges if active group is used as item field template
         if (activeResultGroup != null && activeResultGroup.isUseAsAdvancedSearchTemplate()) {
             resetAdvancedSearchParameters();
+            facets.resetSliderRange();
         }
         activeResultGroup = null;
         this.advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;

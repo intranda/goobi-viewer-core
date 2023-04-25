@@ -839,10 +839,11 @@ public class SearchFacets implements Serializable {
      * alphanumeric comparator.
      *
      * @param field
+     * @param resultGroupName
      * @should populate values correctly
      * @should add all values to list
      */
-    void populateAbsoluteMinMaxValuesForField(String field, SortedMap<String, Long> counts) {
+    void populateAbsoluteMinMaxValuesForField(String field, SortedMap<String, Long> counts, String resultGroupName) {
         if (field == null) {
             return;
         }
@@ -852,7 +853,7 @@ public class SearchFacets implements Serializable {
             return;
         }
 
-        SortedMap<Integer, Long> intValues = new TreeMap<Integer, Long>();
+        SortedMap<Integer, Long> intValues = new TreeMap<>();
         if (counts != null) {
             for (Entry<String, Long> e : counts.entrySet()) {
                 if (e.getKey() == null || e.getValue() == null) {
