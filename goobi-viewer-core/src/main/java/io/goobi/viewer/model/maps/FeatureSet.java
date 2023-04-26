@@ -10,10 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -41,6 +44,10 @@ public abstract class FeatureSet implements Serializable {
     @Column(name = "featureset_id")
     private Long id;
 
+    @Column(name = "name", nullable = true, columnDefinition = "MEDIUMTEXT")
+    @Convert(converter = TranslatedTextConverter.class)
+    private TranslatedText name = new TranslatedText();
+    
     @Column(name = "marker")
     private String marker = DEFAULT_MARKER_NAME;
 
@@ -49,6 +56,8 @@ public abstract class FeatureSet implements Serializable {
     }
     
     protected FeatureSet(FeatureSet blueprint) {
+        this.id = blueprint.id;
+        this.name = new TranslatedText(blueprint.name);
         this.marker = blueprint.marker;
     }
     
@@ -87,6 +96,12 @@ public abstract class FeatureSet implements Serializable {
         return "{}";
     }
 
+    public TranslatedText getName() {
+        return name;
+    }
     
+    public void setName(TranslatedText name) {
+        this.name = name;
+    }
     
 }

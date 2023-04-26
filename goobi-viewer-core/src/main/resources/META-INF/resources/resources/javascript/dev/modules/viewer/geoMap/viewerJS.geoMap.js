@@ -71,6 +71,7 @@ var viewerJS = ( function( viewer ) {
         this.onMapRightclick = new rxjs.Subject();
         this.onMapClick = new rxjs.Subject();
         this.onMapMove = new rxjs.Subject();
+        this.onActiveLayerChange = new rxjs.Subject();
         this.onInitialized = new Promise( (resolve, reject) => {
         	this.resolveInitialization = resolve;
         	this.rejectInitialization = reject;
@@ -113,7 +114,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         this.map = new L.Map(this.config.element ? this.config.element : this.config.mapId, {
-            zoomControl: !this.config.fixed,
+            zoomControl: false,
             doubleClickZoom: !this.config.fixed,
             scrollWheelZoom: !this.config.fixed,
             dragging: !this.config.fixed,    
@@ -313,6 +314,22 @@ var viewerJS = ( function( viewer ) {
         }
     }
 
+	viewer.GeoMap.prototype.setActiveLayers = function(groups) {
+		this.layers.forEach(layer => {
+			if(groups.includes(layer)) {
+				layer.active = true;
+				layer.showMarkers();
+			} else {
+				layer.active = false;
+				layer.hideMarkers();
+			}
+		})
+		this.onActiveLayerChange.next(this.getActiveLayers());
+	}
+
+	viewer.GeoMap.prototype.getActiveLayers = function() {
+		return this.layers.filter(l => l.active !== false);
+	}
     
     //static methods to get all loaded maps
     viewer.GeoMap.allMaps = [];

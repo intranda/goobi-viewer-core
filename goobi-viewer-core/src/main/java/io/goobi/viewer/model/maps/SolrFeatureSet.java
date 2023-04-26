@@ -30,7 +30,8 @@ public class SolrFeatureSet extends FeatureSet {
     @Column(name = "solr_query")
     private String solrQuery = null;
     
-    private boolean aggregateResults = true;
+    @Column(name = "aggregate_results")
+    private boolean aggregateResults = false;
 
     /**
      * SOLR-Field to create the marker title from if the features are generated from a SOLR query
@@ -49,6 +50,7 @@ public class SolrFeatureSet extends FeatureSet {
         super(blueprint);
         this.solrQuery = blueprint.solrQuery;
         this.markerTitleField = blueprint.markerTitleField;
+        this.aggregateResults = blueprint.aggregateResults;
     }
 
     @Override
@@ -148,5 +150,6 @@ public class SolrFeatureSet extends FeatureSet {
     
     public void setAggregateResults(boolean aggregateResults) {
         this.aggregateResults = aggregateResults;
+        this.featuresAsString = null;
     }
 }

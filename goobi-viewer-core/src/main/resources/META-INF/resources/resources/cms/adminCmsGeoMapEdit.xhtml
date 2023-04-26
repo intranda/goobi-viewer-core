@@ -136,7 +136,6 @@
 										</div>
 									</div>
 								</div>
-								<!-- 								</ui:repeat> -->
 							</div>
 						</h:panelGroup>
 						<div class="admin__content-inner-content__form_title">
@@ -169,6 +168,26 @@
 											</button>
 										</div>
 										<div>
+											<!-- FEATURESET NAME -->
+											<div class="input_form__option_group">
+												<div class="input_form__option_label">
+													<label for="featureset_#{status.index}_name">#{msg.name}:</label>
+												</div>
+												<div class="input_form__option_marker"></div>
+												<div class="input_form__option_control">
+													<viewerComponent:localeSelector object="#{featureSet.name}" render="featureSetsPanel"></viewerComponent:localeSelector>
+													<h:inputText id="featureset_#{status.index}_name" styleClass="form-control" value="#{featureSet.name.text}"/>
+												</div>
+												<div class="input_form__option_help">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" for="titleHelp"
+														aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+												<div id="titleHelp"
+													class="input_form__option_control_helptext">#{msg.cms__geomaps__featureset_name__help}</div>
+											</div>
 											<!-- MARKER -->
 											<div class="input_form__option_group">
 												<div class="input_form__option_label">
@@ -272,6 +291,25 @@
 												</div>
 												<div id="popupContentHelp_#{status.index}"
 													class="input_form__option_control_helptext">#{msg.cms__geomaps__popup_content__help}</div>
+											</div>
+											<!-- AGGREGATE RESULTS -->
+											<div class="input_form__option_group">
+												<div class="input_form__option_label">
+													<label for="featureset_#{status.index}_aggregation">#{msg.cms__geomaps__aggregate_query_results__label}:</label>
+												</div>
+												<div class="input_form__option_marker"></div>
+												<div class="input_form__option_control">
+													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/>
+												</div>
+												<div class="input_form__option_help">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" for="titleHelp"
+														aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+												<div id="titleHelp"
+													class="input_form__option_control_helptext">#{msg.cms__geomaps__aggregate_query_results__help}</div>
 											</div>
 										</ui:fragment>
 									</div>

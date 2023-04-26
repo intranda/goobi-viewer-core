@@ -41,6 +41,9 @@ import org.apache.logging.log4j.LogManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -155,23 +158,29 @@ public class JsonTools {
         if(value == null) {
             return null;
         }
-        try {
-            String s = getAsJson(value);
-            if(StringUtils.isBlank(s)) {
-                return null;
-            } else if(s.startsWith("{")) {
-                return new JSONObject(s);
-            } else if(s.matches("(?i)true|false")) {
-                return Boolean.parseBoolean(s);
-            } else if(s.matches("\\d+")) {
-                return Long.parseLong(s);
-            } else if(s.matches("[\\d.]+")) {
-                return Double.parseDouble(s);
-            } else {
-                return s;
+        if(value instanceof String) {
+            return value;
+        } else if(value instanceof IMetadataValue && ((IMetadataValue) value).getNumberOfUniqueTranslations() == 1) {
+            return ((IMetadataValue) value).getValue().orElse("");
+        } else {
+            try {
+                String s = getAsJson(value);
+                if(StringUtils.isBlank(s)) {
+                    return null;
+                } else if(s.startsWith("{")) {
+                    return new JSONObject(s);
+                } else if(s.matches("(?i)true|false")) {
+                    return Boolean.parseBoolean(s);
+                } else if(s.matches("\\d+")) {
+                    return Long.parseLong(s);
+                } else if(s.matches("[\\d.]+")) {
+                    return Double.parseDouble(s);
+                } else {
+                    return s;
+                }
+            } catch (JsonProcessingException e) {
+                return value.toString();
             }
-        } catch (JsonProcessingException e) {
-            return value.toString();
         }
     }
 

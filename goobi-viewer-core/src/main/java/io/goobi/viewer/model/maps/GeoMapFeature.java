@@ -181,11 +181,11 @@ public class GeoMapFeature {
             properties.put("documentId", this.documentId);
         }
         if (!this.entities.isEmpty()) {
-            JSONArray entities = new JSONArray();
-            properties.put("entities", entities);
+            JSONArray ents = new JSONArray();
+            properties.put("entities", ents);
             for (MetadataContainer entity : this.entities) {
                 JSONObject jsonMetadata = new JSONObject();
-                entities.put(jsonMetadata);
+                ents.put(jsonMetadata);
                 for (Entry<String, List<IMetadataValue>> entry : entity.getMetadata().entrySet()) {
                     String name = entry.getKey();
                     if (name != null) {

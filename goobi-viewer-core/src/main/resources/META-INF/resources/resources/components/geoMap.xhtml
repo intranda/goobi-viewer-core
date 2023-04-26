@@ -24,13 +24,16 @@
 			<span class="ajax_loader">
 				<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
 			</span>
+			<div id="featureList_#{cc.attrs.mapId}" class="geomap__featurelist"></div>
 		</div>
 		<popover id="popoverTemplate_#{cc.attrs.mapId}" class="#{cc.attrs.popoverClass}">
 				<h3 data-metadata="title"></h3>
-				<span data-metadata="description"></span> 
+				<span data-metadata="description"></span>
 		</popover>
-		<div id="featureList_#{cc.attrs.mapId}" class="geomap__featurelist"></div>
-		<div id="featureFilters_#{cc.attrs.mapId}" class="geomap__featureFilters"></div>
+		<div class="geomap__options_wrapper">
+			<div id="featureSetSelector_#{cc.attrs.mapId}" class="geomap__featureset_selector"/>
+			<div id="featureFilters_#{cc.attrs.mapId}" class="geomap__featureFilters"></div>
+		</div>
 		<script>
 		
 		$(document).ready(() => {   
@@ -50,6 +53,7 @@
 				           		popoverOnHover: #{cc.attrs.popoverOnHover},
 				           		clusterMarkers: #{cc.attrs.clusterMarkers},
 				           		markerIcon: (icon => icon)(#{featureSet.markerAsJSON}),
+				           		label: #{featureSet.name.getAsJson()},
 				           		search: {
 					            	searchUrlTemplate : '#{featureSet.queryResultSet ? geoMapBean.getCoordinateSearchQueryTemplate(featureSet) : ""}',			           			
 					            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and featureSet.queryResultSet},
@@ -69,23 +73,28 @@
 				        ],
 		            },
 		    }
+		    console.log("map layers ", config.map.layers.map(l => l.features));
 	    	let geomap = new viewerJS.GeoMapCms(config);
 			window.geomap = geomap;
 		    let view = #{cc.attrs.geoMap.initialView};
 	    	geomap.init(view)
 	    	.then((map) => {
+	    		map.setActiveLayers(map.layers.slice(0, 1));
 	    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
 	    			featureGroups: map.layers,
-	    			title: "Personen geboren in",
+	    			geomap: map,
 	    			locale: "#{navigationHelper.locale}",
-	    			labelField: "MD_CREATOR",
+	    			labelFormat: "\${MD_CREATOR} (\${MD_BIOGRAPHY_EDUCATION})",
 	    		})
 	    		riot.mount(document.getElementById("featureFilters_#{cc.attrs.mapId}"), "featuresetfilter", {
-	    			filters: [{
-	    				field: "MD_ROLE",
-	    				featureGroup: map.layers[0],
-	    			}],
+	    			filters: ["MD_ROLE", "METADATA_TYPE"],
     				geomap: map,
+    				featureGroups: map.getActiveLayers(),
+	    			locale: "#{navigationHelper.locale}",
+	    		})
+	    		riot.mount(document.getElementById("featureSetSelector_#{cc.attrs.mapId}"), "featuresetselector", {
+	    			featureGroups: map.layers,
+	    			geomap: map,
 	    			locale: "#{navigationHelper.locale}",
 	    		})
 	    	})

@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -64,6 +65,8 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.ComplexMetadata;
+import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -869,7 +872,6 @@ public class SolrTools {
 
     public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata, Locale locale,
             Function<String, Boolean> fieldNameFilter) {
-        //        List<String> fieldNames = doc.getFieldNames().stream().filter(name -> !IGNORE_METADATA_FIELDS.contains(name)).filter(name -> !name.matches(IGNORE_METADATA_REGEX)).collect(Collectors.toList());
         List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).collect(Collectors.toList());
         for (String fieldName : fieldNames) {
             List<String> values = SolrTools.getMetadataValues(doc, fieldName);
@@ -879,6 +881,7 @@ public class SolrTools {
                 locale = SolrTools.getLocale(fieldName);
             } else if ("MD_VALUE".equals(fieldName)) {
                 baseFieldName = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
+                metadata.put("METADATA_TYPE", Collections.singletonList(new SimpleMetadataValue(baseFieldName)));
             }
             for (String strValue : values) {
                 int valueIndex = values.indexOf(strValue);
@@ -903,5 +906,30 @@ public class SolrTools {
         }
         return metadata;
     }
+    
+    public static final String getReferenceId(SolrDocument doc) {
+       String refId = getSingleFieldStringValue(doc, "MD_REFID");
+       if(StringUtils.isBlank(refId)) {
+           return getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+       } else {
+           return refId;
+       }
+    }
 
+    public static MetadataContainer createMetadataEntity(SolrDocument doc, List<SolrDocument> children, Function<String, Boolean> fieldNameFilter) {
+        Map<String, List<IMetadataValue>> translatedMetadata = getTranslatedMetadata(doc, fieldNameFilter::apply);
+        MetadataContainer entity = new MetadataContainer(
+                getSingleFieldStringValue(doc, SolrConstants.IDDOC), 
+                Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL)).orElse(Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_VALUE)).orElse("")));
+        
+        Set<String> childLabels = children.stream().map(c -> SolrTools.getSingleFieldStringValue(c, SolrConstants.LABEL)).map(SolrTools::getBaseFieldName).collect(Collectors.toSet());
+        translatedMetadata.entrySet().stream()
+        .filter(e -> !childLabels.contains(SolrTools.getBaseFieldName(e.getKey())))
+        .forEach(e -> entity.put(e.getKey(), e.getValue()));
+
+        List<ComplexMetadata> childDocs = ComplexMetadata.getMetadataFromDocuments(children);
+        List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).filter(e -> fieldNameFilter.apply(e.getKey())).collect(Collectors.toList());
+        allChildDocValues.forEach(e -> entity.addAll(e.getKey(),  e.getValue()));
+        return entity;
+    }
 }

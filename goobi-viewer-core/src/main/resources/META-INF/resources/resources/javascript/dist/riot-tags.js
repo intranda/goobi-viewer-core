@@ -2887,110 +2887,126 @@ this.on("mount", () => {
 	console.log("mounting featureSetFilter with", this.opts);
 	this.locale = this.opts.locale;
 	this.geomap = this.opts.geomap;
-	this.filters = this.opts.filters.map(filter => {
+	this.featureGroups = this.opts.featureGroups;
+	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+	this.geomap.onActiveLayerChange.subscribe(groups => {
+		this.featureGroups = groups;
+		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+		this.update();
+	})
+	this.update();
+})
+
+this.createFilters = function(filterOptions, featureGroups) {
+	return filterOptions.map(filter => {
 		return {
-			field: filter.field,
-			options: this.findValues(filter.featureGroup, filter.field, this.locale).map(v => {
+			field: filter,
+			options: this.findValues(featureGroups, filter, this.locale).map(v => {
 				return {
 					name: v,
 					field: filter.field
 				}
 			}),
-			markers: filter.featureGroup.markers,
-			featureGroup: filter.featureGroup
 		}
 	})
-	this.update();
-})
-
-this.setEntities = function(entities) {
-	if(entities && entities.length) {
-		this.entities = entities;
-		this.update();
-	}
+	.filter(filter => filter.options.length > 1);
 }.bind(this)
 
-this.findValues = function(featureGroup, filterField, locale) {
-	return Array.from(new Set(this.findEntities(featureGroup, filterField)
+this.findValues = function(featureGroups, filterField, locale) {
+	return Array.from(new Set(this.findEntities(featureGroups, filterField)
 	.map(e => e[filterField]).map(a => a[0])
 	.map(value => viewerJS.iiif.getValue(value, locale)).filter(e => e)));
 }.bind(this)
 
-this.findEntities = function(featureGroup, filterField) {
-	return featureGroup.markers.flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+this.findEntities = function(featureGroups, filterField) {
+	return featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
 }.bind(this)
 
-this.getLabel = function(entity) {
-	label = viewerJS.iiif.getValue(entity[this.opts.labelField][0], this.locale);
-	return label;
+this.resetFilter = function() {
+	this.featureGroups.forEach(g => g.showMarkers());
 }.bind(this)
 
-this.resetFilter = function(event) {
-	let filter = event.item.filter;
-	this.getAllEntities(filter.featureGroup).forEach(entity => entity.visible = true);
-	this.refreshMarkers(filter);
+this.setFilter = function(event) {
+	let filter = this.getFilterForField(event.item.option.field);
+	let value = event.item.option.name;
+	this.featureGroups.forEach(g => g.showMarkers(entity => entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.locale)).includes(value)));
 }.bind(this)
 
 this.getFilterForField = function(field) {
 	return this.filters.find(f => f.field == field);
 }.bind(this)
 
-this.getAllEntities = function(featureGroup) {
-	let entities = featureGroup.markers.flatMap(m => m.feature.properties.entities);
-	return entities ? entities : [];
+});
+riot.tag2('featuresetselector', '<div class="tab"><button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? \'-active\':\'\'}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button></div>', '', '', function(opts) {
+
+this.featureGroups = [];
+
+this.on("mount", () => {
+	this.featureGroups = opts.featureGroups;
+	this.geomap = opts.geomap;
+	console.log("init featureSetSelector with ", this.featureGroups);
+	this.update();
+})
+
+this.setFeatureGroup = function(event) {
+	let featureGroup = event.item.featureGroup;
+	console.log("change to featureSet ", featureGroup, this.geomap);
+	this.geomap.setActiveLayers([featureGroup]);
 }.bind(this)
 
-this.setFilter = function(event) {
-	let filter = this.getFilterForField(event.item.option.field);
-	let value = event.item.option.name;
-	this.getAllEntities(filter.featureGroup).forEach(entity => {
-		entity.visible = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.locale)).includes(value);
-	});
-	this.refreshMarkers(filter);
+this.getLabel = function(featureGroup) {
+	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale);
 }.bind(this)
 
-this.refreshMarkers = function(filter) {
-	filter.featureGroup.layer.clearLayers();
-	if(filter.featureGroup.cluster) {
-		filter.featureGroup.cluster.clearLayers();
-		filter.featureGroup.layer.addLayer(filter.featureGroup.cluster);
-	}
-	filter.markers.filter(m => filter.featureGroup.getCount(m.feature.properties)).forEach(m => {
-		m.setIcon(filter.featureGroup.getMarkerIcon(m.feature.properties));
-		if(filter.featureGroup.cluster) {
-			filter.featureGroup.cluster.addLayer(m);
-		} else {
-			filter.featureGroup.layer.addLayer(m);
-		}
-	})
+this.isActive = function(featureGroup) {
+	return featureGroup.active;
 }.bind(this)
 
 });
 riot.tag2('geojsonfeaturelist', '<h4>{opts.title}</h4><ul><li each="{entity in entities}">{getLabel(entity)}</li></ul>', '', '', function(opts) {
 
 this.locale = undefined;
+this.defaultDisplay = undefined;
 this.entities = [];
 
 this.on("mount", () => {
 	console.log("mounting ", this.opts);
 	this.locale = this.opts.locale;
 	this.opts.featureGroups.forEach(group => {
-
 		group.onFeatureClick.subscribe(f => this.setEntities(f.properties?.entities?.filter(e => e.visible !== false)));
 	})
-
+	this.opts.geomap.onMapClick.subscribe(e => this.hide());
+	this.hide();
 })
 
 this.setEntities = function(entities) {
 	if(entities && entities.length) {
 		this.entities = entities;
+		this.show();
 		this.update();
 	}
 }.bind(this)
 
 this.getLabel = function(entity) {
-	label = viewerJS.iiif.getValue(entity[this.opts.labelField][0], this.locale);
+	let groups = [...this.opts.labelFormat.matchAll(/\${(.*?)}/g)];
+	let label = this.opts.labelFormat;
+	groups.forEach(group => {
+		if(group.length > 1) {
+			console.log("group ", entity[group[1]]);
+			let value = entity[group[1]].map(s => viewerJS.iiif.getValue(s, this.locale)).join(", ");
+			label = label.replaceAll(group[0], value);
+		}
+	})
 	return label;
+}.bind(this)
+
+this.hide = function() {
+	this.defaultDisplay = this.root.style.display;
+	this.root.style.display = "none";
+}.bind(this)
+
+this.show = function() {
+	this.root.style.display = this.defaultDisplay;
 }.bind(this)
 
 });

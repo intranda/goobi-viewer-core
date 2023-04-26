@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
@@ -43,7 +44,7 @@ public class MetadataContainer {
     public MetadataContainer(MetadataContainer orig) {
         this.solrId = orig.solrId;
         this.label = orig.label.copy();
-        this.metadata = orig.metadata.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().stream().map(IMetadataValue::copy).collect(Collectors.toList())));
+        this.metadata = orig.metadata.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().stream().map(IMetadataValue::copy).collect(Collectors.toList())));
     }
     
     public String getSolrId() {

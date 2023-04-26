@@ -245,7 +245,6 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
     
     viewer.GeoMap.featureGroup.prototype.getClusterCount = function(cluster) { 
 	  	let count = cluster.getAllChildMarkers().map(child => this.getCount(child.feature.properties)).reduce((a, b) => a + b, 0)
-	  	console.log("cluster count", cluster, count);
 	  	return count;
 	  }
     
@@ -520,6 +519,45 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
 	    this.onFeatureClick.complete();
         this.onFeatureMove.complete();	
     }
+    
+    viewer.GeoMap.featureGroup.prototype.showMarkers = function(entityFilter) {
+		_getAllEntities(this).forEach(entity => {
+			entity.visible = _isVisible(entity, entityFilter);
+		});
+		this.hideMarkers();
+		this.markers.filter(m => this.getCount(m.feature.properties))
+		.forEach(m => {
+			m.setIcon(this.getMarkerIcon(m.feature.properties));
+			if(this.cluster) {
+				this.cluster.addLayer(m);
+			} else {
+				this.layer.addLayer(m);
+			}
+		})
+	}
+	
+	viewer.GeoMap.featureGroup.prototype.hideMarkers = function() {
+		this.layer.clearLayers();
+		if(this.cluster) {		
+			this.cluster.clearLayers();
+			this.layer.addLayer(this.cluster);
+		}
+	}
+
+	function _getAllEntities(featureGroup) {
+		let entities = featureGroup.markers.flatMap(m => m.feature.properties.entities);
+		return entities ? entities : [];
+	}
+    
+    function _isVisible(entity, filter) {
+		if(typeof filter === 'function') {
+			return filter(entity);
+		} else if(filter === undefined) {
+			return true;
+		} else {
+			return filter ? true : false;
+		}
+	}
     
     return viewer;
     

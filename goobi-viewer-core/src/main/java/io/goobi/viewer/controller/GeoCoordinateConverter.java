@@ -16,6 +16,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,7 +58,8 @@ public class GeoCoordinateConverter {
     private static final Logger logger = LogManager.getLogger(GeoCoordinateConverter.class);
     protected static final String POINT_LAT_LNG_PATTERN = "([\\dE.-]+)[\\s/]*([\\dE.-]+)";
     protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\dE.-]+[\\s/]*[\\dE.-]+[,\\s]*)+\\)\\)"; //NOSONAR
-    private static final String METADATA_TO_IGNORE_REGEX = "FACET_.*|NORM_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|";
+    private static final String METADATA_TO_IGNORE_REGEX = "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH";
+    private static final String METADATA_TO_INCLUDE_REGEX = "(MD_ROLE|MD_TITLE|MD_VALUE|LABEL|NORM_NAME|MD_CREATOR|MD_BIOGRAPHY|METADATA_TYPE)(_.+)?";
 
     private GeoCoordinateConverter() {
 
@@ -83,8 +86,11 @@ public class GeoCoordinateConverter {
             SolrDocument doc = entry.getKey();
             SolrDocumentList children = entry.getValue();
             for (String field : coordinateFields) {
-                Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, children, field, markerTitleField, null);
-                features.addAll(tempFeatures);
+                Map<String, List<SolrDocument>> metadataDocs = children.stream().collect(Collectors.toMap(SolrTools::getReferenceId, List::of, ListUtils::union));            
+                for (List<SolrDocument> childDocs : metadataDocs.values()) {
+                    Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, childDocs, field, markerTitleField, null);
+                    features.addAll(tempFeatures);
+                }
             }
         }
 
@@ -143,14 +149,14 @@ public class GeoCoordinateConverter {
      * @param titleField solr field containing a title for the coordinates
      * @param descriptionField solr field containing a description for the coordinates
      */
-    public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, SolrDocumentList children, String metadataField, String titleField,
+    public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, List<SolrDocument> children, String metadataField, String titleField,
             String descriptionField) {
         String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
         String desc = StringUtils.isBlank(descriptionField) ? null : SolrTools.getSingleFieldStringValue(doc, descriptionField);
         List<GeoMapFeature> docFeatures = new ArrayList<>();
         List<String> points = new ArrayList<>();
         points.addAll(SolrTools.getMetadataValues(doc, metadataField));
-        points.addAll(children.stream().map(c -> SolrTools.getMetadataValues(c, metadataField)).flatMap(List::stream).collect(Collectors.toList()));
+        points.addAll(children.stream().limit(1).map(c -> SolrTools.getMetadataValues(c, metadataField)).flatMap(List::stream).collect(Collectors.toList()));
         for (String point : points) {
             try {
                 if (point.matches(POINT_LAT_LNG_PATTERN)) { //NOSONAR  no catastrophic backtracking detected
@@ -209,19 +215,15 @@ public class GeoCoordinateConverter {
         return docFeatures;
     }
 
-    private static void addMetadataToFeature(SolrDocument doc, SolrDocumentList children, List<GeoMapFeature> docFeatures) {
-            Map<String, List<IMetadataValue>> translatedMetadata = SolrTools.getTranslatedMetadata(doc, name -> !name.matches(METADATA_TO_IGNORE_REGEX));
-            MetadataContainer entity = new MetadataContainer(
-                    SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), 
-                    Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL)).orElse(Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_VALUE)).orElse("")));
+    private static void addMetadataToFeature(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
             
-            translatedMetadata.entrySet().forEach(e -> entity.put(e.getKey(), e.getValue()));
-
-            List<ComplexMetadata> childDocs = ComplexMetadata.getMetadataFromDocuments(children);
-            List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).collect(Collectors.toList());
-            allChildDocValues.forEach(e -> entity.addAll(e.getKey(),  e.getValue()));
             
+            MetadataContainer entity = SolrTools.createMetadataEntity(doc, children, GeoCoordinateConverter::isValidField);
             docFeatures.forEach(f -> f.addEntity(entity));
+    }
+
+    private static boolean isValidField(String name) {
+        return !name.matches(METADATA_TO_IGNORE_REGEX) && name.matches(METADATA_TO_INCLUDE_REGEX);
     }
 
     /**

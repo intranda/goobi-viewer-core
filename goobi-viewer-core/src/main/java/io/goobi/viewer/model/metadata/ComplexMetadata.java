@@ -33,9 +33,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;

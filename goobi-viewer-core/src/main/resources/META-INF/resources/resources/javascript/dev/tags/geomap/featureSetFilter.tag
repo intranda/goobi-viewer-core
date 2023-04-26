@@ -25,83 +25,55 @@ this.on("mount", () => {
 	console.log("mounting featureSetFilter with", this.opts);
 	this.locale = this.opts.locale;
 	this.geomap = this.opts.geomap;
-	this.filters = this.opts.filters.map(filter => {
+	this.featureGroups = this.opts.featureGroups;
+	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+	this.geomap.onActiveLayerChange.subscribe(groups => {
+		this.featureGroups = groups;
+		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+		this.update();
+	})
+	this.update();
+})
+
+createFilters(filterOptions, featureGroups) {
+	return filterOptions.map(filter => {
 		return {
-			field: filter.field,
-			options: this.findValues(filter.featureGroup, filter.field, this.locale).map(v => {
+			field: filter,
+			options: this.findValues(featureGroups, filter, this.locale).map(v => {
 				return {
 					name: v,
 					field: filter.field
 				}
 			}),
-			markers: filter.featureGroup.markers,
-			featureGroup: filter.featureGroup
 		}
 	})
-	this.update();
-})
-
-setEntities(entities) {
-	if(entities && entities.length) {		
-		this.entities = entities;
-		this.update();
-	}
+	.filter(filter => filter.options.length > 1);
 }
 
-findValues(featureGroup, filterField, locale) {
-	return Array.from(new Set(this.findEntities(featureGroup, filterField)
+findValues(featureGroups, filterField, locale) {
+	return Array.from(new Set(this.findEntities(featureGroups, filterField)
 	.map(e => e[filterField]).map(a => a[0])
 	.map(value => viewerJS.iiif.getValue(value, locale)).filter(e => e)));
 }
 
-findEntities(featureGroup, filterField) {
-	return featureGroup.markers.flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+findEntities(featureGroups, filterField) {
+	return featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
 }
 
-getLabel(entity) {
-	label = viewerJS.iiif.getValue(entity[this.opts.labelField][0], this.locale);
-	return label;
+resetFilter() {
+	this.featureGroups.forEach(g => g.showMarkers());
 }
 
-resetFilter(event) {
-	let filter = event.item.filter;
-	this.getAllEntities(filter.featureGroup).forEach(entity => entity.visible = true);
-	this.refreshMarkers(filter);
+setFilter(event) {
+	let filter = this.getFilterForField(event.item.option.field);
+	let value = event.item.option.name;
+	this.featureGroups.forEach(g => g.showMarkers(entity => entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.locale)).includes(value)));
 }
 
 getFilterForField(field) {
 	return this.filters.find(f => f.field == field);
 }
 
-getAllEntities(featureGroup) {
-	let entities = featureGroup.markers.flatMap(m => m.feature.properties.entities);
-	return entities ? entities : [];
-}
-
-setFilter(event) {
-	let filter = this.getFilterForField(event.item.option.field);
-	let value = event.item.option.name;
-	this.getAllEntities(filter.featureGroup).forEach(entity => {
-		entity.visible = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.locale)).includes(value);
-	});
-	this.refreshMarkers(filter);
-}
-
-refreshMarkers(filter) {
-	filter.featureGroup.layer.clearLayers();
-	if(filter.featureGroup.cluster) {		
-		filter.featureGroup.cluster.clearLayers();
-		filter.featureGroup.layer.addLayer(filter.featureGroup.cluster);
-	}
-	filter.markers.filter(m => filter.featureGroup.getCount(m.feature.properties)).forEach(m => {
-		m.setIcon(filter.featureGroup.getMarkerIcon(m.feature.properties));
-		if(filter.featureGroup.cluster) {
-			filter.featureGroup.cluster.addLayer(m);
-		} else {
-			filter.featureGroup.layer.addLayer(m);
-		}
-	})
-}
 
 
 </script>
