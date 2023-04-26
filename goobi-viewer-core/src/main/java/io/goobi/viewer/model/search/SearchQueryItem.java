@@ -297,7 +297,7 @@ public class SearchQueryItem implements Serializable {
     public String getValue() {
         return value;
     }
-    
+
     /**
      * 
      * @param value
@@ -308,14 +308,15 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * Sets/unsets the given value in the item, depending on the current status.
      * 
-     * @param value
+     * @param value Value to set/unset
+     * @should set values correctly
+     * @should unset values correctly
      */
     public void toggleValue(String value) {
         value = StringTools.stripJS(value);
-        logger.trace("toggleValue: {}", value);
-
-        if (StringUtils.isNotEmpty(this.value)) {
+        if (this.value != null) {
             if (this.value.contains(value)) {
                 this.value = this.value.replace(value, "").trim();
             } else {

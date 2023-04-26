@@ -822,26 +822,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#setExactSearchString(String)
-     * @verifies reset advanced search query items if query empty
-     */
-    @Test
-    public void setExactSearchString_shouldResetAdvancedSearchQueryItemsIfQueryEmpty() throws Exception {
-        DataManager.getInstance().getConfiguration().overrideValue("search.advanced[@enabled]", true);
-        
-        SearchBean sb = new SearchBean();
-        sb.setActiveSearchType(SearchHelper.SEARCH_TYPE_ADVANCED);
-        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
-        Assert.assertFalse(items.isEmpty());
-        items.get(0).setOperator(SearchItemOperator.NOT);
-        items.get(0).setValue("foo bar");
-        Assert.assertEquals(SearchHelper.SEARCH_TYPE_ADVANCED, sb.getActiveSearchType());
-        sb.setExactSearchString("-");
-        Assert.assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
-        Assert.assertNull(items.get(0).getValue());
-    }
-
-    /**
      * @see SearchBean#getSearchSortingOptions()
      * @verifies return options correctly
      */
@@ -872,5 +852,96 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(10, options.size());
         Iterator<SearchSortingOption> iterator = options.iterator();
         assertEquals("random_12345", iterator.next().getField());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies select result group correctly
+     */
+    @Test
+    public void setActiveResultGroupName_shouldSelectResultGroupCorrectly() throws Exception {
+        SearchBean sb = new SearchBean();
+        Assert.assertEquals("-", sb.getActiveResultGroupName());
+
+        sb.setActiveResultGroupName("stories");
+        Assert.assertEquals("stories", sb.getActiveResultGroupName());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset result group if new name not configured
+     */
+    @Test
+    public void setActiveResultGroupName_shouldResetResultGroupIfNewNameNotConfigured() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("stories");
+        Assert.assertEquals("stories", sb.getActiveResultGroupName());
+
+        sb.setActiveResultGroupName("notfound");
+        Assert.assertEquals("-", sb.getActiveResultGroupName());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset result group if empty name given
+     */
+    @Test
+    public void setActiveResultGroupName_shouldResetResultGroupIfEmptyNameGiven() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("stories");
+        Assert.assertEquals("stories", sb.getActiveResultGroupName());
+
+        sb.setActiveResultGroupName("-");
+        Assert.assertEquals("-", sb.getActiveResultGroupName());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset advanced search query items if new group used as field template
+     */
+    @Test
+    public void setActiveResultGroupName_shouldResetAdvancedSearchQueryItemsIfNewGroupUsedAsFieldTemplate() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("stories");
+
+        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
+        Assert.assertFalse(items.isEmpty());
+        items.get(0).setOperator(SearchItemOperator.NOT);
+        items.get(0).setValue("foo bar");
+
+        // Same group, no reset
+        sb.setActiveResultGroupName("stories");
+        Assert.assertEquals(SearchItemOperator.NOT, items.get(0).getOperator());
+        Assert.assertEquals("foo bar", items.get(0).getValue());
+
+        // Non-template group, no reset
+        sb.setActiveResultGroupName("monographs");
+        Assert.assertEquals(SearchItemOperator.NOT, items.get(0).getOperator());
+        Assert.assertEquals("foo bar", items.get(0).getValue());
+
+        // Template group, reset
+        sb.setActiveResultGroupName("lido_objects");
+        Assert.assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
+        Assert.assertNull(items.get(0).getValue());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset advanced search query items if old group used as field template
+     */
+    @Test
+    public void setActiveResultGroupName_shouldResetAdvancedSearchQueryItemsIfOldGroupUsedAsFieldTemplate() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("lido_objects");
+
+        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
+        Assert.assertFalse(items.isEmpty());
+        items.get(0).setOperator(SearchItemOperator.NOT);
+        items.get(0).setValue("foo bar");
+
+        // No group, reset
+        sb.setActiveResultGroupName("-");
+        Assert.assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
+        Assert.assertNull(items.get(0).getValue());
     }
 }

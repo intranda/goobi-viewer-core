@@ -235,6 +235,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * <p>
      * clearSearchItemLists.
      * </p>
+     * TODO Is this even in use?
      */
     public void clearSearchItemLists() {
         advancedSearchSelectItems.clear();
@@ -1305,17 +1306,12 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param inSearchString a {@link java.lang.String} object.
      * @should perform double unescaping if necessary
-     * @should reset advanced search query items if query empty
      */
     public void setExactSearchString(String inSearchString) {
         logger.debug("setExactSearchString: {}", inSearchString);
         if ("-".equals(inSearchString)) {
             inSearchString = "";
             searchString = "";
-            // Reset advanced search query items
-            if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
-                resetAdvancedSearchParameters();
-            }
         }
         searchStringInternal = inSearchString;
         // First apply regular URL decoder
@@ -1450,14 +1446,28 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * 
      * @param activeResultGroupName
+     * @should select result group correctly
+     * @should reset result group if new name not configured
+     * @should reset result group if empty name given
+     * @should reset advanced search query items if new group used as field template
+     * @should reset advanced search query items if old group used as field template
      */
     public void setActiveResultGroupName(String activeResultGroupName) {
-        if (!"-".equals(activeResultGroupName)) {
+        logger.trace("setActiveResultGroupName: {}", activeResultGroupName);
+        if (activeResultGroup != null && activeResultGroup.getName().equals(activeResultGroupName)) {
+            return;
+        }
+
+        if (activeResultGroupName != null && !"-".equals(activeResultGroupName)) {
             for (SearchResultGroup resultGroup : DataManager.getInstance().getConfiguration().getSearchResultGroups()) {
                 if (resultGroup.getName().equals(activeResultGroupName)) {
                     activeResultGroup = resultGroup;
                     if (resultGroup.isUseAsAdvancedSearchTemplate()) {
                         this.advancedSearchFieldTemplate = resultGroup.getName();
+                        // Reset query items
+                        resetAdvancedSearchParameters();
+                        // Reset slider ranges
+                        facets.resetSliderRange();
                     }
                     return;
                 }
@@ -1465,6 +1475,11 @@ public class SearchBean implements SearchInterface, Serializable {
             logger.warn("Search result group name not found: {}", activeResultGroupName);
         }
 
+        // Reset query items and slider ranges if active group is used as item field template
+        if (activeResultGroup != null && activeResultGroup.isUseAsAdvancedSearchTemplate()) {
+            resetAdvancedSearchParameters();
+            facets.resetSliderRange();
+        }
         activeResultGroup = null;
         this.advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
     }
@@ -1931,7 +1946,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Check for pre-generated items
-        String key = new StringBuilder(language).append('_').append(field).toString();
+        String key = new StringBuilder(getActiveResultGroupName()).append('_').append(language).append('_').append(field).toString();
         List<StringPair> ret = advancedSearchSelectItems.get(key);
         if (ret != null) {
             return ret;
@@ -1994,6 +2009,9 @@ public class SearchBean implements SearchInterface, Serializable {
             advancedSearchSelectItems.put(key, ret);
         } else {
             String suffix = SearchHelper.getAllSuffixes();
+            if (activeResultGroup != null) {
+                suffix = suffix + "+(" + activeResultGroup.getQuery() + ")";
+            }
 
             List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 1);
             for (String value : values) {

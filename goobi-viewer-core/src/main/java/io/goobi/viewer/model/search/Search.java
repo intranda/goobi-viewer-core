@@ -407,9 +407,9 @@ public class Search implements Serializable {
         }
 
         // Search without active facets to determine range facets min/max
-        populateRanges(finalQuery, facets, params);
+        populateRanges(finalQuery, facets, resultGroup, params);
         // Search without active facets to populate unfiltered facets
-        populateUnfilteredFacets(finalQuery, facets, params, locale);
+        populateUnfilteredFacets(finalQuery, facets, resultGroup, params, locale);
 
         // Extra search for child element facet values
         if (!facets.getConfiguredSubelementFacetFields().isEmpty()) {
@@ -572,24 +572,27 @@ public class Search implements Serializable {
      * 
      * @param finalQuery
      * @param facets
+     * @param resultGroup Active result group for optional filtering
      * @param params
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private void populateRanges(String finalQuery, SearchFacets facets, Map<String, String> params)
+    private void populateRanges(String finalQuery, SearchFacets facets, SearchResultGroup resultGroup, Map<String, String> params)
             throws PresentationException, IndexUnreachableException {
         logger.trace("populateRanges");
         List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
-        List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(false);
+        List<String> activeFilterQueries = facets.generateFacetFilterQueries(false);
 
         if (StringUtils.isNotEmpty(customFilterQuery)) {
-            nonRangeFacetFilterQueries.add(customFilterQuery);
+            activeFilterQueries.add(customFilterQuery);
+        }
+        if (resultGroup != null) {
+            activeFilterQueries.add(resultGroup.getQuery());
         }
 
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .search(finalQuery, 0, 0, null, rangeFacetFields, Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries,
-                        params);
+                .search(finalQuery, 0, 0, null, rangeFacetFields, Collections.singletonList(SolrConstants.IDDOC), activeFilterQueries, params);
         if (resp == null || resp.getFacetFields() == null) {
             logger.trace("No facet fields");
             return;
@@ -623,12 +626,14 @@ public class Search implements Serializable {
      * 
      * @param finalQuery
      * @param facets
+     * @param resultGroup
      * @param params
      * @param locale
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private void populateUnfilteredFacets(String finalQuery, SearchFacets facets, Map<String, String> params, Locale locale)
+    private void populateUnfilteredFacets(String finalQuery, SearchFacets facets, SearchResultGroup resultGroup, Map<String, String> params,
+            Locale locale)
             throws PresentationException, IndexUnreachableException {
         List<String> unfilteredFacetFields = new ArrayList<>();
         // Collect facet fields with alwaysApplyToUnfilteredHits=true
@@ -638,9 +643,12 @@ public class Search implements Serializable {
             }
         }
 
-        List<String> activeFilterQueries = new ArrayList<>(1);
+        List<String> activeFilterQueries = new ArrayList<>(2);
         if (StringUtils.isNotEmpty(customFilterQuery)) {
             activeFilterQueries.add(customFilterQuery);
+        }
+        if (resultGroup != null) {
+            activeFilterQueries.add(resultGroup.getQuery());
         }
 
         logger.trace("final query: {}", finalQuery);
