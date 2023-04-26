@@ -18,12 +18,10 @@
 
 <script>
 
-this.locale = undefined;
 this.filters = [];
 
 this.on("mount", () => {
 	console.log("mounting featureSetFilter with", this.opts);
-	this.locale = this.opts.locale;
 	this.geomap = this.opts.geomap;
 	this.featureGroups = this.opts.featureGroups;
 	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
@@ -39,7 +37,7 @@ createFilters(filterOptions, featureGroups) {
 	return filterOptions.map(filter => {
 		return {
 			field: filter,
-			options: this.findValues(featureGroups, filter, this.locale).map(v => {
+			options: this.findValues(featureGroups, filter).map(v => {
 				return {
 					name: v,
 					field: filter.field
@@ -50,10 +48,10 @@ createFilters(filterOptions, featureGroups) {
 	.filter(filter => filter.options.length > 1);
 }
 
-findValues(featureGroups, filterField, locale) {
+findValues(featureGroups, filterField) {
 	return Array.from(new Set(this.findEntities(featureGroups, filterField)
 	.map(e => e[filterField]).map(a => a[0])
-	.map(value => viewerJS.iiif.getValue(value, locale)).filter(e => e)));
+	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
 }
 
 findEntities(featureGroups, filterField) {
@@ -67,7 +65,7 @@ resetFilter() {
 setFilter(event) {
 	let filter = this.getFilterForField(event.item.option.field);
 	let value = event.item.option.name;
-	this.featureGroups.forEach(g => g.showMarkers(entity => entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.locale)).includes(value)));
+	this.featureGroups.forEach(g => g.showMarkers(entity => entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(value)));
 }
 
 getFilterForField(field) {

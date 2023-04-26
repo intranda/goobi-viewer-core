@@ -2880,12 +2880,10 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
 });
 riot.tag2('featuresetfilter', '<ul><li each="{filter in filters}"><label>{filter.field}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">Alle</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
 
-this.locale = undefined;
 this.filters = [];
 
 this.on("mount", () => {
 	console.log("mounting featureSetFilter with", this.opts);
-	this.locale = this.opts.locale;
 	this.geomap = this.opts.geomap;
 	this.featureGroups = this.opts.featureGroups;
 	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
@@ -2901,7 +2899,7 @@ this.createFilters = function(filterOptions, featureGroups) {
 	return filterOptions.map(filter => {
 		return {
 			field: filter,
-			options: this.findValues(featureGroups, filter, this.locale).map(v => {
+			options: this.findValues(featureGroups, filter).map(v => {
 				return {
 					name: v,
 					field: filter.field
@@ -2912,10 +2910,10 @@ this.createFilters = function(filterOptions, featureGroups) {
 	.filter(filter => filter.options.length > 1);
 }.bind(this)
 
-this.findValues = function(featureGroups, filterField, locale) {
+this.findValues = function(featureGroups, filterField) {
 	return Array.from(new Set(this.findEntities(featureGroups, filterField)
 	.map(e => e[filterField]).map(a => a[0])
-	.map(value => viewerJS.iiif.getValue(value, locale)).filter(e => e)));
+	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
 }.bind(this)
 
 this.findEntities = function(featureGroups, filterField) {
@@ -2929,7 +2927,7 @@ this.resetFilter = function() {
 this.setFilter = function(event) {
 	let filter = this.getFilterForField(event.item.option.field);
 	let value = event.item.option.name;
-	this.featureGroups.forEach(g => g.showMarkers(entity => entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.locale)).includes(value)));
+	this.featureGroups.forEach(g => g.showMarkers(entity => entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(value)));
 }.bind(this)
 
 this.getFilterForField = function(field) {
@@ -2955,7 +2953,7 @@ this.setFeatureGroup = function(event) {
 }.bind(this)
 
 this.getLabel = function(featureGroup) {
-	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale);
+	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
 }.bind(this)
 
 this.isActive = function(featureGroup) {
@@ -2965,13 +2963,11 @@ this.isActive = function(featureGroup) {
 });
 riot.tag2('geojsonfeaturelist', '<h4>{opts.title}</h4><ul><li each="{entity in entities}">{getLabel(entity)}</li></ul>', '', '', function(opts) {
 
-this.locale = undefined;
 this.defaultDisplay = undefined;
 this.entities = [];
 
 this.on("mount", () => {
 	console.log("mounting ", this.opts);
-	this.locale = this.opts.locale;
 	this.opts.featureGroups.forEach(group => {
 		group.onFeatureClick.subscribe(f => this.setEntities(f.properties?.entities?.filter(e => e.visible !== false)));
 	})
@@ -2992,9 +2988,8 @@ this.getLabel = function(entity) {
 	let label = this.opts.labelFormat;
 	groups.forEach(group => {
 		if(group.length > 1) {
-			console.log("group ", entity[group[1]]);
-			let value = entity[group[1]].map(s => viewerJS.iiif.getValue(s, this.locale)).join(", ");
-			label = label.replaceAll(group[0], value);
+			let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+			label = label.replaceAll(group[0], value ? value : "");
 		}
 	})
 	return label;

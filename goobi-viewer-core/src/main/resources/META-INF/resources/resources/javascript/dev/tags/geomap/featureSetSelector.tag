@@ -23,7 +23,7 @@ setFeatureGroup(event) {
 }
 
 getLabel(featureGroup) {
-	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale);
+	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
 }
 
 isActive(featureGroup) {

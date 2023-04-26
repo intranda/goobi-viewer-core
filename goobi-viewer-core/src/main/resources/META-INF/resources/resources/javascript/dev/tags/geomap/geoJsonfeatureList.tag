@@ -9,13 +9,11 @@
 
 <script>
 
-this.locale = undefined;
 this.defaultDisplay = undefined;
 this.entities = [];
 
 this.on("mount", () => {
 	console.log("mounting ", this.opts);
-	this.locale = this.opts.locale;
 	this.opts.featureGroups.forEach(group => {
 		group.onFeatureClick.subscribe(f => this.setEntities(f.properties?.entities?.filter(e => e.visible !== false)));
 	})
@@ -36,9 +34,8 @@ getLabel(entity) {
 	let label = this.opts.labelFormat;
 	groups.forEach(group => {
 		if(group.length > 1) {
-			console.log("group ", entity[group[1]]);
-			let value = entity[group[1]].map(s => viewerJS.iiif.getValue(s, this.locale)).join(", ");
-			label = label.replaceAll(group[0], value);
+			let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+			label = label.replaceAll(group[0], value ? value : "");
 		}
 	})
 	return label;

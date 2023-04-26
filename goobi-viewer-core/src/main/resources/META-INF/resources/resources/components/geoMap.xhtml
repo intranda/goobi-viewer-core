@@ -83,19 +83,22 @@
 	    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
 	    			featureGroups: map.layers,
 	    			geomap: map,
-	    			locale: "#{navigationHelper.locale}",
 	    			labelFormat: "\${MD_CREATOR} (\${MD_BIOGRAPHY_EDUCATION})",
+	    			locale: "#{navigationHelper.locale}",	    			
+	    			defaultLocale: "#{navigationHelper.defaultLocale}"
 	    		})
 	    		riot.mount(document.getElementById("featureFilters_#{cc.attrs.mapId}"), "featuresetfilter", {
 	    			filters: ["MD_ROLE", "METADATA_TYPE"],
     				geomap: map,
     				featureGroups: map.getActiveLayers(),
 	    			locale: "#{navigationHelper.locale}",
+	    			defaultLocale: "#{navigationHelper.defaultLocale}"
 	    		})
 	    		riot.mount(document.getElementById("featureSetSelector_#{cc.attrs.mapId}"), "featuresetselector", {
 	    			featureGroups: map.layers,
 	    			geomap: map,
 	    			locale: "#{navigationHelper.locale}",
+	    			defaultLocale: "#{navigationHelper.defaultLocale}"
 	    		})
 	    	})
 	    	.catch(e => {
