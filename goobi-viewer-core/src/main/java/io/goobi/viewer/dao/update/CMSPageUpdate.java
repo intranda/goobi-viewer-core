@@ -42,7 +42,6 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.legacy.CMSContentItemTemplate;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -63,6 +62,7 @@ public class CMSPageUpdate implements IModelUpdate {
     CMSTemplateManager templateManager;
 
     public CMSPageUpdate() {
+        //noop
     }
 
     @Override
@@ -71,9 +71,9 @@ public class CMSPageUpdate implements IModelUpdate {
         if (!dao.tableExists("cms_content_items")) {
             return false;
         }
-        
+
         dao.executeUpdate("ALTER TABLE cms_pages MODIFY template_id varchar(255)"); //allow NULL values in cms_pages.template_id
-        
+
         this.templateManager = templateManager;
         this.contentConverter = new CMSContentConverter(dao);
 
@@ -89,7 +89,7 @@ public class CMSPageUpdate implements IModelUpdate {
         /*Map page ids to a map of all owned languageVersions mapped to language*/
         Map<Long, Map<String, Map<String, Object>>> languageVersionMap = languageVersions.stream()
                 .collect(Collectors.toMap(map -> (Long) map.get("owner_page_id"), map -> Map.of((String) map.get("language"), map),
-                        (map1, map2) -> combineMaps(map1, map2)));
+                        CMSPageUpdate::combineMaps));
 
         /*Map language version ids to a list of all owned contentItems*/
         Map<Long, List<Map<String, Object>>> contentItemMap = contentItems.stream()
@@ -125,7 +125,7 @@ public class CMSPageUpdate implements IModelUpdate {
                 TranslatedText menuTitle = getTranslatedText(pageLanguageVersions, "menu_title");
                 Boolean published = (Boolean) pageValues.get("published");
                 String legacyPageTemplateId = (String) pageValues.get("template_id");
-                
+
                 createPreviewComponent(contentItemMap, pageLanguageVersions, title, dao)
                         .ifPresent(page::addPersistentComponent);
 
@@ -142,8 +142,7 @@ public class CMSPageUpdate implements IModelUpdate {
                 Map<String, CMSContent> contentMap = createContentObjects(pageContentItemsMap);
 
                 CMSComponent componentTemplate = templateManager.getLegacyComponent(legacyPageTemplateId);
-                
-                
+
                 if (componentTemplate != null) {
                     PersistentCMSComponent component = new PersistentCMSComponent(componentTemplate, contentMap.values());
                     page.addPersistentComponent(component);
@@ -236,9 +235,9 @@ public class CMSPageUpdate implements IModelUpdate {
             Map<String, Map<String, Object>> pageLanguageVersions, TranslatedText title, IDAO dao) throws DAOException {
 
         TranslatedText dateText = getText(contentItemMap, pageLanguageVersions, "A0");
-        CMSMediaItem previewImage = getImage(contentItemMap, pageLanguageVersions, "image01", dao);        
+        CMSMediaItem previewImage = getImage(contentItemMap, pageLanguageVersions, "image01", dao);
         TranslatedText previewText = getPreviewText(contentItemMap, pageLanguageVersions, title, previewImage);
-        
+
         CMSComponent componentTemplate = templateManager.getComponent("preview").orElse(null);
         if (componentTemplate == null) {
             logger.error("Cannot create preview component: component template 'preview' not found");
@@ -259,7 +258,16 @@ public class CMSPageUpdate implements IModelUpdate {
         return Optional.empty();
     }
 
-    private TranslatedText getPreviewText(Map<Long, List<Map<String, Object>>> contentItemMap, Map<String, Map<String, Object>> pageLanguageVersions,
+    /**
+     * 
+     * @param contentItemMap
+     * @param pageLanguageVersions
+     * @param title
+     * @param previewImage
+     * @return
+     */
+    private static TranslatedText getPreviewText(Map<Long, List<Map<String, Object>>> contentItemMap,
+            Map<String, Map<String, Object>> pageLanguageVersions,
             TranslatedText title, CMSMediaItem previewImage) {
         TranslatedText previewText = getText(contentItemMap, pageLanguageVersions, "preview01");
         if (previewImage != null && previewText.isEmpty()) {
