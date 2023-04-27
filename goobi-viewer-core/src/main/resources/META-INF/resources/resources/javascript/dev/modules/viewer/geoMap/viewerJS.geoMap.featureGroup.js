@@ -37,7 +37,9 @@ var viewerJS = ( function( viewer ) {
             popover: undefined,
             emptyMarkerMessage: undefined,
             popoverOnHover: false,
-            markerIcon : undefined,
+            markerIcon : {
+				html: '<div><span>\${count}</span></div>', 	
+			},
             search: {
             	openSearchOnMarkerClick: true,
             	searchUrlTemplate : '/viewer/search/-/WKT_COORDS:"Intersects(POINT({lng} {lat})) distErrPct=0"/1/-/-/',
@@ -54,7 +56,7 @@ var viewerJS = ( function( viewer ) {
             	stroke: true,
             	color: '#3388ff',
             	highlightColor: '#d9534f',
-            	wight: 3,
+            	weight: 3,
             	opactity: 1.0,
             	fill: true,
             	fillColor: undefined, //defaults to color
@@ -290,19 +292,32 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
 
     
     viewer.GeoMap.featureGroup.prototype.getClusterIcon = function(num) {
-        let iconConfig = {
-            icon: "fa-number",
-            number: num,
-            svg: true,
-            prefix: "fa",
-            iconRotate: 0
-        }; 
-        if(this.config.markerIcon) {
-            iconConfig = $.extend(true, {}, this.config.markerIcon, iconConfig);
-            iconConfig.name = ""; //remove name because it shows up as a label underneath the marker
-        }
-        let icon = L.ExtraMarkers.icon(iconConfig);
-        return icon;
+		
+		if(this.config.markerIcon?.type == 'DivIcon') {
+			let options =  $.extend(true, {}, this.config.markerIcon);
+			if(!options) {
+				throw "marker icon of type 'divIcon' needs an 'options' properties containing the constructor options to pass to the icon";
+			} else {
+				options.html = options.html.replaceAll("${count}", num);
+				options.iconSize = new L.Point(40, 40);
+				return new L.DivIcon(options);
+			}
+		} else {			
+	        let iconConfig = {
+	            icon: "fa-number",
+	            number: num,
+	            svg: true,
+	            prefix: "fa",
+	            iconRotate: 0
+	        }; 
+	        if(this.config.markerIcon) {
+	            iconConfig = $.extend(true, {}, this.config.markerIcon, iconConfig);
+	            iconConfig.name = ""; //remove name because it shows up as a label underneath the marker
+	        }
+	        let icon = L.ExtraMarkers.icon(iconConfig);
+	        return icon;
+		}
+		
     }
     
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(properties) {
@@ -323,6 +338,24 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
         		} else {
         			return new L.Icon.Default();
         		}
+        	} else if(this.config.markerIcon.type) {
+				if(this.config.markerIcon.type == 'DivIcon') {
+					let options =  $.extend(true, {}, this.config.markerIcon);
+					options.html = options.html.replace("${count}", "1");
+					options.iconSize = new L.Point(40, 40);
+					let icon = count > 1 ? this.getClusterIcon(count) : new L.DivIcon(options);
+					return icon;
+				} else {
+					let icon = count > 1 ? this.getClusterIcon(count) : L.ExtraMarkers.icon(this.config.markerIcon);
+		        	icon.options.name = "";	//remove name property to avoid it being displayed on the map
+		            if(this.config.markerIcon.shadow === false) {                
+		                icon.options.shadowSize = [0,0];
+		            }
+		            if(highlighted) {
+		            	icon.options.markerColor = this.config.markerIcon.highlightColor;
+		            }
+		            return icon;
+				}
         	} else {
 	            let icon = count > 1 ? this.getClusterIcon(count) : L.ExtraMarkers.icon(this.config.markerIcon);
 	        	icon.options.name = "";	//remove name property to avoid it being displayed on the map

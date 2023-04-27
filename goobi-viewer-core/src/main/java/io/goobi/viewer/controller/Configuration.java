@@ -69,6 +69,7 @@ import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataView;
@@ -5200,6 +5201,8 @@ public class Configuration extends AbstractConfiguration {
             marker.setShadow(config.getBoolean("[@shadow]", marker.isShadow()));
             marker.setUseDefault(config.getBoolean("[@useDefaultIcon]", marker.isUseDefault()));
             marker.setHighlightIcon(config.getString("[@highlightIcon]", marker.getHighlightIcon()));
+            marker.setType(Optional.ofNullable(MarkerType.getTypeByName(config.getString("[@type]", MarkerType.EXTRA_MARKERS.getName()))).orElse(MarkerType.EXTRA_MARKERS));
+            marker.setClassName(config.getString("[@class]", ""));
             return marker;
         }
         return new GeoMapMarker("");

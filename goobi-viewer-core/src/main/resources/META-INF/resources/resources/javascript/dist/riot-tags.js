@@ -2902,7 +2902,7 @@ this.createFilters = function(filterOptions, featureGroups) {
 			options: this.findValues(featureGroups, filter).map(v => {
 				return {
 					name: v,
-					field: filter.field
+					field: filter
 				}
 			}),
 		}
@@ -2925,9 +2925,9 @@ this.resetFilter = function() {
 }.bind(this)
 
 this.setFilter = function(event) {
-	let filter = this.getFilterForField(event.item.option.field);
+	let field = this.getFilterForField(event.item.option.field).field;
 	let value = event.item.option.name;
-	this.featureGroups.forEach(g => g.showMarkers(entity => entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(value)));
+	this.featureGroups.forEach(g => g.showMarkers(entity => entity[field] != undefined && entity[field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(value)));
 }.bind(this)
 
 this.getFilterForField = function(field) {

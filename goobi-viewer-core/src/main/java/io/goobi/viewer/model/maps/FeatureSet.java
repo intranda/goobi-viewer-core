@@ -87,7 +87,7 @@ public abstract class FeatureSet implements Serializable {
     }
     
     public String getMarkerAsJSON() throws JsonProcessingException {
-        if (StringUtils.isNotBlank(marker)) {
+        if (StringUtils.isNotBlank(marker)) {   
             GeoMapMarker m = DataManager.getInstance().getConfiguration().getGeoMapMarker(this.marker);
             if (m != null) {
                 return m.toJSONString();

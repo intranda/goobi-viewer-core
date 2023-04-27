@@ -67,6 +67,14 @@
 					            	featureUrl: "#{geoMapBean.featureUrl}",
 					        	    filterQuery: "#{cc.attrs.featureSet.solrQueryEncoded}",
 					        	    labelField: "#{cc.attrs.featureSet.markerTitleField}",
+					            }, style : {
+					            	stroke: true,
+					            	color: '#FF5F1F',
+					            	opactity: 0.9,
+					            	fill: true,
+					            	fillColor: "#FF5F1F",
+					            	fillOpacity: 0.6,
+					            	radius: 15
 					            }
 				            },
 			           		</ui:repeat>
@@ -84,7 +92,7 @@
 	    			featureGroups: map.layers,
 	    			geomap: map,
 	    			labelFormat: "\${MD_CREATOR} (\${MD_BIOGRAPHY_EDUCATION})",
-	    			locale: "#{navigationHelper.locale}",	    			
+	    			locale: "#{navigationHelper.locale}",	    			  
 	    			defaultLocale: "#{navigationHelper.defaultLocale}"
 	    		})
 	    		riot.mount(document.getElementById("featureFilters_#{cc.attrs.mapId}"), "featuresetfilter", {
