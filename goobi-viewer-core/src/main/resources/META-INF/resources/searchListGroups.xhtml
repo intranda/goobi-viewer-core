@@ -60,8 +60,8 @@
                                             <div class="search-advanced__input-group-field">
                                                 <ui:fragment rendered="#{queryItem.displaySelectItems}">
                                                 <!-- BADGES -->
-                                                <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
-                                                    <button class="btn btn--link"
+                                                <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}" varStatus="statusBadge">
+                                                    <button id="queryItem_#{statusBadge.count}" class="btn btn--link"
                                                         jsf:action="#{queryItem.toggleValue(item.one)}" title="#{msg[item.two]}">
                                                         <ui:fragment rendered="#{queryItem.isValueSet(item.one)}">
                                                              <div class="badge badge-warning"><strong>#{item.two}</strong></div>
@@ -69,7 +69,7 @@
                                                         <ui:fragment rendered="#{!queryItem.isValueSet(item.one)}">
                                                              <div class="badge badge-light">#{item.two}</div>
                                                         </ui:fragment>
-                                                        <f:ajax render="@form" />
+                                                        <f:ajax render="queryItem_#{statusBadge.count}" />
                                                     </button>
                                                 </c:forEach>
                                                 </ui:fragment> 
