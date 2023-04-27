@@ -2010,7 +2010,7 @@ public class SearchBean implements SearchInterface, Serializable {
         } else {
             String suffix = SearchHelper.getAllSuffixes();
             if (activeResultGroup != null) {
-                suffix = suffix + "+(" + activeResultGroup.getQuery() + ")";
+                suffix = suffix + " +(" + activeResultGroup.getQuery() + ")";
             }
             String query = field + ":[* TO *]" + suffix;
             logger.debug("Select items query: {}", query);
