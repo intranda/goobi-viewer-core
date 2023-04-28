@@ -2984,14 +2984,21 @@ this.setEntities = function(entities) {
 }.bind(this)
 
 this.getLabel = function(entity) {
-	let groups = [...this.opts.labelFormat.matchAll(/\${(.*?)}/g)];
-	let label = this.opts.labelFormat;
-	groups.forEach(group => {
-		if(group.length > 1) {
-			let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
-			label = label.replaceAll(group[0], value ? value : "");
-		}
-	})
+	let labels = this.opts.labelFormat;
+	label = labels.map(format => {
+		let groups = [...format.matchAll(/\${(.*?)}/g)];
+		let l = "";
+		groups.forEach(group => {
+			if(group.length > 1) {
+				let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+				if(value) {
+					l += format.replaceAll(group[0], value ? value : "");
+					console.log("format ", format, value, l);
+				}
+			}
+		})
+		return l;
+	}).join("");
 	return label;
 }.bind(this)
 

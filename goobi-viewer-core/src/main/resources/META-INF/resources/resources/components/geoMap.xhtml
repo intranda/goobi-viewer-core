@@ -38,7 +38,6 @@
 		
 		$(document).ready(() => {   
 		    let config = {
-		    		openSearchOnMarkerClick: true,
 		    		documentIdToHighlight: "#{cc.attrs.highlightDocumentId}",
 		            map: {
 			            mapId : "#{cc.attrs.mapId}",
@@ -59,7 +58,6 @@
 					            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and featureSet.queryResultSet},
 					            	linkTarget : "#{cc.attrs.linkTarget}",
 					            	loader: "##{cc.attrs.mapId} .ajax_loader",
-					            	openSearchOnMarkerClick: false,
 				           		},
 					            heatmap: {
 					            	enabled: #{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()},
@@ -91,7 +89,7 @@
 	    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
 	    			featureGroups: map.layers,
 	    			geomap: map,
-	    			labelFormat: "\${MD_CREATOR} (\${MD_BIOGRAPHY_EDUCATION})",
+	    			labelFormat: ["\${MD_CREATOR}", " (\${MD_BIOGRAPHY_EDUCATION})"],
 	    			locale: "#{navigationHelper.locale}",	    			  
 	    			defaultLocale: "#{navigationHelper.defaultLocale}"
 	    		})
