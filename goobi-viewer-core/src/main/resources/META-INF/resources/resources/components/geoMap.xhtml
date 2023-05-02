@@ -16,6 +16,10 @@
     	<composite:attribute name="clusterMarkers" type="java.lang.Boolean" required="false" default="#{true}"/>
     	<composite:attribute name="popoverClass" required="false" default="geomap_popover"/>
     	<composite:attribute name="highlightDocumentId" required="false" default=""/>
+    	<composite:attribute name="featureSetSwitch" type="java.lang.Boolean" required="false" default="true"/>
+    	<composite:attribute name="featureClickHandling" required="false" default="listEntities"/>
+<!--     	<composite:attribute name="featureClickHandling" required="false" default="openSearch"/> -->
+    	<composite:attribute name="featureFilters" type="java.util.List" required="false" default="#{configurationBean.defaultGeomapFilters}"/>
     </composite:interface>
     
 	<composite:implementation>
@@ -55,7 +59,7 @@
 				           		label: #{featureSet.name.getAsJson()},
 				           		search: {
 					            	searchUrlTemplate : '#{featureSet.queryResultSet ? geoMapBean.getCoordinateSearchQueryTemplate(featureSet) : ""}',			           			
-					            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and featureSet.queryResultSet},
+					            	openSearchOnMarkerClick: #{cc.attrs.featureClickHandling == 'openSearch' and featureSet.queryResultSet},
 					            	linkTarget : "#{cc.attrs.linkTarget}",
 					            	loader: "##{cc.attrs.mapId} .ajax_loader",
 				           		},
@@ -85,7 +89,7 @@
 		    let view = #{cc.attrs.geoMap.initialView};
 	    	geomap.init(view)
 	    	.then((map) => {
-	    		map.setActiveLayers(map.layers.slice(0, 1));
+	    		if(#{cc.attrs.featureClickHandling == 'listEntities'})
 	    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
 	    			featureGroups: map.layers,
 	    			geomap: map,
@@ -93,19 +97,24 @@
 	    			locale: "#{navigationHelper.locale}",	    			  
 	    			defaultLocale: "#{navigationHelper.defaultLocale}"
 	    		})
-	    		riot.mount(document.getElementById("featureFilters_#{cc.attrs.mapId}"), "featuresetfilter", {
-	    			filters: ["MD_ROLE", "METADATA_TYPE"],
-    				geomap: map,
-    				featureGroups: map.getActiveLayers(),
-	    			locale: "#{navigationHelper.locale}",
-	    			defaultLocale: "#{navigationHelper.defaultLocale}"
-	    		})
-	    		riot.mount(document.getElementById("featureSetSelector_#{cc.attrs.mapId}"), "featuresetselector", {
-	    			featureGroups: map.layers,
-	    			geomap: map,
-	    			locale: "#{navigationHelper.locale}",
-	    			defaultLocale: "#{navigationHelper.defaultLocale}"
-	    		})
+	    		if(#{cc.attrs.featureSetSwitch}) {	 
+		    		map.setActiveLayers(map.layers.slice(0, 1));
+		    		riot.mount(document.getElementById("featureSetSelector_#{cc.attrs.mapId}"), "featuresetselector", {
+		    			featureGroups: map.layers,
+		    			geomap: map,
+		    			locale: "#{navigationHelper.locale}",
+		    			defaultLocale: "#{navigationHelper.defaultLocale}"
+		    		})
+	    		}
+	    		if(#{not empty cc.attrs.featureFilters}) {	    			
+		    		riot.mount(document.getElementById("featureFilters_#{cc.attrs.mapId}"), "featuresetfilter", {
+		    			filters: #{cc.attrs.featureFilters},
+	    				geomap: map,
+	    				featureGroups: map.getActiveLayers(),
+		    			locale: "#{navigationHelper.locale}",
+		    			defaultLocale: "#{navigationHelper.defaultLocale}"
+		    		})
+	    		}
 	    	})
 	    	.catch(e => {
 	    		console.error("Error initializing map ", e);

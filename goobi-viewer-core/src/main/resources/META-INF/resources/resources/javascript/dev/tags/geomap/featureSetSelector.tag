@@ -1,6 +1,6 @@
 <featureSetSelector>
 
-<div class="tab">
+<div class="tab" if="{featureGroups.length > 1}">
 	<button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? '-active':''}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button>
 </div>
 

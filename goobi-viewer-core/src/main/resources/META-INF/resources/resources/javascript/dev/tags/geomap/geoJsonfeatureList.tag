@@ -1,8 +1,9 @@
-<geoJsonFeatureList>
+<geoJsonFeatureList onclick="{preventBubble}">
 
-<h4>{opts.title}</h4>
+<h4>{getListLabel()}</h4>
+<input type="text" ref="search"  oninput="{filterList}"></input>
 <ul>
-	<li each="{entity in entities}">{getLabel(entity)}</li>
+	<li each="{entity in getVisibleEntities()}">{getLabel(entity)}</li>
 </ul>
 
 
@@ -11,6 +12,7 @@
 
 this.defaultDisplay = undefined;
 this.entities = [];
+this.filteredEntities = undefined;
 
 this.on("mount", () => {
 	console.log("mounting ", this.opts);
@@ -22,11 +24,39 @@ this.on("mount", () => {
 })
 
 setEntities(entities) {
+	this.entities = [];
+	this.filteredEntities = undefined;
+	this.refs["search"].value = "";
 	if(entities && entities.length) {		
 		this.entities = entities;
 		this.show();
 		this.update();
 	}
+}
+
+getVisibleEntities() {
+	if(this.filteredEntities === undefined) {
+		return this.entities;
+	} else {
+		return this.filteredEntities;
+	}
+}
+
+preventBubble(e) {
+	event.stopPropagation();
+}
+
+filterList(e) {
+	let filter = e.target.value;
+	if(filter) {		
+		this.filteredEntities = this.entities.filter(e => this.getLabel(e).toLowerCase().includes(filter.toLowerCase() ));
+	} else {
+		this.filteredEntities = undefined;
+	}
+}
+
+getListLabel() {
+	return this.entities[0]["MD_LOCATION"]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ")
 }
 
 getLabel(entity) {
@@ -39,7 +69,6 @@ getLabel(entity) {
 				let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
 				if(value) {					
 					l += format.replaceAll(group[0], value ? value : "");
-					console.log("format ", format, value, l);
 				}
 			}
 		})

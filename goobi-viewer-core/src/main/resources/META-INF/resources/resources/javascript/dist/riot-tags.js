@@ -2935,7 +2935,7 @@ this.getFilterForField = function(field) {
 }.bind(this)
 
 });
-riot.tag2('featuresetselector', '<div class="tab"><button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? \'-active\':\'\'}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button></div>', '', '', function(opts) {
+riot.tag2('featuresetselector', '<div class="tab" if="{featureGroups.length > 1}"><button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? \'-active\':\'\'}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button></div>', '', '', function(opts) {
 
 this.featureGroups = [];
 
@@ -2961,10 +2961,11 @@ this.isActive = function(featureGroup) {
 }.bind(this)
 
 });
-riot.tag2('geojsonfeaturelist', '<h4>{opts.title}</h4><ul><li each="{entity in entities}">{getLabel(entity)}</li></ul>', '', '', function(opts) {
+riot.tag2('geojsonfeaturelist', '<h4>{getListLabel()}</h4><input type="text" ref="search" oninput="{filterList}"></input><ul><li each="{entity in getVisibleEntities()}">{getLabel(entity)}</li></ul>', '', 'onclick="{preventBubble}"', function(opts) {
 
 this.defaultDisplay = undefined;
 this.entities = [];
+this.filteredEntities = undefined;
 
 this.on("mount", () => {
 	console.log("mounting ", this.opts);
@@ -2976,11 +2977,39 @@ this.on("mount", () => {
 })
 
 this.setEntities = function(entities) {
+	this.entities = [];
+	this.filteredEntities = undefined;
+	this.refs["search"].value = "";
 	if(entities && entities.length) {
 		this.entities = entities;
 		this.show();
 		this.update();
 	}
+}.bind(this)
+
+this.getVisibleEntities = function() {
+	if(this.filteredEntities === undefined) {
+		return this.entities;
+	} else {
+		return this.filteredEntities;
+	}
+}.bind(this)
+
+this.preventBubble = function(e) {
+	event.stopPropagation();
+}.bind(this)
+
+this.filterList = function(e) {
+	let filter = e.target.value;
+	if(filter) {
+		this.filteredEntities = this.entities.filter(e => this.getLabel(e).toLowerCase().includes(filter.toLowerCase() ));
+	} else {
+		this.filteredEntities = undefined;
+	}
+}.bind(this)
+
+this.getListLabel = function() {
+	return this.entities[0]["MD_LOCATION"]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ")
 }.bind(this)
 
 this.getLabel = function(entity) {
@@ -2993,7 +3022,6 @@ this.getLabel = function(entity) {
 				let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
 				if(value) {
 					l += format.replaceAll(group[0], value ? value : "");
-					console.log("format ", format, value, l);
 				}
 			}
 		})

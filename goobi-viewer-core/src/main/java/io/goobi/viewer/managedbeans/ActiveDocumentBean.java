@@ -87,9 +87,9 @@ import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
-import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
+import io.goobi.viewer.model.maps.RecordGeoMap;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -177,7 +177,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private String clearCacheMode;
 
-    private Map<String, GeoMap> geoMaps = new HashMap<>();
+    private Map<String, RecordGeoMap> geoMaps = new HashMap<>();
 
     private int reloads = 0;
 
@@ -2272,12 +2272,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
-        GeoMap widget = this.geoMaps.get(getPersistentIdentifier());
+        RecordGeoMap widget = this.geoMaps.get(getPersistentIdentifier());
         if (widget == null) {
-            widget = generateGeoMap(getPersistentIdentifier());
+            widget = new RecordGeoMap(getTopDocument(), List.of("MD_BIOGRAPHY", "MD_RELATIONSHIP_EVENT", "MD_RELATIONSHIP_AWARD"));
             this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
         }
-        return widget;
+        return widget.getGeoMap();
     }
 
     /**

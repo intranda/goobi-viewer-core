@@ -1439,5 +1439,9 @@ public class ConfigurationBean implements Serializable {
     public boolean isConfigEditorEnabled() {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
-
+    
+    public List<String> getDefaultGeomapFilters() {
+        return List.of("MD_ROLE", "METADATA_TYPE").stream().map(s -> "'"+s+"'").collect(Collectors.toList());
+    }
+ 
 }

@@ -35,7 +35,7 @@
                     <!-- MAP -->
                     <viewerComponent:geoMap highlightDocumentId="#{cc.attrs.highlightDocumentId}"
                     showPopover="true" popoverOnHover="#{cc.attrs.popoverOnHover}" popoverClass="#{cc.attrs.popoverClass}"
-                    showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.geoMap}" linkToSearch="#{cc.attrs.linkToSearch}" mapId="widget_geoMap_#{cc.attrs.geoMap.id}"></viewerComponent:geoMap>
+                    showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.geoMap}" featureClickHandling="#{cc.attrs.linkToSearch ? 'openSearch':'none'}" mapId="widget_geoMap_#{cc.attrs.geoMap.id}"></viewerComponent:geoMap>
                 </div>
             <script type="text/javascript">	  
           //<![CDATA[
