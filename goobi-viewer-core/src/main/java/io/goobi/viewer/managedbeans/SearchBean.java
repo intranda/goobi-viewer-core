@@ -709,17 +709,29 @@ public class SearchBean implements SearchInterface, Serializable {
                     } else if (queryItem.isRange()) {
                         sbInfo.append('[').append(queryItem.getValue()).append(" - ").append(queryItem.getValue2()).append(']');
                     } else {
-                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (queryItem.isDisplaySelectItems()) {
+                            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        } else {
+                            sbInfo.append(queryItem.getValue());
+                        }
                     }
                     break;
                 case NOT:
-                    sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                    if (queryItem.isDisplaySelectItems()) {
+                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                    } else {
+                        sbInfo.append(queryItem.getValue());
+                    }
                     break;
                 default:
                     if (queryItem.isRange()) {
                         sbInfo.append('[').append(queryItem.getValue()).append(" - ").append(queryItem.getValue2()).append(']');
                     } else {
-                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (queryItem.isDisplaySelectItems()) {
+                            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        } else {
+                            sbInfo.append(queryItem.getValue());
+                        }
                     }
             }
             sbInfo.append(')');
