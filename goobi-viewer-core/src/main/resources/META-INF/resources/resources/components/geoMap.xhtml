@@ -89,14 +89,17 @@
 		    let view = #{cc.attrs.geoMap.initialView};
 	    	geomap.init(view)
 	    	.then((map) => {
-	    		if(#{cc.attrs.featureClickHandling == 'listEntities'})
-	    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
-	    			featureGroups: map.layers,
-	    			geomap: map,
-	    			labelFormat: ["\${MD_CREATOR}", " (\${MD_BIOGRAPHY_EDUCATION})"],
-	    			locale: "#{navigationHelper.locale}",	    			  
-	    			defaultLocale: "#{navigationHelper.defaultLocale}"
-	    		})
+	    		if(#{cc.attrs.featureClickHandling == 'listEntities'}) {	    			
+		    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
+		    			featureGroups: map.layers,
+		    			geomap: map,
+		    			entityLabelFormat: ["\${MD_CREATOR}", " (\${MD_BIOGRAPHY_EDUCATION})"],
+		    			listLabelFormat: ["\${MD_LOCATION}"],
+		    			entityLinkFormat: ["#{request.contextPath}/object/\${PI}/"],
+		    			locale: "#{navigationHelper.locale}",	    			  
+		    			defaultLocale: "#{navigationHelper.defaultLocale}"
+		    		})
+	    		}
 	    		if(#{cc.attrs.featureSetSwitch}) {	 
 		    		map.setActiveLayers(map.layers.slice(0, 1));
 		    		riot.mount(document.getElementById("featureSetSelector_#{cc.attrs.mapId}"), "featuresetselector", {

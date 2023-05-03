@@ -2274,7 +2274,7 @@ public class ActiveDocumentBean implements Serializable {
     public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
         RecordGeoMap widget = this.geoMaps.get(getPersistentIdentifier());
         if (widget == null) {
-            widget = new RecordGeoMap(getTopDocument(), List.of("MD_BIOGRAPHY", "MD_RELATIONSHIP_EVENT", "MD_RELATIONSHIP_AWARD"));
+            widget = new RecordGeoMap(getTopDocument(), List.of("MD_BIOGRAPHY", "MD_RELATIONSHIP_EVENT", "MD_RELATIONSHIP_AWARD", "MD_BIRTHPLACE"));
             this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
         }
         return widget.getGeoMap();
@@ -2527,6 +2527,10 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return false;
+    }
+    
+    public List<String> getGeomapFilters() {
+        return List.of("METADATA_TYPE", "MD_GENRE").stream().map(s -> "'"+s+"'").collect(Collectors.toList());
     }
 
 }

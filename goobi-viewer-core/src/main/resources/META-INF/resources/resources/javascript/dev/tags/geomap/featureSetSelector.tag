@@ -23,6 +23,7 @@ setFeatureGroup(event) {
 }
 
 getLabel(featureGroup) {
+	console.log("get label for ", featureGroup.config.label);
 	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
 }
 

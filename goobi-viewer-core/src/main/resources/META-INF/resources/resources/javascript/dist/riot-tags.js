@@ -2953,6 +2953,7 @@ this.setFeatureGroup = function(event) {
 }.bind(this)
 
 this.getLabel = function(featureGroup) {
+	console.log("get label for ", featureGroup.config.label);
 	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
 }.bind(this)
 
@@ -2961,9 +2962,8 @@ this.isActive = function(featureGroup) {
 }.bind(this)
 
 });
-riot.tag2('geojsonfeaturelist', '<h4>{getListLabel()}</h4><input type="text" ref="search" oninput="{filterList}"></input><ul><li each="{entity in getVisibleEntities()}">{getLabel(entity)}</li></ul>', '', 'onclick="{preventBubble}"', function(opts) {
+riot.tag2('geojsonfeaturelist', '<h4>{getListLabel()}</h4><input type="text" ref="search" oninput="{filterList}"></input><ul><li each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}">{getEntityLabel(entity)}</a></li></ul>', '', 'onclick="{preventBubble}"', function(opts) {
 
-this.defaultDisplay = undefined;
 this.entities = [];
 this.filteredEntities = undefined;
 
@@ -3008,12 +3008,27 @@ this.filterList = function(e) {
 	}
 }.bind(this)
 
-this.getListLabel = function() {
-	return this.entities[0]["MD_LOCATION"]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ")
+this.getEntityLabel = function(entity) {
+	if(entity) {
+		let labels = this.opts.entityLabelFormat;
+		return this.getLabel(entity, labels);
+	}
 }.bind(this)
 
-this.getLabel = function(entity) {
-	let labels = this.opts.labelFormat;
+this.getListLabel = function() {
+	if(this.entities.length) {
+		let labels = this.opts.listLabelFormat;
+		return this.getLabel(this.entities[0], labels);
+	}
+}.bind(this)
+
+this.getLink = function(entity) {
+	if(entity) {
+		return this.getLabel(entity, this.opts.entityLinkFormat);
+	}
+}.bind(this)
+
+this.getLabel = function(entity, labels) {
 	label = labels.map(format => {
 		let groups = [...format.matchAll(/\${(.*?)}/g)];
 		let l = "";
@@ -3031,12 +3046,11 @@ this.getLabel = function(entity) {
 }.bind(this)
 
 this.hide = function() {
-	this.defaultDisplay = this.root.style.display;
 	this.root.style.display = "none";
 }.bind(this)
 
 this.show = function() {
-	this.root.style.display = this.defaultDisplay;
+	this.root.style.display = "block";
 }.bind(this)
 
 });

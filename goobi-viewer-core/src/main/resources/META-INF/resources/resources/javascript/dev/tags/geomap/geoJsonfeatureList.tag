@@ -3,14 +3,15 @@
 <h4>{getListLabel()}</h4>
 <input type="text" ref="search"  oninput="{filterList}"></input>
 <ul>
-	<li each="{entity in getVisibleEntities()}">{getLabel(entity)}</li>
+	<li each="{entity in getVisibleEntities()}">
+		<a href="{getLink(entity)}">{getEntityLabel(entity)}</a>
+	</li>
 </ul>
 
 
 
 <script>
 
-this.defaultDisplay = undefined;
 this.entities = [];
 this.filteredEntities = undefined;
 
@@ -55,12 +56,27 @@ filterList(e) {
 	}
 }
 
-getListLabel() {
-	return this.entities[0]["MD_LOCATION"]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ")
+getEntityLabel(entity) {
+	if(entity) {		
+		let labels = this.opts.entityLabelFormat;
+		return this.getLabel(entity, labels);
+	}
 }
 
-getLabel(entity) {
-	let labels = this.opts.labelFormat;
+getListLabel() {
+	if(this.entities.length) {		
+		let labels = this.opts.listLabelFormat;
+		return this.getLabel(this.entities[0], labels); 
+	}
+}
+
+getLink(entity) {
+	if(entity) {		
+		return this.getLabel(entity, this.opts.entityLinkFormat);
+	}
+}
+
+getLabel(entity, labels) {
 	label = labels.map(format => {
 		let groups = [...format.matchAll(/\${(.*?)}/g)];
 		let l = "";
@@ -78,12 +94,11 @@ getLabel(entity) {
 }
 
 hide() {
-	this.defaultDisplay = this.root.style.display;
 	this.root.style.display = "none";
 }
 
 show() {
-	this.root.style.display = this.defaultDisplay;
+	this.root.style.display = "block";
 }
 
 </script>

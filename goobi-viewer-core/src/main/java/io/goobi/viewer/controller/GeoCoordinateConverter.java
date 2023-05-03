@@ -6,17 +6,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -39,11 +35,9 @@ import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.Point;
 import io.goobi.viewer.model.maps.Polygon;
-import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
-import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -59,7 +53,7 @@ public class GeoCoordinateConverter {
     protected static final String POINT_LAT_LNG_PATTERN = "([\\dE.-]+)[\\s/]*([\\dE.-]+)";
     protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\dE.-]+[\\s/]*[\\dE.-]+[,\\s]*)+\\)\\)"; //NOSONAR
     private static final String METADATA_TO_IGNORE_REGEX = "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH";
-    private static final String METADATA_TO_INCLUDE_REGEX = "(MD_ROLE|MD_TITLE|MD_VALUE|LABEL|NORM_NAME|MD_CREATOR|MD_BIOGRAPHY|METADATA_TYPE|MD_LOCATION)(_.+)?";
+    private static final String METADATA_TO_INCLUDE_REGEX = "(PI|MD_ROLE|MD_TITLE|MD_VALUE|LABEL|NORM_NAME|MD_CREATOR|MD_BIOGRAPHY|METADATA_TYPE|MD_LOCATION)(_.+)?";
 
     private GeoCoordinateConverter() {
 

@@ -12,11 +12,13 @@ import java.util.stream.Collectors;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 
 /**
  * An object containing a number  of translatable metadata values.
  * The values are mapped to a key which is a string corresponding to the SOLR field name the values are taken from
  * Each field name/key is mapped to a list of {@link IMetadataValue} objects which may contain a single string or translations in several languages
+ * Used in {@link GeoCoordinateConverter} to add translatable metadata entites to geomap features
  * @author florian
  *
  */

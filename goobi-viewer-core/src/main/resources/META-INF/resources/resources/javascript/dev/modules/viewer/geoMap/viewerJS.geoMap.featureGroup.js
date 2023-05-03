@@ -554,7 +554,7 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
     }
     
     viewer.GeoMap.featureGroup.prototype.showMarkers = function(entityFilter) {
-		_getAllEntities(this).forEach(entity => {
+		_getAllEntities(this).filter(entity => entity).forEach(entity => {
 			entity.visible = _isVisible(entity, entityFilter);
 		});
 		this.hideMarkers();

@@ -74,6 +74,8 @@ var viewerJS = ( function( viewer ) {
                     	 	return element[fallbackLanguage].join(", ");
                     	 } else if(element.none) {
                     	 	return element.none.join(", ");
+                    	 } else if(element._default) {
+                    	 	return element._default.join(", ");
                     	 } else {
                     	 	let keys = Object.keys(element);
                     	 	if(keys && keys.length > 0) {
