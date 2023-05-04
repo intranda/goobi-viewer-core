@@ -75,8 +75,7 @@ public class SearchQueryItem implements Serializable {
     private String field;
     /** This operator now describes the relation of this item with the other items rather than between terms within this item's query! */
     private SearchItemOperator operator = SearchItemOperator.AND;
-    private String value;
-    private String value2;
+    private List<String> values = new ArrayList<>();
     volatile boolean displaySelectItems = false;
 
     /**
@@ -103,8 +102,8 @@ public class SearchQueryItem implements Serializable {
         result = prime * result + (displaySelectItems ? 1231 : 1237);
         result = prime * result + ((field == null) ? 0 : field.hashCode());
         result = prime * result + ((operator == null) ? 0 : operator.hashCode());
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
-        result = prime * result + ((value2 == null) ? 0 : value2.hashCode());
+        //        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        //        result = prime * result + ((value2 == null) ? 0 : value2.hashCode());
         return result;
     }
 
@@ -129,16 +128,16 @@ public class SearchQueryItem implements Serializable {
             return false;
         if (operator != other.operator)
             return false;
-        if (value == null) {
-            if (other.value != null)
-                return false;
-        } else if (!value.equals(other.value))
-            return false;
-        if (value2 == null) {
-            if (other.value2 != null)
-                return false;
-        } else if (!value2.equals(other.value2))
-            return false;
+        //        if (value == null) {
+        //            if (other.value != null)
+        //                return false;
+        //        } else if (!value.equals(other.value))
+        //            return false;
+        //        if (value2 == null) {
+        //            if (other.value2 != null)
+        //                return false;
+        //        } else if (!value2.equals(other.value2))
+        //            return false;
         return true;
     }
 
@@ -189,8 +188,7 @@ public class SearchQueryItem implements Serializable {
         displaySelectItems = false;
         operator = SearchItemOperator.AND;
         field = null;
-        value = null;
-        value2 = null;
+        values.clear();
     }
 
     /**
@@ -243,6 +241,13 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * @return the selectType
+     */
+    public String getSelectType() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSelectType(field, template, false);
+    }
+
+    /**
      * <p>
      * Getter for the field <code>field</code>.
      * </p>
@@ -288,6 +293,13 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * @return the values
+     */
+    public List<String> getValues() {
+        return values;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>value</code>.
      * </p>
@@ -295,7 +307,11 @@ public class SearchQueryItem implements Serializable {
      * @return the value
      */
     public String getValue() {
-        return value;
+        if (!values.isEmpty()) {
+            return values.get(0);
+        }
+
+        return null;
     }
 
     /**
@@ -304,7 +320,7 @@ public class SearchQueryItem implements Serializable {
      * @return
      */
     public boolean isValueSet(String value) {
-        return this.value != null && this.value.contains(value);
+        return this.values.contains(value);
     }
 
     /**
@@ -316,14 +332,11 @@ public class SearchQueryItem implements Serializable {
      */
     public void toggleValue(String value) {
         value = StringTools.stripJS(value);
-        if (this.value != null) {
-            if (this.value.contains(value)) {
-                this.value = this.value.replace(value, "").trim();
-            } else {
-                this.value += " " + value;
-            }
+        int index = this.values.indexOf(value);
+        if (index >= 0) {
+            this.values.remove(index);
         } else {
-            this.value = value;
+            this.values.add(value);
         }
     }
 
@@ -336,24 +349,31 @@ public class SearchQueryItem implements Serializable {
      */
     public void setValue(String value) {
         logger.trace("setValue: {}", value);
-        this.value = StringTools.stripJS(value);
-        //        if(StringUtils.isNotBlank(this.value) && !this.value.contains(" ")) {
-        //            this.value = SearchHelper.addFuzzySearchToken(this.value);
-        //        }
+        value = StringTools.stripJS(value);
+        values.add(0, value);
     }
 
     /**
      * @return the value2
      */
     public String getValue2() {
-        return value2;
+        if (values.size() < 2) {
+            return null;
+        }
+
+        return values.get(1);
     }
 
     /**
      * @param value2 the value2 to set
      */
     public void setValue2(String value2) {
-        this.value2 = value2;
+        logger.trace("setValue2: {}", value2);
+        value2 = StringTools.stripJS(value2);
+        if (values.isEmpty()) {
+            values.add(null);
+        }
+        values.add(1, value2);
     }
 
     /**
@@ -445,9 +465,7 @@ public class SearchQueryItem implements Serializable {
      * @should add proximity search token correctly
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch) {
-        StringBuilder sbItem = new StringBuilder();
-
-        if (StringUtils.isBlank(value)) {
+        if (values.isEmpty()) {
             return "";
         }
 
@@ -484,12 +502,16 @@ public class SearchQueryItem implements Serializable {
             fields.add(field);
         }
 
+        String value = values.get(0);
+
         // Detect implicit phrase search
         boolean phrase = false;
         if (SearchHelper.isPhrase(value.trim())) {
             logger.trace("Phrase detected, changing operator.");
             phrase = true;
         }
+
+        StringBuilder sbItem = new StringBuilder();
 
         switch (operator) {
             case AND:
@@ -625,12 +647,12 @@ public class SearchQueryItem implements Serializable {
                                 suffix = "*";
                                 useValue = useValue.substring(0, useValue.length() - 1);
                             }
-                            if (StringUtils.isNotBlank(value2)) {
+                            if (values.size() > 1 && StringUtils.isNotBlank(values.get(1))) {
                                 // Range search
                                 sbItem.append('[')
                                         .append(ClientUtils.escapeQueryChars(useValue))
                                         .append(" TO ")
-                                        .append(ClientUtils.escapeQueryChars(value2.trim()))
+                                        .append(ClientUtils.escapeQueryChars(values.get(1).trim()))
                                         .append("]");
                             } else {
                                 // Regular search
@@ -650,7 +672,7 @@ public class SearchQueryItem implements Serializable {
                                 // TODO do not add negated terms
                             }
                         }
-                        if (StringUtils.isBlank(value2)) {
+                        if (values.size() < 2 || StringUtils.isBlank(values.get(1))) {
                             moreThanOneValue = true;
                         }
                     }
@@ -671,6 +693,6 @@ public class SearchQueryItem implements Serializable {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return field + " " + operator + " " + value;
+        return field + " " + operator + " " + getValue();
     }
 }

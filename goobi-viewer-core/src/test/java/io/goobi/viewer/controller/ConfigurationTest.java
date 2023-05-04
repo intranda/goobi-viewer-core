@@ -1527,7 +1527,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
         List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true);
-        Assert.assertEquals(11, result.size());
+        Assert.assertEquals(12, result.size());
         Assert.assertTrue(result.get(0).isHierarchical());
         Assert.assertTrue(result.get(0).isVisible());
         Assert.assertTrue(result.get(5).isRange());
@@ -1535,6 +1535,8 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("#SEPARATOR1#", result.get(7).getField());
         Assert.assertEquals("-----", result.get(7).getLabel());
         Assert.assertTrue(result.get(7).isDisabled());
+        Assert.assertEquals(20, result.get(11).getDisplaySelectItemsThreshold());
+        Assert.assertEquals(AdvancedSearchFieldConfiguration.SELECT_TYPE_BADGES, result.get(11).getSelectType());
     }
 
     /**
@@ -1573,6 +1575,30 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAdvancedSearchFieldSeparatorLabel_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("-----", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSeparatorLabel("#SEPARATOR1#", null, true));
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchFieldDisplaySelectItemsThreshold(String,String,boolean)
+     * @verifies return correct value
+     */
+    @Test
+    public void getAdvancedSearchFieldDisplaySelectItemsThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(20,
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getAdvancedSearchFieldDisplaySelectItemsThreshold(SolrConstants.DOCSTRCT, StringConstants.DEFAULT_NAME, false));
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchFieldSelectType(String,String,boolean)
+     * @verifies return correct value
+     */
+    @Test
+    public void getAdvancedSearchFieldSelectType_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(AdvancedSearchFieldConfiguration.SELECT_TYPE_BADGES,
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getAdvancedSearchFieldSelectType(SolrConstants.DOCSTRCT, StringConstants.DEFAULT_NAME, false));
     }
 
     /**
@@ -3155,7 +3181,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getSearchResultGroups_shouldReturnAllConfiguredElements() throws Exception {
         List<SearchResultGroup> groups = DataManager.getInstance().getConfiguration().getSearchResultGroups();
         Assert.assertEquals(3, groups.size());
-        
+
         Assert.assertEquals("lido_objects", groups.get(0).getName());
         Assert.assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
         Assert.assertTrue(groups.get(0).isUseAsAdvancedSearchTemplate());
