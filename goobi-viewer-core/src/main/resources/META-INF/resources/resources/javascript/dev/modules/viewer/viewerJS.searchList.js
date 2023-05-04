@@ -41,6 +41,8 @@ var viewerJS = ( function( viewer ) {
         saveSearchInputSelector: '#saveSearchInput',
         excelExportSelector: '.excel-export-trigger',
         excelExportLoaderSelector: '.excel-export-loader',
+        risExportSelector: '.ris-export-trigger',
+        risExportLoaderSelector: '.ris-export-loader',
         hitContentLoaderSelector: '.search-list__loader',
         hitContentSelector: '.search-list__hit-content',
         listStyle: '',
@@ -114,6 +116,33 @@ var viewerJS = ( function( viewer ) {
                 .subscribe((jobs) => {
                     //console.log("all jobs finished ", jobs.map(j => j.status));
                     excelLoader.hide();
+                    trigger.show();
+                })
+               
+            } );
+
+            // show/hide loader for RIS export
+            $( _defaults.risExportSelector ).on( 'click', function() {
+                var trigger = $( this ); 
+                var risLoader = $( _defaults.risExportLoaderSelector );
+                
+                trigger.hide();
+                risLoader.show();
+                
+                var url = _defaults.contextPath + '/api/v1/tasks/';
+                let downloadFinished = false;
+                rxjs.interval(1000)
+                .pipe(rxjs.operators.flatMap(() => fetch(url)),
+                        rxjs.operators.flatMap(response => response.json()),
+                        rxjs.operators.takeWhile(json => {
+                            let waiting = json.some(job => job.status != "COMPLETE" && job.status != "ERROR");
+                            return waiting;
+                        }),
+                        rxjs.operators.last()
+                )
+                .subscribe((jobs) => {
+                    //console.log("all jobs finished ", jobs.map(j => j.status));
+                    risLoader.hide();
                     trigger.show();
                 })
                

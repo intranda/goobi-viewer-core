@@ -63,14 +63,14 @@
             <h:panelGroup rendered="#{configurationBean.searchRisExportEnabled}">
                 <div class="search-list__ris-export">
                     <h:form id="risExportSearchForm" prependId="false">
-                        <h:commandLink id="risDownloadButton" styleClass="btn btn--icon ris-export-trigger" action="#{searchBean.exportSearchAsRisAction}" title="#{msg.searchExportRis}">
+                        <h:commandLink id="risDownloadButton" styleClass="btn btn--icon ris-export-trigger" action="#{searchBean.exportSearchAsRisAction}" title="#{msg.searchExportRIS}">
                             <i class="fa fa-file-text-o" aria-hidden="true"></i>
                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
                             <f:passThroughAttribute name="data-placement" value="top" />
                             <f:passThroughAttribute name="aria-label" value="#{msg.searchExportRIS}" />
                         </h:commandLink>
     
-                        <span class="excel-export-loader">
+                        <span class="ris-export-loader">
                             #{msg.searchExportRisLoading}
                             <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" alt="RIS Export Loader" />
                         </span>
