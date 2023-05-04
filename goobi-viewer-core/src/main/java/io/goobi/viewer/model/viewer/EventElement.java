@@ -177,7 +177,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         }
 
         // Get metadata list for the event type
-        logger.trace("Metadata for event '{}'", type);
+        // logger.trace("Metadata for event '{}'", type);
         String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         for (Metadata md : metadata) {
             StructElement se = new StructElement();

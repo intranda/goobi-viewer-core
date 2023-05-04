@@ -1023,6 +1023,17 @@ public class ConfigurationBean implements Serializable {
     public boolean isSearchExcelExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled();
     }
+    
+    /**
+     * <p>
+     * isSearchRisExportEnabled.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isSearchRisExportEnabled() {
+        return DataManager.getInstance().getConfiguration().isSearchRisExportEnabled();
+    }
 
     /**
      * <p>
