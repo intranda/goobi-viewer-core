@@ -449,7 +449,7 @@ public class SearchQueryItem implements Serializable {
      * @should add proximity search token correctly
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch) {
-        if (values.isEmpty()) {
+        if (values.isEmpty() || StringUtils.isBlank(getValue())) {
             return "";
         }
 
