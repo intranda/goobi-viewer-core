@@ -79,6 +79,16 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
                     item.generateQuery(searchTerms, true, false));
             Assert.assertTrue(searchTerms.isEmpty());
         }
+        // Multiple values
+        {
+            SearchQueryItem item = new SearchQueryItem();
+            item.setField("DOCSTRCT"); // selected field must be configured in a way that will return SolrQueryItem.isDisplaySelectItems() == true
+            item.getValues().add("foo bar");
+            item.getValues().add("lorem ipsum");
+            Set<String> searchTerms = new HashSet<>(0);
+            Assert.assertEquals("+(DOCSTRCT:\"foo bar\" DOCSTRCT:\"lorem ipsum\")", item.generateQuery(searchTerms, true, false));
+            Assert.assertTrue(searchTerms.isEmpty());
+        }
     }
 
     /**

@@ -410,8 +410,8 @@ public class SearchQueryItem implements Serializable {
 
                     // Via unique()
                     Map<String, String> params = Collections.singletonMap("json.facet", "{uniqueCount : \"unique(" + facetField + ")\"}");
-                    List<String> values = SearchHelper.getFacetValues(facetField + ":[* TO *]" + suffix, "json:uniqueCount", null, 1, params);
-                    int size = !values.isEmpty() ? Integer.valueOf(values.get(0)) : 0;
+                    List<String> vals = SearchHelper.getFacetValues(facetField + ":[* TO *]" + suffix, "json:uniqueCount", null, 1, params);
+                    int size = !vals.isEmpty() ? Integer.valueOf(vals.get(0)) : 0;
 
                     if (size < getDisplaySelectItemsThreshold()) {
                         displaySelectItems = true;
@@ -478,11 +478,9 @@ public class SearchQueryItem implements Serializable {
             fields.add(field);
         }
 
-        String value = values.get(0);
-
         // Detect implicit phrase search
         boolean phrase = false;
-        if (SearchHelper.isPhrase(value.trim())) {
+        if (SearchHelper.isPhrase(values.get(0).trim())) {
             logger.trace("Phrase detected, changing operator.");
             phrase = true;
         }
@@ -500,12 +498,8 @@ public class SearchQueryItem implements Serializable {
                 break;
         }
         sbItem.append('(');
-
         // Phrase search operator: just the whole value in quotation marks
-        if (phrase) {
-            String useValue = value.trim();
-            int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
-            logger.trace("proximity distance: {}", proximitySearchDistance);
+        if (phrase || isDisplaySelectItems()) {
             boolean additionalField = false;
             for (String f : fields) {
                 if (additionalField) {
@@ -517,28 +511,41 @@ public class SearchQueryItem implements Serializable {
                 if (isUntokenizeForPhraseSearch() && !f.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                     useField = f += SolrConstants.SUFFIX_UNTOKENIZED;
                 }
-                sbItem.append(useField).append(':');
-                if (useValue.charAt(0) != '"') {
-                    sbItem.append('"');
-                }
-                sbItem.append(useValue);
-                if (useValue.charAt(useValue.length() - 1) != '"' && proximitySearchDistance == 0) {
-                    sbItem.append('"');
-                }
-                if (SolrConstants.FULLTEXT.equals(f) || SolrConstants.SUPERFULLTEXT.equals(f)) {
-                    // Remove quotation marks to add to search terms
-                    String val = useValue.replace("\"", "");
-                    if (val.length() > 0) {
-                        searchTerms.add(val);
+
+                boolean additionalValue = false;
+                for (String value : values) {
+                    if (additionalValue) {
+                        // TODO AND-option?
+                        sbItem.append(' ');
                     }
+                    String useValue = value.trim();
+                    int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
+                    logger.trace("proximity distance: {}", proximitySearchDistance);
+
+                    sbItem.append(useField).append(':');
+                    if (useValue.charAt(0) != '"') {
+                        sbItem.append('"');
+                    }
+                    sbItem.append(useValue);
+                    if (useValue.charAt(useValue.length() - 1) != '"' && proximitySearchDistance == 0) {
+                        sbItem.append('"');
+                    }
+                    if (SolrConstants.FULLTEXT.equals(f) || SolrConstants.SUPERFULLTEXT.equals(f)) {
+                        // Remove quotation marks to add to search terms
+                        String val = useValue.replace("\"", "");
+                        if (val.length() > 0) {
+                            searchTerms.add(val);
+                        }
+                    }
+                    additionalField = true;
+                    additionalValue = true;
                 }
-                additionalField = true;
             }
         }
         // AND/OR: e.g. '(FIELD:value1 AND/OR FIELD:"value2" AND/OR -FIELD:value3)' for each query item
         else {
-            if (!value.trim().isEmpty()) {
-                String[] valueSplit = value.trim().split(" ");
+            if (!values.get(0).trim().isEmpty()) {
+                String[] valueSplit = values.get(0).trim().split(" ");
                 boolean moreThanOneField = false;
                 for (String f : fields) {
                     if (moreThanOneField) {
@@ -568,16 +575,10 @@ public class SearchQueryItem implements Serializable {
                             sbItem.append(" -");
                             val = val.substring(1);
                         } else if (moreThanOneValue) {
-                            switch (this.field) {
-                                // TODO: allow OR for FULLTEXT?
-                                //                                case SolrConstants.FULLTEXT:
-                                //                                case SolrConstants.UGCTERMS:
-                                case ADVANCED_SEARCH_ALL_FIELDS:
-                                    sbItem.append(' ');
-                                    break;
-                                default:
-                                    sbItem.append(SolrConstants.SOLR_QUERY_AND);
-                                    break;
+                            if (ADVANCED_SEARCH_ALL_FIELDS.equals(this.field)) {
+                                sbItem.append(' ');
+                            } else {
+                                sbItem.append(SolrConstants.SOLR_QUERY_AND);
                             }
                         }
                         // Lowercase the search term for certain fields
@@ -651,6 +652,7 @@ public class SearchQueryItem implements Serializable {
                         if (values.size() < 2 || StringUtils.isBlank(values.get(1))) {
                             moreThanOneValue = true;
                         }
+
                     }
                     sbItem.append(')');
                     moreThanOneField = true;

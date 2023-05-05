@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,8 +68,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;

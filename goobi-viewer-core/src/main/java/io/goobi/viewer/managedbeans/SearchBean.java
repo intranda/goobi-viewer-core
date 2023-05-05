@@ -2504,8 +2504,6 @@ public class SearchBean implements SearchInterface, Serializable {
     private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, int proximitySearchDistance,
             Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
-            HttpServletRequest request = BeanUtils.getRequest(facesContext);
-
             String termQuery = null;
             if (searchTerms != null) {
                 termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));

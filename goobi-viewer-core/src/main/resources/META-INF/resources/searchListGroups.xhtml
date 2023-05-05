@@ -79,7 +79,7 @@
                                                 <ui:fragment rendered="#{queryItem.selectType == 'dropdown'}">
                                                     <div class="custom-control custom-control--select multiple">
                                                        <h:selectManyMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
-                                                           value="#{queryItem.valueArray}">
+                                                           value="#{queryItem.values}">
                                                            <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
                                                                <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
                                                            </c:forEach>
