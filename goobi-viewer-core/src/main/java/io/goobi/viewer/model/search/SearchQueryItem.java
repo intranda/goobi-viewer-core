@@ -413,7 +413,7 @@ public class SearchQueryItem implements Serializable {
                     List<String> vals = SearchHelper.getFacetValues(facetField + ":[* TO *]" + suffix, "json:uniqueCount", null, 1, params);
                     int size = !vals.isEmpty() ? Integer.valueOf(vals.get(0)) : 0;
 
-                    if (size < getDisplaySelectItemsThreshold()) {
+                    if (size > 0 && size < getDisplaySelectItemsThreshold()) {
                         displaySelectItems = true;
                     } else {
                         displaySelectItems = false;
