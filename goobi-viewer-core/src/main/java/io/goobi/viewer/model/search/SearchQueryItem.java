@@ -276,6 +276,13 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * @param values the values to set
+     */
+    public void setValues(List<String> values) {
+        this.values = values;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>value</code>.
      * </p>
@@ -381,6 +388,7 @@ public class SearchQueryItem implements Serializable {
      * @should set displaySelectItems false if searching in fulltext
      * @should set displaySelectItems true if value count below threshold
      * @should set displaySelectItems false if value count above threshold
+     * @should set displaySelectItems false if value count zero
      */
     protected void toggleDisplaySelectItems() {
         if (field == null) {

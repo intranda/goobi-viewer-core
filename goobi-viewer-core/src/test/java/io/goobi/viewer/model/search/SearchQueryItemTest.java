@@ -242,7 +242,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
     @Test
     public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsTrueIfValueCountBelowThreshold() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
-        item.setField("MD_FOO");
+        item.setField(SolrConstants.EVENTTYPE);
         item.toggleDisplaySelectItems();
         Assert.assertTrue(item.isDisplaySelectItems());
     }
@@ -257,5 +257,15 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setField(SolrConstants.PI);
         item.toggleDisplaySelectItems();
         Assert.assertFalse(item.isDisplaySelectItems());
+    }
+
+    /**
+     * @see SearchQueryItem#toggleDisplaySelectItems()
+     * @verifies set displaySelectItems false if value count zero
+     */
+    @Test
+    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfValueCountZero() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
     }
 }
