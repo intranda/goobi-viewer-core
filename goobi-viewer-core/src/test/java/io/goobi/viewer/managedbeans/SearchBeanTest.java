@@ -332,7 +332,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setOperator(SearchItemOperator.OR);
             item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
-            item.setValue("foo bar");
+            item.setValue("monograph"); // should NOT be translated
         }
         {
             // AND-operator, search in MD_TITLE with negation
@@ -341,9 +341,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setField("MD_TITLE");
             item.setValue("bla \"blup\" -nein");
         }
+        {
+            // NOT-operator, search in DOCSTRCT with negation
+            SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(2);
+            item.setOperator(SearchItemOperator.NOT);
+            item.setField("DOCSTRCT");
+            item.setValue("monograph"); // should be translated
+        }
 
         sb.generateAdvancedSearchString();
-        Assert.assertEquals("OR (All fields: foo bar) AND (Title: bla &quot;blup&quot; -nein)",
+        Assert.assertEquals("OR (All fields: monograph) AND (Title: bla &quot;blup&quot; -nein) NOT (Structure type: Monograph)",
                 sb.getAdvancedSearchQueryInfo());
     }
 

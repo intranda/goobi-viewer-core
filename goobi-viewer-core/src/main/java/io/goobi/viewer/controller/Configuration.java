@@ -4537,6 +4537,18 @@ public class Configuration extends AbstractConfiguration {
     public boolean isSearchInItemEnabled() {
         return getLocalBoolean("sidebar.searchInItem[@enabled]", true);
     }
+    
+    /**
+     * <p>
+     * isSearchRisExportEnabled.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSearchRisExportEnabled() {
+        return getLocalBoolean("search.export.ris[@enabled]", false);
+    }
 
     /**
      * <p>
