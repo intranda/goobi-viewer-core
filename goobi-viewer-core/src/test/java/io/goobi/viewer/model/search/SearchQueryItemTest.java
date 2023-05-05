@@ -265,7 +265,9 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfValueCountZero() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        SearchQueryItem item = new SearchQueryItem();
+        item.setField("MD_NO_SUCH_FIELD");
+        item.toggleDisplaySelectItems();
+        Assert.assertFalse(item.isDisplaySelectItems());
     }
 }
