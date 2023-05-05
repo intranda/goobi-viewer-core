@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
@@ -97,14 +98,7 @@ public class SearchQueryItem implements Serializable {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (displaySelectItems ? 1231 : 1237);
-        result = prime * result + ((field == null) ? 0 : field.hashCode());
-        result = prime * result + ((operator == null) ? 0 : operator.hashCode());
-        //        result = prime * result + ((value == null) ? 0 : value.hashCode());
-        //        result = prime * result + ((value2 == null) ? 0 : value2.hashCode());
-        return result;
+        return Objects.hash(field, operator, template, values);
     }
 
     /* (non-Javadoc)
@@ -119,26 +113,8 @@ public class SearchQueryItem implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         SearchQueryItem other = (SearchQueryItem) obj;
-        if (displaySelectItems != other.displaySelectItems)
-            return false;
-        if (field == null) {
-            if (other.field != null)
-                return false;
-        } else if (!field.equals(other.field))
-            return false;
-        if (operator != other.operator)
-            return false;
-        //        if (value == null) {
-        //            if (other.value != null)
-        //                return false;
-        //        } else if (!value.equals(other.value))
-        //            return false;
-        //        if (value2 == null) {
-        //            if (other.value2 != null)
-        //                return false;
-        //        } else if (!value2.equals(other.value2))
-        //            return false;
-        return true;
+        return Objects.equals(field, other.field) && operator == other.operator && Objects.equals(template, other.template)
+                && Objects.equals(values, other.values);
     }
 
     /**
@@ -315,6 +291,19 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * <p>
+     * Setter for the field <code>value</code>.
+     * </p>
+     *
+     * @param value the value to set
+     */
+    public void setValue(String value) {
+        // logger.trace("setValue: {}", value);
+        value = StringTools.stripJS(value);
+        values.add(0, value);
+    }
+
+    /**
      * 
      * @param value
      * @return
@@ -338,19 +327,6 @@ public class SearchQueryItem implements Serializable {
         } else {
             this.values.add(value);
         }
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>value</code>.
-     * </p>
-     *
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        logger.trace("setValue: {}", value);
-        value = StringTools.stripJS(value);
-        values.add(0, value);
     }
 
     /**
