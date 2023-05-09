@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
@@ -34,11 +35,12 @@ public class ComplexMetadataContainer {
         this.metadataMap = ComplexMetadata.getMetadataFromDocuments(metadataDocs).stream().filter(doc -> fieldNameFilter.test(doc.getField())).collect(Collectors.toMap(ComplexMetadata::getField, List::of, ListUtils::union));
     }
     
-    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, boolean reverseOrder) {
-        List<ComplexMetadata> list = getMetadata(field).stream().sorted( (m1,m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage))).collect(Collectors.toList());
-        if(reverseOrder) {
-            Collections.reverse(list);
-        }
+    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, boolean reverseOrder, String filterField, String filterValue, Integer limit) {
+        List<ComplexMetadata> list = getMetadata(field).stream()
+                .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, sortLanguage).equalsIgnoreCase(filterValue))
+                .sorted( (m1,m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage)) * (reverseOrder?-1:1))
+                .limit(limit)
+                .collect(Collectors.toList());
         return list;
     }
     
