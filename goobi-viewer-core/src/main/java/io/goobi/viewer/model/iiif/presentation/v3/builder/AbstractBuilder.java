@@ -661,8 +661,8 @@ public abstract class AbstractBuilder {
         return URI.create(uri);
     }
 
-    protected Manifest3 createRecordLink(String collectionField, String collectionName, StructElement rec) {
-        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
+    protected Manifest3 createRecordLink(StructElement rec) {
+        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(rec.getPi()).buildURI();
         Manifest3 manifest = new Manifest3(id);
         try {
             manifest.addThumbnail(getThumbnail(rec.getPi()));
@@ -673,8 +673,8 @@ public abstract class AbstractBuilder {
         return manifest;
     }
 
-    protected Collection3 createAnchorLink(String collectionField, String collectionName, StructElement rec) {
-        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
+    protected Collection3 createAnchorLink(StructElement rec) {
+        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(rec.getPi()).buildURI();
         Collection3 manifest = new Collection3(id, null);
         manifest.addBehavior(ViewingHint.multipart);
         manifest.addThumbnail(getThumbnail(rec));

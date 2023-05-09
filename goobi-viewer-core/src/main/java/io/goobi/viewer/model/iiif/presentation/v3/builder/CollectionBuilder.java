@@ -103,10 +103,10 @@ public class CollectionBuilder extends AbstractBuilder {
         List<StructElement> records = dataRetriever.getContainedRecords(collectionField, collectionName);
         for (StructElement record : records) {
             if (record.isAnchor()) {
-                Collection3 manifest = createAnchorLink(collectionField, collectionName, record);
+                Collection3 manifest = createAnchorLink(record);
                 baseCollection.addItem(manifest);
             } else {
-                Manifest3 manifest = createRecordLink(collectionField, collectionName, record);
+                Manifest3 manifest = createRecordLink(record);
                 baseCollection.addItem(manifest);
             }
         }
