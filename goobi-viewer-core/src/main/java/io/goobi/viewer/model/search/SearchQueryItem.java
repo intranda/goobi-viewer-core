@@ -502,7 +502,7 @@ public class SearchQueryItem implements Serializable {
         // AND/OR: e.g. '(FIELD:value1 AND/OR FIELD:"value2" AND/OR -FIELD:value3)' for each query item
         else {
             if (!value.trim().isEmpty()) {
-                String[] valueSplit = value.trim().split(" ");
+                String[] valueSplit = value.trim().split(SearchHelper.SEARCH_TERM_SPLIT_REGEX);
                 boolean moreThanOneField = false;
                 for (String f : fields) {
                     if (moreThanOneField) {
