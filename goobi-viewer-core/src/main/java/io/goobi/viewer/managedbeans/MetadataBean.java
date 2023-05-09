@@ -350,4 +350,8 @@ public class MetadataBean {
     public void setActiveMetadataView(MetadataView activeMetadataView) {
         this.activeMetadataView = activeMetadataView;
     }
+    
+    public List<String> getComplexMetadataFieldsToList()  {
+        return List.of("MD_DATESTART", "MD_DATEEND", "MD_TYPE");
+    }
 }

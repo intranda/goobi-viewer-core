@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -916,8 +917,16 @@ public class SolrTools {
        }
     }
 
-    public static MetadataContainer createMetadataEntity(SolrDocument doc, List<SolrDocument> children, Function<String, Boolean> fieldNameFilter) {
-        Map<String, List<IMetadataValue>> translatedMetadata = getTranslatedMetadata(doc, fieldNameFilter::apply);
+    /**
+     * Returns a {@link MetadataContainer} which includes all metadata fields matching the given fieldNameFilter from the given {@link SolrDocument} doc
+     * as well as the {@link SolrConstants#MD_VALUE values} of those child documents which {@link SolrConstants#LABEL label} matches the fieldnameFilter
+     * @param doc   The main DOCSTRUCT document
+     * @param children  METADATA type documents belonging to the main doc
+     * @param fieldNameFilter   A function which should return true for all metadata field names to be included in the return value
+     * @return  a {@link MetadataContainer}
+     */
+    public static MetadataContainer createMetadataEntity(SolrDocument doc, List<SolrDocument> children, Predicate<String> fieldNameFilter) {
+        Map<String, List<IMetadataValue>> translatedMetadata = getTranslatedMetadata(doc, fieldNameFilter::test);
         MetadataContainer entity = new MetadataContainer(
                 getSingleFieldStringValue(doc, SolrConstants.IDDOC), 
                 Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL)).orElse(Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_VALUE)).orElse("")));
@@ -928,7 +937,7 @@ public class SolrTools {
         .forEach(e -> entity.put(e.getKey(), e.getValue()));
 
         List<ComplexMetadata> childDocs = ComplexMetadata.getMetadataFromDocuments(children);
-        List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).filter(e -> fieldNameFilter.apply(e.getKey())).collect(Collectors.toList());
+        List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).filter(e -> fieldNameFilter.test(e.getKey())).collect(Collectors.toList());
         allChildDocValues.forEach(e -> entity.addAll(e.getKey(),  e.getValue()));
         return entity;
     }

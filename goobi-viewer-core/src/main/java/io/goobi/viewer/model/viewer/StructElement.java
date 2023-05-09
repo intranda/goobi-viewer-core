@@ -52,6 +52,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -89,6 +90,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private final Map<String, String> groupLabels = new HashMap<>();
     /** Metadata describing the polygon that contains this docstruct within a page. */
     private List<ShapeMetadata> shapeMetadata;
+    private ComplexMetadataContainer metadataDocuments = null;
     private StructElement topStruct = null;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
@@ -296,6 +298,17 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
         logger.warn(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, luceneId);
         throw new PresentationException("errDocNotFound");
+    }
+    
+    public ComplexMetadataContainer getMetadataDocuments() throws PresentationException, IndexUnreachableException {
+        if(this.metadataDocuments == null) {
+            this.metadataDocuments = loadMetadataDocuments();
+        }
+        return this.metadataDocuments;
+    }
+
+    private ComplexMetadataContainer loadMetadataDocuments() throws PresentationException, IndexUnreachableException {
+        return ComplexMetadataContainer.loadMetadataDocuments(this.pi, DataManager.getInstance().getSearchIndex());
     }
 
     /**

@@ -2988,6 +2988,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (getActiveSearchType() == 1) {
             return PrettyUrlTools.getAbsolutePageUrl(
                     "pretty:searchAdvanced5",
+                    getActiveResultGroupName(),
                     getExactSearchString(),
                     getCurrentPage(),
                     getSortString(),
@@ -2996,6 +2997,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return PrettyUrlTools.getAbsolutePageUrl(
                 "pretty:newSearch5",
+                getActiveResultGroupName(),
                 getExactSearchString(),
                 getCurrentPage(),
                 getSortString(),

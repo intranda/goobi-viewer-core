@@ -5,49 +5,60 @@
 /* VIEW OBJECT */
 /* BLOCK */
 .view-object {
+
 	/* ELEMENT */
 	/* IMAGE */
 	&__object-3d,
 	&__image {
 		position: relative;
-	    border: 1px solid @lightgray;
-	    overflow: hidden;
+		border: 1px solid @lightgray;
+		overflow: hidden;
 	}
+
 	&__image-loader {}
+
 	&__object-3d-world,
 	&__image-map {
 		position: relative;
-	    width: 100%;
-	    height: 600px;
-	    span {
-	        display: inline-block;
-	        vertical-align: middle;
-	        line-height: normal;
-	        font-size: @fontNormal;
-	    }
-	    img {
-	        max-width: none;
-	    }
-	    .ugcBox {
-	        &.focus {
-	            border: 2px solid red;
-	        }
-	        &.drawing {
-	            border: 2px solid blue;
-	        }
-	    }
-			.openseadragon-canvas:focus-visible {
-				background: rgba(255, 0, 0, 0.4) !important;
-				z-index: 1 !important;
+		width: 100%;
+		height: 600px;
+
+		span {
+			display: inline-block;
+			vertical-align: middle;
+			line-height: normal;
+			font-size: @fontNormal;
+		}
+
+		img {
+			max-width: none;
+		}
+
+		.ugcBox {
+			&.focus {
+				border: 2px solid red;
 			}
+
+			&.drawing {
+				border: 2px solid blue;
+			}
+		}
+
+		.openseadragon-canvas:focus-visible {
+			background: rgba(255, 0, 0, 0.4) !important;
+			z-index: 1 !important;
+		}
 	}
+
 	&__access-denied {
 		text-align: center;
 		overflow: hidden;
+
 		img {
 			max-width: 100%;
 		}
 	}
+
 	/* IMAGE MOBILE OVERLAY */
 	&__image-mobile-overlay {
 		display: none;
@@ -63,18 +74,22 @@
 	&__video,
 	&__audio,
 	&__text {}
+
 	/* VIDEO */
 	&__video {
 		display: flex;
 	}
+
 	&__video-file {
 		height: auto;
 		width: 100%;
 		background: rgba(0, 0, 0, 0.02);
 		cursor: pointer;
 	}
+
 	/* AUDIO */
 	&__audio {}
+
 	/* TEXT */
 	&__text {
 		text-align: center;
@@ -84,29 +99,36 @@
 		padding: 10px;
 	}
 }
+
 .view-object-content {
 	background-color: white;
 	border: 1px solid @middlegray;
 	padding: 1.5rem;
 	display: flex;
 	margin-bottom: 1.5rem;
+
 	&__thumb {
 		flex: 0 0 30%;
+
 		img {
 			width: 100%;
 		}
 	}
+
 	&__objects {
 		flex: 0 0 70%;
 		padding-left: 1.5rem;
+
 		.search-list__hit-title {
-		    width: 100%;
-		    height: 50%;
+			width: 100%;
+			height: 50%;
 		}
 	}
+
 	&__audio {
 		width: 70%;
 		margin: 0 auto;
+
 		audio {
 			width: 100%;
 			border-radius: 1rem;
@@ -117,48 +139,55 @@
 }
 
 .image-fragment {
-	background-color: rgba(255,255,255,0.3);
-    border-color: #FF2523;
-    border-style: solid;
-    border-width: 2px;
-    &.focus {
-    	background-color: transparent;
-    }
+	background-color: rgba(255, 255, 255, 0.3);
+	border-color: #FF2523;
+	border-style: solid;
+	border-width: 2px;
+
+	&.focus {
+		background-color: transparent;
+	}
 }
+
 .page-area {
 	display: none;
-    border-color: rgba(51,101,169,0.5);
-    border-style: solid;
-    border-width: 2px;
-    cursor: pointer;
-    z-index: 2;
-    &.active {
-    	cursor: default;
-    }
-    &:hover {
-    	border-color: #3365a9;
-    }
-    &-label {
-    	display: none;
+	border-color: rgba(51, 101, 169, 0.5);
+	border-style: solid;
+	border-width: 2px;
+	cursor: pointer;
+	z-index: 2;
+
+	&.active {
+		cursor: default;
+	}
+
+	&:hover {
+		border-color: #3365a9;
+	}
+
+	&-label {
+		display: none;
 		min-width: 100px;
 		z-index: 3;
 		pointer-events: none;
-    	&-text {
-    		display: none;
-	    	background: rgba(51,101,169,1);
-	    	color: white;
-	    	width: 100%;
-	    	padding: 2px 5px;
-	    	vertical-align: top;
-	    	font-size: 0.8rem;
-    	}
-    	&.active,
-    	&.hover {
-    		.page-area-label-text {
-    			display: inline-block;
-    		}
-    	}
-    }
+
+		&-text {
+			display: none;
+			background: rgba(51, 101, 169, 1);
+			color: white;
+			width: 100%;
+			padding: 2px 5px;
+			vertical-align: top;
+			font-size: 0.8rem;
+		}
+
+		&.active,
+		&.hover {
+			.page-area-label-text {
+				display: inline-block;
+			}
+		}
+	}
 }
 
 popover [data-copy] {
@@ -167,7 +196,7 @@ popover [data-copy] {
 
 .tooltipp {
 	position: absolute;
-	background: rgba(255,255,255,1.0);
+	background: rgba(255, 255, 255, 1.0);
 	z-index: 10; //must be >1 to be visible
 }
 
@@ -180,12 +209,15 @@ popover [data-copy] {
 		&__thumb {
 			display: none;
 		}
+
 		&__objects {
 			flex: 0 0 100%;
-			 .search-list__hit-title {
-			 	height: auto;
-			 }
+
+			.search-list__hit-title {
+				height: auto;
+			}
 		}
+
 		&__audio {
 			margin-top: 1.5rem;
 		}

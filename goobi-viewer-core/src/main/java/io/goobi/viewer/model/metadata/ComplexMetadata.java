@@ -171,7 +171,26 @@ public class ComplexMetadata {
     
     public String getFirstValue(String fieldName, Locale locale) {
         return Optional.ofNullable(getValues(fieldName, locale)).filter(list -> !list.isEmpty()).map(list -> list.get(0)).orElse("");
-
+    }
+    
+    public List<IMetadataValue> getValues() {
+        return getValues(this.field);
+    }
+    
+    public IMetadataValue getFirstValue() {
+        return getFirstValue(this.field);
+    }
+    
+    public List<String> getValues(Locale locale) {
+        return getValues(this.field, locale);
+    }
+    
+    public String getFirstValue(Locale locale) {
+        return getFirstValue(this.field, locale);
+    }
+    
+    public boolean hasValue(String fieldName) {
+        return !this.metadata.getOrDefault(fieldName, Collections.emptyList()).isEmpty();
     }
     
     @Override
