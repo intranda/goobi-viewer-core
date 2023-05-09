@@ -2697,7 +2697,7 @@ public final class SearchHelper {
                 }
                 if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
                     term = term.replace("\\\"", "\""); // unescape quotation marks
-                    term = SearchHelper.addProximitySearchToken(term, proximitySearchDistance);
+                    term = addProximitySearchToken(term, proximitySearchDistance);
                 }
                 // logger.trace("term: {}", term);
                 sbInner.append(term);
@@ -3075,8 +3075,6 @@ public final class SearchHelper {
      * @param params a {@link java.util.Map} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param locale a {@link java.util.Locale} object.
-     * @param aggregateHits a boolean.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -3084,8 +3082,7 @@ public final class SearchHelper {
      * @should create excel workbook correctly
      */
     public static void exportSearchAsExcel(SXSSFWorkbook wb, String finalQuery, String exportQuery, List<StringPair> sortFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits,
-            int proximitySearchDistance, HttpServletRequest request)
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, int proximitySearchDistance)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (wb == null) {
             throw new IllegalArgumentException("wb may not be null");
@@ -3152,6 +3149,8 @@ public final class SearchHelper {
             }
         }
     }
+
+
 
     /**
      * <p>

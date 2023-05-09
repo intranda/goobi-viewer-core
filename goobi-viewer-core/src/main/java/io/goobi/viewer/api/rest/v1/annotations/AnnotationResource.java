@@ -100,8 +100,7 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Get an annotation collection over all annotations")
     public AnnotationCollection getAnnotationCollection() throws PresentationException, IndexUnreachableException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-        AnnotationCollection collection = builder.getWebAnnotationCollection();
-        return collection;
+        return builder.getWebAnnotationCollection();
     }
 
     /**
@@ -118,10 +117,10 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page) throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
+    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page)
+            throws ContentLibException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-        AnnotationPage annoPage = builder.getWebAnnotationPage(page);
-        return annoPage;
+        return builder.getWebAnnotationPage(page);
     }
 
     /**
@@ -139,10 +138,9 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
-            throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
-            AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-            WebAnnotation annotation =  builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
-            return annotation;
+            throws DAOException, ContentLibException {
+        AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
+        return builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
     }
 
     /**
@@ -160,9 +158,9 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
-            throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
-            AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-            return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
+            throws DAOException, ContentLibException {
+        AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
+        return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
     }
 
     /**
@@ -204,7 +202,7 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
     @ApiResponse(responseCode = "405", description = "May not delete the annotation because it was created by another user")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
-            throws DAOException, ContentLibException, ViewerConfigurationException {
+            throws DAOException, ContentLibException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = DataManager.getInstance().getDao().getAnnotation(id);
         if (pAnno == null) {
@@ -276,8 +274,7 @@ public class AnnotationResource {
     public User getUser() {
         UserBean userBean = BeanUtils.getUserBeanFromRequest(servletRequest);
         if (userBean != null) {
-            User user = userBean.getUser();
-            return user;
+            return userBean.getUser();
         }
         return null;
     }

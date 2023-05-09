@@ -81,7 +81,9 @@
                                     <div class="row no-gutters admin__table-entry" role="row">
                                         <div class="col-6 d-flex flex-column" role="gridcell">
                                             <!-- PAGE TITLE -->
-                                            <span class="admin__last-pages-title">#{page.title}</span>
+                                            <span class="admin__last-pages-title">
+                                                <h:outputText value="#{page.title}" escape="true" />
+                                            </span>
                                             <!-- ACTIONS -->
                                             <div>
                                                 <!-- SHOW -->
@@ -169,7 +171,10 @@
 																<div class="admin__download-tickets-dashboard-row-value">#{ticket.title.length() gt 50 ? ticket.title.substring(0,50).concat('...') : ticket.title}</div>
 																<ui:fragment rendered="#{ticket.requestMessage != null}">
 																	<div class="admin__download-tickets-dashboard-row-key">#{msg.message}:</div>
-																	<div class="admin__download-tickets-dashboard-row-value">#{ticket.requestMessage.length() gt 100 ? ticket.requestMessage.substring(0,100).concat('...') : ticket.requestMessage}</div>
+																	<div class="admin__download-tickets-dashboard-row-value">
+																	     <h:outputText value="#{ticket.requestMessage.length() gt 100 ? ticket.requestMessage.substring(0,100).concat('...') : ticket.requestMessage}"
+																	         escape="true" />
+																	</div>
 								                            	</ui:fragment>
 								                            </div>
 <!-- 								                            <div class="col-3 d-flex justify-content-end"> -->

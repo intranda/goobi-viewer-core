@@ -21,8 +21,6 @@
  */
 package io.goobi.viewer.model.maps;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,7 +36,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public class GeoMapMarkerTest {
 
     private GeoMapMarker testObject = new GeoMapMarker("test");
-    private String testString = "{\"name\":\"test\",\"icon\":\"\",\"markerColor\":\"blue\",\"highlightColor\":\"cyan\",\"shape\":\"circle\",\"extraClasses\":\"\",\"prefix\":\"fa\",\"iconColor\":\"white\",\"iconRotate\":0,\"number\":\"\",\"highlightIcon\":\"\",\"useDefault\":false,\"svg\":false,\"shadow\":true}";
+    private String testString = "{\"name\":\"test\",\"icon\":\"\",\"markerColor\":\"blue\",\"highlightColor\":\"cyan\",\"shape\":\"circle\",\"extraClasses\":\"\",\"prefix\":\"fa\",\"iconColor\":\"white\",\"iconRotate\":0,\"number\":\"\",\"highlightIcon\":\"\",\"useDefault\":false,\"svg\":false,\"shadow\":true,\"type\":\"ExtraMarkers\",\"className\":\"\"}";
 
 
     /**

@@ -24,18 +24,18 @@ package io.goobi.viewer.model.metadata;
 import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.Record;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -296,23 +296,37 @@ public class MetadataTools {
      * generateRIS.
      * </p>
      *
-     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String generateRIS(StructElement structElement) {
-        if (structElement == null) {
+    public static String generateRIS(StructElement se) {
+        if (se == null) {
+            return null;
+        }
+
+        return generateRIS(se.getDocStructType(), se.getMetadataFields());
+    }
+
+    /**
+     * 
+     * @param docstructType
+     * @param metadataFields
+     * @return
+     */
+    public static String generateRIS(String docstructType, Map<String, List<String>> metadataFields) {
+        if (docstructType == null) {
             return null;
         }
 
         StringBuilder result = new StringBuilder(100);
-        result.append("TY  - ").append(getRISTypeMapping(structElement.getDocStructType())).append("\r\n");
-        for (String field : structElement.getMetadataFields().keySet()) {
-            List<String> values = structElement.getMetadataFields().get(field);
+        result.append("TY  - ").append(getRISTypeMapping(docstructType)).append("\r\n");
+        for (Entry<String, List<String>> entry : metadataFields.entrySet()) {
+            List<String> values = entry.getValue();
             if (values == null || values.isEmpty()) {
                 continue;
             }
             String risTag = null;
-            switch (field) {
+            switch (entry.getKey()) {
                 case "CURRENTNO":
                     risTag = "VL";
                     break;
@@ -324,7 +338,6 @@ public class MetadataTools {
                     risTag = "J2";
                     break;
                 case "MD_AUTHOR":
-                case "MD_CREATOR":
                     risTag = "AU";
                     break;
                 case "MD_EDITION":
@@ -349,7 +362,7 @@ public class MetadataTools {
                     risTag = "N1";
                     break;
                 case "MD_PLACEPUBLISH":
-                    risTag = "PP";
+                    risTag = "CY";
                     break;
                 case "MD_PUBLISHER":
                     risTag = "PB";
@@ -368,6 +381,8 @@ public class MetadataTools {
                     break;
                 case "PI_TOPSTRUCT":
                     risTag = "CN";
+                    break;
+                default:
                     break;
             }
             if (risTag == null) {

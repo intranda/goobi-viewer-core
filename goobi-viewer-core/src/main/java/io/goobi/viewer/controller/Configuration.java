@@ -1415,6 +1415,7 @@ public class Configuration extends AbstractConfiguration {
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
             boolean visible = subElement.getBoolean("[@visible]", false);
             int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
+            String selectType = subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
@@ -1423,7 +1424,8 @@ public class Configuration extends AbstractConfiguration {
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
-                    .setDisplaySelectItemsThreshold(displaySelectItemsThreshold));
+                    .setDisplaySelectItemsThreshold(displaySelectItemsThreshold)
+                    .setSelectType(selectType));
         }
 
         return ret;
@@ -1582,6 +1584,37 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
+    }
+
+    /**
+     *
+     * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldSelectType(String field, String template, boolean fallbackToDefaultTemplate) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("search.advanced.searchFields.template");
+        if (templateList == null) {
+            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
+        if (usingTemplate == null) {
+            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        }
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = usingTemplate.configurationsAt("field");
+        if (fieldList == null) {
+            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
+            }
+        }
+
+        return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
     }
 
     /**
@@ -4504,6 +4537,18 @@ public class Configuration extends AbstractConfiguration {
     public boolean isSearchInItemEnabled() {
         return getLocalBoolean("sidebar.searchInItem[@enabled]", true);
     }
+    
+    /**
+     * <p>
+     * isSearchRisExportEnabled.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSearchRisExportEnabled() {
+        return getLocalBoolean("search.export.ris[@enabled]", false);
+    }
 
     /**
      * <p>
@@ -5201,7 +5246,8 @@ public class Configuration extends AbstractConfiguration {
             marker.setShadow(config.getBoolean("[@shadow]", marker.isShadow()));
             marker.setUseDefault(config.getBoolean("[@useDefaultIcon]", marker.isUseDefault()));
             marker.setHighlightIcon(config.getString("[@highlightIcon]", marker.getHighlightIcon()));
-            marker.setType(Optional.ofNullable(MarkerType.getTypeByName(config.getString("[@type]", MarkerType.EXTRA_MARKERS.getName()))).orElse(MarkerType.EXTRA_MARKERS));
+            marker.setType(Optional.ofNullable(MarkerType.getTypeByName(config.getString("[@type]", MarkerType.EXTRA_MARKERS.getName())))
+                    .orElse(MarkerType.EXTRA_MARKERS));
             marker.setClassName(config.getString("[@class]", ""));
             return marker;
         }

@@ -50,16 +50,17 @@
                             <!-- SEARCH ADVANCED INPUT GROUP -->
                         
                                             
-                        <c:forEach var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
-                            <div id="searchAdvancedInputGroup-0-#{status.count}">
+                            <c:forEach var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
+                                <div id="searchAdvancedInputGroup-0-#{status.count}">
                                  
-                                <h3>#{msg[queryItem.field]}</h3>
+                                    <h3>#{msg[queryItem.field]}</h3>
                                         
-                                        <!-- INPUT FIELD -->
-                                        <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.count}">
-                                            <div class="search-advanced__input-group-field">
-                                                <ui:fragment rendered="#{queryItem.displaySelectItems}">
-                                                <!-- BADGES -->
+                                    <!-- INPUT FIELD -->
+                                    <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.count}">
+                                        <div class="search-advanced__input-group-field">
+                                            <ui:fragment rendered="#{queryItem.displaySelectItems}">
+                                                 <!-- BADGES -->
+                                                <ui:fragment rendered="#{queryItem.selectType == 'badges'}">
                                                 <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
                                                     <button class="btn btn--link"
                                                         jsf:action="#{queryItem.toggleValue(item.one)}" title="#{msg[item.two]}">
@@ -73,7 +74,21 @@
                                                     </button>
                                                 </c:forEach>
                                                 </ui:fragment> 
-                                                <ui:fragment rendered="#{!queryItem.displaySelectItems}">
+                                                
+                                                <!-- DROP-DOWN -->
+                                                <ui:fragment rendered="#{queryItem.selectType == 'dropdown'}">
+                                                    <div class="custom-control custom-control--select multiple">
+                                                       <h:selectManyMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
+                                                           value="#{queryItem.values}">
+                                                           <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
+                                                               <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
+                                                           </c:forEach>
+                                                           <f:passThroughAttribute name="aria-label" value="#{msg.cms_collections_err_noselection}" />
+                                                       </h:selectManyMenu>
+                                                    </div>
+                                                </ui:fragment>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{!queryItem.displaySelectItems}">
                                                         <ui:fragment rendered="#{queryItem.range}">
                                                             <div class="search-advanced__year-span-from d-none d-lg-inline-block">#{msg.searchAdvanced_range_value1}</div>
                                                             <h:inputText id="advsearchValue1Text_0-#{status.count}"
@@ -94,15 +109,14 @@
                                                                 <f:passThroughAttribute name="aria-label" value="#{msg.searchFieldDemoText}" />
                                                             </h:inputText>
                                                         </ui:fragment>
-                                                </ui:fragment>
-                                            </div>
-                                        </h:panelGroup>
+                                            </ui:fragment>
+                                        </div>
+                                    </h:panelGroup>
 
-                            </div>
-                         </c:forEach>
+                                </div>
+                            </c:forEach>
                          
-                        
-                    </div>
+                        </div>
 
                 <!-- SEARCH ADVANCED ACTION -->
                 <div class="search-advanced__action">
