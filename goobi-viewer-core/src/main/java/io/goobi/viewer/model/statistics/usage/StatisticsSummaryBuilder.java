@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
@@ -224,7 +225,8 @@ public class StatisticsSummaryBuilder {
     }
 
     private SolrDocumentList search(String query, List<String> fields) throws PresentationException, IndexUnreachableException {
-        return this.searchIndex.search(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, fields, null, null, METHOD.POST).getResults();
+        QueryResponse resp = this.searchIndex.search(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, fields, null, null, METHOD.POST);
+        return resp.getResults();
     }
 
 }
