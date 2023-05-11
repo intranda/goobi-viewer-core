@@ -117,9 +117,15 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void resetSearchAction_shouldReturnCorrectPrettyURLID() throws Exception {
-        searchBean.setActiveSearchType(0);
+        DataManager.getInstance().getConfiguration().overrideValue("search.advanced[@enabled]", true);
+        DataManager.getInstance().getConfiguration().overrideValue("search.calendar[@enabled]", true);
+
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
         Assert.assertEquals("pretty:search", searchBean.resetSearchAction());
-        searchBean.setActiveSearchType(1);
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_ADVANCED);
+        Assert.assertEquals("pretty:searchadvanced", searchBean.resetSearchAction());
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_CALENDAR);
+        Assert.assertEquals("pretty:searchcalendar", searchBean.resetSearchAction());
     }
 
     /**
@@ -858,5 +864,15 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.setCurrentPage(2);
         searchBean.searchAdvanced(true);
         Assert.assertEquals(1, searchBean.getCurrentPage());
+    }
+
+    /**
+     * @see SearchBean#searchToday()
+     * @verifies set search string correctly
+     */
+    @Test
+    public void searchToday_shouldSetSearchStringCorrectly() throws Exception {
+        searchBean.searchToday();
+        Assert.assertTrue(searchBean.searchStringInternal.startsWith(SolrConstants.MONTHDAY));
     }
 }

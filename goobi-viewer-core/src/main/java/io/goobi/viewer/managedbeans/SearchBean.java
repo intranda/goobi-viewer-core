@@ -386,6 +386,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Search using currently set search string
      *
      * @return Target outcome
+     * @should reset search results
      */
     public String searchDirect() {
         logger.trace("searchDirect");
@@ -398,6 +399,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Executes a search for any content tagged with today's month and day.
      * 
      * @return Target outcome
+     * @should set search string correctly
      */
     public String searchToday() {
         logger.trace("searchToday");
@@ -415,8 +417,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Action method for the "reset" button in search forms.
      *
-     * @should return correct Pretty URL ID
      * @return a {@link java.lang.String} object.
+     * @should return correct Pretty URL ID
      */
     public String resetSearchAction() {
         logger.trace("resetSearchAction");
@@ -425,11 +427,11 @@ public class SearchBean implements SearchInterface, Serializable {
         // After resetting, return to the correct search entry page
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
-                return "pretty:" + PageType.advancedSearch.name();
+                return "pretty:" + PageType.advancedSearch.getName();
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                return "pretty:" + PageType.searchCalendar.name();
+                return "pretty:" + PageType.searchCalendar.getName();
             default:
-                return "pretty:" + PageType.search.name();
+                return "pretty:" + PageType.search.getName();
         }
     }
 
