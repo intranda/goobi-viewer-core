@@ -65,6 +65,11 @@ public class RISExport {
     private final String fileName;
     private List<SearchHit> searchHits;
 
+    /**
+     * Constructor.
+     * 
+     * @should set fileName correctly
+     */
     public RISExport() {
         this.fileName = "viewer_search_"
                 + LocalDateTime.now().format(DateTools.formatterFileName) + ".ris";
@@ -73,7 +78,6 @@ public class RISExport {
     /**
      * 
      * @param finalQuery
-     * @param exportQuery
      * @param sortFields
      * @param filterQueries
      * @param params
@@ -87,16 +91,17 @@ public class RISExport {
      * @throws PresentationException
      * @throws ViewerConfigurationException
      * @throws ContentLibException
+     * @should execute search correctly
      */
-    public void executeSearch(String finalQuery, String exportQuery, List<StringPair> sortFields,
+    public void executeSearch(String finalQuery, List<StringPair> sortFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale,
             int proximitySearchDistance, HttpServletRequest request, HttpServletResponse response)
-            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException, ContentLibException {
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         logger.trace("exportSearchAsRIS");
         long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
         int batchSize = 100;
         int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
-        searchHits = new ArrayList<>((int) totalHits); // TODO
+        searchHits = new ArrayList<>((int) totalHits);
         for (int i = 0; i < totalBatches; ++i) {
             int first = i * batchSize;
             int max = first + batchSize - 1;
@@ -145,17 +150,17 @@ public class RISExport {
             logger.error("Error reading RIS from temp file {}", tempFile, e);
         } finally {
             if (Files.exists(tempFile)) {
-                //                    FileUtils.deleteQuietly(tempFile.toFile());
+                FileUtils.deleteQuietly(tempFile.toFile());
             }
         }
 
         return false;
     }
 
-    public void close() {
-
-    }
-
+    /**
+     * @return true if searchHits not empty; false otherwise
+     * @should return correct value
+     */
     public boolean isHasResults() {
         return !searchHits.isEmpty();
     }

@@ -2257,17 +2257,18 @@ public class SearchBean implements SearchInterface, Serializable {
                             public Boolean call() {
                                 try {
                                     RISExport export = new RISExport();
-                                    export.executeSearch(finalQuery, "", currentSearch.getAllSortFields(),
+                                    export.executeSearch(finalQuery, currentSearch.getAllSortFields(),
                                             facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance, request,
                                             (HttpServletResponse) facesContext.getExternalContext().getResponse());
                                     if (export.isHasResults()) {
                                         ((HttpServletResponse) facesContext.getExternalContext().getResponse())
-                                        .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + export.getFileName() + "\"");
+                                                .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
+                                                        "attachment; filename=\"" + export.getFileName() + "\"");
                                         return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
                                     }
                                     return false;
                                 } catch (IndexUnreachableException | DAOException | PresentationException | ViewerConfigurationException
-                                        | ContentLibException | IOException e) {
+                                        | IOException e) {
                                     logger.error(e.getMessage(), e);
                                     return false;
                                 } finally {
