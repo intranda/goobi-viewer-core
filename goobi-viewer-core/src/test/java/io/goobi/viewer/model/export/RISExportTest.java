@@ -53,7 +53,7 @@ public class RISExportTest extends AbstractSolrEnabledTest {
     @Test
     public void executeSearch_shouldExecuteSearchCorrectly() throws Exception {
         RISExport export = new RISExport();
-        export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, null, 0, null, null);
+        export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, Locale.ENGLISH, 0, null, null);
         Assert.assertEquals(1, export.getSearchHits().size());
     }
 
