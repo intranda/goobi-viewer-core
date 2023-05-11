@@ -840,8 +840,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void searchAdvanced_shouldGenerateSearchStringCorrectly() throws Exception {
         Assert.assertTrue(StringUtils.isEmpty(searchBean.searchStringInternal));
+        searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setField(SolrConstants.PI);
+        searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setValue(PI_KLEIUNIV);
         searchBean.searchAdvanced(false);
-        Assert.assertFalse(StringUtils.isEmpty(searchBean.searchStringInternal));
+        Assert.assertEquals("(+(PI:(PPN517154005)))", searchBean.searchStringInternal);
     }
 
     /**
@@ -850,7 +852,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void searchAdvanced_shouldResetSearchParameters() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.advanced[@enabled]", true);
         searchBean.setActiveSearchType(1);
+        Assert.assertEquals(1, searchBean.getActiveSearchType());
         searchBean.setCurrentPage(2);
         searchBean.searchAdvanced(true);
         Assert.assertEquals(1, searchBean.getCurrentPage());
