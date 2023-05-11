@@ -21,6 +21,12 @@
  */
 package io.goobi.viewer.model.iiif.search.parser;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -120,7 +126,23 @@ public abstract class AbstractSearchParser {
      */
     public static String getQueryRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
-        String queryRegex = query.replace("*", "[\\w\\d-]*").replaceAll("\\s+", "\\\\s*|\\\\s*");
+        
+        Matcher literalPartsMatcher = Pattern.compile("[^\\s*]+").matcher(query);
+        
+        List<MatchGroup> matchGroups = new ArrayList<>();
+        while(literalPartsMatcher.find()) {
+            int start = literalPartsMatcher.start();
+            int end = literalPartsMatcher.end();
+            String s = Pattern.quote(literalPartsMatcher.group());
+            matchGroups.add(new MatchGroup(start, end, s));
+        }
+        Collections.reverse(matchGroups);
+        String queryRegex = query;
+        for (MatchGroup matchGroup : matchGroups) {
+            queryRegex = queryRegex.substring(0, matchGroup.start) + matchGroup.text + queryRegex.substring(matchGroup.end);
+        }
+        
+        queryRegex = queryRegex.replace("*", "[\\w\\d-]*").replaceAll("\\s+", "\\\\s*|\\\\s*");
         return "(?i)" + "(?:[.:,;!?\\(\\)]?)((?:" + queryRegex + ")+)(?:[.:,;!?\\(\\)]?)";
     }
 
