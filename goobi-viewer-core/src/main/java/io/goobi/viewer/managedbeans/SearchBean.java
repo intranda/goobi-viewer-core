@@ -229,9 +229,20 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Getter for unit tests.
+     * 
+     * @return the advancedSearchSelectItems
+     */
+    Map<String, List<StringPair>> getAdvancedSearchSelectItems() {
+        return advancedSearchSelectItems;
+    }
+
+    /**
      * <p>
      * clearSearchItemLists.
      * </p>
+     * 
+     * @should clear map correctly
      */
     public void clearSearchItemLists() {
         advancedSearchSelectItems.clear();
@@ -356,6 +367,8 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param resetParameters a boolean.
      * @return a {@link java.lang.String} object.
+     * @should generate search string correctly
+     * @should reset search parameters
      */
     public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
