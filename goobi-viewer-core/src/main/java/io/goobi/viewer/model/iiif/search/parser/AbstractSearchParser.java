@@ -128,7 +128,6 @@ public abstract class AbstractSearchParser {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
         
         Matcher literalPartsMatcher = Pattern.compile("[^\\s*]+").matcher(query);
-        
         List<MatchGroup> matchGroups = new ArrayList<>();
         while(literalPartsMatcher.find()) {
             int start = literalPartsMatcher.start();
@@ -141,8 +140,8 @@ public abstract class AbstractSearchParser {
         for (MatchGroup matchGroup : matchGroups) {
             queryRegex = queryRegex.substring(0, matchGroup.start) + matchGroup.text + queryRegex.substring(matchGroup.end);
         }
-        
         queryRegex = queryRegex.replace("*", "[\\w\\d-]*").replaceAll("\\s+", "\\\\s*|\\\\s*");
+        
         return "(?i)" + "(?:[.:,;!?\\(\\)]?)((?:" + queryRegex + ")+)(?:[.:,;!?\\(\\)]?)";
     }
 
