@@ -89,6 +89,8 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 public class SolrSearchIndex {
 
+    private static final METHOD DEFAULT_QUERY_METHOD = METHOD.GET;
+
     private static final Logger logger = LogManager.getLogger(SolrSearchIndex.class);
 
     /** Constant <code>MAX_HITS=1000000</code> */
@@ -245,7 +247,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
             List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
-        return search(query, first, rows, sortFields, facetFields, facetSort, fieldList, filterQueries, params, METHOD.GET);
+        return search(query, first, rows, sortFields, facetFields, facetSort, fieldList, filterQueries, params, DEFAULT_QUERY_METHOD);
     }
     
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
