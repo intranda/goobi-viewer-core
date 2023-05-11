@@ -70,6 +70,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
@@ -77,6 +78,7 @@ import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -88,6 +90,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.export.ExcelExport;
+import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
@@ -709,17 +712,29 @@ public class SearchBean implements SearchInterface, Serializable {
                     } else if (queryItem.isRange()) {
                         sbInfo.append('[').append(queryItem.getValue()).append(" - ").append(queryItem.getValue2()).append(']');
                     } else {
-                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (queryItem.isDisplaySelectItems()) {
+                            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        } else {
+                            sbInfo.append(queryItem.getValue());
+                        }
                     }
                     break;
                 case NOT:
-                    sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                    if (queryItem.isDisplaySelectItems()) {
+                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                    } else {
+                        sbInfo.append(queryItem.getValue());
+                    }
                     break;
                 default:
                     if (queryItem.isRange()) {
                         sbInfo.append('[').append(queryItem.getValue()).append(" - ").append(queryItem.getValue2()).append(']');
                     } else {
-                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (queryItem.isDisplaySelectItems()) {
+                            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        } else {
+                            sbInfo.append(queryItem.getValue());
+                        }
                     }
             }
             sbInfo.append(')');
@@ -2215,6 +2230,102 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * <p>
+     * exportSearchAsRisAction.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public String exportSearchAsRisAction() throws IndexUnreachableException {
+        logger.trace("exportSearchAsRisAction");
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+
+        String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        Locale locale = navigationHelper.getLocale();
+        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
+
+        BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
+            if (!facesContext.getResponseComplete()) {
+                try {
+                    if (Thread.interrupted()) {
+                        job.setError("Execution cancelled");
+                    } else {
+                        Callable<Boolean> download = new Callable<Boolean>() {
+
+                            @Override
+                            public Boolean call() {
+                                try {
+                                    RISExport export = new RISExport();
+                                    export.executeSearch(finalQuery, "", currentSearch.getAllSortFields(),
+                                            facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance, request,
+                                            (HttpServletResponse) facesContext.getExternalContext().getResponse());
+                                    if (export.isHasResults()) {
+                                        ((HttpServletResponse) facesContext.getExternalContext().getResponse())
+                                        .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + export.getFileName() + "\"");
+                                        return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
+                                    }
+                                    return false;
+                                } catch (IndexUnreachableException | DAOException | PresentationException | ViewerConfigurationException
+                                        | ContentLibException | IOException e) {
+                                    logger.error(e.getMessage(), e);
+                                    return false;
+                                } finally {
+                                    facesContext.responseComplete();
+                                }
+                            }
+                        };
+
+                        downloadComplete = new FutureTask<>(download);
+                        executor.submit(downloadComplete);
+                        downloadComplete.get(timeout, TimeUnit.SECONDS);
+                    }
+                } catch (TimeoutException e) {
+                    job.setError("Timeout for RIS download");
+                } catch (InterruptedException e) {
+                    job.setError("Timeout for RIS download");
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException e) {
+                    logger.error(e.getMessage(), e);
+                    job.setError("Failed to create RIS export");
+                }
+            } else {
+                job.setError("Response is already committed");
+            }
+        };
+
+        try {
+            Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
+            Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
+            Future<?> ready = DataManager.getInstance()
+                    .getRestApiJobManager()
+                    .triggerTaskInThread(jobId, (HttpServletRequest) facesContext.getExternalContext().getRequest());
+            ready.get(timeout, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            logger.debug("Download interrupted");
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            logger.debug("Download execution error", e);
+            Messages.error("download_internal_error");
+        } catch (TimeoutException e) {
+            logger.debug("Downloadtimed out");
+            Messages.error("download_timeout");
+
+        } finally {
+            if (downloadReady != null && !downloadReady.isDone()) {
+                downloadReady.cancel(true);
+            }
+            if (downloadComplete != null && !downloadComplete.isDone()) {
+                downloadComplete.cancel(true);
+            }
+            this.downloadComplete = null;
+            this.downloadReady = null;
+        }
+        return "";
+    }
+
+    /**
+     * <p>
      * exportSearchAsExcelAction.
      * </p>
      *
@@ -2243,7 +2354,7 @@ public class SearchBean implements SearchInterface, Serializable {
                             @Override
                             public Boolean call() {
                                 try {
-                                    logger.debug("Writing excel");
+                                    logger.debug("Writing Excel...");
                                     ExcelExport export = new ExcelExport();
                                     export.setWorkbook(wb);
                                     return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
@@ -2323,9 +2434,7 @@ public class SearchBean implements SearchInterface, Serializable {
             Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
             HttpServletRequest request = BeanUtils.getRequest(facesContext);
-            if (request == null) {
-                request = BeanUtils.getRequest();
-            }
+
             String termQuery = null;
             if (searchTerms != null) {
                 termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
@@ -2333,7 +2442,7 @@ public class SearchBean implements SearchInterface, Serializable {
             Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
             SXSSFWorkbook wb = new SXSSFWorkbook(25); //NOSONAR try-with-resources in the calling method
             SearchHelper.exportSearchAsExcel(wb, finalQuery, exportQuery, currentSearch.getAllSortFields(), facets.generateFacetFilterQueries(true),
-                    params, searchTerms, locale, true, proximitySearchDistance, request);
+                    params, searchTerms, locale, proximitySearchDistance);
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
@@ -2341,7 +2450,7 @@ public class SearchBean implements SearchInterface, Serializable {
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext()
                     .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                            + LocalDateTime.now().format(DateTools.formatterISO8601DateTime)
+                            + LocalDateTime.now().format(DateTools.formatterFileName)
                             + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException | DAOException | PresentationException e) {

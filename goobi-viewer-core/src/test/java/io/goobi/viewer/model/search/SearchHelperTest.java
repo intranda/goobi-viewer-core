@@ -1115,7 +1115,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:18*";
         try (SXSSFWorkbook wb = new SXSSFWorkbook(25)) {
             SearchHelper.exportSearchAsExcel(wb, query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
-                    null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, 0, null);
+                    null, new HashMap<String, Set<String>>(), Locale.ENGLISH, 0);
             String[] cellValues0 =
                     new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
             String[] cellValues1 =
