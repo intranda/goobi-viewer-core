@@ -162,7 +162,7 @@ public class RISExport {
      * @should return correct value
      */
     public boolean isHasResults() {
-        return !searchHits.isEmpty();
+        return searchHits != null && !searchHits.isEmpty();
     }
 
     /**
