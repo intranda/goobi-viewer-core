@@ -89,7 +89,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 public class SolrSearchIndex {
 
-    private static final METHOD DEFAULT_QUERY_METHOD = METHOD.GET;
+    private static final METHOD DEFAULT_QUERY_METHOD = METHOD.POST;
 
     private static final Logger logger = LogManager.getLogger(SolrSearchIndex.class);
 
