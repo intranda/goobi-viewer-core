@@ -24,7 +24,6 @@ package io.goobi.viewer.api.rest.v1.search;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +46,6 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.search.SearchHitChildList;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -151,11 +149,11 @@ public class SearchResultResource {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString(activeFacetString);
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
-        
+
         RISExport export = new RISExport();
-        export.executeSearch(finalQuery, query, null, filterQueries, null, null, locale, proximitySearchDistance, servletRequest, servletResponse);
-        if(export.isHasResults()) {
-        new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
+        export.executeSearch(finalQuery, null, filterQueries, null, null, locale, proximitySearchDistance, servletRequest, servletResponse);
+        if (export.isHasResults()) {
+            new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
         }
         return null;
     }
