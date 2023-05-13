@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.Test;
@@ -73,19 +74,42 @@ public class StatisticsSummaryBuilderTest {
                 StatisticsLuceneFields.DATE, Date.from(LocalDate.of(2022, 8, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()),
                 StatisticsLuceneFields.getFieldName("PI_01"), Arrays.asList(new Long[] { 6l, 1l, 0l, 0l, 0l, 0l }),
                 StatisticsLuceneFields.getFieldName("PI_04"), Arrays.asList(new Long[] { 0l, 0l, 0l, 0l, 0l, 0l }))));
-
-        Mockito.when(searchIndex.search(Mockito.contains("DOCTYPE:" + StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE), Mockito.anyList()))
-                .thenReturn(docs);
+        QueryResponse resp = Mockito.mock(QueryResponse.class);
+        Mockito.when(resp.getResults()).thenReturn(docs);
+        Mockito.when(searchIndex.search(
+                Mockito.contains("DOCTYPE:" + StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE),
+                Mockito.anyInt(),
+                Mockito.anyInt(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.anyList(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any()))
+                .thenReturn(resp);
     }
 
     private static SolrSearchIndex createSolrRecords() throws PresentationException, IndexUnreachableException {
         SolrDocumentList docs = new SolrDocumentList();
+        QueryResponse resp = Mockito.mock(QueryResponse.class);
+        Mockito.when(resp.getResults()).thenReturn(docs);
         docs.add(new SolrDocument(Map.of(StatisticsLuceneFields.DATE,
                 Date.from(LocalDate.of(2022, 8, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()), SolrConstants.PI, "PI_01")));
         docs.add(new SolrDocument(Map.of(StatisticsLuceneFields.DATE,
                 Date.from(LocalDate.of(2022, 8, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()), SolrConstants.PI, "PI_04")));
         SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
-        Mockito.when(searchIndex.search(Mockito.eq("+(DC:test) +(ISWORK:* ISANCHOR:*)"), Mockito.anyList())).thenReturn(docs);
+        Mockito.when(searchIndex.search(
+                Mockito.eq("+(DC:test) +(ISWORK:* ISANCHOR:*)"), 
+                Mockito.anyInt(),
+                Mockito.anyInt(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.anyList(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any())).thenReturn(resp);
         return searchIndex;
     }
 

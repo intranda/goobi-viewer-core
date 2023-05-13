@@ -80,9 +80,9 @@
 		<!-- solr: URL to the Solr index core -->
 		<solr>https://viewer-testing-index.goobi.io/solr/collection1</solr>
 
-		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
-			data -->
-		<dfg-viewer>dfg-viewer_value</dfg-viewer>
+		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic data.
+            @sourcefileField can contain an optional Solr index field containing a custom record file URL -->
+		<dfg-viewer sourcefileField="MD2_DFGVIEWERURL">dfg-viewer_value</dfg-viewer>
 		<!-- urnResolver: Resolver URL for URN-based PURLs displayed in the title 
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>
@@ -897,6 +897,9 @@
 
         <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
         <sidebarWidgetUsage enabled="false">
+            <work>
+                <dfgViewerUrlField>MD2_DFGVIEWERURL</dfgViewerUrlField>
+            </work>
             <page>
                 <downloadOptions enabled="false">
                 <!-- Each option contains a label and a format. The label is translated via the messages. 

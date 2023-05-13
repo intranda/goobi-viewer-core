@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +69,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -113,8 +116,8 @@ public final class SearchHelper {
 
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
-    /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
-    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ]|[,]|[-]";
+    /** Constant <code>SEARCH_TERM_SPLIT_REGEX</code> */
+    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ]|[,]|[・]";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
     public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁ$##";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
@@ -372,7 +375,10 @@ public final class SearchHelper {
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
             List<String> exportFields, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("searchWithAggregation: {}", query);
+        if(query != null) {
+            String s = query.replaceAll("[\n\r]", "_");
+            logger.trace("searchWithAggregation: {}", s);
+        }
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
         if (resp.getResults() == null) {
@@ -2696,7 +2702,7 @@ public final class SearchHelper {
                 }
                 if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
                     term = term.replace("\\\"", "\""); // unescape quotation marks
-                    term = SearchHelper.addProximitySearchToken(term, proximitySearchDistance);
+                    term = addProximitySearchToken(term, proximitySearchDistance);
                 }
                 // logger.trace("term: {}", term);
                 sbInner.append(term);
@@ -3074,8 +3080,6 @@ public final class SearchHelper {
      * @param params a {@link java.util.Map} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param locale a {@link java.util.Locale} object.
-     * @param aggregateHits a boolean.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -3083,8 +3087,7 @@ public final class SearchHelper {
      * @should create excel workbook correctly
      */
     public static void exportSearchAsExcel(SXSSFWorkbook wb, String finalQuery, String exportQuery, List<StringPair> sortFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits,
-            int proximitySearchDistance, HttpServletRequest request)
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, int proximitySearchDistance)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (wb == null) {
             throw new IllegalArgumentException("wb may not be null");
@@ -3152,6 +3155,8 @@ public final class SearchHelper {
         }
     }
 
+
+
     /**
      * <p>
      * parseSortString.
@@ -3172,7 +3177,8 @@ public final class SearchHelper {
         if (sortStringSplit.length > 0) {
             for (String field : sortStringSplit) {
                 ret.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
-                logger.trace("Added sort field: {}", field);
+                String s = field.replaceAll("[\n\r]", "_");
+                logger.trace("Added sort field: {}", s);
                 // add translated sort fields
                 if (navigationHelper != null && field.startsWith(SolrConstants.PREFIX_SORT)) {
                     Iterable<Locale> locales = navigationHelper::getSupportedLocales;

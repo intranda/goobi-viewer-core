@@ -32,9 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.WebApplicationException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.SolrRequest.METHOD;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
@@ -119,11 +123,14 @@ public class StatisticsSummaryBuilder {
 
     private StatisticsSummary loadFromSolr(StatisticsSummaryFilter filter) throws IndexUnreachableException, PresentationException {
         List<String> identifiersToInclude = getFilteredIdentifierList(filter);
+        if (filter.hasFilterQuery() && identifiersToInclude.isEmpty()) {
+            throw new WebApplicationException("No records found matching filter " + filter.getFilterQuery());
+        }
         List<String> fields = getFieldListForRecords(identifiersToInclude);
         if (!fields.isEmpty()) {
             fields.add(StatisticsLuceneFields.DATE);
         }
-        SolrDocumentList docs = this.searchIndex.search(getSolrQuery(filter), fields);
+        SolrDocumentList docs = search(getSolrQuery(filter), fields);
         return docs.stream().reduce(StatisticsSummary.empty(), this::add, StatisticsSummary::add);
     }
 
@@ -200,8 +207,8 @@ public class StatisticsSummaryBuilder {
         if (StringUtils.isNotBlank(filter.getFilterQuery())) {
             try {
                 String completeFilter = "+({}) +(ISWORK:* ISANCHOR:*)".replace("{}", filter.getFilterQuery());
-                identifiersToInclude.addAll(this.searchIndex
-                        .search(completeFilter, Collections.singletonList(SolrConstants.PI))
+                identifiersToInclude.addAll(
+                         search(completeFilter, Collections.singletonList(SolrConstants.PI))
                         .stream()
                         .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
                         .collect(Collectors.toList()));
@@ -215,6 +222,11 @@ public class StatisticsSummaryBuilder {
     private static StatisticsSummary add(StatisticsSummary summary, DailySessionUsageStatistics dailyStats, List<String> identifiersToInclude) {
         StatisticsSummary dailyStatsSummary = new StatisticsSummary(dailyStats, identifiersToInclude);
         return summary.add(dailyStatsSummary);
+    }
+
+    private SolrDocumentList search(String query, List<String> fields) throws PresentationException, IndexUnreachableException {
+        QueryResponse resp = this.searchIndex.search(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, fields, null, null, METHOD.POST);
+        return resp.getResults();
     }
 
 }

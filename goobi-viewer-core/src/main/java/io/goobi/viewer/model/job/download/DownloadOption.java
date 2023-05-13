@@ -27,14 +27,13 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.DataManager;
 
 /**
  * Download option configuration item.
  */
 public class DownloadOption {
-    
+
     /**
      * 
      */
@@ -48,7 +47,6 @@ public class DownloadOption {
      */
     public static final Dimension NONE = new Dimension(0, 0);
 
-
     private String label;
     private String format;
     private Dimension boxSize = NONE;
@@ -58,19 +56,19 @@ public class DownloadOption {
      */
     public DownloadOption() {
     }
-    
+
     public DownloadOption(String label, String format, String boxSize) {
         this.label = label;
         this.format = format;
         setBoxSizeInPixel(boxSize);
     }
-    
+
     public DownloadOption(String label, String format, Dimension boxSize) {
         this.label = label;
         this.format = format;
-        this.boxSize = boxSize != null ? boxSize : NONE; 
+        this.boxSize = boxSize != null ? boxSize : NONE;
     }
-    
+
     /**
      * 
      * @return true if all properties are set; false otherwise
@@ -147,11 +145,11 @@ public class DownloadOption {
      * @return this
      */
     public DownloadOption setBoxSizeInPixel(String boxSizeInPixel) {
-        if(StringUtils.isBlank(boxSizeInPixel)) {
+        if (StringUtils.isBlank(boxSizeInPixel)) {
             this.boxSize = NONE;
-        } else if("max".equalsIgnoreCase(boxSizeInPixel)) {
+        } else if ("max".equalsIgnoreCase(boxSizeInPixel)) {
             this.boxSize = MAX;
-        } else if(boxSizeInPixel.matches("\\d+")) {
+        } else if (boxSizeInPixel.matches("\\d+")) {
             int size = Integer.parseInt(boxSizeInPixel);
             this.boxSize = new Dimension(size, size);
         } else {
@@ -159,18 +157,16 @@ public class DownloadOption {
         }
         return this;
     }
-    
-    public String getBoxSizeLabel() {
-        if(boxSize != MAX && boxSize != NONE) {
-            return boxSize.width + TIMES_SYMBOL + boxSize.height;
-        } else {
-            return "";
-        }
-    }
 
+    public String getBoxSizeLabel() {
+        if (boxSize != MAX && boxSize != NONE) {
+            return boxSize.width + TIMES_SYMBOL + boxSize.height;
+        }
+        return "";
+    }
 
     @Override
     public String toString() {
-        return label;
+        return label + " (" + format + ")";
     }
 }
