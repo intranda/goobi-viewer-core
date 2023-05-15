@@ -30,7 +30,7 @@
 			this.rangeOpacity = window.getComputedStyle(this.refs?.range)?.opacity;
 			
 // 			console.log("chronology graph data ", this.opts.datamap, this.opts.startYear, this.opts.endYear);
-			let completeYearMap = this.generateCompleteYearMap(this.opts.datamap, parseInt(this.opts.startYear), parseInt(this.opts.endYear));
+			let completeYearMap = this.generateCompleteYearMap(this.opts.datamap);
 // 			console.log("year map ", completeYearMap);
 			
 			let chartElement = this.refs.chart;
@@ -124,7 +124,10 @@
 			}
 		})
 		
-		generateCompleteYearMap(datamap, startYear, endYear) {
+		generateCompleteYearMap(datamap) {
+			let keys = Array.from(datamap.keys());
+			let startYear = parseInt(keys[0]);
+			let endYear = parseInt(keys[keys.length-1]);
 			let yearMap = new Map();
 			for(let year = startYear; year <= endYear; year++) {
 				let value = datamap.get(year.toString());
