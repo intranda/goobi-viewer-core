@@ -364,7 +364,6 @@ public class IIIFPresentation2ResourceBuilder {
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
         String finalQuery = SearchHelper.buildFinalQuery(query, false, request, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-        logger.trace("getManifestForQuery: {}", finalQuery);
 
         List<StringPair> sortFieldList = SolrTools.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
         SolrDocumentList queryResults = DataManager.getInstance()

@@ -70,7 +70,6 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
@@ -235,10 +234,20 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Getter for unit tests.
+     * 
+     * @return the advancedSearchSelectItems
+     */
+    Map<String, List<StringPair>> getAdvancedSearchSelectItems() {
+        return advancedSearchSelectItems;
+    }
+
+    /**
      * <p>
      * clearSearchItemLists.
      * </p>
-     * TODO Is this even in use?
+     * 
+     * @should clear map correctly
      */
     public void clearSearchItemLists() {
         advancedSearchSelectItems.clear();
@@ -364,6 +373,8 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param resetParameters a boolean.
      * @return a {@link java.lang.String} object.
+     * @should generate search string correctly
+     * @should reset search parameters
      */
     public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
@@ -381,6 +392,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Search using currently set search string
      *
      * @return Target outcome
+     * @should reset search results
      */
     public String searchDirect() {
         logger.trace("searchDirect");
@@ -393,6 +405,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Executes a search for any content tagged with today's month and day.
      * 
      * @return Target outcome
+     * @should set search string correctly
      */
     public String searchToday() {
         logger.trace("searchToday");
@@ -410,8 +423,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Action method for the "reset" button in search forms.
      *
-     * @should return correct Pretty URL ID
      * @return a {@link java.lang.String} object.
+     * @should return correct Pretty URL ID
      */
     public String resetSearchAction() {
         logger.trace("resetSearchAction");
@@ -420,11 +433,11 @@ public class SearchBean implements SearchInterface, Serializable {
         // After resetting, return to the correct search entry page
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
-                return "pretty:" + PageType.advancedSearch.name();
+                return "pretty:" + PageType.advancedSearch.getName();
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                return "pretty:" + PageType.searchCalendar.name();
+                return "pretty:" + PageType.searchCalendar.getName();
             default:
-                return "pretty:" + PageType.search.name();
+                return "pretty:" + PageType.search.getName();
         }
     }
 
@@ -2328,17 +2341,18 @@ public class SearchBean implements SearchInterface, Serializable {
                             public Boolean call() {
                                 try {
                                     RISExport export = new RISExport();
-                                    export.executeSearch(finalQuery, "", currentSearch.getAllSortFields(),
+                                    export.executeSearch(finalQuery, currentSearch.getAllSortFields(),
                                             facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance, request,
                                             (HttpServletResponse) facesContext.getExternalContext().getResponse());
                                     if (export.isHasResults()) {
                                         ((HttpServletResponse) facesContext.getExternalContext().getResponse())
-                                        .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + export.getFileName() + "\"");
+                                                .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
+                                                        "attachment; filename=\"" + export.getFileName() + "\"");
                                         return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
                                     }
                                     return false;
                                 } catch (IndexUnreachableException | DAOException | PresentationException | ViewerConfigurationException
-                                        | ContentLibException | IOException e) {
+                                        | IOException e) {
                                     logger.error(e.getMessage(), e);
                                     return false;
                                 } finally {

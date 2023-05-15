@@ -42,6 +42,7 @@ import org.jdom2.JDOMException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.api.iiif.search.SearchResult;
@@ -70,6 +71,8 @@ import io.goobi.viewer.solr.SolrTools;
  * @author florian
  */
 public class IIIFSearchBuilder {
+
+    private static final String MOTIVATION_NON_PAINTING = "non-painting";
 
     private static final Logger logger = LogManager.getLogger(IIIFSearchBuilder.class);
 
@@ -317,27 +320,27 @@ public class IIIFSearchBuilder {
         long mostHits = 0;
         long total = 0;
         if (StringUtils.isNotBlank(query)) {
-            if (motivation.isEmpty() || motivation.contains("painting")) {
+            if (motivation.isEmpty() || motivation.contains(Motivation.PAINTING)) {
                 AnnotationResultList fulltextAnnotations = searchFulltext(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(fulltextAnnotations);
                 mostHits = Math.max(mostHits, fulltextAnnotations.numHits);
                 total += fulltextAnnotations.numHits;
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains(Motivation.DESCRIBING)) {
                 AnnotationResultList annotations = searchAnnotations(query, pi, getFirstHitIndex(getPage()), getHitsPerPage(), request);
                 resultList.add(annotations);
                 mostHits = Math.max(mostHits, annotations.numHits);
                 total += annotations.numHits;
 
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains(Motivation.DESCRIBING)) {
                 AnnotationResultList metadata = searchMetadata(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(metadata);
                 mostHits = Math.max(mostHits, metadata.numHits);
                 total += metadata.numHits;
 
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains(Motivation.DESCRIBING)) {
                 AnnotationResultList annotations = searchComments(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(annotations);
                 mostHits = Math.max(mostHits, annotations.numHits);
@@ -383,13 +386,13 @@ public class IIIFSearchBuilder {
             if (motivation.isEmpty() || motivation.contains("painting")) {
                 //add terms from fulltext?
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains("describing")) {
                 terms.addAll(autoSuggestAnnotations(query, getPi(), request));
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains("describing")) {
                 terms.addAll(autoSuggestMetadata(query, getPi()));
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains("commenting")) {
                 terms.addAll(autoSuggestComments(query, getPi()));
             }
         }
@@ -596,7 +599,6 @@ public class IIIFSearchBuilder {
 
         AnnotationResultList results = new AnnotationResultList();
 
-        //        QueryResponse response = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString(), (page-1)*getHitsPerPage(), getHitsPerPage(), Collections.singletonList(sortField), null, FULLTEXTFIELDLIST);
         SolrDocumentList docList = DataManager.getInstance()
                 .getSearchIndex()
                 .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), FULLTEXTFIELDLIST);

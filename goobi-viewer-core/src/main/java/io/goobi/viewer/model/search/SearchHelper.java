@@ -372,7 +372,10 @@ public final class SearchHelper {
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
             List<String> exportFields, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("searchWithAggregation: {}", query);
+        if(query != null) {
+            String s = query.replaceAll("[\n\r]", "_");
+            logger.trace("searchWithAggregation: {}", s);
+        }
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
         if (resp.getResults() == null) {
@@ -3172,7 +3175,8 @@ public final class SearchHelper {
         if (sortStringSplit.length > 0) {
             for (String field : sortStringSplit) {
                 ret.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
-                logger.trace("Added sort field: {}", field);
+                String s = field.replaceAll("[\n\r]", "_");
+                logger.trace("Added sort field: {}", s);
                 // add translated sort fields
                 if (navigationHelper != null && field.startsWith(SolrConstants.PREFIX_SORT)) {
                     Iterable<Locale> locales = navigationHelper::getSupportedLocales;

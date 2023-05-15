@@ -1052,7 +1052,10 @@ public class Search implements Serializable {
      * @param sortString the sortString to set
      */
     public void setSortString(String sortString) {
-        logger.trace("setSortString: {}", sortString);
+        if(StringUtils.isNotBlank(sortString)) {            
+            String s = sortString.replaceAll("[\n\r]", "_");
+            logger.trace("setSortString: {}", s);
+        }
         this.sortString = sortString;
         sortFields = SearchHelper.parseSortString(this.sortString, null);
     }
