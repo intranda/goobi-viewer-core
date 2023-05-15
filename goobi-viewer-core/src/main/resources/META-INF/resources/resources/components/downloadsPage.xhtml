@@ -152,7 +152,32 @@
 												</div>
 											</ui:repeat>
 										</fieldset>
-			
+										
+									<script>
+									// SHOW LOADER AFTER SELECTING DIFFERENT IMAGE DOWNLOAD SIZE
+									viewerJS.jsfAjax.begin.subscribe(() => {
+										
+										// console.log('begin');
+										$('[data-triggerjs="downloadImageButtonTrigger"]').click(function(event) {
+										    event.preventDefault();
+										});
+										
+										$('[data-target="buttonLoader"]').fadeIn('fast');
+										$('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
+										$('[data-triggerjs="downloadImageButtonTrigger"]').addClass('-inactive');
+										
+									});
+									viewerJS.jsfAjax.success.subscribe(() => {
+										
+										// console.log('success');
+										$('[data-triggerjs="downloadImageButtonTrigger"]').unbind('click').click();
+										$('[data-target="buttonLoader"]').fadeOut('fast');
+										$('[data-target="buttonLoaderClickEvent').css('opacity', '1');
+										$('[data-triggerjs="downloadImageButtonTrigger"]').removeClass('-inactive');
+
+									});
+									</script>
+			 
 										<!-- SCRIPT TO CHANGE HREF ON BUTTON -->
 										<h:commandScript name="setDownloadOptionLabel"
 											action="#{activeDocumentBean.setDownloadOptionLabelFromRequestParameter()}"
@@ -160,13 +185,18 @@
 										</h:commandScript>
 			
 										<!-- maybe TODO This takes a few seconds to update the link after selection -->
-										<h:outputLink id="downloadPageLink"
-											styleClass="btn btn--full widget-usage__download-image-size-button"
-											title="#{msg.downloadButton}" target="_blank"
-											rel="nofollow noopener" aria-label="#{msg.downloadButton}"
-											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
-			                                             #{msg.downloadButton}
-			                            </h:outputLink>
+										<div class="widget-usage__download-image-size-button-wrapper small-button-loader__wrapper">
+											<h:outputLink id="downloadPageLink"
+												styleClass="btn btn--full widget-usage__download-image-size-button"
+												pt:data-triggerjs="downloadImageButtonTrigger"
+												title="#{msg.downloadButton}" target="_blank"
+												rel="nofollow noopener" aria-label="#{msg.downloadButton}"
+												value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
+				                                             #{msg.downloadButton}
+				                            </h:outputLink>
+				                            <div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
+			                            </div>
+			                            
 									</h:form>
 								</ui:fragment>
 							</h:panelGroup> 

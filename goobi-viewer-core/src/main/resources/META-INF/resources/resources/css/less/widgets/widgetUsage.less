@@ -244,11 +244,19 @@
 		    flex: 0 0 auto;
 		    text-transform: uppercase;
 	    }
-		&__download-image-size-button {
+		&__download-image-size-button-wrapper {
 			margin: 0 auto;
 			display: block;
 			width: 80%;
 			margin-top: 2rem;
+		}
+		&__download-image-size-button {
+			width: 100%;
+			transition: opacity 0.15s linear;
+			&.-inactive {
+				opacity: 0.5;
+				pointer-events: none;
+			}
 		}
 	}
 }

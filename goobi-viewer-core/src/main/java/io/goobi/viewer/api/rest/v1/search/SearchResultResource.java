@@ -228,11 +228,11 @@ public class SearchResultResource {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString(activeFacetString);
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
-        
+
         RISExport export = new RISExport();
-        export.executeSearch(finalQuery, query, null, filterQueries, null, null, locale, proximitySearchDistance, servletRequest, servletResponse);
-        if(export.isHasResults()) {
-        new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
+        export.executeSearch(finalQuery, null, filterQueries, null, null, locale, proximitySearchDistance, servletRequest, servletResponse);
+        if (export.isHasResults()) {
+            new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
         }
         return null;
     }
