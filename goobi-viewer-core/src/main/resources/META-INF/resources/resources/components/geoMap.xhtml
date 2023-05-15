@@ -57,6 +57,13 @@
 				           		clusterMarkers: #{cc.attrs.clusterMarkers},
 				           		markerIcon: (icon => icon)(#{featureSet.markerAsJSON}),
 				           		label: #{featureSet.name.getAsJson()},
+				           		controls: {
+				           			zoom: {
+				           				in: "#geomap_#{cc.attrs.mapId}_zoomIn",
+				           				out: "#geoMap_#{cc.attrs.mapId}_ZoomOut",
+				           				step: 1
+				           			}
+				           		},
 				           		search: {
 					            	searchUrlTemplate : '#{featureSet.queryResultSet ? geoMapBean.getCoordinateSearchQueryTemplate(featureSet) : ""}',			           			
 					            	openSearchOnMarkerClick: #{cc.attrs.featureClickHandling == 'openSearch' and featureSet.queryResultSet},

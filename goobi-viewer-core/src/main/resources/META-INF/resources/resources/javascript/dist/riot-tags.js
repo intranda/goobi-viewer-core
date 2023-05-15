@@ -819,9 +819,11 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 			this.rangeFillColor = window.getComputedStyle(this.refs?.range)?.backgroundColor;
 			this.rangeOpacity = window.getComputedStyle(this.refs?.range)?.opacity;
 
+			let completeYearMap = this.generateCompleteYearMap(this.opts.datamap, parseInt(this.opts.startYear), parseInt(this.opts.endYear));
+
 			let chartElement = this.refs.chart;
-			this.yearList = Array.from(this.opts.datamap.keys()).map(y => parseInt(y));
-			this.yearValues = Array.from(this.opts.datamap.values());
+			this.yearList = Array.from(completeYearMap.keys()).map(y => parseInt(y));
+			this.yearValues = Array.from(completeYearMap.values());
 			this.startYear = parseInt(opts.startYear);
 			this.endYear = parseInt(opts.endYear);
 			this.minYear = this.yearList[0];
@@ -909,6 +911,15 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 				this.update();
 			}
 		})
+
+		this.generateCompleteYearMap = function(datamap, startYear, endYear) {
+			let yearMap = new Map();
+			for(let year = startYear; year <= endYear; year++) {
+				let value = datamap.get(year.toString());
+				yearMap.set(year, value !== undefined ? value : 0);
+			}
+			return yearMap;
+		}.bind(this)
 
 		this.drawInitialRange = function() {
 			var points = this.chart.getDatasetMeta(0).data;

@@ -29,9 +29,13 @@
 			this.rangeFillColor = window.getComputedStyle(this.refs?.range)?.backgroundColor;
 			this.rangeOpacity = window.getComputedStyle(this.refs?.range)?.opacity;
 			
+// 			console.log("chronology graph data ", this.opts.datamap, this.opts.startYear, this.opts.endYear);
+			let completeYearMap = this.generateCompleteYearMap(this.opts.datamap, parseInt(this.opts.startYear), parseInt(this.opts.endYear));
+// 			console.log("year map ", completeYearMap);
+			
 			let chartElement = this.refs.chart;
-			this.yearList = Array.from(this.opts.datamap.keys()).map(y => parseInt(y));
-			this.yearValues = Array.from(this.opts.datamap.values());
+			this.yearList = Array.from(completeYearMap.keys()).map(y => parseInt(y));
+			this.yearValues = Array.from(completeYearMap.values());
 			this.startYear = parseInt(opts.startYear);
 			this.endYear = parseInt(opts.endYear);
 			this.minYear = this.yearList[0];
@@ -119,6 +123,15 @@
 				this.update();
 			}
 		})
+		
+		generateCompleteYearMap(datamap, startYear, endYear) {
+			let yearMap = new Map();
+			for(let year = startYear; year <= endYear; year++) {
+				let value = datamap.get(year.toString());
+				yearMap.set(year, value !== undefined ? value : 0);
+			}
+			return yearMap;
+		}
 		
 		drawInitialRange() {
 			var points = this.chart.getDatasetMeta(0).data;
