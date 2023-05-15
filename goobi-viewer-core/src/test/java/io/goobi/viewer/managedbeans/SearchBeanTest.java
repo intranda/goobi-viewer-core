@@ -706,13 +706,12 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void findCurrentHitIndex_shouldSetCurrentHitIndexCorrectly() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("search.resultGroups[@enabled]", false);
-        SearchBean sb = new SearchBean();
-        sb.setCurrentSearch(new Search());
-        sb.getCurrentSearch().setPage(1);
-        sb.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
-        sb.getCurrentSearch().setSortString("SORT_TITLE");
-        sb.getCurrentSearch().execute(new SearchFacets(), null, 10, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-        Assert.assertEquals(18, sb.getCurrentSearch().getHitsCount());
+        searchBean.setCurrentSearch(new Search());
+        searchBean.getCurrentSearch().setPage(1);
+        searchBean.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
+        searchBean.getCurrentSearch().setSortString("SORT_TITLE");
+        searchBean.getCurrentSearch().execute(new SearchFacets(), null, 10, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        Assert.assertEquals(18, searchBean.getCurrentSearch().getHitsCount());
 
         searchBean.findCurrentHitIndex("PPN9462", 1, true);
         Assert.assertEquals(0, searchBean.getCurrentHitIndex());
