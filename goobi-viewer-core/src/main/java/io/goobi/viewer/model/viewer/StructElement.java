@@ -54,6 +54,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataTools;
+import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.solr.SolrConstants;
@@ -308,7 +309,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     private ComplexMetadataContainer loadMetadataDocuments() throws PresentationException, IndexUnreachableException {
-        return ComplexMetadataContainer.loadMetadataDocuments(this.pi, DataManager.getInstance().getSearchIndex());
+        return RelationshipMetadataContainer.loadRelationshipMetadata(this.pi, DataManager.getInstance().getSearchIndex());
     }
 
     /**
