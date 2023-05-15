@@ -113,7 +113,7 @@ initSlider() {
 				// console.log(-1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
 			},
 		}
-	console.log("init slider", this.opts, options);
+// 	console.log("init slider", this.opts, options);
     $( this.refs.slider ).slider(options);
 }
 

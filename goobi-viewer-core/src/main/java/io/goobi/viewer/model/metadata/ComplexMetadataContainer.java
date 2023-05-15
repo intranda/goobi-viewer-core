@@ -21,7 +21,7 @@ public class ComplexMetadataContainer {
 
     private static final String QUERY_FORMAT = "+DOCTYPE:METADATA +PI_TOPSTRUCT:%s";
     
-    private final Map<String, List<ComplexMetadata>> metadataMap;
+    protected final Map<String, List<ComplexMetadata>> metadataMap;
     
     public ComplexMetadataContainer(Map<String, List<ComplexMetadata>> metadataMap) {
         this.metadataMap = metadataMap;
@@ -45,7 +45,7 @@ public class ComplexMetadataContainer {
     }
     
     public List<ComplexMetadata> getMetadata(String field) {
-        return metadataMap.get(field);
+        return metadataMap.getOrDefault(field, Collections.emptyList());
     }
     
     public Collection<String> getFieldNames() {

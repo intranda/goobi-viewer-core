@@ -1169,7 +1169,7 @@ this.initSlider = function() {
 
 			},
 		}
-	console.log("init slider", this.opts, options);
+
     $( this.refs.slider ).slider(options);
 }.bind(this)
 
