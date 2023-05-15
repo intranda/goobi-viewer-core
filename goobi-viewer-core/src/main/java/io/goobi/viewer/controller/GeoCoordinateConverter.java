@@ -211,8 +211,7 @@ public class GeoCoordinateConverter {
 
     private static void addMetadataToFeature(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
             
-            
-            MetadataContainer entity = SolrTools.createMetadataEntity(doc, children, GeoCoordinateConverter::isValidField);
+            MetadataContainer entity = MetadataContainer.createMetadataEntity(doc, children, GeoCoordinateConverter::isValidField);
             docFeatures.forEach(f -> f.addEntity(entity));
     }
 
