@@ -633,8 +633,7 @@ public class Search implements Serializable {
      * @throws IndexUnreachableException
      */
     private void populateUnfilteredFacets(String finalQuery, SearchFacets facets, SearchResultGroup resultGroup, Map<String, String> params,
-            Locale locale)
-            throws PresentationException, IndexUnreachableException {
+            Locale locale) throws PresentationException, IndexUnreachableException {
         List<String> unfilteredFacetFields = new ArrayList<>();
         // Collect facet fields with alwaysApplyToUnfilteredHits=true
         for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
@@ -1052,7 +1051,7 @@ public class Search implements Serializable {
      * @param sortString the sortString to set
      */
     public void setSortString(String sortString) {
-        if(StringUtils.isNotBlank(sortString)) {            
+        if (StringUtils.isNotBlank(sortString)) {
             String s = sortString.replaceAll("[\n\r]", "_");
             logger.trace("setSortString: {}", s);
         }

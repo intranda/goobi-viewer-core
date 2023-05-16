@@ -135,7 +135,7 @@ public class NavigationHelper implements Serializable {
     private final String theme;
 
     /** Currently selected page from the main navigation bar. */
-    private String currentPage = "index";
+    private String currentPage = HOME_PAGE;
 
     private boolean isCmsPage = false;
 
@@ -792,6 +792,7 @@ public class NavigationHelper implements Serializable {
      * </p>
      */
     public void reload() {
+        //noop
     }
 
     /**
@@ -802,8 +803,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getApplicationUrl() {
-        String applicationUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
-        return applicationUrl;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
     }
 
     /**

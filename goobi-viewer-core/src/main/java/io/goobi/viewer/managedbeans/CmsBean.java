@@ -1794,7 +1794,6 @@ public class CmsBean implements Serializable {
     }
     
     public void setTest(String test) {
-        System.out.println("set test");
         this.test = test;
     }
 }
