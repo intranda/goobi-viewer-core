@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -54,6 +56,9 @@ import jakarta.persistence.Transient;
 @Table(name = "cms_content_record_list")
 @DiscriminatorValue("recordlist")
 public class CMSRecordListContent extends CMSContent implements PagedCMSContent {
+    
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger(CMSRecordListContent.class); //NOSONAR Sometimes the logger is needed for debugging
 
     private static final String COMPONENT_NAME = "searchhitlist";
 
@@ -157,6 +162,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
+        logger.trace("handlePageLoad");
         if (this.search == null) {
             this.search = initSearch();
         }
@@ -169,6 +175,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             } else if (StringUtils.isNotBlank(this.search.getSortString()) && !this.search.getSortString().equals("-")) {
                 s.setSortString(this.search.getSortString());
                 searchBean.setSortString(this.search.getSortString());
+            } else if (StringUtils.isEmpty(s.getSortString()) && searchBean.getSortString().equals("-")) {
+                s.setSortString(searchBean.getSortString());
             }
             //NOTE: Cannot sort by multivalued fields like DC.
             if (StringUtils.isNotBlank(this.getGroupingField())) {
