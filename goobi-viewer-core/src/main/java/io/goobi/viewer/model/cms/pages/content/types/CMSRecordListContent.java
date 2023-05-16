@@ -39,11 +39,11 @@ import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
+import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.search.HitListView;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -162,7 +162,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
-            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
+            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL, searchBean.getResultGroupsForSearchExecution());
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(this.getSortField());
                 searchBean.setSortString(this.getSortField());
@@ -204,11 +204,11 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     public Functionality getFunctionality() {
         return getSearch();
     }
-    
+
     public HitListView getView() {
         return view;
     }
-    
+
     public void setView(HitListView view) {
         this.view = view;
     }

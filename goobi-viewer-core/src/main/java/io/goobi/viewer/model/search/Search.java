@@ -146,10 +146,7 @@ public class Search implements Serializable {
      * Load configured result groups. If none are configured or groups are disabled, use a single default group for regular search.
      */
     @Transient
-    private List<SearchResultGroup> resultGroups = (!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
-            || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
-                    ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
-                    : DataManager.getInstance().getConfiguration().getSearchResultGroups();
+    private List<SearchResultGroup> resultGroups = new ArrayList<>();
 
     /** Solr fields for search result sorting (usually the field from sortString and some backup fields such as ORDER and FILENAME). */
     @Transient
@@ -187,6 +184,9 @@ public class Search implements Serializable {
         this.lastHitsCount = blueprint.lastHitsCount;
         this.newHitsNotification = blueprint.newHitsNotification;
         this.proximitySearchDistance = blueprint.proximitySearchDistance;
+        for (SearchResultGroup resultGroup : blueprint.getResultGroups()) {
+            this.getResultGroups().add(resultGroup);
+        }
     }
 
     /**
@@ -196,11 +196,15 @@ public class Search implements Serializable {
      *
      * @param searchType a int.
      * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
+     * @param resultGroups
      */
-    public Search(int searchType, SearchFilter searchFilter) {
+    public Search(int searchType, SearchFilter searchFilter, List<SearchResultGroup> resultGroups) {
         this.searchType = searchType;
         if (searchFilter != null) {
             this.searchFilter = searchFilter.getField();
+        }
+        if (resultGroups != null) {
+            this.resultGroups = resultGroups;
         }
     }
 

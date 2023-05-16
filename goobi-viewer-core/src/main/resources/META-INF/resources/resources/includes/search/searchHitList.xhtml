@@ -93,16 +93,17 @@
                     </ui:fragment>
                     <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
                 <div class="search-list__hit #{hit.cssClass}">
+                
                     <!-- COinS IMPLEMENTATION -->
                     <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
+                    
                     <!-- HEADER -->
                     <header class="search-list__hit-header">
-                    
-                                <ui:include src="/resources/includes/search/browseElement.xhtml">
-                        	       <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
-                        	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
-                                </ui:include>
-                            </header>
+                        <ui:include src="/resources/includes/search/browseElement.xhtml">
+                            <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
+                        	<ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
+                        </ui:include>
+                    </header>
 
                             <!-- CONTENT -->
                             <h:panelGroup rendered="#{hit.hasHitCount}">

@@ -333,6 +333,11 @@ public class SearchBean implements SearchInterface, Serializable {
         return "pretty:newSearch5";
     }
 
+    /**
+     * 
+     * @param search
+     * @return
+     */
     public String simpleSearch(SearchInterface search) {
         return search.searchSimple();
     }
@@ -852,7 +857,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Init search object
-        currentSearch = new Search(activeSearchType, currentSearchFilter);
+        currentSearch = new Search(activeSearchType, currentSearchFilter, getResultGroupsForSearchExecution());
         currentSearch.setUserInput(searchString);
         currentSearch.setQuery(searchStringInternal);
         currentSearch.setPage(currentPage);
@@ -881,10 +886,6 @@ public class SearchBean implements SearchInterface, Serializable {
                                     additionalExpandQueryfields),
                             searchTerms, phraseSearch, proximitySearchDistance);
             currentSearch.setExpandQuery(expandQuery);
-        }
-
-        if (activeResultGroup != null) {
-            currentSearch.setResultGroups(Collections.singletonList(activeResultGroup));
         }
 
         currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
@@ -1458,6 +1459,23 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentSearch != null) {
             currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         }
+    }
+
+    /**
+     * Returns relevant search result groups for search execution. If an active group is set, return just that. Otherwise, return either all
+     * configured groups or default group (if groups disabled).
+     * 
+     * @return Relevant search result groups
+     */
+    public List<SearchResultGroup> getResultGroupsForSearchExecution() {
+        if (activeResultGroup != null) {
+            return Collections.singletonList(activeResultGroup);
+        }
+
+        return (!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
+                || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
+                        ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
+                        : DataManager.getInstance().getConfiguration().getSearchResultGroups();
     }
 
     /**
