@@ -16,9 +16,11 @@ this.entities = [];
 this.filteredEntities = undefined;
 
 this.on("mount", () => {
-	console.log("mounting ", this.opts);
 	this.opts.featureGroups.forEach(group => {
-		group.onFeatureClick.subscribe(f => this.setEntities(f.properties?.entities?.filter(e => e.visible !== false)));
+		group.onFeatureClick.subscribe(f => { 
+			this.title = f.properties?.title;
+			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false));
+		});
 	})
 	this.opts.geomap.onMapClick.subscribe(e => this.hide());
 	this.hide();
@@ -64,6 +66,9 @@ getEntityLabel(entity) {
 }
 
 getListLabel() {
+	if(this.title) {
+		return this.title;
+	}
 	if(this.entities.length) {		
 		let labels = this.opts.listLabelFormat;
 		return this.getLabel(this.entities[0], labels); 

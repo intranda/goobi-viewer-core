@@ -41,6 +41,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.faces.model.SelectItem;
+
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.XMLConfiguration;
@@ -59,6 +61,7 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
+import io.goobi.viewer.controller.model.StringMatchConfiguration;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -5634,5 +5637,30 @@ public class Configuration extends AbstractConfiguration {
 
     public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
+    }
+    
+    public List<SelectItem> getGeomapFeatureTitleOptions() {
+       List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.title.option");
+       if(configs != null && !configs.isEmpty()) {
+           return configs.stream()
+                   .map(config -> {
+                       String value = config.getString(".", null);
+                       String label = config.getString("[@label]", value);  //NOSONAR specific path
+                       return new SelectItem(value, label);
+                   }).collect(Collectors.toList());
+       } else {
+           return List.of(
+                   new SelectItem("cms__geomaps__popup_content__option__none", null),
+                   new SelectItem("cms__geomaps__popup_content__option__place", "NORM_NAME"),
+                   new SelectItem("cms__geomaps__popup_content__option__metadata", "MD_VALUE"));
+       }
+    }
+    
+    public StringMatchConfiguration getGeomapFeatureMainDocumentFields() {
+        return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.mainDocumentFields"));
+    }
+    
+    public StringMatchConfiguration getGeomapFeatureMetadataDocumentFields() {
+        return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.metadataDocumentFields"));
     }
 }

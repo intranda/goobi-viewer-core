@@ -108,8 +108,8 @@ public class MetadataContainer {
      * @param fieldNameFilter   A function which should return true for all metadata field names to be included in the return value
      * @return  a {@link MetadataContainer}
      */
-    public static MetadataContainer createMetadataEntity(SolrDocument doc, List<SolrDocument> children, Predicate<String> fieldNameFilter) {
-        Map<String, List<IMetadataValue>> translatedMetadata = SolrTools.getTranslatedMetadata(doc, fieldNameFilter::test);
+    public static MetadataContainer createMetadataEntity(SolrDocument doc, List<SolrDocument> children, Predicate<String> mainDocFieldNameFilter, Predicate<String> childDocFieldNameFilter) {
+        Map<String, List<IMetadataValue>> translatedMetadata = SolrTools.getTranslatedMetadata(doc, mainDocFieldNameFilter::test);
         MetadataContainer entity = new MetadataContainer(
                 SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), 
                 Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL)).orElse(Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_VALUE)).orElse("")));
@@ -120,7 +120,7 @@ public class MetadataContainer {
         .forEach(e -> entity.put(e.getKey(), e.getValue()));
 
         List<ComplexMetadata> childDocs = ComplexMetadata.getMetadataFromDocuments(children);
-        List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).filter(e -> fieldNameFilter.test(e.getKey())).collect(Collectors.toList());
+        List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).filter(e -> childDocFieldNameFilter.test(e.getKey())).collect(Collectors.toList());
         allChildDocValues.forEach(e -> entity.addAll(e.getKey(),  e.getValue()));
         return entity;
     }
@@ -132,7 +132,7 @@ public class MetadataContainer {
      * @return  a {@link MetadataContainer}
      */
     public static MetadataContainer createMetadataEntity(SolrDocument doc, Predicate<String> fieldNameFilter) {
-        return createMetadataEntity(doc, Collections.emptyList(), fieldNameFilter);
+        return createMetadataEntity(doc, Collections.emptyList(), fieldNameFilter, s -> true);
     }
     
     /**
@@ -142,7 +142,7 @@ public class MetadataContainer {
      * @return  a {@link MetadataContainer}
      */
     public static MetadataContainer createMetadataEntity(SolrDocument doc) {
-        return createMetadataEntity(doc, Collections.emptyList(), s -> true);
+        return createMetadataEntity(doc, Collections.emptyList(), s -> true, s -> true);
     }
     
 }

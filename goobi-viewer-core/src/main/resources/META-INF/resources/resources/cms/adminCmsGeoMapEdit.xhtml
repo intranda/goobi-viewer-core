@@ -271,12 +271,13 @@
 														<h:selectOneMenu id="popupContent"
 															styleClass="form-control"
 															value="#{featureSet.markerTitleField}" required="false">
-															<f:selectItem itemValue="#{null}"
-																itemLabel="#{msg.cms__geomaps__popup_content__option__none}"></f:selectItem>
-															<f:selectItem itemValue="NORM_NAME"
-																itemLabel="#{msg.cms__geomaps__popup_content__option__place}"></f:selectItem>
-															<f:selectItem itemValue="MD_VALUE"
-																itemLabel="#{msg.cms__geomaps__popup_content__option__metadata}"></f:selectItem>
+															<f:selectItems var="option" value="#{configurationBean.geomapFeatureTitleOptions}"></f:selectItems>
+<!-- 															<f:selectItem itemValue="#{null}" -->
+<!-- 																itemLabel="#{msg.cms__geomaps__popup_content__option__none}"></f:selectItem> -->
+<!-- 															<f:selectItem itemValue="NORM_NAME" -->
+<!-- 																itemLabel="#{msg.cms__geomaps__popup_content__option__place}"></f:selectItem> -->
+<!-- 															<f:selectItem itemValue="MD_VALUE" -->
+<!-- 																itemLabel="#{msg.cms__geomaps__popup_content__option__metadata}"></f:selectItem> -->
 															<f:ajax execute="mapPanel" render="mapPanel" />
 														</h:selectOneMenu>
 													</div>

@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
+import javax.faces.model.SelectItem;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +46,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -1453,6 +1455,12 @@ public class ConfigurationBean implements Serializable {
     
     public List<String> getDefaultGeomapFilters() {
         return List.of("MD_ROLE", "METADATA_TYPE").stream().map(s -> "'"+s+"'").collect(Collectors.toList());
+    }
+    
+    public List<SelectItem> getGeomapFeatureTitleOptions() {
+        return DataManager.getInstance().getConfiguration().getGeomapFeatureTitleOptions().stream()
+                .map(item -> new SelectItem(item.getValue(), ViewerResourceBundle.getTranslation(item.getLabel(), BeanUtils.getLocale())))
+                .collect(Collectors.toList());
     }
  
 }

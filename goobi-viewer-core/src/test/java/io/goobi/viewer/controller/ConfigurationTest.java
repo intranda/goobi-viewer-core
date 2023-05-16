@@ -22,7 +22,9 @@
 package io.goobi.viewer.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,6 +32,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
@@ -39,6 +43,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.model.StringMatchConfiguration;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -3293,5 +3298,42 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
+    }
+    
+    @Test
+    public void test_getGeomapFeatureTitleOptions() {
+        List<SelectItem> items = DataManager.getInstance().getConfiguration().getGeomapFeatureTitleOptions();
+        assertEquals(3, items.size());
+        
+        assertEquals("cms__geomaps__popup_content__option__none", items.get(0).getLabel());
+        assertEquals(null, items.get(0).getValue());
+        
+        assertEquals("NORM_NAME", items.get(1).getLabel());
+        assertEquals("NORM_NAME", items.get(1).getValue());
+        
+        assertEquals("cms__geomaps__popup_content__option__education", items.get(2).getLabel());
+        assertEquals("MD_BIOGRAPHY_EDUCATION", items.get(2).getValue());
+        
+    }
+    
+    @Test
+    public void test_getGeomapFeatureMainDocumentFields() {
+        StringMatchConfiguration config = DataManager.getInstance().getConfiguration().getGeomapFeatureMainDocumentFields();
+        assertNotNull(config);
+        assertTrue(config.test("PI"));
+        assertTrue(config.test("MD_TITLE"));
+        assertFalse(config.test("test"));
+        assertFalse(config.test("MD_TITLE_UNTOKENIZED"));
+    }
+    
+    @Test
+    public void test_getGeomapFeatureMetadataDocumentFields() {
+        StringMatchConfiguration config = DataManager.getInstance().getConfiguration().getGeomapFeatureMetadataDocumentFields();
+        assertNotNull(config);
+        assertTrue(config.test("PI"));
+        assertTrue(config.test("LABEL"));
+        assertTrue(config.test("MD_TITLE"));
+        assertFalse(config.test("MD_ROLE"));
+        assertFalse(config.test("MD_TITLE_UNTOKENIZED"));
     }
 }
