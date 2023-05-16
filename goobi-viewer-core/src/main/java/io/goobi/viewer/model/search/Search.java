@@ -1099,8 +1099,10 @@ public class Search implements Serializable {
         List<StringPair> ret = new ArrayList<>(staticSortFields.size() + sortFields.size());
         if (!staticSortFields.isEmpty()) {
             for (String s : staticSortFields) {
-                ret.add(new StringPair(s, "asc"));
-                logger.trace("Added static sort field: {}", s);
+                if (StringUtils.isNotBlank(s)) {
+                    ret.add(new StringPair(s, "asc"));
+                    logger.trace("Added static sort field: {}", s);
+                }
             }
         }
         ret.addAll(sortFields);
