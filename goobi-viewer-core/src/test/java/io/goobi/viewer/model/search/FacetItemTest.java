@@ -251,6 +251,29 @@ public class FacetItemTest extends AbstractTest {
     }
 
     /**
+     * @see FacetItem#generateFilterLinkList(List,String,Map,boolean,int,Locale,Map)
+     * @verifies prefer existing items
+     */
+    @Test
+    public void generateFilterLinkList_shouldPreferExistingItems() throws Exception {
+        // Regular
+        FacetItem existing1 = new FacetItem("MD_FOO:bar", false);
+        List<IFacetItem> facetItems1 =
+                FacetItem.generateFilterLinkList(Collections.singletonList(existing1), "MD_FOO", Collections.singletonMap("bar", 1L),
+                        false, -1, null, null);
+        Assert.assertEquals(1, facetItems1.size());
+        Assert.assertEquals("MD_FOO:bar", facetItems1.get(0).getLink());
+
+        // With groupToLength=1
+        FacetItem existing2 = new FacetItem("MD_FOO:B*", false);
+        List<IFacetItem> facetItems2 =
+                FacetItem.generateFilterLinkList(Collections.singletonList(existing2), "MD_FOO", Collections.singletonMap("bar", 1L),
+                        false, 1, null, null);
+        Assert.assertEquals(1, facetItems2.size());
+        Assert.assertEquals("MD_FOO:B*", facetItems2.get(0).getLink());
+    }
+
+    /**
      * @see FacetItem#generateFilterLinkList(String,Map,boolean,boolean,Locale,Map)
      * @verifies group values by starting character correctly
      */
@@ -304,7 +327,7 @@ public class FacetItemTest extends AbstractTest {
         List<IFacetItem> existingItems = new ArrayList<>(2);
         existingItems.add(new FacetItem("MD_CREATOR:Groos, Karl", false).setCount(1));
         existingItems.add(new FacetItem("MD_CREATOR:Doe, John", false).setCount(1));
-        
+
         Map<String, Long> newValueMap = new HashMap<>(2);
         newValueMap.put("Montana, Tony", 1L);
         newValueMap.put("Groos, Karl", 1L);
@@ -316,4 +339,5 @@ public class FacetItemTest extends AbstractTest {
         Assert.assertEquals(2, facetItems.get(1).getCount());
         Assert.assertEquals("Montana, Tony", facetItems.get(2).getValue());
     }
+
 }
