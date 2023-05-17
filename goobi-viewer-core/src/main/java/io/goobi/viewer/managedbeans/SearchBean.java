@@ -1514,6 +1514,8 @@ public class SearchBean implements SearchInterface, Serializable {
                         resetAdvancedSearchParameters();
                         // Reset slider ranges
                         facets.resetSliderRange();
+                        // Reset avalable facets
+                        facets.resetAvailableFacets();
                     }
                     return;
                 }
