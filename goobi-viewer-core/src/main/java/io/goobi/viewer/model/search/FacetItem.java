@@ -230,7 +230,7 @@ public class FacetItem implements Serializable, IFacetItem {
      */
     public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, Map<String, Long> values,
             boolean hierarchical, int groupToLength, Locale locale, Map<String, String> labelMap) {
-        logger.trace("generateFilterLinkList: {}", field);
+        // logger.trace("generateFilterLinkList: {}", field);
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
 

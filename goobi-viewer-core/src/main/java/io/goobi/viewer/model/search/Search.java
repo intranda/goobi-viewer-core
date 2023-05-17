@@ -389,7 +389,11 @@ public class Search implements Serializable {
             int hitsPerPage, Locale locale, boolean keepSolrDoc, SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("Result group: {}", resultGroup.getName());
-        QueryResponse resp = null;
+
+        // Remove previous results
+        if (!resultGroup.getHits().isEmpty()) {
+            resultGroup.getHits().clear();
+        }
 
         List<String> allFacetFields = SearchHelper.facetifyList(DataManager.getInstance().getConfiguration().getAllFacetFields());
 
@@ -422,7 +426,7 @@ public class Search implements Serializable {
                             .append(subElementQueryFilterSuffix)
                             .toString();
             logger.trace("extra query: {}", extraQuery);
-            resp = DataManager.getInstance()
+            QueryResponse resp = DataManager.getInstance()
                     .getSearchIndex()
                     .search(extraQuery, 0, 0, null, facets.getConfiguredSubelementFacetFields(),
                             Collections.singletonList(SolrConstants.IDDOC),
@@ -466,7 +470,7 @@ public class Search implements Serializable {
         }
 
         // Search for hit count + facets
-        resp = DataManager.getInstance()
+        QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
                 .search(finalQuery, 0, maxResults, null, allFacetFields, fieldList, allFilterQueries, params);
         if (resp.getResults() != null) {
