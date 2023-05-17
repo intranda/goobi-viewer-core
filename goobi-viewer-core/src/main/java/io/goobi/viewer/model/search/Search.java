@@ -146,7 +146,10 @@ public class Search implements Serializable {
      * Load configured result groups. If none are configured or groups are disabled, use a single default group for regular search.
      */
     @Transient
-    private List<SearchResultGroup> resultGroups = new ArrayList<>();
+    private List<SearchResultGroup> resultGroups = (!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
+            || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
+                    ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
+                    : DataManager.getInstance().getConfiguration().getSearchResultGroups();
 
     /** Solr fields for search result sorting (usually the field from sortString and some backup fields such as ORDER and FILENAME). */
     @Transient
