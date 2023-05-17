@@ -187,6 +187,7 @@ public class Search implements Serializable {
         this.lastHitsCount = blueprint.lastHitsCount;
         this.newHitsNotification = blueprint.newHitsNotification;
         this.proximitySearchDistance = blueprint.proximitySearchDistance;
+        this.resultGroups = new ArrayList<>();
         for (SearchResultGroup resultGroup : blueprint.getResultGroups()) {
             this.getResultGroups().add(resultGroup);
         }
