@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -616,14 +617,21 @@ public class ActiveDocumentBean implements Serializable {
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
 
-                for (String language : name.getLanguages()) { // TODO ConcurrentModificationException can be th
+                Map<String, String> truncatedNames = new HashMap<>();
+                for (String language : name.getLanguages()) {
                     String translation = name.getValue(language).orElse(getPersistentIdentifier());
                     if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
                         translation =
                                 new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
                                         .append("...")
                                         .toString();
-                        name.setValue(translation, language);
+                        truncatedNames.put(language, translation);
+                    }
+                }
+                // Replace translation outside of the loop
+                if (!truncatedNames.isEmpty()) {
+                    for (Entry<String, String> entry : truncatedNames.entrySet()) {
+                        name.setValue(entry.getValue(), entry.getKey());
                     }
                 }
                 // Fallback using the identifier as the label
@@ -2296,7 +2304,7 @@ public class ActiveDocumentBean implements Serializable {
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
             map.setShowPopover(true);
-            
+
             ManualFeatureSet featureSet = new ManualFeatureSet();
             featureSet.setMarker("default");
             map.addFeatureSet(featureSet);
@@ -2528,9 +2536,9 @@ public class ActiveDocumentBean implements Serializable {
 
         return false;
     }
-    
+
     public List<String> getGeomapFilters() {
-        return List.of("METADATA_TYPE", "MD_GENRE").stream().map(s -> "'"+s+"'").collect(Collectors.toList());
+        return List.of("METADATA_TYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }
 
 }
