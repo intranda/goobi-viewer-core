@@ -203,10 +203,8 @@ public class MediaDeliveryService {
      * @param sec
      * @throws IOException
      */
-    private void copy(FileChannel input, WritableByteChannel output, Section sec) throws IOException {
-
+    private static void copy(FileChannel input, WritableByteChannel output, Section sec) throws IOException {
         input.transferTo(sec.start, sec.length, output);
-
     }
 
     /**
@@ -216,7 +214,7 @@ public class MediaDeliveryService {
      * @param eTag
      * @param disposition
      */
-    private void initResponse(HttpServletResponse response, String fileName, long lastModified, String eTag, String disposition) {
+    private static void initResponse(HttpServletResponse response, String fileName, long lastModified, String eTag, String disposition) {
         response.reset();
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
         response.setHeader("Content-Disposition", disposition + ";filename=\"" + fileName + "\"");
@@ -236,7 +234,7 @@ public class MediaDeliveryService {
      * @throws IOException
      * @throws IllegalRequestException
      */
-    private List<Section> getSections(HttpServletRequest request, long length, long lastModified, String eTag)
+    private static List<Section> getSections(HttpServletRequest request, long length, long lastModified, String eTag)
             throws IllegalRequestException {
         // Prepare some variables. The full Section represents the complete file.
         List<Section> sections = new ArrayList<>();
@@ -292,24 +290,26 @@ public class MediaDeliveryService {
         return sections;
     }
 
+    /**
+     * 
+     * @param range
+     * @return
+     */
     protected static boolean matchesRangeHeaderPattern(String range) {
-        
-        if(range.matches("bytes=.+")) {
+        if (range.matches("bytes=.+")) {
             String rangeParts = range.substring(6);
             String[] parts = rangeParts.split(",\\s*");
-            if(parts.length > 0) {
+            if (parts.length > 0) {
                 for (String part : parts) {
-                    if(!part.matches("\\d+-|-\\d+|\\d+-\\d+")) {
+                    if (!part.matches("\\d+-|-\\d+|\\d+-\\d+")) {
                         return false;
                     }
                 }
                 return true;
-            } else {
-                return false;
             }
-        } else {
             return false;
         }
+        return false;
     }
 
     /**
@@ -322,7 +322,7 @@ public class MediaDeliveryService {
      * @param eTag
      * @throws IOException
      */
-    private Optional<Integer> getCachingResponse(HttpServletRequest request, long lastModified, String eTag) {
+    private static Optional<Integer> getCachingResponse(HttpServletRequest request, long lastModified, String eTag) {
         // If-None-Match header should contain "*" or ETag. If so, then return 304.
         String ifNoneMatch = request.getHeader("If-None-Match");
         if (ifNoneMatch != null && matches(ifNoneMatch, eTag)) {

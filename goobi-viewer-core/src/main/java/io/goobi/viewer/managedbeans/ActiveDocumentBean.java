@@ -616,7 +616,7 @@ public class ActiveDocumentBean implements Serializable {
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
 
-                for (String language : name.getLanguages()) {
+                for (String language : name.getLanguages()) { // TODO ConcurrentModificationException can be th
                     String translation = name.getValue(language).orElse(getPersistentIdentifier());
                     if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
                         translation =

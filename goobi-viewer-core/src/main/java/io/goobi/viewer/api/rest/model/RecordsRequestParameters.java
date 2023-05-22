@@ -24,40 +24,42 @@ package io.goobi.viewer.api.rest.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * POST request parameters for RecordsResource.
  */
-@Schema(name="SolrRequestParameters", description="SOLR query and additional parameters", requiredProperties= {"query"})
+@Schema(name = "SolrRequestParameters", description = "SOLR query and additional parameters", requiredProperties = { "query" })
 public class RecordsRequestParameters {
 
-    @Schema(description = "Raw SOLR query", example="+ISWORK:true +DOCSTRCT:monograph +(FACET_PLACEPUBLISH:Berlin FACET_PLACEPUBLISH:'New York')")
+    @Schema(description = "Raw SOLR query", example = "+ISWORK:true +DOCSTRCT:monograph +(FACET_PLACEPUBLISH:Berlin FACET_PLACEPUBLISH:'New York')")
     public String query;
-    @Schema(description = "A string list of SOLR field names which should be included in the response, allows wildcards", example="[\"PI*\",\"IDDOC\",\"DOCTYPE\",\"DOCSTRCT\",\"LABEL\"]")
+    @Schema(description = "A string list of SOLR field names which should be included in the response, allows wildcards",
+            example = "[\"PI*\",\"IDDOC\",\"DOCTYPE\",\"DOCSTRCT\",\"LABEL\"]")
     public List<String> resultFields = new ArrayList<>();
-    @Schema(description = "A string list of SOLR fields used for sorting", example="[\"SORTNUM_YEAR\",\"LABEL\"]")
+    @Schema(description = "A string list of SOLR fields used for sorting", example = "[\"SORTNUM_YEAR\",\"LABEL\"]")
     public List<String> sortFields = new ArrayList<>();
-    @Schema(description = "If this has the value 'desc', the results will be sorted by the given sortFields in descending order, otherwise ascending", example="asc")
+    @Schema(description = "If this has the value 'desc', the results will be sorted by the given sortFields in descending order, otherwise ascending",
+            example = "asc")
     public String sortOrder = "asc";
-    @Schema(description = "If this has the value 'datecentric', the results will be grouped by their import date in their JSON representation", example="recordcentric")
+    @Schema(description = "If this has the value 'datecentric', the results will be grouped by their import date in their JSON representation",
+            example = "recordcentric")
     public String jsonFormat = "";
-    @Schema(description = "The maximum number of results to return. Negative values don't set a limit", example="10")
+    @Schema(description = "The maximum number of results to return. Negative values don't set a limit", example = "10")
     public int count = -1;
-    @Schema(description = "The absolute index of the first result to return", example="0")
+    @Schema(description = "The absolute index of the first result to return", example = "0")
     public int offset = 0;
-    @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields, randomization only applies to results with identical values in the sortFields", example="false")
+    @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields, randomization only applies to results with identical values in the sortFields",
+            example = "false")
     public boolean randomize = false;
-    @Schema(description = "If this field is set, all SOLR field names and values will be translated into this language if possible. If no language parameter is given, no fields will be translated", example="en")
+    @Schema(description = "If this field is set, all SOLR field names and values will be translated into this language if possible. If no language parameter is given, no fields will be translated",
+            example = "en")
     public String language = "";
-    @Schema(description = "Set to 'true' to include all child documents (sections, pages) that match the query. Child documents are appended in the 'children' property", example="false")
+    @Schema(description = "Set to 'true' to include all child documents (sections, pages) that match the query. Child documents are appended in the 'children' property",
+            example = "false")
     public boolean includeChildHits = false;
-    @Schema(description = "Set to 'true' to place main record that contain the search terms in the title on top", example="false")
+    @Schema(description = "Set to 'true' to place main record that contain the search terms in the title on top", example = "false")
     public boolean boostTopLevelDocstructs = false;
-    @Schema(description = "A list of SOLR field names to get facet results for", example="[\"DC\",\"DOCSTRCT\"]")
+    @Schema(description = "A list of SOLR field names to get facet results for", example = "[\"DC\",\"DOCSTRCT\"]")
     public List<String> facetFields = new ArrayList<>();
-
 }
