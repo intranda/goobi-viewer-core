@@ -194,7 +194,7 @@
 		                        </div>
 		                        <div class="custom-control custom-control--select search-advanced__custom-control">
 		                            <h:selectOneMenu value="#{searchBean.searchSortingOption}" id="sortSelect" converter="searchSortingOptionConverter">
-		                                <f:selectItems value="#{searchBean.searchSortingOptions}"
+		                                <f:selectItems value="#{searchBean.getSearchSortingOptions(navigationHelper.localeString)}"
 		                                    var="option"
 		                                    itemLabel="#{option.label}"
 		                                    itemValue="#{option}"/>

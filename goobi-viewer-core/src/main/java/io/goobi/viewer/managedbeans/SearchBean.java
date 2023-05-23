@@ -3065,12 +3065,13 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     *
+     * 
+     * @param language
      * @return
      * @should return options correctly
      * @should use current random seed option instead of default
      */
-    public Collection<SearchSortingOption> getSearchSortingOptions() {
+    public Collection<SearchSortingOption> getSearchSortingOptions(String language) {
         Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
         Collection<SearchSortingOption> ret = new ArrayList<>(options.size());
         for (SearchSortingOption option : options) {
@@ -3078,7 +3079,9 @@ public class SearchBean implements SearchInterface, Serializable {
             if (option.getField().equals(SolrConstants.SORT_RANDOM) && searchSortingOption != null
                     && searchSortingOption.getField().startsWith("random")) {
                 ret.add(searchSortingOption);
-            } else {
+            } else if (StringUtils.isEmpty(language) || !option.getField().contains(SolrConstants.MIDFIX_LANG)
+                    || option.getField().endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase())) {
+                // Add option unless there's a direct language mismatch
                 ret.add(option);
             }
         }
@@ -3148,6 +3151,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     @Override
     public String changeSorting() throws IOException {
+        logger.trace("changeSorting");
         return "pretty:newSearch5";
     }
 }

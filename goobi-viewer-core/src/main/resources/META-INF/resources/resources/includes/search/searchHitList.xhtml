@@ -57,7 +57,7 @@
                             <h:form prependId="false" onkeypress="if( event.keyCode == 13){event.keyCode=0;}">
 	                            <h:selectOneMenu value="#{searchBean.searchSortingOption}" id="sortSelect"
 	                                converter="searchSortingOptionConverter" pt:onchange="$('[data-execute=\'search\']').click()">
-	                            	<f:selectItems value="#{searchBean.searchSortingOptions}"
+	                            	<f:selectItems value="#{searchBean.getSearchSortingOptions(navigationHelper.localeString)}"
 	                            					var="option"
 	                            					itemLabel="#{option.label}"
 	                            					itemValue="#{option}"/>
