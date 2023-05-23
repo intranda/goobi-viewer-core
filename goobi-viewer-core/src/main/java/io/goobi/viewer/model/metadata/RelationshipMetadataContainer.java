@@ -18,8 +18,8 @@ import io.goobi.viewer.solr.SolrTools;
 public class RelationshipMetadataContainer extends ComplexMetadataContainer {
 
     private static final String RELATED_RECORD_QUERY_FORMAT = "+DOCTYPE:DOCSTRCT +MD_PROCESSID:(%s)";
-    private static final String DOCUMENT_IDENTIFIER = "MD_PROCESSID";
-    private static final String RELATIONSHIP_ID_REFERENCE = "MD_IDENTIFIER";    
+    public static final String DOCUMENT_IDENTIFIER = "MD_PROCESSID";
+    public static final String RELATIONSHIP_ID_REFERENCE = "MD_IDENTIFIER";    
     private static final List<String> RELATED_RECORD_METADATA_FIELDS = List.of(SolrConstants.PI, DOCUMENT_IDENTIFIER, "MD_GENRE");
 
     private final Map<String, MetadataContainer> relatedDocumentMap;    

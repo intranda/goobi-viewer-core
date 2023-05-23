@@ -6,9 +6,12 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 
 import de.intranda.api.annotation.wa.TypedResource;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.ContentBean;
@@ -17,9 +20,13 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
+import io.goobi.viewer.model.metadata.ComplexMetadata;
+import io.goobi.viewer.model.metadata.MetadataContainer;
+import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Contains data to create a geomap for a record containing complex metadata (metadata documents) with geo coordinates
@@ -30,18 +37,22 @@ public class RecordGeoMap {
 
     private final StructElement mainStruct;
     private final List<String> metadataTypes;
+    private final List<MetadataContainer> relatedDocuments;
     private final GeoMap geoMap;
     private final IDAO dao;
+    private final Configuration config;
     
-    public RecordGeoMap(StructElement struct, List<String> metadataTypes) throws DAOException {
-        this(struct, metadataTypes, DataManager.getInstance().getDao());
+    public RecordGeoMap(StructElement struct, List<String> metadataTypes, List<MetadataContainer> relatedDocuments) throws DAOException {
+        this(struct, metadataTypes, relatedDocuments, DataManager.getInstance().getDao(), DataManager.getInstance().getConfiguration());
     }
 
     
-    public RecordGeoMap(StructElement struct, List<String> metadataTypes, IDAO dao) throws DAOException {
+    public RecordGeoMap(StructElement struct, List<String> metadataTypes, List<MetadataContainer> relatedDocuments, IDAO dao, Configuration config) throws DAOException {
         this.dao = dao;
+        this.config = config;
         this.mainStruct = struct;
         this.metadataTypes = new ArrayList<>(metadataTypes);
+        this.relatedDocuments = new ArrayList<>(relatedDocuments);
         this.geoMap = createMap();
     }
     
@@ -54,16 +65,21 @@ public class RecordGeoMap {
             createMetadataFeatureSet(geoMap, md, mainStruct.getPi());
         }
         
+//            createRelatedDocumentFeatureSet(geoMap, relatedDocuments, mainStruct.getPi());
+        
         createAnnotationFeatureSet(geoMap, mainStruct.getPi());
         
         return geoMap;
     }
 
+
     private void createMetadataFeatureSet(GeoMap geoMap, String md, String pi) {
         SolrFeatureSet featureSet = new SolrFeatureSet();
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(md, false)));
-        featureSet.setSolrQuery(String.format("+DOCTYPE:METADATA +LABEL:%s* +PI_TOPSTRUCT:%s", md, pi));
+        featureSet.setSolrQuery(String.format("+DOCTYPE:METADATA +LABEL:%s +PI_TOPSTRUCT:%s", md, pi));
+        featureSet.setMarkerTitleField("NORM_NAME");
         featureSet.setAggregateResults(true);
+        featureSet.setMarker(config.getRecordGeomapMarker("metadata"));
         geoMap.addFeatureSet(featureSet);
     }
     
@@ -72,12 +88,14 @@ public class RecordGeoMap {
         featureSet.setName(createLabel(docStruct));
         featureSet.setSolrQuery(String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", docStruct.getPi()));
         featureSet.setAggregateResults(false);
+        featureSet.setMarker(config.getRecordGeomapMarker("docstruct"));
         geoMap.addFeatureSet(featureSet);
     }
     
     private void createAnnotationFeatureSet(GeoMap geoMap, String pi) throws DAOException {
         ManualFeatureSet featureSet = new ManualFeatureSet();
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations("annotations", true)));
+        featureSet.setMarker(config.getRecordGeomapMarker("annotations"));
         geoMap.addFeatureSet(featureSet);
         
         List<String> features = new ArrayList<>();

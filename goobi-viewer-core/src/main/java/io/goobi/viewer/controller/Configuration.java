@@ -5225,6 +5225,11 @@ public class Configuration extends AbstractConfiguration {
         return markers;
 
     }
+    
+    public String getRecordGeomapMarker(String type) {
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.record.marker");
+        return configs.stream().filter(config -> config.getString("[@type]", "").equals(type)).findAny().map(config -> config.getString(".", "")).orElse("");
+    }
 
     /**
      * @param config
@@ -5663,4 +5668,6 @@ public class Configuration extends AbstractConfiguration {
     public StringMatchConfiguration getGeomapFeatureMetadataDocumentFields() {
         return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.metadataDocumentFields"));
     }
+    
+
 }

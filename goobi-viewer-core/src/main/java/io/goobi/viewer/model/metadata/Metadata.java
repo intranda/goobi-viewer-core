@@ -60,6 +60,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -959,6 +960,10 @@ public class Metadata implements Serializable {
         }
         if (mdValues == null) {
             mdValues = metadataMap.get(key);
+        }
+        if (mdValues == null) {
+            String langKey = key + "_LANG_" + IPolyglott.getDefaultLocale().getLanguage().toUpperCase();
+            mdValues = metadataMap.get(langKey);
         }
         return mdValues;
     }

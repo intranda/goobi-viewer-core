@@ -322,11 +322,11 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
     
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(properties) {
     	
-    	let count = this.getCount(properties);
+    	let count = this.getCount(properties); 
     	let highlighted = properties?.highlighted;
-        
+        console.log("create marker ichon from ", this.config.markerIcon);
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
-        	if(this.config.markerIcon.useDefault) {
+        	if(this.config.markerIcon.useDefault) { 
         		if(this.config.markerIcon.highlightIcon && highlighted) {
         		let icon = new L.Icon.Default({
         			imagePath : this.geoMap.config.iconPath + "/"
@@ -344,6 +344,7 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
 					options.html = options.html.replace("${count}", "1");
 					options.iconSize = new L.Point(40, 40);
 					let icon = count > 1 ? this.getClusterIcon(count) : new L.DivIcon(options);
+					console.log("created marker icon ", icon, "from", options);
 					return icon;
 				} else {
 					let icon = count > 1 ? this.getClusterIcon(count) : L.ExtraMarkers.icon(this.config.markerIcon);

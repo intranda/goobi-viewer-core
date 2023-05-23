@@ -90,6 +90,9 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.RecordGeoMap;
+import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
+import io.goobi.viewer.model.metadata.MetadataContainer;
+import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -2273,9 +2276,18 @@ public class ActiveDocumentBean implements Serializable {
      */
     public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
         RecordGeoMap widget = this.geoMaps.get(getPersistentIdentifier());
-        if (widget == null) {
-            widget = new RecordGeoMap(getTopDocument(), List.of("MD_BIOGRAPHY", "MD_RELATIONSHIP_EVENT", "MD_RELATIONSHIP_AWARD", "MD_BIRTHPLACE"));
-            this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
+                if (widget == null) {
+//        ComplexMetadataContainer md = this.viewManager.getTopStructElement().getMetadataDocuments();
+//        String mdType = "MD_RELATIONSHIP_EVENT";
+        List<MetadataContainer> docs = Collections.emptyList();
+//        if (md instanceof RelationshipMetadataContainer) {
+//            RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
+//            docs = rmc.getMetadata(mdType)
+//                    .stream()
+//                    .map(rmc::getRelatedRecord)
+//                    .collect(Collectors.toList());
+        widget = new RecordGeoMap(getTopDocument(), List.of("(MD_BIOGRAPHY* MD_BIRTHPLACE MD_DEATHPLACE)"), docs);
+        this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
         }
         return widget.getGeoMap();
     }
@@ -2296,7 +2308,7 @@ public class ActiveDocumentBean implements Serializable {
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
             map.setShowPopover(true);
-            
+
             ManualFeatureSet featureSet = new ManualFeatureSet();
             featureSet.setMarker("default");
             map.addFeatureSet(featureSet);
@@ -2528,9 +2540,9 @@ public class ActiveDocumentBean implements Serializable {
 
         return false;
     }
-    
+
     public List<String> getGeomapFilters() {
-        return List.of("METADATA_TYPE", "MD_GENRE").stream().map(s -> "'"+s+"'").collect(Collectors.toList());
+        return List.of("METADATA_TYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }
 
 }
