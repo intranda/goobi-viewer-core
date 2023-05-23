@@ -60,11 +60,20 @@
                         </ul>
                         </nav>
 				</div>
+				
+                <div class="search-list__options">
+                    <!-- HITCOUNT -->
+                    <div class="search-list__hitcount">
+                        <h:outputText rendered="#{searchBean.hitsCount > 0}" value="#{msg.hits}: #{searchBean.hitsCount}" />
+                        <h:outputText rendered="#{searchBean.hitsCount == 0}" value="#{msg.hitsZero}." />
+                    </div>
+                </div>
+				
 				<div class="tpl-search-list-custom content-component__legacy-full-width search-list__hits">
 					<ui:include src="/resources/includes/search/searchHitList.xhtml">
 						<ui:param name="listStyle" value="#{cc.attrs.component.getContent('recordlist').view.cssClass}"></ui:param>
 						<ui:param name="searchParam" value="#{cc.attrs.component.getContent('recordlist').search}"></ui:param>
-						<ui:param name="showSortingOptions" value="#{false}"></ui:param>
+						<ui:param name="showSortingOptions" value="#{true}"></ui:param>
 					</ui:include>
 					
 				</div>
