@@ -1674,11 +1674,12 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public long getHitsCount() {
+        if (activeResultGroup != null) {
+            return activeResultGroup.getHitsCount();
+        }
         if (currentSearch != null) {
-            // logger.trace("Hits count = {}", currentSearch.getHitsCount());
             return currentSearch.getHitsCount();
         }
-        // logger.warn("No Search object available");
 
         return 0;
     }
