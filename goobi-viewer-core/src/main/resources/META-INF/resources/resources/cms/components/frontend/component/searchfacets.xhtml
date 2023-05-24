@@ -41,13 +41,6 @@
                                 <h:outputLink styleClass="content-component__search-facets-link #{searchBean.facets.isFacetCurrentlyUsed(facet) ? '-active' : ''}"
                                     value="#{cmsBean.currentPage.pageUrl}#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{facet.urlEscapedLink}/">
 									#{facet.label}
-<!--                                     <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}"> -->
-<!--                                         #{facet.label} -->
-<!--                                     </ui:fragment> -->
-<!--                                     <ui:fragment rendered="#{searchBean.facets.isFacetCurrentlyUsed(facet)}"> -->
-<!--                                         <strong>#{facet.label}</strong> -->
-<!--                                     </ui:fragment> -->
-
                                     <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.label}" />
                                 </h:outputLink>
                             </ui:fragment>

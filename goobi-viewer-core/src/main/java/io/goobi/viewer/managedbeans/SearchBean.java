@@ -852,7 +852,7 @@ public class SearchBean implements SearchInterface, Serializable {
         setHitsPerPageSetterCalled(false);
 
         if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
-            setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
+            setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField(BeanUtils.getLocale().getLanguage()));
             logger.trace("Using default sorting: {}", searchSortingOption.getSortString());
         }
 
@@ -1410,7 +1410,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public void setSortString(String sortString) {
         logger.trace("setSortString: {}", sortString);
         if ("-".equals(sortString)) {
-            String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
+            String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(BeanUtils.getLocale().getLanguage());
             if (StringUtils.isNotEmpty(defaultSortField)) {
                 sortString = defaultSortField;
             }
@@ -3072,16 +3072,14 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should use current random seed option instead of default
      */
     public Collection<SearchSortingOption> getSearchSortingOptions(String language) {
-        Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions(language);
         Collection<SearchSortingOption> ret = new ArrayList<>(options.size());
         for (SearchSortingOption option : options) {
             // If random sorting is currently in use, use that particular seed
             if (option.getField().equals(SolrConstants.SORT_RANDOM) && searchSortingOption != null
                     && searchSortingOption.getField().startsWith("random")) {
                 ret.add(searchSortingOption);
-            } else if (StringUtils.isEmpty(language) || !option.getField().contains(SolrConstants.MIDFIX_LANG)
-                    || option.getField().endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase())) {
-                // Add option unless there's a direct language mismatch
+            } else {
                 ret.add(option);
             }
         }

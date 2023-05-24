@@ -1015,7 +1015,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isSearchExcelExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled();
     }
-    
+
     /**
      * <p>
      * isSearchRisExportEnabled.
@@ -1327,7 +1327,7 @@ public class ConfigurationBean implements Serializable {
      * @return true if default sorting field is 'RANDOM'; false otherwise
      */
     public boolean isDefaultSortFieldRandom() {
-        return SolrConstants.SORT_RANDOM.equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
+        return SolrConstants.SORT_RANDOM.equals(DataManager.getInstance().getConfiguration().getDefaultSortField(null));
     }
 
     public boolean isDisplayUserGeneratedContentBelowImage() {
@@ -1452,15 +1452,18 @@ public class ConfigurationBean implements Serializable {
     public boolean isConfigEditorEnabled() {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
-    
+
     public List<String> getDefaultGeomapFilters() {
-        return List.of("MD_ROLE", "METADATA_TYPE").stream().map(s -> "'"+s+"'").collect(Collectors.toList());
+        return List.of("MD_ROLE", "METADATA_TYPE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }
-    
+
     public List<SelectItem> getGeomapFeatureTitleOptions() {
-        return DataManager.getInstance().getConfiguration().getGeomapFeatureTitleOptions().stream()
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getGeomapFeatureTitleOptions()
+                .stream()
                 .map(item -> new SelectItem(item.getValue(), ViewerResourceBundle.getTranslation(item.getLabel(), BeanUtils.getLocale())))
                 .collect(Collectors.toList());
     }
- 
+
 }

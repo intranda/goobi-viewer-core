@@ -60,7 +60,7 @@
 	                            	<f:selectItems value="#{searchBean.getSearchSortingOptions(navigationHelper.localeString)}"
 	                            					var="option"
 	                            					itemLabel="#{option.label}"
-	                            					itemValue="#{option}"/>
+	                            					itemValue="#{option}" />
 	                            </h:selectOneMenu>
 <!-- 	                            <h:commandButton styleClass="d-none" id="executeSort" action="pretty:newSearch5"></h:commandButton> -->
 	                            <h:commandButton styleClass="d-none" pt:data-execute="search" action="#{search.changeSorting()}"></h:commandButton>

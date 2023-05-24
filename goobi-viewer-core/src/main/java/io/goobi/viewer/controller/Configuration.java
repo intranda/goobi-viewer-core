@@ -2934,10 +2934,12 @@ public class Configuration extends AbstractConfiguration {
      * getDefaultSortField.
      * </p>
      *
+     * @param language
      * @return a {@link java.lang.String} object.
      * @should return correct value
+     * @should return correct language value
      */
-    public String getDefaultSortField() {
+    public String getDefaultSortField(String language) {
         List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         if (fields == null || fields.isEmpty()) {
             return SolrConstants.SORT_RELEVANCE;
@@ -2945,7 +2947,10 @@ public class Configuration extends AbstractConfiguration {
 
         for (HierarchicalConfiguration<ImmutableNode> fieldConfig : fields) {
             if (fieldConfig.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false)) {
-                return fieldConfig.getString(".");
+                String field = fieldConfig.getString(".");
+                if (StringUtils.isEmpty(language) || !field.contains(SolrConstants.MIDFIX_LANG) || field.endsWith(language.toUpperCase())) {
+                    return field;
+                }
             }
 
         }
@@ -2967,15 +2972,17 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @param language
      * @return List of {@link SearchSortingOption}s from configured sorting fields
      * @should place default sorting field on top
      * @should handle descending configurations correctly
      * @should ignore secondary fields from default config
+     * @should ignore fields with mismatched language
      */
-    public List<SearchSortingOption> getSearchSortingOptions() {
+    public List<SearchSortingOption> getSearchSortingOptions(String language) {
         List<SearchSortingOption> options = new ArrayList<>();
         //default option
-        String defaultField = getDefaultSortField();
+        String defaultField = getDefaultSortField(language);
         if (defaultField.charAt(0) == '!') {
             defaultField = defaultField.substring(1);
         }
@@ -2993,7 +3000,9 @@ public class Configuration extends AbstractConfiguration {
                 field = field.substring(0, field.indexOf(";"));
             }
             SearchSortingOption option = new SearchSortingOption(field, true);
-            if (!options.contains(option)) {
+            // Add option unless already in the list or there's a direct language mismatch
+            if (!options.contains(option) && (StringUtils.isEmpty(language) || !option.getField().contains(SolrConstants.MIDFIX_LANG)
+                    || option.getField().endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase()))) {
                 options.add(new SearchSortingOption(field, true));
                 // Add descending option for most fields
                 if (!SolrConstants.SORT_RANDOM.equals(field) && !SolrConstants.SORT_RELEVANCE.equals(field)) {
@@ -4541,7 +4550,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isSearchInItemEnabled() {
         return getLocalBoolean("sidebar.searchInItem[@enabled]", true);
     }
-    
+
     /**
      * <p>
      * isSearchRisExportEnabled.
@@ -5226,10 +5235,14 @@ public class Configuration extends AbstractConfiguration {
         return markers;
 
     }
-    
+
     public String getRecordGeomapMarker(String type) {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.record.marker");
-        return configs.stream().filter(config -> config.getString("[@type]", "").equals(type)).findAny().map(config -> config.getString(".", "")).orElse("");
+        return configs.stream()
+                .filter(config -> config.getString("[@type]", "").equals(type))
+                .findAny()
+                .map(config -> config.getString(".", ""))
+                .orElse("");
     }
 
     /**
@@ -5644,32 +5657,33 @@ public class Configuration extends AbstractConfiguration {
     public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
-    
+
     public List<SelectItem> getGeomapFeatureTitleOptions() {
-       List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.title.option");
-       if(configs != null && !configs.isEmpty()) {
-           return configs.stream()
-                   .map(config -> {
-                       String value = config.getString(".", null);
-                       String label = config.getString("[@label]", value);  //NOSONAR specific path
-                       return new SelectItem(value, label);
-                   }).collect(Collectors.toList());
-       } else {
-           return List.of(
-                   new SelectItem("cms__geomaps__popup_content__option__none", null),
-                   new SelectItem("cms__geomaps__popup_content__option__place", "NORM_NAME"),
-                   new SelectItem("cms__geomaps__popup_content__option__metadata", "MD_VALUE"));
-       }
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.title.option");
+        if (configs != null && !configs.isEmpty()) {
+            return configs.stream()
+                    .map(config -> {
+                        String value = config.getString(".", null);
+                        String label = config.getString("[@label]", value); //NOSONAR specific path
+                        return new SelectItem(value, label);
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return List.of(
+                    new SelectItem("cms__geomaps__popup_content__option__none", null),
+                    new SelectItem("cms__geomaps__popup_content__option__place", "NORM_NAME"),
+                    new SelectItem("cms__geomaps__popup_content__option__metadata", "MD_VALUE"));
+        }
     }
-    
+
     public StringMatchConfiguration getGeomapFeatureMainDocumentFields() {
         return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.mainDocumentFields"));
     }
-    
+
     public StringMatchConfiguration getGeomapFeatureMetadataDocumentFields() {
         return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.metadataDocumentFields"));
     }
-    
+
     public View getGeomapDefaultView() {
         double zoom = getLocalFloat("maps.view.zoom", 5f);
         double lng = getLocalFloat("maps.view.center.lng", 11.073397f);

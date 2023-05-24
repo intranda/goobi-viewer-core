@@ -1946,15 +1946,21 @@ public class NavigationHelper implements Serializable {
     public void addSearchUrlWithCurrentSortStringToHistory() {
         ViewHistory.getCurrentView(BeanUtils.getRequest())
                 .ifPresent(path -> {
-                    ViewerPath sortStringPath = setupRandomSearchSeed(path);
+                    ViewerPath sortStringPath = setupRandomSearchSeed(path, getLocaleString());
                     if (sortStringPath != path) {
                         ViewHistory.setCurrentView(sortStringPath, BeanUtils.getSession());
                     }
                 });
     }
 
-    private static ViewerPath setupRandomSearchSeed(ViewerPath path) {
-        String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
+    /**
+     * 
+     * @param path
+     * @param language
+     * @return
+     */
+    private static ViewerPath setupRandomSearchSeed(ViewerPath path, String language) {
+        String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(language);
         if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(defaultSortField)) {
             String parameterPath = path.getParameterPath().toString();
             if (StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
