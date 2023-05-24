@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -168,16 +169,52 @@ public class GeoCoordinateConverter {
             String descriptionField) {
         String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
         String desc = StringUtils.isBlank(descriptionField) ? null : SolrTools.getSingleFieldStringValue(doc, descriptionField);
-        List<GeoMapFeature> docFeatures = new ArrayList<>();
         List<String> points = new ArrayList<>();
         points.addAll(SolrTools.getMetadataValues(doc, metadataField));
         points.addAll(children.stream().limit(1).map(c -> SolrTools.getMetadataValues(c, metadataField)).flatMap(List::stream).collect(Collectors.toList()));
+        List<GeoMapFeature> docFeatures = getFeatures(points);
+        addMetadataToFeature(doc, children, docFeatures);
+        setLabels(docFeatures, titleField, descriptionField, title, desc);
+        
+        return docFeatures;
+    }
+    
+    public static Collection<GeoMapFeature> getGeojsonPoints(MetadataContainer doc, String metadataField, String titleField,
+            String descriptionField) {
+        List<String> points = new ArrayList<>();
+        points.addAll(doc.get(metadataField).stream().filter(md -> md != null).map(md -> md.getValueOrFallback(null)).collect(Collectors.toList()));
+        List<GeoMapFeature> docFeatures = getFeatures(points);
+        docFeatures.forEach(f -> f.addEntity(doc));
+        String title = StringUtils.isBlank(titleField) ? null : doc.getFirstValue(titleField);
+        String desc = StringUtils.isBlank(descriptionField) ? null : doc.getFirstValue(descriptionField);
+        setLabels(docFeatures, titleField, descriptionField, title, desc);
+        return docFeatures;
+    }
+
+    private static void setLabels(List<GeoMapFeature> docFeatures,String titleField, String descriptionField, String defaultTitle, String defaultDescription) {
+        
+        docFeatures.forEach(f -> {
+            List<IMetadataValue> titleValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault(titleField, Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
+            if(!titleValues.isEmpty()) {
+                f.setTitle(titleValues.get(0));                
+            } else {
+                f.setTitle(new SimpleMetadataValue(defaultTitle));                
+            }
+            List<IMetadataValue> descValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault(descriptionField, Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
+            if(!descValues.isEmpty()) {
+                f.setDescription(descValues.get(0));                
+            } else {
+                f.setDescription(new SimpleMetadataValue(defaultDescription));                
+            }
+        });
+    }
+
+    private static List<GeoMapFeature> getFeatures(List<String> points) {
+        List<GeoMapFeature> docFeatures = new ArrayList<>();
         for (String point : points) {
             try {
                 if (point.matches(POINT_LAT_LNG_PATTERN)) { //NOSONAR  no catastrophic backtracking detected
                     GeoMapFeature feature = new GeoMapFeature();
-                    feature.setTitle(new SimpleMetadataValue(title));
-                    feature.setDescription(new SimpleMetadataValue(desc));
 
                     Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
                     matcher.find();
@@ -194,8 +231,6 @@ public class GeoCoordinateConverter {
                     docFeatures.add(feature);
                 } else if (point.matches(POLYGON_LAT_LNG_PATTERN)) {
                     GeoMapFeature feature = new GeoMapFeature();
-                    feature.setTitle(new SimpleMetadataValue(title));
-                    feature.setDescription(new SimpleMetadataValue(desc));
 
                     Matcher matcher = Pattern.compile(POLYGON_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
                     matcher.find();
@@ -211,22 +246,12 @@ public class GeoCoordinateConverter {
                     feature.setJson(json.toString());
                     docFeatures.add(feature);
                 } else {
-                    docFeatures.addAll(createFeaturesFromJson(title, desc, point));
+                    docFeatures.addAll(createFeaturesFromJson(point));
                 }
             } catch (JSONException | NumberFormatException e) {
                 logger.error("Encountered non-json feature: {}", point);
             }
         }
-
-        addMetadataToFeature(doc, children, docFeatures);
-        docFeatures.forEach(f -> {
-            List<IMetadataValue> titleValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault(titleField, Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
-            if(!titleValues.isEmpty()) {
-                f.setTitle(titleValues.get(0));                
-            }
-        });
-        
-        
         return docFeatures;
     }
 
@@ -333,7 +358,7 @@ public class GeoCoordinateConverter {
         throw new IllegalArgumentException(String.format("Unable to parse objects %s, %s to double array", x, y));
     }
 
-    private static List<GeoMapFeature> createFeaturesFromJson(String title, String desc, String point) {
+    private static List<GeoMapFeature> createFeaturesFromJson(String point) {
         List<GeoMapFeature> features = new ArrayList<>();
         JSONObject json = new JSONObject(point);
         String type = json.getString("type");
@@ -345,8 +370,6 @@ public class GeoCoordinateConverter {
                         JSONObject jsonObj = (JSONObject) f;
                         String jsonString = jsonObj.toString();
                         GeoMapFeature feature = new GeoMapFeature(jsonString);
-                        feature.setTitle(new SimpleMetadataValue(title));
-                        feature.setDescription(new SimpleMetadataValue(desc));
                         if (!features.contains(feature)) {
                             features.add(feature);
                         }
@@ -355,8 +378,6 @@ public class GeoCoordinateConverter {
             }
         } else if ("Feature".equalsIgnoreCase(type)) {
             GeoMapFeature feature = new GeoMapFeature(json.toString());
-            feature.setTitle(new SimpleMetadataValue(title));
-            feature.setDescription(new SimpleMetadataValue(desc));
             features.add(feature);
         }
         return features;

@@ -1,12 +1,12 @@
 package io.goobi.viewer.model.maps;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 
 import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.controller.Configuration;
@@ -20,13 +20,10 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
-import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.MetadataContainer;
-import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Contains data to create a geomap for a record containing complex metadata (metadata documents) with geo coordinates
@@ -65,11 +62,26 @@ public class RecordGeoMap {
             createMetadataFeatureSet(geoMap, md, mainStruct.getPi());
         }
         
-//            createRelatedDocumentFeatureSet(geoMap, relatedDocuments, mainStruct.getPi());
+        createRelatedDocumentFeatureSet(geoMap, relatedDocuments, mainStruct.getPi());
         
         createAnnotationFeatureSet(geoMap, mainStruct.getPi());
         
         return geoMap;
+    }
+
+
+    private void createRelatedDocumentFeatureSet(GeoMap geoMap, List<MetadataContainer> docs, String pi) {
+        ManualFeatureSet featureSet = new ManualFeatureSet();
+        featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations("events", true)));
+        featureSet.setMarker(config.getRecordGeomapMarker("events"));
+        geoMap.addFeatureSet(featureSet);        
+        
+        featureSet.setFeatures(docs.stream()
+                .map(doc -> GeoCoordinateConverter.getGeojsonPoints(doc, "NORM_COORDS_GEOJSON", "MD_VALUE", null))
+                .flatMap(Collection::stream)
+                .map(GeoMapFeature::getJson)
+                .collect(Collectors.toList()));
+  
     }
 
 

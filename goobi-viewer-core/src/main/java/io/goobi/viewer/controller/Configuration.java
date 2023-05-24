@@ -73,6 +73,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
+import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataView;
@@ -5669,5 +5670,10 @@ public class Configuration extends AbstractConfiguration {
         return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.metadataDocumentFields"));
     }
     
-
+    public View getGeomapDefaultView() {
+        double zoom = getLocalFloat("maps.view.zoom", 5f);
+        double lng = getLocalFloat("maps.view.center.lng", 11.073397f);
+        double lat = getLocalFloat("maps.view.center.lat", 49.451993f);
+        return new View(zoom, lng, lat);
+    }
 }

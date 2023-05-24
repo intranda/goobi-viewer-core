@@ -86,7 +86,7 @@ var viewerJS = ( function( viewer ) {
 
     viewer.GeoMap.prototype.init = function(view) {
        
-       if(_debug)console.log("init geomap with", view, features);
+       if(_debug)console.log("init geomap with", view);
        
         if(this.map) {
             this.map.remove();

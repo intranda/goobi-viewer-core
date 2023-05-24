@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -618,8 +619,8 @@ public class ActiveDocumentBean implements Serializable {
                 IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-
-                for (String language : name.getLanguages()) {
+                List<String> languages = new ArrayList<>(name.getLanguages());  //temporary variable to avoid ConcurrentModificationException
+                for (String language : languages) {
                     String translation = name.getValue(language).orElse(getPersistentIdentifier());
                     if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
                         translation =
@@ -2276,19 +2277,20 @@ public class ActiveDocumentBean implements Serializable {
      */
     public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
         RecordGeoMap widget = this.geoMaps.get(getPersistentIdentifier());
-                if (widget == null) {
-//        ComplexMetadataContainer md = this.viewManager.getTopStructElement().getMetadataDocuments();
-//        String mdType = "MD_RELATIONSHIP_EVENT";
-        List<MetadataContainer> docs = Collections.emptyList();
-//        if (md instanceof RelationshipMetadataContainer) {
-//            RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
-//            docs = rmc.getMetadata(mdType)
-//                    .stream()
-//                    .map(rmc::getRelatedRecord)
-//                    .collect(Collectors.toList());
-        widget = new RecordGeoMap(getTopDocument(), List.of("(MD_BIOGRAPHY* MD_BIRTHPLACE MD_DEATHPLACE)"), docs);
-        this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
-        }
+//        if (widget == null) {
+            ComplexMetadataContainer md = this.viewManager.getTopStructElement().getMetadataDocuments();
+            String mdType = "MD_RELATIONSHIP_EVENT";
+            if (md instanceof RelationshipMetadataContainer) {
+                RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
+                List<MetadataContainer> docs = rmc.getMetadata(mdType)
+                        .stream()
+                        .map(rmc::getRelatedRecord)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                widget = new RecordGeoMap(getTopDocument(), List.of("(MD_BIOGRAPHY* MD_BIRTHPLACE MD_DEATHPLACE)"), docs);
+                this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
+            }
+//        }
         return widget.getGeoMap();
     }
 

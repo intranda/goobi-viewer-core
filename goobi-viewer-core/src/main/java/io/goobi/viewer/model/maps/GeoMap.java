@@ -139,10 +139,7 @@ public class GeoMap implements Serializable {
 
     
     @Column(name = "initial_view")
-    private String initialView = "{" +
-            "\"zoom\": 5," +
-            "\"center\": [11.073397, -49.451993]" +
-            "}";
+    private String initialView = null;
 
 
     @Transient
@@ -305,10 +302,14 @@ public class GeoMap implements Serializable {
     }
 
     /**
-     * @return the initialView
+     * @return the initialView or the default view from the config if no initial view has been set
      */
     public String getInitialView() {
-        return initialView;
+        if(StringUtils.isBlank(initialView)) {
+            return DataManager.getInstance().getConfiguration().getGeomapDefaultView().getGeoJson();
+        } else {            
+            return initialView;
+        }
     }
 
 
