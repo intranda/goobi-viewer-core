@@ -165,6 +165,9 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         logger.trace("handlePageLoad");
         if (this.search == null) {
             this.search = initSearch();
+            //store search in session bean so it will be available when reloading a page
+            //otherwise "submitSearch" button will not work properly because search isn't available anymore
+            BeanUtils.getSessionBean().put("cmsSearch", this.search);
         }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
