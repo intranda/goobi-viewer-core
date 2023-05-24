@@ -333,6 +333,11 @@ public class SearchBean implements SearchInterface, Serializable {
         return "pretty:newSearch5";
     }
 
+    /**
+     * 
+     * @param search
+     * @return
+     */
     public String simpleSearch(SearchInterface search) {
         return search.searchSimple();
     }
@@ -852,7 +857,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Init search object
-        currentSearch = new Search(activeSearchType, currentSearchFilter);
+        currentSearch = new Search(activeSearchType, currentSearchFilter, getResultGroupsForSearchExecution());
         currentSearch.setUserInput(searchString);
         currentSearch.setQuery(searchStringInternal);
         currentSearch.setPage(currentPage);
@@ -881,10 +886,6 @@ public class SearchBean implements SearchInterface, Serializable {
                                     additionalExpandQueryfields),
                             searchTerms, phraseSearch, proximitySearchDistance);
             currentSearch.setExpandQuery(expandQuery);
-        }
-
-        if (activeResultGroup != null) {
-            currentSearch.setResultGroups(Collections.singletonList(activeResultGroup));
         }
 
         currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
@@ -1461,6 +1462,23 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Returns relevant search result groups for search execution. If an active group is set, return just that. Otherwise, return either all
+     * configured groups or default group (if groups disabled).
+     * 
+     * @return Relevant search result groups
+     */
+    public List<SearchResultGroup> getResultGroupsForSearchExecution() {
+        if (activeResultGroup != null) {
+            return Collections.singletonList(activeResultGroup);
+        }
+
+        return (!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
+                || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
+                        ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
+                        : DataManager.getInstance().getConfiguration().getSearchResultGroups();
+    }
+
+    /**
      * 
      */
     public String getActiveResultGroupName() {
@@ -1496,6 +1514,8 @@ public class SearchBean implements SearchInterface, Serializable {
                         resetAdvancedSearchParameters();
                         // Reset slider ranges
                         facets.resetSliderRange();
+                        // Reset avalable facets
+                        facets.resetAvailableFacets();
                     }
                     return;
                 }
@@ -1654,11 +1674,12 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public long getHitsCount() {
+        if (activeResultGroup != null) {
+            return activeResultGroup.getHitsCount();
+        }
         if (currentSearch != null) {
-            // logger.trace("Hits count = {}", currentSearch.getHitsCount());
             return currentSearch.getHitsCount();
         }
-        // logger.warn("No Search object available");
 
         return 0;
     }
@@ -3044,12 +3065,13 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     *
+     * 
+     * @param language
      * @return
      * @should return options correctly
      * @should use current random seed option instead of default
      */
-    public Collection<SearchSortingOption> getSearchSortingOptions() {
+    public Collection<SearchSortingOption> getSearchSortingOptions(String language) {
         Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
         Collection<SearchSortingOption> ret = new ArrayList<>(options.size());
         for (SearchSortingOption option : options) {
@@ -3057,7 +3079,9 @@ public class SearchBean implements SearchInterface, Serializable {
             if (option.getField().equals(SolrConstants.SORT_RANDOM) && searchSortingOption != null
                     && searchSortingOption.getField().startsWith("random")) {
                 ret.add(searchSortingOption);
-            } else {
+            } else if (StringUtils.isEmpty(language) || !option.getField().contains(SolrConstants.MIDFIX_LANG)
+                    || option.getField().endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase())) {
+                // Add option unless there's a direct language mismatch
                 ret.add(option);
             }
         }
@@ -3127,6 +3151,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     @Override
     public String changeSorting() throws IOException {
+        logger.trace("changeSorting");
         return "pretty:newSearch5";
     }
 }

@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -39,11 +41,11 @@ import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
+import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.search.HitListView;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -54,6 +56,9 @@ import jakarta.persistence.Transient;
 @Table(name = "cms_content_record_list")
 @DiscriminatorValue("recordlist")
 public class CMSRecordListContent extends CMSContent implements PagedCMSContent {
+    
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger(CMSRecordListContent.class); //NOSONAR Sometimes the logger is needed for debugging
 
     private static final String COMPONENT_NAME = "searchhitlist";
 
@@ -157,18 +162,21 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
+        logger.trace("handlePageLoad");
         if (this.search == null) {
             this.search = initSearch();
         }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
-            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
+            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL, searchBean.getResultGroupsForSearchExecution());
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(this.getSortField());
                 searchBean.setSortString(this.getSortField());
             } else if (StringUtils.isNotBlank(this.search.getSortString()) && !this.search.getSortString().equals("-")) {
                 s.setSortString(this.search.getSortString());
                 searchBean.setSortString(this.search.getSortString());
+            } else if (StringUtils.isEmpty(s.getSortString()) && searchBean.getSortString().equals("-")) {
+                s.setSortString(searchBean.getSortString());
             }
             //NOTE: Cannot sort by multivalued fields like DC.
             if (StringUtils.isNotBlank(this.getGroupingField())) {
@@ -204,11 +212,11 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     public Functionality getFunctionality() {
         return getSearch();
     }
-    
+
     public HitListView getView() {
         return view;
     }
-    
+
     public void setView(HitListView view) {
         this.view = view;
     }

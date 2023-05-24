@@ -230,7 +230,7 @@ public class FacetItem implements Serializable, IFacetItem {
      */
     public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, Map<String, Long> values,
             boolean hierarchical, int groupToLength, Locale locale, Map<String, String> labelMap) {
-        logger.trace("generateFilterLinkList: {}", field);
+        // logger.trace("generateFilterLinkList: {}", field);
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
 
@@ -256,8 +256,8 @@ public class FacetItem implements Serializable, IFacetItem {
                 if (item instanceof FacetItem) {
                     retList.add(item);
                     existingItems.put(item.getLink(), (FacetItem) item);
-                    if (item.getField().equals("MD_TITLE_LANG_FR"))
-                        logger.trace("Existing item: {}", item.getLink());
+                    //                    if (item.getField().equals("MD_TITLE_LANG_FR"))
+                    //                        logger.trace("Existing item: {}", item.getLink());
                 }
             }
         }
@@ -279,8 +279,8 @@ public class FacetItem implements Serializable, IFacetItem {
 
             String key = field + ":" + useValue;
             if (existingItems.containsKey(key)) {
-                if (field.equals("MD_TITLE_LANG_FR"))
-                    logger.trace("Key already exists: {}", key);
+                //                if (field.equals("MD_TITLE_LANG_FR"))
+                //                    logger.trace("Key already exists: {}", key);
                 existingItems.get(key).increaseCount(entry.getValue());
             } else {
                 if (labelMap != null && labelMap.containsKey(key)) {
@@ -303,7 +303,8 @@ public class FacetItem implements Serializable, IFacetItem {
                     priorityValueMap.put(useValue, facetItem);
                 } else {
                     retList.add(facetItem);
-                    logger.trace("Adding new key: {}", key);
+                    //                    if (field.equals("MD_TITLE_LANG_FR"))
+                    //                        logger.trace("Adding new key: {}", key);
                 }
 
                 existingItems.put(key, facetItem);

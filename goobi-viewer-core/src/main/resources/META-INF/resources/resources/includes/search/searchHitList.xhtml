@@ -57,7 +57,7 @@
                             <h:form prependId="false" onkeypress="if( event.keyCode == 13){event.keyCode=0;}">
 	                            <h:selectOneMenu value="#{searchBean.searchSortingOption}" id="sortSelect"
 	                                converter="searchSortingOptionConverter" pt:onchange="$('[data-execute=\'search\']').click()">
-	                            	<f:selectItems value="#{searchBean.searchSortingOptions}"
+	                            	<f:selectItems value="#{searchBean.getSearchSortingOptions(navigationHelper.localeString)}"
 	                            					var="option"
 	                            					itemLabel="#{option.label}"
 	                            					itemValue="#{option}"/>
@@ -92,14 +92,15 @@
                         <h2>#{msg[resultGroup.name]} (#{resultGroup.hitsCount})</h2>
                     </ui:fragment>
                     <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
-                <div class="search-list__hit #{hit.cssClass}">
-                    <!-- COinS IMPLEMENTATION -->
-                    <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
-                    <!-- HEADER -->
-                    <header class="search-list__hit-header">
+                        <div class="search-list__hit #{hit.cssClass}">
+                
+                            <!-- COinS IMPLEMENTATION -->
+                            <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
                     
+                            <!-- HEADER -->
+                            <header class="search-list__hit-header">
                                 <ui:include src="/resources/includes/search/browseElement.xhtml">
-                        	       <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
+                                    <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
                         	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
                                 </ui:include>
                             </header>

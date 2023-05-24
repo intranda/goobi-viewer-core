@@ -187,6 +187,10 @@ public class Search implements Serializable {
         this.lastHitsCount = blueprint.lastHitsCount;
         this.newHitsNotification = blueprint.newHitsNotification;
         this.proximitySearchDistance = blueprint.proximitySearchDistance;
+        this.resultGroups = new ArrayList<>();
+        for (SearchResultGroup resultGroup : blueprint.getResultGroups()) {
+            this.getResultGroups().add(resultGroup);
+        }
     }
 
     /**
@@ -196,11 +200,15 @@ public class Search implements Serializable {
      *
      * @param searchType a int.
      * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
+     * @param resultGroups
      */
-    public Search(int searchType, SearchFilter searchFilter) {
+    public Search(int searchType, SearchFilter searchFilter, List<SearchResultGroup> resultGroups) {
         this.searchType = searchType;
         if (searchFilter != null) {
             this.searchFilter = searchFilter.getField();
+        }
+        if (resultGroups != null) {
+            this.resultGroups = resultGroups;
         }
     }
 
@@ -385,7 +393,11 @@ public class Search implements Serializable {
             int hitsPerPage, Locale locale, boolean keepSolrDoc, SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("Result group: {}", resultGroup.getName());
-        QueryResponse resp = null;
+
+        // Remove previous results
+        if (!resultGroup.getHits().isEmpty()) {
+            resultGroup.getHits().clear();
+        }
 
         List<String> allFacetFields = SearchHelper.facetifyList(DataManager.getInstance().getConfiguration().getAllFacetFields());
 
@@ -418,7 +430,7 @@ public class Search implements Serializable {
                             .append(subElementQueryFilterSuffix)
                             .toString();
             logger.trace("extra query: {}", extraQuery);
-            resp = DataManager.getInstance()
+            QueryResponse resp = DataManager.getInstance()
                     .getSearchIndex()
                     .search(extraQuery, 0, 0, null, facets.getConfiguredSubelementFacetFields(),
                             Collections.singletonList(SolrConstants.IDDOC),
@@ -462,7 +474,7 @@ public class Search implements Serializable {
         }
 
         // Search for hit count + facets
-        resp = DataManager.getInstance()
+        QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
                 .search(finalQuery, 0, maxResults, null, allFacetFields, fieldList, allFilterQueries, params);
         if (resp.getResults() != null) {
@@ -1095,8 +1107,10 @@ public class Search implements Serializable {
         List<StringPair> ret = new ArrayList<>(staticSortFields.size() + sortFields.size());
         if (!staticSortFields.isEmpty()) {
             for (String s : staticSortFields) {
-                ret.add(new StringPair(s, "asc"));
-                logger.trace("Added static sort field: {}", s);
+                if (StringUtils.isNotBlank(s)) {
+                    ret.add(new StringPair(s, "asc"));
+                    logger.trace("Added static sort field: {}", s);
+                }
             }
         }
         ret.addAll(sortFields);

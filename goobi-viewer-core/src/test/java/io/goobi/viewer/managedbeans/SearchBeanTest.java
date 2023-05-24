@@ -816,7 +816,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getSearchSortingOptions_shouldReturnOptionsCorrectly() throws Exception {
-        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions();
+        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions(null);
         String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField();
         Assert.assertEquals(SolrConstants.SORT_RANDOM, defaultSorting);
         List<String> sortStrings = DataManager.getInstance().getConfiguration().getSortFields();
@@ -835,7 +835,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getSearchSortingOptions_shouldUseCurrentRandomSeedOptionInsteadOfDefault() throws Exception {
         searchBean.setSearchSortingOption(new SearchSortingOption("random_12345"));
-        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions();
+        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions(null);
         Assert.assertEquals(10, options.size());
         Iterator<SearchSortingOption> iterator = options.iterator();
         assertEquals("random_12345", iterator.next().getField());
