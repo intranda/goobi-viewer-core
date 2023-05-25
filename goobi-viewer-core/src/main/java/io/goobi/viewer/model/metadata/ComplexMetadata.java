@@ -33,12 +33,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import io.goobi.viewer.controller.GeoCoordinateConverter;
-import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
@@ -53,9 +50,10 @@ import io.goobi.viewer.solr.SolrTools;
 public class ComplexMetadata {
 
     private static final String MD_REFID = "MD_REFID";
-    private static final List<String> IGNORE_METADATA_FIELDS = List.of(SolrConstants.DOCTYPE, SolrConstants.LABEL, SolrConstants.METADATATYPE, SolrConstants.IDDOC_OWNER, SolrConstants.PI_TOPSTRUCT, SolrConstants.GROUPFIELD, SolrConstants.IDDOC, MD_REFID);
+    private static final List<String> IGNORE_METADATA_FIELDS = List.of(SolrConstants.DOCTYPE, SolrConstants.LABEL, SolrConstants.METADATATYPE,
+            SolrConstants.IDDOC_OWNER, SolrConstants.PI_TOPSTRUCT, SolrConstants.GROUPFIELD, SolrConstants.IDDOC, MD_REFID);
     private static final String IGNORE_METADATA_REGEX = String.format("(%s|%s).*", SolrConstants.PREFIX_FACET, SolrConstants.PREFIX_SORT);
-    
+
     /**
      * Taken from the 'LABEL' property of the SOLR document, without the '_LANG_*' extension
      */
@@ -68,21 +66,21 @@ public class ComplexMetadata {
      * IDDOC_OWNER
      */
     private final Long ownerId;
-    
+
     /**
      * IDDOC
      */
     private final Long id;
-    
+
     /**
      * PI_TOPSTRUCT
      */
     private final String topStructIdentifier;
 
     private Map<String, List<IMetadataValue>> metadata = new HashMap<>();
-    
+
     private ComplexMetadata(SolrDocument doc) {
-        if(!DocType.METADATA.name().equals(doc.get(SolrConstants.DOCTYPE))) {
+        if (!DocType.METADATA.name().equals(doc.get(SolrConstants.DOCTYPE))) {
             throw new IllegalArgumentException("ComplexMetadata must be initialized from SolrDocument of DocType 'METADATA'");
         }
         this.field = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
@@ -91,30 +89,39 @@ public class ComplexMetadata {
         this.topStructIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
         this.id = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(String.class::cast).map(Long::parseLong).orElse(null);
     }
-    
+
     public static ComplexMetadata getFromSolrDoc(SolrDocument doc) {
         ComplexMetadata md = new ComplexMetadata(doc);
         md.metadata = SolrTools.getTranslatedMetadata(doc, new HashMap<>(), null, getMetadataFilter());
         return md;
     }
-    
+
     public static List<ComplexMetadata> getMetadataFromDocuments(List<SolrDocument> docs) {
-        Map<Object, List<SolrDocument>> docMap = docs.stream().collect(Collectors.toMap(doc -> doc.getFieldValue(MD_REFID), List::of, ListUtils::union ));
-        List<ComplexMetadata> translatedMetadata = docMap.entrySet().stream().filter(e -> e.getKey() != null).map(Entry::getValue).map(ComplexMetadata::getFromMultilanganguageDocs).collect(Collectors.toList());
-        List<ComplexMetadata> untranslatedMetadata = Optional.ofNullable(docMap.get(null)).orElse(Collections.emptyList()).stream().map(ComplexMetadata::getFromSolrDoc).collect(Collectors.toList());
+        Map<Object, List<SolrDocument>> docMap =
+                docs.stream().collect(Collectors.toMap(doc -> doc.getFieldValue(MD_REFID), List::of, ListUtils::union));
+        List<ComplexMetadata> translatedMetadata = docMap.entrySet()
+                .stream()
+                .filter(e -> e.getKey() != null)
+                .map(Entry::getValue)
+                .map(ComplexMetadata::getFromMultilanganguageDocs)
+                .collect(Collectors.toList());
+        List<ComplexMetadata> untranslatedMetadata = Optional.ofNullable(docMap.get(null))
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(ComplexMetadata::getFromSolrDoc)
+                .collect(Collectors.toList());
         return ListUtils.union(translatedMetadata, untranslatedMetadata);
     }
 
-    
     public static ComplexMetadata getFromMultilanganguageDocs(List<SolrDocument> docs) {
-        if(docs == null || docs.isEmpty()) {
+        if (docs == null || docs.isEmpty()) {
             throw new IllegalArgumentException("Must provide non-empty document list");
         }
         ComplexMetadata md = new ComplexMetadata(docs.get(0));
         Map<String, List<IMetadataValue>> metadata = new HashMap<>();
         for (SolrDocument doc : docs) {
             Locale locale = SolrTools.getLocale(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
-            if(locale != null) {
+            if (locale != null) {
                 metadata = SolrTools.getTranslatedMetadata(doc, metadata, locale, getMetadataFilter());
             }
         }
@@ -125,74 +132,75 @@ public class ComplexMetadata {
     private static Function<String, Boolean> getMetadataFilter() {
         return name -> !IGNORE_METADATA_FIELDS.contains(name) && !name.matches(IGNORE_METADATA_REGEX);
     }
-    
-
-    
 
     public String getField() {
         return field;
     }
-    
+
     public String getType() {
         return type;
     }
-    
+
     public Long getOwnerId() {
         return ownerId;
     }
-    
+
     public String getTopStructIdentifier() {
         return topStructIdentifier;
     }
-    
+
     public Long getId() {
         return id;
     }
-    
+
     public Map<String, List<IMetadataValue>> getMetadata() {
         return Collections.unmodifiableMap(metadata);
     }
-    
+
     public List<String> getMetadataFields() {
         return new ArrayList<>(metadata.keySet());
     }
-    
+
     public List<IMetadataValue> getValues(String fieldName) {
         return this.metadata.get(fieldName);
     }
-    
+
     public IMetadataValue getFirstValue(String fieldName) {
         return Optional.ofNullable(getValues(fieldName)).filter(list -> !list.isEmpty()).map(list -> list.get(0)).orElse(null);
     }
-    
+
     public List<String> getValues(String fieldName, Locale locale) {
-        return Optional.ofNullable(getValues(fieldName)).orElse(Collections.emptyList()).stream().map(v -> v.getValueOrFallback(locale)).collect(Collectors.toList());
+        return Optional.ofNullable(getValues(fieldName))
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(v -> v.getValueOrFallback(locale))
+                .collect(Collectors.toList());
     }
-    
+
     public String getFirstValue(String fieldName, Locale locale) {
         return Optional.ofNullable(getValues(fieldName, locale)).filter(list -> !list.isEmpty()).map(list -> list.get(0)).orElse("");
     }
-    
+
     public List<IMetadataValue> getValues() {
         return getValues(this.field);
     }
-    
+
     public IMetadataValue getFirstValue() {
         return getFirstValue(this.field);
     }
-    
+
     public List<String> getValues(Locale locale) {
         return getValues(this.field, locale);
     }
-    
+
     public String getFirstValue(Locale locale) {
         return getFirstValue(this.field, locale);
     }
-    
+
     public boolean hasValue(String fieldName) {
         return !this.metadata.getOrDefault(fieldName, Collections.emptyList()).isEmpty();
     }
-    
+
     @Override
     public String toString() {
         return getField() + "\t" + this.metadata.toString();

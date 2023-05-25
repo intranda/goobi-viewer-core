@@ -31,52 +31,51 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * A matcher read from a configuration node which matches strings based on certain criteria
+ * 
  * @author florian
  *
  */
 public class StringMatchConfiguration implements Predicate<String> {
-    
+
     private final String includeRegex;
     private final String excludeRegex;
     private final List<String> allowedValues;
-    
+
     public StringMatchConfiguration(String includeRegex, String excludeRegex, List<String> allowedValues) {
         this.includeRegex = includeRegex;
         this.excludeRegex = excludeRegex;
         this.allowedValues = allowedValues;
     }
-    
+
     public StringMatchConfiguration(List<String> allowedValues) {
         this("", "", allowedValues);
     }
-    
+
     public StringMatchConfiguration(String includeRegex, String excludeRegex) {
         this(includeRegex, excludeRegex, Collections.emptyList());
     }
-    
+
     public StringMatchConfiguration(String includeRegex) {
         this(includeRegex, "", Collections.emptyList());
     }
-    
+
     public boolean test(String s) {
-        if(StringUtils.isBlank(s)) {
+        if (StringUtils.isBlank(s)) {
             return false;
-        } else {
-            return (StringUtils.isBlank(includeRegex) || s.matches(includeRegex)) &&
-                    (StringUtils.isBlank(excludeRegex) || !s.matches(excludeRegex)) &&
-                    (allowedValues.isEmpty() || allowedValues.contains(s));   
         }
+        return (StringUtils.isBlank(includeRegex) || s.matches(includeRegex)) &&
+                (StringUtils.isBlank(excludeRegex) || !s.matches(excludeRegex)) &&
+                (allowedValues.isEmpty() || allowedValues.contains(s));
     }
-    
+
     public static StringMatchConfiguration fromConfig(HierarchicalConfiguration<ImmutableNode> config) {
-        if(config != null) {
+        if (config != null) {
             String include = config.getString("regex.include", "");
             String exclude = config.getString("regex.exclude", "");
             List<String> values = config.getList(String.class, "list.value", Collections.emptyList());
-            return new StringMatchConfiguration(include, exclude, values);            
-        } else {
-            return new StringMatchConfiguration("");
+            return new StringMatchConfiguration(include, exclude, values);
         }
+        return new StringMatchConfiguration("");
     }
 
 }

@@ -354,7 +354,7 @@ public class MetadataBean {
 
     /**
      * 
-     * @param language
+     * @param fields
      * @return
      */
     public List<String> getComplexMetadataFieldsToList(String... fields) {
