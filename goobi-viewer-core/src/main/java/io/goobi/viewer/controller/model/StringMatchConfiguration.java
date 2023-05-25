@@ -69,10 +69,14 @@ public class StringMatchConfiguration implements Predicate<String> {
     }
     
     public static StringMatchConfiguration fromConfig(HierarchicalConfiguration<ImmutableNode> config) {
-        String include = config.getString("regex.include", "");
-        String exclude = config.getString("regex.exclude", "");
-        List<String> values = config.getList(String.class, "list.value", Collections.emptyList());
-        return new StringMatchConfiguration(include, exclude, values);
+        if(config != null) {
+            String include = config.getString("regex.include", "");
+            String exclude = config.getString("regex.exclude", "");
+            List<String> values = config.getList(String.class, "list.value", Collections.emptyList());
+            return new StringMatchConfiguration(include, exclude, values);            
+        } else {
+            return new StringMatchConfiguration("");
+        }
     }
 
 }
