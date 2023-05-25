@@ -193,7 +193,7 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
-
+    
     /**
      * Empty constructor.
      */

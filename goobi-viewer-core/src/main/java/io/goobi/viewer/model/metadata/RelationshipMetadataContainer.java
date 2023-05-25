@@ -1,6 +1,7 @@
 package io.goobi.viewer.model.metadata;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import io.goobi.viewer.solr.SolrTools;
 
 public class RelationshipMetadataContainer extends ComplexMetadataContainer {
 
+    private static final String FIELD_IN_RELATED_DOCUMENT_PREFIX = "related.";
     private static final String RELATED_RECORD_QUERY_FORMAT = "+DOCTYPE:DOCSTRCT +MD_PROCESSID:(%s)";
     public static final String DOCUMENT_IDENTIFIER = "MD_PROCESSID";
     public static final String RELATIONSHIP_ID_REFERENCE = "MD_IDENTIFIER";    
@@ -64,5 +66,18 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
 
     public static ComplexMetadataContainer loadRelationshipMetadata(String pi, SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
         return loadRelationshipMetadata(pi, searchIndex, RELATED_RECORD_METADATA_FIELDS);
+    }
+    
+    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue, Integer limit) {
+        String relatedFilterField = filterField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX) ? filterField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "") : "";
+        List<ComplexMetadata> list = super.getMetadata(field, sortField, sortLanguage, filterField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX) ? "" : filterField, filterValue, Integer.MAX_VALUE);
+        list = list.stream()
+                .filter(m -> 
+                StringUtils.isBlank(relatedFilterField) || 
+                (StringUtils.isBlank(filterValue) && getRelatedRecord(m) == null) || 
+                (getRelatedRecord(m) != null && getRelatedRecord(m).getFirstValue(relatedFilterField).equalsIgnoreCase(filterValue)))   
+            .limit(limit)
+            .collect(Collectors.toList());
+        return list;
     }
 }

@@ -23,6 +23,20 @@ public class ComplexMetadataContainer {
     
     protected final Map<String, List<ComplexMetadata>> metadataMap;
     
+    private String sorting = "desc";
+    
+    public void setSorting(String sorting) {
+        this.sorting = sorting;
+    }
+    
+    public String getSorting() {
+        return sorting;
+    }
+    
+    public boolean isDescendingOrder() {
+        return "desc".equalsIgnoreCase(sorting);
+    }
+    
     public ComplexMetadataContainer(Map<String, List<ComplexMetadata>> metadataMap) {
         this.metadataMap = metadataMap;
     }
@@ -35,10 +49,10 @@ public class ComplexMetadataContainer {
         this.metadataMap = ComplexMetadata.getMetadataFromDocuments(metadataDocs).stream().filter(doc -> fieldNameFilter.test(doc.getField())).collect(Collectors.toMap(ComplexMetadata::getField, List::of, ListUtils::union));
     }
     
-    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, boolean reverseOrder, String filterField, String filterValue, Integer limit) {
+    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue, Integer limit) {
         List<ComplexMetadata> list = getMetadata(field).stream()
                 .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, sortLanguage).equalsIgnoreCase(filterValue))
-                .sorted( (m1,m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage)) * (reverseOrder?-1:1))
+                .sorted( (m1,m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage)) * (isDescendingOrder()?-1:1))
                 .limit(limit)
                 .collect(Collectors.toList());
         return list;
