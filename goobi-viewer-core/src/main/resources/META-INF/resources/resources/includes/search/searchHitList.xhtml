@@ -74,7 +74,7 @@
 			        	classSuffix="-top"
 			            itemCount="#{search.lastPage}" 
 			            itemActive="#{search.currentPage}" 
-			            urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
+			            urlPrefix="#{search.currentSearchUrlRoot}/#{searchBean.activeResultGroupName}/#{search.exactSearchString}/"
 			            urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
 
                </div>
