@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,8 +68,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -253,14 +250,12 @@ public final class SearchHelper {
         if (params != null) {
             logger.trace("params: {}", params);
         }
-        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
-        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
-        Set<String> oneLineFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
-
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
+        
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         int count = 0;
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
         for (SolrDocument doc : resp.getResults()) {
             logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             String fulltext = null;
@@ -306,9 +301,8 @@ public final class SearchHelper {
                 ownerDocs.put((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             }
 
-            SearchHit hit =
-                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields,
-                            ignoreFields, translateFields, oneLineFields, null, proximitySearchDistance, thumbs);
+            SearchHit hit = factory.createSearchHit(doc, ownerDoc, null, fulltext, null);
+            factory.createSearchHit(doc, ownerDoc, null, fulltext, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -375,7 +369,7 @@ public final class SearchHelper {
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
             List<String> exportFields, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if(query != null) {
+        if (query != null) {
             String s = query.replaceAll("[\n\r]", "_");
             logger.trace("searchWithAggregation: {}", s);
         }
@@ -384,21 +378,18 @@ public final class SearchHelper {
         if (resp.getResults() == null) {
             return new ArrayList<>();
         }
-        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
-        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
-        Set<String> oneLineFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
+
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
         for (SolrDocument doc : resp.getResults()) {
             // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
-            SearchHit hit =
-                    SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, ignoreFields,
-                            translateFields, oneLineFields, null, proximitySearchDistance, thumbs);
+            SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -3154,8 +3145,6 @@ public final class SearchHelper {
             }
         }
     }
-
-
 
     /**
      * <p>
