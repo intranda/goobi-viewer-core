@@ -31,14 +31,13 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -51,6 +50,7 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.search.SearchHitFactory;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -60,7 +60,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private CMSTemplateManager templateManager;
     private NavigationHelper navigationHelper;
-    
+
     /**
      * @throws java.lang.Exception
      */
@@ -84,7 +84,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testPage() throws DAOException {
+    public void testPage() {
         CMSPage page = new CMSPage();
         CmsBean bean = new CmsBean(templateManager, navigationHelper);
         bean.setCurrentPage(page);
@@ -184,8 +184,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, UUID.randomUUID());
         doc.addField("LABEL", doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
         SearchHit hit =
-                SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", null, null, null, null, null, null, SearchHit.HitType.DOCSTRCT, 0,
-                        null);
+                new SearchHitFactory(null, null, null, 0, null, Locale.GERMAN).createSearchHit(doc, null, null, null, SearchHit.HitType.DOCSTRCT);
         hit.getBrowseElement().setLabelShort(new SimpleMetadataValue(iddoc));
         // logger.debug("labelShort: {}", hit.getBrowseElement().getLabelShort());
         hit.setSolrDoc(doc);
