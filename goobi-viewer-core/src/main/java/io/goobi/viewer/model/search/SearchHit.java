@@ -161,7 +161,7 @@ public class SearchHit implements Comparable<SearchHit> {
     private SearchHitFactory factory;
 
     /**
-     * Package-private constructor. Use createSearchHit() from other classes.
+     * Package-private constructor. Clients should use SearchHitFactory to create SearchHit instances.
      *
      * @param type
      * @param browseElement

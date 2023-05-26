@@ -251,9 +251,9 @@ public final class SearchHelper {
             logger.trace("params: {}", params);
         }
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
-        
+
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
-        int count = 0;
+        int count = first;
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
         SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
         for (SolrDocument doc : resp.getResults()) {
@@ -305,9 +305,8 @@ public final class SearchHelper {
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
+            hit.setHitNumber(++count);
             ret.add(hit);
-            count++;
-            logger.trace("added hit {}", count);
         }
 
         return ret;
@@ -382,6 +381,7 @@ public final class SearchHelper {
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
 
         SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
+        int count = first;
         for (SolrDocument doc : resp.getResults()) {
             // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
@@ -419,10 +419,11 @@ public final class SearchHelper {
                             logger.trace("hit type found: {}", hitType);
                         }
                     }
-                    int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                    hit.getHitTypeCounts().put(hitType, count + 1);
+                    int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                    hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
                 }
             }
+            hit.setHitNumber(++count);
         }
         logger.trace("Return {} search hits", ret.size());
         return ret;
