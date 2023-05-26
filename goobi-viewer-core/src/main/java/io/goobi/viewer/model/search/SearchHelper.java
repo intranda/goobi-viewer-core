@@ -302,7 +302,6 @@ public final class SearchHelper {
             }
 
             SearchHit hit = factory.createSearchHit(doc, ownerDoc, null, fulltext, null);
-            factory.createSearchHit(doc, ownerDoc, null, fulltext, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
