@@ -438,11 +438,11 @@ public class SearchBean implements SearchInterface, Serializable {
         // After resetting, return to the correct search entry page
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
-                return "pretty:" + PageType.advancedSearch.getName();
+                return StringConstants.PREFIX_PRETTY + PageType.advancedSearch.getName();
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                return "pretty:" + PageType.searchCalendar.getName();
+                return StringConstants.PREFIX_PRETTY + PageType.searchCalendar.getName();
             default:
-                return "pretty:" + PageType.search.getName();
+                return StringConstants.PREFIX_PRETTY + PageType.search.getName();
         }
     }
 
@@ -2363,8 +2363,7 @@ public class SearchBean implements SearchInterface, Serializable {
                                 try {
                                     RISExport export = new RISExport();
                                     export.executeSearch(finalQuery, currentSearch.getAllSortFields(),
-                                            facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance, request,
-                                            (HttpServletResponse) facesContext.getExternalContext().getResponse());
+                                            facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance);
                                     if (export.isHasResults()) {
                                         ((HttpServletResponse) facesContext.getExternalContext().getResponse())
                                                 .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,

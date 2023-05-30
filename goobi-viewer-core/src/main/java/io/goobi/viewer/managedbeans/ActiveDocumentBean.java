@@ -2482,7 +2482,7 @@ public class ActiveDocumentBean implements Serializable {
 
         // When not using PrettyContext, the updated URL will always be a click behind
         if (PrettyContext.getCurrentInstance() != null && PrettyContext.getCurrentInstance().getCurrentMapping() != null) {
-            return "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
+            return StringConstants.PREFIX_PRETTY + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
         }
 
         return "";

@@ -71,7 +71,7 @@ import io.swagger.v3.oas.annotations.Operation;
 @ViewerRestServiceBinding
 public class SearchResultResource {
 
-    private static final Logger logger = LogManager.getLogger(SearchResultResource.class);
+    private static final Logger logger = LogManager.getLogger(SearchResultResource.class); //NOSONAR Sometimes used for debugging
 
     @Context
     private HttpServletRequest servletRequest;
@@ -97,7 +97,7 @@ public class SearchResultResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren)
             throws DAOException, PresentationException, IndexUnreachableException, IOException, ViewerConfigurationException {
-        // logger.trace("/search/hit/{}/{}/", hitId, numChildren);
+        // logger.trace("/search/hit/{}/{}/", hitId, numChildren); //NOSONAR Sometimes used for debugging
         SearchBean searchBean = BeanUtils.getSearchBean();
         if (searchBean == null) {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
@@ -120,7 +120,7 @@ public class SearchResultResource {
         servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "IDDOC " + hitId + " is not in the current search result set.");
         return null;
     }
-    
+
     /**
      * 
      * @param hitId IDDOC of the main search hit
@@ -139,7 +139,7 @@ public class SearchResultResource {
     public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren,
             @PathParam("resultGroup") String resultGroupName)
             throws DAOException, PresentationException, IndexUnreachableException, IOException, ViewerConfigurationException {
-        // logger.trace("/search/hit/{}/{}/", hitId, numChildren);
+        // logger.trace("/search/hit/{}/{}/", hitId, numChildren); //NOSONAR Sometimes used for debugging
         SearchBean searchBean = BeanUtils.getSearchBean();
         if (searchBean == null) {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
@@ -196,10 +196,9 @@ public class SearchResultResource {
         }
         for (SearchHit searchHit : searchHits) {
             if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
-                // logger.trace("found: {}", hitId);
+                // logger.trace("found: {}", hitId); //NOSONAR Sometimes used for debugging
                 if (searchHit.getHitsPopulated() < numChildren) {
-                    searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale,
-                            servletRequest, BeanUtils.getImageDeliveryBean().getThumbs());
+                    searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale, servletRequest);
                 }
                 Collections.sort(searchHit.getChildren());
                 return new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit.isHasMoreChildren());
@@ -230,7 +229,7 @@ public class SearchResultResource {
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
 
         RISExport export = new RISExport();
-        export.executeSearch(finalQuery, null, filterQueries, null, null, locale, proximitySearchDistance, servletRequest, servletResponse);
+        export.executeSearch(finalQuery, null, filterQueries, null, null, locale, proximitySearchDistance);
         if (export.isHasResults()) {
             new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
         }

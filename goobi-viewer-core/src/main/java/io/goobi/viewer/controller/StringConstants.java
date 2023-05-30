@@ -18,6 +18,8 @@ public class StringConstants {
     public static final String MSG_ERR_PASSWORD_INCORRECT = "errPasswordIncorrect";
     public static final String MSG_ERR_SEND_EMAIL = "errSendEmail";
 
+    public static final String PREFIX_PRETTY = "pretty:";
+
     private StringConstants() {
 
     }

@@ -57,8 +57,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
@@ -72,17 +72,14 @@ public class FileTools {
 
     private static final Logger logger = LogManager.getLogger(FileTools.class);
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private FileTools() {
-        //
     }
 
-    /** Constant <code>filenameFilterXML</code> */
-    public static final FilenameFilter filenameFilterXML = (File dir, String name) -> {
-        return "xml".equals(FilenameUtils.getExtension(name.toLowerCase()));
-    };
+    public static final DirectoryStream.Filter<Path> imageNameFilter =
+            (Path path) -> path.getFileName().toString().matches("(?i)[^.]+\\.(jpe?g|tiff?|png|jp2)");
+
+    public static final DirectoryStream.Filter<Path> pdfNameFilter = (Path path) -> path.getFileName().toString().matches("(?i)[^.]+\\.(pdf)");
 
     /**
      * <p>
@@ -147,7 +144,6 @@ public class FileTools {
 
         String ret = text.toString();
         // Convert to target encoding
-        // logger.trace(encoding + " -> " + convertToEncoding);
         if (StringUtils.isNotEmpty(convertToEncoding) && !convertToEncoding.equals(encoding)) {
             ret = StringTools.convertStringEncoding(ret, encoding, convertToEncoding);
         }
@@ -223,7 +219,8 @@ public class FileTools {
         }
 
         File file = new File(filePath);
-        try (FileWriterWithEncoding writer = new FileWriterWithEncoding(file, encoding, append)) {
+
+        try (FileWriterWithEncoding writer = FileWriterWithEncoding.builder().setFile(file).setCharset(encoding).setAppend(append).get();) {
             writer.write(string);
         }
 
@@ -556,7 +553,7 @@ public class FileTools {
         String urlStringLocal = urlString;
         if (urlStringLocal.contains(":")) {
             try {
-                // logger.trace("url string: {}", urlString);
+                // logger.trace("url string: {}", urlString); //NOSONAR Sometimes used for debugging
                 URL url = new URL(urlString);
                 URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
                         url.getQuery(), url.getRef());
@@ -575,7 +572,7 @@ public class FileTools {
 
         return path;
     }
-    
+
     public static List<Path> listFiles(Path folder, DirectoryStream.Filter<Path> filter) {
         List<Path> fileNames = new ArrayList<>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(folder, filter)) {
@@ -589,24 +586,11 @@ public class FileTools {
         Collections.sort(fileNames);
         return fileNames;
     }
-    
-    public static final DirectoryStream.Filter<Path> imageNameFilter = new DirectoryStream.Filter<Path>() {
-        @Override
-        public boolean accept(Path path) {
-            return path.getFileName().toString().matches("(?i)[^.]+\\.(jpe?g|tiff?|png|jp2)");
-        }
-    };
-    
-    public static final DirectoryStream.Filter<Path> pdfNameFilter = new DirectoryStream.Filter<Path>() {
-        @Override
-        public boolean accept(Path path) {
-            return path.getFileName().toString().matches("(?i)[^.]+\\.(pdf)");
-        }
-    };
 
     /**
      * Return a path which equals the given path but using the given extension in place of the original one
-     * @param path  any file path
+     * 
+     * @param path any file path
      * @param extension the extension, without leading '.'
      * @return
      */
@@ -614,10 +598,9 @@ public class FileTools {
         String filename = path.getFileName().toString();
         String basename = FilenameUtils.getBaseName(filename);
         Path relativeFile = Paths.get(basename + "." + extension);
-        if(path.getParent() != null) {
+        if (path.getParent() != null) {
             return path.getParent().resolve(relativeFile);
-        } else {
-            return relativeFile;
         }
+        return relativeFile;
     }
 }
