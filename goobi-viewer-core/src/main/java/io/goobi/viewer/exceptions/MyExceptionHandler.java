@@ -116,7 +116,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     // handleError(getSessionDetails(fc), "viewExpired");
                     // Messages.error(ViewerResourceBundle.getTranslation("sessionExpired", null));
                     // TODO visualize expiration error
-                    redirect("pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId());
+                    redirect(StringConstants.PREFIX_PRETTY + PrettyContext.getCurrentInstance().getCurrentMapping().getId());
                 } else if (t instanceof RecordNotFoundException || isCausedByExceptionType(t, RecordNotFoundException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class.getSimpleName()))) {
                     String pi = "";

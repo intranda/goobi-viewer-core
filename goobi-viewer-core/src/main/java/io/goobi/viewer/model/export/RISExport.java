@@ -36,9 +36,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,8 +81,6 @@ public class RISExport {
      * @param searchTerms
      * @param locale
      * @param proximitySearchDistance
-     * @param request
-     * @param response
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
@@ -93,9 +88,8 @@ public class RISExport {
      * @throws ContentLibException
      * @should execute search correctly
      */
-    public void executeSearch(String finalQuery, List<StringPair> sortFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale,
-            int proximitySearchDistance, HttpServletRequest request, HttpServletResponse response)
+    public void executeSearch(String finalQuery, List<StringPair> sortFields, List<String> filterQueries, Map<String, String> params,
+            Map<String, Set<String>> searchTerms, Locale locale, int proximitySearchDistance)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         logger.trace("exportSearchAsRIS");
         long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);

@@ -115,7 +115,7 @@ public class SearchHitFactory {
         if (docType == null) {
             docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         }
-        // logger.trace("docType: {}", docType);
+        // logger.trace("docType: {}", docType); //NOSONAR Sometimes used for debugging
         HitType hitType = overrideType;
         if (hitType == null) {
             hitType = HitType.getByName(docType);

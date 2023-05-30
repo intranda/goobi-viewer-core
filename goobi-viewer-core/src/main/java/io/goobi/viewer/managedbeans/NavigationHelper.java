@@ -1750,7 +1750,7 @@ public class NavigationHelper implements Serializable {
 
     public String getExitUrl(PageType pageType) {
         String exitView = DataManager.getInstance().getConfiguration().getPageTypeExitView(pageType);
-        if (StringUtils.isNotBlank(exitView) && exitView.startsWith("pretty:")) {
+        if (StringUtils.isNotBlank(exitView) && exitView.startsWith(StringConstants.PREFIX_PRETTY)) {
             return resolvePrettyUrl(exitView);
         } else if (StringUtils.isBlank(exitView) || exitView.equalsIgnoreCase("previousView")) {
             return getPreviousViewUrl();
