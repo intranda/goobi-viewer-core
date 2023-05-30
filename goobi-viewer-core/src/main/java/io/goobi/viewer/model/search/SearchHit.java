@@ -55,7 +55,6 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.TEITools;
-import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -369,7 +368,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 fulltext = TEITools.getTeiFulltext(fulltext);
                 fulltext = Jsoup.parse(fulltext).text();
             }
-            // logger.trace(fulltext);
+            // logger.trace(fulltext); //NOSONAR Sometimes used for debugging
             List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT),
                     fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false, proximitySearchDistance);
 
@@ -385,7 +384,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     count++;
                 }
                 children.add(hit);
-                // logger.trace("Added {} fragments", count);
+                // logger.trace("Added {} fragments", count); //NOSONAR Sometimes used for debugging
                 int oldCount = hit.getHitTypeCounts().get(HitType.PAGE) != null ? hit.getHitTypeCounts().get(HitType.PAGE) : 0;
                 hitTypeCounts.put(HitType.PAGE, oldCount + count);
             }
@@ -405,13 +404,12 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param skip a int.
      * @param locale a {@link java.util.Locale} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param thumbnailHandler
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void populateChildren(int number, int skip, Locale locale, HttpServletRequest request, ThumbnailHandler thumbnailHandler)
+    public void populateChildren(int number, int skip, Locale locale, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("populateChildren START");
 
@@ -435,7 +433,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 logger.warn("Document {} has no DOCTYPE field, cannot add to child search hits.", childDoc.getFieldValue(SolrConstants.IDDOC));
                 continue;
             }
-            // logger.trace("Found child doc: {}", docType);
+            // logger.trace("Found child doc: {}", docType); //NOSONAR Sometimes used for debugging
             boolean acccessDeniedType = false;
             switch (docType) {
                 case PAGE: //NOSONAR, no break on purpose to run through all cases
@@ -481,7 +479,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             ownerHits.put(ownerIddoc, ownerHit);
                             ownerDocs.put(ownerIddoc, ownerDoc);
                             populateHit = true;
-                            // logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID"));
+                            // logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID")); //NOSONAR Sometimes used for debugging
                         }
                     }
                     if (ownerHit == null) {
@@ -495,31 +493,31 @@ public class SearchHit implements Comparable<SearchHit> {
                         ownerHit = newOwnerHit;
                         ownerHits.put(ownerIddoc, newOwnerHit);
                     }
-                    // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), ownerHit.getBrowseElement().getIddoc());
-                    {
-                        SearchHit childHit =
-                                factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), null, fulltext,
-                                        acccessDeniedType ? HitType.ACCESSDENIED : null);
-                        // Skip grouped metadata child hits that have no additional (unique) metadata to display
-                        if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
-                            // TODO This will result in an infinite loading animation if all child hits are skipped
-                            continue;
-                        }
-                        if (!DocType.UGC.equals(docType)) {
-                            // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
-                            for (StringPair metadata : childHit.getFoundMetadata()) {
-                                // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
-                                if (!ownerHit.getFoundMetadata().contains(metadata)) {
-                                    ownerHit.getFoundMetadata().add(metadata);
-                                }
+                    // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
+
+                    SearchHit childHit =
+                            factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), null, fulltext,
+                                    acccessDeniedType ? HitType.ACCESSDENIED : null);
+                    // Skip grouped metadata child hits that have no additional (unique) metadata to display
+                    if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
+                        // TODO This will result in an infinite loading animation if all child hits are skipped
+                        continue;
+                    }
+                    if (!DocType.UGC.equals(docType)) {
+                        // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
+                        for (StringPair metadata : childHit.getFoundMetadata()) {
+                            // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
+                            if (!ownerHit.getFoundMetadata().contains(metadata)) {
+                                ownerHit.getFoundMetadata().add(metadata);
                             }
                         }
-                        ownerHit.getChildren().add(childHit);
-                        populateHit = true;
-                        if (populateHit) {
-                            hitsPopulated++;
-                        }
                     }
+                    ownerHit.getChildren().add(childHit);
+                    populateHit = true; //TODO why?
+                    if (populateHit) {
+                        hitsPopulated++;
+                    }
+
                 }
                     break;
                 case DOCSTRCT:
@@ -539,7 +537,6 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         }
 
-        //            childDocs = childDocs.subList(number, childDocs.size());
         if (childDocs.isEmpty()) {
             ownerDocs.clear();
             ownerHits.clear();
@@ -567,7 +564,7 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields,
             Set<String> oneLineFields) {
-        // logger.trace("populateFoundMetadata: {}", searchTerms);
+        // logger.trace("populateFoundMetadata: {}", searchTerms); //NOSONAR Sometimes used for debugging
         if (searchTerms == null) {
             return;
         }
@@ -634,7 +631,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             if (sb.length() > 0) {
                                 foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), sb.toString()));
-                                // logger.trace("found metadata: {}:{}", docFieldName, fieldValue);
+                                // logger.trace("found metadata: {}:{}", docFieldName, fieldValue); //NOSONAR Sometimes used for debugging
                             }
                         } else {
                             for (String fieldValue : fieldValues) {
@@ -657,7 +654,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                     if ("NORM_ALTNAME".equals(docFieldName)) {
                                         break;
                                     }
-                                    // logger.trace("found metadata: {}:{}", docFieldName, fieldValue);
+                                    // logger.trace("found metadata: {}:{}", docFieldName, fieldValue); //NOSONAR Sometimes used for debugging
                                 }
                             }
                         }
@@ -708,7 +705,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             if (sb.length() > 0) {
                                 foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), sb.toString()));
-                                // logger.trace("found metadata: {}:{}", docFieldName, fieldValue);
+                                // logger.trace("found metadata: {}:{}", docFieldName, fieldValue); //NOSONAR Sometimes used for debugging
                             }
 
                         } else {
@@ -838,7 +835,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @return a boolean.
      */
     public boolean isHasChildren() {
-        return children != null && !children.isEmpty();
+        return !children.isEmpty();
     }
 
     /**
