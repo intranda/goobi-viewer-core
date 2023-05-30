@@ -535,6 +535,12 @@ public class IdentifierResolver extends HttpServlet {
         request.getRequestDispatcher(url).forward(request, response);
     }
 
+    /**
+     * 
+     * @param targetDoc
+     * @param pageResolverUrl
+     * @return
+     */
     public static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
         int order = 1;
         if (targetDoc.containsKey(SolrConstants.THUMBPAGENO)) {
@@ -561,6 +567,7 @@ public class IdentifierResolver extends HttpServlet {
         String docStructType = (String) targetDoc.getFieldValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) targetDoc.getFieldValue(SolrConstants.MIMETYPE);
         String topstructPi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+        boolean topstruct = SolrTools.getAsBoolean(targetDoc.getFieldValue(SolrConstants.ISWORK));
         boolean anchorOrGroup = SolrTools.isAnchor(targetDoc) || SolrTools.isGroup(targetDoc);
         boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL)
                 && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
@@ -570,7 +577,7 @@ public class IdentifierResolver extends HttpServlet {
         StringBuilder sb = new StringBuilder("/");
         sb.append(DataManager.getInstance()
                 .getUrlBuilder()
-                .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType, true));
+                .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType, topstruct || anchorOrGroup));
 
         // logger.trace("Resolved to: {}", sb.toString());
         return sb.toString();

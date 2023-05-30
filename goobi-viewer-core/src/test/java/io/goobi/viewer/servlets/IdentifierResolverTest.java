@@ -32,20 +32,16 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.HttpInternalErrorException;
 import com.meterware.httpunit.HttpNotFoundException;
 import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.TestUtils;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrConstants;
@@ -74,7 +70,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     public void doGet_shouldReturn400IfRecordIdentifierMissing() throws Exception {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
-        WebResponse response = sc.getResponse(request);
+        sc.getResponse(request);
     }
 
     /**
@@ -86,7 +82,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("urn", "NOTFOUND");
-        WebResponse response = sc.getResponse(request);
+        sc.getResponse(request);
     }
 
     /**
@@ -99,7 +95,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("field", "NOSUCHFIELD");
         request.setParameter("identifier", "PPN123");
-        WebResponse response = sc.getResponse(request);
+        sc.getResponse(request);
     }
 
     /**
@@ -112,7 +108,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("field", SolrConstants.PI);
         request.setParameter("identifier", "a:b");
-        WebResponse response = sc.getResponse(request);
+        sc.getResponse(request);
     }
 
     /**
@@ -124,7 +120,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = PI_KLEIUNIV;
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/object/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
+        Assert.assertEquals("/object/" + pi + "/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
     }
 
     /**
@@ -136,7 +132,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "306653648";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/toc/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
+        Assert.assertEquals("/toc/" + pi + "/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
     }
 
     /**
@@ -149,7 +145,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCTYPE, DocType.GROUP.toString());
         doc.setField(SolrConstants.PI_TOPSTRUCT, pi);
-        Assert.assertEquals("/toc/" + pi + "/1/-/", IdentifierResolver.constructUrl(doc, false));
+        Assert.assertEquals("/toc/" + pi + "/", IdentifierResolver.constructUrl(doc, false));
     }
 
     /**
@@ -175,7 +171,8 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Catalogue");
         doc.setField(SolrConstants.PI_TOPSTRUCT, "123");
-        Assert.assertEquals("/toc/" + pi + "/1/-/", IdentifierResolver.constructUrl(doc, false));
+        doc.setField(SolrConstants.ISWORK, true);
+        Assert.assertEquals("/toc/" + pi + "/", IdentifierResolver.constructUrl(doc, false));
     }
 
     /**
@@ -188,8 +185,9 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Monograph");
         doc.setField(SolrConstants.PI_TOPSTRUCT, "123");
+        doc.setField(SolrConstants.ISWORK, true);
         doc.setField(SolrConstants.MIMETYPE, "application");
-        Assert.assertEquals("/metadata/" + pi + "/1/-/", IdentifierResolver.constructUrl(doc, false));
+        Assert.assertEquals("/metadata/" + pi + "/", IdentifierResolver.constructUrl(doc, false));
     }
 
     /**
