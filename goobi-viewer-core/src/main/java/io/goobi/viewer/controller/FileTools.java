@@ -36,6 +36,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -55,6 +57,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.commons.lang.CharSet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -219,7 +222,12 @@ public class FileTools {
 
         File file = new File(filePath);
 
-        try (FileWriterWithEncoding writer = FileWriterWithEncoding.builder().setFile(file).setCharset(encoding).setAppend(append).get();) {
+        try (FileWriterWithEncoding writer = FileWriterWithEncoding.builder()
+                .setFile(file)
+                .setCharset(encoding)
+                .setCharsetEncoder(Charset.forName(encoding).newEncoder())
+                .setAppend(append)
+                .get()) {
             writer.write(string);
         }
 
