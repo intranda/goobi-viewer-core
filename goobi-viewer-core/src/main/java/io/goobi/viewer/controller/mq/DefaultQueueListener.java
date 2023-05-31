@@ -154,7 +154,7 @@ public class DefaultQueueListener {
 
     public void close() {
         this.shouldStop = true;
-        logger.debug("Stopping MessageQueue listener...");
+        log.debug("Stopping MessageQueue listener...");
         try {
             this.thread.join(1000);
         } catch (InterruptedException e) {
