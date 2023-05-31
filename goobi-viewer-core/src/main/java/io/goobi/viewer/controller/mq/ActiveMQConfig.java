@@ -61,7 +61,7 @@ public class ActiveMQConfig {
 
     }
 
-    private static Path getConfigResource(String filename) {
+    public static Path getConfigResource(String filename) {
         URI uri = PathConverter.toURI(ActiveMQConfig.class.getClassLoader().getResource(""));
         Path configFilePath = PathConverter.getPath(uri).resolve(filename);
         return configFilePath;

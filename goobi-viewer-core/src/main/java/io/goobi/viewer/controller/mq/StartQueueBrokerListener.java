@@ -51,8 +51,11 @@ public class StartQueueBrokerListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            
-            if(this.messageBroker.initializeMessageServer()) {
+            if(this.messageBroker == null) {
+                log.error("No MessageQueueManager injected. Maybe class could not be initialized");
+            } else if(!this.messageBroker.hasConfig()) {
+                log.warn("ActiveMQ configuration file {} could not be loaded", ActiveMQConfig.getConfigResource(MessageQueueManager.ACTIVE_MQ_CONFIG_FILENAME));
+            } else if(this.messageBroker.initializeMessageServer()) {
                 log.info("Successfully started ActiveMQ");
             } else {
                 log.error("ActiveMQ not initialized!");
