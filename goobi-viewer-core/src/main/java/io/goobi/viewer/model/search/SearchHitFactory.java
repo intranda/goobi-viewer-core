@@ -37,9 +37,14 @@ public class SearchHitFactory {
     private Map<String, Set<String>> searchTerms;
     private List<String> exportFields;
     private List<StringPair> sortFields;
-    private Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
-    private Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
-    private Set<String> oneLineFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
+    private Set<String> additionalMetadataIgnoreFields =
+            new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
+    private Set<String> additionalMetadataTranslateFields =
+            new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
+    private Set<String> additionalMetadataOneLineFields =
+            new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
+    private Set<String> additionalMetadataSnippetFields =
+            new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataSnippetFields());
     private int proximitySearchDistance;
 
     private ThumbnailHandler thumbnailHandler;
@@ -103,12 +108,13 @@ public class SearchHitFactory {
 
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         if (DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled()) {
-            browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, ignoreFields, translateFields,
-                    oneLineFields);
+            browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, additionalMetadataIgnoreFields,
+                    additionalMetadataTranslateFields,
+                    additionalMetadataOneLineFields, additionalMetadataSnippetFields);
         }
 
         // Add sorting fields (should be added after all other metadata to avoid duplicates)
-        browseElement.addSortFieldsToMetadata(se, sortFields, ignoreFields);
+        browseElement.addSortFieldsToMetadata(se, sortFields, additionalMetadataIgnoreFields);
 
         // Determine hit type
         String docType = se.getMetadataValue(SolrConstants.DOCTYPE);
@@ -137,7 +143,8 @@ public class SearchHitFactory {
         }
 
         SearchHit hit = new SearchHit(hitType, browseElement, doc, searchTerms, locale, this);
-        hit.populateFoundMetadata(doc, ownerAlreadyHasMetadata, ignoreFields, translateFields, oneLineFields);
+        hit.populateFoundMetadata(doc, ownerAlreadyHasMetadata, additionalMetadataIgnoreFields, additionalMetadataTranslateFields,
+                additionalMetadataOneLineFields);
 
         // Export fields for Excel export
         if (exportFields != null && !exportFields.isEmpty()) {
@@ -191,23 +198,23 @@ public class SearchHitFactory {
     }
 
     /**
-     * @return the ignoreFields
+     * @return the additionalMetadataIgnoreFields
      */
-    public Set<String> getIgnoreFields() {
-        return ignoreFields;
+    public Set<String> getAdditionalMetadataIgnoreFields() {
+        return additionalMetadataIgnoreFields;
     }
 
     /**
-     * @return the translateFields
+     * @return the additionalMetadataTranslateFields
      */
-    public Set<String> getTranslateFields() {
-        return translateFields;
+    public Set<String> getAdditionalMetadataTranslateFields() {
+        return additionalMetadataTranslateFields;
     }
 
     /**
-     * @return the oneLineFields
+     * @return the additionalMetadataOneLineFields
      */
-    public Set<String> getOneLineFields() {
-        return oneLineFields;
+    public Set<String> getAdditionalMetadataOneLineFields() {
+        return additionalMetadataOneLineFields;
     }
 }

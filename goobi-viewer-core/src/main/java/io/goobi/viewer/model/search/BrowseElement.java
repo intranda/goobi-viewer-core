@@ -567,15 +567,17 @@ public class BrowseElement implements Serializable {
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
      * @param oneLineFields Fields to be added as a single string containing all values
+     * @param snippetFields Fields to truncate to the relevant part of the value
      * @should add metadata fields that match search terms
      * @should not add duplicates from default terms
      * @should not add duplicates from explicit terms
      * @should not add ignored fields
      * @should translate configured field values correctly
      * @should write one line fields into a single string
+     * @should truncate snippet fields correctly
      */
     void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms,
-            Set<String> ignoreFields, Set<String> translateFields, Set<String> oneLineFields) {
+            Set<String> ignoreFields, Set<String> translateFields, Set<String> oneLineFields, Set<String> snippetFields) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
 
         if (searchTerms == null) {

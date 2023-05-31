@@ -172,7 +172,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("T-1000", "Call to John now.");
 
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
-        factory.getIgnoreFields().add("T-1000");
+        factory.getAdditionalMetadataIgnoreFields().add("T-1000");
         SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
         new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
         Assert.assertNotNull(hit);
@@ -237,7 +237,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
         String[] translateFields = { SolrConstants.DC, SolrConstants.DOCSTRCT };
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
-        factory.getTranslateFields().addAll(Arrays.asList(translateFields));
+        factory.getAdditionalMetadataTranslateFields().addAll(Arrays.asList(translateFields));
         SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
@@ -271,7 +271,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
         String[] oneLineFields = { "MD_COUNT_EU", "MD_COUNT_SE" };
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
-        factory.getOneLineFields().addAll(Arrays.asList(oneLineFields));
+        factory.getAdditionalMetadataOneLineFields().addAll(Arrays.asList(oneLineFields));
         SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
@@ -284,6 +284,16 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("MD_COUNT_EU", hit.getFoundMetadata().get(1).getOne());
         Assert.assertEquals("<span class=\"search-list--highlight\">bat</span>, <span class=\"search-list--highlight\">hiru</span>",
                 hit.getFoundMetadata().get(1).getTwo());
+    }
+
+    /**
+     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set,Set,Set)
+     * @verifies truncate snippet fields correctly
+     */
+    @Test
+    public void populateFoundMetadata_shouldTruncateSnippetFieldsCorrectly() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
     }
 
     /**

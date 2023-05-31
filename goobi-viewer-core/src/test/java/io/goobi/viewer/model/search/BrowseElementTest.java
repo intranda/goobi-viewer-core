@@ -120,7 +120,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
         searchTerms.put("MD_YEARPUBLISH", new HashSet<>(Arrays.asList(new String[] { "1984" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null);
         Assert.assertEquals(2, be.getAdditionalMetadataList().size());
         {
             String field = "MD_TITLE";
@@ -154,7 +154,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null);
         Assert.assertTrue(be.getMetadataList("MD_TITLE").isEmpty());
     }
 
@@ -174,7 +174,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null);
         Assert.assertEquals(1, be.getMetadataList("MD_TITLE").size());
     }
 
@@ -194,7 +194,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, new HashSet<>(Collections.singletonList("MD_IGNOREME")), null, null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, new HashSet<>(Collections.singletonList("MD_IGNOREME")), null, null, null);
         Assert.assertEquals(0, be.getMetadataList("MD_IGNOREME").size());
     }
 
@@ -216,7 +216,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.DC, new HashSet<>(Arrays.asList(new String[] { "admin" })));
 
         String[] translateFields = { SolrConstants.DC };
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, new HashSet<>(Arrays.asList(translateFields)), null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, new HashSet<>(Arrays.asList(translateFields)), null, null);
         Assert.assertEquals(1, be.getMetadataList(SolrConstants.DC).size());
     }
 
@@ -239,7 +239,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put("MD_COUNT_EN", new HashSet<>(Arrays.asList(new String[] { "one", "three" })));
 
         String[] oneLineFields = { "MD_COUNT_EN", "MD_COUNT_JP" };
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, new HashSet<>(Arrays.asList(oneLineFields)));
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, new HashSet<>(Arrays.asList(oneLineFields)), null);
 
         // Via explicit term field
         Assert.assertEquals(1, be.getMetadataList("MD_COUNT_EN").size());
@@ -251,6 +251,17 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(1, be.getMetadataList("MD_COUNT_JP").size());
         Assert.assertEquals("<span class=\"search-list--highlight\">ichi</span>, <span class=\"search-list--highlight\">ni</span>",
                 be.getMetadataList("MD_COUNT_JP").get(0).getValues().get(0).getComboValueShort(0));
+    }
+    
+
+    /**
+     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Set,Set,Set,Set)
+     * @verifies truncate snippet fields correctly
+     */
+    @Test
+    public void addAdditionalMetadataContainingSearchTerms_shouldTruncateSnippetFieldsCorrectly() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
     }
 
     /**

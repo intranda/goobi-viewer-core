@@ -561,6 +561,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should not add field values that equal the label
      * @should translate configured field values correctly
      * @should write one line fields into a single string
+     * @should truncate snippet fields correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields,
             Set<String> oneLineFields) {
