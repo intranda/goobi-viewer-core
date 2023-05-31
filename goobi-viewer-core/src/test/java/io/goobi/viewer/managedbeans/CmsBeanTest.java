@@ -56,7 +56,7 @@ import io.goobi.viewer.solr.SolrConstants;
 
 public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final Logger logger = LogManager.getLogger(CmsBeanTest.class);
+    private static final Logger logger = LogManager.getLogger(CmsBeanTest.class); //NOSONAR Sometimes used for debugging
 
     private CMSTemplateManager templateManager;
     private NavigationHelper navigationHelper;
@@ -203,5 +203,18 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         for (int i = 0; i < pageTypes.size(); ++i) {
             Assert.assertEquals(pageTypes.get(i).getName(), pages.get(i).getPageName());
         }
+    }
+
+    /**
+     * @see CmsBean#getPossibleSortFields()
+     * @verifies add relevance and random values at beginning
+     */
+    @Test
+    public void getPossibleSortFields_shouldAddRelevanceAndRandomValuesAtBeginning() throws Exception {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        List<String> fields = bean.getPossibleGroupFields();
+        Assert.assertTrue(fields.size() > 2);
+        Assert.assertEquals(SolrConstants.SORT_RELEVANCE, fields.get(0));
+        Assert.assertEquals(SolrConstants.SORT_RANDOM, fields.get(1));
     }
 }
