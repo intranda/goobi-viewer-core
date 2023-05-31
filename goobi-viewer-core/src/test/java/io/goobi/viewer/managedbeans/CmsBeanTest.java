@@ -212,7 +212,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPossibleSortFields_shouldAddRelevanceAndRandomValuesAtBeginning() throws Exception {
         CmsBean bean = new CmsBean(templateManager, navigationHelper);
-        List<String> fields = bean.getPossibleGroupFields();
+        List<String> fields = bean.getPossibleSortFields();
         Assert.assertTrue(fields.size() > 2);
         Assert.assertEquals(SolrConstants.SORT_RELEVANCE, fields.get(0));
         Assert.assertEquals(SolrConstants.SORT_RANDOM, fields.get(1));
