@@ -52,7 +52,7 @@ public class SearchTest extends AbstractTest {
 
         List<StringPair> result = search.getAllSortFields();
         Assert.assertTrue(result.containsAll(search.getSortFields()));
-        Assert.assertTrue(result.contains(new StringPair(staticFields.get(0), "asc")));
+        Assert.assertTrue(result.contains(new StringPair(staticFields.get(0).substring(1), "desc")));
     }
 
     @Test

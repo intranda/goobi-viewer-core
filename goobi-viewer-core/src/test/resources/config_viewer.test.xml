@@ -418,7 +418,7 @@
             <!-- static: Sorting fields defined here will always used silently prior to the visible sorting fields. These fields can be used to always place
                 certain records on top, for example. -->
             <static>
-                <field>BOOL_PRIORITIZE</field>
+                <field>!BOOL_PRIORITIZE</field>
             </static>
 		</sorting>
 		<facets>
