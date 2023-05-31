@@ -259,21 +259,21 @@ public class QuartzListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
-        log.debug("Stop daily JobManager scheduler");
         try {
             stopTimedJobs();
+            log.info("Successfully stopped QuartzListener scheduler");
         } catch (SchedulerException e) {
-            log.error("Daily JobManager could not be stopped", e);
+            log.error("QuartzListener scheduler could not be stopped", e);
         }
     }
 
     @Override
     public void contextInitialized(ServletContextEvent evt) {
-        log.debug("Start daily JobManager scheduler");
         try {
             startTimedJobs(evt.getServletContext());
+            log.info("Successfully started QuartzListener scheduler");
         } catch (SchedulerException e) {
-            log.error("daily JobManager could not be started", e);
+            log.error("QuartzListener scheduler could not be started", e);
         }
     }
 

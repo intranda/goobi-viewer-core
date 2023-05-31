@@ -30,6 +30,7 @@ public class MonitoringStatus {
 
     public static final String KEY_DATABASE = "database";
     public static final String KEY_IMAGES = "images";
+    public static final String KEY_MESSAGE_QUEUE = "mq";
     public static final String KEY_SOLR = "solr";
     public static final String KEY_SOLRSCHEMA = "solrschema";
 
