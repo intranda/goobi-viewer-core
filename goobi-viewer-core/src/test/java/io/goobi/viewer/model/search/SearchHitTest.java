@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.search;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -37,6 +38,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.model.search.SearchHit.HitType;
@@ -292,8 +294,39 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void populateFoundMetadata_shouldTruncateSnippetFieldsCorrectly() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        int maxLength = 50;
+        DataManager.getInstance().getConfiguration().overrideValue("search.fulltextFragmentLength", maxLength);
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "labore" })));
+        searchTerms.put("MD_SOMETEXT", new HashSet<>(Arrays.asList(new String[] { "ipsum" })));
+
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField("MD_TITLE", "Any title");
+        doc.addField("MD_DESCRIPTION", StringConstants.LOREM_IPSUM);
+        doc.addField("MD_SOMETEXT", StringConstants.LOREM_IPSUM.replace("labore", "foo")); // prevent matches via DEFAULT
+
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
+        factory.getAdditionalMetadataSnippetFields().addAll(Collections.singletonList("MD_SOMETEXT"));
+        Assert.assertEquals(2, factory.getAdditionalMetadataSnippetFields().size());
+        SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
+        Assert.assertNotNull(hit);
+        Assert.assertEquals(2, hit.getFoundMetadata().size());
+
+        // Via DEFAULT
+        Assert.assertEquals("MD_DESCRIPTION", hit.getFoundMetadata().get(0).getOne());
+        Assert.assertTrue(hit.getFoundMetadata().get(0).getTwo().length() <= maxLength + 44);
+        // Truncated snippet is randomized, so cannot test the exact value
+        Assert.assertTrue(hit.getFoundMetadata().get(0).getTwo().contains("ut <span class=\"search-list--highlight\">labore</span> et"));
+
+        // Via explicit term field
+        Assert.assertEquals("MD_SOMETEXT", hit.getFoundMetadata().get(1).getOne());
+        Assert.assertTrue(hit.getFoundMetadata().get(1).getTwo().length() <= maxLength + 44);
+        // Truncated snippet is randomized, so cannot test the exact value
+        Assert.assertTrue(hit.getFoundMetadata().get(1).getTwo().contains("<span class=\"search-list--highlight\">ipsum</span> dolor"));
     }
 
     /**
@@ -313,7 +346,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
-        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+        doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
         Assert.assertNotNull(hit);
@@ -341,7 +374,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
-        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+        doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
         Assert.assertNotNull(hit);
@@ -362,12 +395,12 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
-        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+        doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
         Assert.assertNotNull(hit);
         hit.addLabelHighlighting();
-        Assert.assertEquals("label: " + hit.getBrowseElement().getLabelShort(), SearchHelperTest.LOREM_IPSUM, hit.getBrowseElement()
+        Assert.assertEquals("label: " + hit.getBrowseElement().getLabelShort(), StringConstants.LOREM_IPSUM, hit.getBrowseElement()
                 .getLabelShort());
     }
 
@@ -412,7 +445,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
-        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+        doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit =
                 //                SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, Collections.emptyMap(), null, null, null, null, null, null, 0, null);
@@ -439,7 +472,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
-        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+        doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit =
                 // SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
@@ -473,7 +506,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
-        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+        doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
         Assert.assertNotNull(hit);

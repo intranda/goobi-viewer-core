@@ -109,8 +109,7 @@ public class SearchHitFactory {
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         if (DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled()) {
             browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, additionalMetadataIgnoreFields,
-                    additionalMetadataTranslateFields,
-                    additionalMetadataOneLineFields, additionalMetadataSnippetFields);
+                    additionalMetadataTranslateFields, additionalMetadataOneLineFields, additionalMetadataSnippetFields, proximitySearchDistance);
         }
 
         // Add sorting fields (should be added after all other metadata to avoid duplicates)
@@ -144,7 +143,7 @@ public class SearchHitFactory {
 
         SearchHit hit = new SearchHit(hitType, browseElement, doc, searchTerms, locale, this);
         hit.populateFoundMetadata(doc, ownerAlreadyHasMetadata, additionalMetadataIgnoreFields, additionalMetadataTranslateFields,
-                additionalMetadataOneLineFields);
+                additionalMetadataOneLineFields, additionalMetadataSnippetFields);
 
         // Export fields for Excel export
         if (exportFields != null && !exportFields.isEmpty()) {
@@ -215,6 +214,22 @@ public class SearchHitFactory {
      * @return the additionalMetadataOneLineFields
      */
     public Set<String> getAdditionalMetadataOneLineFields() {
-        return additionalMetadataOneLineFields;
+        return
+
+        additionalMetadataOneLineFields;
+    }
+
+    /**
+     * @return the additionalMetadataSnippetFields
+     */
+    public Set<String> getAdditionalMetadataSnippetFields() {
+        return additionalMetadataSnippetFields;
+    }
+
+    /**
+     * @param additionalMetadataOneLineFields the additionalMetadataOneLineFields to set
+     */
+    public void setAdditionalMetadataOneLineFields(Set<String> additionalMetadataOneLineFields) {
+        this.additionalMetadataOneLineFields = additionalMetadataOneLineFields;
     }
 }
