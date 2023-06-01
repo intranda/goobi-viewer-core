@@ -283,6 +283,16 @@ public class ConfigurationTest extends AbstractTest {
     public void getSearchHitsPerPageValues_shouldReturnAllValues() throws Exception {
         Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues().size());
     }
+    
+
+    /**
+     * @see Configuration#isDisplaySearchHitNumbers()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySearchHitNumbers_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers());
+    }
 
     /**
      * @see Configuration#getFulltextFragmentLength()
