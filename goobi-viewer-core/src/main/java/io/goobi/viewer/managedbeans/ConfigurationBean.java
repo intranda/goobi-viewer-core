@@ -1446,4 +1446,11 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean isDisplaySearchHitNumbers() {
+        return DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers();
+    }
 }
