@@ -576,6 +576,7 @@ public class Configuration extends AbstractConfiguration {
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String labelField = sub.getString("[@labelField]");
         String sortField = sub.getString("[@sortField]");
+        String separator = sub.getString("[@separator]");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -595,6 +596,7 @@ public class Configuration extends AbstractConfiguration {
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
                 .setSortField(sortField)
+                .setSeparator(separator)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
@@ -1293,7 +1295,7 @@ public class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
+
     /**
      * 
      * @return Configured value; default value if none found

@@ -2986,6 +2986,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertNotNull(md);
         Assert.assertEquals("MD_CATALOGIDSOURCE", md.getLabel());
         Assert.assertEquals("LINK_CATALOGIDSOURCE", md.getMasterValue());
+        Assert.assertEquals("; ", md.getSeparator());
         Assert.assertTrue(md.isTopstructOnly());
     }
 

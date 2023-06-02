@@ -621,13 +621,16 @@
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />
 				</metadata>
-				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE" topstructOnly="true">
+				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE" separator="; " topstructOnly="true">
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 				</metadata>
 				<metadata label="DOCSTRCT" value="">
 					<param type="field" key="DOCSTRCT" />
 				</metadata>
+                <metadata label="DC" value="">
+                    <param type="field" key="DC" />
+                </metadata>
 			</template>
 			<template name="Chapter">
 				<metadata label="DC" value="">
