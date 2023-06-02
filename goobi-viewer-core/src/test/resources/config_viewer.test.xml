@@ -628,9 +628,6 @@
 				<metadata label="DOCSTRCT" value="">
 					<param type="field" key="DOCSTRCT" />
 				</metadata>
-                <metadata label="DC" value="">
-                    <param type="field" key="DC" />
-                </metadata>
 			</template>
 			<template name="Chapter">
 				<metadata label="DC" value="">
