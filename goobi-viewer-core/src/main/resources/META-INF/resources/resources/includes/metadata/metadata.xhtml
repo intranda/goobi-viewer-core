@@ -32,7 +32,7 @@
 						<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 	
 			            <!-- ADD TO BOOKMARK -->
-			            <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
+			            <ui:fragment rendered="#{configurationBean.bookmarksEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
 			                    <button type="button" class="btn btn--icon metadata__bookmark-button" aria-label="#{msg.bookmarkList_addToBookmarkList}"
 			                        data-bookmark-list-type="add" 
 			                        data-pi="#{activeDocumentBean.viewManager.pi}"
