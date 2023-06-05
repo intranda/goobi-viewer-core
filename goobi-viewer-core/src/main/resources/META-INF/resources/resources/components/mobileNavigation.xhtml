@@ -139,7 +139,7 @@
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{userBean.loggedIn}">
                                         <!-- BOOKMARKS -->
-                                        <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
+                                        <h:panelGroup rendered="#{configurationBean.bookmarksEnabled}">
                                             <h2 >#{msg.bookmarkList_bookmarkList}</h2>
                                             <h:panelGroup
                                                 rendered="#{bookmarkBean.getNumBookshelvesForUser(userBean.user) gt 0 and cc.attrs.addToBookshelfDisplay}">
