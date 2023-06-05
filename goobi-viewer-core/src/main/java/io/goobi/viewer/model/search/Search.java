@@ -535,7 +535,7 @@ public class Search implements Serializable {
         }
 
         // If this is a group preview, use the group's configured hit count instead of paginator hits per page
-        if (resultGroups.size() > 1 && resultGroup.getPreviewHitCount() > 0 && resultGroup.getPreviewHitCount() > hitsPerPage) {
+        if (resultGroups.size() > 1 && resultGroup.getPreviewHitCount() > 0 && resultGroup.getPreviewHitCount() < hitsPerPage) {
             hitsPerPage = resultGroup.getPreviewHitCount();
         }
 
