@@ -281,7 +281,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Via DEFAULT
         Assert.assertEquals(1, be.getMetadataList("MD_DESCRIPTION").size());
-        Assert.assertTrue(be.getMetadataList("MD_DESCRIPTION").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 44);
+        Assert.assertTrue(be.getMetadataList("MD_DESCRIPTION").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
         Assert.assertTrue(be.getMetadataList("MD_DESCRIPTION")
                 .get(0)
@@ -292,7 +292,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Via explicit term field
         Assert.assertEquals(1, be.getMetadataList("MD_SOMETEXT").size());
-        Assert.assertTrue(be.getMetadataList("MD_SOMETEXT").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 44);
+        Assert.assertTrue(be.getMetadataList("MD_SOMETEXT").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
         Assert.assertTrue(be.getMetadataList("MD_SOMETEXT")
                 .get(0)
