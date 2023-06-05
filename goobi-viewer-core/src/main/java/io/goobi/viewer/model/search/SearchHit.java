@@ -652,7 +652,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                                     DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
                                                     proximitySearchDistance);
                                     if (!truncatedValues.isEmpty()) {
-                                        highlightedValue = truncatedValues.get(0).trim();
+                                        highlightedValue = "[...] " + truncatedValues.get(0).trim() + " [...]";
                                     }
                                 }
 

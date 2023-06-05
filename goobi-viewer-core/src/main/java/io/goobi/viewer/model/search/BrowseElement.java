@@ -676,7 +676,7 @@ public class BrowseElement implements Serializable {
                                                     DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
                                                     proximitySearchDistance);
                                     if (!truncatedValues.isEmpty()) {
-                                        highlightedValue = truncatedValues.get(0).trim();
+                                        highlightedValue = "[...] " + truncatedValues.get(0).trim() + " [...]";
                                     }
                                 }
 
