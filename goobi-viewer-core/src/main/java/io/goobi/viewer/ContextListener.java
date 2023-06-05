@@ -156,8 +156,9 @@ public class ContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             DataManager.getInstance().getDao().shutdown();
+            logger.info("Successfully stopped DAO");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Error stopping DAO", e);
         }
     }
 }

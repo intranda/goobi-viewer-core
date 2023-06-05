@@ -266,15 +266,14 @@ public class MessageQueueManager {
 
     public void closeMessageServer() {
         try {
-            if (rmiServer != null) {
-                rmiServer.stop();
-            }
             for (DefaultQueueListener l : listeners) {
-                l.close();
+                l.close();  //includes a join for the listener thread
             }
-
             if (broker != null) {
                 broker.stop();
+            }
+            if (rmiServer != null) {
+                rmiServer.stop();
             }
         } catch (Exception e) {
             logger.error(e);

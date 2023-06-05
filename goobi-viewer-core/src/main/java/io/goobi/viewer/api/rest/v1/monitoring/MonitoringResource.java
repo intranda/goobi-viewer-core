@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -48,6 +49,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.modules.IModule;
@@ -64,6 +66,8 @@ public class MonitoringResource {
     private HttpServletResponse servletResponse;
     @Context
     private ContainerRequestContext requestContext;
+    @Inject
+    private MessageQueueManager messageBroker;
 
     /**
      * @return {@link MonitoringStatus} as JSON
@@ -106,6 +110,15 @@ public class MonitoringResource {
         } catch (HTTPException | IOException e) {
             ret.getMonitoring().put(MonitoringStatus.KEY_IMAGES, MonitoringStatus.STATUS_ERROR);
             logger.warn("Image delivery monitoring check failed.");
+        }
+
+        // Check message queue status
+        if (messageBroker != null) {
+            ret.getMonitoring()
+                    .put(MonitoringStatus.KEY_MESSAGE_QUEUE,
+                            messageBroker.isQueueRunning() ? MonitoringStatus.STATUS_OK : MonitoringStatus.STATUS_ERROR);
+        } else {
+            logger.warn("MessageQueueManager injection failed.");
         }
 
         // viewer-core version

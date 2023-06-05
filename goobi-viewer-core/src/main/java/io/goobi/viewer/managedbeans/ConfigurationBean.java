@@ -1453,6 +1453,14 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean isDisplaySearchHitNumbers() {
+        return DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers();
+    }
+
     public List<String> getDefaultGeomapFilters() {
         return List.of("MD_ROLE", "METADATA_TYPE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }

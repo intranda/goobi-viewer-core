@@ -100,7 +100,9 @@
                             <!-- HEADER -->
                             <header class="search-list__hit-header">
                         		<!-- TODO Display hit Number -->
-                        		<!-- #{hit.hitNumber} -->
+                        		<ui:fragment rendered="#{configurationBean.displaySearchHitNumbers}">
+                            		<!-- #{hit.hitNumber} -->
+                        		</ui:fragment>
                                 <ui:include src="/resources/includes/search/browseElement.xhtml">
                                     <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
                         	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>

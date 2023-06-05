@@ -1334,6 +1334,15 @@ public class Configuration extends AbstractConfiguration {
 
         return ret;
     }
+    
+    /**
+     * 
+     * @return Configured value; default value if none found
+     * @should return correct value
+     */
+    public boolean isDisplaySearchHitNumbers() {
+        return getLocalBoolean("search.displayHitNumbers", false);
+    }
 
     /**
      * <p>
