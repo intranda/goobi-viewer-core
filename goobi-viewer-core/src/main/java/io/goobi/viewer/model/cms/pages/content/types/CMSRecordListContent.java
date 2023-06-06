@@ -67,7 +67,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     private String sortField = "";
     @Column(name = "grouping_field")
     private String groupingField = "";
-    @Column(name = "result_group")
+    @Column(name = "result_group", columnDefinition = "VARCHAR(40)")
     private String resultGroupName;
     @Column(name = "include_structure_elements")
     private boolean includeStructureElements = false;
@@ -187,12 +187,12 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
-            
+
             // Set configured result group on SearchBean, if available (before initializing Search)
             if (StringUtils.isNotBlank(resultGroupName)) {
                 searchBean.setActiveResultGroupName(resultGroupName);
             }
-            
+
             Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL, searchBean.getResultGroupsForSearchExecution());
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(this.getSortField());
