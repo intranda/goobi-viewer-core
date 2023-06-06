@@ -90,6 +90,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.groupingField = orig.groupingField;
         this.includeStructureElements = orig.includeStructureElements;
         this.elementsPerPage = orig.elementsPerPage;
+        this.resultGroupName = orig.resultGroupName;
         this.view = orig.view;
     }
 
