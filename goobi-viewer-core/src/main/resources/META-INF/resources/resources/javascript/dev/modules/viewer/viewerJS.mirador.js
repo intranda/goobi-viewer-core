@@ -207,6 +207,7 @@ var viewerJS = ( function( viewer ) {
 	
 	   
     function _getMiradorConfigForManifestUrls(manifests, _defaults) {
+		console.log("defaults = ", _defaults);
         var columns = Math.ceil(Math.sqrt(manifests.length));
         var rows = Math.ceil(manifests.length/columns);
         var miradorConfig = { 
@@ -218,7 +219,9 @@ var viewerJS = ( function( viewer ) {
                 }),
                 windows: manifests.map(man => {
                     var winObj = Object.assign({}, windowObject);
-                    if(man.sequences && man.sequences.length > 0 && man.sequences[0].startCanvas) {
+                    if(_defaults.startPage) {
+						winObj.canvasIndex = _defaults.startPage-1;
+					} else if(man.sequences && man.sequences.length > 0 && man.sequences[0].startCanvas) {
                     	let startId = man.sequences[0].startCanvas["@id"];
                     	let match = startId.match(/pages\/(\d+)\/canvas/);
                     	if(match && match.length > 1) {

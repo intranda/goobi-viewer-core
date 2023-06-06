@@ -98,6 +98,7 @@ import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.job.download.DownloadOption;
+import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
@@ -3987,5 +3988,16 @@ public class ViewManager implements Serializable {
             return false;
         }
 
+    }
+    
+    
+    public List<PhysicalElement> getPagesForMediaType(String type) throws PresentationException, IndexUnreachableException {
+        List<ComplexMetadata> mds = getTopStructElement().getMetadataDocuments().getMetadata("MD_MEDIA_INFO");
+        List<PhysicalElement> pages =  mds.stream().filter(md -> type.equalsIgnoreCase(md.getFirstValue("MD_SUBJECT", null)))
+                .map(md -> md.getFirstValue("MD_MEDIA_INFO", null))
+                .map(filename -> this.getPageLoader().findPageForFilename(filename))
+                .filter(p -> p != null)
+                .collect(Collectors.toList());
+        return pages;
     }
 }
