@@ -59,17 +59,17 @@ public class CMSCollectionContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "collection";
 
-    @Column(name = "solr_field")
+    @Column(name = "solr_field", length=40)
     private String solrField = SolrConstants.DC;
     @Column(name = "collection_name")
     private String collectionName = ""; //if black, all collections of the solrField are included
-    @Column(name = "sorting")
+    @Column(name = "sorting", length=20)
     @Enumerated(EnumType.STRING)
     private Sorting sorting = Sorting.alphanumeric;
     @Column(name = "filter_query")
     private String filterQuery = "";
     /** Name of SOLR field by which to group results of the collection */
-    @Column(name = "grouping_field")
+    @Column(name = "grouping_field", length=40)
     private String groupingField = "";
     /** Comma separated list of collection names to ignore for display */
     @Column(name = "ignore_collections", columnDefinition = "LONGTEXT")
