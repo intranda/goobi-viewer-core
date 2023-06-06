@@ -23,7 +23,10 @@ package io.goobi.viewer.model.metadata;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,6 +56,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.faces.converters.LocalDateConverter;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -435,6 +439,17 @@ public class Metadata implements Serializable {
                     // Values that are message keys (or collection names, etc.)
                     value = ViewerResourceBundle.getTranslation(value, locale);
                     // convert line breaks back to HTML
+                    value = value.replace("&lt;br /&gt;", "<br />");
+                    break;
+                case DATEFIELD:
+                    try {                        
+                        String outputPattern = BeanUtils.getNavigationHelper().getDatePattern();
+                        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
+                        LocalDate date = LocalDate.parse(value);
+                        value = date.format(dateTimeFormatter);
+                    } catch(DateTimeParseException e) {
+                        logger.error("Error parsing {} as date", value);
+                    }
                     value = value.replace("&lt;br /&gt;", "<br />");
                     break;
                 case UNESCAPEDFIELD:
