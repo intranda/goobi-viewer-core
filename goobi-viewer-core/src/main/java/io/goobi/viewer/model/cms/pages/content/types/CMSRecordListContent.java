@@ -187,6 +187,12 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
+            
+            // Set configured result group on SearchBean, if available (before initializing Search)
+            if (StringUtils.isNotBlank(resultGroupName)) {
+                searchBean.setActiveResultGroupName(resultGroupName);
+            }
+            
             Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL, searchBean.getResultGroupsForSearchExecution());
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(this.getSortField());
@@ -202,10 +208,6 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
                 sortString = this.getGroupingField() + ";" + sortString;
                 s.setSortString(sortString);
-            }
-            logger.trace("result group configured: "+ resultGroupName);
-            if (StringUtils.isNotBlank(resultGroupName)) {
-                searchBean.setActiveResultGroupName(resultGroupName);
             }
             SearchFacets facets = searchBean.getFacets();
             s.setPage(getCurrentListPage());

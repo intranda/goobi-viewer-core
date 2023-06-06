@@ -144,6 +144,7 @@ public class Search implements Serializable {
 
     /**
      * Load configured result groups. If none are configured or groups are disabled, use a single default group for regular search.
+     * TODO Always set externally, according to context?
      */
     @Transient
     private List<SearchResultGroup> resultGroups = (!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
