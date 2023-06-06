@@ -888,6 +888,11 @@ public class SearchBean implements SearchInterface, Serializable {
             currentSearch.setExpandQuery(expandQuery);
         }
 
+        // Override default result groups config if active group selected
+        if (activeResultGroup != null) {
+            currentSearch.setResultGroups(Collections.singletonList(activeResultGroup));
+        }
+
         currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
     }
 
