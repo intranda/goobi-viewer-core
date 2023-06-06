@@ -371,6 +371,7 @@ public final class SearchHelper {
             String s = query.replaceAll("[\n\r]", "_");
             logger.trace("searchWithAggregation: {}", s);
         }
+        logger.trace("hitsPerPage: {}", rows);
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
         if (resp.getResults() == null) {

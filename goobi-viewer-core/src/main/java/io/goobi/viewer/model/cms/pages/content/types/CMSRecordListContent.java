@@ -56,8 +56,7 @@ import jakarta.persistence.Transient;
 @Table(name = "cms_content_record_list")
 @DiscriminatorValue("recordlist")
 public class CMSRecordListContent extends CMSContent implements PagedCMSContent {
-    
-    @SuppressWarnings("unused")
+
     private static final Logger logger = LogManager.getLogger(CMSRecordListContent.class); //NOSONAR Sometimes the logger is needed for debugging
 
     private static final String COMPONENT_NAME = "searchhitlist";
@@ -68,6 +67,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     private String sortField = "";
     @Column(name = "grouping_field")
     private String groupingField = "";
+    @Column(name = "result_group")
+    private String resultGroupName;
     @Column(name = "include_structure_elements")
     private boolean includeStructureElements = false;
     @Column(name = "elements_per_page")
@@ -120,6 +121,20 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
     public void setGroupingField(String groupingField) {
         this.groupingField = groupingField;
+    }
+
+    /**
+     * @return the resultGroupName
+     */
+    public String getResultGroupName() {
+        return resultGroupName;
+    }
+
+    /**
+     * @param resultGroupName the resultGroupName to set
+     */
+    public void setResultGroupName(String resultGroupName) {
+        this.resultGroupName = resultGroupName;
     }
 
     public String getSortField() {
@@ -186,6 +201,10 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
                 sortString = this.getGroupingField() + ";" + sortString;
                 s.setSortString(sortString);
+            }
+            logger.trace("result group configured: "+ resultGroupName);
+            if (StringUtils.isNotBlank(resultGroupName)) {
+                searchBean.setActiveResultGroupName(resultGroupName);
             }
             SearchFacets facets = searchBean.getFacets();
             s.setPage(getCurrentListPage());
