@@ -735,6 +735,7 @@ public class NavigationHelper implements Serializable {
             case "en":
                 return "MM/dd/yyyy";
             case "es":
+            case "fr":
                 return "dd/MM/yyyy";
             default:
                 return "yyyy-MM-dd";

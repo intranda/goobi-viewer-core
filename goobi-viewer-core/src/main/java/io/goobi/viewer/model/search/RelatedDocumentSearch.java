@@ -30,6 +30,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -67,8 +68,10 @@ public class RelatedDocumentSearch implements Serializable {
     public String search(String pi, String relationshipField) throws PresentationException, IndexUnreachableException {
         List<String> ids = getRelatedProcessIdentifier(pi, relationshipField);
         String searchString = String.format(SEARCH_STRING_FORMAT, ids.stream().collect(Collectors.joining(SEARCH_STRING_IDENTIFIER_SEPARATOR)));
-        searchBean.setExactSearchString(searchString);
-        return "pretty:newSearch5";
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", searchString, 1, searchBean.getSortString(), "-");
+        
+//        searchBean.setExactSearchString(searchString);
+//        return "pretty:newSearch5";
     }
     
     private List<String> getRelatedProcessIdentifier(String pi, String relationshipField) throws PresentationException, IndexUnreachableException {
