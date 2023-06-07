@@ -1,5 +1,6 @@
 package io.goobi.viewer.model.metadata;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,11 +58,15 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
                 .collect(Collectors.toList());
         String recordIdentifiers = relationshipMetadata.stream().map(md -> md.getFirstValue(RELATIONSHIP_ID_REFERENCE, null))
         .collect(Collectors.joining(" "));
-        String query = String.format(RELATED_RECORD_QUERY_FORMAT, recordIdentifiers);
-        SolrDocumentList recordDocs = searchIndex.search(query, recordFields);
-        Map<String, MetadataContainer> map = recordDocs.stream()
-                .collect(Collectors.toMap(doc -> SolrTools.getSingleFieldStringValue(doc, DOCUMENT_IDENTIFIER), MetadataContainer::createMetadataEntity));
-        return new RelationshipMetadataContainer(container.metadataMap, map);
+        if(StringUtils.isBlank(recordIdentifiers)) {
+            return new RelationshipMetadataContainer(Collections.emptyMap(), Collections.emptyMap());
+        } else {            
+            String query = String.format(RELATED_RECORD_QUERY_FORMAT, recordIdentifiers);
+            SolrDocumentList recordDocs = searchIndex.search(query, recordFields);
+            Map<String, MetadataContainer> map = recordDocs.stream()
+                    .collect(Collectors.toMap(doc -> SolrTools.getSingleFieldStringValue(doc, DOCUMENT_IDENTIFIER), MetadataContainer::createMetadataEntity));
+            return new RelationshipMetadataContainer(container.metadataMap, map);
+        }
     }
 
     public static ComplexMetadataContainer loadRelationshipMetadata(String pi, SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
