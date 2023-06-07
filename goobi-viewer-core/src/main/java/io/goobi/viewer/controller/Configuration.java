@@ -1302,7 +1302,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplaySearchHitNumbers() {
-        return getLocalBoolean("search.displayHitNumbers", false);
+        return getLocalBoolean("search.displayHitNumbers[@enabled]", false);
     }
 
     /**
