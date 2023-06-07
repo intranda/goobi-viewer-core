@@ -377,7 +377,7 @@ public class Configuration extends AbstractConfiguration {
     public String getDfgViewerUrl() {
         return getLocalString("urls.dfg-viewer", "https://dfg-viewer.de/v2?set[mets]=");
     }
-    
+
     /**
      * 
      * @return
@@ -386,7 +386,6 @@ public class Configuration extends AbstractConfiguration {
     public String getDfgViewerSourcefileField() {
         return getLocalString("urls.dfg-viewer[@sourcefileField]");
     }
-
 
     /**
      * Returns the list of configured metadata for search hit elements.
@@ -577,6 +576,7 @@ public class Configuration extends AbstractConfiguration {
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String labelField = sub.getString("[@labelField]");
         String sortField = sub.getString("[@sortField]");
+        String separator = sub.getString("[@separator]");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -596,6 +596,7 @@ public class Configuration extends AbstractConfiguration {
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
                 .setSortField(sortField)
+                .setSeparator(separator)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
@@ -729,7 +730,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isDisplaySidebarWidgetUsage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@enabled]", true);
     }
-    
+
     /**
      *
      * @return Boolean value
@@ -1294,7 +1295,7 @@ public class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
+
     /**
      * 
      * @return Configured value; default value if none found
@@ -1438,6 +1439,18 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getDisplayAdditionalMetadataOnelineFields() {
         return getDisplayAdditionalMetadataFieldsByType("oneline", false);
+    }
+
+    /**
+     * <p>
+     * getDisplayAdditionalMetadataSnippetFields.
+     * </p>
+     *
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataSnippetFields() {
+        return getDisplayAdditionalMetadataFieldsByType("snippet", false);
     }
 
     /**
@@ -2750,13 +2763,13 @@ public class Configuration extends AbstractConfiguration {
     public String getFacetFieldType(String facetField) {
         return getPropertyForFacetField(facetField, XML_PATH_ATTRIBUTE_TYPE, "");
     }
-    
+
     /**
      * @param facetField
      * @return
      * @should return correct value
      */
-    public String  getMultiValueOperatorForField(String facetField) {
+    public String getMultiValueOperatorForField(String facetField) {
         return getPropertyForFacetField(facetField, "[@multiValueOperator]", "AND");
     }
 
@@ -3268,12 +3281,13 @@ public class Configuration extends AbstractConfiguration {
     public boolean useTiles(PageType view, ImageType image) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, image).getBoolean("[@tileImage]", false);
     }
-    
+
     /**
      * whether to show a navigator element in the openseadragon viewe
-     * @param view  get settings for this pageType
-     * @param image  get settings for this image type
-     * @return  true if navigator should be shown
+     * 
+     * @param view get settings for this pageType
+     * @param image get settings for this image type
+     * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
     public boolean showImageNavigator(PageType view, ImageType image) throws ViewerConfigurationException {
@@ -4446,7 +4460,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isSearchInItemEnabled() {
         return getLocalBoolean("sidebar.searchInItem[@enabled]", true);
     }
-    
+
     /**
      * <p>
      * isSearchRisExportEnabled.

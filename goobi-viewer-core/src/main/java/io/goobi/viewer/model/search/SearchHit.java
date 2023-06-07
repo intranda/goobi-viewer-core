@@ -554,6 +554,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
      * @param oneLineFields
+     * @param snippetFields Fields to be truncated to the relevant part
      * @should add field values pairs that match search terms
      * @should add MD fields that contain terms from DEFAULT
      * @should not add duplicate values
@@ -561,9 +562,10 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should not add field values that equal the label
      * @should translate configured field values correctly
      * @should write one line fields into a single string
+     * @should truncate snippet fields correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields,
-            Set<String> oneLineFields) {
+            Set<String> oneLineFields, Set<String> snippetFields) {
         // logger.trace("populateFoundMetadata: {}", searchTerms); //NOSONAR Sometimes used for debugging
         if (searchTerms == null) {
             return;
@@ -609,6 +611,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if (fieldValue.equals(browseElement.getLabel())) {
                                     continue;
                                 }
+
                                 String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
@@ -639,7 +642,24 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if (fieldValue.equals(browseElement.getLabel())) {
                                     continue;
                                 }
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+
+                                String highlightedValue = null;
+
+                                // Truncate snippet field values
+                                if (snippetFields != null && snippetFields.contains(docFieldName)) {
+                                    List<String> truncatedValues =
+                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
+                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
+                                                    proximitySearchDistance);
+                                    if (!truncatedValues.isEmpty()) {
+                                        highlightedValue = "[...] " + truncatedValues.get(0).trim() + " [...]";
+                                    }
+                                }
+
+                                // Apply highlighting, if not yet done via truncation
+                                if (highlightedValue == null) {
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
                                     if (translateFields != null && (translateFields.contains(entry.getKey())
@@ -728,7 +748,23 @@ public class SearchHit implements Comparable<SearchHit> {
                                     }
                                 }
 
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                String highlightedValue = null;
+
+                                // Truncate snippet field values
+                                if (snippetFields != null && snippetFields.contains(entry.getKey())) {
+                                    List<String> truncatedValues =
+                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
+                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
+                                                    proximitySearchDistance);
+                                    if (!truncatedValues.isEmpty()) {
+                                        highlightedValue = truncatedValues.get(0).trim();
+                                    }
+                                }
+
+                                // Apply highlighting, if not yet done via truncation
+                                if (highlightedValue == null) {
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
                                     if (translateFields != null && (translateFields.contains(entry.getKey())

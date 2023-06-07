@@ -36,6 +36,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -120,7 +122,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
         searchTerms.put("MD_YEARPUBLISH", new HashSet<>(Arrays.asList(new String[] { "1984" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null, 0);
         Assert.assertEquals(2, be.getAdditionalMetadataList().size());
         {
             String field = "MD_TITLE";
@@ -154,7 +156,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null, 0);
         Assert.assertTrue(be.getMetadataList("MD_TITLE").isEmpty());
     }
 
@@ -174,7 +176,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null, 0);
         Assert.assertEquals(1, be.getMetadataList("MD_TITLE").size());
     }
 
@@ -194,7 +196,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, new HashSet<>(Collections.singletonList("MD_IGNOREME")), null, null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, new HashSet<>(Collections.singletonList("MD_IGNOREME")), null, null, null, 0);
         Assert.assertEquals(0, be.getMetadataList("MD_IGNOREME").size());
     }
 
@@ -216,7 +218,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.DC, new HashSet<>(Arrays.asList(new String[] { "admin" })));
 
         String[] translateFields = { SolrConstants.DC };
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, new HashSet<>(Arrays.asList(translateFields)), null);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, new HashSet<>(Arrays.asList(translateFields)), null, null, 0);
         Assert.assertEquals(1, be.getMetadataList(SolrConstants.DC).size());
     }
 
@@ -239,7 +241,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put("MD_COUNT_EN", new HashSet<>(Arrays.asList(new String[] { "one", "three" })));
 
         String[] oneLineFields = { "MD_COUNT_EN", "MD_COUNT_JP" };
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, new HashSet<>(Arrays.asList(oneLineFields)));
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, new HashSet<>(Arrays.asList(oneLineFields)), null, 0);
 
         // Via explicit term field
         Assert.assertEquals(1, be.getMetadataList("MD_COUNT_EN").size());
@@ -251,6 +253,53 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(1, be.getMetadataList("MD_COUNT_JP").size());
         Assert.assertEquals("<span class=\"search-list--highlight\">ichi</span>, <span class=\"search-list--highlight\">ni</span>",
                 be.getMetadataList("MD_COUNT_JP").get(0).getValues().get(0).getComboValueShort(0));
+    }
+
+    /**
+     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Set,Set,Set,Set)
+     * @verifies truncate snippet fields correctly
+     */
+    @Test
+    public void addAdditionalMetadataContainingSearchTerms_shouldTruncateSnippetFieldsCorrectly() throws Exception {
+        int maxLength = 50;
+        DataManager.getInstance().getConfiguration().overrideValue("search.fulltextFragmentLength", maxLength);
+
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
+        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
+
+        StructElement se = new StructElement();
+        se.getMetadataFields().put("MD_DESCRIPTION", Collections.singletonList(StringConstants.LOREM_IPSUM));
+        se.getMetadataFields().put("MD_SOMETEXT", Collections.singletonList(StringConstants.LOREM_IPSUM.replace("labore", "foo")));
+        Assert.assertEquals(2, se.getMetadataFields().size());
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, Collections.singleton("labore"));
+        searchTerms.put("MD_SOMETEXT", Collections.singleton("ipsum"));
+
+        String[] snippetFields = { "MD_DESCRIPTION", "MD_SOMETEXT" };
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, new HashSet<>(Arrays.asList(snippetFields)), 0);
+
+        // Via DEFAULT
+        Assert.assertEquals(1, be.getMetadataList("MD_DESCRIPTION").size());
+        Assert.assertTrue(be.getMetadataList("MD_DESCRIPTION").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
+        // Truncated snippet is randomized, so cannot test the exact value
+        Assert.assertTrue(be.getMetadataList("MD_DESCRIPTION")
+                .get(0)
+                .getValues()
+                .get(0)
+                .getComboValueShort(0)
+                .contains("ut <span class=\"search-list--highlight\">labore</span> et"));
+
+        // Via explicit term field
+        Assert.assertEquals(1, be.getMetadataList("MD_SOMETEXT").size());
+        Assert.assertTrue(be.getMetadataList("MD_SOMETEXT").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
+        // Truncated snippet is randomized, so cannot test the exact value
+        Assert.assertTrue(be.getMetadataList("MD_SOMETEXT")
+                .get(0)
+                .getValues()
+                .get(0)
+                .getComboValueShort(0)
+                .contains("<span class=\"search-list--highlight\">ipsum</span> dolor"));
     }
 
     /**

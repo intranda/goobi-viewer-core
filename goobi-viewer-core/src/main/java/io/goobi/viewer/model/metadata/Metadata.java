@@ -87,6 +87,7 @@ public class Metadata implements Serializable {
     private String sortField;
     /** Optional metadata field that will provide the label value (if singleString=true) */
     private String labelField;
+    private String separator;
     private int type = 0;
     private int number = -1;
     private boolean group = false;
@@ -1086,6 +1087,22 @@ public class Metadata implements Serializable {
      */
     public Metadata setLabelField(String labelField) {
         this.labelField = labelField;
+        return this;
+    }
+
+    /**
+     * @return the separator
+     */
+    public String getSeparator() {
+        return separator;
+    }
+
+    /**
+     * @param separator the separator to set
+     * @return this
+     */
+    public Metadata setSeparator(String separator) {
+        this.separator = separator;
         return this;
     }
 
