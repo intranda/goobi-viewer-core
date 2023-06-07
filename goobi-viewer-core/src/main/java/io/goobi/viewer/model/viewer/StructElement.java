@@ -269,7 +269,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                         String coords = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
                         String order = String.valueOf(shapeDoc.getFieldValue(SolrConstants.ORDER));
                         this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(),
-                                order != null ? Integer.parseInt(order) : getImageNumber(), this.logid));
+                                "null".equals(order) ? getImageNumber() : Integer.parseInt(order), this.logid));
                     }
                 }
             }
