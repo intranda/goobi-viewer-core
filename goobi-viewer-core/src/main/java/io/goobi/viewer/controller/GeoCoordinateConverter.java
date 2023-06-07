@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -95,12 +96,12 @@ public class GeoCoordinateConverter {
     public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, List<String> coordinateFields,
             String markerTitleField, boolean aggregateResults)
             throws PresentationException, IndexUnreachableException {
-        Map<SolrDocument, SolrDocumentList> docs = StringUtils.isNotBlank(query)
+        Map<SolrDocument, List<SolrDocument>> docs = StringUtils.isNotBlank(query)
                 ? getSolrDocuments(query, filterQueries, coordinateFields, markerTitleField, aggregateResults) : Collections.emptyMap();
         List<GeoMapFeature> features = new ArrayList<>();
-        for (Entry<SolrDocument, SolrDocumentList> entry : docs.entrySet()) {
+        for (Entry<SolrDocument, List<SolrDocument>> entry : docs.entrySet()) {
             SolrDocument doc = entry.getKey();
-            SolrDocumentList children = entry.getValue();
+            List<SolrDocument> children = entry.getValue();
             for (String field : coordinateFields) {
                 Map<String, List<SolrDocument>> metadataDocs = children.stream().collect(Collectors.toMap(SolrTools::getReferenceId, List::of, ListUtils::union));            
                 for (List<SolrDocument> childDocs : metadataDocs.values()) {
@@ -127,7 +128,7 @@ public class GeoCoordinateConverter {
         return features;
     }
 
-    static Map<SolrDocument, SolrDocumentList> getSolrDocuments(String query, List<String> filterQueries, List<String> coordinateFields,
+    static Map<SolrDocument, List<SolrDocument>> getSolrDocuments(String query, List<String> filterQueries, List<String> coordinateFields,
             String markerTitleField, boolean aggregateResults)
             throws PresentationException, IndexUnreachableException {
         List<String> fieldList = new ArrayList<>(coordinateFields);
@@ -139,22 +140,32 @@ public class GeoCoordinateConverter {
         }
         String finalQuery = String.format("%s +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
         Map<String, String> params = new HashMap<>();
-        if (aggregateResults) {
-            String expandQuery = query.replaceAll("\\{\\!join[^}]+}", "");
-            params.putAll(SearchHelper.getExpandQueryParams(expandQuery));
-        }
+//        if (aggregateResults) {
+//            String expandQuery = query.replaceAll("\\{\\!join[^}]+}", "");
+//            params.putAll(SearchHelper.getExpandQueryParams(expandQuery));
+//        }
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
                 .search(finalQuery, 0, 10_000, null, null, aggregateResults ? null : fieldList, filterQueries, params);
         SolrDocumentList docs = response.getResults();
-        Map<String, SolrDocumentList> expandedResults = response.getExpandedResults();
-        if (expandedResults == null) {
-            return docs.stream().collect(Collectors.toMap(doc -> doc, doc -> new SolrDocumentList()));
-        } else {
+        
+        if (aggregateResults) {
+            String expandQuery = query.replaceAll("\\{\\!join[^}]+}", "");
+            QueryResponse expandResponse = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(expandQuery, 0, 10_000, null, null, null, filterQueries, params);
+            SolrDocumentList expandDocs = expandResponse.getResults();
+            Map<String, List<SolrDocument>> expandedResults = expandDocs.stream().collect(Collectors.toMap(doc -> SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT), List::of, ListUtils::union));
+//          Map<String, SolrDocumentList> expandedResults = response.getExpandedResults();
+
+            long expandedResultCount = expandedResults.values().stream().flatMap(List::stream).count();
             return docs.stream()
                     .collect(Collectors.toMap(doc -> doc,
                             doc -> expandedResults.getOrDefault(doc.getFieldValue(SolrConstants.PI), new SolrDocumentList())));
+        } else {
+            return docs.stream().collect(Collectors.toMap(doc -> doc, doc -> new SolrDocumentList()));
         }
+
     }
 
     /**
