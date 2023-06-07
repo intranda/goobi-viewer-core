@@ -376,7 +376,7 @@
     
     <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
     	<ui:fragment rendered="#{se.hasShapeMetadata()}">
-    	<ui:repeat var="shape" value="#{se.shapeMetadata}" varStatus="status">
+    	<ui:repeat var="shape" value="#{se.getShapeMetadataForPage(activeDocumentBean.viewManager.currentPage.order)}" varStatus="status">
 	    	<div id="pageAreaFrame_#{se.logid}_#{status.index}" class="page-area #{se.logid == activeDocumentBean.logid ? 'active':''}">
 	    	</div>
 	    	<div id="pageAreaLabel_#{se.logid}_#{status.index}" class="page-area-label #{se.logid == activeDocumentBean.logid ? 'active':''}">

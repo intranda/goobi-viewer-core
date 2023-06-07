@@ -15,7 +15,7 @@
     <div class="row no-gutters">
 	     <div class="col-12 col-sm-#{browseElement.showThumbnail ? '10' : '12'}">
 	         <!-- TITLE -->
-	         <div class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}">
+	         <div class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}  #{configurationBean.displaySearchHitNumbers != null ? '-hitNumber' : ''}">
 	                 <!-- ADD TO BOOKMARKS ICON FOR OBJECTS WITHOUT THUMBS -->
 	                 <ui:fragment rendered="#{configurationBean.bookmarksEnabled and !browseElement.showThumbnail}">
 	                     <button type="button" class="btn btn--icon search-list__no-thumb-bookmark" data-bookmark-list-type="add" data-pi="#{browseElement.pi}" aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch" aria-checked="false">
@@ -25,6 +25,10 @@
 	                         </span>
 	                     </button>
 	                 </ui:fragment>
+                       <!-- Display search hit number -->
+                       <h:panelGroup styleClass="search-list__hit-number-wrapper" rendered="#{configurationBean.displaySearchHitNumbers}">
+                            <span title="#{hit.hitNumber}" class="search-list__hit-number">#{hit.hitNumber}</span>
+						</h:panelGroup>
 	                 <h3 >
 	                     <a href="#{navigationHelper.applicationUrl}#{browseElement.url}" title="#{msg[browseElement.label]}">
 	                         <h:outputText value="#{msg[browseElement.labelShort]}" escape="false" />
