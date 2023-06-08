@@ -41,6 +41,7 @@ import org.json.JSONObject;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -780,18 +781,10 @@ public class ConfigurationBean implements Serializable {
                 .getConfiguration()
                 .getSortFields()
                 .stream()
-                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
+                .filter(field -> !Configuration.isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
                 .collect(Collectors.toList());
     }
 
-    /**
-     * @param field
-     * @param language
-     * @return
-     */
-    private static boolean isLanguageVersionOtherThan(String field, String language) {
-        return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
-    }
 
     /**
      * <p>

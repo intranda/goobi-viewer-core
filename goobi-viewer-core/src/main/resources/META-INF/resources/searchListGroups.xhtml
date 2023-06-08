@@ -77,7 +77,27 @@
                                                 </c:forEach>
                                                 </ui:fragment> 
                                                 
-                                                <!-- DROP-DOWN -->
+                                                <!-- DROP-DOWN-CHECKBOXES -->
+                                                <ui:fragment rendered="#{queryItem.selectType == 'dropdowncheckboxes'}">
+														<div class="cms-module__option-dropdown">
+															<div class="cms-module__option-dropdown-trigger"
+																data-toggle="option-dropdown">#{msg.select}</div>
+															<ul>
+																<ui:repeat var="selectable"
+																	value="#{queryItem.getSelectableItems(navigationHelper.localeString)}">
+																	<li>
+																		<label> 
+																			<h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}">
+																				<f:ajax event="valueChange" render="@this"></f:ajax>
+																			</h:selectBooleanCheckbox> #{selectable.label}
+																		</label>
+																	</li>
+																</ui:repeat>
+															</ul>
+														</div>
+                                                </ui:fragment>
+                                                
+                                                 <!-- DROP-DOWN -->
                                                 <ui:fragment rendered="#{queryItem.selectType == 'dropdown'}">
                                                     <div class="custom-control custom-control--select multiple">
                                                        <h:selectManyMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
@@ -89,6 +109,7 @@
                                                        </h:selectManyMenu>
                                                     </div>
                                                 </ui:fragment>
+                                                
                                             </ui:fragment>
                                             <ui:fragment rendered="#{!queryItem.displaySelectItems}">
                                                         <ui:fragment rendered="#{queryItem.range}">

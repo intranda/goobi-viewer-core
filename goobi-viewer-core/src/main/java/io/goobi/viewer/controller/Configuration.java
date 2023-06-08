@@ -1418,8 +1418,12 @@ public class Configuration extends AbstractConfiguration {
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
         for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             String field = subElement.getString(".");
+            
             if (StringUtils.isEmpty(field)) {
                 logger.warn("No advanced search field name defined, skipping.");
+                continue;
+            } else if(isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage())) {
+                logger.trace("Field {} belongs to different language; skipping", field);
                 continue;
             }
             String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, null);
@@ -5698,5 +5702,15 @@ public class Configuration extends AbstractConfiguration {
         double lng = getLocalFloat("maps.view.center.lng", 11.073397f);
         double lat = getLocalFloat("maps.view.center.lat", 49.451993f);
         return new View(zoom, lng, lat);
+    }
+    
+
+    /**
+     * @param field
+     * @param language
+     * @return
+     */
+    public static boolean isLanguageVersionOtherThan(String field, String language) {
+        return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
     }
 }

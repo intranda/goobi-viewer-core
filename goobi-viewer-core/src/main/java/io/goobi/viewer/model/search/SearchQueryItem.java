@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.faces.event.ValueChangeEvent;
 
@@ -45,6 +46,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
@@ -153,6 +156,12 @@ public class SearchQueryItem implements Serializable {
         }
 
         return Collections.emptyList();
+    }
+    
+    public List<CheckboxSelectable<String>> getSelectableItems(String language) throws DAOException, PresentationException, IndexUnreachableException {
+                return this.getSelectItems(language).stream()
+                .map(item -> new CheckboxSelectable<String>(this.values, item.getOne(), s -> item.getTwo()))
+                .collect(Collectors.toList());
     }
 
     /**
