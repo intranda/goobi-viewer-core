@@ -2762,7 +2762,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private URI getParameterPath(URI basePath) {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
-        basePath = ViewerPathBuilder.resolve(basePath, "-");
+        basePath = ViewerPathBuilder.resolve(basePath, getActiveResultGroupName());
         // URL-encode query if not yet encoded
         String exactSearchString = getExactSearchString();
         //        try {
