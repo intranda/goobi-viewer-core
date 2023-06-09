@@ -2498,6 +2498,18 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, results.size());
         Assert.assertEquals("MD_ACCESSLOCATIONS", results.get(0));
     }
+    
+    /**
+     * @see Configuration#getDisplayAdditionalMetadataSnippetFields()
+     * @verifies return correct values
+     */
+    @Test
+    public void getDisplayAdditionalMetadataSnippetFields_shouldReturnCorrectValues() throws Exception {
+        List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataSnippetFields();
+        Assert.assertNotNull(results);
+        Assert.assertEquals(1, results.size());
+        Assert.assertEquals("MD_DESCRIPTION", results.get(0));
+    }
 
     @Test
     public void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws Exception {
@@ -3028,6 +3040,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertNotNull(md);
         Assert.assertEquals("MD_CATALOGIDSOURCE", md.getLabel());
         Assert.assertEquals("LINK_CATALOGIDSOURCE", md.getMasterValue());
+        Assert.assertEquals("; ", md.getSeparator());
         Assert.assertTrue(md.isTopstructOnly());
     }
 

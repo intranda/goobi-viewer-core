@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +52,6 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
@@ -275,7 +273,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                         String coords = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
                         String order = String.valueOf(shapeDoc.getFieldValue(SolrConstants.ORDER));
                         this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(),
-                                order != null ? Integer.parseInt(order) : getImageNumber(), this.logid));
+                                "null".equals(order) ? getImageNumber() : Integer.parseInt(order), this.logid));
                     }
                 }
             }

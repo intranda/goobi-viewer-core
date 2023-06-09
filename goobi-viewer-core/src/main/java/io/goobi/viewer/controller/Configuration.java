@@ -617,6 +617,7 @@ public class Configuration extends AbstractConfiguration {
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String labelField = sub.getString("[@labelField]");
         String sortField = sub.getString("[@sortField]");
+        String separator = sub.getString("[@separator]");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -636,6 +637,7 @@ public class Configuration extends AbstractConfiguration {
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
                 .setSortField(sortField)
+                .setSeparator(separator)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
@@ -1334,14 +1336,14 @@ public class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
+
     /**
      * 
      * @return Configured value; default value if none found
      * @should return correct value
      */
     public boolean isDisplaySearchHitNumbers() {
-        return getLocalBoolean("search.displayHitNumbers", false);
+        return getLocalBoolean("search.displayHitNumbers[@enabled]", false);
     }
 
     /**
@@ -1495,6 +1497,18 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getDisplayAdditionalMetadataOnelineFields() {
         return getDisplayAdditionalMetadataFieldsByType("oneline", false);
+    }
+
+    /**
+     * <p>
+     * getDisplayAdditionalMetadataSnippetFields.
+     * </p>
+     *
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataSnippetFields() {
+        return getDisplayAdditionalMetadataFieldsByType("snippet", false);
     }
 
     /**

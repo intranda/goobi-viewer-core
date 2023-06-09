@@ -51,6 +51,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -68,9 +69,6 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
-
-    public static final String LOREM_IPSUM =
-            "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -298,7 +296,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void truncateFulltext_shouldMakeTermsBoldIfFoundInText() throws Exception {
-        String original = LOREM_IPSUM;
+        String original = StringConstants.LOREM_IPSUM;
         String[] terms = { "ipsum", "tempor", "labore" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true, 0);
         Assert.assertFalse(truncated.isEmpty());
@@ -326,7 +324,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermsAreGiven() throws Exception {
-        String original = LOREM_IPSUM;
+        String original = StringConstants.LOREM_IPSUM;
         List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true, true, 0);
         Assert.assertFalse(truncated.isEmpty());
         Assert.assertEquals(original.substring(0, 200), truncated.get(0));
@@ -338,7 +336,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermHasBeenFound() throws Exception {
-        String original = LOREM_IPSUM;
+        String original = StringConstants.LOREM_IPSUM;
         String[] terms = { "boogers" };
         {
             List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true, 0);
@@ -370,7 +368,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void truncateFulltext_shouldReturnMultipleMatchFragmentsCorrectly() throws Exception {
-        String original = LOREM_IPSUM;
+        String original = StringConstants.LOREM_IPSUM;
         String[] terms = { "in" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assert.assertEquals(7, truncated.size());
@@ -411,7 +409,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     public void truncateFulltext_shouldFindFuzzySearchTermsCorrectly() throws Exception {
-        String original = LOREM_IPSUM;
+        String original = StringConstants.LOREM_IPSUM;
         String[] terms = { "dolor~1" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assert.assertEquals(4, truncated.size());

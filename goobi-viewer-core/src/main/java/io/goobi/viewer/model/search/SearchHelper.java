@@ -1519,19 +1519,6 @@ public final class SearchHelper {
 
     /**
      * <p>
-     * replaceHighlightingPlaceholdersForHyperlinks.
-     * </p>
-     *
-     * @param phrase a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     * @should replace placeholders with bold tags
-     */
-    public static String replaceHighlightingPlaceholdersForHyperlinks(String phrase) {
-        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span style=\"color:blue\">").replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
-    }
-
-    /**
-     * <p>
      * replaceHighlightingPlaceholders.
      * </p>
      *

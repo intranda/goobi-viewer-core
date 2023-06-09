@@ -142,14 +142,16 @@ public class SearchHit implements Comparable<SearchHit> {
     private final Map<String, Set<String>> searchTerms;
     /** Docstruct metadata that matches the search terms. */
     private final List<StringPair> foundMetadata = new ArrayList<>();
+    /** Metadata for Excel export. */
+    @JsonIgnore
+    private final Map<String, String> exportMetadata = new HashMap<>();
+    @JsonIgnore
+    private final Set<String> existingMetadataFields = new HashSet<>();
     private final String url;
     @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
     private final Map<HitType, Integer> hitTypeCounts = new EnumMap<>(HitType.class);
-    /** Metadata for Excel export. */
-    @JsonIgnore
-    private final Map<String, String> exportMetadata = new HashMap<>();
     @JsonIgnore
     private int hitsPopulated = 0;
     @JsonIgnore
@@ -479,7 +481,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             ownerHits.put(ownerIddoc, ownerHit);
                             ownerDocs.put(ownerIddoc, ownerDoc);
                             populateHit = true;
-                            // logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID")); //NOSONAR Sometimes used for debugging
+                            logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID")); //NOSONAR Sometimes used for debugging
                         }
                     }
                     if (ownerHit == null) {
@@ -496,10 +498,10 @@ public class SearchHit implements Comparable<SearchHit> {
                     // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
 
                     SearchHit childHit =
-                            factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), null, fulltext,
+                            factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), existingMetadataFields, fulltext,
                                     acccessDeniedType ? HitType.ACCESSDENIED : null);
                     // Skip grouped metadata child hits that have no additional (unique) metadata to display
-                    if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
+                    if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty() && ownerHit.getFoundMetadata().isEmpty()) {
                         // TODO This will result in an infinite loading animation if all child hits are skipped
                         continue;
                     }
@@ -541,7 +543,7 @@ public class SearchHit implements Comparable<SearchHit> {
             ownerDocs.clear();
             ownerHits.clear();
         }
-        logger.trace("Remaning child docs: {}", childDocs.size());
+        // logger.trace("Remaning child docs: {}", childDocs.size());
     }
 
     /**
@@ -554,6 +556,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
      * @param oneLineFields
+     * @param snippetFields Fields to be truncated to the relevant part
      * @should add field values pairs that match search terms
      * @should add MD fields that contain terms from DEFAULT
      * @should not add duplicate values
@@ -561,9 +564,10 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should not add field values that equal the label
      * @should translate configured field values correctly
      * @should write one line fields into a single string
+     * @should truncate snippet fields correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields,
-            Set<String> oneLineFields) {
+            Set<String> oneLineFields, Set<String> snippetFields) {
         // logger.trace("populateFoundMetadata: {}", searchTerms); //NOSONAR Sometimes used for debugging
         if (searchTerms == null) {
             return;
@@ -590,7 +594,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (ownerAlreadyHasFields != null) {
                             switch (browseElement.getDocType()) {
                                 case METADATA:
-                                    if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
+                                    if (ownerAlreadyHasFields.contains(docFieldName)) {
                                         logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
                                         continue;
                                     }
@@ -609,6 +613,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if (fieldValue.equals(browseElement.getLabel())) {
                                     continue;
                                 }
+
                                 String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
@@ -639,7 +644,24 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if (fieldValue.equals(browseElement.getLabel())) {
                                     continue;
                                 }
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+
+                                String highlightedValue = null;
+
+                                // Truncate snippet field values
+                                if (snippetFields != null && snippetFields.contains(docFieldName)) {
+                                    List<String> truncatedValues =
+                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
+                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
+                                                    proximitySearchDistance);
+                                    if (!truncatedValues.isEmpty()) {
+                                        highlightedValue = "[...] " + truncatedValues.get(0).trim() + " [...]";
+                                    }
+                                }
+
+                                // Apply highlighting, if not yet done via truncation
+                                if (highlightedValue == null) {
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
                                     if (translateFields != null && (translateFields.contains(entry.getKey())
@@ -650,6 +672,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                     foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue));
+                                    existingMetadataFields.add(docFieldName);
                                     // Only add one instance of NORM_ALTNAME (as there can be dozens)
                                     if ("NORM_ALTNAME".equals(docFieldName)) {
                                         break;
@@ -705,6 +728,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             if (sb.length() > 0) {
                                 foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), sb.toString()));
+                                existingMetadataFields.add(entry.getKey());
                                 // logger.trace("found metadata: {}:{}", docFieldName, fieldValue); //NOSONAR Sometimes used for debugging
                             }
 
@@ -728,7 +752,23 @@ public class SearchHit implements Comparable<SearchHit> {
                                     }
                                 }
 
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                String highlightedValue = null;
+
+                                // Truncate snippet field values
+                                if (snippetFields != null && snippetFields.contains(entry.getKey())) {
+                                    List<String> truncatedValues =
+                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
+                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
+                                                    proximitySearchDistance);
+                                    if (!truncatedValues.isEmpty()) {
+                                        highlightedValue = truncatedValues.get(0).trim();
+                                    }
+                                }
+
+                                // Apply highlighting, if not yet done via truncation
+                                if (highlightedValue == null) {
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
                                     if (translateFields != null && (translateFields.contains(entry.getKey())
@@ -739,6 +779,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                     foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), highlightedValue));
+                                    existingMetadataFields.add(entry.getKey());
                                 }
                             }
                         }

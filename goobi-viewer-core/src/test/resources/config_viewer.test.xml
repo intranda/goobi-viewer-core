@@ -390,8 +390,8 @@
             <value>50</value>
             <value>100</value>
         </hitsPerPage>
-        <!-- displayHitNumbers: If true, individual numbers of search hits within the current result set will be displayed. Default is false. -->
-        <displayHitNumbers>true</displayHitNumbers>
+        <!-- displayHitNumbers/@enabled: If true, individual numbers of search hits within the current result set will be displayed. Default is false. -->
+        <displayHitNumbers enabled="true" />
 		<!-- fulltextFragmentLength: Approximate length of the full-text fragment 
 			displayed in search hits. Default is 200. -->
 		<fulltextFragmentLength>50</fulltextFragmentLength>
@@ -494,6 +494,7 @@
 			<field type="translate">MD_LANGUAGE_UNTOKENIZED</field>
             <!-- field type="oneline": Fields in this list will have multiple values written into a single string, without line breaks. -->
             <field type="oneline">MD_ACCESSLOCATIONS</field>
+            <field type="snippet">MD_DESCRIPTION</field>
 		</displayAdditionalMetadata>
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
@@ -632,7 +633,7 @@
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />
 				</metadata>
-				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE" topstructOnly="true">
+				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE" separator="; " topstructOnly="true">
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 				</metadata>
