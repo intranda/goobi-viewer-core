@@ -690,4 +690,5 @@ public class SearchQueryItem implements Serializable {
     public String toString() {
         return field + " " + operator + " " + getValue();
     }
+
 }
