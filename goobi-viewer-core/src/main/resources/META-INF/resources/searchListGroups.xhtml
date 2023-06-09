@@ -64,7 +64,7 @@
                                                  <!-- BADGES -->
                                                 <ui:fragment rendered="#{queryItem.selectType == 'badges'}">
                                                 <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
-                                                    <button class="btn btn--link"
+                                                    <button type="button" class="btn btn--link"
                                                         jsf:action="#{queryItem.toggleValue(item.one)}" title="#{msg[item.two]}">
                                                         <ui:fragment rendered="#{queryItem.isValueSet(item.one)}">
                                                              <div class="badge badge-warning"><strong>#{item.two}</strong></div>
