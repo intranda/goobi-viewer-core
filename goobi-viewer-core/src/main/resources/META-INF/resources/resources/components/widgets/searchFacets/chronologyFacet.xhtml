@@ -17,6 +17,7 @@
         <!--  WIDGET CHRONOLOGY -->
         <ui:fragment rendered="#{searchBean.facets.hasRangeFacets}">
             <c:forEach var="field" items="#{searchBean.facets.allRangeFacetFields}" varStatus="status">
+                <ui:fragment rendered="#{!searchBean.facets.getValueRange(field).isEmpty()}">
                 <div class="widget widget-chronology-slider">
                     <div class="widget-chronology-slider__topbar">
 				        <div class="widget-chronology-slider__item chronology-slider-label">
@@ -74,6 +75,7 @@
 			        })
 	            })();
 	            </script>
+	            </ui:fragment>
             </c:forEach>
         </ui:fragment>
     </composite:implementation>
