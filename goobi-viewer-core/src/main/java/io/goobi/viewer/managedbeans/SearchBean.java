@@ -70,7 +70,6 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
@@ -80,6 +79,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -427,11 +427,11 @@ public class SearchBean implements SearchInterface, Serializable {
         // After resetting, return to the correct search entry page
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
-                return "pretty:" + PageType.advancedSearch.getName();
+                return StringConstants.PREFIX_PRETTY + PageType.advancedSearch.getName();
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                return "pretty:" + PageType.searchCalendar.getName();
+                return StringConstants.PREFIX_PRETTY + PageType.searchCalendar.getName();
             default:
-                return "pretty:" + PageType.search.getName();
+                return StringConstants.PREFIX_PRETTY + PageType.search.getName();
         }
     }
 
@@ -2273,8 +2273,7 @@ public class SearchBean implements SearchInterface, Serializable {
                                 try {
                                     RISExport export = new RISExport();
                                     export.executeSearch(finalQuery, currentSearch.getAllSortFields(),
-                                            facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance, request,
-                                            (HttpServletResponse) facesContext.getExternalContext().getResponse());
+                                            facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance);
                                     if (export.isHasResults()) {
                                         ((HttpServletResponse) facesContext.getExternalContext().getResponse())
                                                 .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
@@ -2449,8 +2448,6 @@ public class SearchBean implements SearchInterface, Serializable {
     private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, int proximitySearchDistance,
             Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
-            HttpServletRequest request = BeanUtils.getRequest(facesContext);
-
             String termQuery = null;
             if (searchTerms != null) {
                 termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));

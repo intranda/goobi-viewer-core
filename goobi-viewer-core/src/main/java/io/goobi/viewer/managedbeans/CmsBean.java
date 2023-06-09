@@ -1475,10 +1475,14 @@ public class CmsBean implements Serializable {
      * @return a {@link java.util.List} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
+     * @should add relevance and random values at beginning
      */
     public List<String> getPossibleSortFields() throws SolrServerException, IOException {
         if (this.solrSortFields == null) {
-            this.solrSortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
+            this.solrSortFields = new ArrayList<>();
+            this.solrSortFields.add(SolrConstants.SORT_RELEVANCE);
+            this.solrSortFields.add(SolrConstants.SORT_RANDOM);
+            this.solrSortFields.addAll(DataManager.getInstance().getSearchIndex().getAllSortFieldNames());
         }
         return this.solrSortFields;
     }

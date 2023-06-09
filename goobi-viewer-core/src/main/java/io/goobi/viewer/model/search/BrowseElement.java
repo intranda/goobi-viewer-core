@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -567,37 +568,43 @@ public class BrowseElement implements Serializable {
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
      * @param oneLineFields Fields to be added as a single string containing all values
+     * @param snippetFields Fields to truncate to the relevant part of the value
+     * @param proximitySearchDistance
      * @should add metadata fields that match search terms
      * @should not add duplicates from default terms
      * @should not add duplicates from explicit terms
      * @should not add ignored fields
      * @should translate configured field values correctly
      * @should write one line fields into a single string
+     * @should truncate snippet fields correctly
      */
     void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms,
-            Set<String> ignoreFields, Set<String> translateFields, Set<String> oneLineFields) {
+            Set<String> ignoreFields, Set<String> translateFields, Set<String> oneLineFields, Set<String> snippetFields,
+            int proximitySearchDistance) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
 
         if (searchTerms == null) {
             return;
         }
-        for (String termsFieldName : searchTerms.keySet()) {
+        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
             // Skip fields that are in the ignore list
-            if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
+            if (ignoreFields != null && ignoreFields.contains(entry.getKey())) {
                 continue;
             }
             // Skip fields that are already in the list
             boolean skip = false;
             for (Metadata md : metadataList) {
-                if (md.getLabel().equals(termsFieldName)) {
-                    continue;
+                if (md.getLabel().equals(entry.getKey())) {
+                    skip = true;
+                    break;
                 }
             }
             if (skip) {
                 continue;
             }
-            switch (termsFieldName) {
+            switch (entry.getKey()) {
                 case SolrConstants.DEFAULT:
+                case SolrConstants.NORMDATATERMS:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : structElement.getMetadataFields().keySet()) {
                         // Skip fields that are in the ignore list
@@ -629,7 +636,7 @@ public class BrowseElement implements Serializable {
                                 if (labelValue.isPresent() && fieldValue.equals(labelValue.get())) {
                                     continue;
                                 }
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
                                     if (translateFields != null && (translateFields.contains(docFieldName)
@@ -659,11 +666,27 @@ public class BrowseElement implements Serializable {
                                 if (labelValue.isPresent() && fieldValue.equals(labelValue.get())) {
                                     continue;
                                 }
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+
+                                String highlightedValue = null;
+
+                                // Truncate snippet field values
+                                if (snippetFields != null && snippetFields.contains(docFieldName)) {
+                                    List<String> truncatedValues =
+                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
+                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
+                                                    proximitySearchDistance);
+                                    if (!truncatedValues.isEmpty()) {
+                                        highlightedValue = "[...] " + truncatedValues.get(0).trim() + " [...]";
+                                    }
+                                }
+
+                                if (highlightedValue == null) {
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(termsFieldName)
-                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
                                         String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
@@ -682,23 +705,23 @@ public class BrowseElement implements Serializable {
                 default:
                     // Skip fields that are already in the list
                     for (Metadata md : metadataList) {
-                        if (md.getLabel().equals(termsFieldName)) {
+                        if (md.getLabel().equals(entry.getKey())) {
                             skip = true;
                             break;
                         }
                     }
                     // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
-                    if (!skip && structElement.getMetadataFields().containsKey(termsFieldName)) {
-                        List<String> fieldValues = structElement.getMetadataFields().get(termsFieldName);
-                        if (oneLineFields != null && oneLineFields.contains(termsFieldName)) {
+                    if (!skip && structElement.getMetadataFields().containsKey(entry.getKey())) {
+                        List<String> fieldValues = structElement.getMetadataFields().get(entry.getKey());
+                        if (oneLineFields != null && oneLineFields.contains(entry.getKey())) {
                             // All values into a single field value
                             StringBuilder sb = new StringBuilder();
                             for (String fieldValue : fieldValues) {
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(termsFieldName)
-                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
                                         String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
@@ -711,27 +734,43 @@ public class BrowseElement implements Serializable {
                                 }
                             }
                             if (sb.length() > 0) {
-                                metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), termsFieldName, "", sb.toString()));
+                                metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", sb.toString()));
                                 additionalMetadataList
-                                        .add(new Metadata(String.valueOf(structElement.getLuceneId()), termsFieldName, "", sb.toString()));
-                                existingMetadataFields.add(termsFieldName);
+                                        .add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", sb.toString()));
+                                existingMetadataFields.add(entry.getKey());
                             }
                         } else {
                             for (String fieldValue : fieldValues) {
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+
+                                String highlightedValue = null;
+
+                                // Truncate snippet field values
+                                if (snippetFields != null && snippetFields.contains(entry.getKey())) {
+                                    List<String> truncatedValues =
+                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
+                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
+                                                    proximitySearchDistance);
+                                    if (!truncatedValues.isEmpty()) {
+                                        highlightedValue = truncatedValues.get(0).trim();
+                                    }
+                                }
+
+                                if (highlightedValue == null) {
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(termsFieldName)
-                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
                                         String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), termsFieldName, "", highlightedValue));
+                                    metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", highlightedValue));
                                     additionalMetadataList
-                                            .add(new Metadata(String.valueOf(structElement.getLuceneId()), termsFieldName, "", highlightedValue));
-                                    existingMetadataFields.add(termsFieldName);
+                                            .add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", highlightedValue));
+                                    existingMetadataFields.add(entry.getKey());
                                 }
                             }
                         }
@@ -739,6 +778,7 @@ public class BrowseElement implements Serializable {
                     break;
             }
         }
+
     }
 
     /**

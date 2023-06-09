@@ -31,14 +31,13 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -51,16 +50,17 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.search.SearchHitFactory;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final Logger logger = LogManager.getLogger(CmsBeanTest.class);
+    private static final Logger logger = LogManager.getLogger(CmsBeanTest.class); //NOSONAR Sometimes used for debugging
 
     private CMSTemplateManager templateManager;
     private NavigationHelper navigationHelper;
-    
+
     /**
      * @throws java.lang.Exception
      */
@@ -84,7 +84,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testPage() throws DAOException {
+    public void testPage() {
         CMSPage page = new CMSPage();
         CmsBean bean = new CmsBean(templateManager, navigationHelper);
         bean.setCurrentPage(page);
@@ -184,8 +184,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, UUID.randomUUID());
         doc.addField("LABEL", doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
         SearchHit hit =
-                SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", null, null, null, null, null, null, SearchHit.HitType.DOCSTRCT, 0,
-                        null);
+                new SearchHitFactory(null, null, null, 0, null, Locale.GERMAN).createSearchHit(doc, null, null, null, SearchHit.HitType.DOCSTRCT);
         hit.getBrowseElement().setLabelShort(new SimpleMetadataValue(iddoc));
         // logger.debug("labelShort: {}", hit.getBrowseElement().getLabelShort());
         hit.setSolrDoc(doc);
@@ -204,5 +203,18 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         for (int i = 0; i < pageTypes.size(); ++i) {
             Assert.assertEquals(pageTypes.get(i).getName(), pages.get(i).getPageName());
         }
+    }
+
+    /**
+     * @see CmsBean#getPossibleSortFields()
+     * @verifies add relevance and random values at beginning
+     */
+    @Test
+    public void getPossibleSortFields_shouldAddRelevanceAndRandomValuesAtBeginning() throws Exception {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        List<String> fields = bean.getPossibleSortFields();
+        Assert.assertTrue(fields.size() > 2);
+        Assert.assertEquals(SolrConstants.SORT_RELEVANCE, fields.get(0));
+        Assert.assertEquals(SolrConstants.SORT_RANDOM, fields.get(1));
     }
 }

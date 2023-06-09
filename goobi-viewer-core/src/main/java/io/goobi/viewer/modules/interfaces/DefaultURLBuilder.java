@@ -83,7 +83,11 @@ public class DefaultURLBuilder implements IURLBuilder {
 
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should only add logId if not topStruct
+     */
     @Override
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct) {
         StringBuilder sb = new StringBuilder();
@@ -105,11 +109,15 @@ public class DefaultURLBuilder implements IURLBuilder {
         sb.append(view)
                 .append('/')
                 .append(pi)
-                .append('/')
-                .append(imageNo)
-                .append('/')
-                .append(StringUtils.isNotEmpty(logId) ? logId : '-')
                 .append('/');
+        if (!topStruct || imageNo > 1) {
+            sb.append(imageNo)
+                    .append('/');
+        }
+        if (!topStruct) {
+            sb.append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                    .append('/');
+        }
 
         return sb.toString();
     }

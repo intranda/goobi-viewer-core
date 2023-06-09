@@ -48,10 +48,21 @@
 	        <div class="cms-module__option-control">
 	            <div class="custom-control custom-control--select">
 	                <h:selectOneMenu id="solrSortFields" styleClass="form-control" value="#{contentItem.solrSortFields}">
-	                    <f:selectItem itemValue="" itemLabel="#{msg.select}" />
 	                    <c:forEach var="field" items="#{cmsBean.possibleSortFields}">
-	                        <f:selectItem itemValue="#{field}" itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_ascending})" />
-	                        <f:selectItem itemValue="!#{field}" itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_descending})" />
+                            <c:choose>
+                                <c:when test="#{field eq 'RELEVANCE'}">
+                                    <f:selectItem itemValue="#{field}" itemLabel="#{msg.searchSortingDropdown_relevance}" />
+                                </c:when>
+                                <c:when test="#{field eq 'RANDOM'}">
+                                    <f:selectItem itemValue="#{field}" itemLabel="#{msg.searchSortingDropdown_random}" />
+                                </c:when>
+                                <c:otherwise>
+                                    <f:selectItem itemValue="#{field}"
+                                        itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_ascending})" />
+                                    <f:selectItem itemValue="!#{field}"
+                                        itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_descending})" />
+                                </c:otherwise>
+                            </c:choose>
 	                    </c:forEach>
 	                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
 	                </h:selectOneMenu>

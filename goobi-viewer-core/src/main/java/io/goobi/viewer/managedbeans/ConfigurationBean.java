@@ -150,12 +150,13 @@ public class ConfigurationBean implements Serializable {
     public boolean useTiles(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType));
     }
-    
+
     /**
      * whether to show a navigator element in the openseadragon viewe
-     * @param pageType  get settings for this pageType
-     * @param mimeType  get settings for this image type
-     * @return  true if navigator should be shown
+     * 
+     * @param pageType get settings for this pageType
+     * @param mimeType get settings for this image type
+     * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
     public boolean showImageNavigator(String pageType, String mimeType) throws ViewerConfigurationException {
@@ -732,11 +733,6 @@ public class ConfigurationBean implements Serializable {
         }
     }
 
-    @Deprecated
-    public boolean isPiwikTracking() {
-        return isPiwikTrackingEnabled();
-    }
-
     /**
      * <p>
      * isPiwikTracking.
@@ -837,10 +833,7 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isPageBrowseStep1Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
-        if (steps != null && steps.size() > 0 && steps.get(0) > 0) {
-            return true;
-        }
-        return false;
+        return steps != null && !steps.isEmpty() && steps.get(0) > 0;
     }
 
     /**
@@ -852,10 +845,7 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isPageBrowseStep2Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
-        if (steps != null && steps.size() > 1 && steps.get(1) > 0) {
-            return true;
-        }
-        return false;
+        return steps != null && steps.size() > 1 && steps.get(1) > 0;
     }
 
     /**
@@ -867,10 +857,7 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isPageBrowseStep3Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
-        if (steps != null && steps.size() > 2 && steps.get(2) > 1) {
-            return true;
-        }
-        return false;
+        return steps != null && steps.size() > 2 && steps.get(2) > 1;
     }
 
     /**
@@ -882,7 +869,7 @@ public class ConfigurationBean implements Serializable {
      */
     public int getPageBrowseStep1() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
-        if (steps != null && steps.size() > 0 && steps.get(0) > 1) {
+        if (steps != null && !steps.isEmpty() && steps.get(0) > 1) {
             return steps.get(0);
         }
         return 0;
@@ -1023,7 +1010,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isSearchExcelExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled();
     }
-    
+
     /**
      * <p>
      * isSearchRisExportEnabled.
@@ -1275,14 +1262,6 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * @deprecated Superseded by isCopyrightIndicatorEnabled
-     */
-    @Deprecated(since = "22.07")
-    public boolean isDisplayCopyrightInfo() {
-        return false;
-    }
-
-    /**
      * 
      * @return
      */
@@ -1388,7 +1367,7 @@ public class ConfigurationBean implements Serializable {
     public GeoMapMarker getMarkerForMapSearch() {
         return DataManager.getInstance().getConfiguration().getMarkerForMapSearch();
     }
-    
+
     public String getSelectionColorForMapSearch() {
         return DataManager.getInstance().getConfiguration().getSelectionColorForMapSearch();
     }
@@ -1400,7 +1379,7 @@ public class ConfigurationBean implements Serializable {
     public GeoMapMarker getMarkerForFacetting() {
         return DataManager.getInstance().getConfiguration().getMarkerForFacetting();
     }
-    
+
     public String getSelectionColorForFacetting() {
         return DataManager.getInstance().getConfiguration().getSelectionColorForFacetting();
     }
@@ -1411,11 +1390,10 @@ public class ConfigurationBean implements Serializable {
 
     public GeoMapMarker getDefaultMarkerForCMSMaps() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
-        GeoMapMarker marker = markers.stream()
+        return markers.stream()
                 .filter(m -> m.getName().equalsIgnoreCase("default"))
                 .findAny()
                 .orElse(new GeoMapMarker("default"));
-        return marker;
     }
 
     public int getGeomapAnnotationZoom() {
@@ -1446,4 +1424,11 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean isDisplaySearchHitNumbers() {
+        return DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers();
+    }
 }
