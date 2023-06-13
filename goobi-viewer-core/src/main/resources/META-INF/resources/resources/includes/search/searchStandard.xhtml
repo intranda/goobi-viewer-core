@@ -22,9 +22,8 @@
         <h:form id="searchForm" prependId="true">
             <!-- SEARCH STANDARD INPUT -->
             <div class="search-standard__input-slim">
-            
                 <div class="search-standard__filter-select">
-                    <h:inputHidden id="hiddenSearchFilterString" value="#{searchBean.currentSearchFilterString}" />
+                    <h:inputHidden id="hiddenSearchFilterString" value="#{search.currentSearchFilterString}" pt:data-value="hiddenSearchFilterString" />
                     
                      <div class="custom-control custom-control--select">
 	              		<select aria-label="#{msg.limitSearch}"> 
@@ -38,7 +37,9 @@
 						$('.search-standard__filter-select select').on("change", function() {
 							var currOptionSelected = $("option:selected", this);
 							var currValue = currOptionSelected.val();
-							$('#hiddenSearchFilterString').val(currValue).change();
+							let $input = $("[data-value='hiddenSearchFilterString']");
+							//console.log("changed search filter to ", currValue, $input);
+							$input.val(currValue).change();
                         });
                 	</script>
                 </div>
