@@ -207,7 +207,7 @@ public class JPAClassLoader extends ClassLoader {
                     XmlTools.writeXmlFile(docMerged, file.getAbsolutePath());
                     newUrl = file.toURI().toURL();
                     //                    newUrl = new URL("file://" + file.getAbsolutePath());
-                    logger.info("URL: " + newUrl);
+                    logger.info("URL: {}", newUrl);
                 } catch (JDOMException e) {
                     throw new IOException(e.toString());
                 } catch (DAOException e) {

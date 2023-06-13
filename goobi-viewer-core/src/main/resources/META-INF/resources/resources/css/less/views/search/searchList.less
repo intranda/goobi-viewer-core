@@ -271,6 +271,29 @@
 		background-color: @middlegray2;
 	}
 	&__hit-header {
+		
+	}
+	&__hit-number-wrapper {
+        border-radius: 50%;
+        color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+        font-weight: bold;
+        margin-right: 7px;
+        text-align: center;
+        width: 40px;
+		height: 40px;
+		background: @blue;
+		max-width: 40px;
+		flex: 0 0 40px;
+		align-self: flex-start;
+	}
+	&__hit-number {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 30px;
+		display: inline-block;
 	}
 	&__hit-title,
 	&__hit-type,
@@ -284,6 +307,14 @@
 		}
 		&.-noThumbnail {
 			padding-right: 2.4rem;
+		}
+		&.-hitNumber {
+			display: flex;
+			align-items: center;
+			margin-bottom: 10px;
+			h3 {
+				padding-bottom: 0;
+			}
 		}
 	}
 	&__no-thumb-bookmark {

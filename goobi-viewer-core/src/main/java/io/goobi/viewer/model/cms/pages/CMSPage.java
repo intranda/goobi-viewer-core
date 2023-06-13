@@ -1426,7 +1426,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public boolean isLegacyPage() {
-        return getTemplate().map(CMSPageTemplate::isLegacyTemplate).orElse(null);
+        return getTemplate().map(CMSPageTemplate::isLegacyTemplate).orElse(false);
     }
 
     public Long getTemplateId() {

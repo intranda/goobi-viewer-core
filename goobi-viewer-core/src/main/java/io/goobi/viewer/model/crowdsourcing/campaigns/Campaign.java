@@ -430,12 +430,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
                         .mapToInt(doc -> (Integer) doc.getFieldValue(SolrConstants.NUMPAGES))
                         .sum();
                 this.pageCount = pages;
-            } catch (RemoteSolrException e) {
+            } catch (RemoteSolrException | PresentationException | IndexUnreachableException e) {
                 logger.error(e.getMessage());
-            } catch (PresentationException e) {
-                logger.error(e.getMessage());
-            } catch (IndexUnreachableException e) {
-                logger.error(e.getMessage());
+                return 0;
             }
         }
         return this.pageCount;

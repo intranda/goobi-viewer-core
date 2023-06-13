@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,8 +68,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -253,14 +250,12 @@ public final class SearchHelper {
         if (params != null) {
             logger.trace("params: {}", params);
         }
-        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
-        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
-        Set<String> oneLineFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
-
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
+
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
-        int count = 0;
+        int count = first;
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
         for (SolrDocument doc : resp.getResults()) {
             logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             String fulltext = null;
@@ -306,15 +301,12 @@ public final class SearchHelper {
                 ownerDocs.put((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             }
 
-            SearchHit hit =
-                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields,
-                            ignoreFields, translateFields, oneLineFields, null, proximitySearchDistance, thumbs);
+            SearchHit hit = factory.createSearchHit(doc, ownerDoc, null, fulltext, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
+            hit.setHitNumber(++count);
             ret.add(hit);
-            count++;
-            logger.trace("added hit {}", count);
         }
 
         return ret;
@@ -375,27 +367,28 @@ public final class SearchHelper {
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
             List<String> exportFields, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("searchWithAggregation: {}", query);
+        if (query != null) {
+            String s = query.replaceAll("[\n\r]", "_");
+            logger.trace("searchWithAggregation: {}", s);
+        }
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
         if (resp.getResults() == null) {
             return new ArrayList<>();
         }
-        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
-        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
-        Set<String> oneLineFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
+
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
+        int count = first;
         for (SolrDocument doc : resp.getResults()) {
             // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
-            SearchHit hit =
-                    SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, ignoreFields,
-                            translateFields, oneLineFields, null, proximitySearchDistance, thumbs);
+            SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -426,10 +419,11 @@ public final class SearchHelper {
                             logger.trace("hit type found: {}", hitType);
                         }
                     }
-                    int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                    hit.getHitTypeCounts().put(hitType, count + 1);
+                    int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                    hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
                 }
             }
+            hit.setHitNumber(++count);
         }
         logger.trace("Return {} search hits", ret.size());
         return ret;
@@ -1520,19 +1514,6 @@ public final class SearchHelper {
      */
     static String applyHighlightingToTerm(String term) {
         return new StringBuilder(PLACEHOLDER_HIGHLIGHTING_START).append(term).append(PLACEHOLDER_HIGHLIGHTING_END).toString();
-    }
-
-    /**
-     * <p>
-     * replaceHighlightingPlaceholdersForHyperlinks.
-     * </p>
-     *
-     * @param phrase a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     * @should replace placeholders with bold tags
-     */
-    public static String replaceHighlightingPlaceholdersForHyperlinks(String phrase) {
-        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span style=\"color:blue\">").replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
     }
 
     /**
@@ -3152,8 +3133,6 @@ public final class SearchHelper {
         }
     }
 
-
-
     /**
      * <p>
      * parseSortString.
@@ -3174,7 +3153,8 @@ public final class SearchHelper {
         if (sortStringSplit.length > 0) {
             for (String field : sortStringSplit) {
                 ret.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
-                logger.trace("Added sort field: {}", field);
+                String s = field.replaceAll("[\n\r]", "_");
+                logger.trace("Added sort field: {}", s);
                 // add translated sort fields
                 if (navigationHelper != null && field.startsWith(SolrConstants.PREFIX_SORT)) {
                     Iterable<Locale> locales = navigationHelper::getSupportedLocales;

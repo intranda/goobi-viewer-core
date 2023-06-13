@@ -24,7 +24,6 @@ package io.goobi.viewer.api.rest.v1.search;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +46,6 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.search.SearchHitChildList;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -72,7 +70,7 @@ import io.swagger.v3.oas.annotations.Operation;
 @ViewerRestServiceBinding
 public class SearchResultResource {
 
-    private static final Logger logger = LogManager.getLogger(SearchResultResource.class);
+    private static final Logger logger = LogManager.getLogger(SearchResultResource.class); //NOSONAR Sometimes used for debugging
 
     @Context
     private HttpServletRequest servletRequest;
@@ -114,16 +112,12 @@ public class SearchResultResource {
         if (searchHits != null) {
             for (SearchHit searchHit : searchHits) {
                 if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
-                    // logger.trace("found: {}", hitId);
+                    // logger.trace("found: {}", hitId); //NOSONAR Sometimes used for debugging
                     if (searchHit.getHitsPopulated() < numChildren) {
-                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale,
-                                servletRequest, BeanUtils.getImageDeliveryBean().getThumbs());
+                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale, servletRequest);
                     }
                     Collections.sort(searchHit.getChildren());
-                    SearchHitChildList searchHitChildren =
-                            new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit.isHasMoreChildren());
-                    // logger.trace("children: {}", searchHit.getChildren().size());
-                    return searchHitChildren;
+                    return new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit.isHasMoreChildren());
                 }
             }
         }
@@ -151,11 +145,11 @@ public class SearchResultResource {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString(activeFacetString);
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
-        
+
         RISExport export = new RISExport();
-        export.executeSearch(finalQuery, query, null, filterQueries, null, null, locale, proximitySearchDistance, servletRequest, servletResponse);
-        if(export.isHasResults()) {
-        new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
+        export.executeSearch(finalQuery, null, filterQueries, null, null, locale, proximitySearchDistance);
+        if (export.isHasResults()) {
+            new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
         }
         return null;
     }

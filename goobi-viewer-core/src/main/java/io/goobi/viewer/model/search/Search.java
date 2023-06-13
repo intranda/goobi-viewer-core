@@ -1001,7 +1001,10 @@ public class Search implements Serializable {
      * @param sortString the sortString to set
      */
     public void setSortString(String sortString) {
-        logger.trace("setSortString: {}", sortString);
+        if (StringUtils.isNotBlank(sortString)) {
+            String s = sortString.replaceAll("[\n\r]", "_");
+            logger.trace("setSortString: {}", s);
+        }
         this.sortString = sortString;
         sortFields = SearchHelper.parseSortString(this.sortString, null);
     }
@@ -1042,7 +1045,11 @@ public class Search implements Serializable {
         List<StringPair> ret = new ArrayList<>(staticSortFields.size() + sortFields.size());
         if (!staticSortFields.isEmpty()) {
             for (String s : staticSortFields) {
-                ret.add(new StringPair(s, "asc"));
+                if (s.startsWith("!")) {
+                    ret.add(new StringPair(s.substring(1), "desc"));
+                } else {
+                    ret.add(new StringPair(s, "asc"));
+                }
                 logger.trace("Added static sort field: {}", s);
             }
         }

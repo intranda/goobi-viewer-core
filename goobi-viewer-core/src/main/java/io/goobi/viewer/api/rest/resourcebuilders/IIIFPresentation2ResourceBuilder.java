@@ -89,7 +89,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class IIIFPresentation2ResourceBuilder {
 
-    private static final Logger logger = LogManager.getLogger(IIIFPresentation2ResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(IIIFPresentation2ResourceBuilder.class); //NOSONAR Sometimes used for debugging
 
     private ManifestBuilder manifestBuilder;
     private StructureBuilder structureBuilder;
@@ -364,7 +364,6 @@ public class IIIFPresentation2ResourceBuilder {
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
         String finalQuery = SearchHelper.buildFinalQuery(query, false, request, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-        logger.trace("getManifestForQuery: {}", finalQuery);
 
         List<StringPair> sortFieldList = SolrTools.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
         SolrDocumentList queryResults = DataManager.getInstance()

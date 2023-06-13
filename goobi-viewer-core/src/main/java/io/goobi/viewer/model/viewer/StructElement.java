@@ -267,7 +267,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                         String label = getLabel();
                         String shape = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
                         String coords = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
-                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(), getImageNumber(), this.logid));
+                        String order = String.valueOf(shapeDoc.getFieldValue(SolrConstants.ORDER));
+                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(),
+                                "null".equals(order) ? getImageNumber() : Integer.parseInt(order), this.logid));
                     }
                 }
             }
@@ -943,15 +945,31 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return null;
     }
 
+    public boolean hasShapeMetadata() {
+        return shapeMetadata != null && !shapeMetadata.isEmpty();
+    }
+
+    /**
+     * 
+     * @param order Page order
+     * @return
+     */
+    public List<ShapeMetadata> getShapeMetadataForPage(int order) {
+        List<ShapeMetadata> ret = new ArrayList<>();
+        for (ShapeMetadata smd : shapeMetadata) {
+            if (smd.getPageNo() == order) {
+                ret.add(smd);
+            }
+        }
+
+        return ret;
+    }
+
     /**
      * @return the shapeMetadata
      */
     public List<ShapeMetadata> getShapeMetadata() {
         return shapeMetadata;
-    }
-
-    public boolean hasShapeMetadata() {
-        return shapeMetadata != null && !shapeMetadata.isEmpty();
     }
 
     /**
@@ -1050,9 +1068,16 @@ public class StructElement extends StructElementStub implements Comparable<Struc
          * @return the logId
          */
         public String getLogId() {
+
             return logId;
         }
 
+        /**
+         * @return the pageNo
+         */
+        public int getPageNo() {
+            return pageNo;
+        }
     }
 
     public static StructElement create(SolrDocument solrDoc) {
