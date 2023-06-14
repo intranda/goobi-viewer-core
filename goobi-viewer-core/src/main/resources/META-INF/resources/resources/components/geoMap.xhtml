@@ -19,7 +19,7 @@
     	<composite:attribute name="featureSetSwitch" type="java.lang.Boolean" required="false" default="true"/>
     	<composite:attribute name="featureClickHandling" required="false" default="listEntities"/>
 <!--     	<composite:attribute name="featureClickHandling" required="false" default="openSearch"/> -->
-    	<composite:attribute name="featureFilters" type="java.util.List" required="false" default="#{configurationBean.defaultGeomapFilters}"/>
+    	<composite:attribute name="featureFilters" required="false" default="#{configurationBean.geomapFiltersAsJson}"/>
     </composite:interface>
     
 	<composite:implementation>
@@ -100,7 +100,7 @@
 		    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
 		    			featureGroups: map.layers,
 		    			geomap: map,
-		    			entityLabelFormat: ["\${MD_CREATOR}"],
+		    			entityLabelFormat: ["\${MD_CREATOR}", "\${MD_TITLE}"],
 		    			listLabelFormat: ["\${MD_BIOGRAPHY_EDUCATION}"],
 		    			entityLinkFormat: ["#{request.contextPath}/object/\${PI}/"],
 		    			locale: "#{navigationHelper.locale}",	    			  
@@ -118,11 +118,14 @@
 	    		}
 	    		if(#{not empty cc.attrs.featureFilters}) {	    			
 		    		riot.mount(document.getElementById("featureFilters_#{cc.attrs.mapId}"), "featuresetfilter", {
-		    			filters: #{cc.attrs.featureFilters},
+		    			filters: new Map(Object.entries(#{cc.attrs.featureFilters})),
 	    				geomap: map,
 	    				featureGroups: map.getActiveLayers(),
 		    			locale: "#{navigationHelper.locale}",
-		    			defaultLocale: "#{navigationHelper.defaultLocale}"
+		    			defaultLocale: "#{navigationHelper.defaultLocale}",
+		    			msg: {
+		    				"alle" : "#{msg.all}"
+		    			}
 		    		})
 	    		}
 	    	})

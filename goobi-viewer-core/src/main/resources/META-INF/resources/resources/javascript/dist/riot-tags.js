@@ -2892,7 +2892,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
-riot.tag2('featuresetfilter', '<ul><li each="{filter in filters}"><label>{filter.field}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">Alle</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
+riot.tag2('featuresetfilter', '<ul><li each="{filter in filters}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
 
 this.filters = [];
 
@@ -2904,22 +2904,31 @@ this.on("mount", () => {
 	this.geomap.onActiveLayerChange.subscribe(groups => {
 		this.featureGroups = groups;
 		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
-		this.update();
+ 		this.update();
 	})
 	this.update();
 })
 
-this.createFilters = function(filterOptions, featureGroups) {
+this.createFilters = function(filterMap, featureGroups) {
+
+	let layerNames = featureGroups.map(layer => {
+		let label = layer.config.label;
+		let labelString = viewerJS.iiif.getValue(label, this.opts.defaultLocale);
+		return labelString;
+	})
+	let filterOptions = layerNames.flatMap(name => filterMap.get(name));
 	return filterOptions.map(filter => {
-		return {
-			field: filter,
-			options: this.findValues(featureGroups, filter).map(v => {
+		let f = {
+			field: filter.value,
+			label: filter.label,
+			options: this.findValues(featureGroups, filter.value).map(v => {
 				return {
 					name: v,
-					field: filter
+					field: filter.value
 				}
 			}),
-		}
+		};
+		return f;
 	})
 	.filter(filter => filter.options.length > 1);
 }.bind(this)

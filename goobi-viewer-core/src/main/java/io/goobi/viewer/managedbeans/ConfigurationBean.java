@@ -43,6 +43,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -1431,8 +1432,9 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers();
     }
 
-    public List<String> getDefaultGeomapFilters() {
-        return List.of("MD_ROLE", "METADATA_TYPE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
+    public String getGeomapFiltersAsJson() {
+        Map<String, List<LabeledValue>> map = DataManager.getInstance().getConfiguration().getGeomapFilters();
+        return  new JSONObject(map).toString();
     }
 
     public List<SelectItem> getGeomapFeatureTitleOptions() {

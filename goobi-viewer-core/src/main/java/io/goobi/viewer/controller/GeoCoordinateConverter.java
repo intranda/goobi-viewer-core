@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -35,7 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -110,7 +108,7 @@ public class GeoCoordinateConverter {
                 }
             }
         }
-
+        
         Map<GeoMapFeature, List<GeoMapFeature>> featureMap = features
                 .stream()
                 .collect(Collectors.groupingBy(Function.identity()));
@@ -140,10 +138,7 @@ public class GeoCoordinateConverter {
         }
         String finalQuery = String.format("%s +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
         Map<String, String> params = new HashMap<>();
-//        if (aggregateResults) {
-//            String expandQuery = query.replaceAll("\\{\\!join[^}]+}", "");
-//            params.putAll(SearchHelper.getExpandQueryParams(expandQuery));
-//        }
+
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
                 .search(finalQuery, 0, 10_000, null, null, aggregateResults ? null : fieldList, filterQueries, params);
@@ -156,9 +151,7 @@ public class GeoCoordinateConverter {
                     .search(expandQuery, 0, 10_000, null, null, null, filterQueries, params);
             SolrDocumentList expandDocs = expandResponse.getResults();
             Map<String, List<SolrDocument>> expandedResults = expandDocs.stream().collect(Collectors.toMap(doc -> SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT), List::of, ListUtils::union));
-//          Map<String, SolrDocumentList> expandedResults = response.getExpandedResults();
 
-            long expandedResultCount = expandedResults.values().stream().flatMap(List::stream).count();
             return docs.stream()
                     .collect(Collectors.toMap(doc -> doc,
                             doc -> expandedResults.getOrDefault(doc.getFieldValue(SolrConstants.PI), new SolrDocumentList())));
@@ -207,9 +200,14 @@ public class GeoCoordinateConverter {
         docFeatures.forEach(f -> {
             List<IMetadataValue> titleValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault(titleField, Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
             if(!titleValues.isEmpty()) {
-                f.setTitle(titleValues.get(0));                
+                f.setTitle(titleValues.get(0));     
             } else {
-                f.setTitle(new SimpleMetadataValue(defaultTitle));                
+                titleValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault("NORM_NAME", Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
+                if(!titleValues.isEmpty()) {
+                    f.setTitle(titleValues.get(0));   
+                } else {
+                    f.setTitle(new SimpleMetadataValue(defaultTitle));                
+                }
             }
             List<IMetadataValue> descValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault(descriptionField, Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
             if(!descValues.isEmpty()) {

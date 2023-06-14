@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -209,7 +210,7 @@ public class GeoMapFeature {
     @Override
     public int hashCode() {
         int jsonCode = this.json == null ? "".hashCode() : this.json.hashCode();
-        int titleCode = this.title == null ? "".hashCode() : this.title.hashCode();
+        int titleCode = this.title == null ? "".hashCode() : getIndentifyingString(this.title).hashCode();
         int linkCode = this.link == null ? "".hashCode() : this.link.hashCode();
         return jsonCode + 31 * (titleCode + 31 * linkCode);
     }
@@ -225,7 +226,7 @@ public class GeoMapFeature {
         if (obj.getClass().equals(this.getClass())) {
             GeoMapFeature other = (GeoMapFeature) obj;
             return Objects.equals(this.json, other.json) &&
-                    Objects.equals(this.title, other.title) &&
+                    Objects.equals(getIndentifyingString(this.title), getIndentifyingString(other.title)) &&
                     Objects.equals(this.link, other.link);
         }
 
@@ -240,4 +241,7 @@ public class GeoMapFeature {
         return this.json;
     }
 
+    private String getIndentifyingString(IMetadataValue md) {
+        return md.getValues().stream().map(pair -> pair.getValue()).distinct().collect(Collectors.joining());
+    }
 }

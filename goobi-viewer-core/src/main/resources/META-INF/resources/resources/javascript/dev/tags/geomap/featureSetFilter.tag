@@ -2,10 +2,10 @@
 
 <ul>
 	<li each="{filter in filters}">
-			<label>{filter.field}</label>
+			<label>{filter.label}</label>
 			<div>
 				<input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"/>
-				<label for="options_{filter.field}_all">Alle</label>
+				<label for="options_{filter.field}_all">{opts.msg.alle}</label>
 			</div>
 			<div each="{ option, index in filter.options}">
 				<input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" value="{option.name}" onclick="{setFilter}"/>
@@ -28,22 +28,31 @@ this.on("mount", () => {
 	this.geomap.onActiveLayerChange.subscribe(groups => {
 		this.featureGroups = groups;
 		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
-		this.update();
+ 		this.update();
 	})
 	this.update();
 })
 
-createFilters(filterOptions, featureGroups) {
+createFilters(filterMap, featureGroups) {
+	
+	let layerNames = featureGroups.map(layer => {
+		let label = layer.config.label;
+		let labelString = viewerJS.iiif.getValue(label, this.opts.defaultLocale);
+		return labelString;
+	})
+	let filterOptions = layerNames.flatMap(name => filterMap.get(name));
 	return filterOptions.map(filter => {
-		return {
-			field: filter,
-			options: this.findValues(featureGroups, filter).map(v => {
+		let f = {
+			field: filter.value,
+			label: filter.label,
+			options: this.findValues(featureGroups, filter.value).map(v => {
 				return {
 					name: v,
-					field: filter
+					field: filter.value
 				}
 			}),
-		}
+		};
+		return f;
 	})
 	.filter(filter => filter.options.length > 1);
 }

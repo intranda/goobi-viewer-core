@@ -59,6 +59,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.controller.model.StringMatchConfiguration;
@@ -5716,6 +5717,22 @@ public class Configuration extends AbstractConfiguration {
         double lng = getLocalFloat("maps.view.center.lng", 11.073397f);
         double lat = getLocalFloat("maps.view.center.lat", 49.451993f);
         return new View(zoom, lng, lat);
+    }
+    
+    public Map<String, List<LabeledValue>> getGeomapFilters() {
+        List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = this.getLocalConfigurationsAt("maps.filters.filter");
+        Map<String, List<LabeledValue>> filters = new HashMap<>();
+        for (HierarchicalConfiguration<ImmutableNode> config : filterConfigs) {
+            String groupName = config.getString("featureGroup", "");
+            List<LabeledValue> fields = config.configurationsAt("field").stream().map(c -> {
+                String field = c.getString(".");
+                String label = c.getString("[@label]", "");
+                return new LabeledValue(field, label);
+            })
+            .collect(Collectors.toList());
+            filters.put(groupName, fields);
+        }
+        return filters;
     }
     
 

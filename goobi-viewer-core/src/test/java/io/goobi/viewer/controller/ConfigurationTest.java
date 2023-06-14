@@ -43,6 +43,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.StringMatchConfiguration;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
@@ -3380,5 +3381,19 @@ public class ConfigurationTest extends AbstractTest {
         assertTrue(config.test("MD_TITLE"));
         assertFalse(config.test("MD_ROLE"));
         assertFalse(config.test("MD_TITLE_UNTOKENIZED"));
+    }
+    
+    @Test
+    public void test_getGeomapFilters() {
+        Map<String, List<LabeledValue>> filters = DataManager.getInstance().getConfiguration().getGeomapFilters();
+        assertEquals(3, filters.size());
+        assertEquals("D", filters.get("").get(0).getValue());
+        assertEquals("", filters.get("").get(0).getLabel());
+        assertEquals("A", filters.get("X").get(0).getValue());
+        assertEquals("", filters.get("X").get(0).getLabel());
+        assertEquals("B", filters.get("Y").get(0).getValue());
+        assertEquals("b", filters.get("Y").get(0).getLabel());
+        assertEquals("C", filters.get("Y").get(1).getValue());
+        assertEquals("c", filters.get("Y").get(1).getLabel());
     }
 }

@@ -1279,6 +1279,20 @@
 	    <marker icon="fa-coffee"  markerColor="pink" shape="star" prefix="fa" iconColor="black" iconRotate="270">maps__marker_4</marker>
 	    <marker icon="fa-number"  number="42" svg="true">maps__marker_5</marker>
 	  </markers>
+	  <filters>
+	  		<filter>
+				<field>D</field>
+			</filter>
+			<filter>
+				<featureGroup>X</featureGroup>
+				<field label="">A</field>
+			</filter>
+			<filter>
+				<featureGroup>Y</featureGroup>
+				<field label="b">B</field>
+				<field label="c">C</field>
+			</filter>
+		</filters>
 	  <metadata>
         	<title>
         		<option label="cms__geomaps__popup_content__option__none"></option>

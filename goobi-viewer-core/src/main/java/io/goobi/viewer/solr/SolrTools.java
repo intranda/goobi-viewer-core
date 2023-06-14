@@ -882,7 +882,7 @@ public class SolrTools {
                 locale = SolrTools.getLocale(fieldName);
             } else if ("MD_VALUE".equals(fieldName)) {
                 baseFieldName = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
-                metadata.put("METADATA_TYPE", Collections.singletonList(new SimpleMetadataValue(baseFieldName)));
+                metadata.put("METADATA_TYPE", Collections.singletonList( ViewerResourceBundle.getTranslations(baseFieldName, true)));
             }
             for (String strValue : values) {
                 int valueIndex = values.indexOf(strValue);
