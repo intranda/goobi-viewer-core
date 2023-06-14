@@ -54,19 +54,19 @@
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title" role="row">
                                 <!-- PAGE COL -->
-                                <div class="col-11 d-flex" role="columnheader">
+                                <div class="col-12 d-flex" role="columnheader">
                                 	#{msg.cms__record_notes_table__text_heading}
                                 </div>
-                                <div class="col-1 d-flex justify-content-center" role="columnheader">
-                                	#{msg.admin__cms_template_visible}
-                                </div>
+<!--                                 <div class="col-1 d-flex justify-content-center" role="columnheader"> -->
+<!--                                 	#{msg.admin__cms_template_visible} -->
+<!--                                 </div> -->
                             </div>
 
 
                             <!-- INDIVIDUAL ROWS -->
                             <ui:repeat var="note" value="#{cmsRecordNotesBean.dataProvider.paginatorList}">
-                                <div class="row no-gutters admin__table-entry" role="row">
-                                    <div class="col-11 d-flex" role="presentation">
+                                <div class="row no-gutters admin__table-entry #{note.displayNote ? '' : '-unpublished'}" role="row">
+                                    <div class="col-12 d-flex" role="presentation">
                                        	<div class="admin__record-notes-table-img align-self-center">
                                    			<ui:fragment rendered="#{note.isSingleRecordNote()}">
                                            		<img alt="#{note.recordPi}" title="#{note.recordPi}"
@@ -86,7 +86,7 @@
                                             <ui:fragment rendered="#{note.isMultiRecordNote()}">
                                             	<div class="admin__table-name">#{note.query}</div>
                                             </ui:fragment>
-                                            <div>
+                                            <div class="admin__table-data-content">
                                             	<label jsf:escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"></label>
                                             </div>
                                             <div>
@@ -99,8 +99,7 @@
                                                 <ui:fragment rendered="#{note.isSingleRecordNote()}">
                                                 	<a
                                                     class="admin__table-action-link" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}"
-                                                    aria-label="#{msg.title__preview}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}">#{msg.show}
-                                                  </a>
+                                                    aria-label="#{msg.title__preview}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}">#{msg.show}</a>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{note.isMultiRecordNote()}">
                                                   <a href="#{cmsRecordNotesBean.getSearchUrlForNote(note)}" class="admin__table-action-link" target="_blank">#{msg.show}</a>
@@ -120,15 +119,15 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-1 d-flex justify-content-center" role="gridcell">
-                                        <ui:fragment rendered="#{note.displayNote}">
-                                        <span class="sr-only">#{msg.yes}</span>
-                                          <i class="fa fa-check" aria-hidden="true"></i>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{!note.displayNote}">
-                                            <span class="sr-only">#{msg.no}</span>
-                                        </ui:fragment>
-                                  </div>
+<!--                                     <div class="col-1 d-flex justify-content-center" role="gridcell"> -->
+<!--                                         <ui:fragment rendered="#{note.displayNote}"> -->
+<!--                                         <span class="sr-only">#{msg.yes}</span> -->
+<!--                                           <i class="fa fa-check" aria-hidden="true"></i> -->
+<!--                                         </ui:fragment> -->
+<!--                                         <ui:fragment rendered="#{!note.displayNote}"> -->
+<!--                                             <span class="sr-only">#{msg.no}</span> -->
+<!--                                         </ui:fragment> -->
+<!--                                   </div> -->
                                 </div>
                             </ui:repeat>
                         </div>
