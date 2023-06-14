@@ -388,6 +388,41 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @param type
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @param topstructValueFallbackDefaultValue
+     * @return
+     */
+    List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
+            boolean topstructValueFallbackDefaultValue) {
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
+        if (metadataLists == null) {
+            logger.error("no metadata lists found");
+            return new ArrayList<>(); // must be a mutable list!
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
+            if (type.equals(metadataList.getString("[@type]"))) {
+                List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
+                if (templateList.isEmpty()) {
+                    logger.error("{}  templates found for type {}", templateList.size(), type);
+                    return new ArrayList<>(); // must be a mutable list!
+                }
+
+                return getMetadataForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue);
+            }
+        }
+
+        return new ArrayList<>(); // must be a mutable list!
+    }
+
+    /**
      * Returns the list of configured metadata for search hit elements.
      *
      * @param template a {@link java.lang.String} object.
@@ -397,12 +432,14 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
-        if (templateList == null) {
-            return new ArrayList<>(); // must be a mutable list!
-        }
+        // TODO Comment back in once core config_viewer.xml has been refactored
+        //        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
+        //        if (templateList != null) {
+        //            logger.warn("Old <searchHitMetadataList> configuration found - please migrate to <metadataList type=\"searchHit\">.");
+        //            return getMetadataForTemplate(template, templateList, true, true);
+        //        }
 
-        return getMetadataForTemplate(template, templateList, true, true);
+        return getMetadataConfigurationForTemplate("searchHit", template, true, true);
     }
 
     /**
@@ -472,12 +509,14 @@ public class Configuration extends AbstractConfiguration {
      * @should return empty list if template is null
      */
     public List<Metadata> getSidebarMetadataForTemplate(String template) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.sideBarMetadataList.template");
-        if (templateList == null) {
-            return new ArrayList<>();
-        }
+        // TODO Comment back in once core config_viewer.xml has been refactored
+        //     List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.sideBarMetadataList.template");
+        //     if (templateList != null) {
+        //         logger.warn("Old <sideBarMetadataList> configuration found - please migrate to <metadataList type=\"sideBar\">.");
+        //         return getMetadataForTemplate(template, templateList, false, false);
+        //     }
 
-        return getMetadataForTemplate(template, templateList, false, false);
+        return getMetadataConfigurationForTemplate("sideBar", template, false, false);
     }
 
     /**

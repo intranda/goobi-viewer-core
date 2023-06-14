@@ -661,9 +661,9 @@
             </template>
         </metadataView>
 
-		<!-- searchHitMetadataList: defines metadata that is displayed in the search 
+		<!-- metadataList[@type="search"]: defines metadata that is displayed in the search 
 			hitlist. The syntax is the same as in mainMetadataList -->
-		<searchHitMetadataList>
+		<metadataList type="searchHit">
 			<template name="_DEFAULT">
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />
@@ -697,11 +697,11 @@
 			<!-- valueLength: defines the maximum length in characters for each value, 
 				longer values are truncated [since 2.0] -->
 			<valueLength>18</valueLength>
-		</searchHitMetadataList>
+		</metadataList>
 
 
-		<!-- sideBarMetadataList: defines metadata that are displayed in the sidebar. -->
-		<sideBarMetadataList>
+		<!-- metadataList[@type="sidebar"]: defines metadata that are displayed in the sidebar. -->
+		<metadataList type="sideBar">
 			<!-- _DEFAULT: metadata defined in the _DEFAULT template is displayed 
 				on all struct elements that have no explicit definition -->
 			<template name="_DEFAULT">
@@ -736,7 +736,7 @@
 					<param type="field" key="URN" />
 				</metadata>
 			</template>
-		</sideBarMetadataList>
+		</metadataList>
 		
         <!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
         <normdataList>
