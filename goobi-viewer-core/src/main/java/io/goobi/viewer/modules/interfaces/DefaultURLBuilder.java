@@ -50,7 +50,12 @@ public class DefaultURLBuilder implements IURLBuilder {
     /* (non-Javadoc)
      * @see io.goobi.viewer.modules.interfaces.IURLBuilder#generateURL(io.goobi.viewer.model.search.BrowseElement)
      */
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should only add page if not topStruct or page greater than one
+     * @should only add logId if not topStruct
+     */
     @Override
     public String generateURL(BrowseElement ele) {
 

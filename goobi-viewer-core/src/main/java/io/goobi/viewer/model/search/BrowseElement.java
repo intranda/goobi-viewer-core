@@ -166,7 +166,7 @@ public class BrowseElement implements Serializable {
      *
      * @should build overview page url correctly
      */
-    BrowseElement(String pi, int imageNo, String label, String fulltext, Locale locale, String dataRepository, String url) {
+    public BrowseElement(String pi, int imageNo, String label, String fulltext, Locale locale, String dataRepository, String url) {
         this.pi = pi;
         this.imageNo = imageNo;
         this.label = new SimpleMetadataValue(label);
@@ -1054,6 +1054,13 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @param imageNo the imageNo to set
+     */
+    public void setImageNo(int imageNo) {
+        this.imageNo = imageNo;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>structElements</code>.
      * </p>
@@ -1609,6 +1616,13 @@ public class BrowseElement implements Serializable {
      */
     public String getLogId() {
         return logId;
+    }
+
+    /**
+     * @param logId the logId to set
+     */
+    public void setLogId(String logId) {
+        this.logId = logId;
     }
 
     /**
