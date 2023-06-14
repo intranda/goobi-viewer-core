@@ -31,10 +31,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class RISExportTest extends AbstractSolrEnabledTest {
+public class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see RISExport#RISExport()
