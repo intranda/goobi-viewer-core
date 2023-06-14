@@ -31,6 +31,18 @@ public class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see DefaultURLBuilder#buildPageUrl(String,int,String,PageType,boolean)
+     * @verifies only add page if not topStruct or page greater than one
+     */
+    @Test
+    public void buildPageUrl_shouldOnlyAddPageIfNotTopStructOrPageGreaterThanOne() throws Exception {
+        IURLBuilder builder = new DefaultURLBuilder();
+        Assert.assertEquals("object/PPN123/", builder.buildPageUrl("PPN123", 1, null, PageType.viewObject, true));
+        Assert.assertEquals("object/PPN123/2/", builder.buildPageUrl("PPN123", 2, null, PageType.viewObject, true));
+        Assert.assertEquals("object/PPN123/1/-/", builder.buildPageUrl("PPN123", 1, null, PageType.viewObject, false));
+    }
+
+    /**
+     * @see DefaultURLBuilder#buildPageUrl(String,int,String,PageType,boolean)
      * @verifies only add logId if not topStruct
      */
     @Test

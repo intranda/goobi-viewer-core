@@ -448,9 +448,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         }
 
         StringBuilder sbUrl = new StringBuilder();
+        boolean topstruct = isWork() || isAnchor() || isGroup();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
-                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, imageNumber, logid, pageType));
+                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, imageNumber, logid, pageType, topstruct));
 
         return sbUrl.toString();
     }

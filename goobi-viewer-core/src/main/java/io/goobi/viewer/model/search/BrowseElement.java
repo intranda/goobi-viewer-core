@@ -111,6 +111,8 @@ public class BrowseElement implements Serializable {
     @JsonIgnore
     private List<EventElement> events;
     @JsonIgnore
+    private boolean work = false;
+    @JsonIgnore
     private boolean anchor = false;
     @JsonIgnore
     private boolean hasImages = false;
@@ -256,6 +258,7 @@ public class BrowseElement implements Serializable {
             }
         }
 
+        work = structElement.isWork();
         anchor = structElement.isAnchor();
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
@@ -1150,6 +1153,20 @@ public class BrowseElement implements Serializable {
      */
     public boolean isGroup() {
         return DocType.GROUP.equals(docType);
+    }
+
+    /**
+     * @return the work
+     */
+    public boolean isWork() {
+        return work;
+    }
+
+    /**
+     * @param work the work to set
+     */
+    public void setWork(boolean work) {
+        this.work = work;
     }
 
     /**

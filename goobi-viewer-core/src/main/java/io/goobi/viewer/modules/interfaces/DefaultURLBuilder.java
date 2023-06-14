@@ -56,6 +56,7 @@ public class DefaultURLBuilder implements IURLBuilder {
 
         // For aggregated person search hits, start another search (label contains the person's name in this case)
         String url = "";
+        boolean topstruct = ele.isWork() || ele.isAnchor() || ele.isGroup();
         if (ele.getMetadataGroupType() != null) {
             switch (ele.getMetadataGroupType()) {
                 case PERSON:
@@ -70,15 +71,15 @@ public class DefaultURLBuilder implements IURLBuilder {
                     break;
                 default:
                     PageType pageType = getPageType(ele);
-                    url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType);
+                    url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
                     break;
             }
         } else {
             PageType pageType = getPageType(ele);
-            url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType);
+            url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
         }
 
-        // logger.trace("generateUrl: {}", sb.toString());
+        logger.trace("generateUrl: {}", url);
         return url;
 
     }
@@ -86,6 +87,7 @@ public class DefaultURLBuilder implements IURLBuilder {
     /**
      * {@inheritDoc}
      * 
+     * @should only add page if not topStruct or page greater than one
      * @should only add logId if not topStruct
      */
     @Override
