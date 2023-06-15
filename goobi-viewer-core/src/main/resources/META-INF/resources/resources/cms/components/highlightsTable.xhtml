@@ -98,12 +98,27 @@
 	                                    
 	                                    <!-- SCHEDULE FROM -->
 	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
-	                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateStart}"></h:outputText>
+		                                    <span>
+			                                    <ui:fragment rendered="#{not empty object.data.dateStart}">
+			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateStart}"></h:outputText>
+			                                    </ui:fragment>
+			                                    <ui:fragment rendered="#{empty object.data.dateStart}">
+			                                    -
+			                                    </ui:fragment>
+		                                    </span>
 	                                  	</div>
 	                                  	
 	                                    <!-- SCHEDULE UNTIL -->
 	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
-	                                    <h:outputText  converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateEnd}"></h:outputText>
+	                                    	<span>
+			                                    <ui:fragment rendered="#{not empty object.data.dateEnd}">
+			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateEnd}"></h:outputText>
+			                                    </ui:fragment>
+			                                    <ui:fragment rendered="#{empty object.data.dateEnd}">
+			                                    -
+			                                    </ui:fragment>
+		                                    </span>
+	                                    
 	                                  	</div>
 	
 										<!-- IS ACTIVE? -->
