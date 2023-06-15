@@ -108,13 +108,13 @@ public class HighlightDataTest extends AbstractDatabaseEnabledTest {
         LocalDateTime time = LocalDate.of(2023, 2, 15).atStartOfDay();
         assertEquals(1, dao.getHighlightsForDate(time).size());
         assertEquals("Objekt des Monats Februar", dao.getHighlightsForDate(time).get(0).getName().getText());
+        assertEquals(0l, dao.getHighlightsForDate(time).stream().filter(HighlightData::isEnabled).count());
         
         LocalDateTime time2 = LocalDate.of(2023, 2, 1).atStartOfDay();
         assertEquals(2, dao.getHighlightsForDate(time2).size());
         
         LocalDateTime time3 = LocalDate.of(2023, 3, 15).atStartOfDay();
         assertEquals(1, dao.getHighlightsForDate(time3).size());
-        assertEquals(0l, dao.getHighlightsForDate(time3).stream().filter(HighlightData::isEnabled).count());
     }
 
     @Test
