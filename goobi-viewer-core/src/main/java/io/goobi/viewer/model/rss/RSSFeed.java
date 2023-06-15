@@ -642,8 +642,6 @@ public class RSSFeed {
             feed.addItem(entry);
         }
 
-        Collections.sort(feed.getItems());
-
         return feed;
     }
 

@@ -305,7 +305,7 @@ public class ActivityCollectionBuilder {
         if (startDate != null && endDate != null) {
             query = "(" + query + ") AND (DATEUPDATED:[" + startDate + " TO " + endDate + "] OR DATECREATED:[" + startDate + " TO " + endDate + "])";
         }
-        SolrDocumentList list = DataManager.getInstance().getSearchIndex().search(query, getActivitiesPerPage(), null, Arrays.asList(SOLR_FIELDS));
+        SolrDocumentList list = DataManager.getInstance().getSearchIndex().search(query, Integer.MAX_VALUE, null, Arrays.asList(SOLR_FIELDS));
         return list;
     }
 

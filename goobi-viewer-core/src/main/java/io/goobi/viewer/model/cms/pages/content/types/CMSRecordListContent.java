@@ -208,6 +208,9 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
                 sortString = this.getGroupingField() + ";" + sortString;
                 s.setSortString(sortString);
+            } else {
+                String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
+                s.setSortString(sortString);
             }
             SearchFacets facets = searchBean.getFacets();
             s.setPage(getCurrentListPage());
