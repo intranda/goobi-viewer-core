@@ -1072,11 +1072,16 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             return getUrl(pageType);
         }
 
+        /**
+         * 
+         * @param pageType
+         * @return
+         */
         public String getUrl(PageType pageType) {
             StringBuilder sbUrl = new StringBuilder();
             sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append('/')
-                    .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(structPi, pageNo, logId, pageType));
+                    .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(structPi, pageNo, logId, pageType, false));
             return sbUrl.toString();
         }
 

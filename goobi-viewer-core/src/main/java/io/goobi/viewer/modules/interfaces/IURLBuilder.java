@@ -55,6 +55,14 @@ public interface IURLBuilder {
      */
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct);
 
+    /**
+     * 
+     * @param pi
+     * @param imageNo
+     * @param logId
+     * @param pageType
+     * @return
+     */
     public default String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
         return buildPageUrl(pi, imageNo, logId, pageType, false);
     }
