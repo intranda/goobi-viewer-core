@@ -54,7 +54,7 @@
 									</h2>
 									<div class="admin__default-block">
 									
-										<div for="inputRecordIdentifier">#{msg.cms__highlight_record_or_identifier}:
+										<div class="mb-2">#{msg.cms__highlight_record_or_identifier}:
 											</div>
 									
 										<div class="form-group admin__highlights-connected-area admin__highlights-connected-radio-buttons">
@@ -159,60 +159,65 @@
 											</h:panelGroup>
 
 									</div>
-									<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'URL' ? '-deactivated' : ''}">
-								
-											<div class="col-12 col-lg-2 control-label admin__form-label">
-												<label for="inputObjectIdentifier">#{msg.admin__highlights__target_url}:</label>
-											</div>
-			                            	<h:panelGroup id="targetUrlInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
-
-												<h:message for="inputTargetUrl"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
-												</div>
-												<h:inputText id="inputTargetUrl" tabindex="1"
-													styleClass="form-control -validation-input"
-													requiredMessage="#{msg.info__input_required}"
-													value="#{highlight.data.targetUrl}"
-													required="true"
-													disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'URL'}">
-													<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
-												</h:inputText>
-												<span class="admin__form-help-text">#{msg.cms__highlight_target_url__help}</span>
-											</h:panelGroup>
-
-									</div>
-									<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'RECORD' ? '-deactivated' : ''}">
-								
-											<div class="col-12 col-lg-2 control-label admin__form-label">
-												<label for="inputObjectIdentifier">#{msg.admin__highlights__new_pi}:</label>
-											</div>
-			                            	<h:panelGroup id="recordIdentifierInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
-
-												<h:message for="inputRecordIdentifier"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
-												</div>
-												<h:inputText id="inputRecordIdentifier" tabindex="1"
-													styleClass="form-control -validation-input"
-													requiredMessage="#{msg.info__input_required}"
-													validatorMessage="#{msg.pi_errNotFound}"
-													value="#{highlight.data.recordIdentifier}"
-													required="true"
-													disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'RECORD'}">
-													<f:validator validatorId="piInSolrValidator"
-														for="inputRecordIdentifier" />
-													<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
-												</h:inputText>
-												<span class="admin__form-help-text">#{msg.cms__highligh_record_identifier__help}</span>
-											</h:panelGroup>
-
-									</div>
 									
+									<ui:fragment rendered="#{highlight.data.targetType == 'URL'}">
+										<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'URL' ? '-deactivated' : ''}">
+									
+												<div class="col-12 col-lg-2 control-label admin__form-label">
+													<label for="inputObjectIdentifier">#{msg.admin__highlights__target_url}:</label>
+												</div>
+				                            	<h:panelGroup id="targetUrlInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
+	
+													<h:message for="inputTargetUrl"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													<h:inputText id="inputTargetUrl" tabindex="1"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														value="#{highlight.data.targetUrl}"
+														required="true"
+														disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'URL'}">
+														<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__highlight_target_url__help}</span>
+												</h:panelGroup>
+	
+										</div>
+									</ui:fragment>
+									
+									<ui:fragment rendered="#{highlight.data.targetType == 'RECORD'}">
+										<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'RECORD' ? '-deactivated' : ''}">
+									
+												<div class="col-12 col-lg-2 control-label admin__form-label">
+													<label for="inputObjectIdentifier">#{msg.admin__highlights__new_pi}:</label>
+												</div>
+				                            	<h:panelGroup id="recordIdentifierInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
+	
+													<h:message for="inputRecordIdentifier"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													<h:inputText id="inputRecordIdentifier" tabindex="1"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														validatorMessage="#{msg.pi_errNotFound}"
+														value="#{highlight.data.recordIdentifier}"
+														required="true"
+														disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'RECORD'}">
+														<f:validator validatorId="piInSolrValidator"
+															for="inputRecordIdentifier" />
+														<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__highligh_record_identifier__help}</span>
+												</h:panelGroup>
+	
+										</div>
+									</ui:fragment>
 									
 
 									</div>
@@ -351,7 +356,7 @@
 									
 									<div class="#{highlight.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 								
-
+										<div class="admin__form-help-text in mb-2">#{msg.admin__highlights__period_info}</div>
 												
 
 
@@ -462,18 +467,18 @@
 								<!-- OBJECT INFOS + DISPLAY LINK -->
 								<h:panelGroup id="recordInformation">
 
-									<h:panelGroup layout="block" styleClass="admin__default-block"
-									rendered="#{not empty highlight.data.recordIdentifier}">
-										<h2>#{msg.show}</h2>
-										<div class="admin__form-help-text in mb-4 admin__record-notes-info-box">
-											<span>#{msg.cms__record_notes_select_record__show_title}</span>
-										</div>
-											<div class="row">
-												<div class="col-12 d-flex justify-content-center">
-													<a class="btn btn--default" target="_blank" href="#{highlightsBean.getUrl(highlight)}">#{msg.show}</a>
-					                            </div>
-											</div>
-									</h:panelGroup>
+<!-- 									<h:panelGroup layout="block" styleClass="admin__default-block" -->
+<!-- 									rendered="#{not empty highlight.data.recordIdentifier}"> -->
+<!-- 										<h2>#{msg.show}</h2> -->
+<!-- 										<div class="admin__form-help-text in mb-4 admin__record-notes-info-box"> -->
+<!-- 											<span>#{msg.cms__record_notes_select_record__show_title}</span> -->
+<!-- 										</div> -->
+<!-- 											<div class="row"> -->
+<!-- 												<div class="col-12 d-flex justify-content-center"> -->
+<!-- 													<a class="btn" target="_blank" href="#{highlightsBean.getUrl(highlight)}">#{msg.show}</a> -->
+<!-- 					                            </div> -->
+<!-- 											</div> -->
+<!-- 									</h:panelGroup> -->
 
 									<h:panelGroup layout="block" styleClass="admin__default-block"
 									rendered="#{not empty highlight.data.recordIdentifier}">
