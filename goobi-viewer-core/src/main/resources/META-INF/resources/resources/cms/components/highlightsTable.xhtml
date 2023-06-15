@@ -98,12 +98,12 @@
 	                                    
 	                                    <!-- SCHEDULE FROM -->
 	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
-	                                        <span>#{object.data.dateStart}</span>
+	                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateStart}"></h:outputText>
 	                                  	</div>
 	                                  	
 	                                    <!-- SCHEDULE UNTIL -->
 	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
-	                                        <span>#{object.data.dateEnd}</span>
+	                                    <h:outputText  converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateEnd}"></h:outputText>
 	                                  	</div>
 	
 										<!-- IS ACTIVE? -->

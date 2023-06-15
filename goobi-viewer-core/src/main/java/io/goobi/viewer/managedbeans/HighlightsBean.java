@@ -124,6 +124,7 @@ public class HighlightsBean implements Serializable {
                 (first, pageSize, sortField, descending, filters) -> dao
                 .getHighlightsForDate(now)
                 .stream()
+                .filter(HighlightData::isEnabled)
                 .map(Highlight::new)
                 .collect(Collectors.toList()));
     }
