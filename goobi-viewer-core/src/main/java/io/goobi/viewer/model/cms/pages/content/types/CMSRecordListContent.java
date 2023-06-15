@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -46,6 +47,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -63,9 +65,9 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
     @Column(name = "solr_query")
     private String solrQuery = "";
-    @Column(name = "sort_field", length=40)
+    @Column(name = "sort_field", length = 40)
     private String sortField = "";
-    @Column(name = "grouping_field", length=40)
+    @Column(name = "grouping_field", length = 40)
     private String groupingField = "";
     @Column(name = "result_group", columnDefinition = "VARCHAR(40)")
     private String resultGroupName;
@@ -188,12 +190,17 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
 
-            // Set configured result group on SearchBean, if available (before initializing Search)
+            List<SearchResultGroup> resultGroups;
             if (StringUtils.isNotBlank(resultGroupName)) {
+                // Set configured result group on SearchBean, if available (before initializing Search)
                 searchBean.setActiveResultGroupName(resultGroupName);
+                resultGroups = searchBean.getResultGroupsForSearchExecution();
+            } else {
+                // If none is set in the CMS page, created a default group (overriding config settings).
+                resultGroups = Collections.singletonList(SearchResultGroup.createDefaultGroup());
             }
 
-            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL, searchBean.getResultGroupsForSearchExecution());
+            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL, resultGroups);
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(this.getSortField());
                 searchBean.setSortString(this.getSortField());
