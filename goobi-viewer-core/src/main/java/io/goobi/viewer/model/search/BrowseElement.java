@@ -111,6 +111,8 @@ public class BrowseElement implements Serializable {
     @JsonIgnore
     private List<EventElement> events;
     @JsonIgnore
+    private boolean work = false;
+    @JsonIgnore
     private boolean anchor = false;
     @JsonIgnore
     private boolean hasImages = false;
@@ -164,7 +166,7 @@ public class BrowseElement implements Serializable {
      *
      * @should build overview page url correctly
      */
-    BrowseElement(String pi, int imageNo, String label, String fulltext, Locale locale, String dataRepository, String url) {
+    public BrowseElement(String pi, int imageNo, String label, String fulltext, Locale locale, String dataRepository, String url) {
         this.pi = pi;
         this.imageNo = imageNo;
         this.label = new SimpleMetadataValue(label);
@@ -256,6 +258,7 @@ public class BrowseElement implements Serializable {
             }
         }
 
+        work = structElement.isWork();
         anchor = structElement.isAnchor();
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
@@ -1051,6 +1054,13 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @param imageNo the imageNo to set
+     */
+    public void setImageNo(int imageNo) {
+        this.imageNo = imageNo;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>structElements</code>.
      * </p>
@@ -1150,6 +1160,20 @@ public class BrowseElement implements Serializable {
      */
     public boolean isGroup() {
         return DocType.GROUP.equals(docType);
+    }
+
+    /**
+     * @return the work
+     */
+    public boolean isWork() {
+        return work;
+    }
+
+    /**
+     * @param work the work to set
+     */
+    public void setWork(boolean work) {
+        this.work = work;
     }
 
     /**
@@ -1592,6 +1616,13 @@ public class BrowseElement implements Serializable {
      */
     public String getLogId() {
         return logId;
+    }
+
+    /**
+     * @param logId the logId to set
+     */
+    public void setLogId(String logId) {
+        this.logId = logId;
     }
 
     /**
