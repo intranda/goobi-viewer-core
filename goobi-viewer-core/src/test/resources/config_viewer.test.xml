@@ -674,7 +674,7 @@
         </metadataView>
 
 		<!-- metadataList[@type="search"]: defines metadata that is displayed in the search 
-			hitlist. The syntax is the same as in mainMetadataList -->
+			hitlist. The syntax is the same as in metadataView -->
 		<metadataList type="searchHit">
 			<template name="_DEFAULT">
 				<metadata label="MD_CREATOR" value="">

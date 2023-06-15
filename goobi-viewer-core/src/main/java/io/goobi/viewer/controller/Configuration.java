@@ -432,12 +432,11 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
-        // TODO Comment back in once core config_viewer.xml has been refactored
-        //        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
-        //        if (templateList != null) {
-        //            logger.warn("Old <searchHitMetadataList> configuration found - please migrate to <metadataList type=\"searchHit\">.");
-        //            return getMetadataForTemplate(template, templateList, true, true);
-        //        }
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
+        if (templateList != null && !templateList.isEmpty()) {
+            logger.warn("Old <searchHitMetadataList> configuration found - please migrate to <metadataList type=\"searchHit\">.");
+            return getMetadataForTemplate(template, templateList, true, true);
+        }
 
         return getMetadataConfigurationForTemplate("searchHit", template, true, true);
     }
@@ -509,12 +508,11 @@ public class Configuration extends AbstractConfiguration {
      * @should return empty list if template is null
      */
     public List<Metadata> getSidebarMetadataForTemplate(String template) {
-        // TODO Comment back in once core config_viewer.xml has been refactored
-        //     List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.sideBarMetadataList.template");
-        //     if (templateList != null) {
-        //         logger.warn("Old <sideBarMetadataList> configuration found - please migrate to <metadataList type=\"sideBar\">.");
-        //         return getMetadataForTemplate(template, templateList, false, false);
-        //     }
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.sideBarMetadataList.template");
+        if (templateList != null && !templateList.isEmpty()) {
+            logger.warn("Old <sideBarMetadataList> configuration found - please migrate to <metadataList type=\"sideBar\">.");
+            return getMetadataForTemplate(template, templateList, false, false);
+        }
 
         return getMetadataConfigurationForTemplate("sideBar", template, false, false);
     }
