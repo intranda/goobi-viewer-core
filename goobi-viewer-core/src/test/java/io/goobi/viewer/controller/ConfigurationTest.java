@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -291,7 +292,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getSearchHitsPerPageValues_shouldReturnAllValues() throws Exception {
         Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues().size());
     }
-    
 
     /**
      * @see Configuration#isDisplaySearchHitNumbers()
@@ -1564,7 +1564,8 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
-        List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true);
+        List<AdvancedSearchFieldConfiguration> result =
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, Locale.ENGLISH.getLanguage());
         Assert.assertEquals(10, result.size());
         Assert.assertTrue(result.get(0).isHierarchical());
         Assert.assertTrue(result.get(0).isVisible());
@@ -1575,6 +1576,21 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertTrue(result.get(7).isDisabled());
         Assert.assertEquals(20, result.get(9).getDisplaySelectItemsThreshold());
         Assert.assertEquals(AdvancedSearchFieldConfiguration.SELECT_TYPE_BADGES, result.get(9).getSelectType());
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchFields(String,boolean,String)
+     * @verifies return skip fields that don't match given language
+     */
+    @Test
+    public void getAdvancedSearchFields_shouldReturnSkipFieldsThatDontMatchGivenLanguage() throws Exception {
+        List<AdvancedSearchFieldConfiguration> result =
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en");
+        Assert.assertEquals(10, result.size());
+
+        Assert.assertEquals("MD_FOO_LANG_EN", result.get(8).getField());
+        Assert.assertEquals("MD_FOO_LANG_DE",
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "de").get(8).getField());
     }
 
     /**
@@ -2499,7 +2515,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, results.size());
         Assert.assertEquals("MD_ACCESSLOCATIONS", results.get(0));
     }
-    
+
     /**
      * @see Configuration#getDisplayAdditionalMetadataSnippetFields()
      * @verifies return correct values
@@ -3382,7 +3398,7 @@ public class ConfigurationTest extends AbstractTest {
         assertFalse(config.test("MD_ROLE"));
         assertFalse(config.test("MD_TITLE_UNTOKENIZED"));
     }
-    
+
     @Test
     public void test_getGeomapFilters() {
         Map<String, List<LabeledValue>> filters = DataManager.getInstance().getConfiguration().getGeomapFilters();

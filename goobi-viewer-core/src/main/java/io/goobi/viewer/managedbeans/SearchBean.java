@@ -182,7 +182,10 @@ public class SearchBean implements SearchInterface, Serializable {
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
     /** Group of query item clusters for the advanced search. */
     private final SearchQueryGroup advancedSearchQueryGroup =
-            new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(advancedSearchFieldTemplate, true),
+            new SearchQueryGroup(
+                    DataManager.getInstance()
+                            .getConfiguration()
+                            .getAdvancedSearchFields(advancedSearchFieldTemplate, true, BeanUtils.getLocale().getLanguage()),
                     advancedSearchFieldTemplate);
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
@@ -562,7 +565,10 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     protected void resetAdvancedSearchParameters() {
         logger.trace("resetAdvancedSearchParameters");
-        advancedSearchQueryGroup.init(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(advancedSearchFieldTemplate, true),
+        advancedSearchQueryGroup.init(
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getAdvancedSearchFields(advancedSearchFieldTemplate, true, navigationHelper.getLocaleString()),
                 advancedSearchFieldTemplate);
         // If currentCollection is set, pre-select it in the advanced search menu
         mirrorAdvancedSearchCurrentHierarchicalFacets();
@@ -837,7 +843,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED && advancedSearchQueryGroup.isBlank()) {
             SearchQueryGroup parsedGroup =
                     SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getActiveFacetString(),
-                            advancedSearchFieldTemplate);
+                            advancedSearchFieldTemplate, navigationHelper.getLocaleString());
             advancedSearchQueryGroup.injectItems(parsedGroup.getQueryItems());
         }
 
@@ -2139,7 +2145,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should omit languaged fields for other languages
      */
     public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(String language, String template) {
-        List<AdvancedSearchFieldConfiguration> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, false);
+        List<AdvancedSearchFieldConfiguration> fields =
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, false, language);
         if (fields == null) {
             return Collections.emptyList();
         }

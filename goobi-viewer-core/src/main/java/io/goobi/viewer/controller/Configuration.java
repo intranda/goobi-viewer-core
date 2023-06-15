@@ -1437,10 +1437,12 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param template
      * @param fallbackToDefaultTemplate
-     * @should return all values
+     * @param language
      * @return a {@link java.util.List} object.
+     * @should return all values
+     * @should return skip fields that don't match given language
      */
-    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate) {
+    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate, String language) {
         logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate);
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("search.advanced.searchFields.template");
         if (templateList == null) {
@@ -1458,11 +1460,11 @@ public class Configuration extends AbstractConfiguration {
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
         for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             String field = subElement.getString(".");
-            
+
             if (StringUtils.isEmpty(field)) {
                 logger.warn("No advanced search field name defined, skipping.");
                 continue;
-            } else if(isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage())) {
+            } else if (isLanguageVersionOtherThan(field, language != null ? language : "en")) {
                 logger.trace("Field {} belongs to different language; skipping", field);
                 continue;
             }
@@ -5755,7 +5757,7 @@ public class Configuration extends AbstractConfiguration {
         double lat = getLocalFloat("maps.view.center.lat", 49.451993f);
         return new View(zoom, lng, lat);
     }
-    
+
     public Map<String, List<LabeledValue>> getGeomapFilters() {
         List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = this.getLocalConfigurationsAt("maps.filters.filter");
         Map<String, List<LabeledValue>> filters = new HashMap<>();
@@ -5766,12 +5768,11 @@ public class Configuration extends AbstractConfiguration {
                 String label = c.getString("[@label]", "");
                 return new LabeledValue(field, label);
             })
-            .collect(Collectors.toList());
+                    .collect(Collectors.toList());
             filters.put(groupName, fields);
         }
         return filters;
     }
-    
 
     /**
      * @param field

@@ -40,7 +40,7 @@ public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void init_shouldCreateAndPreselectVisibleFields() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true), null);
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         Assert.assertEquals(3, group.getQueryItems().size());
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
         Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(1).getField());
@@ -64,7 +64,7 @@ public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void injectItems_shouldReplaceExistingItemsWithGiven() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true), null);
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         Assert.assertEquals(3, group.getQueryItems().size());
 
         SearchQueryItem item = new SearchQueryItem();
@@ -80,7 +80,7 @@ public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void isBlank_shouldReturnTrueIfAllItemsWithoutValue() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true), null);
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         Assert.assertTrue(group.isBlank());
     }
 
@@ -90,7 +90,7 @@ public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void isBlank_shouldReturnFalseIfAtLeastOneItemHasValue() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true), null);
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         Assert.assertEquals(3, group.getQueryItems().size());
         group.getQueryItems().get(0).setValue("foobar");
         Assert.assertFalse(group.isBlank());
@@ -102,7 +102,7 @@ public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getAvailableOperators_shouldReturnAllEnumValues() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true), null);
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         List<SearchQueryGroupOperator> operators = group.getAvailableOperators();
         Assert.assertTrue(operators.contains(SearchQueryGroupOperator.AND));
         Assert.assertTrue(operators.contains(SearchQueryGroupOperator.OR));
@@ -126,7 +126,7 @@ public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void removeQueryItem_shouldRemoveItemCorrectly() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true), null);
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         Assert.assertEquals(3, group.getQueryItems().size());
         Assert.assertTrue(group.removeQueryItem(group.getQueryItems().get(0)));
         Assert.assertEquals(2, group.getQueryItems().size());
