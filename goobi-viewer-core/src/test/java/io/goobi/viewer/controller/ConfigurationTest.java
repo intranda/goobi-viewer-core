@@ -1565,16 +1565,16 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
         List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true);
-        Assert.assertEquals(12, result.size());
+        Assert.assertEquals(10, result.size());
         Assert.assertTrue(result.get(0).isHierarchical());
         Assert.assertTrue(result.get(0).isVisible());
-        Assert.assertTrue(result.get(5).isRange());
         Assert.assertTrue(result.get(1).isUntokenizeForPhraseSearch());
+        Assert.assertTrue(result.get(5).isRange());
         Assert.assertEquals("#SEPARATOR1#", result.get(7).getField());
         Assert.assertEquals("-----", result.get(7).getLabel());
         Assert.assertTrue(result.get(7).isDisabled());
-        Assert.assertEquals(20, result.get(11).getDisplaySelectItemsThreshold());
-        Assert.assertEquals(AdvancedSearchFieldConfiguration.SELECT_TYPE_BADGES, result.get(11).getSelectType());
+        Assert.assertEquals(20, result.get(9).getDisplaySelectItemsThreshold());
+        Assert.assertEquals(AdvancedSearchFieldConfiguration.SELECT_TYPE_BADGES, result.get(9).getSelectType());
     }
 
     /**
