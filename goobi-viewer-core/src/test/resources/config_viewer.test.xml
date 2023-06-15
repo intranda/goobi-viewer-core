@@ -491,6 +491,18 @@
             <field type="oneline">MD_ACCESSLOCATIONS</field>
             <field type="snippet">MD_DESCRIPTION</field>
 		</displayAdditionalMetadata>
+        
+        <metadata>
+            <!-- displayStructType: If false, the structtype is hidden. Default is true -->
+            <displayStructType>false</displayStructType>
+
+            <!-- valueNumber: defines the maximum number of found values to display for each field type -->
+            <valueNumber>17</valueNumber>
+
+            <!-- valueLength: defines the maximum length in characters for each value, longer values are truncated -->
+            <valueLength>18</valueLength>
+        </metadata>
+        
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
 		<staticQuerySuffix>-BOOL_HIDE:true</staticQuerySuffix>
@@ -687,16 +699,6 @@
 				</metadata>
 			</template>
 
-			<!-- displayStructType: if false, the structtype is hidden -->
-			<displayStructType>false</displayStructType>
-
-			<!-- valueNumber: defines the maximum number of found values to display 
-				for each field type [since 2.0] -->
-			<valueNumber>17</valueNumber>
-
-			<!-- valueLength: defines the maximum length in characters for each value, 
-				longer values are truncated [since 2.0] -->
-			<valueLength>18</valueLength>
 		</metadataList>
 
 

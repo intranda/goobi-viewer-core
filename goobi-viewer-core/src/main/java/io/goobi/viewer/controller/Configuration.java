@@ -3574,7 +3574,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean getDisplayStructType() {
-        return this.getLocalBoolean("metadata.searchHitMetadataList.displayStructType", true);
+        return this.getLocalBoolean("search.metadata.displayStructType", true);
     }
 
     /**
@@ -3586,7 +3586,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSearchHitMetadataValueNumber() {
-        return getLocalInt("metadata.searchHitMetadataList.valueNumber", 1);
+        return getLocalInt("search.metadata.valueNumber", 1);
     }
 
     /**
@@ -3598,7 +3598,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSearchHitMetadataValueLength() {
-        return getLocalInt("metadata.searchHitMetadataList.valueLength", 0);
+        return getLocalInt("search.metadata.valueLength", 0);
     }
 
     /**
