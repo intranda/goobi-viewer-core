@@ -1165,8 +1165,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT),
-                        0, 10, null, null, null, null, null,
-                        null, Locale.ENGLISH, 0);
+                        0, 10, null, null, null, null, null, null, null, Locale.ENGLISH, false, 0);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {

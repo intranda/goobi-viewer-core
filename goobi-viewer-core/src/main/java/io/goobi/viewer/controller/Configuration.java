@@ -107,6 +107,10 @@ import io.goobi.viewer.solr.SolrConstants;
 public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LogManager.getLogger(Configuration.class);
+    
+    public static final String CONFIG_FILE_NAME = "config_viewer.xml";
+
+    public static final String METADATA_LIST_TYPE_SEARCH_HIT = "searchHit";
 
     private static final String XML_PATH_ATTRIBUTE_CONDITION = "[@condition]";
     private static final String XML_PATH_ATTRIBUTE_DEFAULT = "[@default]";
@@ -122,8 +126,6 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
 
     private static final String VALUE_DEFAULT = "_DEFAULT";
-
-    public static final String CONFIG_FILE_NAME = "config_viewer.xml";
 
     private Set<String> stopwords;
 
@@ -396,7 +398,7 @@ public class Configuration extends AbstractConfiguration {
      * @param topstructValueFallbackDefaultValue
      * @return
      */
-    List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
+    public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
@@ -409,7 +411,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
-            if (type.equals(metadataList.getString("[@type]"))) {
+            if (type.equals(metadataList.getString(XML_PATH_ATTRIBUTE_TYPE))) {
                 List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
                 if (templateList.isEmpty()) {
                     logger.error("{}  templates found for type {}", templateList.size(), type);
@@ -439,9 +441,9 @@ public class Configuration extends AbstractConfiguration {
             return getMetadataForTemplate(template, templateList, true, true);
         }
 
-        return getMetadataConfigurationForTemplate("searchHit", template, true, true);
+        return getMetadataConfigurationForTemplate(METADATA_LIST_TYPE_SEARCH_HIT, template, true, true);
     }
-    
+
     /**
      * Returns the list of configured metadata for {@link Highlight}s which reference a record.
      *

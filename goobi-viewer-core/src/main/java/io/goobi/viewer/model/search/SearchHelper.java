@@ -68,6 +68,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -324,35 +325,7 @@ public final class SearchHelper {
      * @param params a {@link java.util.Map} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields a {@link java.util.List} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @param proximitySearchDistance
-     * @return List of <code>StructElement</code>s containing the search hits.
-     * @should return all hits
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
-            List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
-            List<String> exportFields, Locale locale, int proximitySearchDistance)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return searchWithAggregation(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false,
-                proximitySearchDistance);
-    }
-
-    /**
-     * Main search method for aggregated search.
-     *
-     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link java.lang.Integer} von
-     * @param rows {@link java.lang.Integer} bis
-     * @param sortFields a {@link java.util.List} object.
-     * @param resultFields a {@link java.util.List} object.
-     * @param filterQueries a {@link java.util.List} object.
-     * @param params a {@link java.util.Map} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param exportFields a {@link java.util.List} object.
+     * @param metadataListType Optional metadata list type, overriding the default "searchHit"
      * @param locale a {@link java.util.Locale} object.
      * @param keepSolrDoc
      * @param proximitySearchDistance
@@ -365,7 +338,7 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
-            List<String> exportFields, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
+            List<String> exportFields, String metadataListType, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (query != null) {
             String s = query.replaceAll("[\n\r]", "_");
@@ -381,6 +354,10 @@ public final class SearchHelper {
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
 
         SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
+        if (StringUtils.isNotBlank(metadataListType)) {
+            factory.setMetadataListType(metadataListType);
+        }
+
         int count = first;
         for (SolrDocument doc : resp.getResults()) {
             // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
@@ -532,7 +509,8 @@ public final class SearchHelper {
         finalQuery = buildFinalQuery(finalQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits =
-                SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale,
+                SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null,
+                        Configuration.METADATA_LIST_TYPE_SEARCH_HIT, locale, false,
                         proximitySearchDistance);
         if (!hits.isEmpty()) {
             return hits.get(0).getBrowseElement();
@@ -3118,7 +3096,7 @@ public final class SearchHelper {
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch =
                     searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFieldNames,
-                            locale, proximitySearchDistance);
+                            Configuration.METADATA_LIST_TYPE_SEARCH_HIT, locale, false, proximitySearchDistance);
 
             for (SearchHit hit : batch) {
                 // Create row
