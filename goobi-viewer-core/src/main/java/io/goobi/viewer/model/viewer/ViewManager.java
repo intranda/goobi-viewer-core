@@ -39,6 +39,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -3993,11 +3994,11 @@ public class ViewManager implements Serializable {
     
     public List<PhysicalElement> getPagesForMediaType(String type) throws PresentationException, IndexUnreachableException {
         List<ComplexMetadata> mds = getTopStructElement().getMetadataDocuments().getMetadata("MD_MEDIA_INFO");
-        List<PhysicalElement> pages =  mds.stream().filter(md -> type.equalsIgnoreCase(md.getFirstValue("MD_SUBJECT", null)))
+        return mds.stream().filter(md -> type.equalsIgnoreCase(md.getFirstValue("MD_SUBJECT", null)))
                 .map(md -> md.getFirstValue("MD_MEDIA_INFO", null))
+                .map(path -> Paths.get(path).getFileName().toString())
                 .map(filename -> this.getPageLoader().findPageForFilename(filename))
                 .filter(p -> p != null)
                 .collect(Collectors.toList());
-        return pages;
     }
 }
