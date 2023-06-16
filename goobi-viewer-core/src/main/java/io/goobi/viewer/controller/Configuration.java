@@ -107,7 +107,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LogManager.getLogger(Configuration.class);
-    
+
     public static final String CONFIG_FILE_NAME = "config_viewer.xml";
 
     public static final String METADATA_LIST_TYPE_SEARCH_HIT = "searchHit";
@@ -392,6 +392,31 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @param prefix Optional prefix for filtering
+     * @return List of type attribute values of matching lists
+     * @should return all metadataList types if prefix empty
+     * @should filter by prefix correctly
+     */
+    public List<String> getMetadataListTypes(String prefix) {
+        List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
+        if (metadataLists == null) {
+            logger.error("no metadata lists found");
+            return new ArrayList<>(); // must be a mutable list!
+        }
+
+        List<String> ret = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
+            String type = metadataList.getString(XML_PATH_ATTRIBUTE_TYPE);
+            if (StringUtils.isEmpty(prefix) || type.startsWith(prefix)) {
+                ret.add(type);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
      * @param type
      * @param template
      * @param fallbackToDefaultTemplate
@@ -406,7 +431,7 @@ public class Configuration extends AbstractConfiguration {
 
         List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
         if (metadataLists == null) {
-            logger.error("no metadata lists found");
+            logger.trace("no metadata lists found");
             return new ArrayList<>(); // must be a mutable list!
         }
 
@@ -414,7 +439,7 @@ public class Configuration extends AbstractConfiguration {
             if (type.equals(metadataList.getString(XML_PATH_ATTRIBUTE_TYPE))) {
                 List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
                 if (templateList.isEmpty()) {
-                    logger.error("{}  templates found for type {}", templateList.size(), type);
+                    logger.trace("{}  templates found for type {}", templateList.size(), type);
                     return new ArrayList<>(); // must be a mutable list!
                 }
 
