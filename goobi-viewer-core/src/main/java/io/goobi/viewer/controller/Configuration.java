@@ -425,6 +425,7 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
+        // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Sometimes used for debugging
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
         }

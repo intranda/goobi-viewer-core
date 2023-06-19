@@ -87,6 +87,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.includeStructureElements = orig.includeStructureElements;
         this.elementsPerPage = orig.elementsPerPage;
         this.view = orig.view;
+        this.metadataListType = orig.metadataListType;
     }
 
     private SearchFunctionality initSearch() {

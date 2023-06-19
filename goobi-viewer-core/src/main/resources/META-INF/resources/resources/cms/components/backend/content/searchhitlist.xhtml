@@ -144,19 +144,38 @@
 	    </div>
 
 		<!-- ITEM COUNT -->
-			<div class="admin__content-component-input-group">
-				<div class="admin__content-component-input-label">
-					<label for="itemCount">#{msg.cms_itemCount}:</label>
-				</div>
-				<div class="admin__content-component-input-field">
-					<h:inputText id="itemCount" styleClass="form-control"
-						value="#{cc.attrs.contentItem.content.elementsPerPage}">
-						<f:passThroughAttribute name="aria-label"
-							value="#{msg.cms_itemGroupByField}" />
-						<!-- <f:ajax event="change" render="@this" /> -->
-					</h:inputText>
-				</div>
+		<div class="admin__content-component-input-group">
+			<div class="admin__content-component-input-label">
+				<label for="itemCount">#{msg.cms_itemCount}:</label>
 			</div>
+			<div class="admin__content-component-input-field">
+				<h:inputText id="itemCount" styleClass="form-control"
+					value="#{cc.attrs.contentItem.content.elementsPerPage}">
+					<f:passThroughAttribute name="aria-label"
+						value="#{msg.cms_itemGroupByField}" />
+					<!-- <f:ajax event="change" render="@this" /> -->
+				</h:inputText>
+			</div>
+		</div>
+		
+        <!-- HIT LIST CONFIGURATION -->
+        <div class="admin__content-component-input-group">
+            <div class="admin__content-component-input-label">
+                <label for="metadataListType">#{msg.cms_metadataListType}:</label>
+            </div>
+            <div class="admin__content-component-input-field">
+                <div class="custom-control custom-control--select">
+                    <h:selectOneMenu id="metadataListType" styleClass="form-control"
+                        value="#{cc.attrs.contentItem.content.metadataListType}">
+                        <f:selectItem itemValue="" itemLabel="#{msg.select}" />
+                        <f:selectItems value="#{cmsBean.cmsMetadataListTypes}" var="type"
+                            itemValue="#{type}" itemLabel="#{msg[type]} (#{type})" />
+                        <f:passThroughAttribute name="aria-label"
+                            value="#{msg.cms_metadataListType}" />
+                    </h:selectOneMenu>
+                </div>
+            </div>
+        </div>
 
 	</composite:implementation>
 </ui:composition>

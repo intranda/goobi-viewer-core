@@ -140,7 +140,7 @@ public class CmsBean implements Serializable {
     private List<String> solrSortFields = null;
     private List<String> solrGroupFields = null;
     private String test = "";
-    
+
     private List<String> luceneFields = null;
 
     public CmsBean() {
@@ -1515,6 +1515,14 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Returns metadataList types from the configuration where the type value stars with "cms_".
+     * @return
+     */
+    public List<String> getCmsMetadataListTypes() {
+        return DataManager.getInstance().getConfiguration().getMetadataListTypes("cms_");
+    }
+
+    /**
      * <p>
      * getCssClass.
      * </p>
@@ -1796,7 +1804,7 @@ public class CmsBean implements Serializable {
     public String getTest() {
         return test;
     }
-    
+
     public void setTest(String test) {
         System.out.println("set test");
         this.test = test;
