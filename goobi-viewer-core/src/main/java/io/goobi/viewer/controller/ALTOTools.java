@@ -500,6 +500,7 @@ public class ALTOTools {
                             Word nextWord = words.get(wordIndex);
                             int hits = ALTOTools.getMatchALTOWord(nextWord, Arrays.copyOfRange(searchWords, totalHits, searchWords.length));
                             if (hits == 0) {
+                                wordIndex--;
                                 match = false;
                                 break;
                             }
