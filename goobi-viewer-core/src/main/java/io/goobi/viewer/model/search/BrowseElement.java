@@ -246,6 +246,7 @@ public class BrowseElement implements Serializable {
         int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
         for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
             if (!entry.getValue().isEmpty()) {
+                logger.trace("populating metadata list {}", entry.getKey());
                 populateMetadataList(entry.getValue(), structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
             }
         }
@@ -340,7 +341,7 @@ public class BrowseElement implements Serializable {
         if (thumbs != null) {
             String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
             if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
-                thumbnailUrl = StringTools.intern(sbThumbnailUrl.toString());
+                thumbnailUrl = StringTools.intern(sbThumbnailUrl);
             }
         }
 
@@ -1501,6 +1502,22 @@ public class BrowseElement implements Serializable {
      */
     public List<Metadata> getMetadataListForCurrentLocale() {
         return getMetadataListForLocale(BeanUtils.getLocale());
+    }
+
+    /**
+     * 
+     * @return First metadata list in metadataListMap that's not the default search metadata list configuration; empty list if not found
+     */
+    public List<Metadata> getSecondaryMetadataListForCurrentLocale() {
+        if (this.metadataListMap.size() > 1) {
+            for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
+                if (!Configuration.METADATA_LIST_TYPE_SEARCH_HIT.equals(entry.getKey())) {
+                    return entry.getValue();
+                }
+            }
+        }
+
+        return Collections.emptyList();
     }
 
     /**
