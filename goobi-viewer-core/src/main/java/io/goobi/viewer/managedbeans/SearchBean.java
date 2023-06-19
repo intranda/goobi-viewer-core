@@ -568,7 +568,7 @@ public class SearchBean implements SearchInterface, Serializable {
         advancedSearchQueryGroup.init(
                 DataManager.getInstance()
                         .getConfiguration()
-                        .getAdvancedSearchFields(advancedSearchFieldTemplate, true, navigationHelper.getLocaleString()),
+                        .getAdvancedSearchFields(advancedSearchFieldTemplate, true, BeanUtils.getLocale().getLanguage()),
                 advancedSearchFieldTemplate);
         // If currentCollection is set, pre-select it in the advanced search menu
         mirrorAdvancedSearchCurrentHierarchicalFacets();
