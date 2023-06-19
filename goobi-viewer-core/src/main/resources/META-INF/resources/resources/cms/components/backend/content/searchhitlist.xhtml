@@ -108,6 +108,7 @@
 							itemValue="#{hitlistview}" itemLabel="#{msg[hitlistview.label]}" />
 						<f:passThroughAttribute name="aria-label"
 							value="#{msg.cms__search_hit_list__select_view}" />
+						<f:ajax event="change" render="metadataListTypeGroup" />
 					</h:selectOneMenu>
 				</div>
 			</div>
@@ -159,23 +160,27 @@
 		</div>
 		
         <!-- HIT LIST CONFIGURATION -->
-        <div class="admin__content-component-input-group">
-            <div class="admin__content-component-input-label">
-                <label for="metadataListType">#{msg.cms_metadataListType}:</label>
-            </div>
-            <div class="admin__content-component-input-field">
-                <div class="custom-control custom-control--select">
-                    <h:selectOneMenu id="metadataListType" styleClass="form-control"
-                        value="#{cc.attrs.contentItem.content.metadataListType}">
-                        <f:selectItem itemValue="" itemLabel="#{msg.select}" />
-                        <f:selectItems value="#{cmsBean.cmsMetadataListTypes}" var="type"
-                            itemValue="#{type}" itemLabel="#{msg[type]} (#{type})" />
-                        <f:passThroughAttribute name="aria-label"
-                            value="#{msg.cms_metadataListType}" />
-                    </h:selectOneMenu>
+        <h:panelGroup id="metadataListTypeGroup">
+            <ui:fragment rendered="#{cc.attrs.contentItem.content.view.label == 'searchListTileView'}">
+                <div class="admin__content-component-input-group">
+                    <div class="admin__content-component-input-label">
+                        <label for="metadataListType">#{msg.cms_metadataListType}:</label>
+                    </div>
+                    <div class="admin__content-component-input-field">
+                        <div class="custom-control custom-control--select">
+                            <h:selectOneMenu id="metadataListType" styleClass="form-control"
+                                value="#{cc.attrs.contentItem.content.metadataListType}">
+                                <f:selectItem itemValue="" itemLabel="#{msg.select}" />
+                                <f:selectItems value="#{cmsBean.cmsMetadataListTypes}" var="type"
+                                    itemValue="#{type}" itemLabel="#{msg[type]} (#{type})" />
+                                <f:passThroughAttribute name="aria-label"
+                                    value="#{msg.cms_metadataListType}" />
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </ui:fragment>
+        </h:panelGroup>
 
 	</composite:implementation>
 </ui:composition>

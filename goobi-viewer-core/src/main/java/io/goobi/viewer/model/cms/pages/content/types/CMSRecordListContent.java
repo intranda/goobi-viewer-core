@@ -201,8 +201,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 sortString = this.getGroupingField() + ";" + sortString;
                 s.setSortString(sortString);
             }
-            // Override search hit metadata list configuration, if set in CMS page
-            if (StringUtils.isNotBlank(metadataListType)) {
+            // Override search hit metadata list configuration, if set in CMS page (and selected view is TILES)
+            if (StringUtils.isNotBlank(metadataListType) && HitListView.TILES.equals(view)) {
                 s.setMetadataListType(metadataListType);
             }
             SearchFacets facets = searchBean.getFacets();
