@@ -36,7 +36,7 @@ public class SearchHitFactory {
     private static final Logger logger = LogManager.getLogger(SearchHitFactory.class);
 
     private Map<String, Set<String>> searchTerms;
-    private String metadataListType = Configuration.METADATA_LIST_TYPE_SEARCH_HIT;
+    private String additionalMetadataListType;
     private List<String> exportFields;
     private List<StringPair> sortFields;
     private Set<String> additionalMetadataIgnoreFields =
@@ -103,9 +103,19 @@ public class SearchHitFactory {
         searchedFields.put(SolrConstants.FULLTEXT, Collections.singletonList(fulltext));
         Map<String, Set<String>> foundSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
 
+        Map<String, List<Metadata>> metadataListMap = new HashMap<>();
         List<Metadata> metadataList =
-                DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(metadataListType, docstructType, true, true);
-        BrowseElement browseElement = new BrowseElement(se, metadataList, locale,
+                DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
+        metadataListMap.put(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, metadataList);
+        
+        // If an additional metadata list type is provided, add a second metadata list
+        if (StringUtils.isNotBlank(additionalMetadataListType)) {
+            List<Metadata> altMetadataList =
+                    DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(additionalMetadataListType, docstructType, true, true);
+            metadataListMap.put(additionalMetadataListType, altMetadataList);
+        }
+        
+        BrowseElement browseElement = new BrowseElement(se, metadataListMap, locale,
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, foundSearchTerms,
                 thumbnailHandler);
 
@@ -161,11 +171,11 @@ public class SearchHitFactory {
     }
 
     /**
-     * @param metadataListType the metadataListType to set
+     * @param additionalMetadataListType the additionalMetadataListType to set
      * @return this
      */
-    public SearchHitFactory setMetadataListType(String metadataListType) {
-        this.metadataListType = metadataListType;
+    public SearchHitFactory setAdditionalMetadataListType(String additionalMetadataListType) {
+        this.additionalMetadataListType = additionalMetadataListType;
         return this;
     }
 

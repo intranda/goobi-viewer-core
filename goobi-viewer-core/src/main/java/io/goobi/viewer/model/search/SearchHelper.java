@@ -317,15 +317,15 @@ public final class SearchHelper {
      * Main search method for aggregated search.
      *
      * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link java.lang.Integer} von
-     * @param rows {@link java.lang.Integer} bis
+     * @param first {@link java.lang.Integer} First hit index
+     * @param rows {@link java.lang.Integer} Number of hits to return
      * @param sortFields a {@link java.util.List} object.
      * @param resultFields a {@link java.util.List} object.
      * @param filterQueries a {@link java.util.List} object.
      * @param params a {@link java.util.Map} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields a {@link java.util.List} object.
-     * @param metadataListType Optional metadata list type, overriding the default "searchHit"
+     * @param additionalMetadataListType Optional addtional metadata list type, to be used on alternative search hit views, etc.
      * @param locale a {@link java.util.Locale} object.
      * @param keepSolrDoc
      * @param proximitySearchDistance
@@ -338,7 +338,7 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
-            List<String> exportFields, String metadataListType, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
+            List<String> exportFields, String additionalMetadataListType, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (query != null) {
             String s = query.replaceAll("[\n\r]", "_");
@@ -354,8 +354,8 @@ public final class SearchHelper {
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
 
         SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
-        if (StringUtils.isNotBlank(metadataListType)) {
-            factory.setMetadataListType(metadataListType);
+        if (StringUtils.isNotBlank(additionalMetadataListType)) {
+            factory.setAdditionalMetadataListType(additionalMetadataListType);
         }
 
         int count = first;

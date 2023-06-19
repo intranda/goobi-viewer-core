@@ -36,6 +36,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -59,7 +60,8 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
-        BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, null, null);
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), null);
         Assert.assertEquals(1, be.getMetadataList().size());
         Assert.assertEquals("SORT_FOO", be.getMetadataList().get(0).getLabel());
@@ -78,7 +80,8 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
-        BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, null, null);
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), Collections.singleton("SORT_FOO"));
         Assert.assertEquals(0, be.getMetadataList().size());
     }
@@ -93,7 +96,8 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
 
-        BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, null, null);
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
         be.getMetadataList().add(new Metadata(String.valueOf(se.getLuceneId()), "MD_FOO", "", "old value"));
 
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), null);
@@ -106,11 +110,11 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Locale)
+     * @see BrowseElement#addFoundMetadataContainingSearchTerms(StructElement,Map,Locale)
      * @verifies add metadata fields that match search terms
      */
     @Test
-    public void addAdditionalMetadataContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() throws Exception {
+    public void addFoundMetadataContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "label", null, Locale.ENGLISH, null, null);
 
         StructElement se = new StructElement();
@@ -123,7 +127,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put("MD_YEARPUBLISH", new HashSet<>(Arrays.asList(new String[] { "1984" })));
 
         be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null, 0);
-        Assert.assertEquals(2, be.getAdditionalMetadataList().size());
+        Assert.assertEquals(2, be.getFoundMetadataList().size());
         {
             String field = "MD_TITLE";
             Assert.assertNotNull(be.getMetadataList(field));
