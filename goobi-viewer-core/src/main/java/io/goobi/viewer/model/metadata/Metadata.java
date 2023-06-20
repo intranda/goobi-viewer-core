@@ -56,7 +56,6 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.faces.converters.LocalDateConverter;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -81,6 +80,10 @@ public class Metadata implements Serializable {
     private static final long serialVersionUID = 5671775647919258310L;
 
     private static final Logger logger = LogManager.getLogger(Metadata.class);
+
+    private static final String HTML_LINE_BREAK_ESCAPED = "&lt;br /&gt;";
+    private static final String HTML_LINE_BREAK_UNESCAPED = "<br />";
+    private static final String NORM_TYPE = "NORM_TYPE";
 
     // Configuration
 
@@ -440,22 +443,22 @@ public class Metadata implements Serializable {
                     // Values that are message keys (or collection names, etc.)
                     value = ViewerResourceBundle.getTranslation(value, locale);
                     // convert line breaks back to HTML
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(HTML_LINE_BREAK_ESCAPED, HTML_LINE_BREAK_UNESCAPED);
                     break;
                 case DATEFIELD:
-                    try {                        
+                    try {
                         String outputPattern = BeanUtils.getNavigationHelper().getDatePattern();
                         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
                         LocalDate date = LocalDate.parse(value);
                         value = date.format(dateTimeFormatter);
-                    } catch(DateTimeParseException e) {
+                    } catch (DateTimeParseException e) {
                         logger.error("Error parsing {} as date", value);
                     }
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(HTML_LINE_BREAK_ESCAPED, HTML_LINE_BREAK_UNESCAPED);
                     break;
                 case UNESCAPEDFIELD:
                     // convert line breaks back to HTML
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(HTML_LINE_BREAK_ESCAPED, HTML_LINE_BREAK_UNESCAPED);
                     break;
                 case URLESCAPEDFIELD:
                     // escape reserved URL characters
@@ -482,15 +485,15 @@ public class Metadata implements Serializable {
                                 // Determine norm data set type from the URI field name
                                 normDataType = param.getKey().replace("NORM_URI_", "");
                             } else if (param.getKey().equals("NORM_URI")) {
-                                if (options != null && options.get("NORM_TYPE") != null) {
+                                if (options != null && options.get(NORM_TYPE) != null) {
                                     // Try local NORM_TYPE value, if given
-                                    normDataType = MetadataTools.findMetadataGroupType(options.get("NORM_TYPE"));
+                                    normDataType = MetadataTools.findMetadataGroupType(options.get(NORM_TYPE));
                                 } else {
                                     // Fetch MARCXML record and determine norm data set type from gndspec field 075$b
                                     Record marcRecord = MetadataTools.getAuthorityDataRecord(url);
                                     if (marcRecord != null && !marcRecord.getNormDataList().isEmpty()) {
                                         for (NormData normData : marcRecord.getNormDataList()) {
-                                            if ("NORM_TYPE".equals(normData.getKey())) {
+                                            if (NORM_TYPE.equals(normData.getKey())) {
                                                 String val = normData.getValues().get(0).getText();
                                                 normDataType = MetadataTools.findMetadataGroupType(val);
                                                 break;
@@ -549,7 +552,7 @@ public class Metadata implements Serializable {
                     // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
                     value = StringEscapeUtils.escapeHtml4(value);
                     // convert line breaks back to HTML
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(HTML_LINE_BREAK_ESCAPED, HTML_LINE_BREAK_UNESCAPED);
             }
             value = value.replace("'", "&#39;");
             if (param.isRemoveHighlighting()) {
@@ -681,6 +684,17 @@ public class Metadata implements Serializable {
      */
     public int getParamCount() {
         return params.size();
+    }
+
+    public String getParamValue(String field) {
+        for (MetadataValue val : values) {
+            String ret = val.getParamValue(field);
+            if (StringUtils.isNotBlank(ret)) {
+                return ret;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -923,8 +937,8 @@ public class Metadata implements Serializable {
                             }
                             paramValues.add(value);
                         }
-                        if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue("NORM_TYPE") != null) {
-                            options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
+                        if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue(NORM_TYPE) != null) {
+                            options.put(NORM_TYPE, SolrTools.getSingleFieldStringValue(doc, NORM_TYPE));
                         }
                         setParamValue(count, i, paramValues, param.getKey(), null, options, groupType, locale);
                     } else if (param.getDefaultValue() != null) {
