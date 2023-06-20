@@ -161,7 +161,7 @@ public final class SearchHelper {
     /** Constant <code>patternPhrase</code> */
     public static Pattern patternPhrase = Pattern.compile("^" + StringTools.REGEX_QUOTATION_MARKS + "(~[0-9]+)?$");
     /** Constant <code>patternProximitySearchToken</code> */
-    public static Pattern patternProximitySearchToken = Pattern.compile("~([0-9]+)");
+    public static Pattern patternProximitySearchToken = Pattern.compile("(?<=\")~([0-9]+)");
     /** Constant <code>patternYearRange</code> */
     public static Pattern patternYearRange = Pattern.compile("\\[[0-9]+ TO [0-9]+\\]");
     /** Constant <code>patternHyperlink</code> */

@@ -271,8 +271,8 @@
     }
     &__info-text {
         margin-bottom: 3rem;
-		max-width: 1300px;
-        .badge {
+		// max-width: 1300px;
+        .badge { 
         	background-color: @white;
             margin-right: 0;
         }
@@ -864,7 +864,7 @@
 		    }
 		}
 		&.-unpublished {
-			.admin__table-name, .admin__table-additional-info {
+			.admin__table-name, .admin__table-additional-info, .admin__table-data-content, .admin__record-notes-table-img {
 				opacity: 0.35;
 			}
 		}
@@ -1977,6 +1977,20 @@
 		.fa {
 			font-size: 5rem;
 			opacity: 0.5;
+		}
+	} 
+	
+	// HIGHLIGHTED OBJECT - this code is duplicate for record notes, cleanup tbd
+	&__highlights-connected-radio-buttons {
+		padding-right: 10rem;
+		margin-bottom: 0;
+		min-width: 360px;
+	}
+	&__highlights-radio-select {
+		max-width: 150px;
+		flex: 0 0 150px;
+		label {
+			margin: 0 0 0 .8rem;
 		}
 	}
 	&__comments-functionality-wrapper,

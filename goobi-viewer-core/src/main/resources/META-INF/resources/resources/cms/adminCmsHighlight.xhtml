@@ -44,15 +44,19 @@
 
 						<div class="form-horizontal form-group admin__content-wrapper">
 						
-							<div class="admin__content-main -sticky -refreshHCsticky">
+							<div class="#{highlightsBean.editStatus == 'SELECT_TARGET' ? 'w-100' : 'admin__content-main -sticky -refreshHCsticky'}">
 						
-							<div class="w-100">
+
 							
 								<ui:fragment rendered="#{highlightsBean.editStatus == 'SELECT_TARGET'}">
 									<h2 class="admin__content-inner-content__form_title mt-0">
 										#{msg.general}
 									</h2>
 									<div class="admin__default-block">
+									
+										<div class="mb-2">#{msg.cms__highlight_record_or_identifier}:
+											</div>
+									
 										<div class="form-group admin__highlights-connected-area admin__highlights-connected-radio-buttons">
 		                            		<div class="connected-top">
 		                            			<div class="form-row">
@@ -83,7 +87,6 @@
 					                            </div>
 					                        </div>
 					                        <div class="connected-bottom">
-		                            			<div class="form-row">
 					                            	<div class="form-row">
 						                            	<div data-target="#{highlight.data.targetType == 'URL' ? 'isChecked' : 'blurIfUnchecked'}" class="admin__highlights-radio-select control-label admin__form-label">
 							                            	<h:selectOneRadio group="targetTypeSelect" value="#{highlight.data.targetType}" immediate="true" >
@@ -107,7 +110,6 @@
 															<span class="admin__form-help-text">#{msg.admin__highlights__target_type_url__help}</span>
 														</div>
 					                            	</div>
-					                        	</div>
 					                        </div>
 					                	</div>
 					            	</div>
@@ -118,7 +120,7 @@
 									<a class="btn btn--cancel"
 										href="#{navigationHelper.applicationUrl}admin/cms/highlights/">#{msg.button__abort}
 									</a>
-									<h:commandButton class="btn btn--default" tabindex="2" action="#{highlightsBean.setEditStatus('CREATE')}"
+									<h:commandButton class="btn btn--full" tabindex="2" action="#{highlightsBean.setEditStatus('CREATE')}"
 									onclick="viewerJS.showLoader()" value="#{msg.button__continue}">
 										<f:ajax render="@form" execute="@form" onevent="viewerJS.initTinyMCE"></f:ajax>
 									</h:commandButton>
@@ -157,146 +159,67 @@
 											</h:panelGroup>
 
 									</div>
-									<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'URL' ? '-deactivated' : ''}">
-								
-											<div class="col-12 col-lg-2 control-label admin__form-label">
-												<label for="inputObjectIdentifier">#{msg.admin__highlights__target_url}:</label>
-											</div>
-			                            	<h:panelGroup id="targetUrlInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
-
-												<h:message for="inputTargetUrl"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
-												</div>
-												<h:inputText id="inputTargetUrl" tabindex="1"
-													styleClass="form-control -validation-input"
-													requiredMessage="#{msg.info__input_required}"
-													value="#{highlight.data.targetUrl}"
-													required="true"
-													disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'URL'}">
-													<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
-												</h:inputText>
-												<span class="admin__form-help-text">#{msg.cms__highlight_target_url__help}</span>
-											</h:panelGroup>
-
-									</div>
-									<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'RECORD' ? '-deactivated' : ''}">
-								
-											<div class="col-12 col-lg-2 control-label admin__form-label">
-												<label for="inputObjectIdentifier">#{msg.admin__highlights__new_pi}:</label>
-											</div>
-			                            	<h:panelGroup id="recordIdentifierInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
-
-												<h:message for="inputRecordIdentifier"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
-												</div>
-												<h:inputText id="inputRecordIdentifier" tabindex="1"
-													styleClass="form-control -validation-input"
-													requiredMessage="#{msg.info__input_required}"
-													validatorMessage="#{msg.pi_errNotFound}"
-													value="#{highlight.data.recordIdentifier}"
-													required="true"
-													disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'RECORD'}">
-													<f:validator validatorId="piInSolrValidator"
-														for="inputRecordIdentifier" />
-													<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
-												</h:inputText>
-												<span class="admin__form-help-text">#{msg.cms__highligh_record_identifier__help}</span>
-											</h:panelGroup>
-
-									</div>
 									
+									<ui:fragment rendered="#{highlight.data.targetType == 'URL'}">
+										<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'URL' ? '-deactivated' : ''}">
 									
-									<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
-								
-											<div class="col-12 col-lg-2 control-label admin__form-label">
-												<label for="inputObjectEndDate">#{msg.admin__highlights__period}:</label>
-											</div>
-			                            	<div class="col-11 col-lg-9 admin__form-input">
-
-											<div class="admin__highlighted-objects-date-wrapper">
-												<h:message for="pickerDateStart"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
+												<div class="col-12 col-lg-2 control-label admin__form-label">
+													<label for="inputObjectIdentifier">#{msg.admin__highlights__target_url}:</label>
 												</div>
-
-                                                <div class="admin__date-picker admin__highlighted-objects-date-picker">
-                                                	<h:inputText
-                                                		id="pickerDateStart" 
-                                                		name="pickerDateStart" 
-                                                		value="#{highlight.data.dateStart}"
-                                                		converter="localDateConverter"
-                                                		data-format="#{navigationHelper.datePattern}"
-                                                		styleClass="form-control"
-                                                		disabled="#{!highlight.isDefaultLocaleSelected()}">
-                                                		<f:passThroughAttribute name="data-target" value="datePickerStart" />
-														<f:passThroughAttribute name="placeholder"
-															value="#{msg.admin__highlights__date_from}"
-															 /> 
-                                                	</h:inputText>
-                                                </div>
-                                                
-                                                <div class="admin__highlighted-objects-date-picker-text-between">
-                                                	<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
-                                                </div>
-												
-                                                <div class="admin__date-picker admin__highlighted-objects-date-picker">
-													<h:inputText 
-														id="pickerDateEnd" 
-														name="pickerDateEnd"
-														value="#{highlight.data.dateEnd}"
-														converter="localDateConverter"
-														data-format="#{navigationHelper.datePattern}"
-														styleClass="form-control"
-														disabled="#{!highlight.isDefaultLocaleSelected()}">
-														<f:passThroughAttribute name="data-target"
-															value="datePickerEnd"
-															 />
-															 
-														<f:passThroughAttribute name="placeholder"
-															value="#{msg.admin__highlights__date_until}"
-															 /> 
+				                            	<h:panelGroup id="targetUrlInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
+	
+													<h:message for="inputTargetUrl"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													<h:inputText id="inputTargetUrl" tabindex="1"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														value="#{highlight.data.targetUrl}"
+														required="true"
+														disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'URL'}">
+														<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
 													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__highlight_target_url__help}</span>
+												</h:panelGroup>
+	
+										</div>
+									</ui:fragment>
+									
+									<ui:fragment rendered="#{highlight.data.targetType == 'RECORD'}">
+										<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'RECORD' ? '-deactivated' : ''}">
+									
+												<div class="col-12 col-lg-2 control-label admin__form-label">
+													<label for="inputObjectIdentifier">#{msg.admin__highlights__new_pi}:</label>
 												</div>
-												
+				                            	<h:panelGroup id="recordIdentifierInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
+	
+													<h:message for="inputRecordIdentifier"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													<h:inputText id="inputRecordIdentifier" tabindex="1"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														validatorMessage="#{msg.pi_errNotFound}"
+														value="#{highlight.data.recordIdentifier}"
+														required="true"
+														disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'RECORD'}">
+														<f:validator validatorId="piInSolrValidator"
+															for="inputRecordIdentifier" />
+														<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__highligh_record_identifier__help}</span>
+												</h:panelGroup>
+	
+										</div>
+									</ui:fragment>
+									
 
-												<script type="text/javascript">
-                                                       	
-                                                       	$(document).ready(function(){
-                                                       	    $("[data-target='datePickerStart']").datepicker({
-                                                       	        onSelect: function(selected) {
-                                                       	          $("[data-target='datePickerEnd']").datepicker("option","minDate", selected)
-                                                       	        },
-                                                           		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
-                                                           		isRTL: #{navigationHelper.rtl},
-                                                       	    });
-                                                       	    
-                                                       	    $("[data-target='datePickerEnd']").datepicker({
-                                                       	        onSelect: function(selected) {
-                                                       	           $("[data-target='datePickerStart']").datepicker("option","maxDate", selected)
-                                                       	        },
-                                                        		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
-                                                        		isRTL: #{navigationHelper.rtl},
-                                                       	    });  
-                                                       	});
-
-									 			</script>
-									 			
-									 			
-
-		 										
-		 										</div>
-
-											</div>
-
-									</div>
 									</div>
 								</h:panelGroup>
 		                        <!-- IMAGE -->
@@ -386,7 +309,7 @@
 									</button> 
 								</div>
 							</ui:fragment>
-						</div>
+
 					</div>
 						
 					<h:panelGroup id="mediaSelectPanel">
@@ -410,7 +333,7 @@
 
 
 					<!-- TO DO AK: Rendered condition if already existing object is selected to edit -->
-					<ui:fragment rendered="#{userBean.user.cmsAdmin}">
+					<ui:fragment rendered="#{highlightsBean.editStatus ne 'SELECT_TARGET'}">
 
 
 							<!-- SIDEBAR START -->
@@ -419,30 +342,143 @@
 								<!-- OVERRIDE ACTIVE YES / NO -->
 								<div class="admin__default-block">
 										<div class="admin__record-notes-visibility">
-											<h2>#{msg.admin__highlights__sidebar_status}</h2>
+											<h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
 											<div class="admin__form-help-text in mb-2">#{msg.admin__highlights__sidebar_status_help}</div>
 											<div class="mb-1 d-flex justify-content-between">
-												<label>#{msg.admin__highlights__sidebar_status_toggle}: </label>
+<!-- 												<label>#{msg.admin__highlights__sidebar_status_toggle}: </label> -->
 												<viewerComponent:toggleSwitch name="showThisNote" value="#{highlight.data.enabled}" />
 											</div>
 										</div>
 								</div>
+								
+								<div class="admin__default-block">
+									<h2>#{msg.admin__highlights__period}</h2>
+									
+									<div class="#{highlight.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
+								
+										<div class="admin__form-help-text in mb-2">#{msg.admin__highlights__period_info}</div>
+												
+
+
+
+											<div class="admin__highlighted-objects-date-wrapper">
+<!-- 												<h:message for="pickerDateStart" -->
+<!-- 													errorClass="-validation-message -danger"></h:message> -->
+<!-- 												<div class="-validation-mark"> -->
+<!-- 													<i class="fa fa-check" aria-hidden="true"></i> <i -->
+<!-- 														class="fa fa-exclamation" aria-hidden="true"></i> -->
+<!-- 												</div> -->
+                                                	
+                                                
+                                              	<div class="form-row mt-3 mb-1">
+                                              	
+
+                                                   <div class="col-4 control-label admin__form-label">
+														<label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_from}:</label>
+                                               	</div>
+                                                	
+                                                <div class="col-8 control-label admin__form-label">
+                                                	<div class="admin__campaign-date-picker">
+                                                	<h:inputText
+                                                		id="pickerDateStart" 
+                                                		name="pickerDateStart" 
+                                                		value="#{highlight.data.dateStart}"
+                                                		converter="localDateConverter"
+                                                		data-format="#{navigationHelper.datePattern}"
+                                                		styleClass="form-control"
+                                                		disabled="#{!highlight.isDefaultLocaleSelected()}">
+                                                		<f:passThroughAttribute name="data-target" value="datePickerStart" />
+														<f:passThroughAttribute name="placeholder"
+															value="#{msg.admin__highlights__date_from}"
+															 /> 
+                                                	</h:inputText>
+                                                	</div>
+												</div>
+												
+												</div>
+												
+												<div class="form-row">
+
+
+                                                <div class="col-4 control-label admin__form-label">
+														<label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_until}:</label>
+                                               	</div>
+												
+												<div class="col-8 control-label admin__form-label">
+												
+                                                <div class="admin__date-picker admin__highlighted-objects-date-picker">
+                                                	<div class="admin__campaign-date-picker">
+													<h:inputText 
+														id="pickerDateEnd" 
+														name="pickerDateEnd"
+														value="#{highlight.data.dateEnd}"
+														converter="localDateConverter"
+														data-format="#{navigationHelper.datePattern}"
+														styleClass="form-control"
+														disabled="#{!highlight.isDefaultLocaleSelected()}">
+														<f:passThroughAttribute name="data-target"
+															value="datePickerEnd"
+															 />
+															 
+														<f:passThroughAttribute name="placeholder"
+															value="#{msg.admin__highlights__date_until}"
+															 /> 
+													</h:inputText>
+													</div>
+												</div>
+												</div>
+												</div>
+
+												<script type="text/javascript">
+                                                       	
+                                                       	$(document).ready(function(){
+                                                       	    $("[data-target='datePickerStart']").datepicker({
+                                                       	        onSelect: function(selected) {
+                                                       	          $("[data-target='datePickerEnd']").datepicker("option","minDate", selected)
+                                                       	        },
+                                                           		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+                                                           		isRTL: #{navigationHelper.rtl},
+                                                       	    });
+                                                       	    
+                                                       	    $("[data-target='datePickerEnd']").datepicker({
+                                                       	        onSelect: function(selected) {
+                                                       	           $("[data-target='datePickerStart']").datepicker("option","maxDate", selected)
+                                                       	        },
+                                                        		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+                                                        		isRTL: #{navigationHelper.rtl},
+                                                       	    });  
+                                                       	});
+
+									 			</script>
+									 			
+									 			
+
+
+											</div>
+
+									</div>
+								
+								
+								
+
+                                </div>
+								
 
 								<!-- OBJECT INFOS + DISPLAY LINK -->
 								<h:panelGroup id="recordInformation">
 
-									<h:panelGroup layout="block" styleClass="admin__default-block"
-									rendered="#{not empty highlight.data.recordIdentifier}">
-										<h2>#{msg.show}</h2>
-										<div class="admin__form-help-text in mb-4 admin__record-notes-info-box">
-											<span>#{msg.cms__record_notes_select_record__show_title}</span>
-										</div>
-											<div class="row">
-												<div class="col-12 d-flex justify-content-center">
-													<a class="btn btn--default" target="_blank" href="#{highlightsBean.getUrl(highlight)}">#{msg.show}</a>
-					                            </div>
-											</div>
-									</h:panelGroup>
+<!-- 									<h:panelGroup layout="block" styleClass="admin__default-block" -->
+<!-- 									rendered="#{not empty highlight.data.recordIdentifier}"> -->
+<!-- 										<h2>#{msg.show}</h2> -->
+<!-- 										<div class="admin__form-help-text in mb-4 admin__record-notes-info-box"> -->
+<!-- 											<span>#{msg.cms__record_notes_select_record__show_title}</span> -->
+<!-- 										</div> -->
+<!-- 											<div class="row"> -->
+<!-- 												<div class="col-12 d-flex justify-content-center"> -->
+<!-- 													<a class="btn" target="_blank" href="#{highlightsBean.getUrl(highlight)}">#{msg.show}</a> -->
+<!-- 					                            </div> -->
+<!-- 											</div> -->
+<!-- 									</h:panelGroup> -->
 
 									<h:panelGroup layout="block" styleClass="admin__default-block"
 									rendered="#{not empty highlight.data.recordIdentifier}">

@@ -42,22 +42,22 @@
 	                                <div class="col-6 d-flex" role="columnheader">
 	                                	#{msg.admin__highlights__table_header}
 	                                </div>
-	                                <div class="col-2 d-flex justify-content-center" role="columnheader">
+	                                <div class="col-3 d-flex justify-content-center" role="columnheader">
 	                                	#{msg.admin__highlights__table_from}
 	                                </div>
-	                                <div class="col-2 d-flex justify-content-center" role="columnheader">
+	                                <div class="col-3 d-flex justify-content-center" role="columnheader">
 	                                	#{msg.admin__highlights__table_until}
 	                                </div>
-	                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-	                                	#{msg.admin__highlights__table_active}
-	                                </div>
+<!-- 	                                <div class="col-2 d-flex justify-content-center" role="columnheader"> -->
+<!-- 	                                	#{msg.admin__highlights__table_active} -->
+<!-- 	                                </div> -->
 	
 	                            </div>
 	
 	
 	                            <!-- INDIVIDUAL ROWS -->
 	                            <ui:repeat var="object" value="#{cc.attrs.dataProvider.paginatorList}">
-	                                <div class="row no-gutters admin__table-entry #{object.data.enabled ? '-isActive' : ''}" role="row">
+	                                <div class="row no-gutters admin__table-entry #{object.data.enabled ? '' : '-unpublished'}" role="row">
 	                                    
 	                                    <div class="col-6 d-flex" role="presentation">
 	                                       	<div class="admin__record-notes-table-img align-self-center">
@@ -79,8 +79,7 @@
 	                                                <!-- PREVIEW -->
 	                                                	<a
 	                                                    class="admin__table-action-link" target="_blank" href="#{highlightsBean.getUrl(object)}"
-	                                                    aria-label="#{msg.title__preview}: #{object.data.name.textOrDefault}">#{msg.show}
-	                                                  </a>
+	                                                    aria-label="#{msg.title__preview}: #{object.data.name.textOrDefault}">#{msg.show}</a>
 	
 		                                           <!-- DELETE -->
 		                                           <button
@@ -98,24 +97,39 @@
 	                                    </div>
 	                                    
 	                                    <!-- SCHEDULE FROM -->
-	                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
-	                                        <span>#{object.data.dateStart}</span>
+	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
+		                                    <span>
+			                                    <ui:fragment rendered="#{not empty object.data.dateStart}">
+			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateStart}"></h:outputText>
+			                                    </ui:fragment>
+			                                    <ui:fragment rendered="#{empty object.data.dateStart}">
+			                                    -
+			                                    </ui:fragment>
+		                                    </span>
 	                                  	</div>
 	                                  	
 	                                    <!-- SCHEDULE UNTIL -->
-	                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
-	                                        <span>#{object.data.dateEnd}</span>
+	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
+	                                    	<span>
+			                                    <ui:fragment rendered="#{not empty object.data.dateEnd}">
+			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateEnd}"></h:outputText>
+			                                    </ui:fragment>
+			                                    <ui:fragment rendered="#{empty object.data.dateEnd}">
+			                                    -
+			                                    </ui:fragment>
+		                                    </span>
+	                                    
 	                                  	</div>
 	
 										<!-- IS ACTIVE? -->
-	                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
-	                                        <ui:fragment rendered="#{object.data.enabled}">
-	                                        	<span class="sr-only">#{msg.yes}</span><i class="fa fa-check" aria-hidden="true"></i>
-	                                        </ui:fragment>
-	                                        <ui:fragment rendered="#{!object.data.enabled}">
-	                                        	<span class="sr-only">#{msg.no}</span>
-	                                        </ui:fragment>
-	                                  </div>
+<!-- 	                                    <div class="col-2 d-flex justify-content-center" role="gridcell"> -->
+<!-- 	                                        <ui:fragment rendered="#{object.data.enabled}"> -->
+<!-- 	                                        	<span class="sr-only">#{msg.yes}</span><i class="fa fa-check" aria-hidden="true"></i> -->
+<!-- 	                                        </ui:fragment> -->
+<!-- 	                                        <ui:fragment rendered="#{!object.data.enabled}"> -->
+<!-- 	                                        	<span class="sr-only">#{msg.no}</span> -->
+<!-- 	                                        </ui:fragment> -->
+<!-- 	                                  </div> -->
 	                                </div>
 	                            </ui:repeat>
 	                        </div>

@@ -55,6 +55,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.metadata.MetadataElement;
@@ -124,6 +125,7 @@ public class HighlightsBean implements Serializable {
                 (first, pageSize, sortField, descending, filters) -> dao
                 .getHighlightsForDate(now)
                 .stream()
+                .filter(HighlightData::isEnabled)
                 .map(Highlight::new)
                 .collect(Collectors.toList()));
     }
@@ -216,9 +218,9 @@ public class HighlightsBean implements Serializable {
             redirect = true;
         }
         if (saved) {
-            Messages.info("Successfully saved object " + object);
+            Messages.info(ViewerResourceBundle.getTranslationWithParameters("button__save__success", null, object.toString()));
         } else {
-            Messages.error("Failed to save object " + object);
+            Messages.error(ViewerResourceBundle.getTranslationWithParameters("button__save__error", null, object.toString()));
         }
         if (redirect) {
             PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightsEdit", object.getData().getId()));

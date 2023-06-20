@@ -128,7 +128,7 @@
 									<a class="btn btn--cancel" tabindex="3"
 										href="#{cmsRecordNoteEditBean.returnUrl}">#{msg.button__abort}
 									</a>
-									<h:commandButton class="btn btn--default" tabindex="2"
+									<h:commandButton class="btn btn--full" tabindex="2"
 									onclick="viewerJS.showLoader()" value="#{msg.button__continue}">
 										<f:ajax render="mainGroup" execute="@form" onevent="viewerJS.initTinyMCE"></f:ajax>
 									</h:commandButton>
@@ -190,6 +190,37 @@
 										</div>
 										<script>$(document).ready(() => $("#inputQuery2").trigger("blur"))</script>
 									</ui:fragment>
+									
+									<ui:fragment rendered="#{!cmsRecordNoteEditBean.isMultiRecordNote()}">
+										<h2>#{msg.general}</h2>
+
+										<div class="admin__default-block">
+
+										<div class="form-group form-row">
+											<div class="col-2 control-label admin__form-label">
+												<label for="inputQuery3">#{msg.cms__record_notes__type_record}:
+												</label>
+<!-- 												<span class="admin__label-required-field">(#{msg.form__required_field})</span> -->
+											</div>
+
+											<div class="cms-module__option-control col-9 admin__form-input">
+
+											<h:panelGroup id="inputQueryGroup2">
+
+
+													<h:inputText id="inputQuery3" tabindex="1" disabled="true"
+														styleClass="form-control"
+														requiredMessage="#{msg.info__input_required}"
+														required="#{cmsRecordNoteEditBean.currentNoteType eq 'MULTI'}"
+														value="#{cmsRecordNoteEditBean.recordIdentifier}"> 
+													</h:inputText>
+
+											</h:panelGroup>
+											</div>
+											</div>
+										</div>
+									</ui:fragment>
+									
 
 									<h2>#{msg.cms__record_notes_edit_text__title}</h2>
 
@@ -302,12 +333,12 @@
 								<div class="admin__default-block">
 									<h:form>
 										<div class="admin__record-notes-visibility">
-											<h2>#{msg.cms__record_notes_visibility}</h2>
+											<h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
 											<div class="admin__form-help-text in mb-2">
 											#{msg.cms__record_notes_edit_text__toggle_help}
 											</div>
 											<div class="mb-1 d-flex justify-content-between">
-												<label>#{msg.cms__record_notes_edit_text__toggle}: </label>
+<!-- 												<label>#{msg.cms__record_notes_edit_text__toggle}: </label> -->
 												<viewerComponent:toggleSwitch name="showThisNote" value="#{note.displayNote}" />
 											</div>
 										</div>
