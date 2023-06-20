@@ -15,7 +15,7 @@
     <div class="row no-gutters">
 	     <div class="col-12 col-sm-#{browseElement.showThumbnail ? '10' : '12'}">
 	         <!-- TITLE -->
-	         <div class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}  #{configurationBean.displaySearchHitNumbers != null ? '-hitNumber' : ''}">
+	         <div class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}  #{configurationBean.displaySearchHitNumbers != null ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
 	                 <!-- ADD TO BOOKMARKS ICON FOR OBJECTS WITHOUT THUMBS -->
 	                 <ui:fragment rendered="#{configurationBean.bookmarksEnabled and !browseElement.showThumbnail}">
 	                     <button type="button" class="btn btn--icon search-list__no-thumb-bookmark" data-bookmark-list-type="add" data-pi="#{browseElement.pi}" aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch" aria-checked="false">
@@ -37,7 +37,7 @@
 	         </div>
 
 	         <!-- TYPE -->
-	         <div class="search-list__hit-type">
+	         <div class="search-list__hit-type #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
 	                 <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
 	                 <h:panelGroup
     					rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
@@ -63,6 +63,7 @@
 
                     <!-- METADATA -->
                     <ui:fragment>
+                    <div class="search-list__hit-metadata-first">
                     <ui:repeat value="#{browseElement.metadataListForCurrentLocale}" var="browseElementMetadata">
                         <h:panelGroup rendered="#{!browseElementMetadata.blank}">
                             <div class="search-list__hit-text">
@@ -101,10 +102,12 @@
                             </div>
                         </h:panelGroup>
                     </ui:repeat>
+                    </div>
                     </ui:fragment>
                     
-                    <!-- SECONDARY METADATA (TILE VIEW) -->
-                    <ui:fragment>
+                    <!-- SECONDARY METADATA (ONLY FOR TILE VIEW) -->
+                    <ui:fragment rendered="#{not empty browseElement.secondaryMetadataListForCurrentLocale}">
+                    <div class="search-list__hit-metadata-second">
                     <ui:repeat value="#{browseElement.secondaryMetadataListForCurrentLocale}" var="browseElementMetadata">
                         <h:panelGroup rendered="#{!browseElementMetadata.blank}">
                             <div class="search-list__hit-text">
@@ -143,6 +146,7 @@
                             </div>
                         </h:panelGroup>
                     </ui:repeat>
+                    </div>
                     </ui:fragment>
 
 	                 <!-- FULLTEXT -->
