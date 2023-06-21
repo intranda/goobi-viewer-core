@@ -2121,8 +2121,8 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        List<SearchHit> ret = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
-                navigationHelper.getLocale(), 0);
+        List<SearchHit> ret = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null,
+                navigationHelper.getLocale(), false, 0);
 
         logger.trace("{} related items found", ret.size());
         return ret;

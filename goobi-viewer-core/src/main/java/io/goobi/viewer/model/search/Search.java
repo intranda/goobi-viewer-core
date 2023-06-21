@@ -49,6 +49,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -143,8 +144,8 @@ public class Search implements Serializable {
     private int proximitySearchDistance = 0;
 
     /**
-     * Load configured result groups. If none are configured or groups are disabled, use a single default group for regular search.
-     * TODO Always set externally, according to context?
+     * Load configured result groups. If none are configured or groups are disabled, use a single default group for regular search. TODO Always set
+     * externally, according to context?
      */
     @Transient
     private List<SearchResultGroup> resultGroups = (!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
@@ -158,6 +159,17 @@ public class Search implements Serializable {
 
     @Transient
     private boolean saved = false;
+
+    /**
+     * List of geo-locations found by the last search
+     */
+    @Transient
+    private List<Location> hitLocationList = new ArrayList<>();
+    @Transient
+    private boolean hasGeoLocationHits = false;
+    /** Metadata configuration list type (default is "searchHit") */
+    @Transient
+    private String metadataListType = Configuration.METADATA_LIST_TYPE_SEARCH_HIT;
 
     /**
      * Empty constructor for JPA.
@@ -571,7 +583,7 @@ public class Search implements Serializable {
         if (SearchAggregationType.AGGREGATE_TO_TOPSTRUCT.equals(aggregationType)) {
             foundHits = SearchHelper.searchWithAggregation(finalQuery, from,
                     hitsPerPage, useSortFields, null, allFilterQueries, params,
-                    searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
+                    searchTerms, null, metadataListType, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
         } else if (SearchAggregationType.NO_AGGREGATION.equals(aggregationType)) {
             foundHits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, allFilterQueries, params,
                     searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc, proximitySearchDistance);
@@ -760,6 +772,11 @@ public class Search implements Serializable {
         throw new IllegalArgumentException(String.format("Unable to parse %s of type %s as location", o.toString(), o.getClass()));
     }
 
+    /**
+     * 
+     * @param value
+     * @return
+     */
     protected static double[][] getPoints(String value) {
         List<double[]> points = new ArrayList<>();
         Matcher matcher = Pattern.compile("([0-9\\.\\-E]+)\\s([0-9\\.\\-E]+)").matcher(value); //NOSONAR   no catastrophic backtracking detected
@@ -1353,5 +1370,19 @@ public class Search implements Serializable {
      */
     public boolean isGroupPreviewMode() {
         return resultGroups.size() > 1;
+    }
+
+    /**
+     * @return the metadataListType
+     */
+    public String getMetadataListType() {
+        return metadataListType;
+    }
+
+    /**
+     * @param metadataListType the metadataListType to set
+     */
+    public void setMetadataListType(String metadataListType) {
+        this.metadataListType = metadataListType;
     }
 }

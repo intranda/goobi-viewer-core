@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -35,6 +36,7 @@ public class SearchHitFactory {
     private static final Logger logger = LogManager.getLogger(SearchHitFactory.class);
 
     private Map<String, Set<String>> searchTerms;
+    private String additionalMetadataListType;
     private List<String> exportFields;
     private List<StringPair> sortFields;
     private Set<String> additionalMetadataIgnoreFields =
@@ -101,8 +103,19 @@ public class SearchHitFactory {
         searchedFields.put(SolrConstants.FULLTEXT, Collections.singletonList(fulltext));
         Map<String, Set<String>> foundSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
 
-        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
-        BrowseElement browseElement = new BrowseElement(se, metadataList, locale,
+        Map<String, List<Metadata>> metadataListMap = new HashMap<>();
+        List<Metadata> metadataList =
+                DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
+        metadataListMap.put(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, metadataList);
+        
+        // If an additional metadata list type is provided, add a second metadata list
+        if (StringUtils.isNotBlank(additionalMetadataListType)) {
+            List<Metadata> altMetadataList =
+                    DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(additionalMetadataListType, docstructType, true, true);
+            metadataListMap.put(additionalMetadataListType, altMetadataList);
+        }
+        
+        BrowseElement browseElement = new BrowseElement(se, metadataListMap, locale,
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, foundSearchTerms,
                 thumbnailHandler);
 
@@ -155,6 +168,15 @@ public class SearchHitFactory {
             }
         }
         return hit;
+    }
+
+    /**
+     * @param additionalMetadataListType the additionalMetadataListType to set
+     * @return this
+     */
+    public SearchHitFactory setAdditionalMetadataListType(String additionalMetadataListType) {
+        this.additionalMetadataListType = additionalMetadataListType;
+        return this;
     }
 
     /**
