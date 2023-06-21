@@ -201,6 +201,10 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 sortString = this.getGroupingField() + ";" + sortString;
                 s.setSortString(sortString);
             }
+            // Pass secondary metadata list configuration, if set in CMS page 
+            if (StringUtils.isNotBlank(metadataListType)) {
+                s.setMetadataListType(metadataListType);
+            }
             SearchFacets facets = searchBean.getFacets();
             s.setPage(getCurrentListPage());
             searchBean.setHitsPerPage(this.getElementsPerPage());
