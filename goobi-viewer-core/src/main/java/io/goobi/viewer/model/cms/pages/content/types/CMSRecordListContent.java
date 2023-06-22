@@ -31,7 +31,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -219,6 +218,9 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             if (StringUtils.isNotBlank(resultGroupName)) {
                 // Set configured result group on SearchBean, if available (before initializing Search)
                 searchBean.setActiveResultGroupName(resultGroupName);
+                resultGroups = searchBean.getResultGroupsForSearchExecution();
+            } else if (!"-".equals(searchBean.getActiveResultGroupName())) {
+                // If not overriden by the CMS page, use the selected result group in SeachBean
                 resultGroups = searchBean.getResultGroupsForSearchExecution();
             } else {
                 // If none is set in the CMS page, created a default group (overriding config settings).

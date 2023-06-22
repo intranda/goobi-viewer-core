@@ -1494,7 +1494,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return true if activeResultGroup null; false otherwise
      */
     public boolean isDisplayResultGroupNames() {
-        return activeResultGroup != null;
+        return activeResultGroup == null;
     }
 
     /**
