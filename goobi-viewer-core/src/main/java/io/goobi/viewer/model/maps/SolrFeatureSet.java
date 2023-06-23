@@ -41,16 +41,25 @@ public class SolrFeatureSet extends FeatureSet {
 
     @Transient
     private String featuresAsString = null;
+    
+    @Transient
+    private final GeoCoordinateConverter converter;
 
     public SolrFeatureSet() {
-        super();
+        this(new GeoCoordinateConverter());
     }
 
+    public SolrFeatureSet(GeoCoordinateConverter converter) {
+        super();
+        this.converter = converter;
+    }
+    
     public SolrFeatureSet(SolrFeatureSet blueprint) {
         super(blueprint);
         this.solrQuery = blueprint.solrQuery;
         this.markerTitleField = blueprint.markerTitleField;
         this.aggregateResults = blueprint.aggregateResults;
+        this.converter = blueprint.converter;
     }
 
     @Override
@@ -80,8 +89,7 @@ public class SolrFeatureSet extends FeatureSet {
             return "[]";
         }
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
-        Collection<GeoMapFeature> featuresFromSolr =
-                GeoCoordinateConverter.getFeaturesFromSolrQuery(getSolrQuery(isAggregateResults()), Collections.emptyList(), coordinateFields, getMarkerTitleField(), isAggregateResults());
+        Collection<GeoMapFeature> featuresFromSolr = converter.getFeaturesFromSolrQuery(getSolrQuery(isAggregateResults()), Collections.emptyList(), coordinateFields, getMarkerTitleField(), isAggregateResults());
         String ret = featuresFromSolr.stream()
                 .distinct()
                 .map(GeoMapFeature::getJsonObject)

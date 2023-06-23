@@ -41,7 +41,7 @@ createFilters(filterMap, featureGroups) {
 		return labelString;
 	})
 	let filterOptions = layerNames.flatMap(name => filterMap.get(name));
-	return filterOptions.map(filter => {
+	return filterOptions.filter(f => f != undefined).map(filter => {
 		let f = {
 			field: filter.value,
 			label: filter.label,

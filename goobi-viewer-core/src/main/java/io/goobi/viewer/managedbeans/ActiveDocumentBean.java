@@ -2295,7 +2295,7 @@ public class ActiveDocumentBean implements Serializable {
                         .map(rmc::getRelatedRecord)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
-                widget = new RecordGeoMap(getTopDocument(), List.of("(MD_BIOGRAPHY* MD_BIRTHPLACE MD_DEATHPLACE)"), docs);
+                widget = new RecordGeoMap(getTopDocument(), docs);
                 this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
             }
 //        }
@@ -2372,7 +2372,7 @@ public class ActiveDocumentBean implements Serializable {
                     for (String coordinateField : coordinateFields) {
                         String docType = solrDocument.getFieldValue(SolrConstants.DOCTYPE).toString();
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
-                        docFeatures.addAll(GeoCoordinateConverter.getGeojsonPoints(solrDocument, null, coordinateField, labelField, null));
+                        docFeatures.addAll(new GeoCoordinateConverter().getGeojsonPoints(solrDocument, null, coordinateField, labelField));
                     }
                     if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT")) {
                         docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));

@@ -59,6 +59,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.model.FeatureSetConfiguration;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
@@ -739,6 +740,56 @@ public class Configuration extends AbstractConfiguration {
         return getMetadataForTemplate(template, templateList, true, false);
     }
 
+    public Map<String, Metadata> getRecordGeomapFeatureConfigurations() {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("maps.record.metadata.title.template");
+        if (templateList == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Metadata> map = new HashMap<>();
+        for (HierarchicalConfiguration<ImmutableNode> template : templateList) {
+            String name = template.getString("[@name]", "_DEFAULT");
+            Metadata md = getMetadataForTemplate(name,  templateList, true, false).stream().findAny().orElse(null);
+            if(md != null) {
+                map.put(name, md);
+            }
+        }
+        return map;
+    }
+    
+    public Map<String, Metadata> getRecordGeomapEntityConfigurations() {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("maps.record.metadata.entity.title.template");
+        if (templateList == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Metadata> map = new HashMap<>();
+        for (HierarchicalConfiguration<ImmutableNode> template : templateList) {
+            String name = template.getString("[@name]", "_DEFAULT");
+            Metadata md = getMetadataForTemplate(name,  templateList, true, false).stream().findAny().orElse(null);
+            if(md != null) {
+                map.put(name, md);
+            }
+        }
+        return map;
+    }
+    
+    public Metadata getRecordGeomapFeatureConfiguration(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("maps.record.metadata.title.template");
+        if (templateList == null) {
+            return new Metadata();
+        }
+
+        return getMetadataForTemplate(template, templateList, true, false).get(0);
+    }
+    
+    public Metadata getRecordGeomapEntityLabelConfiguration(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("maps.record.metadata.entity.title.template");
+        if (templateList == null) {
+            return new Metadata();
+        }
+
+        return getMetadataForTemplate(template, templateList, true, false).get(0);
+    }
+    
     /**
      * Returns number of elements displayed per paginator page in a table of contents for anchors and groups. Values below 1 disable pagination (all
      * elements are displayed on the single page).
@@ -5773,6 +5824,12 @@ public class Configuration extends AbstractConfiguration {
         }
         return filters;
     }
+    
+    public List<FeatureSetConfiguration> getRecordGeomapFeatureSetConfigs() {
+        List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = this.getLocalConfigurationsAt("maps.record.featureSets.featureSet");
+        return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
+    }
+    
 
     /**
      * @param field

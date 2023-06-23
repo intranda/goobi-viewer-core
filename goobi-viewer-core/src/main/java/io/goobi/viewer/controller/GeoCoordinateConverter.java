@@ -26,9 +26,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,16 +52,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.Point;
 import io.goobi.viewer.model.maps.Polygon;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataContainer;
+import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
@@ -76,9 +85,24 @@ public class GeoCoordinateConverter {
     private static final String METADATA_TO_IGNORE_REGEX = "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH";
     private static final String METADATA_TO_INCLUDE_REGEX = "(PI|MD_ROLE|MD_TITLE|MD_VALUE|LABEL|NORM_NAME|MD_CREATOR|MD_BIOGRAPHY|METADATA_TYPE|MD_LOCATION)(_.+)?";
 
-    private GeoCoordinateConverter() {
-
+//    private final Configuration config;
+    private final Map<String, Metadata> featureTitleConfigs;
+    private final Map<String, Metadata> entityTitleConfigs;
+    
+    public GeoCoordinateConverter() {
+        this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getRecordGeomapFeatureConfigurations();
+        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getRecordGeomapEntityConfigurations();
     }
+    
+    
+
+    public GeoCoordinateConverter(Map<String, Metadata> featureTitleConfigs, Map<String, Metadata> entityTitleConfigs) {
+        super();
+        this.featureTitleConfigs = featureTitleConfigs;
+        this.entityTitleConfigs = entityTitleConfigs;
+    }
+
+
 
     /**
      * Collect all point coordinate in the given coordinate fields from solr documents returned by the given solr query
@@ -91,19 +115,21 @@ public class GeoCoordinateConverter {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, List<String> coordinateFields,
+    public List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, List<String> coordinateFields,
             String markerTitleField, boolean aggregateResults)
             throws PresentationException, IndexUnreachableException {
         Map<SolrDocument, List<SolrDocument>> docs = StringUtils.isNotBlank(query)
                 ? getSolrDocuments(query, filterQueries, coordinateFields, markerTitleField, aggregateResults) : Collections.emptyMap();
         List<GeoMapFeature> features = new ArrayList<>();
+        
         for (Entry<SolrDocument, List<SolrDocument>> entry : docs.entrySet()) {
             SolrDocument doc = entry.getKey();
             List<SolrDocument> children = entry.getValue();
             for (String field : coordinateFields) {
+                features.addAll(getGeojsonPoints(doc, field, markerTitleField));
                 Map<String, List<SolrDocument>> metadataDocs = children.stream().collect(Collectors.toMap(SolrTools::getReferenceId, List::of, ListUtils::union));            
                 for (List<SolrDocument> childDocs : metadataDocs.values()) {
-                    Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, childDocs, field, markerTitleField, null);
+                    Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, childDocs, field, markerTitleField);
                     features.addAll(tempFeatures);
                 }
             }
@@ -169,53 +195,137 @@ public class GeoCoordinateConverter {
      * @param titleField solr field containing a title for the coordinates
      * @param descriptionField solr field containing a description for the coordinates
      */
-    public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, List<SolrDocument> children, String metadataField, String titleField,
-            String descriptionField) {
+    public Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, List<SolrDocument> children, String metadataField, String titleField) {
         String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
-        String desc = StringUtils.isBlank(descriptionField) ? null : SolrTools.getSingleFieldStringValue(doc, descriptionField);
         List<String> points = new ArrayList<>();
-        points.addAll(SolrTools.getMetadataValues(doc, metadataField));
         points.addAll(children.stream().limit(1).map(c -> SolrTools.getMetadataValues(c, metadataField)).flatMap(List::stream).collect(Collectors.toList()));
         List<GeoMapFeature> docFeatures = getFeatures(points);
         addMetadataToFeature(doc, children, docFeatures);
-        setLabels(docFeatures, titleField, descriptionField, title, desc);
+        Metadata titleConfig =  this.featureTitleConfigs.getOrDefault(children.stream().findAny().map(child -> SolrTools.getSingleFieldStringValue(child, "LABEL")).map(SolrTools::getBaseFieldName).orElse("_DEFAULT"), this.featureTitleConfigs.get("_DEFAULT"));
+        Metadata entityLabelConfig = this.entityTitleConfigs.getOrDefault(children.stream().findAny().map(child -> SolrTools.getSingleFieldStringValue(child, "LABEL")).map(SolrTools::getBaseFieldName).orElse("_DEFAULT"), this.entityTitleConfigs.get("_DEFAULT"));
+        setLabels(docFeatures, titleConfig, title, entityLabelConfig);
         
         return docFeatures;
     }
     
-    public static Collection<GeoMapFeature> getGeojsonPoints(MetadataContainer doc, String metadataField, String titleField,
-            String descriptionField) {
+    public Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField, String titleField) {
+        String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
         List<String> points = new ArrayList<>();
-        points.addAll(doc.get(metadataField).stream().filter(md -> md != null).map(md -> md.getValueOrFallback(null)).collect(Collectors.toList()));
+        points.addAll(SolrTools.getMetadataValues(doc, metadataField));
+        List<GeoMapFeature> docFeatures = getFeatures(points);
+        addMetadataToFeature(doc, Collections.emptyList(), docFeatures);
+        Metadata titleConfig = this.featureTitleConfigs.getOrDefault(Optional.ofNullable(doc).map(mc -> mc.getFirstValue("DOCSTRCT")).orElse("_DEFAULT"), this.featureTitleConfigs.get("_DEFAULT"));
+        Metadata entityLabelConfig = this.entityTitleConfigs.getOrDefault(Optional.ofNullable(doc).map(mc -> mc.getFirstValue("DOCSTRCT")).orElse("_DEFAULT"), this.entityTitleConfigs.get("_DEFAULT"));
+        setLabels(docFeatures, titleConfig, title, entityLabelConfig);
+        
+        return docFeatures;
+    }
+    
+    public Collection<GeoMapFeature> getGeojsonPoints(MetadataContainer doc, String metadataField, String titleField) {
+        List<String> points = new ArrayList<>();
+        points.addAll(doc.get(metadataField).stream().filter(Objects::nonNull).map(md -> md.getValueOrFallback(null)).collect(Collectors.toList()));
         List<GeoMapFeature> docFeatures = getFeatures(points);
         docFeatures.forEach(f -> f.addEntity(doc));
         String title = StringUtils.isBlank(titleField) ? null : doc.getFirstValue(titleField);
-        String desc = StringUtils.isBlank(descriptionField) ? null : doc.getFirstValue(descriptionField);
-        setLabels(docFeatures, titleField, descriptionField, title, desc);
+        Metadata titleConfig = this.featureTitleConfigs.getOrDefault(Optional.ofNullable(doc).map(mc -> mc.getFirstValue("DOCSTRCT")).orElse("_DEFAULT"), this.featureTitleConfigs.get("_DEFAULT"));
+        Metadata entityLabelConfig = this.entityTitleConfigs.getOrDefault(Optional.ofNullable(doc).map(mc -> mc.getFirstValue("DOCSTRCT")).orElse("_DEFAULT"), this.entityTitleConfigs.get("_DEFAULT"));
+        setLabels(docFeatures, titleConfig, title, entityLabelConfig);
         return docFeatures;
     }
 
-    private static void setLabels(List<GeoMapFeature> docFeatures,String titleField, String descriptionField, String defaultTitle, String defaultDescription) {
+    private static void setLabels(List<GeoMapFeature> docFeatures, Metadata titleConfiguration, String defaultTitle, Metadata entityLabelConfiguration) {
         
         docFeatures.forEach(f -> {
-            List<IMetadataValue> titleValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault(titleField, Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
-            if(!titleValues.isEmpty()) {
-                f.setTitle(titleValues.get(0));     
-            } else {
-                titleValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault("NORM_NAME", Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
-                if(!titleValues.isEmpty()) {
-                    f.setTitle(titleValues.get(0));   
-                } else {
-                    f.setTitle(new SimpleMetadataValue(defaultTitle));                
-                }
-            }
-            List<IMetadataValue> descValues = f.getEntities().stream().map(MetadataContainer::getMetadata).map(md ->  md.getOrDefault(descriptionField, Collections.emptyList())).flatMap(List::stream).collect(Collectors.toList());
-            if(!descValues.isEmpty()) {
-                f.setDescription(descValues.get(0));                
-            } else {
-                f.setDescription(new SimpleMetadataValue(defaultDescription));                
-            }
+
+                IMetadataValue title = Optional.ofNullable(f.getEntities()).filter(l-> !l.isEmpty()).map(l -> l.get(0)).map(MetadataContainer::getMetadata)
+                .map(metadata -> createTitle(titleConfiguration, metadata))
+                .filter(md -> !md.isEmpty())
+                .orElse(new SimpleMetadataValue(defaultTitle));
+                f.setTitle(title);
+                
+                f.getEntities().forEach(entity -> {
+                    Optional.ofNullable(entity.getMetadata())
+                            .map(metadata -> createTitle(entityLabelConfiguration, metadata))
+                            .filter(md -> !md.isEmpty())
+                            .ifPresent(label -> entity.setLabel(label));
+                });
+                
         });
+    }
+
+    public static IMetadataValue createTitle(Metadata labelConfig, Map<String, List<IMetadataValue>> metadata) {
+        IMetadataValue title = new MultiLanguageMetadataValue();
+        for (MetadataParameter param : labelConfig.getParams()) {
+            // logger.trace("param key: {}", param.getKey());
+            IMetadataValue value;
+            IMetadataValue keyValue = Optional.ofNullable(param.getKey()).map(key -> metadata.get(key)).map(l -> l.get(0)).orElse(null);
+            IMetadataValue altKeyValue = Optional.ofNullable(param.getAltKey()).map(key -> metadata.get(key)).map(l -> l.get(0)).orElse(null);
+            switch (param.getType()) {
+                case TRANSLATEDFIELD:
+                    if (keyValue != null) {
+                        if(keyValue instanceof SimpleMetadataValue) {
+                            value = ViewerResourceBundle.getTranslations(keyValue.getValue().orElse(""));
+                        } else {
+                            value = keyValue;
+                        }
+                    } else if (altKeyValue != null) {
+                        if(altKeyValue instanceof SimpleMetadataValue) {
+                            value = ViewerResourceBundle.getTranslations(altKeyValue.getValue().orElse(""));
+                        } else {
+                            value = altKeyValue;
+                        }
+                    } else if (StringUtils.isNotBlank(param.getDefaultValue())) {
+                        // Translate key, if no index field found
+                        value = ViewerResourceBundle.getTranslations(param.getDefaultValue());
+                    } else {
+                        value = new SimpleMetadataValue();
+                    }
+                    break;
+                case FIELD:
+                    if (keyValue != null) {
+                            value = keyValue;
+                    } else if (altKeyValue != null) {
+                            value = altKeyValue;
+                    } else if (StringUtils.isNotBlank(param.getDefaultValue())) {
+                        // Translate key, if no index field found
+                        value = new SimpleMetadataValue(param.getDefaultValue());
+                    } else {
+                        value = new SimpleMetadataValue();
+                    }
+                    break;
+                default:
+                    value = metadata.get(param.getKey()).get(0);
+                    // logger.trace("value: {}:{}", param.getKey(), value.getValue());
+                    break;
+            }
+
+            String placeholder1 = new StringBuilder("{").append(param.getKey()).append("}").toString();
+            String placeholder2 = new StringBuilder("{").append(labelConfig.getParams().indexOf(param)).append("}").toString();
+            // logger.trace("placeholder: {}", placeholder);
+            if (!value.isEmpty() && StringUtils.isNotEmpty(param.getPrefix())) {
+                String prefix = ViewerResourceBundle.getTranslation(param.getPrefix(), null);
+                value.addPrefix(prefix);
+            }
+            if (!value.isEmpty() && StringUtils.isNotEmpty(param.getSuffix())) {
+                String suffix = ViewerResourceBundle.getTranslation(param.getSuffix(), null);
+                value.addSuffix(suffix);
+            }
+            Set<String> languages = new HashSet<>(value.getLanguages());
+            languages.addAll(title.getLanguages());
+            // Replace master value placeholders in the label object
+            Map<String, String> languageLabelMap = new HashMap<>();
+            for (String language : languages) {
+                String langValue = title.getValue(language)
+                        .orElse(title.getValue().orElse(ViewerResourceBundle.getTranslation(labelConfig.getMasterValue(), Locale.forLanguageTag(language), true)))
+                        .replace(placeholder1, value.getValue(language).orElse(value.getValue().orElse("")))
+                        .replace(placeholder2, value.getValue(language).orElse(value.getValue().orElse("")));
+                languageLabelMap.put(language, langValue);
+            }
+            for (Entry<String, String> entry : languageLabelMap.entrySet()) {
+                title.setValue(entry.getValue(), entry.getKey());
+            }
+        }
+        return title;
     }
 
     private static List<GeoMapFeature> getFeatures(List<String> points) {

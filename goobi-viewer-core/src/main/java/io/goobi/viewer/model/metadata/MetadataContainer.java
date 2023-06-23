@@ -32,7 +32,7 @@ import io.goobi.viewer.solr.SolrTools;
 public class MetadataContainer {
 
     private final String solrId;
-    private final IMetadataValue label;
+    private IMetadataValue label;
     
     private final Map<String, List<IMetadataValue>> metadata;
 
@@ -62,6 +62,10 @@ public class MetadataContainer {
     
     public IMetadataValue getLabel() {
         return label;
+    }
+    
+    public void setLabel(IMetadataValue label) {
+        this.label = label;
     }
     
     public String getLabel(Locale locale) {

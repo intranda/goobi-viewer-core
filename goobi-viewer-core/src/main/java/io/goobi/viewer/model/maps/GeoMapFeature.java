@@ -186,6 +186,7 @@ public class GeoMapFeature {
             properties.put("entities", ents);
             for (MetadataContainer entity : this.entities) {
                 JSONObject jsonMetadata = new JSONObject();
+                jsonMetadata.put("title", JsonTools.getAsObjectForJson(entity.getLabel()));
                 ents.put(jsonMetadata);
                 for (Entry<String, List<IMetadataValue>> entry : entity.getMetadata().entrySet()) {
                     String name = entry.getKey();

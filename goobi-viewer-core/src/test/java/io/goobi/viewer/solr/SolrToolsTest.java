@@ -216,6 +216,14 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
         List<String> values = SolrTools.getAvailableValuesForField("MD_YEARPUBLISH", SolrConstants.ISWORK + ":true");
         Assert.assertFalse(values.isEmpty());
     }
+    
+    @Test
+    public void getAvailableValuesForField_shouldReturnAllEntireValues() throws Exception {
+        List<String> values = SolrTools.getAvailableValuesForField("MD_PLACEPUBLISH", SolrConstants.ISWORK + ":true");
+        Assert.assertFalse(values.isEmpty());
+        values.forEach(System.out::println);
+        Assert.assertTrue(values.contains("Ateliersituation vor neutralem Hintergrund"));
+    }
 
     /**
      * @see SolrTools#getExistingSubthemes()

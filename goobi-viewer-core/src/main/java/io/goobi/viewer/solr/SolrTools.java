@@ -690,12 +690,12 @@ public class SolrTools {
         if (filterQuery == null) {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
-
+        String facettifiedField = SearchHelper.facetifyField(field);
         filterQuery = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
+                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(facettifiedField), 1, false);
         if (qr != null) {
-            FacetField facet = qr.getFacetField(field);
+            FacetField facet = qr.getFacetField(facettifiedField);
             if (facet != null) {
                 List<String> ret = new ArrayList<>(facet.getValueCount());
                 for (Count count : facet.getValues()) {
@@ -874,6 +874,8 @@ public class SolrTools {
     public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata, Locale locale,
             Function<String, Boolean> fieldNameFilter) {
         List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).collect(Collectors.toList());
+        String docType = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
+
         for (String fieldName : fieldNames) {
             List<String> values = SolrTools.getMetadataValues(doc, fieldName);
             String baseFieldName = fieldName;
@@ -881,7 +883,7 @@ public class SolrTools {
                 baseFieldName = SolrTools.getBaseFieldName(fieldName);
                 locale = SolrTools.getLocale(fieldName);
             } else if ("MD_VALUE".equals(fieldName)) {
-                baseFieldName = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
+                baseFieldName = docType;
                 metadata.put("METADATA_TYPE", Collections.singletonList( ViewerResourceBundle.getTranslations(baseFieldName, true)));
             }
             for (String strValue : values) {
@@ -904,6 +906,9 @@ public class SolrTools {
                     }
                 }
             }
+        }
+        if(StringUtils.isNotBlank(docType) && metadata.containsKey(docType)) {            
+            metadata.put("MD_VALUE", metadata.get(docType));
         }
         return metadata;
     }

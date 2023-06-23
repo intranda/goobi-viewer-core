@@ -1,12 +1,18 @@
 <geoJsonFeatureList onclick="{preventBubble}">
 
-<h4>{getListLabel()}</h4>
-<input type="text" ref="search"  oninput="{filterList}"></input>
-<ul>
-	<li each="{entity in getVisibleEntities()}">
-		<a href="{getLink(entity)}">{getEntityLabel(entity)}</a>
-	</li>
-</ul>
+<div class="custom-map__sidebar-inner-wrapper">
+	<div class="custom-map__sidebar-inner-top">
+		<h4 class="custom-map__sidebar-inner-heading">{getListLabel()}</h4>
+		<input class="custom-map__sidebar-inner-search-input" type="text" ref="search"  oninput="{filterList}"></input>
+	</div>
+	<div class="custom-map__sidebar-inner-bottom">
+	<ul class="custom-map__inner-wrapper-list">
+		<li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}">
+			<a href="{getLink(entity)}">{getEntityLabel(entity)}</a>
+		</li>
+	</ul>
+	</div>
+</div>
 
 
 
@@ -16,8 +22,10 @@ this.entities = [];
 this.filteredEntities = undefined;
 
 this.on("mount", () => {
+	console.log("mount geoJsonFeatureList", this.opts);
 	this.opts.featureGroups.forEach(group => {
 		group.onFeatureClick.subscribe(f => { 
+			console.log("clicked on :", f);
 			this.title = f.properties?.title;
 			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false));
 		});
@@ -67,7 +75,7 @@ getEntityLabel(entity) {
 
 getListLabel() {
 	if(this.title) {
-		return this.title;
+		return viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
 	}
 	if(this.entities.length) {		
 		let labels = this.opts.listLabelFormat;
@@ -82,20 +90,27 @@ getLink(entity) {
 }
 
 getLabel(entity, labels) {
-	label = labels.map(format => {
-		let groups = [...format.matchAll(/\${(.*?)}/g)];
-		let l = "";
-		groups.forEach(group => {
-			if(group.length > 1) {
-				let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
-				if(value) {					
-					l += format.replaceAll(group[0], value ? value : "");
+	
+	if(entity.title) {
+		return viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
+	} else {
+		label = labels.map(format => {
+			let groups = [...format.matchAll(/\${(.*?)}/g)];
+			let l = "";
+			groups.forEach(group => {
+				if(group.length > 1) {
+					let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+					if(value) {					
+						l += format.replaceAll(group[0], value ? value : "");
+					}
 				}
-			}
-		})
-		return l;
-	}).join("");
-	return label;
+			})
+			return l;
+		}).join("");
+		return label;
+		
+	}
+	
 }
 
 hide() {
