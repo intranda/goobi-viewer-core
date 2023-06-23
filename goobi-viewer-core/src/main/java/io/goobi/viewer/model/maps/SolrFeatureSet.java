@@ -41,9 +41,6 @@ public class SolrFeatureSet extends FeatureSet {
 
     @Transient
     private String featuresAsString = null;
-    
-    @Transient
-    private final GeoCoordinateConverter converter;
 
     public SolrFeatureSet() {
         this(new GeoCoordinateConverter());
@@ -51,7 +48,6 @@ public class SolrFeatureSet extends FeatureSet {
 
     public SolrFeatureSet(GeoCoordinateConverter converter) {
         super();
-        this.converter = converter;
     }
     
     public SolrFeatureSet(SolrFeatureSet blueprint) {
@@ -59,7 +55,6 @@ public class SolrFeatureSet extends FeatureSet {
         this.solrQuery = blueprint.solrQuery;
         this.markerTitleField = blueprint.markerTitleField;
         this.aggregateResults = blueprint.aggregateResults;
-        this.converter = blueprint.converter;
     }
 
     @Override
@@ -88,6 +83,7 @@ public class SolrFeatureSet extends FeatureSet {
             //No features required since they will be loaded dynamically with the heatmap
             return "[]";
         }
+        GeoCoordinateConverter converter = new GeoCoordinateConverter(this.markerTitleField);
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
         Collection<GeoMapFeature> featuresFromSolr = converter.getFeaturesFromSolrQuery(getSolrQuery(isAggregateResults()), Collections.emptyList(), coordinateFields, getMarkerTitleField(), isAggregateResults());
         String ret = featuresFromSolr.stream()

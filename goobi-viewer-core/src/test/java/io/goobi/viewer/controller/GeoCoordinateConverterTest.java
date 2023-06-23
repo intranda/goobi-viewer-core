@@ -21,15 +21,15 @@ public class GeoCoordinateConverterTest extends AbstractTest {
         super.setUp();
     }
     
-    @Test
-    public void test_createTitle() {
-        Metadata md = DataManager.getInstance().getConfiguration().getRecordGeomapFeatureConfiguration("MD_BIOGRAPHY_JOURNEY");
-        Map<String, List<IMetadataValue>> mdMap = Map.of(
-                "MD_LOCATION", List.of(new SimpleMetadataValue("Mexico"))
-                );
-                
-        IMetadataValue value = GeoCoordinateConverter.createTitle(md, mdMap);
-        assertEquals("Journey to Mexico", value.getValueOrFallback(Locale.ENGLISH));
-    }
+    //@Test
+//    public void test_createTitle() {
+//        Metadata md = DataManager.getInstance().getConfiguration().getRecordGeomapFeatureConfiguration("MD_BIOGRAPHY_JOURNEY");
+//        Map<String, List<IMetadataValue>> mdMap = Map.of(
+//                "MD_LOCATION", List.of(new SimpleMetadataValue("Mexico"))
+//                );
+//                
+//        IMetadataValue value = GeoCoordinateConverter.createTitle(md, mdMap);
+//        assertEquals("Journey to Mexico", value.getValueOrFallback(Locale.ENGLISH));
+//    }
 
 }

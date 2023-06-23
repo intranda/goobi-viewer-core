@@ -82,19 +82,19 @@ public class GeoCoordinateConverter {
     private static final Logger logger = LogManager.getLogger(GeoCoordinateConverter.class);
     protected static final String POINT_LAT_LNG_PATTERN = "([\\dE.-]+)[\\s/]*([\\dE.-]+)";
     protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\dE.-]+[\\s/]*[\\dE.-]+[,\\s]*)+\\)\\)"; //NOSONAR
-    private static final String METADATA_TO_IGNORE_REGEX = "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH";
-    private static final String METADATA_TO_INCLUDE_REGEX = "(PI|MD_ROLE|MD_TITLE|MD_VALUE|LABEL|NORM_NAME|MD_CREATOR|MD_BIOGRAPHY|METADATA_TYPE|MD_LOCATION)(_.+)?";
 
 //    private final Configuration config;
     private final Map<String, Metadata> featureTitleConfigs;
     private final Map<String, Metadata> entityTitleConfigs;
     
     public GeoCoordinateConverter() {
-        this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getRecordGeomapFeatureConfigurations();
-        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getRecordGeomapEntityConfigurations();
+        this("");
     }
     
-    
+    public GeoCoordinateConverter(String markerTitleConfig) {
+        this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations(markerTitleConfig);
+        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapEntityConfigurations(markerTitleConfig);
+    }
 
     public GeoCoordinateConverter(Map<String, Metadata> featureTitleConfigs, Map<String, Metadata> entityTitleConfigs) {
         super();
@@ -254,6 +254,16 @@ public class GeoCoordinateConverter {
     }
 
     public static IMetadataValue createTitle(Metadata labelConfig, Map<String, List<IMetadataValue>> metadata) {
+        if(labelConfig != null) {
+            return createLabelFromConfig(labelConfig, metadata);
+        } else {            
+            return new SimpleMetadataValue("");// metadata.getOrDefault("LABEL", metadata.getOrDefault("MD_TITLE", List.of(new SimpleMetadataValue("")))).stream().findFirst().orElse(new SimpleMetadataValue(""));
+        }
+    }
+
+
+
+    public static IMetadataValue createLabelFromConfig(Metadata labelConfig, Map<String, List<IMetadataValue>> metadata) {
         IMetadataValue title = new MultiLanguageMetadataValue();
         for (MetadataParameter param : labelConfig.getParams()) {
             // logger.trace("param key: {}", param.getKey());

@@ -767,25 +767,92 @@ public class Configuration extends AbstractConfiguration {
 
         return getMetadataForTemplate(template, templateList, true, false);
     }
+    
+    public Map<String, Metadata> getGeomapFeatureConfigurations(String option) {
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream().filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .map(config -> config.configurationsAt("title.template"))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        
+        
+        return loadGeomapLabelConfigurations(templates);
+    }
+    
+    public Map<String, Metadata> getGeomapEntityConfigurations(String option) {
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream().filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .map(config -> config.configurationsAt("entity.title.template"))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        
+        return loadGeomapLabelConfigurations(templates);
+    }
 
     public Map<String, Metadata> getRecordGeomapFeatureConfigurations() {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("maps.record.metadata.title.template");
-        if (templateList == null) {
-            return Collections.emptyMap();
-        }
-        Map<String, Metadata> map = new HashMap<>();
-        for (HierarchicalConfiguration<ImmutableNode> template : templateList) {
-            String name = template.getString("[@name]", "_DEFAULT");
-            Metadata md = getMetadataForTemplate(name,  templateList, true, false).stream().findAny().orElse(null);
-            if(md != null) {
-                map.put(name, md);
-            }
-        }
-        return map;
+        return loadGeomapLabelConfigurations(getLocalConfigurationsAt("maps.record.metadata.title.template"));
     }
     
     public Map<String, Metadata> getRecordGeomapEntityConfigurations() {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("maps.record.metadata.entity.title.template");
+        return loadGeomapLabelConfigurations(getLocalConfigurationsAt("maps.record.metadata.entity.title.template"));
+    }
+    
+
+    public List<SelectItem> getGeomapFeatureTitleOptions() {
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.title.option");
+        if (configs != null && !configs.isEmpty()) {
+            return configs.stream()
+                    .map(config -> {
+                        String value = config.getString(".", null);
+                        String label = config.getString("[@label]", value); //NOSONAR specific path
+                        return new SelectItem(value, label);
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return List.of(
+                    new SelectItem("cms__geomaps__popup_content__option__none", null),
+                    new SelectItem("cms__geomaps__popup_content__option__place", "NORM_NAME"),
+                    new SelectItem("cms__geomaps__popup_content__option__metadata", "MD_VALUE"));
+        }
+    }
+
+    public StringMatchConfiguration getGeomapFeatureMainDocumentFields() {
+        return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.mainDocumentFields"));
+    }
+
+    public StringMatchConfiguration getGeomapFeatureMetadataDocumentFields() {
+        return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.metadataDocumentFields"));
+    }
+
+    public View getGeomapDefaultView() {
+        double zoom = getLocalFloat("maps.view.zoom", 5f);
+        double lng = getLocalFloat("maps.view.center.lng", 11.073397f);
+        double lat = getLocalFloat("maps.view.center.lat", 49.451993f);
+        return new View(zoom, lng, lat);
+    }
+
+    public Map<String, List<LabeledValue>> getGeomapFilters() {
+        List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = this.getLocalConfigurationsAt("maps.filters.filter");
+        Map<String, List<LabeledValue>> filters = new HashMap<>();
+        for (HierarchicalConfiguration<ImmutableNode> config : filterConfigs) {
+            String groupName = config.getString("featureGroup", "");
+            List<LabeledValue> fields = config.configurationsAt("field").stream().map(c -> {
+                String field = c.getString(".");
+                String label = c.getString("[@label]", "");
+                return new LabeledValue(field, label);
+            })
+                    .collect(Collectors.toList());
+            filters.put(groupName, fields);
+        }
+        return filters;
+    }
+    
+    public List<FeatureSetConfiguration> getRecordGeomapFeatureSetConfigs() {
+        List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = this.getLocalConfigurationsAt("maps.record.featureSets.featureSet");
+        return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
+    }
+    
+    private Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
         if (templateList == null) {
             return Collections.emptyMap();
         }
@@ -798,24 +865,6 @@ public class Configuration extends AbstractConfiguration {
             }
         }
         return map;
-    }
-    
-    public Metadata getRecordGeomapFeatureConfiguration(String template) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("maps.record.metadata.title.template");
-        if (templateList == null) {
-            return new Metadata();
-        }
-
-        return getMetadataForTemplate(template, templateList, true, false).get(0);
-    }
-    
-    public Metadata getRecordGeomapEntityLabelConfiguration(String template) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("maps.record.metadata.entity.title.template");
-        if (templateList == null) {
-            return new Metadata();
-        }
-
-        return getMetadataForTemplate(template, templateList, true, false).get(0);
     }
     
     /**
@@ -5804,59 +5853,6 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
 
-    public List<SelectItem> getGeomapFeatureTitleOptions() {
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.title.option");
-        if (configs != null && !configs.isEmpty()) {
-            return configs.stream()
-                    .map(config -> {
-                        String value = config.getString(".", null);
-                        String label = config.getString("[@label]", value); //NOSONAR specific path
-                        return new SelectItem(value, label);
-                    })
-                    .collect(Collectors.toList());
-        } else {
-            return List.of(
-                    new SelectItem("cms__geomaps__popup_content__option__none", null),
-                    new SelectItem("cms__geomaps__popup_content__option__place", "NORM_NAME"),
-                    new SelectItem("cms__geomaps__popup_content__option__metadata", "MD_VALUE"));
-        }
-    }
-
-    public StringMatchConfiguration getGeomapFeatureMainDocumentFields() {
-        return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.mainDocumentFields"));
-    }
-
-    public StringMatchConfiguration getGeomapFeatureMetadataDocumentFields() {
-        return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.metadataDocumentFields"));
-    }
-
-    public View getGeomapDefaultView() {
-        double zoom = getLocalFloat("maps.view.zoom", 5f);
-        double lng = getLocalFloat("maps.view.center.lng", 11.073397f);
-        double lat = getLocalFloat("maps.view.center.lat", 49.451993f);
-        return new View(zoom, lng, lat);
-    }
-
-    public Map<String, List<LabeledValue>> getGeomapFilters() {
-        List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = this.getLocalConfigurationsAt("maps.filters.filter");
-        Map<String, List<LabeledValue>> filters = new HashMap<>();
-        for (HierarchicalConfiguration<ImmutableNode> config : filterConfigs) {
-            String groupName = config.getString("featureGroup", "");
-            List<LabeledValue> fields = config.configurationsAt("field").stream().map(c -> {
-                String field = c.getString(".");
-                String label = c.getString("[@label]", "");
-                return new LabeledValue(field, label);
-            })
-                    .collect(Collectors.toList());
-            filters.put(groupName, fields);
-        }
-        return filters;
-    }
-    
-    public List<FeatureSetConfiguration> getRecordGeomapFeatureSetConfigs() {
-        List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = this.getLocalConfigurationsAt("maps.record.featureSets.featureSet");
-        return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
-    }
     
 
     /**
