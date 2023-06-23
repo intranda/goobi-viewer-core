@@ -40,13 +40,11 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchFacetsTest extends AbstractSolrEnabledTest {
@@ -567,7 +565,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
 
         String filterQueryString = facets.generateFacetFilterQueries(true).get(0);
         List<SearchHit> hits = SearchHelper.searchWithAggregation("BOOL_WKT_COORDS:*", 0, 100, null, null,
-                Collections.singletonList(filterQueryString), null, null, null, Locale.GERMANY, 0);
+                Collections.singletonList(filterQueryString), null, null, null, null, Locale.GERMANY, false, 0);
         assertEquals(2, hits.size());
 
     }

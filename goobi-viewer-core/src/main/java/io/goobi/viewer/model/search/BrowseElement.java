@@ -26,13 +26,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +47,7 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -128,15 +130,14 @@ public class BrowseElement implements Serializable {
     private String logId;
     @JsonIgnore
     private NavigationHelper navigationHelper;
+    /** Map containing metadata lists for this search hit. */
     @JsonIgnore
-    private List<Metadata> metadataList = null;
+    private Map<String, List<Metadata>> metadataListMap = Collections.emptyMap();
     @JsonIgnore
     private final Set<String> existingMetadataFields = new HashSet<>();
-    /**
-     * List of just the metadata fields that were added because they contained search terms (for use where not the entire metadata list is desired).
-     */
+    /** List metadata fields that are not explicitly configured for display, but contain search terms. */
     @JsonIgnore
-    private final List<Metadata> additionalMetadataList = new ArrayList<>();
+    private final List<Metadata> foundMetadataList = new ArrayList<>();
     @JsonIgnore
     private String mimeType = "";
     @JsonIgnore
@@ -174,7 +175,8 @@ public class BrowseElement implements Serializable {
         this.label = new SimpleMetadataValue(label);
         this.fulltext = fulltext;
         this.locale = locale;
-        this.metadataList = new ArrayList<>();
+        this.metadataListMap = new HashMap<>(1);
+        this.metadataListMap.put(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>());
         this.url = url;
         if (this.url == null) {
             this.url = generateUrl();
@@ -186,7 +188,7 @@ public class BrowseElement implements Serializable {
      * Constructor.
      *
      * @param structElement {@link StructElement}
-     * @param metadataList
+     * @param metadataListMap
      * @param locale
      * @param fulltext
      * @param searchTerms
@@ -196,11 +198,16 @@ public class BrowseElement implements Serializable {
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
-    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, Map<String, Set<String>> searchTerms,
-            ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException {
-        this.metadataList = metadataList;
-        if (this.metadataList == null) {
-            this.metadataList = new ArrayList<>();
+    BrowseElement(StructElement structElement, Map<String, List<Metadata>> metadataListMap, Locale locale, String fulltext,
+            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException {
+        if (structElement == null) {
+            throw new IllegalArgumentException("structElement may not be null");
+        }
+
+        this.metadataListMap = metadataListMap;
+        if (this.metadataListMap == null || this.metadataListMap.isEmpty()) {
+            this.metadataListMap = new HashMap<>(1);
+            this.metadataListMap.put(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>());
         }
         this.locale = locale;
         this.fulltext = fulltext;
@@ -238,15 +245,18 @@ public class BrowseElement implements Serializable {
         }
 
         // Populate metadata
-        if (!this.metadataList.isEmpty()) {
-            int length = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueLength();
-            int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
-            populateMetadataList(structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
-
-            // Add event metadata for LIDO records
-            if (topStructElement != null && topStructElement.isLidoRecord()) {
-                populateEvents(topStructElement, searchTerms);
+        int length = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueLength();
+        int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
+        for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                // logger.trace("populating metadata list {}", entry.getKey());
+                populateMetadataList(entry.getValue(), structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
             }
+        }
+
+        // Add event metadata for LIDO records
+        if (topStructElement != null && topStructElement.isLidoRecord()) {
+            populateEvents(topStructElement, searchTerms);
         }
 
         if (DataManager.getInstance().getConfiguration().isSearchRisExportEnabled()) {
@@ -335,7 +345,7 @@ public class BrowseElement implements Serializable {
         if (thumbs != null) {
             String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
             if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
-                thumbnailUrl = StringTools.intern(sbThumbnailUrl.toString());
+                thumbnailUrl = StringTools.intern(sbThumbnailUrl);
             }
         }
 
@@ -371,9 +381,14 @@ public class BrowseElement implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    void populateMetadataList(StructElement structElement, StructElement topStructElement, StructElement anchorStructElement,
+    void populateMetadataList(List<Metadata> metadataList, StructElement structElement, StructElement topStructElement,
+            StructElement anchorStructElement,
             Map<String, Set<String>> searchTerms, int length, int number, Locale locale) throws IndexUnreachableException, PresentationException {
-        for (Metadata md : this.metadataList) {
+        if (metadataList == null) {
+            throw new IllegalArgumentException("metadataList may not be null");
+        }
+
+        for (Metadata md : metadataList) {
             for (MetadataParameter param : md.getParams()) {
                 StructElement elementToUse = structElement;
                 if (StringUtils.isNotEmpty(param.getSource())) {
@@ -532,36 +547,38 @@ public class BrowseElement implements Serializable {
             // Skip fields that are already in the list
             boolean skip = false;
 
-            for (Metadata md : metadataList) {
-                if (md.getLabel().equals(sortField.getOne().replace("SORT_", "MD_"))) {
-                    skip = true;
-                    break;
-                }
-            }
-            if (skip) {
-                continue;
-            }
-            // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
-            if (!skip && structElement.getMetadataFields().containsKey(sortField.getOne())) {
-                List<String> fieldValues = structElement.getMetadataFields().get(sortField.getOne());
-                for (String fieldValue : fieldValues) {
-                    MetadataParameterType type;
-                    switch (sortField.getOne()) {
-                        case SolrConstants.DATECREATED:
-                        case SolrConstants.DATEINDEXED:
-                        case SolrConstants.DATEUPDATED:
-                            type = MetadataParameterType.MILLISFIELD;
-                            break;
-                        default:
-                            type = MetadataParameterType.FIELD;
-                            break;
+            for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
+                for (Metadata md : entry.getValue()) {
+                    if (md.getLabel().equals(sortField.getOne().replace("SORT_", "MD_"))) {
+                        skip = true;
+                        break;
                     }
+                }
+                if (skip) {
+                    continue;
+                }
+                // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
+                if (!skip && structElement.getMetadataFields().containsKey(sortField.getOne())) {
+                    List<String> fieldValues = structElement.getMetadataFields().get(sortField.getOne());
+                    for (String fieldValue : fieldValues) {
+                        MetadataParameterType type;
+                        switch (sortField.getOne()) {
+                            case SolrConstants.DATECREATED:
+                            case SolrConstants.DATEINDEXED:
+                            case SolrConstants.DATEUPDATED:
+                                type = MetadataParameterType.MILLISFIELD;
+                                break;
+                            default:
+                                type = MetadataParameterType.FIELD;
+                                break;
+                        }
 
-                    Metadata md = new Metadata(String.valueOf(structElement.getLuceneId()), sortField.getOne(), "",
-                            new MetadataParameter().setType(type), fieldValue, locale);
+                        Metadata md = new Metadata(String.valueOf(structElement.getLuceneId()), sortField.getOne(), "",
+                                new MetadataParameter().setType(type), fieldValue, locale);
 
-                    metadataList.add(md);
-                    additionalMetadataList.add(md);
+                        entry.getValue().add(md);
+                        foundMetadataList.add(md);
+                    }
                 }
             }
         }
@@ -600,7 +617,7 @@ public class BrowseElement implements Serializable {
             }
             // Skip fields that are already in the list
             boolean skip = false;
-            for (Metadata md : metadataList) {
+            for (Metadata md : getMetadataList()) {
                 if (md.getLabel().equals(entry.getKey())) {
                     skip = true;
                     break;
@@ -622,7 +639,7 @@ public class BrowseElement implements Serializable {
                             continue;
                         }
                         // Skip fields that are already in the list
-                        for (Metadata md : metadataList) {
+                        for (Metadata md : getMetadataList()) {
                             if (md.getLabel().equals(docFieldName)) {
                                 skip = true;
                                 break;
@@ -660,8 +677,9 @@ public class BrowseElement implements Serializable {
                                 }
                             }
                             if (sb.length() > 0) {
-                                metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", sb.toString()));
-                                additionalMetadataList
+                                getMetadataList()
+                                        .add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", sb.toString()));
+                                foundMetadataList
                                         .add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", sb.toString()));
                                 existingMetadataFields.add(docFieldName);
                                 logger.trace("added existing field: {}", docFieldName);
@@ -699,8 +717,9 @@ public class BrowseElement implements Serializable {
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", highlightedValue));
-                                    additionalMetadataList
+                                    getMetadataList()
+                                            .add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", highlightedValue));
+                                    foundMetadataList
                                             .add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", highlightedValue));
                                     existingMetadataFields.add(docFieldName);
                                     // logger.trace("added existing field: {}", docFieldName);
@@ -711,7 +730,7 @@ public class BrowseElement implements Serializable {
                     break;
                 default:
                     // Skip fields that are already in the list
-                    for (Metadata md : metadataList) {
+                    for (Metadata md : getMetadataList()) {
                         if (md.getLabel().equals(entry.getKey())) {
                             skip = true;
                             break;
@@ -741,8 +760,8 @@ public class BrowseElement implements Serializable {
                                 }
                             }
                             if (sb.length() > 0) {
-                                metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", sb.toString()));
-                                additionalMetadataList
+                                getMetadataList().add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", sb.toString()));
+                                foundMetadataList
                                         .add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", sb.toString()));
                                 existingMetadataFields.add(entry.getKey());
                             }
@@ -774,8 +793,9 @@ public class BrowseElement implements Serializable {
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", highlightedValue));
-                                    additionalMetadataList
+                                    getMetadataList()
+                                            .add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", highlightedValue));
+                                    foundMetadataList
                                             .add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", highlightedValue));
                                     existingMetadataFields.add(entry.getKey());
                                 }
@@ -1444,17 +1464,29 @@ public class BrowseElement implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getMetadataList() {
-        return metadataList;
+        return metadataListMap.get(Configuration.METADATA_LIST_TYPE_SEARCH_HIT);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param locale
+     * @return
+     */
+    public List<Metadata> getMetadataListForLocale(String field, Locale locale) {
+        return Metadata.filterMetadata(this.metadataListMap.get(Configuration.METADATA_LIST_TYPE_SEARCH_HIT),
+                locale != null ? locale.getLanguage() : null, field);
     }
 
     /**
      *
      * @param field Requested field name
      * @param locale Requested locale
+     * @param metadataListType
      * @return
      */
-    public List<Metadata> getMetadataListForLocale(String field, Locale locale) {
-        return Metadata.filterMetadata(metadataList, locale != null ? locale.getLanguage() : null, field);
+    public List<Metadata> getMetadataListForLocale(String field, Locale locale, String metadataListType) {
+        return Metadata.filterMetadata(this.metadataListMap.get(metadataListType), locale != null ? locale.getLanguage() : null, field);
     }
 
     /**
@@ -1466,7 +1498,17 @@ public class BrowseElement implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getMetadataListForLocale(Locale locale) {
-        return Metadata.filterMetadata(metadataList, locale != null ? locale.getLanguage() : null, null);
+        return getMetadataListForLocale(locale, Configuration.METADATA_LIST_TYPE_SEARCH_HIT);
+    }
+
+    /**
+     * 
+     * @param locale
+     * @param metadataListType
+     * @return
+     */
+    public List<Metadata> getMetadataListForLocale(Locale locale, String metadataListType) {
+        return Metadata.filterMetadata(this.metadataListMap.get(metadataListType), locale != null ? locale.getLanguage() : null, null);
     }
 
     /**
@@ -1481,14 +1523,19 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * <p>
-     * Setter for the field <code>metadataList</code>.
-     * </p>
-     *
-     * @param metadataList a {@link java.util.List} object.
+     * 
+     * @return First metadata list in metadataListMap that's not the default search metadata list configuration; empty list if not found
      */
-    public void setMetadataList(List<Metadata> metadataList) {
-        this.metadataList = metadataList;
+    public List<Metadata> getSecondaryMetadataListForCurrentLocale() {
+        if (this.metadataListMap.size() > 1) {
+            for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
+                if (!Configuration.METADATA_LIST_TYPE_SEARCH_HIT.equals(entry.getKey())) {
+                    return entry.getValue();
+                }
+            }
+        }
+
+        return Collections.emptyList();
     }
 
     /**
@@ -1529,13 +1576,13 @@ public class BrowseElement implements Serializable {
 
     /**
      * <p>
-     * Getter for the field <code>additionalMetadataList</code>.
+     * Getter for the field <code>foundMetadataList</code>.
      * </p>
      *
-     * @return the additionalMetadataList
+     * @return the foundMetadataList
      */
-    public List<Metadata> getAdditionalMetadataList() {
-        return additionalMetadataList;
+    public List<Metadata> getFoundMetadataList() {
+        return foundMetadataList;
     }
 
     /**

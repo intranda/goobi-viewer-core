@@ -1530,6 +1530,15 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Returns metadataList types from the configuration where the type value stars with "cms_".
+     * 
+     * @return
+     */
+    public List<String> getCmsMetadataListTypes() {
+        return DataManager.getInstance().getConfiguration().getMetadataListTypes("cms_");
+    }
+
+    /**
      * <p>
      * getCssClass.
      * </p>

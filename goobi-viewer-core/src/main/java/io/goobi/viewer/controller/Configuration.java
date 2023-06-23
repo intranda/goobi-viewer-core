@@ -116,6 +116,10 @@ public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LogManager.getLogger(Configuration.class);
 
+    public static final String CONFIG_FILE_NAME = "config_viewer.xml";
+
+    public static final String METADATA_LIST_TYPE_SEARCH_HIT = "searchHit";
+
     private static final String XML_PATH_ATTRIBUTE_CONDITION = "[@condition]";
     private static final String XML_PATH_ATTRIBUTE_DEFAULT = "[@default]";
     private static final String XML_PATH_ATTRIBUTE_DESCRIPTION = "[@description]";
@@ -128,8 +132,6 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_SEARCH_SORTING_FIELD = "search.sorting.field";
     private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
-
-    public static final String CONFIG_FILE_NAME = "config_viewer.xml";
 
     private Set<String> stopwords;
 
@@ -396,29 +398,55 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param type
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @param topstructValueFallbackDefaultValue
-     * @return
+     * @param prefix Optional prefix for filtering
+     * @return List of type attribute values of matching lists
+     * @should return all metadataList types if prefix empty
+     * @should filter by prefix correctly
      */
-    List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
-            boolean topstructValueFallbackDefaultValue) {
-        if (type == null) {
-            throw new IllegalArgumentException("type may not be null");
-        }
-
+    public List<String> getMetadataListTypes(String prefix) {
         List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
         if (metadataLists == null) {
             logger.error("no metadata lists found");
             return new ArrayList<>(); // must be a mutable list!
         }
 
+        List<String> ret = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
-            if (type.equals(metadataList.getString("[@type]"))) {
+            String type = metadataList.getString(XML_PATH_ATTRIBUTE_TYPE);
+            if (StringUtils.isEmpty(prefix) || type.startsWith(prefix)) {
+                ret.add(type);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param type
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @param topstructValueFallbackDefaultValue
+     * @return
+     */
+    public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
+            boolean topstructValueFallbackDefaultValue) {
+        // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Sometimes used for debugging
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
+        if (metadataLists == null) {
+            logger.trace("no metadata lists found");
+            return new ArrayList<>(); // must be a mutable list!
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
+            if (type.equals(metadataList.getString(XML_PATH_ATTRIBUTE_TYPE))) {
                 List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
                 if (templateList.isEmpty()) {
-                    logger.error("{}  templates found for type {}", templateList.size(), type);
+                    logger.trace("{}  templates found for type {}", templateList.size(), type);
                     return new ArrayList<>(); // must be a mutable list!
                 }
 
@@ -445,7 +473,7 @@ public class Configuration extends AbstractConfiguration {
             return getMetadataForTemplate(template, templateList, true, true);
         }
 
-        return getMetadataConfigurationForTemplate("searchHit", template, true, true);
+        return getMetadataConfigurationForTemplate(METADATA_LIST_TYPE_SEARCH_HIT, template, true, true);
     }
 
     /**

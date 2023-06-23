@@ -86,7 +86,7 @@ public class DefaultURLBuilder implements IURLBuilder {
             url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
         }
 
-        logger.trace("generateUrl: {}", url);
+        // logger.trace("generateUrl: {}", url);
         return url;
 
     }

@@ -623,6 +623,28 @@ public class ConfigurationTest extends AbstractTest {
     public void getRssTitle_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("title_value", DataManager.getInstance().getConfiguration().getRssTitle());
     }
+    
+
+    /**
+     * @see Configuration#getMetadataListTypes(String)
+     * @verifies return all metadataList types if prefix empty
+     */
+    @Test
+    public void getMetadataListTypes_shouldReturnAllMetadataListTypesIfPrefixEmpty() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes(null);
+        Assert.assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getMetadataListTypes(String)
+     * @verifies filter by prefix correctly
+     */
+    @Test
+    public void getMetadataListTypes_shouldFilterByPrefixCorrectly() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes("cms_");
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals("cms_fooBar", result.get(0));
+    }
 
     /**
      * @see Configuration#getSearchHitMetadataForTemplate(String)

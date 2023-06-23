@@ -316,7 +316,7 @@ public class TocMaker {
      */
     private static void buildGroupToc(List<TOCElement> ret, List<String> groupIdFields, String groupIdValue, boolean sourceFormatPdfAllowed,
             String mimeType)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
+            throws PresentationException, IndexUnreachableException,  DAOException {
         logger.trace("addMembersToGroup: {}", groupIdValue);
         if (ret == null) {
             throw new IllegalArgumentException("ret may not be null");
@@ -345,7 +345,7 @@ public class TocMaker {
             returnFields.add(groupSortField); // add each sorting field to return list
         }
         sbQuery.append(')');
-        logger.trace("Group TOC query: {}", sbQuery.toString());
+        logger.trace("Group TOC query: {}", sbQuery);
 
         SolrDocumentList groupMemberDocs = DataManager.getInstance()
                 .getSearchIndex()
