@@ -684,12 +684,12 @@ public class SolrTools {
         if (filterQuery == null) {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
-
+        String facettifiedField = SearchHelper.facetifyField(field);
         filterQuery = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
+                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(facettifiedField), 1, false);
         if (qr != null) {
-            FacetField facet = qr.getFacetField(field);
+            FacetField facet = qr.getFacetField(facettifiedField);
             if (facet != null) {
                 List<String> ret = new ArrayList<>(facet.getValueCount());
                 for (Count count : facet.getValues()) {
