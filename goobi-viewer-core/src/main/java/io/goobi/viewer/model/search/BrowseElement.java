@@ -249,7 +249,7 @@ public class BrowseElement implements Serializable {
         int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
         for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
             if (!entry.getValue().isEmpty()) {
-                logger.trace("populating metadata list {}", entry.getKey());
+                // logger.trace("populating metadata list {}", entry.getKey());
                 populateMetadataList(entry.getValue(), structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
             }
         }
