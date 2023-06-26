@@ -1437,7 +1437,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getFilteredTerms_shouldBeThreadSafeWhenCountingTerms() throws Exception {
         int previousSize = -1;
         Map<String, Long> previousCounts = new HashMap<>();
-        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, false, false);
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null, false, false, false);
         for (int i = 0; i < 10; ++i) {
             List<BrowseTerm> terms =
                     SearchHelper.getFilteredTerms(bmfc, null, null, 0, SolrSearchIndex.MAX_HITS, new BrowseTermComparator(Locale.ENGLISH));

@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
@@ -43,6 +42,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -187,12 +187,25 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject canvas = new JSONObject(entity);
-            JSONArray renderings = canvas.getJSONArray("rendering");
+            JSONArray renderings = null;
+            try {
+                renderings = canvas.getJSONArray("rendering");
+            } catch (JSONException e) {
+                // Fallback for when "rendering" is not an array
+                JSONObject rendering = canvas.getJSONObject("rendering");
+                if (rendering != null) {
+                    renderings = new JSONArray();
+                    renderings.put(rendering);
+                }
+            }
+            assertNotNull(renderings);
             assertFalse(renderings.isEmpty());
-            List linkList = renderings.toList();
-            Map pdfLink = renderings.toList().stream().map(object -> (Map)object)
+            Map pdfLink = renderings.toList()
+                    .stream()
+                    .map(object -> (Map) object)
                     .filter(map -> "dcTypes:Image".equals(map.get("@type")))
-                    .findAny().orElse(null);
+                    .findAny()
+                    .orElse(null);
             assertNotNull("No PDF link in canvas", pdfLink);
             String id = (String) pdfLink.get("@id");
             Assert.assertTrue("Wrong filename in " + id, id.contains("erdmagnetisches+observatorium+vi_blatt_5.tif"));
