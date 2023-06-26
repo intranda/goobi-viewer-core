@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
@@ -85,6 +86,7 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -99,6 +101,7 @@ import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.translations.language.LocaleComparator;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -3429,5 +3432,207 @@ public final class SearchHelper {
         }
 
         return sb.toString().trim();
+    }
+
+    List<Object> findAdditionalMetadataFieldsContainingSearchTerms(List<Metadata> existingMetadataList, Map<String, List<String>> availableMetadata,
+            String iddoc, Map<String, Set<String>> searchTerms, Set<String> ignoreFields, Set<String> translateFields, Set<String> oneLineFields,
+            Set<String> snippetFields, int proximitySearchDistance, Locale locale) {
+        // logger.trace("findAdditionalMetadataFieldsContainingSearchTerms");
+        if (existingMetadataList == null) {
+            throw new IllegalArgumentException("metadataList may not be null");
+        }
+        if (availableMetadata == null) {
+            throw new IllegalArgumentException("availableMetadata may not be null");
+        }
+        if (searchTerms == null) {
+            return Collections.emptyList();
+        }
+
+        List<Object> ret = new ArrayList<>();
+        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
+            // Skip fields that are in the ignore list
+            if (ignoreFields != null && ignoreFields.contains(entry.getKey())) {
+                continue;
+            }
+            // Skip fields that are already in the list
+            boolean skip = false;
+            for (Metadata md : existingMetadataList) {
+                if (md.getLabel().equals(entry.getKey())) {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip) {
+                continue;
+            }
+            switch (entry.getKey()) {
+                case SolrConstants.DEFAULT:
+                case SolrConstants.NORMDATATERMS:
+                    // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
+                    for (String docFieldName : availableMetadata.keySet()) {
+                        // Skip fields that are in the ignore list
+                        if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
+                            continue;
+                        }
+                        if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                            continue;
+                        }
+                        // Skip fields that are already in the list
+                        for (Metadata md : existingMetadataList) {
+                            if (md.getLabel().equals(docFieldName)) {
+                                skip = true;
+                                break;
+                            }
+                        }
+                        if (skip) {
+                            skip = false;
+                            continue;
+                        }
+                        List<String> fieldValues = availableMetadata.get(docFieldName);
+
+                        if (oneLineFields != null && oneLineFields.contains(docFieldName)) {
+                            // All values into a single field value
+                            StringBuilder sb = new StringBuilder();
+                            for (String fieldValue : fieldValues) {
+                                // Skip values that are equal to the hit label
+                                Optional<String> labelValue = label.getValue();
+                                if (labelValue.isPresent() && fieldValue.equals(labelValue.get())) {
+                                    continue;
+                                }
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                if (!highlightedValue.equals(fieldValue)) {
+                                    // Translate values for certain fields, keeping the highlighting
+                                    if (translateFields != null && (translateFields.contains(docFieldName)
+                                            || translateFields.contains(SearchHelper.adaptField(docFieldName, null)))) {
+                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                                "$1" + translatedValue + "$3");
+                                    }
+                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(highlightedValue);
+                                }
+                            }
+                            if (sb.length() > 0) {
+                                ret.add(new Metadata(iddoc, docFieldName, "", sb.toString()));
+                                existingMetadataFields.add(docFieldName);
+                                logger.trace("added existing field: {}", docFieldName);
+                            }
+                        } else {
+                            for (String fieldValue : fieldValues) {
+                                // Skip values that are equal to the hit label
+                                Optional<String> labelValue = label.getValue();
+                                if (labelValue.isPresent() && fieldValue.equals(labelValue.get())) {
+                                    continue;
+                                }
+
+                                String highlightedValue = null;
+
+                                // Truncate snippet field values
+                                if (snippetFields != null && snippetFields.contains(docFieldName)) {
+                                    List<String> truncatedValues =
+                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
+                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
+                                                    proximitySearchDistance);
+                                    if (!truncatedValues.isEmpty()) {
+                                        highlightedValue = "[...] " + truncatedValues.get(0).trim() + " [...]";
+                                    }
+                                }
+
+                                if (highlightedValue == null) {
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                }
+                                if (!highlightedValue.equals(fieldValue)) {
+                                    // Translate values for certain fields, keeping the highlighting
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
+                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                                "$1" + translatedValue + "$3");
+                                    }
+                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    ret.add(new Metadata(iddoc, docFieldName, "", highlightedValue));
+                                    existingMetadataFields.add(docFieldName);
+                                    logger.trace("added existing field: {}", docFieldName);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    // Skip fields that are already in the list
+                    for (Metadata md : existingMetadataList) {
+                        if (md.getLabel().equals(entry.getKey())) {
+                            skip = true;
+                            break;
+                        }
+                    }
+                    // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
+                    if (!skip && availableMetadata.containsKey(entry.getKey())) {
+                        List<String> fieldValues = availableMetadata.get(entry.getKey());
+                        if (oneLineFields != null && oneLineFields.contains(entry.getKey())) {
+                            // All values into a single field value
+                            StringBuilder sb = new StringBuilder();
+                            for (String fieldValue : fieldValues) {
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                if (!highlightedValue.equals(fieldValue)) {
+                                    // Translate values for certain fields, keeping the highlighting
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
+                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                                "$1" + translatedValue + "$3");
+                                    }
+                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(highlightedValue);
+                                }
+                            }
+                            if (sb.length() > 0) {
+                                ret.add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", sb.toString()));
+                                existingMetadataFields.add(entry.getKey());
+                            }
+                        } else {
+                            for (String fieldValue : fieldValues) {
+                                String highlightedValue = null;
+
+                                // Truncate snippet field values
+                                if (snippetFields != null && snippetFields.contains(entry.getKey())) {
+                                    List<String> truncatedValues =
+                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
+                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
+                                                    proximitySearchDistance);
+                                    if (!truncatedValues.isEmpty()) {
+                                        highlightedValue = truncatedValues.get(0).trim();
+                                    }
+                                }
+
+                                if (highlightedValue == null) {
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
+                                }
+                                if (!highlightedValue.equals(fieldValue)) {
+                                    // Translate values for certain fields, keeping the highlighting
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
+                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                                "$1" + translatedValue + "$3");
+                                    }
+                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    ret.add(new Metadata(String.valueOf(structElement.getLuceneId()), entry.getKey(), "", highlightedValue));
+                                    existingMetadataFields.add(entry.getKey());
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+
+        return ret;
     }
 }

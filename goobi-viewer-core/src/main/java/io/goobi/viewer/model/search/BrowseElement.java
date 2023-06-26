@@ -602,10 +602,10 @@ public class BrowseElement implements Serializable {
             Set<String> ignoreFields, Set<String> translateFields, Set<String> oneLineFields, Set<String> snippetFields,
             int proximitySearchDistance) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
-
         if (searchTerms == null) {
             return;
         }
+        
         for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
             // Skip fields that are in the ignore list
             if (ignoreFields != null && ignoreFields.contains(entry.getKey())) {
