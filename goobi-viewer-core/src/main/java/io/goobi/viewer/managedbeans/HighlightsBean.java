@@ -37,13 +37,9 @@ import javax.inject.Named;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
 
-import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
@@ -59,10 +55,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.metadata.MetadataElement;
-import io.goobi.viewer.model.toc.TocMaker;
-import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.translations.TranslatedText;
-import io.goobi.viewer.model.viewer.StructElement;
 
 @Named
 @SessionScoped
@@ -95,17 +87,17 @@ public class HighlightsBean implements Serializable {
         CREATE,
         EDIT;
     }
-    
+
     public HighlightsBean() {
-        
+
     }
-    
+
     public HighlightsBean(IDAO dao, NavigationHelper navigationHelper, ImageDeliveryBean imaging) {
         this.dao = dao;
         this.navigationHelper = navigationHelper;
         this.imaging = imaging;
     }
-    
+
     @PostConstruct
     public void init() {
         LocalDateTime now = LocalDateTime.now();
@@ -123,34 +115,34 @@ public class HighlightsBean implements Serializable {
                         .collect(Collectors.toList()));
         currentObjectsProvider = TableDataProvider.initDataProvider(Integer.MAX_VALUE, CURRENT_OBJECTS_SORT_FIELD, CURRENT_OBJECTS_SORT_ORDER,
                 (first, pageSize, sortField, descending, filters) -> dao
-                .getHighlightsForDate(now)
-                .stream()
-                .filter(HighlightData::isEnabled)
-                .map(Highlight::new)
-                .collect(Collectors.toList()));
+                        .getHighlightsForDate(now)
+                        .stream()
+                        .filter(HighlightData::isEnabled)
+                        .map(Highlight::new)
+                        .collect(Collectors.toList()));
     }
 
     public TableDataProvider<Highlight> getAllObjectsProvider() {
         return allObjectsProvider;
     }
-    
+
     public TableDataProvider<Highlight> getCurrentObjectsProvider() {
         return currentObjectsProvider;
     }
 
     public String getUrl(Highlight object) {
         if (object != null) {
-            switch(object.getData().getTargetType()) {
+            switch (object.getData().getTargetType()) {
                 case RECORD:
                     return navigationHelper.getImageUrl() + "/" + object.getData().getRecordIdentifier() + "/";
                 case URL:
-                    try {                        
+                    try {
                         URI uri = new URI(object.getData().getTargetUrl());
-                        if(!uri.isAbsolute()) {
+                        if (!uri.isAbsolute()) {
                             uri = UriBuilder.fromPath("/").path(object.getData().getTargetUrl()).scheme("https").build();
                         }
                         return uri.toString();
-                    } catch(URISyntaxException e) {
+                    } catch (URISyntaxException e) {
                         logger.error("Highlight target url {} is not a valid url", object.getData().getTargetUrl());
                     }
             }
@@ -176,7 +168,7 @@ public class HighlightsBean implements Serializable {
         this.selectedObject = selectedObject;
         if (this.selectedObject != null) {
             this.selectedObject.setSelectedLocale(BeanUtils.getDefaultLocale());
-            if(this.selectedObject.getData().getId() == null) {
+            if (this.selectedObject.getData().getId() == null) {
                 setEditStatus(EditStatus.SELECT_TARGET);
             } else {
                 setEditStatus(EditStatus.EDIT);
@@ -220,7 +212,8 @@ public class HighlightsBean implements Serializable {
         if (saved) {
             Messages.info(ViewerResourceBundle.getTranslationWithParameters("button__save__success", null, object.toString()));
         } else {
-            Messages.error(ViewerResourceBundle.getTranslationWithParameters("button__save__error", null, object.toString()));
+            Messages.error(
+                    ViewerResourceBundle.getTranslationWithParameters("button__save__error", null, object != null ? object.toString() : "null"));
         }
         if (redirect) {
             PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightsEdit", object.getData().getId()));
@@ -228,23 +221,20 @@ public class HighlightsBean implements Serializable {
     }
 
     public MetadataElement getMetadataElement() {
-        if(this.selectedObject != null) {
-            try {                
+        if (this.selectedObject != null) {
+            try {
                 return this.selectedObject.getMetadataElement();
             } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", this.getSelectedObject().getData().getName().getTextOrDefault(),
+                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}",
+                        this.getSelectedObject().getData().getName().getTextOrDefault(),
                         e.getMessage());
                 Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}",
                         getSelectedObject().getData().getName().getTextOrDefault(), e.getMessage());
                 return null;
             }
-        } else {
-            return null;
         }
+        return null;
     }
-
-
-
 
     public Highlight getCurrentHighlight() throws DAOException {
         List<Highlight> currentObjects = dao.getHighlightsForDate(LocalDateTime.now())
@@ -255,9 +245,8 @@ public class HighlightsBean implements Serializable {
         if (!currentObjects.isEmpty()) {
             int randomIndex = random.nextInt(currentObjects.size());
             return currentObjects.get(randomIndex);
-        } else {
-            return null;
         }
+        return null;
     }
 
     public URI getRecordRepresentativeURI() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
@@ -271,19 +260,18 @@ public class HighlightsBean implements Serializable {
             return Optional.ofNullable(imaging.getThumbs().getThumbnailUrl(getSelectedObject().getData().getRecordIdentifier(), width, height))
                     .map(URI::create)
                     .orElse(null);
-        } else {
-            return null;
         }
+        return null;
     }
-    
+
     public List<Highlight> getCurrentObjects() {
         return this.getCurrentObjectsProvider().getPaginatorList();
     }
-    
+
     public EditStatus getEditStatus() {
         return editStatus;
     }
-    
+
     public void setEditStatus(EditStatus editStatus) {
         this.editStatus = editStatus;
     }
