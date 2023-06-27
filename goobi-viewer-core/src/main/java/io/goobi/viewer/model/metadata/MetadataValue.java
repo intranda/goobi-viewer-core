@@ -24,6 +24,7 @@ package io.goobi.viewer.model.metadata;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -379,11 +380,25 @@ public class MetadataValue implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getParamValue(String paramLabel) {
+        List<String> values = getParamValues(paramLabel);
+        if (!values.isEmpty()) {
+            return values.get(0);
+        }
+
+        return "";
+    }
+
+    /**
+     * 
+     * @param paramLabel
+     * @return
+     */
+    public List<String> getParamValues(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
         if (index > -1 && index < paramValues.size()) {
-            return paramValues.get(index).get(0);
+            return paramValues.get(index);
         }
-        return "";
+        return Collections.emptyList();
     }
 
     /**
