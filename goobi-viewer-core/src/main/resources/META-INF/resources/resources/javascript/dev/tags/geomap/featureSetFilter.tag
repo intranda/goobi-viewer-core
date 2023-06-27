@@ -67,14 +67,35 @@ findEntities(featureGroups, filterField) {
 	return featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
 }
 
-resetFilter() {
-	this.featureGroups.forEach(g => g.showMarkers());
+resetFilter(event) {
+	//console.log("reset ", event.item.filter);
+	let filter = event.item.filter;
+	this.featureGroups.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
+// 	this.featureGroups.forEach(g => g.showMarkers());
 }
 
 setFilter(event) {
-	let field = this.getFilterForField(event.item.option.field).field;
+	//console.log("set ", event.item.option);
+	let filter = this.getFilterForField(event.item.option.field);
 	let value = event.item.option.name;
-	this.featureGroups.forEach(g => g.showMarkers(entity => entity[field] != undefined && entity[field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(value)));
+	this.featureGroups.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
+}
+
+isShowMarker(entity, filter, value) {
+// 	console.log("isShowMarker", entity, filter, value);
+	filter.selectedValue = value;
+	let match = this.filters.map(filter => {
+		if(filter.selectedValue) {
+			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
+// 			console.log("filter " + filter.label + " shows: " + show + " for entity ", entity);
+			return show;
+		} else {
+// 			console.log("filter " + filter.label + " shows all");
+			return true;	
+		}
+	})
+	.every(match => match);
+	return match;
 }
 
 getFilterForField(field) {
