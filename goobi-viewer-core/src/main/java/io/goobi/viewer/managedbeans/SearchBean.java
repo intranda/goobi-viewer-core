@@ -3169,6 +3169,14 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public String changeSorting() throws IOException {
         logger.trace("changeSorting");
-        return "pretty:newSearch5";
+        switch(getActiveSearchType()) {
+            case 1:
+                return "pretty:searchAdvanced5";
+            case 0:
+            default:
+                return "pretty:newSearch5";
+                    
+        }
     }
+
 }
