@@ -247,7 +247,7 @@ public class GeoCoordinateConverter {
                     Optional.ofNullable(entity.getMetadata())
                             .map(metadata -> createTitle(entityLabelConfiguration, metadata))
                             .filter(md -> !md.isEmpty())
-                            .ifPresent(label -> entity.setLabel(label));
+                            .ifPresent(entity::setLabel);
                 });
                 
         });
@@ -268,8 +268,8 @@ public class GeoCoordinateConverter {
         for (MetadataParameter param : labelConfig.getParams()) {
             // logger.trace("param key: {}", param.getKey());
             IMetadataValue value;
-            IMetadataValue keyValue = Optional.ofNullable(param.getKey()).map(key -> metadata.get(key)).map(l -> l.get(0)).orElse(null);
-            IMetadataValue altKeyValue = Optional.ofNullable(param.getAltKey()).map(key -> metadata.get(key)).map(l -> l.get(0)).orElse(null);
+            IMetadataValue keyValue = Optional.ofNullable(param.getKey()).map(metadata::get).map(l -> l.get(0)).map(IMetadataValue::copy).orElse(null);
+            IMetadataValue altKeyValue = Optional.ofNullable(param.getAltKey()).map(metadata::get).map(l -> l.get(0)).map(IMetadataValue::copy).orElse(null);
             switch (param.getType()) {
                 case TRANSLATEDFIELD:
                     if (keyValue != null) {

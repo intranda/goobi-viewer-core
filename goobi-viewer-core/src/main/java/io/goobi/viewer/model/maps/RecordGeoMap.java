@@ -24,6 +24,7 @@ import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Contains data to create a geomap for a record containing complex metadata (metadata documents) with geo coordinates
@@ -71,10 +72,14 @@ public class RecordGeoMap {
         featureSet.setMarker(config.getMarker());
         geoMap.addFeatureSet(featureSet);        
         
+        
         featureSet.setFeatures(docs.stream()
+                .distinct()
+                .filter(d -> StringUtils.isNotBlank(d.getFirstValue("NORM_COORDS_GEOJSON")))
                 .map(doc -> converter.getGeojsonPoints(doc, "NORM_COORDS_GEOJSON", "MD_VALUE"))
                 .flatMap(Collection::stream)
-                .map(GeoMapFeature::getJson)
+                .map(GeoMapFeature::getJsonObject)
+                .map(Object::toString)
                 .collect(Collectors.toList()));
   
     }

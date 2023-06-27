@@ -23,7 +23,7 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
     private static final String RELATED_RECORD_QUERY_FORMAT = "+DOCTYPE:DOCSTRCT +MD_PROCESSID:(%s)";
     public static final String DOCUMENT_IDENTIFIER = "MD_PROCESSID";
     public static final String RELATIONSHIP_ID_REFERENCE = "MD_IDENTIFIER";    
-    private static final List<String> RELATED_RECORD_METADATA_FIELDS = List.of(SolrConstants.PI, DOCUMENT_IDENTIFIER, "MD_GENRE", "MD_VALUE", "MD_SUBJECT", "NORM_COORDS_GEOJSON");
+    private static final List<String> RELATED_RECORD_METADATA_FIELDS = List.of(SolrConstants.PI, DOCUMENT_IDENTIFIER, SolrConstants.TITLE, SolrConstants.DOCSTRCT, "MD_*", "NORM_COORDS_GEOJSON");
 
     private final Map<String, MetadataContainer> relatedDocumentMap;    
     

@@ -27,7 +27,8 @@ this.on("mount", () => {
 		group.onFeatureClick.subscribe(f => { 
 			console.log("clicked on :", f);
 			this.title = f.properties?.title;
-			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false));
+			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getLabel(e)?.length > 0));
+			console.log("entities", this.entities);
 		});
 	})
 	this.opts.geomap.onMapClick.subscribe(e => this.hide());
@@ -68,8 +69,7 @@ filterList(e) {
 
 getEntityLabel(entity) {
 	if(entity) {		
-		let labels = this.opts.entityLabelFormat;
-		return this.getLabel(entity, labels);
+		return this.getLabel(entity);
 	}
 }
 
@@ -85,30 +85,16 @@ getListLabel() {
 
 getLink(entity) {
 	if(entity) {		
-		return this.getLabel(entity, this.opts.entityLinkFormat);
+		return this.getLabel(entity);
 	}
 }
 
-getLabel(entity, labels) {
+getLabel(entity) {
 	
 	if(entity.title) {
 		return viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
 	} else {
-		label = labels.map(format => {
-			let groups = [...format.matchAll(/\${(.*?)}/g)];
-			let l = "";
-			groups.forEach(group => {
-				if(group.length > 1) {
-					let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
-					if(value) {					
-						l += format.replaceAll(group[0], value ? value : "");
-					}
-				}
-			})
-			return l;
-		}).join("");
-		return label;
-		
+		return "";
 	}
 	
 }

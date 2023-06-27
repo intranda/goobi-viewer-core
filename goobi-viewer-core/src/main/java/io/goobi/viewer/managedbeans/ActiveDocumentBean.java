@@ -2287,11 +2287,12 @@ public class ActiveDocumentBean implements Serializable {
         RecordGeoMap widget = this.geoMaps.get(getPersistentIdentifier());
 //        if (widget == null) {
             ComplexMetadataContainer md = this.viewManager.getTopStructElement().getMetadataDocuments();
-            String mdType = "MD_RELATIONSHIP_EVENT";
             if (md instanceof RelationshipMetadataContainer) {
                 RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
-                List<MetadataContainer> docs = rmc.getMetadata(mdType)
-                        .stream()
+                List<MetadataContainer> docs = rmc.getFieldNames().stream()
+                        .map(rmc::getMetadata)
+                        .flatMap(List::stream)
+                        .distinct()
                         .map(rmc::getRelatedRecord)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
