@@ -3006,7 +3006,7 @@ this.isActive = function(featureGroup) {
 }.bind(this)
 
 });
-riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading">{getListLabel()}</h4><input class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}">{getEntityLabel(entity)}</a></li></ul></div></div>', '', 'onclick="{preventBubble}"', function(opts) {
+riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', 'onclick="{preventBubble}"', function(opts) {
 
 this.entities = [];
 this.filteredEntities = undefined;
@@ -3065,7 +3065,8 @@ this.getEntityLabel = function(entity) {
 
 this.getListLabel = function() {
 	if(this.title) {
-		return viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
+		let label = viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
 	}
 	if(this.entities.length) {
 		let labels = this.opts.listLabelFormat;
@@ -3082,7 +3083,8 @@ this.getLink = function(entity) {
 this.getLabel = function(entity) {
 
 	if(entity.title) {
-		return viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
+		let label = viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
 	} else {
 		return "";
 	}
@@ -3810,6 +3812,14 @@ this.addCloseHandler = function() {
 });
 
 
+riot.tag2('rawhtml', '', '', '', function(opts) {
+  this.on("mount", () => {
+	    this.root.innerHTML = opts.content;
+	  })
+  this.on("updated", () => {
+    this.root.innerHTML = opts.content;
+  })
+});
 riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description">{this.opts.description}</div></a>', '', '', function(opts) {
 });
 riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {

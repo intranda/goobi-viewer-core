@@ -769,14 +769,18 @@ public class Configuration extends AbstractConfiguration {
     }
     
     public Map<String, Metadata> getGeomapFeatureConfigurations(String option) {
-        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
-        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream().filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
-                .map(config -> config.configurationsAt("title.template"))
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-        
-        
-        return loadGeomapLabelConfigurations(templates);
+        if(StringUtils.isBlank(option)) {
+            return Collections.emptyMap();
+        } else {            
+            List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+            List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream().filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                    .map(config -> config.configurationsAt("title.template"))
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+            
+            
+            return loadGeomapLabelConfigurations(templates);
+        }
     }
     
     public Map<String, Metadata> getGeomapEntityConfigurations(String option) {

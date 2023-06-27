@@ -71,7 +71,7 @@ public class RecordGeoMap {
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
         featureSet.setMarker(config.getMarker());
         geoMap.addFeatureSet(featureSet);        
-        
+
         
         featureSet.setFeatures(docs.stream()
                 .distinct()
@@ -89,6 +89,7 @@ public class RecordGeoMap {
         SolrFeatureSet featureSet = new SolrFeatureSet(converter);
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), false)));
         featureSet.setSolrQuery(String.format("+DOCTYPE:METADATA +LABEL:(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
+        featureSet.setMarkerTitleField(config.getLabelConfig());
         featureSet.setAggregateResults(true);
         featureSet.setMarker(config.getMarker());
         geoMap.addFeatureSet(featureSet);

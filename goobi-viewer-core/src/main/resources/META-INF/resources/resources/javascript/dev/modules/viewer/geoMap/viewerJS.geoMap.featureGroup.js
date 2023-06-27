@@ -393,7 +393,7 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
         let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
         if(this.config.popover && (title || desc) ) {
             let $popover = $(this.config.popover).clone();
-            $popover.find("[data-metadata='title']").text(title);
+            $popover.find("[data-metadata='title']").html(title);
             $popover.find("[data-metadata='description']").html(desc);
             $popover.css("display", "block");
             return $popover.get(0);

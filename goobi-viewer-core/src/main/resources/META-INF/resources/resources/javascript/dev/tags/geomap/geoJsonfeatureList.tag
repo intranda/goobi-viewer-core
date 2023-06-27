@@ -2,13 +2,15 @@
 
 <div class="custom-map__sidebar-inner-wrapper">
 	<div class="custom-map__sidebar-inner-top">
-		<h4 class="custom-map__sidebar-inner-heading">{getListLabel()}</h4>
+		<h4 class="custom-map__sidebar-inner-heading">
+			<rawhtml content="{getListLabel()}"></rawhtml>
+		</h4>
 		<input class="custom-map__sidebar-inner-search-input" type="text" ref="search"  oninput="{filterList}"></input>
 	</div>
 	<div class="custom-map__sidebar-inner-bottom">
 	<ul class="custom-map__inner-wrapper-list">
 		<li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}">
-			<a href="{getLink(entity)}">{getEntityLabel(entity)}</a>
+			<a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a>
 		</li>
 	</ul>
 	</div>
@@ -75,7 +77,8 @@ getEntityLabel(entity) {
 
 getListLabel() {
 	if(this.title) {
-		return viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
+		let label = viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
 	}
 	if(this.entities.length) {		
 		let labels = this.opts.listLabelFormat;
@@ -92,7 +95,8 @@ getLink(entity) {
 getLabel(entity) {
 	
 	if(entity.title) {
-		return viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
+		let label = viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
 	} else {
 		return "";
 	}

@@ -13,16 +13,18 @@ public class FeatureSetConfiguration {
     private final String name;
     private final String marker;
     private final String query;
+    private final String labelConfig;
     private final List<LabeledValue> filters;
     
     
     
-    public FeatureSetConfiguration(String type, String name, String marker, String query, List<LabeledValue> filters) {
+    public FeatureSetConfiguration(String type, String name, String marker, String query, String labelConfig, List<LabeledValue> filters) {
         super();
         this.type = type;
         this.name = name;
         this.marker = marker;
         this.query = query;
+        this.labelConfig = labelConfig;
         this.filters = filters;
     }
     
@@ -32,6 +34,7 @@ public class FeatureSetConfiguration {
                 config.getString("name"),
                 config.getString("marker", ""),
                 config.getString("query"),
+                config.getString("labelConfig", ""),
                 parseFilters(config.configurationsAt("filters.filter"))
                 );
     }
@@ -59,6 +62,9 @@ public class FeatureSetConfiguration {
     }
     public List<LabeledValue> getFilters() {
         return filters;
+    }
+    public String getLabelConfig() {
+        return labelConfig;
     }
 
 }
