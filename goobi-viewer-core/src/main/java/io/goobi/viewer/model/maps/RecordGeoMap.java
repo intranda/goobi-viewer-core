@@ -37,20 +37,17 @@ public class RecordGeoMap {
     private final List<MetadataContainer> relatedDocuments;
     private final GeoMap geoMap;
     private final IDAO dao;
-    private final GeoCoordinateConverter converter;
     private final List<FeatureSetConfiguration> featureSetConfigs;
     
     public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments) throws DAOException {
-        this(struct, relatedDocuments, DataManager.getInstance().getDao(), DataManager.getInstance().getConfiguration().getRecordGeomapFeatureSetConfigs(),
-                new GeoCoordinateConverter(DataManager.getInstance().getConfiguration().getRecordGeomapFeatureConfigurations(), DataManager.getInstance().getConfiguration().getRecordGeomapEntityConfigurations()));
+        this(struct, relatedDocuments, DataManager.getInstance().getDao(), DataManager.getInstance().getConfiguration().getRecordGeomapFeatureSetConfigs());
     }
 
     
-    public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments, IDAO dao, List<FeatureSetConfiguration> featureSetConfigs, GeoCoordinateConverter converter) throws DAOException {
+    public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments, IDAO dao, List<FeatureSetConfiguration> featureSetConfigs) throws DAOException {
         this.dao = dao;
         this.mainStruct = struct;
         this.relatedDocuments = new ArrayList<>(relatedDocuments);
-        this.converter = converter;
         this.featureSetConfigs = featureSetConfigs;
         this.geoMap = createMap();
     }
@@ -58,21 +55,21 @@ public class RecordGeoMap {
     private GeoMap createMap() throws DAOException {
         GeoMap geoMap = new GeoMap();
         
-        this.createDocStructFeatureSet(geoMap, mainStruct, converter);
-        this.featureSetConfigs.stream().filter(config -> "metadata".equals(config.getType())).forEach(config -> createMetadataFeatureSet(geoMap, mainStruct, config, converter));
-        this.featureSetConfigs.stream().filter(config -> "relation".equals(config.getType())).forEach(config -> createRelatedDocumentFeatureSet(geoMap, relatedDocuments, config, converter));
+        this.createDocStructFeatureSet(geoMap, mainStruct);
+        this.featureSetConfigs.stream().filter(config -> "metadata".equals(config.getType())).forEach(config -> createMetadataFeatureSet(geoMap, mainStruct, config));
+        this.featureSetConfigs.stream().filter(config -> "relation".equals(config.getType())).forEach(config -> createRelatedDocumentFeatureSet(geoMap, relatedDocuments, config));
 
         return geoMap;
     }
 
 
-    private void createRelatedDocumentFeatureSet(GeoMap geoMap, List<MetadataContainer> docs, FeatureSetConfiguration config, GeoCoordinateConverter converter) {
+    private void createRelatedDocumentFeatureSet(GeoMap geoMap, List<MetadataContainer> docs, FeatureSetConfiguration config) {
         ManualFeatureSet featureSet = new ManualFeatureSet();
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
         featureSet.setMarker(config.getMarker());
         geoMap.addFeatureSet(featureSet);        
 
-        
+        GeoCoordinateConverter converter = new GeoCoordinateConverter(config.getLabelConfig());
         featureSet.setFeatures(docs.stream()
                 .distinct()
                 .filter(d -> StringUtils.isNotBlank(d.getFirstValue("NORM_COORDS_GEOJSON")))
@@ -85,8 +82,8 @@ public class RecordGeoMap {
     }
 
 
-    private void createMetadataFeatureSet(GeoMap geoMap, StructElement mainStruct, FeatureSetConfiguration config, GeoCoordinateConverter converter) {
-        SolrFeatureSet featureSet = new SolrFeatureSet(converter);
+    private void createMetadataFeatureSet(GeoMap geoMap, StructElement mainStruct, FeatureSetConfiguration config) {
+        SolrFeatureSet featureSet = new SolrFeatureSet();
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), false)));
         featureSet.setSolrQuery(String.format("+DOCTYPE:METADATA +LABEL:(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
         featureSet.setMarkerTitleField(config.getLabelConfig());
@@ -95,7 +92,7 @@ public class RecordGeoMap {
         geoMap.addFeatureSet(featureSet);
     }
     
-    private void createDocStructFeatureSet(GeoMap geoMap, StructElement docStruct, GeoCoordinateConverter converter) {
+    private void createDocStructFeatureSet(GeoMap geoMap, StructElement docStruct) {
             SolrFeatureSet featureSet = new SolrFeatureSet();
             featureSet.setName(createLabel(docStruct));
             featureSet.setMarkerTitleField("MD_TITLE");

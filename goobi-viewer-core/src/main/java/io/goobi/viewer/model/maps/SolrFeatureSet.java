@@ -42,11 +42,8 @@ public class SolrFeatureSet extends FeatureSet {
     @Transient
     private String featuresAsString = null;
 
-    public SolrFeatureSet() {
-        this(new GeoCoordinateConverter());
-    }
 
-    public SolrFeatureSet(GeoCoordinateConverter converter) {
+    public SolrFeatureSet() {
         super();
     }
     
