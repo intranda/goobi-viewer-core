@@ -109,7 +109,7 @@
 		<commons-net.version>3.9.0</commons-net.version>
 		<commons-text.version>1.10.0</commons-text.version>
 		<dbunit.version>2.7.3</dbunit.version>
-		<eclipselink.version>4.0.1</eclipselink.version>
+		<eclipselink.version>4.0.2</eclipselink.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
