@@ -88,7 +88,7 @@
 		<buildDate>${maven.build.timestamp}</buildDate>
 
 		<!-- intranda libraries -->
-		<alto.version>1.5.10</alto.version>
+		<alto.version>1.5.11</alto.version>
 		<ics.version>3.9.1</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
