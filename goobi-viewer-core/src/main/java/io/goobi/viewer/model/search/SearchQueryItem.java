@@ -46,7 +46,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -142,7 +141,8 @@ public class SearchQueryItem implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<StringPair> getSelectItems(String language) throws PresentationException, IndexUnreachableException, DAOException {
+    public List<StringPair> getSelectItems(String language)
+            throws PresentationException, IndexUnreachableException, DAOException {
         if (searchBean == null) {
             searchBean = BeanUtils.getSearchBean();
         }
@@ -152,16 +152,41 @@ public class SearchQueryItem implements Serializable {
                 ret = new ArrayList<>();
                 logger.warn("No values found for field: {}", field);
             }
+
             return ret;
         }
 
         return Collections.emptyList();
     }
-    
-    public List<CheckboxSelectable<String>> getSelectableItems(String language) throws DAOException, PresentationException, IndexUnreachableException {
-                return this.getSelectItems(language).stream()
+
+    /**
+     * 
+     * @param language
+     * @param additionalValues 0-n additional, manually added values
+     * @return
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public List<CheckboxSelectable<String>> getCheckboxSelectables(String language, String... additionalValues)
+            throws DAOException, PresentationException, IndexUnreachableException {
+        List<CheckboxSelectable<String>> ret = this.getSelectItems(language)
+                .stream()
                 .map(item -> new CheckboxSelectable<String>(this.values, item.getOne(), s -> item.getTwo()))
                 .collect(Collectors.toList());
+        if (additionalValues != null && additionalValues.length > 0) {
+            for (String additinalValue : additionalValues) {
+                if (StringUtils.isNotEmpty(additinalValue)) {
+                    ret.add(new CheckboxSelectable<>(this.values, additinalValue, s -> ViewerResourceBundle.getTranslation(additinalValue, null)));
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    public CheckboxSelectable<String> getCustomSelectableItem(String value) {
+        return new CheckboxSelectable<>(this.values, field, s -> value);
     }
 
     /**
