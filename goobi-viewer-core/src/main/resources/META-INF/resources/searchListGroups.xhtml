@@ -79,7 +79,7 @@
                                                 
                                                  <!-- CHECKBOXES -->
                                                 <ui:fragment rendered="#{queryItem.selectType == 'checkboxes'}">
-                                                <ui:repeat var="selectable" value="#{queryItem.getSelectableItems(navigationHelper.localeString)}">
+                                                <ui:repeat var="selectable" value="#{queryItem.getCheckboxSelectables(navigationHelper.localeString)}">
                                                     <li>
 														<label> 
 															<h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}">
@@ -99,7 +99,7 @@
 																data-toggle="option-dropdown">#{msg.select}</div>
 															<ul>
 																<ui:repeat var="selectable"
-																	value="#{queryItem.getSelectableItems(navigationHelper.localeString)}">
+																	value="#{queryItem.getCheckboxSelectables(navigationHelper.localeString)}">
 																	<li>
 																		<label> 
 																			<h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}">
