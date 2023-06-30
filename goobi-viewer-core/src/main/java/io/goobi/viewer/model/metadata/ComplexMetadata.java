@@ -36,6 +36,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -122,9 +123,9 @@ public class ComplexMetadata {
         Map<String, List<IMetadataValue>> metadata = new HashMap<>();
         for (SolrDocument doc : docs) {
             Locale locale = SolrTools.getLocale(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
-            if(locale == null) {
-                locale = IPolyglott.getDefaultLocale();
-            }
+//            if(locale == null) {
+//                locale = IPolyglott.getDefaultLocale();
+//            }
             metadata = SolrTools.getTranslatedMetadata(doc, metadata, locale, getMetadataFilter());
         }
         md.metadata = metadata;
