@@ -458,7 +458,7 @@ public class SearchBean implements SearchInterface, Serializable {
         setExactSearchString("");
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         resetSearchResults();
-        resetSearchParameters(true);
+        resetSearchParameters(true, true);
         searchInCurrentItemString = null;
         customFilterQuery = null;
         proximitySearchDistance = 0;
@@ -498,18 +498,27 @@ public class SearchBean implements SearchInterface, Serializable {
      * Resets general search options and type specific options for currently unused types.
      */
     public void resetSearchParameters() {
-        resetSearchParameters(false);
+        resetSearchParameters(false, true);
+    }
+
+    /**
+     * 
+     * @param resetAllSearchTypes
+     */
+    public void resetSearchParameters(boolean resetAllSearchTypes) {
+        resetSearchParameters(resetAllSearchTypes, true);
     }
 
     /**
      * Resets general search options and type specific options for currently unused types (all options if <resetAll> is true).
      *
-     * @param resetAll If true, parameters for the currently used search type are also reset.
+     * @param resetAllSearchTypes If true, parameters for the currently used search type are also reset.
+     * @param resetCurrentPage If true, currentPage will be reset to 1
      */
-    public void resetSearchParameters(boolean resetAll) {
-        logger.trace("resetSearchParameters");
+    public void resetSearchParameters(boolean resetAllSearchTypes, boolean resetCurrentPage) {
+        logger.trace("resetSearchParameters; resetAllSearchTypes: {}", resetAllSearchTypes);
         CalendarBean calendarBean = BeanUtils.getCalendarBean();
-        if (resetAll) {
+        if (resetAllSearchTypes) {
             resetSimpleSearchParameters();
             resetAdvancedSearchParameters();
             if (calendarBean != null) {
@@ -540,6 +549,9 @@ public class SearchBean implements SearchInterface, Serializable {
                 default: // nothing
             }
         }
+        if (resetCurrentPage) {
+            setCurrentPage(1);
+        }
     }
 
     /**
@@ -551,7 +563,6 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("resetSimpleSearchParameters");
         currentSearchFilter = SearchHelper.SEARCH_FILTER_ALL;
         generateSimpleSearchString("");
-        setCurrentPage(1);
 
         searchString = "";
     }
@@ -3169,13 +3180,13 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public String changeSorting() throws IOException {
         logger.trace("changeSorting");
-        switch(getActiveSearchType()) {
+        switch (getActiveSearchType()) {
             case 1:
                 return "pretty:searchAdvanced5";
             case 0:
             default:
                 return "pretty:newSearch5";
-                    
+
         }
     }
 
