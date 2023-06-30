@@ -26,14 +26,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,20 +49,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.Point;
 import io.goobi.viewer.model.maps.Polygon;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataBuilder;
 import io.goobi.viewer.model.metadata.MetadataContainer;
-import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
@@ -255,88 +250,12 @@ public class GeoCoordinateConverter {
 
     public static IMetadataValue createTitle(Metadata labelConfig, Map<String, List<IMetadataValue>> metadata) {
         if(labelConfig != null) {
-            return createLabelFromConfig(labelConfig, metadata);
+            return new MetadataBuilder(metadata).build(labelConfig);
         } else {            
-            return new SimpleMetadataValue("");// metadata.getOrDefault("LABEL", metadata.getOrDefault("MD_TITLE", List.of(new SimpleMetadataValue("")))).stream().findFirst().orElse(new SimpleMetadataValue(""));
+            return new SimpleMetadataValue("");
         }
     }
 
-
-
-    public static IMetadataValue createLabelFromConfig(Metadata labelConfig, Map<String, List<IMetadataValue>> metadata) {
-        IMetadataValue title = new MultiLanguageMetadataValue();
-        for (MetadataParameter param : labelConfig.getParams()) {
-            // logger.trace("param key: {}", param.getKey());
-            IMetadataValue value;
-            IMetadataValue keyValue = Optional.ofNullable(param.getKey()).map(metadata::get).map(l -> l.get(0)).map(IMetadataValue::copy).orElse(null);
-            IMetadataValue altKeyValue = Optional.ofNullable(param.getAltKey()).map(metadata::get).map(l -> l.get(0)).map(IMetadataValue::copy).orElse(null);
-            switch (param.getType()) {
-                case TRANSLATEDFIELD:
-                    if (keyValue != null) {
-                        if(keyValue instanceof SimpleMetadataValue) {
-                            value = ViewerResourceBundle.getTranslations(keyValue.getValue().orElse(""));
-                        } else {
-                            value = keyValue;
-                        }
-                    } else if (altKeyValue != null) {
-                        if(altKeyValue instanceof SimpleMetadataValue) {
-                            value = ViewerResourceBundle.getTranslations(altKeyValue.getValue().orElse(""));
-                        } else {
-                            value = altKeyValue;
-                        }
-                    } else if (StringUtils.isNotBlank(param.getDefaultValue())) {
-                        // Translate key, if no index field found
-                        value = ViewerResourceBundle.getTranslations(param.getDefaultValue());
-                    } else {
-                        value = new SimpleMetadataValue();
-                    }
-                    break;
-                case FIELD:
-                    if (keyValue != null) {
-                            value = keyValue;
-                    } else if (altKeyValue != null) {
-                            value = altKeyValue;
-                    } else if (StringUtils.isNotBlank(param.getDefaultValue())) {
-                        // Translate key, if no index field found
-                        value = new SimpleMetadataValue(param.getDefaultValue());
-                    } else {
-                        value = new SimpleMetadataValue();
-                    }
-                    break;
-                default:
-                    value = metadata.get(param.getKey()).get(0);
-                    // logger.trace("value: {}:{}", param.getKey(), value.getValue());
-                    break;
-            }
-
-            String placeholder1 = new StringBuilder("{").append(param.getKey()).append("}").toString();
-            String placeholder2 = new StringBuilder("{").append(labelConfig.getParams().indexOf(param)).append("}").toString();
-            // logger.trace("placeholder: {}", placeholder);
-            if (!value.isEmpty() && StringUtils.isNotEmpty(param.getPrefix())) {
-                String prefix = ViewerResourceBundle.getTranslation(param.getPrefix(), null);
-                value.addPrefix(prefix);
-            }
-            if (!value.isEmpty() && StringUtils.isNotEmpty(param.getSuffix())) {
-                String suffix = ViewerResourceBundle.getTranslation(param.getSuffix(), null);
-                value.addSuffix(suffix);
-            }
-            Set<String> languages = new HashSet<>(value.getLanguages());
-            languages.addAll(title.getLanguages());
-            // Replace master value placeholders in the label object
-            Map<String, String> languageLabelMap = new HashMap<>();
-            for (String language : languages) {
-                String langValue = title.getValue(language)
-                        .orElse(title.getValue().orElse(ViewerResourceBundle.getTranslation(labelConfig.getMasterValue(), Locale.forLanguageTag(language), true)))
-                        .replace(placeholder1, value.getValue(language).orElse(value.getValue().orElse("")))
-                        .replace(placeholder2, value.getValue(language).orElse(value.getValue().orElse("")));
-                languageLabelMap.put(language, langValue);
-            }
-            for (Entry<String, String> entry : languageLabelMap.entrySet()) {
-                title.setValue(entry.getValue(), entry.getKey());
-            }
-        }
-        return title;
-    }
 
     private static List<GeoMapFeature> getFeatures(List<String> points) {
         List<GeoMapFeature> docFeatures = new ArrayList<>();

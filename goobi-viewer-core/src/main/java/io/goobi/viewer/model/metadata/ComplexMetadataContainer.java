@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -86,5 +87,9 @@ public class ComplexMetadataContainer {
             throws PresentationException, IndexUnreachableException {
         SolrDocumentList metadataDocs = searchIndex.search(String.format(QUERY_FORMAT, pi), fieldList);
         return new ComplexMetadataContainer(metadataDocs);
+    }
+    
+    public List<String> getAllValues(String field, String filterField, Locale locale) {
+        return this.getMetadata(field).stream().filter(md -> StringUtils.isBlank(filterField) ? true : filterField.equals(md.getFirstValue((Locale)null))).map(md -> md.getValues(locale)).flatMap(List::stream).distinct().collect(Collectors.toList());
     }
 }

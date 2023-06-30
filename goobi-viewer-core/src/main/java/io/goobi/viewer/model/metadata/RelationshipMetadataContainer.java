@@ -1,11 +1,14 @@
 package io.goobi.viewer.model.metadata;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -54,12 +57,12 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
     public static RelationshipMetadataContainer loadRelationshipMetadata(String pi, SolrSearchIndex searchIndex, List<String> recordFields) throws PresentationException, IndexUnreachableException {
         ComplexMetadataContainer container = ComplexMetadataContainer.loadMetadataDocuments(pi, searchIndex);
         List<ComplexMetadata> relationshipMetadata = container.metadataMap.values().stream().flatMap(List::stream)
-                .filter(md -> md.hasValue(RELATIONSHIP_ID_REFERENCE))
+//                .filter(md -> md.hasValue(RELATIONSHIP_ID_REFERENCE))
                 .collect(Collectors.toList());
         String recordIdentifiers = relationshipMetadata.stream().map(md -> md.getFirstValue(RELATIONSHIP_ID_REFERENCE, null))
         .collect(Collectors.joining(" "));
         if(StringUtils.isBlank(recordIdentifiers)) {
-            return new RelationshipMetadataContainer(Collections.emptyMap(), Collections.emptyMap());
+            return new RelationshipMetadataContainer(container.metadataMap, Collections.emptyMap());
         } else {            
             String query = String.format(RELATED_RECORD_QUERY_FORMAT, recordIdentifiers);
             SolrDocumentList recordDocs = searchIndex.search(query, recordFields);
@@ -73,6 +76,8 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         return loadRelationshipMetadata(pi, searchIndex, RELATED_RECORD_METADATA_FIELDS);
     }
     
+    
+    
     public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue, Integer limit) {
         String relatedFilterField = filterField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX) ? filterField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "") : "";
         List<ComplexMetadata> list = super.getMetadata(field, sortField, sortLanguage, filterField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX) ? "" : filterField, filterValue, Integer.MAX_VALUE);
@@ -84,5 +89,33 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             .limit(limit)
             .collect(Collectors.toList());
         return list;
+    }
+    
+    /**
+     * Get all metadata documents with a certain {@link ComplexMetadata#field}
+     * @param fieldName The metadata field for which to return metadata documents. If empty, all metadata documents will be returned
+     * @return  A stream of Metadata documents
+     */
+    private Stream<ComplexMetadata> getAllMetadataByField(String fieldName) {
+        return this.metadataMap.values().stream().flatMap(Collection::stream).filter(md -> StringUtils.isBlank(fieldName) ? true : fieldName.equals(md.getField()));
+    }
+    
+    /**
+     * Get all field values of the given field from all metadata documents from the filterField in the given locale
+     * If the field is prefixed with 'related.', then search in the related documents rather than the (relationship) metadata documents
+     * @param field  The field for which to return the values
+     * @param filterField   Look only in metadata documents for this fied. If blank, look in all metadata documents
+     * @param locale    The language for which to find values. If a value is not available for the language, a default value will be used if possible
+     */
+    @Override
+    public List<String> getAllValues(String field, String filterField, Locale locale) {
+        if(field != null &&  field.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX)) {
+            String relatedField = field.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
+            return getAllMetadataByField(filterField)
+                    .map(this::getRelatedRecord)
+                    .map(rec -> rec.getValues(relatedField, locale)).flatMap(List::stream).distinct().collect(Collectors.toList());
+        } else {
+            return super.getAllValues(field, filterField, locale);
+        }
     }
 }

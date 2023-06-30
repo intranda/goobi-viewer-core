@@ -81,8 +81,8 @@ public class Metadata implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(Metadata.class);
 
-    private static final String HTML_LINE_BREAK_ESCAPED = "&lt;br /&gt;";
-    private static final String HTML_LINE_BREAK_UNESCAPED = "<br />";
+    public static final String HTML_LINE_BREAK_ESCAPED = "&lt;br /&gt;";
+    public static final String HTML_LINE_BREAK_UNESCAPED = "<br />";
     private static final String NORM_TYPE = "NORM_TYPE";
 
     // Configuration

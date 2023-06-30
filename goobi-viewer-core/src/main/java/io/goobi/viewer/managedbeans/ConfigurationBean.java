@@ -53,6 +53,7 @@ import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
@@ -1444,6 +1445,14 @@ public class ConfigurationBean implements Serializable {
                 .stream()
                 .map(item -> new SelectItem(item.getValue(), ViewerResourceBundle.getTranslation(item.getLabel(), BeanUtils.getLocale())))
                 .collect(Collectors.toList());
+    }
+    
+    public List<Metadata> getMetadataConfiguration(String type) {
+        return getMetadataConfiguration(type, "_DEFAULT");
+    }
+    
+    public List<Metadata> getMetadataConfiguration(String type, String template) {
+        return DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(type, template, true, true);
     }
 
 }

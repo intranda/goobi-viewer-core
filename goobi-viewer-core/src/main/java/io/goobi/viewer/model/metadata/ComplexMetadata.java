@@ -56,7 +56,7 @@ public class ComplexMetadata {
     private static final String IGNORE_METADATA_REGEX = String.format("(%s|%s).*", SolrConstants.PREFIX_FACET, SolrConstants.PREFIX_SORT);
 
     /**
-     * Taken from the 'LABEL' property of the SOLR document, without the '_LANG_*' extension
+     * The metadata field of this metadata. Taken from the 'LABEL' property of the SOLR document, without the '_LANG_*' extension
      */
     private final String field;
     /**
@@ -206,6 +206,10 @@ public class ComplexMetadata {
     @Override
     public String toString() {
         return getField() + "\t" + this.metadata.toString();
+    }
+
+    public IMetadataValue getConfiguredValue(Metadata config) {
+        return new MetadataBuilder(this).build(config);
     }
 
 }

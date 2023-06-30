@@ -725,6 +725,10 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getDatePattern() {
+        return getDatePattern(locale);
+    }
+
+    public String getDatePattern(Locale locale) {
         if (locale == null) {
             return "yyyy-MM-dd";
         }

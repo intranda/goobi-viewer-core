@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
@@ -76,12 +78,60 @@ public class MetadataContainer {
         return Collections.unmodifiableMap(metadata);
     }
     
+    /**
+     * Get all metadata for the given key
+     * @param key   the field name for which to get the metadata value
+     * @return
+     */
     public List<IMetadataValue> get(String key) {
         return this.metadata.getOrDefault(key, Collections.emptyList());
     }
     
+    /**
+     * get the first metadata  value for the given key. If no such value exists, an empty {@link IMetadataValue} is returned
+     * @param key   the field name for which to get the metadata value
+     * @return
+     */
+    public IMetadataValue getFirst(String key) {
+        return this.metadata.getOrDefault(key, Collections.emptyList()).stream().findFirst().orElse(new SimpleMetadataValue(""));
+    }
+    
+    /**
+     * Get all values of the default language (or any value of no default langauge value exists) for the given field
+     * @param key   the field name for which to get the metadata value
+     * @return
+     */
+    public List<String> getValues(String key) {
+        return this.get(key).stream().map(value -> value.getValueOrFallback(null)).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get the first found value in the default language for the given key
+     * @param key   the field name for which to get the metadata value
+     * @return
+     */
     public String getFirstValue(String key) {
         return this.get(key).stream().findFirst().flatMap(IMetadataValue::getValue).orElse("");
+    }
+    
+    /**
+     * Get all values of the default language (or any value of no default langauge value exists) for the given field
+     * @param key   the field name for which to get the metadata value
+     * @param locale    the language for which to find a value. If there is no translation in that langauge, use the default language and failing that any language entry
+     * @return
+     */
+    public List<String> getValues(String key, Locale locale) {
+        return this.get(key).stream().map(value -> value.getValueOrFallback(locale)).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get the first found value for the given key and locale
+     * @param key   the field name for which to get the metadata value
+     * @param locale    the language for which to find a value. If there is no translation in that langauge, use the default language and failing that any language entry
+     * @return
+     */
+    public String getFirstValue(String key, Locale locale) {
+        return this.get(key).stream().filter(value -> !value.isEmpty()).findFirst().map(value -> value.getValueOrFallback(locale)).orElse("");
     }
     
     public void put(String key, List<IMetadataValue> values) {

@@ -3076,7 +3076,22 @@ this.getListLabel = function() {
 
 this.getLink = function(entity) {
 	if(entity) {
-		return this.getLabel(entity);
+		let labels = this.opts.entityLinkFormat;
+		label = labels.map(format => {
+			let groups = [...format.matchAll(/\${(.*?)}/g)];
+			let l = "";
+			groups.forEach(group => {
+				if(group.length > 1) {
+					let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+					if(value) {
+						l += format.replaceAll(group[0], value ? value : "");
+					}
+				}
+			})
+			return l;
+		}).join("");
+		return label;
+
 	}
 }.bind(this)
 
