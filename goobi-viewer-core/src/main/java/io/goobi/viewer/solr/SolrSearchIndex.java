@@ -129,7 +129,7 @@ public class SolrSearchIndex {
         if (!(client instanceof HttpSolrClient)) {
             return;
         }
-        
+
         HttpSolrClient httpSolrClient = (HttpSolrClient) client;
         if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(httpSolrClient.getBaseURL())) {
             // Re-init Solr client if the configured Solr URL has been changed
@@ -234,8 +234,8 @@ public class SolrSearchIndex {
      * @param fieldList If not null, only the fields in the list will be returned.
      * @param filterQueries a {@link java.util.List} object.
      * @param params Additional query parameters.
-     * @param queryMethod The http method to use for the request to solr. Default is {@link METHOD.GET}.
-     * But for some requests this may yield a "URI too long" exception in which case {@link METHOD.POST} must be used
+     * @param queryMethod The http method to use for the request to solr. Default is {@link METHOD.GET}. But for some requests this may yield a "URI
+     *            too long" exception in which case {@link METHOD.POST} must be used
      * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
      * @should return correct results
      * @should return correct number of rows
@@ -249,9 +249,10 @@ public class SolrSearchIndex {
             List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
         return search(query, first, rows, sortFields, facetFields, facetSort, fieldList, filterQueries, params, DEFAULT_QUERY_METHOD);
     }
-    
+
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
-            List<String> fieldList, List<String> filterQueries, Map<String, String> params, METHOD queryMethod) throws PresentationException, IndexUnreachableException {
+            List<String> fieldList, List<String> filterQueries, Map<String, String> params, METHOD queryMethod)
+            throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query)).setStart(first).setRows(rows);
 
         if (sortFields != null && !sortFields.isEmpty()) {
@@ -1098,10 +1099,17 @@ public class SolrSearchIndex {
         Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
 
         List<String> list = new ArrayList<>();
+        Set<String> added = new HashSet<>();
         for (String name : fieldInfoMap.keySet()) {
-            if ((name.startsWith(SolrConstants.PREFIX_SORT) || name.startsWith("SORTNUM_") || name.equals(SolrConstants.DATECREATED))
-                    && !name.contains(SolrConstants.MIDFIX_LANG)) {
-                list.add(name);
+            if ((name.startsWith(SolrConstants.PREFIX_SORT) || name.startsWith("SORTNUM_") || name.equals(SolrConstants.DATECREATED))) {
+                if (name.contains(SolrConstants.MIDFIX_LANG)) {
+                    name = name.replaceAll(SolrConstants.MIDFIX_LANG + ".*", SolrConstants.MIDFIX_LANG + "{}");
+                }
+                if (!added.contains(name)) {
+                    list.add(name);
+                    added.add(name);
+                    logger.trace("added sort field: {}", name);
+                }
             }
         }
 

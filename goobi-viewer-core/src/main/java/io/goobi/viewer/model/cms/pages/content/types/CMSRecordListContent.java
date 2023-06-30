@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -146,6 +147,20 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         return sortField;
     }
 
+    /**
+     * If <code>sortField</code> contains a language code placeholder, this method replaces it with the give language code.
+     * 
+     * @param language ISO-2 language code
+     * @return
+     */
+    public String getSortFieldForLanguage(String language) {
+        if (sortField != null && language != null) {
+            return sortField.replace("{}", language.toUpperCase());
+        }
+
+        return sortField;
+    }
+
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
@@ -212,6 +227,10 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             BeanUtils.getSessionBean().put("cmsSearch", this.search);
         }
         try {
+            Locale locale = BeanUtils.getLocale();
+            if (locale == null) {
+                locale = Locale.ENGLISH;
+            }
             SearchBean searchBean = BeanUtils.getSearchBean();
 
             List<SearchResultGroup> resultGroups;
@@ -229,8 +248,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
             Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL, resultGroups);
             if (StringUtils.isNotBlank(this.getSortField())) {
-                s.setSortString(this.getSortField());
-                searchBean.setSortString(this.getSortField());
+                s.setSortString(getSortFieldForLanguage(locale.getLanguage()));
+                searchBean.setSortString(getSortFieldForLanguage(locale.getLanguage()));
             } else if (StringUtils.isNotBlank(this.search.getSortString()) && !this.search.getSortString().equals("-")) {
                 s.setSortString(this.search.getSortString());
                 searchBean.setSortString(this.search.getSortString());
@@ -255,7 +274,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             searchBean.setHitsPerPage(this.getElementsPerPage());
             searchBean.setLastUsedSearchPage();
             s.setCustomFilterQuery(this.solrQuery);
-            s.execute(facets, null, searchBean.getHitsPerPage(), BeanUtils.getLocale(), true,
+            s.execute(facets, null, searchBean.getHitsPerPage(), locale, true,
                     this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(s);
             searchBean.setHitsPerPageSetterCalled(false);

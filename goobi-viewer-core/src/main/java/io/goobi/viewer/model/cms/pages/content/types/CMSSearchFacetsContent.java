@@ -86,7 +86,6 @@ public class CMSSearchFacetsContent extends CMSContent {
      * @param facetField the facetField to set
      */
     public void setFacetField(String facetField) {
-        logger.trace("setFacetField: {}", facetField);
         this.facetField = facetField;
     }
 

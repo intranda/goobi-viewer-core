@@ -767,57 +767,58 @@ public class Configuration extends AbstractConfiguration {
 
         return getMetadataForTemplate(template, templateList, true, false);
     }
-    
+
     public Map<String, Metadata> getGeomapFeatureConfigurations(String option) {
-        if(StringUtils.isBlank(option)) {
+        if (StringUtils.isBlank(option)) {
             return Collections.emptyMap();
-        } else {            
-            List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
-            List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream().filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
-                    .map(config -> config.configurationsAt("title.template"))
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
-            
-            
-            return loadGeomapLabelConfigurations(templates);
         }
+
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .map(config -> config.configurationsAt("title.template"))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        return loadGeomapLabelConfigurations(templates);
     }
-    
+
     public Map<String, Metadata> getGeomapEntityConfigurations(String option) {
         List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
-        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream().filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
                 .map(config -> config.configurationsAt("entity.title.template"))
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
-        
+
         return loadGeomapLabelConfigurations(templates);
     }
 
     public Map<String, Metadata> getRecordGeomapFeatureConfigurations() {
         return loadGeomapLabelConfigurations(getLocalConfigurationsAt("maps.record.metadata.title.template"));
     }
-    
+
     public Map<String, Metadata> getRecordGeomapEntityConfigurations() {
         return loadGeomapLabelConfigurations(getLocalConfigurationsAt("maps.record.metadata.entity.title.template"));
     }
-    
 
+    /**
+     * 
+     * @return
+     */
     public List<SelectItem> getGeomapFeatureTitleOptions() {
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.option");
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.title.option");
         if (configs != null && !configs.isEmpty()) {
             return configs.stream()
                     .map(config -> {
-                        String value = config.getString("[@name]", null);
+                        String value = config.getString(".", null);
                         String label = config.getString("[@label]", value); //NOSONAR specific path
                         return new SelectItem(value, label);
                     })
                     .collect(Collectors.toList());
-        } else {
-            return List.of(
-                    new SelectItem("cms__geomaps__popup_content__option__none", null),
-                    new SelectItem("cms__geomaps__popup_content__option__place", "NORM_NAME"),
-                    new SelectItem("cms__geomaps__popup_content__option__metadata", "MD_VALUE"));
         }
+
+        return Collections.emptyList();
     }
 
     public StringMatchConfiguration getGeomapFeatureMainDocumentFields() {
@@ -850,27 +851,27 @@ public class Configuration extends AbstractConfiguration {
         }
         return filters;
     }
-    
+
     public List<FeatureSetConfiguration> getRecordGeomapFeatureSetConfigs() {
         List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = this.getLocalConfigurationsAt("maps.record.featureSets.featureSet");
         return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
     }
-    
-    private Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
+
+    private static Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
         if (templateList == null) {
             return Collections.emptyMap();
         }
         Map<String, Metadata> map = new HashMap<>();
         for (HierarchicalConfiguration<ImmutableNode> template : templateList) {
             String name = template.getString("[@name]", "_DEFAULT");
-            Metadata md = getMetadataForTemplate(name,  templateList, true, false).stream().findAny().orElse(null);
-            if(md != null) {
+            Metadata md = getMetadataForTemplate(name, templateList, true, false).stream().findAny().orElse(null);
+            if (md != null) {
                 map.put(name, md);
             }
         }
         return map;
     }
-    
+
     /**
      * Returns number of elements displayed per paginator page in a table of contents for anchors and groups. Values below 1 disable pagination (all
      * elements are displayed on the single page).
@@ -5856,8 +5857,6 @@ public class Configuration extends AbstractConfiguration {
     public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
-
-    
 
     /**
      * @param field
