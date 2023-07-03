@@ -7,13 +7,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
-import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -21,10 +21,11 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public class ComplexMetadataContainer {
 
     private static final String QUERY_FORMAT = "+DOCTYPE:METADATA +PI_TOPSTRUCT:%s";
+    private static final String DEFAULT_SORTING = "desc";
 
     protected final Map<String, List<ComplexMetadata>> metadataMap;
 
-    private String sorting = "desc";
+    private String sorting = DEFAULT_SORTING;
 
     public void setSorting(String sorting) {
         this.sorting = sorting;
@@ -52,15 +53,25 @@ public class ComplexMetadataContainer {
                 .filter(doc -> fieldNameFilter.test(doc.getField()))
                 .collect(Collectors.toMap(ComplexMetadata::getField, List::of, ListUtils::union));
     }
+    
+    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue, long limit) {
+        return streamMetadata(field, sortField, sortLanguage, filterField, filterValue, limit).collect(Collectors.toList());
+    }
 
-    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue,
-            Integer limit) {
+    public long getNumEntries(String field, String filterField, String filterValue) {
         return getMetadata(field).stream()
-                .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, sortLanguage).equalsIgnoreCase(filterValue))
-                .sorted((m1, m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage))
-                        * (isDescendingOrder() ? -1 : 1))
-                .limit(limit)
-                .collect(Collectors.toList());
+        .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, null).equalsIgnoreCase(filterValue)).count();
+    }
+    
+    protected Stream<ComplexMetadata> streamMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue,
+            long listSizeLimit) {
+        Stream<ComplexMetadata> stream = getMetadata(field).stream()
+                .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, null).equalsIgnoreCase(filterValue));
+        if(StringUtils.isNotBlank(sortField)) {
+            stream = stream.sorted((m1, m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage))
+                    * (isDescendingOrder() ? -1 : 1));
+        }
+        return stream.limit(listSizeLimit);
     }
 
     public List<ComplexMetadata> getMetadata(String field) {
@@ -88,8 +99,14 @@ public class ComplexMetadataContainer {
         SolrDocumentList metadataDocs = searchIndex.search(String.format(QUERY_FORMAT, pi), fieldList);
         return new ComplexMetadataContainer(metadataDocs);
     }
-    
+
     public List<String> getAllValues(String field, String filterField, Locale locale) {
-        return this.getMetadata(field).stream().filter(md -> StringUtils.isBlank(filterField) ? true : filterField.equals(md.getFirstValue((Locale)null))).map(md -> md.getValues(locale)).flatMap(List::stream).distinct().collect(Collectors.toList());
+        return this.getMetadata(field)
+                .stream()
+                .filter(md -> StringUtils.isBlank(filterField) ? true : filterField.equals(md.getFirstValue((Locale) null)))
+                .map(md -> md.getValues(locale))
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

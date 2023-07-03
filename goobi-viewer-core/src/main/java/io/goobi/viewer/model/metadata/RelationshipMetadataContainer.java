@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -76,19 +77,39 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         return loadRelationshipMetadata(pi, searchIndex, RELATED_RECORD_METADATA_FIELDS);
     }
     
+    @Override
+    public long getNumEntries(String field, String filterField, String filterValue) {
+        return getNumEntries(field, filterField, filterValue, false);
+    }
+
     
+    public long getNumEntries(String field, String filterField, String filterValue, boolean hideUninkedEntries) {
+        boolean searchInRelatedRecords = filterField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX);
+        if(searchInRelatedRecords) {
+            String relatedFilterField = filterField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
+            return super.streamMetadata(field, null, null, null, null, Integer.MAX_VALUE)
+            .filter(m -> Optional.ofNullable(getRelatedRecord(m)).map(r -> r.getFirstValue(relatedFilterField).equalsIgnoreCase(filterValue)).orElse(false))   
+            .count();
+        } else {
+            return getMetadata(field).stream()
+                    .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, null).equalsIgnoreCase(filterValue))
+             .filter(m -> hideUninkedEntries ? getRelatedRecord(m) != null : true)
+             .count();
+
+        }
+    }
     
-    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue, Integer limit) {
-        String relatedFilterField = filterField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX) ? filterField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "") : "";
-        List<ComplexMetadata> list = super.getMetadata(field, sortField, sortLanguage, filterField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX) ? "" : filterField, filterValue, Integer.MAX_VALUE);
-        list = list.stream()
-                .filter(m -> 
-                StringUtils.isBlank(relatedFilterField) || 
-                (StringUtils.isBlank(filterValue) && getRelatedRecord(m) == null) || 
-                (getRelatedRecord(m) != null && getRelatedRecord(m).getFirstValue(relatedFilterField).equalsIgnoreCase(filterValue)))   
+    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue, long limit) {
+        boolean searchInRelatedRecords = filterField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX);
+        if(searchInRelatedRecords) {
+            String relatedFilterField = filterField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
+            return super.streamMetadata(field, sortField, sortLanguage, "", filterValue, Integer.MAX_VALUE)
+            .filter(m -> Optional.ofNullable(getRelatedRecord(m)).map(record -> record.getFirstValue(relatedFilterField).equalsIgnoreCase(filterValue)).orElse(false))   
             .limit(limit)
             .collect(Collectors.toList());
-        return list;
+        } else {
+            return super.getMetadata(field, sortField, sortLanguage, filterField, filterValue, limit);
+        }
     }
     
     /**
