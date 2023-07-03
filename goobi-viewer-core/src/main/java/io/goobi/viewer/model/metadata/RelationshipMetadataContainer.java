@@ -134,6 +134,7 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             String relatedField = field.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
             return getAllMetadataByField(filterField)
                     .map(this::getRelatedRecord)
+                    .filter(Objects::nonNull)
                     .map(rec -> rec.getValues(relatedField, locale)).flatMap(List::stream).distinct().collect(Collectors.toList());
         } else {
             return super.getAllValues(field, filterField, locale);
