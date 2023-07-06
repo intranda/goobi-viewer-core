@@ -10,7 +10,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 public class PageTemplageIdUpdate implements IModelUpdate {
 
     @Override
-    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
+    public boolean update(IDAO dao) throws DAOException, SQLException {
         int updates = 0;
         //rename TEMPLATEID column to page_template_id if the latter column has no entries
         if(dao.columnsExists("cms_pages", "TEMPLATEID")) {
