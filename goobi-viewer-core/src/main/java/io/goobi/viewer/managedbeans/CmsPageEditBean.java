@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +68,9 @@ import io.goobi.viewer.model.cms.pages.CMSPageEditState;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.user.User;
@@ -265,6 +269,18 @@ public class CmsPageEditBean implements Serializable {
     public void deletePage(CMSPage page) throws DAOException {
         if (this.dao != null && page != null && page.getId() != null) {
             logger.info("Deleting CMS page: {}", page);
+            List<CMSComponent> components = new ArrayList<>(page.getComponents());
+            for (CMSComponent component : components) {
+                PersistentCMSComponent persistentComponent = component.getPersistentComponent();
+                List<CMSContentItem> contentItems = new ArrayList<>(component.getContentItems());
+                for(CMSContentItem contentItem : contentItems) {
+                    CMSContent content = contentItem.getContent();
+                    component.removeContentItem(contentItem);
+                    dao.deleteCMSContent(content);
+                }
+                page.removeComponent(component);
+                dao.deleteCMSComponent(persistentComponent);
+            }
             if (this.dao.deleteCMSPage(page)) {
                 // Delete files matching content item IDs of the deleted page and re-index record
                 try {
