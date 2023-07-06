@@ -50,12 +50,12 @@ public class AlphanumCollatorComparator implements Comparator<String> {
         this.collator = collator;
     }
 
-    private final static boolean isDigit(char ch) {
+    private static final boolean isDigit(char ch) {
         return ch >= 48 && ch <= 57;
     }
 
     /** Length of string is passed in for improved efficiency (only need to calculate it once) **/
-    private final static String getChunk(String s, int slength, int marker) {
+    private static final String getChunk(String s, int slength, int marker) {
         StringBuilder chunk = new StringBuilder();
         char c = s.charAt(marker);
         chunk.append(c);
