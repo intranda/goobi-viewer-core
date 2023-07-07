@@ -22,13 +22,9 @@
 package io.goobi.viewer.model.search;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -37,12 +33,9 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.solr.SolrConstants;
 
 public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -107,203 +100,6 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
         Assert.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
         Assert.assertEquals("old value", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
-    }
-
-    /**
-     * @see BrowseElement#addFoundMetadataContainingSearchTerms(StructElement,Map,Locale)
-     * @verifies add metadata fields that match search terms
-     */
-    @Test
-    public void addFoundMetadataContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "label", null, Locale.ENGLISH, null, null);
-
-        StructElement se = new StructElement();
-        se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR"));
-        se.getMetadataFields().put("MD_YEARPUBLISH", Collections.singletonList("ca. 1984"));
-        Assert.assertEquals(2, se.getMetadataFields().size());
-
-        Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
-        searchTerms.put("MD_YEARPUBLISH", new HashSet<>(Arrays.asList(new String[] { "1984" })));
-
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null, 0);
-        Assert.assertEquals(2, be.getFoundMetadataList().size());
-        {
-            String field = "MD_TITLE";
-            Assert.assertNotNull(be.getMetadataList(field));
-            List<Metadata> mdList = be.getMetadataList(field);
-            Assert.assertFalse(mdList.get(0).getValues().isEmpty());
-            Assert.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>",
-                    mdList.get(0).getValues().get(0).getComboValueShort(0));
-        }
-        {
-            String field = "MD_YEARPUBLISH";
-            Assert.assertNotNull(be.getMetadataList(field));
-            List<Metadata> mdList = be.getMetadataList(field);
-            Assert.assertFalse(mdList.get(0).getValues().isEmpty());
-            Assert.assertEquals("ca. <span class=\"search-list--highlight\">1984</span>", mdList.get(0).getValues().get(0).getComboValueShort(0));
-        }
-    }
-
-    /**
-     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map)
-     * @verifies not add duplicates from default terms
-     */
-    @Test
-    public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromDefaultTerms() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
-
-        StructElement se = new StructElement();
-        se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
-        Assert.assertEquals(1, se.getMetadataFields().size());
-
-        Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
-
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null, 0);
-        Assert.assertTrue(be.getMetadataList("MD_TITLE").isEmpty());
-    }
-
-    /**
-     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map)
-     * @verifies not add duplicates from explicit terms
-     */
-    @Test
-    public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromExplicitTerms() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
-        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
-
-        StructElement se = new StructElement();
-        se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
-        Assert.assertEquals(1, se.getMetadataFields().size());
-
-        Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
-
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, null, 0);
-        Assert.assertEquals(1, be.getMetadataList("MD_TITLE").size());
-    }
-
-    /**
-     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Set)
-     * @verifies not add ignored fields
-     */
-    @Test
-    public void addAdditionalMetadataContainingSearchTerms_shouldNotAddIgnoredFields() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
-        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
-
-        StructElement se = new StructElement();
-        se.getMetadataFields().put("MD_IGNOREME", Collections.singletonList("foo ignores bar"));
-        Assert.assertEquals(1, se.getMetadataFields().size());
-
-        Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
-
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, new HashSet<>(Collections.singletonList("MD_IGNOREME")), null, null, null, 0);
-        Assert.assertEquals(0, be.getMetadataList("MD_IGNOREME").size());
-    }
-
-    /**
-     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Set,Set)
-     * @verifies translate configured field values correctly
-     */
-    @Test
-    public void addAdditionalMetadataContainingSearchTerms_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
-        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
-
-        StructElement se = new StructElement();
-        se.getMetadataFields().put(SolrConstants.DC, Collections.singletonList("admin"));
-        Assert.assertEquals(1, se.getMetadataFields().size());
-
-        Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
-        searchTerms.put(SolrConstants.DC, new HashSet<>(Arrays.asList(new String[] { "admin" })));
-
-        String[] translateFields = { SolrConstants.DC };
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, new HashSet<>(Arrays.asList(translateFields)), null, null, 0);
-        Assert.assertEquals(1, be.getMetadataList(SolrConstants.DC).size());
-    }
-
-    /**
-     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Set,Set,Set)
-     * @verifies write one line fields into a single string
-     */
-    @Test
-    public void addAdditionalMetadataContainingSearchTerms_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
-        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
-
-        StructElement se = new StructElement();
-        se.getMetadataFields().put("MD_COUNT_EN", Arrays.asList(new String[] { "one", "two", "three" }));
-        se.getMetadataFields().put("MD_COUNT_JP", Arrays.asList(new String[] { "ichi", "ni", "san" }));
-        Assert.assertEquals(2, se.getMetadataFields().size());
-
-        Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "ichi", "ni" })));
-        searchTerms.put("MD_COUNT_EN", new HashSet<>(Arrays.asList(new String[] { "one", "three" })));
-
-        String[] oneLineFields = { "MD_COUNT_EN", "MD_COUNT_JP" };
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, new HashSet<>(Arrays.asList(oneLineFields)), null, 0);
-
-        // Via explicit term field
-        Assert.assertEquals(1, be.getMetadataList("MD_COUNT_EN").size());
-        Assert.assertEquals(
-                "<span class=\"search-list--highlight\">one</span>, <span class=\"search-list--highlight\">three</span>",
-                be.getMetadataList("MD_COUNT_EN").get(0).getValues().get(0).getComboValueShort(0));
-
-        // Via DEFAULT
-        Assert.assertEquals(1, be.getMetadataList("MD_COUNT_JP").size());
-        Assert.assertEquals("<span class=\"search-list--highlight\">ichi</span>, <span class=\"search-list--highlight\">ni</span>",
-                be.getMetadataList("MD_COUNT_JP").get(0).getValues().get(0).getComboValueShort(0));
-    }
-
-    /**
-     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Set,Set,Set,Set)
-     * @verifies truncate snippet fields correctly
-     */
-    @Test
-    public void addAdditionalMetadataContainingSearchTerms_shouldTruncateSnippetFieldsCorrectly() throws Exception {
-        int maxLength = 50;
-        DataManager.getInstance().getConfiguration().overrideValue("search.fulltextFragmentLength", maxLength);
-
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
-        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
-
-        StructElement se = new StructElement();
-        se.getMetadataFields().put("MD_DESCRIPTION", Collections.singletonList(StringConstants.LOREM_IPSUM));
-        se.getMetadataFields().put("MD_SOMETEXT", Collections.singletonList(StringConstants.LOREM_IPSUM.replace("labore", "foo")));
-        Assert.assertEquals(2, se.getMetadataFields().size());
-
-        Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put(SolrConstants.DEFAULT, Collections.singleton("labore"));
-        searchTerms.put("MD_SOMETEXT", Collections.singleton("ipsum"));
-
-        String[] snippetFields = { "MD_DESCRIPTION", "MD_SOMETEXT" };
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, null, new HashSet<>(Arrays.asList(snippetFields)), 0);
-
-        // Via DEFAULT
-        Assert.assertEquals(1, be.getMetadataList("MD_DESCRIPTION").size());
-        Assert.assertTrue(be.getMetadataList("MD_DESCRIPTION").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
-        // Truncated snippet is randomized, so cannot test the exact value
-        Assert.assertTrue(be.getMetadataList("MD_DESCRIPTION")
-                .get(0)
-                .getValues()
-                .get(0)
-                .getComboValueShort(0)
-                .contains("ut <span class=\"search-list--highlight\">labore</span> et"));
-
-        // Via explicit term field
-        Assert.assertEquals(1, be.getMetadataList("MD_SOMETEXT").size());
-        Assert.assertTrue(be.getMetadataList("MD_SOMETEXT").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
-        // Truncated snippet is randomized, so cannot test the exact value
-        Assert.assertTrue(be.getMetadataList("MD_SOMETEXT")
-                .get(0)
-                .getValues()
-                .get(0)
-                .getComboValueShort(0)
-                .contains("<span class=\"search-list--highlight\">ipsum</span> dolor"));
     }
 
     /**

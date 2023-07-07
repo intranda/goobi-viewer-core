@@ -57,6 +57,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Nörde~1"));
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN).createSearchHit(doc, null, null, null);
         assertEquals(1, hit.getFoundMetadata().size());
+        assertEquals(1, hit.getFoundMetadata().size());
     }
 
     @Test
@@ -89,8 +90,8 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
         List<MetadataWrapper> result =
-                factory.findAdditionalMetadataFieldsContainingSearchTerms(Collections.emptyList(), se.getMetadataFields(),
-                        String.valueOf(se.getLuceneId()), be.getLabel(), searchTerms);
+                factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
+                        String.valueOf(se.getLuceneId()), be.getLabel());
 
         Assert.assertEquals(2, result.size());
         if (!result.isEmpty()) {
@@ -127,8 +128,8 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(1, se.getMetadataFields().size());
 
         List<MetadataWrapper> result =
-                factory.findAdditionalMetadataFieldsContainingSearchTerms(Collections.emptyList(), se.getMetadataFields(),
-                        String.valueOf(se.getLuceneId()), be.getLabel(), searchTerms);
+                factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
+                        String.valueOf(se.getLuceneId()), be.getLabel());
 
         Assert.assertTrue(result.isEmpty());
         Assert.assertTrue(be.getMetadataList("MD_TITLE").isEmpty());
@@ -153,8 +154,8 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
         List<MetadataWrapper> result =
-                factory.findAdditionalMetadataFieldsContainingSearchTerms(Collections.emptyList(), se.getMetadataFields(),
-                        String.valueOf(se.getLuceneId()), be.getLabel(), searchTerms);
+                factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
+                        String.valueOf(se.getLuceneId()), be.getLabel());
         if (!result.isEmpty()) {
             for (MetadataWrapper mw : result) {
                 be.getMetadataList().add(mw.getMetadata());
@@ -183,8 +184,8 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
         factory.getAdditionalMetadataIgnoreFields().add("MD_IGNOREME");
         List<MetadataWrapper> result =
-                factory.findAdditionalMetadataFieldsContainingSearchTerms(Collections.emptyList(), se.getMetadataFields(),
-                        String.valueOf(se.getLuceneId()), be.getLabel(), searchTerms);
+                factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
+                        String.valueOf(se.getLuceneId()), be.getLabel());
         if (!result.isEmpty()) {
             for (MetadataWrapper mw : result) {
                 be.getMetadataList().add(mw.getMetadata());
@@ -214,8 +215,8 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
         factory.getAdditionalMetadataTranslateFields().add(SolrConstants.DC);
         List<MetadataWrapper> result =
-                factory.findAdditionalMetadataFieldsContainingSearchTerms(Collections.emptyList(), se.getMetadataFields(),
-                        String.valueOf(se.getLuceneId()), be.getLabel(), searchTerms);
+                factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
+                        String.valueOf(se.getLuceneId()), be.getLabel());
         if (!result.isEmpty()) {
             for (MetadataWrapper mw : result) {
                 be.getMetadataList().add(mw.getMetadata());
@@ -246,8 +247,8 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
         factory.getAdditionalMetadataOneLineFields().addAll(Arrays.asList("MD_COUNT_EN", "MD_COUNT_JP"));
         List<MetadataWrapper> result =
-                factory.findAdditionalMetadataFieldsContainingSearchTerms(Collections.emptyList(), se.getMetadataFields(),
-                        String.valueOf(se.getLuceneId()), be.getLabel(), searchTerms);
+                factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
+                        String.valueOf(se.getLuceneId()), be.getLabel());
         if (!result.isEmpty()) {
             for (MetadataWrapper mw : result) {
                 be.getMetadataList().add(mw.getMetadata());
@@ -290,8 +291,8 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
         factory.getAdditionalMetadataSnippetFields().addAll(Arrays.asList("MD_DESCRIPTION", "MD_SOMETEXT"));
         List<MetadataWrapper> result =
-                factory.findAdditionalMetadataFieldsContainingSearchTerms(Collections.emptyList(), se.getMetadataFields(),
-                        String.valueOf(se.getLuceneId()), be.getLabel(), searchTerms);
+                factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
+                        String.valueOf(se.getLuceneId()), be.getLabel());
         if (!result.isEmpty()) {
             for (MetadataWrapper mw : result) {
                 be.getMetadataList().add(mw.getMetadata());

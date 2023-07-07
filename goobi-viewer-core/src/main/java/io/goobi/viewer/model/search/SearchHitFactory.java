@@ -33,6 +33,7 @@ import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 public class SearchHitFactory {
@@ -104,7 +105,6 @@ public class SearchHitFactory {
 
         Map<String, List<String>> searchedFields = new HashMap<>(se.getMetadataFields());
         searchedFields.put(SolrConstants.FULLTEXT, Collections.singletonList(fulltext));
-        Map<String, Set<String>> cleanedUpSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
 
         Map<String, List<Metadata>> metadataListMap = new HashMap<>();
         List<Metadata> metadataList =
@@ -120,21 +120,20 @@ public class SearchHitFactory {
             metadataListMap.put(additionalMetadataListType, altMetadataList);
         }
 
+        Map<String, Set<String>> cleanedUpSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
         BrowseElement browseElement = new BrowseElement(se, metadataListMap, locale,
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, cleanedUpSearchTerms,
                 thumbnailHandler);
 
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         if (DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled()) {
-            //            browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, additionalMetadataIgnoreFields,
-            //                    additionalMetadataTranslateFields, additionalMetadataOneLineFields, additionalMetadataSnippetFields, proximitySearchDistance);
-
             Optional<String> labelValue = browseElement.getLabelAsMetadataValue().getValue();
-            List<MetadataWrapper> additionalMetadata = findAdditionalMetadataFieldsContainingSearchTerms(metadataList,
-                    se.getMetadataFields(),
+            List<MetadataWrapper> additionalMetadata = findAdditionalMetadataFieldsContainingSearchTerms(
+                    se.getMetadataFields(), // Available new values from StructElement
+                    searchTerms,
+                    browseElement.getMetadataFieldNames(),
                     String.valueOf(browseElement.getIddoc()),
-                    labelValue.isPresent() ? labelValue.get() : "",
-                    cleanedUpSearchTerms);
+                    labelValue.isPresent() ? labelValue.get() : "");
             if (!additionalMetadata.isEmpty()) {
                 for (MetadataWrapper mw : additionalMetadata) {
                     browseElement.getMetadataList().add(mw.getMetadata());
@@ -172,15 +171,14 @@ public class SearchHitFactory {
         }
 
         SearchHit hit = new SearchHit(hitType, browseElement, doc, searchTerms, locale, this);
-        //        hit.populateFoundMetadata(doc, ownerAlreadyHasMetadata, additionalMetadataIgnoreFields, additionalMetadataTranslateFields,
-        //                additionalMetadataOneLineFields, additionalMetadataSnippetFields);
-
         Optional<String> labelValue = browseElement.getLabelAsMetadataValue().getValue();
-        List<MetadataWrapper> additionalMetadata = findAdditionalMetadataFieldsContainingSearchTerms(metadataList,
-                se.getMetadataFields(),
-                String.valueOf(browseElement.getIddoc()),
-                labelValue.isPresent() ? labelValue.get() : "",
-                cleanedUpSearchTerms);
+        List<MetadataWrapper> additionalMetadata =
+                findAdditionalMetadataFieldsContainingSearchTerms(
+                        SolrTools.getFieldValueMap(doc), // Available new values from Solr doc
+                        searchTerms, // Terms must contain fuzzy operators here
+                        browseElement.getMetadataFieldNames(),
+                        String.valueOf(browseElement.getIddoc()),
+                        labelValue.isPresent() ? labelValue.get() : "");
         if (!additionalMetadata.isEmpty()) {
             for (MetadataWrapper mw : additionalMetadata) {
                 hit.getFoundMetadata().add(mw.getValuePair());
@@ -248,18 +246,11 @@ public class SearchHitFactory {
     }
 
     /**
-     * 
-     * @param existingMetadataList
      * @param availableMetadata
+     * @param searchTerms
+     * @param existingMetadataFields
      * @param iddoc
      * @param searchHitLabel
-     * @param searchTerms
-     * @param ignoreFields
-     * @param translateFields
-     * @param oneLineFields
-     * @param snippetFields
-     * @param proximitySearchDistance
-     * @param locale
      * @return
      * @should add metadata fields that match search terms
      * @should not add duplicates from default terms
@@ -269,10 +260,11 @@ public class SearchHitFactory {
      * @should write one line fields into a single string
      * @should truncate snippet fields correctly
      */
-    List<MetadataWrapper> findAdditionalMetadataFieldsContainingSearchTerms(List<Metadata> existingMetadataList,
-            Map<String, List<String>> availableMetadata, String iddoc, String searchHitLabel, Map<String, Set<String>> searchTerms) {
+    List<MetadataWrapper> findAdditionalMetadataFieldsContainingSearchTerms(
+            Map<String, List<String>> availableMetadata, Map<String, Set<String>> searchTerms, Set<String> existingMetadataFields, String iddoc,
+            String searchHitLabel) {
         // logger.trace("findAdditionalMetadataFieldsContainingSearchTerms");
-        if (existingMetadataList == null) {
+        if (existingMetadataFields == null) {
             throw new IllegalArgumentException("existingMetadataList may not be null");
         }
         if (availableMetadata == null) {
@@ -290,8 +282,8 @@ public class SearchHitFactory {
             }
             // Skip fields that are already in the list
             boolean skip = false;
-            for (Metadata md : existingMetadataList) {
-                if (md.getLabel().equals(entry.getKey())) {
+            for (String field : existingMetadataFields) {
+                if (field != null && field.equals(entry.getKey())) {
                     skip = true;
                     break;
                 }
@@ -299,6 +291,7 @@ public class SearchHitFactory {
             if (skip) {
                 continue;
             }
+
             switch (entry.getKey()) {
                 case SolrConstants.DEFAULT:
                 case SolrConstants.NORMDATATERMS:
@@ -312,8 +305,8 @@ public class SearchHitFactory {
                             continue;
                         }
                         // Skip fields that are already in the list
-                        for (Metadata md : existingMetadataList) {
-                            if (md.getLabel().equals(docFieldName)) {
+                        for (String field : existingMetadataFields) {
+                            if (field != null && field.equals(entry.getKey())) {
                                 skip = true;
                                 break;
                             }
@@ -351,7 +344,6 @@ public class SearchHitFactory {
                             if (sb.length() > 0) {
                                 ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", sb.toString()))
                                         .setValuePair(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), sb.toString())));
-                                // existingMetadataFields.add(docFieldName);
                                 logger.trace("added existing field: {}", docFieldName);
                             }
                         } else {
@@ -389,7 +381,6 @@ public class SearchHitFactory {
                                     ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", highlightedValue))
                                             .setValuePair(
                                                     new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue)));
-                                    // existingMetadataFields.add(docFieldName);
                                     logger.trace("added existing field: {}", docFieldName);
                                 }
                             }
@@ -398,8 +389,8 @@ public class SearchHitFactory {
                     break;
                 default:
                     // Skip fields that are already in the list
-                    for (Metadata md : existingMetadataList) {
-                        if (md.getLabel().equals(entry.getKey())) {
+                    for (String field : existingMetadataFields) {
+                        if (field != null && field.equals(entry.getKey())) {
                             skip = true;
                             break;
                         }
@@ -431,7 +422,6 @@ public class SearchHitFactory {
                                 ret.add(new MetadataWrapper()
                                         .setMetadata(new Metadata(iddoc, entry.getKey(), "", sb.toString()))
                                         .setValuePair(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), sb.toString())));
-                                // existingMetadataFields.add(entry.getKey());
                             }
                         } else {
                             for (String fieldValue : fieldValues) {
@@ -463,7 +453,6 @@ public class SearchHitFactory {
                                     ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", highlightedValue))
                                             .setValuePair(
                                                     new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), highlightedValue)));
-                                    // existingMetadataFields.add(entry.getKey());
                                 }
                             }
                         }
