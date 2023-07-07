@@ -1877,4 +1877,74 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("bar", group.getQueryItems().get(5).getValue());
         Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(5).getOperator());
     }
+
+    /**
+     * @see SearchHelper#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map,Set,Set,Set,Set,int,Locale)
+     * @verifies add metadata fields that match search terms
+     */
+    @Test
+    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see SearchHelper#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map,Set,Set,Set,Set,int,Locale)
+     * @verifies not add duplicates from default terms
+     */
+    @Test
+    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddDuplicatesFromDefaultTerms() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see SearchHelper#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map,Set,Set,Set,Set,int,Locale)
+     * @verifies not add duplicates from explicit terms
+     */
+    @Test
+    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddDuplicatesFromExplicitTerms() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see SearchHelper#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map,Set,Set,Set,Set,int,Locale)
+     * @verifies not add ignored fields
+     */
+    @Test
+    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddIgnoredFields() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see SearchHelper#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map,Set,Set,Set,Set,int,Locale)
+     * @verifies translate configured field values correctly
+     */
+    @Test
+    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see SearchHelper#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map,Set,Set,Set,Set,int,Locale)
+     * @verifies write one line fields into a single string
+     */
+    @Test
+    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see SearchHelper#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map,Set,Set,Set,Set,int,Locale)
+     * @verifies truncate snippet fields correctly
+     */
+    @Test
+    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldTruncateSnippetFieldsCorrectly() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
 }
