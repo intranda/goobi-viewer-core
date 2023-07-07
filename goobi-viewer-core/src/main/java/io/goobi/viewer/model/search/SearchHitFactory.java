@@ -246,9 +246,9 @@ public class SearchHitFactory {
     }
 
     /**
-     * @param availableMetadata
-     * @param searchTerms
-     * @param existingMetadataFields
+     * @param availableMetadata Additional available metadata to check for matches
+     * @param searchTerms Search terms
+     * @param existingMetadataFields Metadata field names that are already added to the search hit and should be skipped
      * @param iddoc
      * @param searchHitLabel
      * @return
@@ -274,6 +274,7 @@ public class SearchHitFactory {
             return Collections.emptyList();
         }
 
+        Set<String> addedValues = new HashSet<>(); // Collects already added key+value pairs to prevent duplicates
         List<MetadataWrapper> ret = new ArrayList<>();
         for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
             // Skip fields that are in the ignore list
@@ -306,7 +307,7 @@ public class SearchHitFactory {
                         }
                         // Skip fields that are already in the list
                         for (String field : existingMetadataFields) {
-                            if (field != null && field.equals(entry.getKey())) {
+                            if (field != null && field.equals(docFieldName)) {
                                 skip = true;
                                 break;
                             }
@@ -342,9 +343,12 @@ public class SearchHitFactory {
                                 }
                             }
                             if (sb.length() > 0) {
-                                ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", sb.toString()))
-                                        .setValuePair(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), sb.toString())));
-                                logger.trace("added existing field: {}", docFieldName);
+                                String val = sb.toString();
+                                if (!addedValues.contains(docFieldName + ":" + val)) {
+                                    ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", val))
+                                            .setValuePair(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), val)));
+                                    addedValues.add(docFieldName + ":" + val);
+                                }
                             }
                         } else {
                             for (String fieldValue : fieldValues) {
@@ -378,10 +382,12 @@ public class SearchHitFactory {
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", highlightedValue))
-                                            .setValuePair(
-                                                    new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue)));
-                                    logger.trace("added existing field: {}", docFieldName);
+                                    if (!addedValues.contains(docFieldName + ":" + highlightedValue)) {
+                                        ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", highlightedValue))
+                                                .setValuePair(
+                                                        new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue)));
+                                        addedValues.add(docFieldName + ":" + highlightedValue);
+                                    }
                                 }
                             }
                         }
@@ -419,9 +425,13 @@ public class SearchHitFactory {
                                 }
                             }
                             if (sb.length() > 0) {
-                                ret.add(new MetadataWrapper()
-                                        .setMetadata(new Metadata(iddoc, entry.getKey(), "", sb.toString()))
-                                        .setValuePair(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), sb.toString())));
+                                String val = sb.toString();
+                                if (!addedValues.contains(entry.getKey() + ":" + val)) {
+                                    ret.add(new MetadataWrapper()
+                                            .setMetadata(new Metadata(iddoc, entry.getKey(), "", val))
+                                            .setValuePair(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), val)));
+                                    addedValues.add(entry.getKey() + ":" + val);
+                                }
                             }
                         } else {
                             for (String fieldValue : fieldValues) {
@@ -450,9 +460,13 @@ public class SearchHitFactory {
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", highlightedValue))
-                                            .setValuePair(
-                                                    new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), highlightedValue)));
+                                    if (!addedValues.contains(entry.getKey() + ":" + highlightedValue)) {
+                                        ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", highlightedValue))
+                                                .setValuePair(
+                                                        new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale),
+                                                                highlightedValue)));
+                                        addedValues.add(entry.getKey() + ":" + highlightedValue);
+                                    }
                                 }
                             }
                         }
