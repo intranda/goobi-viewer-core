@@ -282,14 +282,7 @@ public class SearchHitFactory {
                 continue;
             }
             // Skip fields that are already in the list
-            boolean skip = false;
-            for (String field : existingMetadataFields) {
-                if (field != null && field.equals(entry.getKey())) {
-                    skip = true;
-                    break;
-                }
-            }
-            if (skip) {
+            if (existingMetadataFields.contains(entry.getKey())) {
                 continue;
             }
 
@@ -306,16 +299,10 @@ public class SearchHitFactory {
                             continue;
                         }
                         // Skip fields that are already in the list
-                        for (String field : existingMetadataFields) {
-                            if (field != null && field.equals(docFieldName)) {
-                                skip = true;
-                                break;
-                            }
-                        }
-                        if (skip) {
-                            skip = false;
+                        if (existingMetadataFields.contains(docFieldName)) {
                             continue;
                         }
+
                         List<String> fieldValues = availableMetadata.get(docFieldName);
 
                         if (additionalMetadataOneLineFields != null && additionalMetadataOneLineFields.contains(docFieldName)) {
@@ -395,14 +382,12 @@ public class SearchHitFactory {
                     break;
                 default:
                     // Skip fields that are already in the list
-                    for (String field : existingMetadataFields) {
-                        if (field != null && field.equals(entry.getKey())) {
-                            skip = true;
-                            break;
-                        }
+                    if (existingMetadataFields.contains(entry.getKey())) {
+                        continue;
                     }
+
                     // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
-                    if (!skip && availableMetadata.containsKey(entry.getKey())) {
+                    if (availableMetadata.containsKey(entry.getKey())) {
                         List<String> fieldValues = availableMetadata.get(entry.getKey());
                         if (additionalMetadataOneLineFields != null && additionalMetadataOneLineFields.contains(entry.getKey())) {
                             // All values into a single field value

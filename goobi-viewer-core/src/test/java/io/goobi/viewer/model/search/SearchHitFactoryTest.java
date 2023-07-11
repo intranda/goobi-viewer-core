@@ -52,11 +52,10 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     public void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, Long.toString(1l));
-        doc.setField("MD_CREATOR", "Norden");
-        doc.setField("MD_PUBLISHER", "Nørre");
+        doc.setField("MD_FOO", "Norden");
+        doc.setField("MD_BAR", "Nørre");
         Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Nörde~1"));
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN).createSearchHit(doc, null, null, null);
-        assertEquals(1, hit.getFoundMetadata().size());
         assertEquals(1, hit.getFoundMetadata().size());
     }
 
@@ -64,8 +63,8 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     public void createSearchHit_findUmlaute() throws PresentationException, IndexUnreachableException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, Long.toString(1l));
-        doc.setField("MD_CREATOR", "Nörden");
-        doc.setField("MD_PUBLISHER", "Nørre");
+        doc.setField("MD_FOO", "Nörden");
+        doc.setField("MD_BAR", "Nørre");
         Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Norde~1"));
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN).createSearchHit(doc, null, null, null);
         assertEquals(1, hit.getFoundMetadata().size());
