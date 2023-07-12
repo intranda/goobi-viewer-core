@@ -1773,7 +1773,7 @@ public class ViewManager implements Serializable {
     public String getLinkForDFGViewer() throws IndexUnreachableException {
         if (topStructElement != null && SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat()) && isHasPages()) {
             String metsUrl = getMetsResolverUrl();
-            
+
             String urlField = DataManager.getInstance().getConfiguration().getDfgViewerSourcefileField();
             if (StringUtils.isNotBlank(urlField)) {
                 // If there's a configured metadata field containing the DfG Viewer record URL, embed the custom URL instead
@@ -1783,7 +1783,7 @@ public class ViewManager implements Serializable {
                     metsUrl = url;
                 }
             }
-            
+
             try {
                 return new StringBuilder()
                         .append(DataManager.getInstance().getConfiguration().getDfgViewerUrl())
@@ -2273,7 +2273,9 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated title.xhtml no longer exists
      */
+    @Deprecated(since = "22.08")
     public boolean isDisplayTitleBarPdfLink() {
         return DataManager.getInstance().getConfiguration().isTitlePdfEnabled() && isAccessPermissionPdf();
     }
