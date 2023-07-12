@@ -2064,6 +2064,16 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Returns an external download URL, if once exists in MD2_DOWNLOAD_URL.
+     * 
+     * @return url if exists; null otherwise
+     * @should return correct value
+     */
+    public String getExternalDownloadUrl() {
+        return topStructElement != null ? topStructElement.getMetadataValue(SolrConstants.DOWNLOAD_URL_EXTERNAL) : null;
+    }
+
+    /**
      * Returns the pdf download link for the current document
      *
      * @return {@link java.lang.String}
@@ -2300,9 +2310,8 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @throws ViewerConfigurationException
      */
-    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException {
         if (metadataViewOnly == null) {
             // Display object view criteria
             if (isDisplayObjectViewLink()) {
