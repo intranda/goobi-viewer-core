@@ -36,8 +36,8 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.DAOSearchFunction;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
-import io.goobi.viewer.model.cms.HighlightedObject;
-import io.goobi.viewer.model.cms.HighlightedObjectData;
+import io.goobi.viewer.model.cms.Highlight;
+import io.goobi.viewer.model.cms.HighlightData;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

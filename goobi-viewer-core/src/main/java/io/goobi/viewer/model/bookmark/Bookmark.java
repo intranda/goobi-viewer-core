@@ -652,7 +652,7 @@ public class Bookmark implements Serializable {
                 if (doc != null) {
                     Locale locale = BeanUtils.getLocale();
                     SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, BeanUtils.getImageDeliveryBean().getThumbs(), locale);
-                    SearchHit sh = factory.createSearchHit(doc, null, null, null, null);
+                    SearchHit sh = factory.createSearchHit(doc, null, null, null);
                     this.browseElement = sh.getBrowseElement();
                     try {
                         this.browseElement

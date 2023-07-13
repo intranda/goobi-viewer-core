@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,14 +34,12 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
 
-import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
@@ -52,32 +51,29 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.cms.HighlightedObject;
-import io.goobi.viewer.model.cms.HighlightedObjectData;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.Highlight;
+import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.metadata.MetadataElement;
-import io.goobi.viewer.model.toc.TocMaker;
-import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.translations.TranslatedText;
-import io.goobi.viewer.model.viewer.StructElement;
 
 @Named
 @SessionScoped
-public class HighlightedObjectBean implements Serializable {
+public class HighlightsBean implements Serializable {
 
     private static final long serialVersionUID = -6647395682752991930L;
-    private static final Logger logger = LogManager.getLogger(HighlightedObjectBean.class);
+    private static final Logger logger = LogManager.getLogger(HighlightsBean.class);
     private static final int NUM_ITEMS_PER_PAGE = 12;
     private static final String ALL_OBJECTS_SORT_FIELD = "dateStart";
     private static final SortOrder ALL_OBJECTS_SORT_ORDER = SortOrder.DESCENDING;
     private static final String CURRENT_OBJECTS_SORT_FIELD = "dateStart";
     private static final SortOrder CURRENT_OBJECTS_SORT_ORDER = SortOrder.ASCENDING;
 
-    private TableDataProvider<HighlightedObject> allObjectsProvider;
-    private TableDataProvider<HighlightedObject> currentObjectsProvider;
+    private TableDataProvider<Highlight> allObjectsProvider;
+    private TableDataProvider<Highlight> currentObjectsProvider;
 
-    private transient HighlightedObject selectedObject = null;
-    private MetadataElement metadataElement = null;
+    private transient Highlight selectedObject = null;
     private final Random random = new Random(); //NOSONAR   generated numbers have no security relevance
+    private EditStatus editStatus = EditStatus.SELECT_TARGET;
 
     @Inject
     private NavigationHelper navigationHelper;
@@ -86,14 +82,22 @@ public class HighlightedObjectBean implements Serializable {
     @Inject
     private ImageDeliveryBean imaging;
 
-    public HighlightedObjectBean() {
-        
+    public enum EditStatus {
+        SELECT_TARGET,
+        CREATE,
+        EDIT;
     }
-    
-    public HighlightedObjectBean(IDAO dao) {
+
+    public HighlightsBean() {
+
+    }
+
+    public HighlightsBean(IDAO dao, NavigationHelper navigationHelper, ImageDeliveryBean imaging) {
         this.dao = dao;
+        this.navigationHelper = navigationHelper;
+        this.imaging = imaging;
     }
-    
+
     @PostConstruct
     public void init() {
         LocalDateTime now = LocalDateTime.now();
@@ -105,61 +109,79 @@ public class HighlightedObjectBean implements Serializable {
     void initProviders(LocalDateTime now) {
         allObjectsProvider = TableDataProvider.initDataProvider(NUM_ITEMS_PER_PAGE, ALL_OBJECTS_SORT_FIELD, ALL_OBJECTS_SORT_ORDER,
                 (first, pageSize, sortField, descending, filters) -> dao
-                        .getHighlightedObjects(first, pageSize, sortField, descending, filters)
+                        .getHighlights(first, pageSize, sortField, descending, filters)
                         .stream()
-                        .map(HighlightedObject::new)
+                        .map(Highlight::new)
                         .collect(Collectors.toList()));
         currentObjectsProvider = TableDataProvider.initDataProvider(Integer.MAX_VALUE, CURRENT_OBJECTS_SORT_FIELD, CURRENT_OBJECTS_SORT_ORDER,
                 (first, pageSize, sortField, descending, filters) -> dao
-                .getHighlightedObjectsForDate(now)
-                .stream()
-                .map(HighlightedObject::new)
-                .collect(Collectors.toList()));
+                        .getHighlightsForDate(now)
+                        .stream()
+                        .filter(HighlightData::isEnabled)
+                        .map(Highlight::new)
+                        .collect(Collectors.toList()));
     }
 
-    public TableDataProvider<HighlightedObject> getAllObjectsProvider() {
+    public TableDataProvider<Highlight> getAllObjectsProvider() {
         return allObjectsProvider;
     }
-    
-    public TableDataProvider<HighlightedObject> getCurrentObjectsProvider() {
+
+    public TableDataProvider<Highlight> getCurrentObjectsProvider() {
         return currentObjectsProvider;
     }
 
-    public String getRecordUrl(HighlightedObject object) {
+    public String getUrl(Highlight object) {
         if (object != null) {
-            return navigationHelper.getImageUrl() + "/" + object.getData().getRecordIdentifier() + "/";
+            switch (object.getData().getTargetType()) {
+                case RECORD:
+                    return navigationHelper.getImageUrl() + "/" + object.getData().getRecordIdentifier() + "/";
+                case URL:
+                    try {
+                        URI uri = new URI(object.getData().getTargetUrl());
+                        if (!uri.isAbsolute()) {
+                            uri = UriBuilder.fromPath("/").path(object.getData().getTargetUrl()).scheme("https").build();
+                        }
+                        return uri.toString();
+                    } catch (URISyntaxException e) {
+                        logger.error("Highlight target url {} is not a valid url", object.getData().getTargetUrl());
+                    }
+            }
         }
         return "";
     }
 
-    public void deleteObject(HighlightedObject object) {
+    public void deleteObject(Highlight object) {
         try {
-            dao.deleteHighlightedObject(object.getData().getId());
-            Messages.info("cms___highlighted_objects__delete__success");
+            dao.deleteHighlight(object.getData().getId());
+            Messages.info("cms___highlights__delete__success");
         } catch (DAOException e) {
             logger.error("Error deleting object", e);
-            Messages.error("cms___highlighted_objects__delete__error");
+            Messages.error("cms___highlights__delete__error");
         }
     }
 
-    public HighlightedObject getSelectedObject() {
+    public Highlight getSelectedObject() {
         return selectedObject;
     }
 
-    public void setSelectedObject(HighlightedObject selectedObject) {
+    public void setSelectedObject(Highlight selectedObject) {
         this.selectedObject = selectedObject;
-        this.metadataElement = null;
         if (this.selectedObject != null) {
             this.selectedObject.setSelectedLocale(BeanUtils.getDefaultLocale());
+            if (this.selectedObject.getData().getId() == null) {
+                setEditStatus(EditStatus.SELECT_TARGET);
+            } else {
+                setEditStatus(EditStatus.EDIT);
+            }
         }
     }
 
     public void setSelectedObjectId(long id) {
 
         try {
-            HighlightedObjectData data = dao.getHighlightedObject(id);
+            HighlightData data = dao.getHighlight(id);
             if (data != null) {
-                setSelectedObject(new HighlightedObject(data));
+                setSelectedObject(new Highlight(data));
             } else {
                 setSelectedObject(null);
             }
@@ -170,118 +192,61 @@ public class HighlightedObjectBean implements Serializable {
     }
 
     public void setNewSelectedObject() {
-        HighlightedObjectData data = new HighlightedObjectData();
-        setSelectedObject(new HighlightedObject(data));
+        HighlightData data = new HighlightData();
+        setSelectedObject(new Highlight(data));
     }
 
     public boolean isNewObject() {
-        return this.selectedObject != null && this.selectedObject.getData().getId() != null;
+        return this.selectedObject != null && this.selectedObject.getData().getId() == null;
     }
 
-    public void saveObject(HighlightedObject object) throws DAOException {
+    public void saveObject(Highlight object) throws DAOException {
         boolean saved = false;
         boolean redirect = false;
         if (object != null && object.getData().getId() != null) {
-            saved = dao.updateHighlightedObject(object.getData());
+            saved = dao.updateHighlight(object.getData());
         } else if (object != null) {
-            saved = dao.addHighlightedObject(object.getData());
+            saved = dao.addHighlight(object.getData());
             redirect = true;
         }
         if (saved) {
-            Messages.info("Successfully saved object " + object);
+            Messages.info(ViewerResourceBundle.getTranslationWithParameters("button__save__success", null, object.toString()));
         } else {
-            Messages.error("Failed to save object " + object);
+            Messages.error(
+                    ViewerResourceBundle.getTranslationWithParameters("button__save__error", null, object != null ? object.toString() : "null"));
         }
         if (redirect) {
-            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightedObjectsEdit", object.getData().getId()));
+            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightsEdit", object.getData().getId()));
         }
     }
 
     public MetadataElement getMetadataElement() {
-        if (this.metadataElement == null && this.selectedObject != null) {
+        if (this.selectedObject != null) {
             try {
-                SolrDocument solrDoc = loadSolrDocument(this.selectedObject.getData().getRecordIdentifier());
-                if (solrDoc != null) {
-                    this.metadataElement = loadMetadataElement(solrDoc, 0);
-                    if (this.selectedObject.getData().getName().isEmpty()) {
-                        this.selectedObject.getData().setName(createRecordTitle(solrDoc));
-                    }
-                }
+                return this.selectedObject.getMetadataElement();
             } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", getSelectedObject().getData().getName().getTextOrDefault(),
+                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}",
+                        this.getSelectedObject().getData().getName().getTextOrDefault(),
                         e.getMessage());
                 Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}",
                         getSelectedObject().getData().getName().getTextOrDefault(), e.getMessage());
+                return null;
             }
         }
-        return this.metadataElement;
+        return null;
     }
 
-    /**
-     * @param recordPi
-     * @param index Metadata view index
-     * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    private MetadataElement loadMetadataElement(SolrDocument solrDoc, int index) throws PresentationException, IndexUnreachableException {
-        StructElement structElement = new StructElement(solrDoc);
-        return new MetadataElement().init(structElement, index, BeanUtils.getLocale())
-                .setSelectedRecordLanguage(this.selectedObject.getSelectedLocale().getLanguage());
-
-    }
-
-    SolrDocument loadSolrDocument(String recordPi) throws IndexUnreachableException, PresentationException {
-        if (StringUtils.isBlank(recordPi)) {
-            return null;
-        }
-
-        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(recordPi);
-        if (solrDoc == null) {
-            return null;
-        }
-        return solrDoc;
-    }
-
-    /**
-     * @param note2
-     * @param metadataElement2
-     */
-    private TranslatedText createRecordTitle(SolrDocument solrDoc) {
-        IMetadataValue label = TocMaker.buildTocElementLabel(solrDoc);
-        TranslatedText text = createRecordTitle(label);
-        text.setSelectedLocale(IPolyglott.getDefaultLocale());
-        return text;
-    }
-
-    /**
-     * @param label
-     * @return
-     */
-    private TranslatedText createRecordTitle(IMetadataValue label) {
-        if (label instanceof MultiLanguageMetadataValue) {
-            MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
-            return new TranslatedText(mLabel);
-        } else {
-            TranslatedText title = new TranslatedText();
-            title.setValue(label.getValue().orElse(""), IPolyglott.getDefaultLocale());
-            return title;
-        }
-    }
-
-    public HighlightedObject getCurrentHighlightedObject() throws DAOException {
-        List<HighlightedObject> currentObjects = dao.getHighlightedObjectsForDate(LocalDateTime.now())
+    public Highlight getCurrentHighlight() throws DAOException {
+        List<Highlight> currentObjects = dao.getHighlightsForDate(LocalDateTime.now())
                 .stream()
-                .filter(HighlightedObjectData::isEnabled)
-                .map(HighlightedObject::new)
+                .filter(HighlightData::isEnabled)
+                .map(Highlight::new)
                 .collect(Collectors.toList());
         if (!currentObjects.isEmpty()) {
             int randomIndex = random.nextInt(currentObjects.size());
             return currentObjects.get(randomIndex);
-        } else {
-            return null;
         }
+        return null;
     }
 
     public URI getRecordRepresentativeURI() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
@@ -295,13 +260,20 @@ public class HighlightedObjectBean implements Serializable {
             return Optional.ofNullable(imaging.getThumbs().getThumbnailUrl(getSelectedObject().getData().getRecordIdentifier(), width, height))
                     .map(URI::create)
                     .orElse(null);
-        } else {
-            return null;
         }
+        return null;
     }
-    
-    public List<HighlightedObject> getCurrentObjects() {
+
+    public List<Highlight> getCurrentObjects() {
         return this.getCurrentObjectsProvider().getPaginatorList();
+    }
+
+    public EditStatus getEditStatus() {
+        return editStatus;
+    }
+
+    public void setEditStatus(EditStatus editStatus) {
+        this.editStatus = editStatus;
     }
 
 }

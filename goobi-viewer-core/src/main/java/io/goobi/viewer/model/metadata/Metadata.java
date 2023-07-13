@@ -77,6 +77,8 @@ public class Metadata implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(Metadata.class);
 
+    private static final String FIELD_NORM_TYPE = "NORM_TYPE";
+
     // Configuration
 
     /** Label from messages.properties. */
@@ -435,11 +437,11 @@ public class Metadata implements Serializable {
                     // Values that are message keys (or collection names, etc.)
                     value = ViewerResourceBundle.getTranslation(value, locale);
                     // convert line breaks back to HTML
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                     break;
                 case UNESCAPEDFIELD:
                     // convert line breaks back to HTML
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                     break;
                 case URLESCAPEDFIELD:
                     // escape reserved URL characters
@@ -466,15 +468,15 @@ public class Metadata implements Serializable {
                                 // Determine norm data set type from the URI field name
                                 normDataType = param.getKey().replace("NORM_URI_", "");
                             } else if (param.getKey().equals("NORM_URI")) {
-                                if (options != null && options.get("NORM_TYPE") != null) {
+                                if (options != null && options.get(FIELD_NORM_TYPE) != null) {
                                     // Try local NORM_TYPE value, if given
-                                    normDataType = MetadataTools.findMetadataGroupType(options.get("NORM_TYPE"));
+                                    normDataType = MetadataTools.findMetadataGroupType(options.get(FIELD_NORM_TYPE));
                                 } else {
                                     // Fetch MARCXML record and determine norm data set type from gndspec field 075$b
                                     Record marcRecord = MetadataTools.getAuthorityDataRecord(url);
                                     if (marcRecord != null && !marcRecord.getNormDataList().isEmpty()) {
                                         for (NormData normData : marcRecord.getNormDataList()) {
-                                            if ("NORM_TYPE".equals(normData.getKey())) {
+                                            if (FIELD_NORM_TYPE.equals(normData.getKey())) {
                                                 String val = normData.getValues().get(0).getText();
                                                 normDataType = MetadataTools.findMetadataGroupType(val);
                                                 break;
@@ -533,7 +535,7 @@ public class Metadata implements Serializable {
                     // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
                     value = StringEscapeUtils.escapeHtml4(value);
                     // convert line breaks back to HTML
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
             }
             value = value.replace("'", "&#39;");
             if (param.isRemoveHighlighting()) {
@@ -907,8 +909,8 @@ public class Metadata implements Serializable {
                             }
                             paramValues.add(value);
                         }
-                        if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue("NORM_TYPE") != null) {
-                            options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
+                        if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue(FIELD_NORM_TYPE) != null) {
+                            options.put(FIELD_NORM_TYPE, SolrTools.getSingleFieldStringValue(doc, FIELD_NORM_TYPE));
                         }
                         setParamValue(count, i, paramValues, param.getKey(), null, options, groupType, locale);
                     } else if (param.getDefaultValue() != null) {

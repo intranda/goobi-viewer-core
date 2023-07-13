@@ -80,7 +80,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_2", "bla blup");
         doc.addField("MD_3", "none of the above");
 
-        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
@@ -113,7 +113,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_SUBTITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
-        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
@@ -144,7 +144,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_AUTHOR", "Doe, John");
         doc.addField("MD_AUTHOR" + SolrConstants.SUFFIX_UNTOKENIZED, "Doe, John");
 
-        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
@@ -175,8 +175,8 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
         factory.getAdditionalMetadataIgnoreFields().add("T-1000");
-        SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
-        new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+        SearchHit hit = factory.createSearchHit(doc, null, null, null);
+        new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
@@ -205,7 +205,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_TITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
-        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("MD_2", hit.getFoundMetadata().get(0).getOne());
@@ -240,7 +240,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         String[] translateFields = { SolrConstants.DC, SolrConstants.DOCSTRCT };
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
         factory.getAdditionalMetadataTranslateFields().addAll(Arrays.asList(translateFields));
-        SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
+        SearchHit hit = factory.createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Structure type", hit.getFoundMetadata().get(0).getOne());
@@ -274,7 +274,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         String[] oneLineFields = { "MD_COUNT_EU", "MD_COUNT_SE" };
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
         factory.getAdditionalMetadataOneLineFields().addAll(Arrays.asList(oneLineFields));
-        SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
+        SearchHit hit = factory.createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
 
@@ -312,7 +312,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
         factory.getAdditionalMetadataSnippetFields().addAll(Collections.singletonList("MD_SOMETEXT"));
         Assert.assertEquals(2, factory.getAdditionalMetadataSnippetFields().size());
-        SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
+        SearchHit hit = factory.createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
 
@@ -348,7 +348,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
-        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         hit.addLabelHighlighting();
         Assert.assertTrue("label: " + hit.getBrowseElement().getLabelShort(), hit.getBrowseElement()
@@ -376,7 +376,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
-        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         hit.addLabelHighlighting();
         Assert.assertTrue("label: " + hit.getBrowseElement().getLabelShort(), hit.getBrowseElement()
@@ -397,7 +397,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
-        SearchHit hit = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+        SearchHit hit = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         hit.addLabelHighlighting();
         Assert.assertEquals("label: " + hit.getBrowseElement().getLabelShort(), StringConstants.LOREM_IPSUM, hit.getBrowseElement()
@@ -449,7 +449,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
         SearchHit hit =
                 //                SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, Collections.emptyMap(), null, null, null, null, null, null, 0, null);
-                new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+                new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
 
         hit.addFulltextChild(null, "en");
@@ -476,7 +476,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
         SearchHit hit =
                 // SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
-                new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+                new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(0, hit.getChildren().size());
 
@@ -508,7 +508,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
-        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(0, hit.getChildren().size());
 
@@ -534,7 +534,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
         SearchHit hit =
                 new SearchHitFactory(null, null, null, 0, new ThumbnailHandler(new IIIFUrlHandler(new ApiUrls(ApiUrls.API)), "/foo/bar/"),
-                        Locale.ENGLISH).createSearchHit(doc, null, null, null, null);
+                        Locale.ENGLISH).createSearchHit(doc, null, null, null);
         Assert.assertNotNull(hit);
 
         int count = 3;

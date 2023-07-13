@@ -29,11 +29,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
-
-import com.ibm.icu.util.TimeZone;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.controller.mq.MessageStatus;
@@ -67,7 +62,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
-import io.goobi.viewer.model.cms.HighlightedObjectData;
+import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -117,7 +112,6 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import jakarta.persistence.RollbackException;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -2820,7 +2814,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSPage o");
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -2891,7 +2885,7 @@ public class JPADAO implements IDAO {
 
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -3149,6 +3143,29 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSContent(CMSContent content) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                CMSContent o = em.getReference(CMSContent.class, content.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error deleting cms component", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
@@ -6996,33 +7013,33 @@ public class JPADAO implements IDAO {
     }
 
     @Override
-    public boolean addHighlightedObject(HighlightedObjectData object) throws DAOException {
+    public boolean addHighlight(HighlightData object) throws DAOException {
         return addEntity(object);
     }
 
     @Override
-    public boolean updateHighlightedObject(HighlightedObjectData object) throws DAOException {
+    public boolean updateHighlight(HighlightData object) throws DAOException {
         return updateEntity(object);
     }
     
     @Override
-    public boolean deleteHighlightedObject(Long id) throws DAOException {
-        return deleteEntity(id, HighlightedObjectData.class);
+    public boolean deleteHighlight(Long id) throws DAOException {
+        return deleteEntity(id, HighlightData.class);
     }
 
     @Override
-    public HighlightedObjectData getHighlightedObject(Long id) throws DAOException {
-        return getEntity(id, HighlightedObjectData.class);
+    public HighlightData getHighlight(Long id) throws DAOException {
+        return getEntity(id, HighlightData.class);
     }
 
     @Override
-    public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException {
-        return getAllEntities(HighlightedObjectData.class);
+    public List<HighlightData> getAllHighlights() throws DAOException {
+        return getAllEntities(HighlightData.class);
     }
 
     @Override
-    public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException {
-        return getMatchingEntities(HighlightedObjectData.class,
+    public List<HighlightData> getHighlightsForDate(LocalDateTime date) throws DAOException {
+        return getMatchingEntities(HighlightData.class,
                 "(:date BETWEEN o.dateStart AND o.dateEnd)"
                 + " OR "
                 + "(o.dateStart IS NULL AND :date < o.dateEnd)"
@@ -7033,24 +7050,24 @@ public class JPADAO implements IDAO {
     }
     
     @Override
-    public List<HighlightedObjectData> getPastHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+    public List<HighlightData> getPastHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightedObjectData> data = getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
+        List<HighlightData> data = getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
         return data;
     }
     
     @Override
-    public List<HighlightedObjectData> getFutureHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+    public List<HighlightData> getFutureHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightedObjectData> data = getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
+        List<HighlightData> data = getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
         return data;
     }
     
 
     @Override
-    public List<HighlightedObjectData> getHighlightedObjects(int first, int pageSize, String sortField, boolean descending,
+    public List<HighlightData> getHighlights(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters) throws DAOException {
-        return getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters);
+        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters);
     }
     
     private boolean addEntity(Serializable obj) throws DAOException {

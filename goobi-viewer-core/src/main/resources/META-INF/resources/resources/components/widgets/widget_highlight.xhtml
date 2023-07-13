@@ -14,17 +14,17 @@
     <composite:implementation>
     
         <!-- WIDGET HIGHLIGHTED OBJECT -->
-        <div id="widgetHighlightedObject" class="widget widget-highlighted-object">
-	        <h2 class="widget__title widget-highlighted-object__title">
-	            <span>#{msg.cms__highlighted_object}</span>
+        <div id="widgetHighlight" class="widget widget-highlight">
+	        <h2 class="widget__title widget-highlight__title">
+	            <span>#{msg.cms__highlight}</span>
 	        </h2>
-            <div class="widget__body widget__highlighted-object-body">
-				<viewerComponent:highlightedObject imageSizeWidth="450" imageSizeHeight="550" />
+            <div class="widget__body widget__highlight-body">
+				<viewerComponent:highlight imageSizeWidth="450" imageSizeHeight="550" />
 
              	<!-- LINK FOR ADMINS TO HIGHLIGHTED OBJECTS TABLE OVERVIEW -->
              	<ui:fragment rendered="#{userBean.admin}">
-               		<div class="widget-highlighted-object__action-link">
-               			<a href="#{request.contextPath}admin/cms/highlightedobjects/">#{msg.edit}</a>
+               		<div class="widget-highlight__action-link">
+               			<a href="#{request.contextPath}admin/cms/highlights/">#{msg.edit}</a>
                		</div>
               </ui:fragment>
               

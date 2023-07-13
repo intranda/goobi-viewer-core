@@ -3,6 +3,9 @@ package io.goobi.viewer.controller;
 public class StringConstants {
 
     public static final String DEFAULT = "default";
+    
+    public static final String HTML_BR = "<br />";
+    public static final String HTML_BR_ESCAPED = "&lt;br /&gt;";
 
     public static final String MIMETYPE_TEXT_PLAIN = "text/plain";
 

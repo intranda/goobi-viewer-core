@@ -491,6 +491,18 @@
             <field type="oneline">MD_ACCESSLOCATIONS</field>
             <field type="snippet">MD_DESCRIPTION</field>
 		</displayAdditionalMetadata>
+        
+        <metadata>
+            <!-- displayStructType: If false, the structtype is hidden. Default is true -->
+            <displayStructType>false</displayStructType>
+
+            <!-- valueNumber: defines the maximum number of found values to display for each field type -->
+            <valueNumber>17</valueNumber>
+
+            <!-- valueLength: defines the maximum length in characters for each value, longer values are truncated -->
+            <valueLength>18</valueLength>
+        </metadata>
+        
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
 		<staticQuerySuffix>-BOOL_HIDE:true</staticQuerySuffix>
@@ -661,9 +673,9 @@
             </template>
         </metadataView>
 
-		<!-- searchHitMetadataList: defines metadata that is displayed in the search 
-			hitlist. The syntax is the same as in mainMetadataList -->
-		<searchHitMetadataList>
+		<!-- metadataList[@type="search"]: defines metadata that is displayed in the search 
+			hitlist. The syntax is the same as in metadataView -->
+		<metadataList type="searchHit">
 			<template name="_DEFAULT">
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />
@@ -687,21 +699,11 @@
 				</metadata>
 			</template>
 
-			<!-- displayStructType: if false, the structtype is hidden -->
-			<displayStructType>false</displayStructType>
-
-			<!-- valueNumber: defines the maximum number of found values to display 
-				for each field type [since 2.0] -->
-			<valueNumber>17</valueNumber>
-
-			<!-- valueLength: defines the maximum length in characters for each value, 
-				longer values are truncated [since 2.0] -->
-			<valueLength>18</valueLength>
-		</searchHitMetadataList>
+		</metadataList>
 
 
-		<!-- sideBarMetadataList: defines metadata that are displayed in the sidebar. -->
-		<sideBarMetadataList>
+		<!-- metadataList[@type="sidebar"]: defines metadata that are displayed in the sidebar. -->
+		<metadataList type="sideBar">
 			<!-- _DEFAULT: metadata defined in the _DEFAULT template is displayed 
 				on all struct elements that have no explicit definition -->
 			<template name="_DEFAULT">
@@ -736,7 +738,27 @@
 					<param type="field" key="URN" />
 				</metadata>
 			</template>
-		</sideBarMetadataList>
+		</metadataList>
+        
+        <metadataList type="cms_fooBar">
+            <template name="_DEFAULT">
+                <metadata label="MD_CREATOR" value="">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_SHELFMARK" value="">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+                <metadata label="MD_PUBLISHER" value="">
+                    <param type="field" key="MD_PUBLISHER" />
+                </metadata>
+                <metadata label="MD_YEARPUBLISH" value="">
+                    <param type="field" key="MD_YEARPUBLISH" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH" value="">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+            </template>
+        </metadataList>
 		
         <!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
         <normdataList>

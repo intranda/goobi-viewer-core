@@ -64,6 +64,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -107,6 +108,10 @@ public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LogManager.getLogger(Configuration.class);
 
+    public static final String CONFIG_FILE_NAME = "config_viewer.xml";
+
+    public static final String METADATA_LIST_TYPE_SEARCH_HIT = "searchHit";
+
     private static final String XML_PATH_ATTRIBUTE_CONDITION = "[@condition]";
     private static final String XML_PATH_ATTRIBUTE_DEFAULT = "[@default]";
     private static final String XML_PATH_ATTRIBUTE_DESCRIPTION = "[@description]";
@@ -116,13 +121,12 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_ATTRIBUTE_TYPE = "[@type]";
     private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
 
+    private static final String XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD = "search.advanced.searchFields.field";
     private static final String XML_PATH_SEARCH_SORTING_FIELD = "search.sorting.field";
     private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
 
     private static final String VALUE_DEFAULT = "_DEFAULT";
-
-    public static final String CONFIG_FILE_NAME = "config_viewer.xml";
 
     private Set<String> stopwords;
 
@@ -388,6 +392,67 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @param prefix Optional prefix for filtering
+     * @return List of type attribute values of matching lists
+     * @should return all metadataList types if prefix empty
+     * @should filter by prefix correctly
+     */
+    public List<String> getMetadataListTypes(String prefix) {
+        List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
+        if (metadataLists == null) {
+            logger.error("no metadata lists found");
+            return new ArrayList<>(); // must be a mutable list!
+        }
+
+        List<String> ret = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
+            String type = metadataList.getString(XML_PATH_ATTRIBUTE_TYPE);
+            if (StringUtils.isEmpty(prefix) || type.startsWith(prefix)) {
+                ret.add(type);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param type
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @param topstructValueFallbackDefaultValue
+     * @return
+     */
+    public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
+            boolean topstructValueFallbackDefaultValue) {
+        // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Sometimes used for debugging
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
+        if (metadataLists == null) {
+            logger.trace("no metadata lists found");
+            return new ArrayList<>(); // must be a mutable list!
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
+            if (type.equals(metadataList.getString(XML_PATH_ATTRIBUTE_TYPE))) {
+                List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
+                if (templateList.isEmpty()) {
+                    logger.trace("{}  templates found for type {}", templateList.size(), type);
+                    return new ArrayList<>(); // must be a mutable list!
+                }
+
+                return getMetadataForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue);
+            }
+        }
+
+        return new ArrayList<>(); // must be a mutable list!
+    }
+
+    /**
      * Returns the list of configured metadata for search hit elements.
      *
      * @param template a {@link java.lang.String} object.
@@ -398,6 +463,25 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
+        if (templateList != null && !templateList.isEmpty()) {
+            logger.warn("Old <searchHitMetadataList> configuration found - please migrate to <metadataList type=\"searchHit\">.");
+            return getMetadataForTemplate(template, templateList, true, true);
+        }
+
+        return getMetadataConfigurationForTemplate(METADATA_LIST_TYPE_SEARCH_HIT, template, true, true);
+    }
+
+    /**
+     * Returns the list of configured metadata for {@link Highlight}s which reference a record.
+     *
+     * @param template a {@link java.lang.String} object.
+     * @should return correct template configuration
+     * @should return default template configuration if requested not found
+     * @should return default template if template is null
+     * @return a {@link java.util.List} object.
+     */
+    public List<Metadata> getHighlightMetadataForTemplate(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.highlightMetadataList.template");
         if (templateList == null) {
             return new ArrayList<>(); // must be a mutable list!
         }
@@ -473,11 +557,12 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<Metadata> getSidebarMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.sideBarMetadataList.template");
-        if (templateList == null) {
-            return new ArrayList<>();
+        if (templateList != null && !templateList.isEmpty()) {
+            logger.warn("Old <sideBarMetadataList> configuration found - please migrate to <metadataList type=\"sideBar\">.");
+            return getMetadataForTemplate(template, templateList, false, false);
         }
 
-        return getMetadataForTemplate(template, templateList, false, false);
+        return getMetadataConfigurationForTemplate("sideBar", template, false, false);
     }
 
     /**
@@ -1360,7 +1445,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
         if (fieldList == null) {
             return new ArrayList<>();
         }
@@ -1531,7 +1616,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public int getAdvancedSearchFieldDisplaySelectItemsThreshold(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
         if (fieldList == null) {
             return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
         }
@@ -1555,7 +1640,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSeparatorLabel(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
         if (fieldList == null) {
             return null;
         }
@@ -1576,7 +1661,7 @@ public class Configuration extends AbstractConfiguration {
      * @return
      */
     boolean isAdvancedSearchFieldHasAttribute(String field, String attribute) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
         if (fieldList == null) {
             return false;
         }
@@ -3535,7 +3620,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean getDisplayStructType() {
-        return this.getLocalBoolean("metadata.searchHitMetadataList.displayStructType", true);
+        return this.getLocalBoolean("search.metadata.displayStructType", true);
     }
 
     /**
@@ -3547,7 +3632,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSearchHitMetadataValueNumber() {
-        return getLocalInt("metadata.searchHitMetadataList.valueNumber", 1);
+        return getLocalInt("search.metadata.valueNumber", 1);
     }
 
     /**
@@ -3559,7 +3644,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSearchHitMetadataValueLength() {
-        return getLocalInt("metadata.searchHitMetadataList.valueLength", 0);
+        return getLocalInt("search.metadata.valueLength", 0);
     }
 
     /**

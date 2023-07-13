@@ -1165,8 +1165,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT),
-                        0, 10, null, null, null, null, null,
-                        null, Locale.ENGLISH, 0);
+                        0, 10, null, null, null, null, null, null, null, Locale.ENGLISH, false, 0);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
@@ -1438,7 +1437,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getFilteredTerms_shouldBeThreadSafeWhenCountingTerms() throws Exception {
         int previousSize = -1;
         Map<String, Long> previousCounts = new HashMap<>();
-        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, false, false);
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null, false, false, false);
         for (int i = 0; i < 10; ++i) {
             List<BrowseTerm> terms =
                     SearchHelper.getFilteredTerms(bmfc, null, null, 0, SolrSearchIndex.MAX_HITS, new BrowseTermComparator(Locale.ENGLISH));

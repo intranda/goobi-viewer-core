@@ -52,8 +52,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 
-import com.fasterxml.jackson.databind.ser.std.EnumSerializer;
-
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
@@ -88,10 +86,10 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
+import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
-import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
@@ -140,7 +138,7 @@ public class CmsBean implements Serializable {
     private List<String> solrSortFields = null;
     private List<String> solrGroupFields = null;
     private String test = "";
-    
+
     private List<String> luceneFields = null;
 
     public CmsBean() {
@@ -1515,6 +1513,14 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Returns metadataList types from the configuration where the type value stars with "cms_".
+     * @return
+     */
+    public List<String> getCmsMetadataListTypes() {
+        return DataManager.getInstance().getConfiguration().getMetadataListTypes("cms_");
+    }
+
+    /**
      * <p>
      * getCssClass.
      * </p>
@@ -1796,9 +1802,8 @@ public class CmsBean implements Serializable {
     public String getTest() {
         return test;
     }
-    
+
     public void setTest(String test) {
-        System.out.println("set test");
         this.test = test;
     }
 }

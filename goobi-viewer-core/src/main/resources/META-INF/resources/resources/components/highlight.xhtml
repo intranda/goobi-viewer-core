@@ -1,0 +1,88 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface>
+        	<composite:attribute name="imageSizeWidth" required="false" default="2000" />
+        	<composite:attribute name="imageSizeHeight" required="false" default="2100" />
+        	<composite:attribute name="displayMetadata" required="false" default="#{false}" />
+    </composite:interface>
+
+    <composite:implementation>
+    	<!-- CONDITION: IS ANY HIGHLIGHTED OBJECT SET UP FOR THE CURRENT DATE? -->
+		<c:set scope="request" var="highlight" value="#{highlightsBean.currentHighlight}"/>
+		<h:panelGroup styleClass="highlighted-object" layout="block" rendered="#{highlight != null}">
+
+					<!-- CONDITION: DOES AN OBJECT IMAGE EXIST? YES: RENDER LINK + IMAGE + IMAGE TITLE -->
+					<ui:fragment rendered="#{highlight.hasImageURI()}">
+						<a class="highlighted-object__link" href ="#{highlightsBean.getUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}" >
+							<figure class="highlighted-object__figure">
+								<img class="highlighted-object__image"
+									alt="#{highlight.data.name.textOrDefault}" 
+									title="#{msg.image}: #{highlight.data.name.textOrDefault}"
+									src="#{highlight.getImageURI(cc.attrs.imageSizeWidth, cc.attrs.imageSizeHeight)}" />
+								<figcaption class="highlighted-object__image-title">#{highlight.data.name.textOrDefault}</figcaption>
+							</figure>
+						</a>
+					</ui:fragment>
+
+					<!-- CONDITION: DOES AN OBJECT IMAGE EXIST? NO: RENDER LINK ONLY -->
+					<ui:fragment rendered="#{!highlight.hasImageURI()}">
+						<a class="highlighted-object__no-image-link" href="#{highlightsBean.getUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}">#{highlight.data.name.textOrDefault}</a>
+					</ui:fragment>
+					
+					<ui:fragment rendered="#{cc.attrs.displayMetadata and not empty highlight.metadataList}">
+					      <c:forEach items="#{highlight.metadataList}" var="metadata">
+	                            <h:panelGroup rendered="#{!metadata.blank}">
+	
+	                                    <!-- grouped="true" -->
+	                                    <h:panelGroup rendered="#{metadata.group}">
+	
+	                                        <!-- Single label for all values, each value is a single string -->
+	                                        <h:panelGroup rendered="#{metadata.singleString}">
+	                                            <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+	                                                <ui:param name="metadata" value="#{metadata}" />
+	                                            </ui:include>
+	                                        </h:panelGroup>
+	
+	                                        <!-- Each value has a label column and a value column -->
+	                                        <h:panelGroup rendered="#{!metadata.singleString}">
+	                                            <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+	                                                <ui:param name="metadata" value="#{metadata}" />
+	                                            </ui:include>
+	                                        </h:panelGroup>
+	
+	                                    </h:panelGroup>
+	
+	                                    <!-- grouped="false" -->
+	                                    <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
+	                                        <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
+	                                            <dt title="#{metadata.label}">
+	                                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+	                                            </dt>
+	                                            <ui:repeat value="#{metadata.values}" var="val">
+	                                            	<dd>
+	                                                    <span class="metadata__element-value">
+	                                                        <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+	                                                            <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
+	                                                                <f:param value="#{val.getComboValueShort(ind)}" />
+	                                                            </c:forEach>
+	                                                        </h:outputFormat>
+	                                                    </span>
+	                                            	</dd>
+	                                            </ui:repeat>
+	                                        </dl>
+	                                    </h:panelGroup>
+	
+	                            </h:panelGroup>
+	                        </c:forEach>
+					
+					</ui:fragment>
+
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

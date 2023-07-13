@@ -34,7 +34,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,7 +71,6 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
-import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Wrapper class for search hits. Contains the corresponding <code>BrowseElement</code>
@@ -145,8 +143,6 @@ public class SearchHit implements Comparable<SearchHit> {
     /** Metadata for Excel export. */
     @JsonIgnore
     private final Map<String, String> exportMetadata = new HashMap<>();
-    @JsonIgnore
-    private final Set<String> existingMetadataFields = new HashSet<>();
     private final String url;
     @JsonIgnore
     private final Locale locale;
@@ -476,7 +472,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     if (ownerHit == null) {
                         SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                         if (ownerDoc != null) {
-                            ownerHit = factory.createSearchHit(ownerDoc, null, null, fulltext, null);
+                            ownerHit = factory.createSearchHit(ownerDoc, null, fulltext, null);
                             children.add(ownerHit);
                             ownerHits.put(ownerIddoc, ownerHit);
                             ownerDocs.put(ownerIddoc, ownerDoc);
@@ -490,7 +486,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     }
                     // If the owner hit the is the main element, create an intermediary to avoid the child label being displayed twice
                     if (ownerHit.equals(this)) {
-                        SearchHit newOwnerHit = factory.createSearchHit(ownerDocs.get(ownerIddoc), null, null, fulltext, null);
+                        SearchHit newOwnerHit = factory.createSearchHit(ownerDocs.get(ownerIddoc), null, fulltext, null);
                         ownerHit.getChildren().add(newOwnerHit);
                         ownerHit = newOwnerHit;
                         ownerHits.put(ownerIddoc, newOwnerHit);
@@ -498,7 +494,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
 
                     SearchHit childHit =
-                            factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), existingMetadataFields, fulltext,
+                            factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), fulltext,
                                     acccessDeniedType ? HitType.ACCESSDENIED : null);
                     // Skip grouped metadata child hits that have no additional (unique) metadata to display
                     if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty() && ownerHit.getFoundMetadata().isEmpty()) {
@@ -526,7 +522,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     // Docstruct hits are immediate children of the main hit
                     String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                     if (!ownerHits.containsKey(iddoc)) {
-                        SearchHit childHit = factory.createSearchHit(childDoc, null, null, fulltext, null);
+                        SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
                         children.add(childHit);
                         ownerHits.put(iddoc, childHit);
                         ownerDocs.put(iddoc, childDoc);
@@ -544,250 +540,6 @@ public class SearchHit implements Comparable<SearchHit> {
             ownerHits.clear();
         }
         // logger.trace("Remaning child docs: {}", childDocs.size());
-    }
-
-    /**
-     * <p>
-     * populateFoundMetadata.
-     * </p>
-     *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param ownerAlreadyHasFields List of metadata field+value combos that the owner already has
-     * @param ignoreFields Fields to be skipped
-     * @param translateFields Fields to be translated
-     * @param oneLineFields
-     * @param snippetFields Fields to be truncated to the relevant part
-     * @should add field values pairs that match search terms
-     * @should add MD fields that contain terms from DEFAULT
-     * @should not add duplicate values
-     * @should not add ignored fields
-     * @should not add field values that equal the label
-     * @should translate configured field values correctly
-     * @should write one line fields into a single string
-     * @should truncate snippet fields correctly
-     */
-    public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields,
-            Set<String> oneLineFields, Set<String> snippetFields) {
-        // logger.trace("populateFoundMetadata: {}", searchTerms); //NOSONAR Sometimes used for debugging
-        if (searchTerms == null) {
-            return;
-        }
-
-        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
-            // Skip fields that are in the ignore list
-            if (ignoreFields != null && ignoreFields.contains(entry.getKey())) {
-                continue;
-            }
-            switch (entry.getKey()) {
-                case SolrConstants.DEFAULT:
-                case SolrConstants.NORMDATATERMS:
-                    // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
-                    for (String docFieldName : doc.getFieldNames()) {
-                        if (!(docFieldName.startsWith("MD_") || docFieldName.startsWith("NORM_"))
-                                || docFieldName.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
-                            continue;
-                        }
-                        if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
-                            continue;
-                        }
-                        // Prevent showing child hit metadata that's already displayed on the parent hit
-                        if (ownerAlreadyHasFields != null) {
-                            switch (browseElement.getDocType()) {
-                                case METADATA:
-                                    if (ownerAlreadyHasFields.contains(docFieldName)) {
-                                        logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
-                                        continue;
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-
-                        List<String> fieldValues = SolrTools.getMetadataValues(doc, docFieldName);
-                        if (oneLineFields != null && oneLineFields.contains(docFieldName)) {
-                            // All values into a single field value
-                            StringBuilder sb = new StringBuilder();
-                            for (String fieldValue : fieldValues) {
-                                // Skip values that are equal to the hit label
-                                if (fieldValue.equals(browseElement.getLabel())) {
-                                    continue;
-                                }
-
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
-                                if (!highlightedValue.equals(fieldValue)) {
-                                    // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(entry.getKey())
-                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
-                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                                "$1" + translatedValue + "$3");
-                                    }
-                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    // Only add one instance of NORM_ALTNAME (as there can be dozens)
-                                    if ("NORM_ALTNAME".equals(docFieldName)) {
-                                        break;
-                                    }
-                                    if (sb.length() > 0) {
-                                        sb.append(", ");
-                                    }
-                                    sb.append(highlightedValue);
-                                }
-                            }
-                            if (sb.length() > 0) {
-                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), sb.toString()));
-                                // logger.trace("found metadata: {}:{}", docFieldName, fieldValue); //NOSONAR Sometimes used for debugging
-                            }
-                        } else {
-                            for (String fieldValue : fieldValues) {
-                                // Skip values that are equal to the hit label
-                                if (fieldValue.equals(browseElement.getLabel())) {
-                                    continue;
-                                }
-
-                                String highlightedValue = null;
-
-                                // Truncate snippet field values
-                                if (snippetFields != null && snippetFields.contains(docFieldName)) {
-                                    List<String> truncatedValues =
-                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
-                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
-                                                    proximitySearchDistance);
-                                    if (!truncatedValues.isEmpty()) {
-                                        highlightedValue = "[...] " + truncatedValues.get(0).trim() + " [...]";
-                                    }
-                                }
-
-                                // Apply highlighting, if not yet done via truncation
-                                if (highlightedValue == null) {
-                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
-                                }
-                                if (!highlightedValue.equals(fieldValue)) {
-                                    // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(entry.getKey())
-                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
-                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                                "$1" + translatedValue + "$3");
-                                    }
-                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue));
-                                    existingMetadataFields.add(docFieldName);
-                                    // Only add one instance of NORM_ALTNAME (as there can be dozens)
-                                    if ("NORM_ALTNAME".equals(docFieldName)) {
-                                        break;
-                                    }
-                                    // logger.trace("found metadata: {}:{}", docFieldName, fieldValue); //NOSONAR Sometimes used for debugging
-                                }
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    // Look up the exact field name in he Solr doc and add its values that contain any of the terms for that field
-                    if (doc.containsKey(entry.getKey())) {
-                        List<String> fieldValues = SolrTools.getMetadataValues(doc, entry.getKey());
-
-                        if (oneLineFields != null && oneLineFields.contains(entry.getKey())) {
-                            // All values into a single field value
-                            StringBuilder sb = new StringBuilder();
-                            for (String fieldValue : fieldValues) {
-                                // Skip values that are equal to the hit label
-                                if (fieldValue.equals(browseElement.getLabel())) {
-                                    continue;
-                                }
-                                // Prevent showing child hit metadata that's already displayed on the parent hit
-                                if (ownerAlreadyHasFields != null) {
-                                    switch (browseElement.getDocType()) {
-                                        case METADATA:
-                                            if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
-                                                logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
-                                                continue;
-                                            }
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
-                                if (!highlightedValue.equals(fieldValue)) {
-                                    // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(entry.getKey())
-                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
-                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                                "$1" + translatedValue + "$3");
-                                    }
-                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    if (sb.length() > 0) {
-                                        sb.append(", ");
-                                    }
-                                    sb.append(highlightedValue);
-                                }
-                            }
-                            if (sb.length() > 0) {
-                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), sb.toString()));
-                                existingMetadataFields.add(entry.getKey());
-                                // logger.trace("found metadata: {}:{}", docFieldName, fieldValue); //NOSONAR Sometimes used for debugging
-                            }
-
-                        } else {
-                            for (String fieldValue : fieldValues) {
-                                // Skip values that are equal to the hit label
-                                if (fieldValue.equals(browseElement.getLabel())) {
-                                    continue;
-                                }
-                                // Prevent showing child hit metadata that's already displayed on the parent hit
-                                if (ownerAlreadyHasFields != null) {
-                                    switch (browseElement.getDocType()) {
-                                        case METADATA:
-                                            if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
-                                                logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
-                                                continue;
-                                            }
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-
-                                String highlightedValue = null;
-
-                                // Truncate snippet field values
-                                if (snippetFields != null && snippetFields.contains(entry.getKey())) {
-                                    List<String> truncatedValues =
-                                            SearchHelper.truncateFulltext(entry.getValue(), fieldValue,
-                                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
-                                                    proximitySearchDistance);
-                                    if (!truncatedValues.isEmpty()) {
-                                        highlightedValue = truncatedValues.get(0).trim();
-                                    }
-                                }
-
-                                // Apply highlighting, if not yet done via truncation
-                                if (highlightedValue == null) {
-                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
-                                }
-                                if (!highlightedValue.equals(fieldValue)) {
-                                    // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(entry.getKey())
-                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
-                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                                "$1" + translatedValue + "$3");
-                                    }
-                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), highlightedValue));
-                                    existingMetadataFields.add(entry.getKey());
-                                }
-                            }
-                        }
-                    }
-                    break;
-            }
-
-        }
     }
 
     /**

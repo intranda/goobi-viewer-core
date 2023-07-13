@@ -31,15 +31,15 @@
 					<div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
 				</ui:fragment>
 
-				<!-- SEARCH HEADER -->
+				<!-- SEARCH HEADER --> 
 				<ui:include src="/resources/includes/search/searchHeader.xhtml">
 					<ui:param name="search"
 						value="#{cc.attrs.component.getContentItem('search').content.search}" />
 					<ui:param name="searchType" value="0"></ui:param>
 				</ui:include>
-               	<h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{sessionBean.get('cmsSearch').searchSimple}" value="#{msg.search}">
-                   	<f:setPropertyActionListener target="#{sessionBean.get('cmsSearch').activeSearchType}" value="0" />
-               	</h:commandButton>
+<!--                	<h:commandButton id="submitSearch" type="submit" styleClass="btn btnfull" action="#{sessionBean.get('cmsSearch').searchSimple}" value="#{msg.search}"> -->
+<!--                    	<f:setPropertyActionListener target="#{sessionBean.get('cmsSearch').activeSearchType}" value="0" /> -->
+<!--                	</h:commandButton> -->
 
 				<!-- SEARCH LIST -->
 				<div class="search-list">

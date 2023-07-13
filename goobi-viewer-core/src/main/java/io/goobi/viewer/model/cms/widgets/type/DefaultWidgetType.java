@@ -45,9 +45,9 @@ public enum DefaultWidgetType implements WidgetContentType {
     /**
      * Display the total number of records available in the viewer
      */
-    WIDGET_WORKCOUNT("totalNumberOfVolumes", "cms_widget__total_number_of_volumes__description", "fa fa-circle-o", "widget_workCount.xhtml");
+    WIDGET_WORKCOUNT("totalNumberOfVolumes", "cms_widget__total_number_of_volumes__description", "fa fa-circle-o", "widget_workCount.xhtml"),
     
-//    WIDGET_HIGHLIGHTED_OBJECT("cms_widget__highlighted_object__label", "cms_widget__highlighted_object__description", "fa fa-star", "widget_highlightedobject.xhtml");
+    WIDGET_HIGHLIGHT("cms_widget__highlight__label", "cms_widget__highlight__description", "fa fa-star", "widget_highlight.xhtml");
 
     private final String label;
     private final String description;

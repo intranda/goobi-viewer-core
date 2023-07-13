@@ -57,9 +57,9 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getMetadataValues_shouldReturnAllValuesForTheGivenField() throws Exception {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":AC13451894", null);
         Assert.assertNotNull(doc);
-        List<String> values = SolrTools.getMetadataValues(doc, SolrConstants.DATEUPDATED);
+        List<String> values = SolrTools.getMetadataValues(doc, "MD_CREATOR");
         Assert.assertTrue(values.size() >= 2);
     }
 
@@ -215,6 +215,14 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     public void getAvailableValuesForField_shouldReturnAllExistingValuesForTheGivenField() throws Exception {
         List<String> values = SolrTools.getAvailableValuesForField("MD_YEARPUBLISH", SolrConstants.ISWORK + ":true");
         Assert.assertFalse(values.isEmpty());
+    }
+
+    @Test
+    public void getAvailableValuesForField_shouldReturnAllEntireValues() throws Exception {
+        List<String> values = SolrTools.getAvailableValuesForField("MD_PLACEPUBLISH", SolrConstants.ISWORK + ":true");
+        Assert.assertFalse(values.isEmpty());
+        //values.forEach(System.out::println);
+        Assert.assertTrue(values.contains("Ateliersituation vor neutralem Hintergrund"));
     }
 
     /**
