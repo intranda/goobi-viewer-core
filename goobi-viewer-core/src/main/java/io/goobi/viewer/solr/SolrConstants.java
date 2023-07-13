@@ -148,6 +148,8 @@ public class SolrConstants {
     public static final String DOCSTRCT_TOP = "DOCSTRCT_TOP";
     /** Constant <code>DOCTYPE="DOCTYPE"</code> */
     public static final String DOCTYPE = "DOCTYPE";
+    /** Constant <code>DOWNLOAD_URL_EXTERNAL="MD2_DOWNLOAD_URL"</code> */
+    public static final String DOWNLOAD_URL_EXTERNAL = "MD2_DOWNLOAD_URL";
     /** Constant <code>EVENTDATE="EVENTDATE"</code> */
     public static final String EVENTDATE = "EVENTDATE";
     /** Constant <code>EVENTDATESTART="EVENTDATESTART"</code> */

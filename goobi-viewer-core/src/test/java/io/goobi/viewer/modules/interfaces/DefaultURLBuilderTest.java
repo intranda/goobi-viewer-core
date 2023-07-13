@@ -21,13 +21,63 @@
  */
 package io.goobi.viewer.modules.interfaces;
 
+import java.util.Locale;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
 
 public class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
+
+    /**
+     * @see DefaultURLBuilder#generateURL(BrowseElement)
+     * @verifies only add page if not topStruct or page greater than one
+     */
+    @Test
+    public void generateURL_shouldOnlyAddPageIfNotTopStructOrPageGreaterThanOne() throws Exception {
+        BrowseElement be = new BrowseElement("PPN123", 1, "Title", null, Locale.ENGLISH, null, null);
+        be.setWork(true);
+        IURLBuilder builder = new DefaultURLBuilder();
+        Assert.assertEquals("metadata/PPN123/", builder.generateURL(be));
+        be.setImageNo(2);
+        Assert.assertEquals("metadata/PPN123/2/", builder.generateURL(be));
+        be.setImageNo(1);
+        be.setWork(false);
+        Assert.assertEquals("metadata/PPN123/1/-/", builder.generateURL(be));
+    }
+
+    /**
+     * @see DefaultURLBuilder#generateURL(BrowseElement)
+     * @verifies only add logId if not topStruct
+     */
+    @Test
+    public void generateURL_shouldOnlyAddLogIdIfNotTopStruct() throws Exception {
+        BrowseElement be = new BrowseElement("PPN123", 1, "Title", null, Locale.ENGLISH, null, null);
+        be.setWork(true);
+        be.setLogId("LOG_0000");
+        IURLBuilder builder = new DefaultURLBuilder();
+        Assert.assertEquals("metadata/PPN123/", builder.generateURL(be));
+        be.setImageNo(2);
+        Assert.assertEquals("metadata/PPN123/2/", builder.generateURL(be));
+        be.setImageNo(1);
+        be.setWork(false);
+        Assert.assertEquals("metadata/PPN123/1/LOG_0000/", builder.generateURL(be));
+    }
+
+    /**
+     * @see DefaultURLBuilder#buildPageUrl(String,int,String,PageType,boolean)
+     * @verifies only add page if not topStruct or page greater than one
+     */
+    @Test
+    public void buildPageUrl_shouldOnlyAddPageIfNotTopStructOrPageGreaterThanOne() throws Exception {
+        IURLBuilder builder = new DefaultURLBuilder();
+        Assert.assertEquals("object/PPN123/", builder.buildPageUrl("PPN123", 1, null, PageType.viewObject, true));
+        Assert.assertEquals("object/PPN123/2/", builder.buildPageUrl("PPN123", 2, null, PageType.viewObject, true));
+        Assert.assertEquals("object/PPN123/1/-/", builder.buildPageUrl("PPN123", 1, null, PageType.viewObject, false));
+    }
 
     /**
      * @see DefaultURLBuilder#buildPageUrl(String,int,String,PageType,boolean)

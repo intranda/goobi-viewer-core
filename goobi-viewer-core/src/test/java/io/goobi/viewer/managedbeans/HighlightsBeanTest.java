@@ -28,19 +28,23 @@ import java.time.LocalDateTime;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.Highlight;
 
-public class HighlightedObjectBeanTest extends AbstractDatabaseEnabledTest {
+public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
 
-    HighlightedObjectBean bean;
+    HighlightsBean bean;
+    NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);
+    ImageDeliveryBean imaging = Mockito.mock(ImageDeliveryBean.class);
     
     @Before
     public void setup() throws Exception {
         super.setUp();
-        bean = new HighlightedObjectBean(DataManager.getInstance().getDao());
+        bean = new HighlightsBean(DataManager.getInstance().getDao(), navigationHelper, imaging);
         bean.init();
     }
     
@@ -67,6 +71,19 @@ public class HighlightedObjectBeanTest extends AbstractDatabaseEnabledTest {
 
         bean.getAllObjectsProvider().getFilter("name").setValue("");
         assertEquals(3, bean.getAllObjectsProvider().getSizeOfDataList());
+    }
+    
+    @Test
+    public void test_HighlightUrl() throws DAOException {
+        
+        Mockito.when(navigationHelper.getImageUrl()).thenReturn("localhost:8080/viewer/image");
+        
+        Highlight recordHighlight = new Highlight(DataManager.getInstance().getDao().getHighlight(1l));
+        Highlight urlHighlight = new Highlight(DataManager.getInstance().getDao().getHighlight(3l));
+        
+        assertEquals("localhost:8080/viewer/image/PPN12345/", bean.getUrl(recordHighlight));
+        assertEquals("https:/viewer/cms/99/", bean.getUrl(urlHighlight));
+
     }
 
 }

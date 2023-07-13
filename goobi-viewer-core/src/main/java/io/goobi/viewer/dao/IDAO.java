@@ -42,11 +42,12 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
-import io.goobi.viewer.model.cms.HighlightedObjectData;
+import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
@@ -2592,6 +2593,8 @@ public interface IDAO {
 
 
     public boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+    
+    public boolean deleteCMSContent(CMSContent content) throws DAOException;
 
     public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
 
@@ -2645,16 +2648,16 @@ public interface IDAO {
 
     public int deleteViewerMessagesBefore(LocalDateTime date) throws DAOException;
     
-    public boolean addHighlightedObject(HighlightedObjectData object) throws DAOException;
-    public boolean updateHighlightedObject(HighlightedObjectData object) throws DAOException;
-    public boolean deleteHighlightedObject(Long id) throws DAOException;
-    public HighlightedObjectData getHighlightedObject(Long id) throws DAOException;
-    public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException;
-    public List<HighlightedObjectData> getHighlightedObjects(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
-    public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException;
-    public List<HighlightedObjectData> getPastHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+    public boolean addHighlight(HighlightData object) throws DAOException;
+    public boolean updateHighlight(HighlightData object) throws DAOException;
+    public boolean deleteHighlight(Long id) throws DAOException;
+    public HighlightData getHighlight(Long id) throws DAOException;
+    public List<HighlightData> getAllHighlights() throws DAOException;
+    public List<HighlightData> getHighlights(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+    public List<HighlightData> getHighlightsForDate(LocalDateTime date) throws DAOException;
+    public List<HighlightData> getPastHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException;
-    public List<HighlightedObjectData> getFutureHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+    public List<HighlightData> getFutureHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException;
     
     /**

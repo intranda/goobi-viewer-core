@@ -582,4 +582,18 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("dfg-viewer_valuehttps%3A%2F%2Ffoo.bar%2FPPN517154004.xml&set[image]=-1", viewManager.getLinkForDFGViewer());
     }
 
+    /**
+     * @see ViewManager#getExternalDownloadUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getExternalDownloadUrl_shouldReturnCorrectValue() throws Exception {
+        String url = "https://example.com/download";
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        se.metadataFields.put(SolrConstants.DOWNLOAD_URL_EXTERNAL, Collections.singletonList(url));
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        Assert.assertEquals(url, viewManager.getExternalDownloadUrl());
+    }
 }

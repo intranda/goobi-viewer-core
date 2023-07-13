@@ -313,6 +313,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         for (PersistentCMSComponent component : original.getPersistentComponents()) {
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
             copy.setOwningPage(this);
+            copy.setOwningPage(null);
             this.persistentComponents.add(copy);
         }
     }

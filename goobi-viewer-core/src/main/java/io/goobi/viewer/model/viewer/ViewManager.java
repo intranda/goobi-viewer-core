@@ -1773,7 +1773,7 @@ public class ViewManager implements Serializable {
     public String getLinkForDFGViewer() throws IndexUnreachableException {
         if (topStructElement != null && SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat()) && isHasPages()) {
             String metsUrl = getMetsResolverUrl();
-            
+
             String urlField = DataManager.getInstance().getConfiguration().getDfgViewerSourcefileField();
             if (StringUtils.isNotBlank(urlField)) {
                 // If there's a configured metadata field containing the DfG Viewer record URL, embed the custom URL instead
@@ -1783,7 +1783,7 @@ public class ViewManager implements Serializable {
                     metsUrl = url;
                 }
             }
-            
+
             try {
                 return new StringBuilder()
                         .append(DataManager.getInstance().getConfiguration().getDfgViewerUrl())
@@ -2064,6 +2064,16 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Returns an external download URL, if once exists in MD2_DOWNLOAD_URL.
+     * 
+     * @return url if exists; null otherwise
+     * @should return correct value
+     */
+    public String getExternalDownloadUrl() {
+        return topStructElement != null ? topStructElement.getMetadataValue(SolrConstants.DOWNLOAD_URL_EXTERNAL) : null;
+    }
+
+    /**
      * Returns the pdf download link for the current document
      *
      * @return {@link java.lang.String}
@@ -2273,7 +2283,9 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated title.xhtml no longer exists
      */
+    @Deprecated(since = "22.08")
     public boolean isDisplayTitleBarPdfLink() {
         return DataManager.getInstance().getConfiguration().isTitlePdfEnabled() && isAccessPermissionPdf();
     }
@@ -2298,9 +2310,8 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @throws ViewerConfigurationException
      */
-    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException {
         if (metadataViewOnly == null) {
             // Display object view criteria
             if (isDisplayObjectViewLink()) {

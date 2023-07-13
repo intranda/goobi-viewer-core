@@ -1,0 +1,529 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin( highlightsBean.newObject ? 'adminCmsHighlightsNew':'adminCmsHighlightsEdit')}" />
+<!-- 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlights')}" /> -->
+		</f:metadata>
+	</ui:define>
+
+	<ui:param name="highlight" value="#{highlightsBean.selectedObject}"></ui:param>
+
+	<ui:define name="content">
+
+
+		<div id="highlightEdit" class="admin__highlights-single">
+
+		<f:view contentType="text/html" encoding="utf-8">
+
+			<h:panelGroup id="mainGroup" layout="block" rendered="#{userBean.user.cmsAdmin}">
+				<!-- TITLE -->
+				<div class="admin__title-bar">
+					<h1 class="admin__title">#{highlightsBean.newObject ? msg.admin__highlights__new_title : msg.admin__highlights__edit_title}</h1>
+				</div>
+				
+				<viewerComponent:adminBreadcrumbs />
+
+				<div class="admin__content-inner-content">
+
+
+					<!-- TO DO AK: Rendered condition if new highlight shall be created -->
+					<h:form id="selectObject" prependId="false">
+
+						<div class="form-horizontal form-group admin__content-wrapper">
+						
+							<div class="#{highlightsBean.editStatus == 'SELECT_TARGET' ? 'w-100' : 'admin__content-main -sticky -refreshHCsticky'}">
+						
+
+							
+								<ui:fragment rendered="#{highlightsBean.editStatus == 'SELECT_TARGET'}">
+									<h2 class="admin__content-inner-content__form_title mt-0">
+										#{msg.general}
+									</h2>
+									<div class="admin__default-block">
+									
+										<div class="mb-2">#{msg.cms__highlight_record_or_identifier}:
+											</div>
+									
+										<div class="form-group admin__highlights-connected-area admin__highlights-connected-radio-buttons">
+		                            		<div class="connected-top">
+		                            			<div class="form-row">
+					                            	<div data-target="#{highlight.data.targetType == 'RECORD' ? 'isChecked' : 'blurIfUnchecked'}" class="admin__highlights-radio-select control-label admin__form-label">
+						                            	<h:selectOneRadio group="targetTypeSelect" value="#{highlight.data.targetType}" immediate="true" >
+						                                	<f:selectItem itemValue="RECORD" itemLabel="#{msg.admin__highlights__target_type_record}" />
+						                                	<f:ajax render="@form" />
+						                            	</h:selectOneRadio>
+					                            	</div>
+					                            	<div class="admin__form-input cms-module__option-control">
+														<h:message for="select_inputRecordIdentifier"
+															errorClass="-validation-message -danger"></h:message>
+														<div class="-validation-mark">
+															<i class="fa fa-check" aria-hidden="true"></i> <i
+																class="fa fa-exclamation" aria-hidden="true"></i>
+														</div>
+														<h:inputText id="select_inputRecordIdentifier" tabindex="1" disabled="#{highlight.data.targetType ne 'RECORD'}"
+															styleClass="form-control -validation-input"
+															requiredMessage="#{msg.info__input_required}"
+															validatorMessage="#{msg.pi_errNotFound}"
+															required="#{highlight.data.targetType eq 'RECORD'}"
+															value="#{highlight.data.recordIdentifier}">
+															<f:validator validatorId="piInSolrValidator"
+																for="select_inputRecordIdentifier" />
+														</h:inputText>
+														<span class="admin__form-help-text">#{msg.admin__highlights__target_type_record__help}</span>
+													</div>
+					                            </div>
+					                        </div>
+					                        <div class="connected-bottom">
+					                            	<div class="form-row">
+						                            	<div data-target="#{highlight.data.targetType == 'URL' ? 'isChecked' : 'blurIfUnchecked'}" class="admin__highlights-radio-select control-label admin__form-label">
+							                            	<h:selectOneRadio group="targetTypeSelect" value="#{highlight.data.targetType}" immediate="true" >
+							                                	<f:selectItem itemValue="URL" itemLabel="#{msg.admin__highlights__target_type_url}" />
+							                                	<f:ajax render="@form" />
+							                            	</h:selectOneRadio>
+						                            	</div>
+						                            	<div class="admin__form-input cms-module__option-control">
+															<h:message for="select_inputTargetUrl"
+																errorClass="-validation-message -danger"></h:message>
+															<div class="-validation-mark">
+																<i class="fa fa-check" aria-hidden="true"></i> <i
+																	class="fa fa-exclamation" aria-hidden="true"></i>
+															</div>
+															<h:inputText id="select_inputTargetUrl" tabindex="1" disabled="#{highlight.data.targetType ne 'URL'}"
+																styleClass="form-control -validation-input"
+																requiredMessage="#{msg.info__input_required}"
+																required="#{highlight.data.targetType eq 'URL'}"
+																value="#{highlight.data.targetUrl}">
+															</h:inputText>
+															<span class="admin__form-help-text">#{msg.admin__highlights__target_type_url__help}</span>
+														</div>
+					                            	</div>
+					                        </div>
+					                	</div>
+					            	</div>
+					            	
+					            	<div
+									class="row no-gutters justify-content-end admin__final-actions">
+
+									<a class="btn btn--cancel"
+										href="#{navigationHelper.applicationUrl}admin/cms/highlights/">#{msg.button__abort}
+									</a>
+									<h:commandButton class="btn btn--full" tabindex="2" action="#{highlightsBean.setEditStatus('CREATE')}"
+									onclick="viewerJS.showLoader()" value="#{msg.button__continue}">
+										<f:ajax render="@form" execute="@form" onevent="viewerJS.initTinyMCE"></f:ajax>
+									</h:commandButton>
+
+								</div>
+					            	
+								</ui:fragment>
+							
+								<ui:fragment rendered="#{highlightsBean.editStatus ne 'SELECT_TARGET'}">
+								<h2 class="admin__content-inner-content__form_title mt-0">
+								#{msg.general}
+									<span class="ajax_loader"> <img
+										src="#{request.contextPath}/resources/images/infinity_loader.gif"
+										class="img-responsive" alt="Waiting..." />
+									</span> 
+								</h2>
+								
+
+								<h:panelGroup id="highlightMainGroup" layout="block">
+								<div class="admin__language-tabs">
+									<viewerComponent:localeSelector render="highlightMainGroup" object="#{highlight}"/>
+								</div>
+								<div class="admin__default-block">
+
+									<div class="form-group form-row">
+											<div class="col-12 col-lg-2 control-label admin__form-label">
+												<label>#{msg.admin__highlights__naming}:</label>
+											</div>
+			                            	<h:panelGroup id="inputNameBlock" layout="block" class="col-11 col-lg-9 admin__form-input">
+												<h:inputText id="inputObjectName" tabindex="1"
+													styleClass="form-control -validation-input"
+													requiredMessage="#{msg.info__input_required}"
+													value="#{highlight.data.name.text}">
+												</h:inputText>
+												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+											</h:panelGroup>
+
+									</div>
+									
+									<ui:fragment rendered="#{highlight.data.targetType == 'URL'}">
+										<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'URL' ? '-deactivated' : ''}">
+									
+												<div class="col-12 col-lg-2 control-label admin__form-label">
+													<label for="inputObjectIdentifier">#{msg.admin__highlights__target_url}:</label>
+												</div>
+				                            	<h:panelGroup id="targetUrlInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
+	
+													<h:message for="inputTargetUrl"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													<h:inputText id="inputTargetUrl" tabindex="1"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														value="#{highlight.data.targetUrl}"
+														required="true"
+														disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'URL'}">
+														<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__highlight_target_url__help}</span>
+												</h:panelGroup>
+	
+										</div>
+									</ui:fragment>
+									
+									<ui:fragment rendered="#{highlight.data.targetType == 'RECORD'}">
+										<div class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'RECORD' ? '-deactivated' : ''}">
+									
+												<div class="col-12 col-lg-2 control-label admin__form-label">
+													<label for="inputObjectIdentifier">#{msg.admin__highlights__new_pi}:</label>
+												</div>
+				                            	<h:panelGroup id="recordIdentifierInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
+	
+													<h:message for="inputRecordIdentifier"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													<h:inputText id="inputRecordIdentifier" tabindex="1"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														validatorMessage="#{msg.pi_errNotFound}"
+														value="#{highlight.data.recordIdentifier}"
+														required="true"
+														disabled="#{!highlight.isDefaultLocaleSelected() or highlight.data.targetType ne 'RECORD'}">
+														<f:validator validatorId="piInSolrValidator"
+															for="inputRecordIdentifier" />
+														<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__highligh_record_identifier__help}</span>
+												</h:panelGroup>
+	
+										</div>
+									</ui:fragment>
+									
+
+									</div>
+								</h:panelGroup>
+		                        <!-- IMAGE -->
+		                        <h2>#{msg.admin__highlights__image}</h2>
+		                        <div class="admin__default-block">
+		                            <p class="admin__boxed-entry-description">#{msg.admin__highlights__image_desc}</p>
+		                            
+		                            <h:panelGroup layout="block" id="imageModeGroup" styleClass="admin__cms-edit-collection-image-actions-wrapper">
+		                            
+		                            	<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+		                            		<div class="connected-top">
+				                            	<h:selectOneRadio group="imageModeRadio" value="#{highlight.data.imageMode}" immediate="true">
+				                                	<f:selectItem itemValue="NO_IMAGE" itemLabel="#{msg.admin__highlights__no_image}" />
+				                                	<f:ajax render="imageModeGroup" />
+				                            	</h:selectOneRadio>
+			                            	</div>
+			                            	<div class="connected-middle">
+				                            	<h:selectOneRadio group="imageModeRadio" value="#{highlight.data.imageMode}" immediate="true">
+				                                	<f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__highlights__media_image}" />
+				                                	<f:ajax render="imageModeGroup" />
+				                            	</h:selectOneRadio>
+			                            	</div>
+			                            	<div class="connected-bottom">
+				                            	<h:selectOneRadio group="imageModeRadio" value="#{highlight.data.imageMode}" immediate="true" disabled="#{highlight.data.targetType ne 'RECORD'}">
+				                                	<f:selectItem itemValue="RECORD_REPRESENTATIVE" itemLabel="#{msg.admin__highlights__record_image}" />
+				                                	<f:ajax render="imageModeGroup" />
+				                            	</h:selectOneRadio>
+			                            	</div>
+										</div>
+		                            	
+		                            
+		                                <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image" id="mediaGroup" rendered="#{highlight.data.imageMode == 'UPLOADED_IMAGE'}">
+		                                <!-- THUMBNAIL -->
+		                                <div class="admin__cms-edit-collection-image-thumbnail">
+		                                    <ui:fragment rendered="#{highlight.hasMediaItem()}">
+		                                        <img src="#{highlight.imageURI}" class="img-fluid" alt="" />
+		                                    </ui:fragment>
+		                                    <ui:fragment rendered="#{!highlight.hasMediaItem()}">
+		                                        <img data-src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
+		                                        data-viewer-thumbnail="thumbnail"
+		                                            class="img-fluid" alt="" />
+		                                    </ui:fragment>
+		                                </div>
+		                                
+						                <!-- ACTIONS -->
+						                <div class="admin__cms-edit-collection-image-actions">
+						                    <h:commandLink 
+						                        action="#{cmsBean.setSelectedMediaHolder(highlight)}" 
+						                        value="#{highlight.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
+						                        class="#{highlight.getMediaItem() == null ? 'btn btn--default' : ''}" 
+						                        role="button">
+						                        <f:ajax execute="@form" render="mediaSelectPanel" />
+						                    </h:commandLink>
+						                    <h:commandLink 
+						                        rendered="#{highlight.getMediaItem() != null}" 
+						                        action="#{highlight.setMediaItem(null)}" 
+						                        value="#{msg.cms_selectMediaItem_deselect}" 
+						                        class="-redlink"
+						                        role="button">
+						                        <f:ajax render="mediaGroup" />
+						                    </h:commandLink>                    
+						                </div>
+		                                
+		                            </h:panelGroup>	
+		                            
+		                            <h:panelGroup layout="block" styleClass="admin__cms-collections-wrapper-identifier" id="piGroup" rendered="#{highlight.data.imageMode == 'RECORD_REPRESENTATIVE'}">
+		                            	<div class="admin__cms-edit-collection-image-thumbnail">
+		                                    <ui:fragment rendered="#{not empty highlight.data.recordIdentifier}">
+		                                        <img src="#{highlight.imageURI}" class="img-fluid" alt="" />
+		                                    </ui:fragment>
+		                                </div>
+		                            </h:panelGroup>
+		                            
+		                            </h:panelGroup>
+		                        </div>
+		
+								<div
+									class="row no-gutters justify-content-end admin__final-actions">
+		
+									<a class="btn btn--cancel"
+										href="#{navigationHelper.applicationUrl}admin/cms/highlights/">#{msg.button__abort}
+									</a>
+									<button class="btn btn--success"
+										jsf:action="#{highlightsBean.saveObject(highlight)}">
+										#{msg.button__save}
+										<f:ajax render="@form :messages :noteInfoGroup" execute="@form"></f:ajax>
+									</button> 
+								</div>
+							</ui:fragment>
+
+					</div>
+						
+					<h:panelGroup id="mediaSelectPanel">
+						<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+			                   <div class="admin-cms-media-select-overlay">
+			                    
+			                    <!-- SELECT MEDIA ITEM OVERLAY -->
+		                            <div class="admin-cms-media__select-overlay"></div>
+		                            
+		                            <!-- SELECT MEDIA ITEM -->
+		                            <div class="admin-cms-media__select">                            
+		                                 <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+		                                 	<ui:param name="mediaDisplayPanel" value="mediaGroup" />
+		                                 	<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
+		        							<ui:param name="fileTypeValidator" value="#{cmsMediaBean.getImageFilter()}"/>
+		                                </ui:include>
+		                            </div>
+			                   </div>
+						</ui:fragment>
+			        </h:panelGroup>
+
+
+					<!-- TO DO AK: Rendered condition if already existing object is selected to edit -->
+					<ui:fragment rendered="#{highlightsBean.editStatus ne 'SELECT_TARGET'}">
+
+
+							<!-- SIDEBAR START -->
+							<div class="admin__content-side">
+
+								<!-- OVERRIDE ACTIVE YES / NO -->
+								<div class="admin__default-block">
+										<div class="admin__record-notes-visibility">
+											<h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
+											<div class="admin__form-help-text in mb-2">#{msg.admin__highlights__sidebar_status_help}</div>
+											<div class="mb-1 d-flex justify-content-between">
+<!-- 												<label>#{msg.admin__highlights__sidebar_status_toggle}: </label> -->
+												<viewerComponent:toggleSwitch name="showThisNote" value="#{highlight.data.enabled}" />
+											</div>
+										</div>
+								</div>
+								
+								<div class="admin__default-block">
+									<h2>#{msg.admin__highlights__period}</h2>
+									
+									<div class="#{highlight.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
+								
+										<div class="admin__form-help-text in mb-2">#{msg.admin__highlights__period_info}</div>
+												
+
+
+
+											<div class="admin__highlighted-objects-date-wrapper">
+<!-- 												<h:message for="pickerDateStart" -->
+<!-- 													errorClass="-validation-message -danger"></h:message> -->
+<!-- 												<div class="-validation-mark"> -->
+<!-- 													<i class="fa fa-check" aria-hidden="true"></i> <i -->
+<!-- 														class="fa fa-exclamation" aria-hidden="true"></i> -->
+<!-- 												</div> -->
+                                                	
+                                                
+                                              	<div class="form-row mt-3 mb-1">
+                                              	
+
+                                                   <div class="col-4 control-label admin__form-label">
+														<label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_from}:</label>
+                                               	</div>
+                                                	
+                                                <div class="col-8 control-label admin__form-label">
+                                                	<div class="admin__campaign-date-picker">
+                                                	<h:inputText
+                                                		id="pickerDateStart" 
+                                                		name="pickerDateStart" 
+                                                		value="#{highlight.data.dateStart}"
+                                                		converter="localDateConverter"
+                                                		data-format="#{navigationHelper.datePattern}"
+                                                		styleClass="form-control"
+                                                		disabled="#{!highlight.isDefaultLocaleSelected()}">
+                                                		<f:passThroughAttribute name="data-target" value="datePickerStart" />
+														<f:passThroughAttribute name="placeholder"
+															value="#{msg.admin__highlights__date_from}"
+															 /> 
+                                                	</h:inputText>
+                                                	</div>
+												</div>
+												
+												</div>
+												
+												<div class="form-row">
+
+
+                                                <div class="col-4 control-label admin__form-label">
+														<label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_until}:</label>
+                                               	</div>
+												
+												<div class="col-8 control-label admin__form-label">
+												
+                                                <div class="admin__date-picker admin__highlighted-objects-date-picker">
+                                                	<div class="admin__campaign-date-picker">
+													<h:inputText 
+														id="pickerDateEnd" 
+														name="pickerDateEnd"
+														value="#{highlight.data.dateEnd}"
+														converter="localDateConverter"
+														data-format="#{navigationHelper.datePattern}"
+														styleClass="form-control"
+														disabled="#{!highlight.isDefaultLocaleSelected()}">
+														<f:passThroughAttribute name="data-target"
+															value="datePickerEnd"
+															 />
+															 
+														<f:passThroughAttribute name="placeholder"
+															value="#{msg.admin__highlights__date_until}"
+															 /> 
+													</h:inputText>
+													</div>
+												</div>
+												</div>
+												</div>
+
+												<script type="text/javascript">
+                                                       	
+                                                       	$(document).ready(function(){
+                                                       	    $("[data-target='datePickerStart']").datepicker({
+                                                       	        onSelect: function(selected) {
+                                                       	          $("[data-target='datePickerEnd']").datepicker("option","minDate", selected)
+                                                       	        },
+                                                           		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+                                                           		isRTL: #{navigationHelper.rtl},
+                                                       	    });
+                                                       	    
+                                                       	    $("[data-target='datePickerEnd']").datepicker({
+                                                       	        onSelect: function(selected) {
+                                                       	           $("[data-target='datePickerStart']").datepicker("option","maxDate", selected)
+                                                       	        },
+                                                        		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+                                                        		isRTL: #{navigationHelper.rtl},
+                                                       	    });  
+                                                       	});
+
+									 			</script>
+									 			
+									 			
+
+
+											</div>
+
+									</div>
+								
+								
+								
+
+                                </div>
+								
+
+								<!-- OBJECT INFOS + DISPLAY LINK -->
+								<h:panelGroup id="recordInformation">
+
+<!-- 									<h:panelGroup layout="block" styleClass="admin__default-block" -->
+<!-- 									rendered="#{not empty highlight.data.recordIdentifier}"> -->
+<!-- 										<h2>#{msg.show}</h2> -->
+<!-- 										<div class="admin__form-help-text in mb-4 admin__record-notes-info-box"> -->
+<!-- 											<span>#{msg.cms__record_notes_select_record__show_title}</span> -->
+<!-- 										</div> -->
+<!-- 											<div class="row"> -->
+<!-- 												<div class="col-12 d-flex justify-content-center"> -->
+<!-- 													<a class="btn" target="_blank" href="#{highlightsBean.getUrl(highlight)}">#{msg.show}</a> -->
+<!-- 					                            </div> -->
+<!-- 											</div> -->
+<!-- 									</h:panelGroup> -->
+
+									<h:panelGroup layout="block" styleClass="admin__default-block"
+									rendered="#{not empty highlight.data.recordIdentifier}">
+										<h2>#{msg.cms__record_notes_select_record__title}</h2>
+										<div class="admin__record-notes-info-box">
+											<div class="admin__record-notes-image-wrapper">
+												<img class="admin__record-notes-image"
+													alt="#{highlightsBean.metadataElement.label}"
+													title="#{highlightsBean.metadataElement.label}"
+													src="#{highlightsBean.getRecordRepresentativeURI(350, 420)}" />
+											</div>
+											<div class="admin__record-notes-metadata">
+												<ui:include
+													src="/resources/includes/metadata/metadataElement.xhtml">
+													<ui:param name="metadataElement"
+														value="#{highlightsBean.metadataElement}" />
+												</ui:include>
+											</div>
+										</div>
+									</h:panelGroup>
+								</h:panelGroup>
+
+							<!-- SIDEBAR EOL -->
+							</div>
+
+
+					</ui:fragment>
+						
+						
+						
+						</div>
+					</h:form>
+
+				</div>
+			</h:panelGroup>
+	        <script>
+
+	        viewerJS.jsfAjax.success.pipe(rxjs.operators.merge(rxjs.fromEvent(window, "load")))
+	        .subscribe(e => {
+				$("[data-target='isChecked'] input").prop("checked", true);
+				$("[data-target='blurIfUnchecked'] input").prop("checked", false);
+	        })
+	        </script>
+		</f:view>
+		</div>
+	</ui:define>
+</ui:composition>
+

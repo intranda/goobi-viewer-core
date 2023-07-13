@@ -1117,19 +1117,19 @@
     </url-mapping>
 
 	<!-- CMS HIGHLIGHTED OBJECTS -->
-    <url-mapping id="adminCmsHighlightedObjects">
-        <pattern value="/admin/cms/highlightedobjects/" />
-        <view-id value="/resources/cms/adminCmsHighlightedObjects.xhtml" />
+    <url-mapping id="adminCmsHighlights">
+        <pattern value="/admin/cms/highlights/" />
+        <view-id value="/resources/cms/adminCmsHighlights.xhtml" />
     </url-mapping>
-    <url-mapping id="adminCmsHighlightedObjectsNew">
-        <pattern value="/admin/cms/highlightedobjects/new/" />
-        <view-id value="/resources/cms/adminCmsHighlightedObjectsEdit.xhtml" />
-        <action onPostback="false">#{highlightedObjectBean.setNewSelectedObject()}</action>
+    <url-mapping id="adminCmsHighlightsNew">
+        <pattern value="/admin/cms/highlights/new/" />
+        <view-id value="/resources/cms/adminCmsHighlight.xhtml" />
+        <action onPostback="false">#{highlightsBean.setNewSelectedObject()}</action>
     </url-mapping>
-    <url-mapping id="adminCmsHighlightedObjectsEdit">
-        <pattern value="/admin/cms/highlightedobjects/edit/#{selectedObjectId}/" />
-        <view-id value="/resources/cms/adminCmsHighlightedObjectsEdit.xhtml" />
-        <action onPostback="false">#{highlightedObjectBean.setSelectedObjectId(selectedObjectId)}</action>
+    <url-mapping id="adminCmsHighlightsEdit">
+        <pattern value="/admin/cms/highlights/edit/#{selectedObjectId}/" />
+        <view-id value="/resources/cms/adminCmsHighlight.xhtml" />
+        <action onPostback="false">#{highlightsBean.setSelectedObjectId(selectedObjectId)}</action>
     </url-mapping>
 
 	<!-- CMS -->

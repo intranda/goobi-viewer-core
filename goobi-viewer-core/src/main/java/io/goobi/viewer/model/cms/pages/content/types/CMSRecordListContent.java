@@ -69,6 +69,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     private int elementsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
     @Column(name = "view")
     private HitListView view = HitListView.DETAILS;
+    @Column(name = "metadata_list_type", columnDefinition = "VARCHAR(40)")
+    private String metadataListType;
 
     @Transient
     private SearchFunctionality search = null;
@@ -85,6 +87,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.includeStructureElements = orig.includeStructureElements;
         this.elementsPerPage = orig.elementsPerPage;
         this.view = orig.view;
+        this.metadataListType = orig.metadataListType;
     }
 
     private SearchFunctionality initSearch() {
@@ -145,6 +148,28 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.elementsPerPage = elementsPerPage;
     }
 
+    public HitListView getView() {
+        return view;
+    }
+
+    public void setView(HitListView view) {
+        this.view = view;
+    }
+
+    /**
+     * @return the metadataListType
+     */
+    public String getMetadataListType() {
+        return metadataListType;
+    }
+
+    /**
+     * @param metadataListType the metadataListType to set
+     */
+    public void setMetadataListType(String metadataListType) {
+        this.metadataListType = metadataListType;
+    }
+
     @Override
     public CMSContent copy() {
         return new CMSRecordListContent(this);
@@ -176,6 +201,10 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 sortString = this.getGroupingField() + ";" + sortString;
                 s.setSortString(sortString);
             }
+            // Pass secondary metadata list configuration, if set in CMS page 
+            if (StringUtils.isNotBlank(metadataListType)) {
+                s.setMetadataListType(metadataListType);
+            }
             SearchFacets facets = searchBean.getFacets();
             s.setPage(getCurrentListPage());
             searchBean.setHitsPerPage(this.getElementsPerPage());
@@ -203,14 +232,6 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
      */
     public Functionality getFunctionality() {
         return getSearch();
-    }
-    
-    public HitListView getView() {
-        return view;
-    }
-    
-    public void setView(HitListView view) {
-        this.view = view;
     }
 
     @Override

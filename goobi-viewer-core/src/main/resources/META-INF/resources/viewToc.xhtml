@@ -269,7 +269,8 @@
 																	</h:panelGroup>
 
 																	<!-- PDF DOWNLOAD -->
-																	<h:panelGroup rendered="#{tocElement.pageNo != null and tocElement.accessPermissionPdf}">
+																	<h:panelGroup rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
+																	                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
 																		<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
 																			<li>
 																				<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
@@ -335,7 +336,8 @@
 																</h:panelGroup>
 
 																<!-- PDF DOWNLOAD -->
-																<h:panelGroup rendered="#{tocElement.pageNo != null and tocElement.accessPermissionPdf}">
+																<h:panelGroup rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
+																                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
 																	<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
 																		<li>
 																			<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">

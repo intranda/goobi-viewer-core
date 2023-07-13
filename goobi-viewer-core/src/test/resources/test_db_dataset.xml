@@ -216,11 +216,11 @@
     <cms_record_notes note_type="MULTI" cms_record_note_id="4" query="PI:mnha*" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen MNHA&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
     <cms_record_notes note_type="MULTI" cms_record_note_id="5"  query="DC:dctext*" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen OCR&quot;}" note_text="loram ipsum" display_note="false"></cms_record_notes>
     
-    <cms_highlighted_objects highlighted_object_id="1" enabled="true" name="Objekt des Monats Januar" record_identifier="PPN12345" 
+    <cms_highlights highlight_id="1" enabled="true" name="Objekt des Monats Januar" target_type="RECORD" record_identifier="PPN12345" 
     	date_start="2023-01-01 00:00:00.000000000" date_end="2023-02-01 00:00:00.000000000" image_mode="RECORD_REPRESENTATIVE"/>
-    <cms_highlighted_objects highlighted_object_id="2" enabled="true" name="Objekt des Monats Februar" record_identifier="PPN67890" 
+    <cms_highlights highlight_id="2" enabled="false" name="Objekt des Monats Februar" target_type="RECORD" record_identifier="PPN67890" 
     	date_start="2023-02-01 00:00:00.000000000" date_end="2023-03-01 00:00:00.000000000" image_mode="RECORD_REPRESENTATIVE"/>
-    <cms_highlighted_objects highlighted_object_id="3" enabled="false" name="Deaktiviertes Objekt" record_identifier="PPN00000" 
+    <cms_highlights highlight_id="3" enabled="true" name="Deaktiviertes Objekt" target_type="URL" target_url="viewer/cms/99/" 
     	date_start="2023-03-01 00:00:00.000000000" date_end="2023-04-01 00:00:00.000000000" image_mode="NO_IMAGE"/>
     	
     <download_jobs download_job_id="1" type="pdf" identifier="187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a" pi="PI_1"

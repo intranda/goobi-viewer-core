@@ -105,8 +105,8 @@ public class RISExport {
             }
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch =
-                    SearchHelper.searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, null,
-                            locale, proximitySearchDistance);
+                    SearchHelper.searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, null, null,
+                            locale, false, proximitySearchDistance);
             searchHits.addAll(batch);
         }
     }

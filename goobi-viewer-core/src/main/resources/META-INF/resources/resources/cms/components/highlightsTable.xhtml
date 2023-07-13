@@ -25,7 +25,7 @@
 		                            <!-- FILTER -->
 		                            <!-- TO DO AK: Functionality search in columns/filter -->
 		                            <div class="admin__table-filter">
-		                                <viewerComponent:dataTableColumnFilter key="admin__highlighted_objects__search"
+		                                <viewerComponent:dataTableColumnFilter key="admin__highlights__search"
 		                                filter="#{cc.attrs.dataProvider.getFilter('name', 'recordIdentifier')}"/>
 		                            </div>
 		                        </div>
@@ -33,31 +33,31 @@
 
 
 	                        <!-- HIGHLIGHTED OBJECTS TABLE -->
-	                        <div id="tableWrapper_#{cc.clientId}" class="admin__table-content" role="grid" aria-label="#{msg.admin__highlighted_objects__title}: #{msg.aria_label__table__actions}">
+	                        <div id="tableWrapper_#{cc.clientId}" class="admin__table-content" role="grid" aria-label="#{msg.admin__highlights__title}: #{msg.aria_label__table__actions}">
 	                            
 	                            <!-- TITLE ROW -->
 	                            <div class="row no-gutters admin__table-title" role="row">
 	
 	                                <!-- PAGE COL -->
 	                                <div class="col-6 d-flex" role="columnheader">
-	                                	#{msg.admin__highlighted_objects__table_header}
+	                                	#{msg.admin__highlights__table_header}
 	                                </div>
-	                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-	                                	#{msg.admin__highlighted_objects__table_from}
+	                                <div class="col-3 d-flex justify-content-center" role="columnheader">
+	                                	#{msg.admin__highlights__table_from}
 	                                </div>
-	                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-	                                	#{msg.admin__highlighted_objects__table_until}
+	                                <div class="col-3 d-flex justify-content-center" role="columnheader">
+	                                	#{msg.admin__highlights__table_until}
 	                                </div>
-	                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-	                                	#{msg.admin__highlighted_objects__table_active}
-	                                </div>
+<!-- 	                                <div class="col-2 d-flex justify-content-center" role="columnheader"> -->
+<!-- 	                                	#{msg.admin__highlights__table_active} -->
+<!-- 	                                </div> -->
 	
 	                            </div>
 	
 	
 	                            <!-- INDIVIDUAL ROWS -->
 	                            <ui:repeat var="object" value="#{cc.attrs.dataProvider.paginatorList}">
-	                                <div class="row no-gutters admin__table-entry #{object.data.enabled ? '-isActive' : ''}" role="row">
+	                                <div class="row no-gutters admin__table-entry #{object.data.enabled ? '' : '-unpublished'}" role="row">
 	                                    
 	                                    <div class="col-6 d-flex" role="presentation">
 	                                       	<div class="admin__record-notes-table-img align-self-center">
@@ -72,23 +72,22 @@
 	                                            <div>
 	                                            
 	                                                <!-- EDIT -->
-	                                                <a href="#{navigationHelper.applicationUrl}admin/cms/highlightedobjects/edit/#{object.data.id}/"
+	                                                <a href="#{navigationHelper.applicationUrl}admin/cms/highlights/edit/#{object.data.id}/"
 	                                                class="admin__table-action-link"
 	                                                aria-label="#{msg.edit}: #{object.data.name.textOrDefault}">#{msg.edit}</a>
 	
 	                                                <!-- PREVIEW -->
 	                                                	<a
-	                                                    class="admin__table-action-link" target="_blank" href="#{highlightedObjectBean.getRecordUrl(object)}"
-	                                                    aria-label="#{msg.title__preview}: #{object.data.name.textOrDefault}">#{msg.show}
-	                                                  </a>
+	                                                    class="admin__table-action-link" target="_blank" href="#{highlightsBean.getUrl(object)}"
+	                                                    aria-label="#{msg.title__preview}: #{object.data.name.textOrDefault}">#{msg.show}</a>
 	
 		                                           <!-- DELETE -->
 		                                           <button
 		                                               class="admin__table-action-link -redlink"
-		                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlighted_objects__delete_confirmation, object.data.name.textOrDefault)}"
+		                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__highlights__delete_confirmation, object.data.name.textOrDefault)}"
 		                                               data-require-confirmation="true"
-		                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlighted_objects__delete_confirmation, object.data.name.textOrDefault)}"
-		                                               jsf:action="#{highlightedObjectBean.deleteObject(object)}"
+		                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__highlights__delete_confirmation, object.data.name.textOrDefault)}"
+		                                               jsf:action="#{highlightsBean.deleteObject(object)}"
 		                                               aria-label="#{msg.delete}" >
 		                                               #{msg.delete}
 		                                           </button>
@@ -98,24 +97,39 @@
 	                                    </div>
 	                                    
 	                                    <!-- SCHEDULE FROM -->
-	                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
-	                                        <span>#{object.data.dateStart}</span>
+	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
+		                                    <span>
+			                                    <ui:fragment rendered="#{not empty object.data.dateStart}">
+			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateStart}"></h:outputText>
+			                                    </ui:fragment>
+			                                    <ui:fragment rendered="#{empty object.data.dateStart}">
+			                                    -
+			                                    </ui:fragment>
+		                                    </span>
 	                                  	</div>
 	                                  	
 	                                    <!-- SCHEDULE UNTIL -->
-	                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
-	                                        <span>#{object.data.dateEnd}</span>
+	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
+	                                    	<span>
+			                                    <ui:fragment rendered="#{not empty object.data.dateEnd}">
+			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateEnd}"></h:outputText>
+			                                    </ui:fragment>
+			                                    <ui:fragment rendered="#{empty object.data.dateEnd}">
+			                                    -
+			                                    </ui:fragment>
+		                                    </span>
+	                                    
 	                                  	</div>
 	
 										<!-- IS ACTIVE? -->
-	                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
-	                                        <ui:fragment rendered="#{object.data.enabled}">
-	                                        	<span class="sr-only">#{msg.yes}</span><i class="fa fa-check" aria-hidden="true"></i>
-	                                        </ui:fragment>
-	                                        <ui:fragment rendered="#{!object.data.enabled}">
-	                                        	<span class="sr-only">#{msg.no}</span>
-	                                        </ui:fragment>
-	                                  </div>
+<!-- 	                                    <div class="col-2 d-flex justify-content-center" role="gridcell"> -->
+<!-- 	                                        <ui:fragment rendered="#{object.data.enabled}"> -->
+<!-- 	                                        	<span class="sr-only">#{msg.yes}</span><i class="fa fa-check" aria-hidden="true"></i> -->
+<!-- 	                                        </ui:fragment> -->
+<!-- 	                                        <ui:fragment rendered="#{!object.data.enabled}"> -->
+<!-- 	                                        	<span class="sr-only">#{msg.no}</span> -->
+<!-- 	                                        </ui:fragment> -->
+<!-- 	                                  </div> -->
 	                                </div>
 	                            </ui:repeat>
 	                        </div>
