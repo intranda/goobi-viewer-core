@@ -29,11 +29,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
-
-import com.ibm.icu.util.TimeZone;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.controller.mq.MessageStatus;
@@ -117,7 +112,6 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import jakarta.persistence.RollbackException;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -2820,7 +2814,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSPage o");
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -2891,7 +2885,7 @@ public class JPADAO implements IDAO {
 
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);

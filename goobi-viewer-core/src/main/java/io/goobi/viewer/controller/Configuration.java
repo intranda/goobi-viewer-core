@@ -121,6 +121,7 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_ATTRIBUTE_TYPE = "[@type]";
     private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
 
+    private static final String XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD = "search.advanced.searchFields.field";
     private static final String XML_PATH_SEARCH_SORTING_FIELD = "search.sorting.field";
     private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
@@ -1444,7 +1445,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
         if (fieldList == null) {
             return new ArrayList<>();
         }
@@ -1615,7 +1616,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public int getAdvancedSearchFieldDisplaySelectItemsThreshold(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
         if (fieldList == null) {
             return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
         }
@@ -1639,7 +1640,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSeparatorLabel(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
         if (fieldList == null) {
             return null;
         }
@@ -1660,7 +1661,7 @@ public class Configuration extends AbstractConfiguration {
      * @return
      */
     boolean isAdvancedSearchFieldHasAttribute(String field, String attribute) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
         if (fieldList == null) {
             return false;
         }
