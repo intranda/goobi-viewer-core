@@ -15,7 +15,7 @@
     
         <!-- WIDGET HIGHLIGHTED OBJECT -->
         <div id="widgetHighlight" class="widget widget-highlight">
-	        <h2 class="widget__title widget-highlighted-object__title">
+	        <h2 class="widget__title widget-highlight__title">
 	            <span>#{msg.cms__highlight}</span>
 	        </h2>
             <div class="widget__body widget__highlight-body">
@@ -23,7 +23,7 @@
 
              	<!-- LINK FOR ADMINS TO HIGHLIGHTED OBJECTS TABLE OVERVIEW -->
              	<ui:fragment rendered="#{userBean.admin}">
-               		<div class="widget-highlighted-object__action-link">
+               		<div class="widget-highlight__action-link">
                			<a href="#{request.contextPath}admin/cms/highlights/">#{msg.edit}</a>
                		</div>
               </ui:fragment>
