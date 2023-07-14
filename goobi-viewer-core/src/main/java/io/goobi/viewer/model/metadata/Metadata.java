@@ -445,7 +445,8 @@ public class Metadata implements Serializable {
                     break;
                 case DATEFIELD:
                     try {
-                        String outputPattern = BeanUtils.getNavigationHelper().getDatePattern();
+                        String outputPattern =
+                                StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : BeanUtils.getNavigationHelper().getDatePattern();
                         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
                         LocalDate date = LocalDate.parse(value);
                         value = date.format(dateTimeFormatter);
