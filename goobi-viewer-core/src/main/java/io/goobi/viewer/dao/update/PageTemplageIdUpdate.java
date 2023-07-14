@@ -17,7 +17,7 @@ public class PageTemplageIdUpdate implements IModelUpdate {
             boolean newColumnHasEntries = dao.getNativeQueryResults("SELECT page_template_id FROM cms_pages").stream().anyMatch(o -> o != null);
             if (!newColumnHasEntries) {
                 dao.executeUpdate("ALTER TABLE cms_pages DROP page_template_id;");
-                dao.executeUpdate("ALTER TABLE cms_pages RENAME COLUMN TEMPLATEID TO page_template_id;");
+                dao.executeUpdate("ALTER TABLE cms_pages CHANGE COLUMN `TEMPLATEID` page_template_id BIGINT(20);");
                 updates += 1;
             }
         }
