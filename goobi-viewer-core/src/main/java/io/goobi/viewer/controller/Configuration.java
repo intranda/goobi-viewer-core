@@ -481,18 +481,17 @@ public class Configuration extends AbstractConfiguration {
      * Returns the list of configured metadata for {@link Highlight}s which reference a record.
      *
      * @param template a {@link java.lang.String} object.
-     * @should return correct template configuration
      * @should return default template configuration if requested not found
-     * @should return default template if template is null
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getHighlightMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.highlightMetadataList.template");
-        if (templateList == null) {
-            return new ArrayList<>(); // must be a mutable list!
+        if (templateList != null && !templateList.isEmpty()) {
+            logger.warn("Old <searchHitMetadataList> configuration found - please migrate to <metadataList type=\"searchHit\">.");
+            return getMetadataForTemplate(template, templateList, true, true);
         }
 
-        return getMetadataForTemplate(template, templateList, true, true);
+        return getMetadataConfigurationForTemplate("highlight", template, true, true);
     }
 
     /**
@@ -1599,7 +1598,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("No advanced search field name defined, skipping.");
                 continue;
             } else if (isLanguageVersionOtherThan(field, language != null ? language : "en")) {
-                logger.trace("Field {} belongs to different language; skipping", field);
+                // logger.trace("Field {} belongs to different language; skipping", field);
                 continue;
             }
             String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, null);
