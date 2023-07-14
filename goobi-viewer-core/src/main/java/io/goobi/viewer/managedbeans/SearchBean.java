@@ -1133,16 +1133,17 @@ public class SearchBean implements SearchInterface, Serializable {
             inSearchString = "";
         }
 
-        searchString = StringTools.stripJS(inSearchString);
-        searchStringInternal = "";
-        searchTerms.clear();
-        phraseSearch = false;
-
         inSearchString = inSearchString.trim();
         if (StringUtils.isEmpty(inSearchString)) {
             searchString = "";
             return;
         }
+
+        // Reset internal query etc. only after confirming the given search string is not empty
+        searchString = StringTools.stripJS(inSearchString);
+        searchStringInternal = "";
+        searchTerms.clear();
+        phraseSearch = false;
 
         if ("*".equals(inSearchString)) {
             searchStringInternal = SearchHelper.prepareQuery("");
@@ -1333,10 +1334,11 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     @Override
     public String getExactSearchString() {
+        // logger.trace("getExactSearchString: {}", searchStringInternal);
         if (searchStringInternal.length() == 0) {
             return "-";
         }
-        // logger.trace("getExactSearchString: {}", searchStringInternal);
+
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
         try {
             // Escape the query here, otherwise Rewrite will spam warnings into catalina.out
