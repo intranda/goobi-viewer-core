@@ -42,10 +42,10 @@
 	                                <div class="col-6 d-flex" role="columnheader">
 	                                	#{msg.admin__highlights__table_header}
 	                                </div>
-	                                <div class="col-3 d-flex justify-content-center" role="columnheader">
+	                                <div class="col-3 d-flex align-items-center justify-content-center" role="columnheader">
 	                                	#{msg.admin__highlights__table_from}
-	                                </div>
-	                                <div class="col-3 d-flex justify-content-center" role="columnheader">
+	                                </div> 
+	                                <div class="col-3 d-flex align-items-center justify-content-center" role="columnheader">
 	                                	#{msg.admin__highlights__table_until}
 	                                </div>
 <!-- 	                                <div class="col-2 d-flex justify-content-center" role="columnheader"> -->
@@ -97,7 +97,7 @@
 	                                    </div>
 	                                    
 	                                    <!-- SCHEDULE FROM -->
-	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
+	                                    <div class="col-3 d-flex align-items-center justify-content-center" role="gridcell">
 		                                    <span>
 			                                    <ui:fragment rendered="#{not empty object.data.dateStart}">
 			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateStart}"></h:outputText>
@@ -109,7 +109,7 @@
 	                                  	</div>
 	                                  	
 	                                    <!-- SCHEDULE UNTIL -->
-	                                    <div class="col-3 d-flex justify-content-center" role="gridcell">
+	                                    <div class="col-3 d-flex align-items-center justify-content-center" role="gridcell">
 	                                    	<span>
 			                                    <ui:fragment rendered="#{not empty object.data.dateEnd}">
 			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateEnd}"></h:outputText>

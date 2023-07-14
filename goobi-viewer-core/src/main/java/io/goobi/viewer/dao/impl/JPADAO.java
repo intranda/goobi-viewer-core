@@ -2814,7 +2814,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSPage o");
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -2885,7 +2885,7 @@ public class JPADAO implements IDAO {
 
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);

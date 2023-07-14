@@ -28,8 +28,8 @@
 						<div class="widget-usage__page-downloads">
 						
 							<!-- PDF (PAGE) -->
-							<ui:fragment
-								rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
+							<ui:fragment rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
+							                         activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
 								<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 									id="pdfPage"
 									class="badge badge-dark widget-usage__page-download-pdf"
