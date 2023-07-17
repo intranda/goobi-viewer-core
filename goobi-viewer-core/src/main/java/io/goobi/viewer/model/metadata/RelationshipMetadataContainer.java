@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
@@ -129,15 +130,20 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
      * @param locale    The language for which to find values. If a value is not available for the language, a default value will be used if possible
      */
     @Override
-    public List<String> getAllValues(String field, String filterField, Locale locale) {
+    public List<String> getAllValues(String field, String filterField, List<String> boostedValues, Locale locale) {
         if(field != null &&  field.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX)) {
             String relatedField = field.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
-            return getAllMetadataByField(filterField)
+            List<String> stream = getAllMetadataByField(filterField)
                     .map(this::getRelatedRecord)
                     .filter(Objects::nonNull)
-                    .map(rec -> rec.getValues(relatedField, locale)).flatMap(List::stream).distinct().collect(Collectors.toList());
+                    .map(rec -> rec.getValues(relatedField, locale)).flatMap(List::stream).distinct()
+                    .collect(Collectors.toList());
+            if (boostedValues != null && !boostedValues.isEmpty()) {
+                stream.sort((k, l) -> StringTools.sortByList(k, l, boostedValues));
+            }
+            return stream;
         } else {
-            return super.getAllValues(field, filterField, locale);
+            return super.getAllValues(field, filterField, boostedValues, locale);
         }
     }
 }

@@ -13,3 +13,4 @@
 /.project
 /src/META-INF/resources/resources/css/styleguide/
 /.settings/
+/package-lock.json

@@ -21,9 +21,12 @@
  */
 package io.goobi.viewer.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -285,4 +288,17 @@ public class StringToolsTest {
         Assert.assertEquals("+A/\\|?Z", StringTools.unescapeCriticalUrlChracters("U002BAU002FU005CU007CU003FZ"));
     }
 
+    
+    @Test
+    public void testSortByList() {
+        List<String> sorting = List.of("c", "d", "e", "f", "g", "a", "h");
+        
+        List<String> s1 = List.of("a", "b", "c", "d");
+        List<String> s1Sorted =  new ArrayList<>(s1);
+        s1Sorted.sort((k,l) -> StringTools.sortByList(k, l, sorting));
+        assertEquals("c", s1Sorted.get(0));
+        assertEquals("d", s1Sorted.get(1));
+        assertEquals("a", s1Sorted.get(2));
+        assertEquals("b", s1Sorted.get(3));
+    }
 }

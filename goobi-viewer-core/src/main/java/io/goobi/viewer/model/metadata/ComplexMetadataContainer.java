@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -53,21 +54,23 @@ public class ComplexMetadataContainer {
                 .filter(doc -> fieldNameFilter.test(doc.getField()))
                 .collect(Collectors.toMap(ComplexMetadata::getField, List::of, ListUtils::union));
     }
-    
-    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue, long limit) {
+
+    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue,
+            long limit) {
         return streamMetadata(field, sortField, sortLanguage, filterField, filterValue, limit).collect(Collectors.toList());
     }
 
     public long getNumEntries(String field, String filterField, String filterValue) {
         return getMetadata(field).stream()
-        .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, null).equalsIgnoreCase(filterValue)).count();
+                .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, null).equalsIgnoreCase(filterValue))
+                .count();
     }
-    
+
     protected Stream<ComplexMetadata> streamMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue,
             long listSizeLimit) {
         Stream<ComplexMetadata> stream = getMetadata(field).stream()
                 .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, null).equalsIgnoreCase(filterValue));
-        if(StringUtils.isNotBlank(sortField)) {
+        if (StringUtils.isNotBlank(sortField)) {
             stream = stream.sorted((m1, m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage))
                     * (isDescendingOrder() ? -1 : 1));
         }
@@ -100,13 +103,17 @@ public class ComplexMetadataContainer {
         return new ComplexMetadataContainer(metadataDocs);
     }
 
-    public List<String> getAllValues(String field, String filterField, Locale locale) {
-        return this.getMetadata(field)
+    public List<String> getAllValues(String field, String filterField, List<String> boostedValues, Locale locale) {
+        List<ComplexMetadata> mds = this.getMetadata(field);
+        Stream<String> stream = mds
                 .stream()
                 .filter(md -> StringUtils.isBlank(filterField) ? true : filterField.equals(md.getFirstValue((Locale) null)))
                 .map(md -> md.getValues(locale))
                 .flatMap(List::stream)
-                .distinct()
-                .collect(Collectors.toList());
+                .distinct();
+        if (boostedValues != null && !boostedValues.isEmpty()) {
+            stream = stream.sorted((k, l) -> StringTools.sortByList(k, l, boostedValues));
+        }
+        return stream.collect(Collectors.toList());
     }
 }
