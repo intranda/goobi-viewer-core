@@ -273,7 +273,7 @@ public class CmsPageEditBean implements Serializable {
             for (CMSComponent component : components) {
                 PersistentCMSComponent persistentComponent = component.getPersistentComponent();
                 List<CMSContentItem> contentItems = new ArrayList<>(component.getContentItems());
-                for(CMSContentItem contentItem : contentItems) {
+                for (CMSContentItem contentItem : contentItems) {
                     CMSContent content = contentItem.getContent();
                     component.removeContentItem(contentItem);
                     dao.deleteCMSContent(content);
