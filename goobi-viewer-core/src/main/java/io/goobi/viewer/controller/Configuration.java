@@ -129,6 +129,7 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_ATTRIBUTE_TYPE = "[@type]";
     private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
 
+    private static final String XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE = "search.advanced.searchFields.template";
     private static final String XML_PATH_SEARCH_SORTING_FIELD = "search.sorting.field";
     private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
@@ -480,18 +481,17 @@ public class Configuration extends AbstractConfiguration {
      * Returns the list of configured metadata for {@link Highlight}s which reference a record.
      *
      * @param template a {@link java.lang.String} object.
-     * @should return correct template configuration
      * @should return default template configuration if requested not found
-     * @should return default template if template is null
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getHighlightMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.highlightMetadataList.template");
-        if (templateList == null) {
-            return new ArrayList<>(); // must be a mutable list!
+        if (templateList != null && !templateList.isEmpty()) {
+            logger.warn("Old <searchHitMetadataList> configuration found - please migrate to <metadataList type=\"searchHit\">.");
+            return getMetadataForTemplate(template, templateList, true, true);
         }
 
-        return getMetadataForTemplate(template, templateList, true, true);
+        return getMetadataConfigurationForTemplate("highlight", template, true, true);
     }
 
     /**
@@ -1577,7 +1577,7 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate, String language) {
         logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate);
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("search.advanced.searchFields.template");
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return new ArrayList<>();
         }
@@ -1598,7 +1598,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("No advanced search field name defined, skipping.");
                 continue;
             } else if (isLanguageVersionOtherThan(field, language != null ? language : "en")) {
-                logger.trace("Field {} belongs to different language; skipping", field);
+                // logger.trace("Field {} belongs to different language; skipping", field);
                 continue;
             }
             String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, null);
@@ -1768,7 +1768,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public int getAdvancedSearchFieldDisplaySelectItemsThreshold(String field, String template, boolean fallbackToDefaultTemplate) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("search.advanced.searchFields.template");
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
         }
@@ -1799,7 +1799,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSelectType(String field, String template, boolean fallbackToDefaultTemplate) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("search.advanced.searchFields.template");
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
         }
@@ -1833,7 +1833,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSeparatorLabel(String field, String template, boolean fallbackToDefaultTemplate) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("search.advanced.searchFields.template");
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return null;
         }
@@ -1864,7 +1864,7 @@ public class Configuration extends AbstractConfiguration {
      * @return
      */
     boolean isAdvancedSearchFieldHasAttribute(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("search.advanced.searchFields.template");
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return false;
         }

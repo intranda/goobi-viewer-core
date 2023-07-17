@@ -3,12 +3,7 @@
    style declarations for widget_highlight.xhtml
    ==============================================================*/
 
-.widget-highlighted-object {
-	&:hover {
-		.widget-highlight__action-link {
-			opacity: 1;
-		}
-	}
+.widget-highlight {
 	&__action-link {
 		transition: opacity .2s ease;
 		opacity: 0;
@@ -17,7 +12,17 @@
 	.highlighted-object {
 		margin: 0.5rem 0;
 		&__image-title {
-			font-size: 14px;
+			font-size: 15px;
+			font-weight: 400;
+			text-align: center;
+		}
+		&__no-image-link {
+			font-size: 16px;
+		}
+	}
+	&:hover {
+		.widget-highlight__action-link {
+			opacity: 1;
 		}
 	}
 }

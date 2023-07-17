@@ -302,7 +302,7 @@ public final class SearchHelper {
                 ownerDocs.put((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             }
 
-            SearchHit hit = factory.createSearchHit(doc, ownerDoc, null, fulltext, null);
+            SearchHit hit = factory.createSearchHit(doc, ownerDoc, fulltext, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -366,7 +366,7 @@ public final class SearchHelper {
 
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
-            SearchHit hit = factory.createSearchHit(doc, null, null, null, null);
+            SearchHit hit = factory.createSearchHit(doc, null, null, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }

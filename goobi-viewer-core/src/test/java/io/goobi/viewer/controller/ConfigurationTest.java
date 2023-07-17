@@ -632,7 +632,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getMetadataListTypes_shouldReturnAllMetadataListTypesIfPrefixEmpty() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes(null);
-        Assert.assertEquals(3, result.size());
+        Assert.assertEquals(4, result.size());
     }
 
     /**
@@ -671,6 +671,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getSearchHitMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
         Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(null).size());
+    }
+    
+    /**
+     * @see Configuration#getHighlightMetadataForTemplate(String)
+     * @verifies return default template configuration if requested not found
+     */
+    @Test
+    public void getHighlightMetadataForTemplate_shouldReturnDefaultTemplateConfigurationIfRequestedNotFound() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getHighlightMetadataForTemplate("notfound").size());
     }
 
     /**

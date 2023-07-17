@@ -5,6 +5,9 @@ public class StringConstants {
     public static final String DEFAULT = "default";
     public static final String DEFAULT_NAME = "_DEFAULT";
 
+    public static final String HTML_BR = "<br />";
+    public static final String HTML_BR_ESCAPED = "&lt;br /&gt;";
+
     public static final String MIMETYPE_TEXT_PLAIN = "text/plain";
 
     public static final String LOG_PRESENTATION_EXCEPTION_THROWN_HERE = "PresentationException thrown here: {}";

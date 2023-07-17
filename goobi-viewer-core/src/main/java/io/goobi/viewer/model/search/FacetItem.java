@@ -327,6 +327,13 @@ public class FacetItem implements Serializable, IFacetItem {
                 Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
                 Collections.reverse(retList);
                 break;
+            case "alphanumerical":
+                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
+                break;
+            case "alphanumerica_desc":
+                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
+                Collections.reverse(retList);
+                break;
             default:
                 Collections.sort(retList, FacetItem.COUNT_COMPARATOR);
 
@@ -763,8 +770,7 @@ public class FacetItem implements Serializable, IFacetItem {
         public int compare(IFacetItem o1, IFacetItem o2) {
             String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
             String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
-            int ret = label1.compareTo(label2);
-            return ret;
+            return label1.compareTo(label2);
         }
 
     }

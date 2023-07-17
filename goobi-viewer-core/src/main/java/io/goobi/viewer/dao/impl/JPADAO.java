@@ -2814,7 +2814,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSPage o");
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -2885,7 +2885,7 @@ public class JPADAO implements IDAO {
 
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -3143,6 +3143,29 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSContent(CMSContent content) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                CMSContent o = em.getReference(CMSContent.class, content.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error deleting cms component", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {

@@ -752,6 +752,18 @@
 			</template>
 		</metadataList>
         
+        <!-- metadataList[@type="highlight"]: defines metadata that is displayed in the highlight views. The syntax is the same as in metadataView -->
+        <metadataList type="highlight">
+            <template name="_DEFAULT">
+                <metadata label="PI" value="">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_SHELFMARK" value="">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+            </template>
+        </metadataList>
+        
         <metadataList type="cms_fooBar">
             <template name="_DEFAULT">
                 <metadata label="MD_CREATOR" value="">

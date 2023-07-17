@@ -40,6 +40,7 @@ import org.apache.solr.common.SolrDocument;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -104,7 +105,7 @@ public class MetadataBuilder {
             try {
                 LocalDate date = LocalDate.parse(keyValue.getValueOrFallback(locale));
                 String dateString = date.format(dateTimeFormatter);
-                dateString = dateString.replace(Metadata.HTML_LINE_BREAK_ESCAPED, Metadata.HTML_LINE_BREAK_UNESCAPED);
+                dateString = dateString.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                 value.setValue(dateString, locale);
             } catch (DateTimeParseException | NullPointerException e) {
                 try {

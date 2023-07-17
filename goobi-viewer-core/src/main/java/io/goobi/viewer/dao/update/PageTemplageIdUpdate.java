@@ -1,7 +1,6 @@
 package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -9,6 +8,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 public class PageTemplageIdUpdate implements IModelUpdate {
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         int updates = 0;
@@ -25,7 +25,7 @@ public class PageTemplageIdUpdate implements IModelUpdate {
                 updates += 1;
             }
         }
-        
+
         //remove references to cms-page-templates from components which belong to a cms_page
         updates += dao.executeUpdate("UPDATE cms_components SET owning_template_id = NULL WHERE owning_page_id IS NOT NULL;");
         return updates > 0;
