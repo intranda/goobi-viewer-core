@@ -12,11 +12,15 @@ public class PageTemplageIdUpdate implements IModelUpdate {
     public boolean update(IDAO dao) throws DAOException, SQLException {
         int updates = 0;
         //rename TEMPLATEID column to page_template_id if the latter column has no entries
-        if (dao.columnsExists("cms_pages", "TEMPLATEID")) {
+        if(dao.columnsExists("cms_pages", "TEMPLATEID")) {
             boolean newColumnHasEntries = dao.getNativeQueryResults("SELECT page_template_id FROM cms_pages").stream().anyMatch(o -> o != null);
-            if (!newColumnHasEntries) {
+            if(!newColumnHasEntries) {
                 dao.executeUpdate("ALTER TABLE cms_pages DROP page_template_id;");
-                dao.executeUpdate("ALTER TABLE cms_pages RENAME COLUMN TEMPLATEID TO page_template_id;");
+                try {                    
+                    dao.executeUpdate("ALTER TABLE cms_pages RENAME COLUMN TEMPLATEID TO page_template_id;");
+                } catch(DAOException e) {
+                    dao.executeUpdate("ALTER TABLE cms_pages ADD COLUMN page_template_id bigint(20);");
+                }
                 updates += 1;
             }
         }
