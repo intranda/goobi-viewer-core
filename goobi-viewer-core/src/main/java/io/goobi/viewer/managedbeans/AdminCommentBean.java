@@ -35,8 +35,8 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -47,8 +47,8 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.comments.Comment;
-import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
+import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.security.user.User;
 
 @Named
@@ -60,7 +60,7 @@ public class AdminCommentBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(AdminCommentBean.class);
 
     @Inject
-    UserBean userBean;
+    private UserBean userBean;
 
     private TableDataProvider<Comment> lazyModelComments;
 
@@ -79,81 +79,79 @@ public class AdminCommentBean implements Serializable {
             logger.error(e.getMessage());
         }
 
-        {
-            lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
+        lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
 
-                @Override
-                public List<Comment> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                    try {
-                        if (StringUtils.isEmpty(sortField)) {
-                            sortField = "dateCreated";
-                            sortOrder = SortOrder.DESCENDING;
-                        }
-                        if (currentCommentGroup == null) {
-                            return Collections.emptyList();
-                        }
-                        if (currentCommentGroup.isCoreType() && userBean != null && userBean.isAdmin()) {
-                            return DataManager.getInstance()
-                                    .getDao()
-                                    .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, null);
-                        }
-                        if (!currentCommentGroup.isIdentifiersQueried()) {
-                            CommentManager.queryCommentGroupIdentifiers(currentCommentGroup);
-                        }
-                        if (currentCommentGroup.getIdentifiers().isEmpty()) {
-                            return Collections.emptyList();
-                        }
+            @Override
+            public List<Comment> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                try {
+                    if (StringUtils.isEmpty(sortField)) {
+                        sortField = "dateCreated";
+                        sortOrder = SortOrder.DESCENDING;
+                    }
+                    if (currentCommentGroup == null) {
+                        return Collections.emptyList();
+                    }
+                    if (currentCommentGroup.isCoreType() && userBean != null && userBean.isAdmin()) {
                         return DataManager.getInstance()
                                 .getDao()
-                                .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, currentCommentGroup.getIdentifiers());
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage());
-                    } catch (PresentationException e) {
-                        logger.error(e.getMessage());
-                    } catch (IndexUnreachableException e) {
-                        logger.error(e.getMessage());
+                                .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, null);
                     }
-                    return Collections.emptyList();
+                    if (!currentCommentGroup.isIdentifiersQueried()) {
+                        CommentManager.queryCommentGroupIdentifiers(currentCommentGroup);
+                    }
+                    if (currentCommentGroup.getIdentifiers().isEmpty()) {
+                        return Collections.emptyList();
+                    }
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, currentCommentGroup.getIdentifiers());
+                } catch (DAOException e) {
+                    logger.error(e.getMessage());
+                } catch (PresentationException e) {
+                    logger.error(e.getMessage());
+                } catch (IndexUnreachableException e) {
+                    logger.error(e.getMessage());
+                }
+                return Collections.emptyList();
+            }
+
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                if (currentCommentGroup == null) {
+                    return 0;
                 }
 
-                @Override
-                public long getTotalNumberOfRecords(Map<String, String> filters) {
-                    if (currentCommentGroup == null) {
-                        return 0;
+                try {
+                    if (currentCommentGroup.isCoreType() && userBean != null && userBean.isAdmin()) {
+                        return DataManager.getInstance().getDao().getCommentCount(filters, null, null);
                     }
 
-                    try {
-                        if (currentCommentGroup.isCoreType() && userBean != null && userBean.isAdmin()) {
-                            return DataManager.getInstance().getDao().getCommentCount(filters, null, null);
-                        }
-
-                        if (!currentCommentGroup.isIdentifiersQueried()) {
-                            CommentManager.queryCommentGroupIdentifiers(currentCommentGroup);
-                        }
-                        if (currentCommentGroup.getIdentifiers().isEmpty()) {
-                            return 0;
-                        }
-                        return DataManager.getInstance().getDao().getCommentCount(filters, null, currentCommentGroup.getIdentifiers());
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                        return 0;
-                    } catch (PresentationException e) {
-                        logger.error(e.getMessage(), e);
-                        return 0;
-                    } catch (IndexUnreachableException e) {
-                        logger.error(e.getMessage(), e);
+                    if (!currentCommentGroup.isIdentifiersQueried()) {
+                        CommentManager.queryCommentGroupIdentifiers(currentCommentGroup);
+                    }
+                    if (currentCommentGroup.getIdentifiers().isEmpty()) {
                         return 0;
                     }
+                    return DataManager.getInstance().getDao().getCommentCount(filters, null, currentCommentGroup.getIdentifiers());
+                } catch (DAOException e) {
+                    logger.error(e.getMessage(), e);
+                    return 0;
+                } catch (PresentationException e) {
+                    logger.error(e.getMessage(), e);
+                    return 0;
+                } catch (IndexUnreachableException e) {
+                    logger.error(e.getMessage(), e);
+                    return 0;
                 }
+            }
 
-                @Override
-                public void resetTotalNumberOfRecords() {
-                }
+            @Override
+            public void resetTotalNumberOfRecords() {
+            }
 
-            });
-            lazyModelComments.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
-            lazyModelComments.getFilter("body_targetPI");
-        }
+        });
+        lazyModelComments.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
+        lazyModelComments.getFilter("body_targetPI");
     }
 
     /**
@@ -168,6 +166,14 @@ public class AdminCommentBean implements Serializable {
         return false;
     }
 
+    public void setUserBean(UserBean userBean) {
+        this.userBean = userBean;
+    }
+    
+    public UserBean getUserBean() {
+        return userBean;
+    }
+    
     /**
      *
      * @param userCommentsEnabled
@@ -211,7 +217,8 @@ public class AdminCommentBean implements Serializable {
         // Regular users
         List<CommentGroup> ret = new ArrayList<>();
         for (CommentGroup commentGroup : DataManager.getInstance().getDao().getAllCommentGroups()) {
-            if (!commentGroup.isCoreType() && commentGroup.getUserGroup() != null && commentGroup.getUserGroup().getMembersAndOwner().contains(user)) {
+            if (!commentGroup.isCoreType() && commentGroup.getUserGroup() != null
+                    && commentGroup.getUserGroup().getMembersAndOwner().contains(user)) {
                 ret.add(commentGroup);
             }
         }
@@ -270,7 +277,6 @@ public class AdminCommentBean implements Serializable {
         }
         return "";
     }
-
 
     /**
      * <p>

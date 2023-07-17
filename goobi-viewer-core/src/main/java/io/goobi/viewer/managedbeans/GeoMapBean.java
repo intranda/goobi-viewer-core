@@ -65,7 +65,7 @@ public class GeoMapBean implements Serializable {
     private static final long serialVersionUID = 2602901072184103402L;
 
     private GeoMap currentMap = null;
-    
+
     private ManualFeatureSet activeFeatureSet = null;
 
     private String selectedLanguage;
@@ -94,8 +94,13 @@ public class GeoMapBean implements Serializable {
      */
     public void setCurrentMap(GeoMap currentMap) {
         this.currentMap = new GeoMap(currentMap);
-        this.activeFeatureSet = this.currentMap.getFeatureSets().stream().filter(s -> !s.isQueryResultSet()).findFirst().map(ManualFeatureSet.class::cast).orElse(null);
-        
+        this.activeFeatureSet = this.currentMap.getFeatureSets()
+                .stream()
+                .filter(s -> !s.isQueryResultSet())
+                .findFirst()
+                .map(ManualFeatureSet.class::cast)
+                .orElse(null);
+
     }
 
     /**
@@ -106,8 +111,8 @@ public class GeoMapBean implements Serializable {
      */
     public void setCurrentMapId(Long mapId) throws DAOException {
         GeoMap orig = DataManager.getInstance().getDao().getGeoMap(mapId);
-        if(orig != null) {
-            setCurrentMap(orig);            
+        if (orig != null) {
+            setCurrentMap(orig);
         }
     }
 
@@ -145,7 +150,7 @@ public class GeoMapBean implements Serializable {
             Messages.error("notify__save_map__error");
         }
         this.loadedMaps = null;
-        if(redirect) {
+        if (redirect) {
             PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.currentMap.getId()));
         }
     }
@@ -268,10 +273,10 @@ public class GeoMapBean implements Serializable {
                 .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_SEARCH).build())
                 .orElse("");
     }
-    
+
     public void addFeatureSet(GeoMap map, String type) {
-        if(map != null && type != null) {            
-            switch(type) {
+        if (map != null && type != null) {
+            switch (type) {
                 case "MANUAL":
                     ManualFeatureSet featureSet = new ManualFeatureSet();
                     map.addFeatureSet(featureSet);
@@ -283,18 +288,18 @@ public class GeoMapBean implements Serializable {
             }
         }
     }
-    
+
     public void removeFeatureSet(GeoMap map, FeatureSet set) {
-        if(map != null && map.getFeatureSets().contains(set)) {
+        if (map != null && map.getFeatureSets().contains(set)) {
             map.removeFeatureSet(set);
         }
     }
-    
+
     public void setCurrentGeoMapType(GeoMapType type) {
-        
-        if(currentMap != null) {
+
+        if (currentMap != null) {
             FeatureSet featureSet = null;
-            switch(type) {
+            switch (type) {
                 case MANUAL:
                     featureSet = new ManualFeatureSet();
                     break;
@@ -304,34 +309,34 @@ public class GeoMapBean implements Serializable {
             currentMap.setFeatureSets(Collections.singletonList(featureSet));
         }
     }
-    
+
     public FeatureSet getActiveFeatureSet() {
         return activeFeatureSet;
     }
-    
+
     public void setActiveFeatureSet(ManualFeatureSet activeFeatureSet) {
         this.activeFeatureSet = activeFeatureSet;
     }
-    
+
     public String getActiveFeatureSetAsString() throws PresentationException {
-        if(this.activeFeatureSet != null) {
+        if (this.activeFeatureSet != null) {
             return this.activeFeatureSet.getFeaturesAsString();
         } else {
             return "";
         }
     }
-    
+
     public void setActiveFeatureSetAsString(String features) {
-        if(this.activeFeatureSet != null) {
+        if (this.activeFeatureSet != null) {
             this.activeFeatureSet.setFeaturesAsString(features);
         }
     }
-    
+
     public void setActiveFeatureSet() {
         Integer index = Faces.getRequestParameter("index", Integer.class);
-        if(this.currentMap != null && index != null && index >= 0 && index < this.currentMap.getFeatureSets().size()) {
+        if (this.currentMap != null && index != null && index >= 0 && index < this.currentMap.getFeatureSets().size()) {
             FeatureSet newActiveSet = this.currentMap.getFeatureSets().get(index);
-            if(newActiveSet instanceof ManualFeatureSet) {                
+            if (newActiveSet instanceof ManualFeatureSet) {
                 setActiveFeatureSet((ManualFeatureSet) newActiveSet);
             }
         } else {
@@ -339,7 +344,6 @@ public class GeoMapBean implements Serializable {
         }
     }
 
-    
     public boolean isActiveFeatureSet(FeatureSet featureSet) {
         return this.activeFeatureSet != null && this.activeFeatureSet.equals(featureSet);
     }
