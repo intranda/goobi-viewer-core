@@ -1261,6 +1261,38 @@ public class SolrSearchIndex {
 
         return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
     }
+    
+    /**
+     * Catches the filename of the page with the given basename under the given ip. Used in case a filename is requested without the file extension
+     *
+     * @param pi The topstruct pi
+     * @param basename The filename of the image without the extension (everything before the last dot)
+     * @return An optíonal containing the filename of the page with the given order under the given ip. Or an empty optional if no matching page was
+     *         found.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public Optional<String> getFilename(String pi, String basename) throws PresentationException, IndexUnreachableException {
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append(SolrConstants.DOCTYPE)
+                .append(":")
+                .append(DocType.PAGE.name())
+                .append(SolrConstants.SOLR_QUERY_AND)
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(":")
+                .append(pi)
+                .append(SolrConstants.SOLR_QUERY_AND)
+                .append(SolrConstants.FILENAME)
+                .append(":")
+                .append(basename).append(".*");
+
+        SolrDocumentList hits = search(sbQuery.toString(), Collections.singletonList(SolrConstants.FILENAME));
+        if (hits.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
+    }
 
     /**
      *

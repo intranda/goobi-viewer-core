@@ -104,16 +104,31 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
         }
         //        if (imageName != null && !imageName.contains(".") && imageName.matches("\\d+")) {
         try {
-            Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
+            Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, imageName);
+
             if (filename.isPresent()) {
-                request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename.get());
+                String filenameValue = filename.get();
+                request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filenameValue);
                 String redirectURI = DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> urls
                         .path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
-                        .params(pi, filename.get())
+                        .params(pi, filenameValue)
                         .build())
-                        .orElse(request.getRequestURI().replace("/" + imageName, "/" + filename.get()));
+                        .orElse(request.getRequestURI().replace("/" + imageName, "/" + filenameValue));
                 response.sendRedirect(redirectURI);
                 return true;
+            } else if(imageName.matches("\\d+")) {
+                filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
+                if (filename.isPresent()) {
+                    String filenameValue = filename.get();
+                    request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filenameValue);
+                    String redirectURI = DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> urls
+                            .path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
+                            .params(pi, filenameValue)
+                            .build())
+                            .orElse(request.getRequestURI().replace("/" + imageName, "/" + filenameValue));
+                    response.sendRedirect(redirectURI);
+                    return true;
+                }
             }
         } catch (NumberFormatException | PresentationException | IndexUnreachableException e) {
             logger.error("Unable to resolve image file for image order {} and pi {}", imageName, pi);
