@@ -29,14 +29,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.monitoring.timer.Timer;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -139,7 +137,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     public HighlightData getData() {
         return data;
-    };
+    }
 
     /**
      * Check whether an image is set for this object
@@ -309,7 +307,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @param note2
      * @param metadataElement2
      */
-    private TranslatedText createRecordTitle(SolrDocument solrDoc) {
+    private static TranslatedText createRecordTitle(SolrDocument solrDoc) {
         IMetadataValue label = TocMaker.buildTocElementLabel(solrDoc);
         TranslatedText text = createRecordTitle(label);
         text.setSelectedLocale(IPolyglott.getDefaultLocale());
@@ -320,15 +318,14 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @param label
      * @return
      */
-    private TranslatedText createRecordTitle(IMetadataValue label) {
+    private static TranslatedText createRecordTitle(IMetadataValue label) {
         if (label instanceof MultiLanguageMetadataValue) {
             MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
             return new TranslatedText(mLabel);
-        } else {
-            TranslatedText title = new TranslatedText();
-            title.setValue(label.getValue().orElse(""), IPolyglott.getDefaultLocale());
-            return title;
         }
+        TranslatedText title = new TranslatedText();
+        title.setValue(label.getValue().orElse(""), IPolyglott.getDefaultLocale());
+        return title;
     }
 
     /**
@@ -346,7 +343,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     }
 
-    private SolrDocument loadSolrDocument(String recordPi) throws IndexUnreachableException, PresentationException {
+    private static SolrDocument loadSolrDocument(String recordPi) throws IndexUnreachableException, PresentationException {
         if (StringUtils.isBlank(recordPi)) {
             return null;
         }
