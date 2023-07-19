@@ -3399,13 +3399,13 @@ public class ConfigurationTest extends AbstractTest {
         assertEquals(3, items.size());
 
         assertEquals("cms__geomaps__popup_content__option__none", items.get(0).getLabel());
-        assertEquals(null, items.get(0).getValue());
+        assertEquals("", items.get(0).getValue());
 
-        assertEquals("NORM_NAME", items.get(1).getLabel());
+        assertEquals("cms__geomaps__popup_content__option__place", items.get(1).getLabel());
         assertEquals("NORM_NAME", items.get(1).getValue());
 
-        assertEquals("cms__geomaps__popup_content__option__education", items.get(2).getLabel());
-        assertEquals("MD_BIOGRAPHY_EDUCATION", items.get(2).getValue());
+        assertEquals("cms__geomaps__popup_content__option__metadata", items.get(2).getLabel());
+        assertEquals("MD_VALUE", items.get(2).getValue());
 
     }
 

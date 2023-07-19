@@ -1328,11 +1328,25 @@
 			</filter>
 		</filters>
 	  <metadata>
-        	<title>
-        		<option label="cms__geomaps__popup_content__option__none"></option>
-        		<option>NORM_NAME</option>
-        		<option label="cms__geomaps__popup_content__option__education">MD_BIOGRAPHY_EDUCATION</option>
-        	</title>
+		  <option label="cms__geomaps__popup_content__option__none" name=""/>
+        	<option label="cms__geomaps__popup_content__option__place" name="NORM_NAME">
+        		<title>
+        			<template name="_DEFAULT">
+	                	<metadata label="" value="{NORM_NAME}">
+	                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
+						</metadata>
+					</template>
+				</title>
+        	</option>
+        	<option label="cms__geomaps__popup_content__option__metadata" name="MD_VALUE">
+        		<title>
+	        		<template name="_DEFAULT">
+	                	<metadata label="" value="{MD_VALUE}">
+	                    			<param type="field" key="MD_VALUE" altKey="LABEL" />
+						</metadata>
+					</template>
+        		</title>
+        	</option>
         	<mainDocumentFields>
         		<regex>
 	        		<include>(PI|MD_ROLE|MD_TITLE|MD_VALUE|LABEL|NORM_NAME|MD_CREATOR|MD_BIOGRAPHY|METADATA_TYPE|MD_LOCATION)(_.+)?</include>
