@@ -1133,14 +1133,13 @@ public class SearchBean implements SearchInterface, Serializable {
             inSearchString = "";
         }
 
-        inSearchString = inSearchString.trim();
+        searchString = StringTools.stripJS(inSearchString).trim();
         if (StringUtils.isEmpty(inSearchString)) {
             searchString = "";
             return;
         }
 
         // Reset internal query etc. only after confirming the given search string is not empty
-        searchString = StringTools.stripJS(inSearchString);
         searchStringInternal = "";
         searchTerms.clear();
         phraseSearch = false;
