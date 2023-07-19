@@ -53,6 +53,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.json.JSONObject;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -67,6 +68,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -2302,6 +2304,26 @@ public class ActiveDocumentBean implements Serializable {
 //        }
         return widget.getGeoMap();
     }
+    
+    public RecordGeoMap getRecordGeoMap() throws DAOException, PresentationException, IndexUnreachableException {
+        RecordGeoMap widget = this.geoMaps.get(getPersistentIdentifier());
+//      if (widget == null) {
+          ComplexMetadataContainer md = this.viewManager.getTopStructElement().getMetadataDocuments();
+          if (md instanceof RelationshipMetadataContainer) {
+              RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
+              List<MetadataContainer> docs = rmc.getFieldNames().stream()
+                      .map(rmc::getMetadata)
+                      .flatMap(List::stream)
+                      .distinct()
+                      .map(rmc::getRelatedRecord)
+                      .filter(Objects::nonNull)
+                      .collect(Collectors.toList());
+              widget = new RecordGeoMap(getTopDocument(), docs);
+              this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
+          }
+//      }
+      return widget; 
+    }
 
     /**
      * 
@@ -2553,7 +2575,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public List<String> getGeomapFilters() {
-        return List.of("METADATA_TYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
+        return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }
+
 
 }

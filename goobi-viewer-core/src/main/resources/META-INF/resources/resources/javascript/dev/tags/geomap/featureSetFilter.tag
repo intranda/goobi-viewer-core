@@ -64,9 +64,7 @@ findValues(featureGroups, filterField) {
 }
 
 findEntities(featureGroups, filterField) {
-	let entities = featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
-	console.log("entities", entities);
-	return entities;
+	return featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
 }
 
 resetFilter(event) {

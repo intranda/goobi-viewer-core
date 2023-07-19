@@ -807,11 +807,11 @@ public class Configuration extends AbstractConfiguration {
      * @return
      */
     public List<SelectItem> getGeomapFeatureTitleOptions() {
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.title.option");
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.option");
         if (configs != null && !configs.isEmpty()) {
             return configs.stream()
                     .map(config -> {
-                        String value = config.getString(".", null);
+                        String value = config.getString("[@name]", null);
                         String label = config.getString("[@label]", value); //NOSONAR specific path
                         return new SelectItem(value, label);
                     })
@@ -851,7 +851,6 @@ public class Configuration extends AbstractConfiguration {
         }
         return filters;
     }
-
     public List<FeatureSetConfiguration> getRecordGeomapFeatureSetConfigs() {
         List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = this.getLocalConfigurationsAt("maps.record.featureSets.featureSet");
         return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());

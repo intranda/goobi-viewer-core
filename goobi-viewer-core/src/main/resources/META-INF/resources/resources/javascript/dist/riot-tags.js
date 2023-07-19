@@ -2940,9 +2940,7 @@ this.findValues = function(featureGroups, filterField) {
 }.bind(this)
 
 this.findEntities = function(featureGroups, filterField) {
-	let entities = featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
-	console.log("entities", entities);
-	return entities;
+	return featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
 }.bind(this)
 
 this.resetFilter = function(event) {

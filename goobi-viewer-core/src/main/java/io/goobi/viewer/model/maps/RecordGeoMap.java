@@ -2,16 +2,21 @@ package io.goobi.viewer.model.maps;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 
 import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.model.FeatureSetConfiguration;
+import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.ContentBean;
@@ -135,6 +140,24 @@ public class RecordGeoMap {
         return label;
     }
 
+    public String getGeomapFiltersAsJson() {
+        Locale locale =  BeanUtils.getLocale();
+        Map<String, List<LabeledValue>> map = new HashMap<>();
+        for (FeatureSetConfiguration config : featureSetConfigs) {
+            map.put(config.getName(), config.getFilters());
+        }
+        Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
+        for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
+//            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
+            List<LabeledValue> translatedValues = entry.getValue().stream()
+                    .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale)))
+                    .collect(Collectors.toList());
+            translatedMap.put(entry.getKey(), translatedValues);
+                    
+        }
+        return  new JSONObject(translatedMap).toString();
+    }
+    
     public GeoMap getGeoMap() {
         return geoMap;
     };
