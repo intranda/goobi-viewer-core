@@ -225,14 +225,16 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
 
     
     viewer.GeoMap.featureGroup.prototype.createMarkerCluster = function() {
-        let cluster = L.markerClusterGroup({
-            maxClusterRadius: 80,
+		let baseConfig = {
+			 maxClusterRadius: 80,
             zoomToBoundsOnClick: !this.geoMap.config.fixed,
             iconCreateFunction: function(cluster) {
                 return this.getClusterIcon(this.getClusterCount(cluster));
             }.bind(this)
-        });
-        if(!this.geoMap.config.fixed) {            
+		}
+		let clusterConfig = $.extend(true, {}, baseConfig, this.config.cluster);
+        let cluster = L.markerClusterGroup(clusterConfig);
+        if(clusterConfig.showCoverageOnHover && !this.geoMap.config.fixed) {            
             cluster.on('clustermouseover', function (a) {
                 this.removePolygon();
                 this.shownLayer = a.layer;
