@@ -96,6 +96,13 @@ public class FacetItemAlphanumComparator implements Comparator<IFacetItem>, Seri
         if (!string1Alphanum && string2Alphanum) {
             return 1;
         }
+        // Sort digits after letters
+        if (Character.isDigit(relevantString1.charAt(0)) && Character.isLetter(relevantString2.charAt(0))) {
+            return 1;
+        }
+        if (Character.isLetter(relevantString1.charAt(0)) && Character.isDigit(relevantString2.charAt(0))) {
+            return -1;
+        }
 
         return comparator.compare(relevantString1, relevantString2);
     }
