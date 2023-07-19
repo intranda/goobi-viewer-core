@@ -173,6 +173,11 @@ public class MetadataContainer {
         .filter(e -> !childLabels.contains(SolrTools.getBaseFieldName(e.getKey())))
         .forEach(e -> entity.put(e.getKey(), e.getValue()));
 
+        List<IMetadataValue> roles = entity.get("MD_ROLE");
+        if("agent".equals(doc.getFirstValue("DOCSTRCT")) && !roles.isEmpty()) {
+            System.out.println("ROLE: " + roles.get(0));
+        }
+        
         List<ComplexMetadata> childDocs = ComplexMetadata.getMetadataFromDocuments(children);
         List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).filter(e -> childDocFieldNameFilter.test(e.getKey())).collect(Collectors.toList());
         allChildDocValues.forEach(e -> entity.addAll(e.getKey(),  e.getValue()));

@@ -24,8 +24,11 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -1434,8 +1437,18 @@ public class ConfigurationBean implements Serializable {
     }
 
     public String getGeomapFiltersAsJson() {
+        Locale locale =  BeanUtils.getLocale();
         Map<String, List<LabeledValue>> map = DataManager.getInstance().getConfiguration().getGeomapFilters();
-        return  new JSONObject(map).toString();
+        Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
+        for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
+//            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
+            List<LabeledValue> translatedValues = entry.getValue().stream()
+                    .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale)))
+                    .collect(Collectors.toList());
+            translatedMap.put(entry.getKey(), translatedValues);
+                    
+        }
+        return  new JSONObject(translatedMap).toString();
     }
 
     public List<SelectItem> getGeomapFeatureTitleOptions() {
