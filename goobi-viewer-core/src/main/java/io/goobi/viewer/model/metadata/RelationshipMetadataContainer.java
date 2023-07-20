@@ -104,9 +104,18 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         boolean searchInRelatedRecords = filterField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX);
         if(searchInRelatedRecords) {
             String relatedFilterField = filterField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
-            return super.streamMetadata(field, sortField, sortLanguage, "", filterValue, Integer.MAX_VALUE)
-            .filter(m -> Optional.ofNullable(getRelatedRecord(m)).map(record -> record.getFirstValue(relatedFilterField).equalsIgnoreCase(filterValue)).orElse(false))   
-            .limit(limit)
+            Stream<ComplexMetadata> stream = super.streamMetadata(field, sortField, sortLanguage, "", filterValue, Integer.MAX_VALUE)
+            .filter(m -> Optional.ofNullable(getRelatedRecord(m)).map(record -> record.getFirstValue(relatedFilterField).equalsIgnoreCase(filterValue)).orElse(false));   
+            
+            if (StringUtils.isNotBlank(sortField)) {
+                stream = stream.sorted((m1, m2) -> {
+                    String v1 = Optional.ofNullable(getRelatedRecord(m1)).map(c -> c.getFirstValue(sortField, sortLanguage)).orElse(m1.getFirstValue(sortField, sortLanguage));
+                    String v2 = Optional.ofNullable(getRelatedRecord(m2)).map(c -> c.getFirstValue(sortField, sortLanguage)).orElse(m2.getFirstValue(sortField, sortLanguage));
+                    return v1.compareTo(v2) * (isDescendingOrder() ? -1 : 1);
+                });
+            }
+            
+            return stream.limit(limit)
             .collect(Collectors.toList());
         } else {
             return super.getMetadata(field, sortField, sortLanguage, filterField, filterValue, limit);
