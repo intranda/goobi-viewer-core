@@ -46,7 +46,7 @@ public class RecordGeoMap {
     private final List<FeatureSetConfiguration> featureSetConfigs;
     
     public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments) throws DAOException {
-        this(struct, relatedDocuments, DataManager.getInstance().getDao(), DataManager.getInstance().getConfiguration().getRecordGeomapFeatureSetConfigs());
+        this(struct, relatedDocuments, DataManager.getInstance().getDao(), DataManager.getInstance().getConfiguration().getRecordGeomapFeatureSetConfigs(struct.getDocStructType()));
     }
 
     
@@ -133,7 +133,7 @@ public class RecordGeoMap {
             featureSet.setMarkerTitleField("MD_TITLE");
             featureSet.setSolrQuery(String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", docStruct.getPi()));
             featureSet.setAggregateResults(false);
-            featureSet.setMarker(DataManager.getInstance().getConfiguration().getRecordGeomapMarker(""));
+            featureSet.setMarker(DataManager.getInstance().getConfiguration().getRecordGeomapMarker(docStruct.getDocStructType(), ""));
             geoMap.addFeatureSet(featureSet);
         }
     

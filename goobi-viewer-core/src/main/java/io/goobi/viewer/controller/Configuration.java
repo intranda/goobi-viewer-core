@@ -794,14 +794,6 @@ public class Configuration extends AbstractConfiguration {
         return loadGeomapLabelConfigurations(templates);
     }
 
-    public Map<String, Metadata> getRecordGeomapFeatureConfigurations() {
-        return loadGeomapLabelConfigurations(getLocalConfigurationsAt("maps.record.metadata.title.template"));
-    }
-
-    public Map<String, Metadata> getRecordGeomapEntityConfigurations() {
-        return loadGeomapLabelConfigurations(getLocalConfigurationsAt("maps.record.metadata.entity.title.template"));
-    }
-
     /**
      * 
      * @return
@@ -852,9 +844,14 @@ public class Configuration extends AbstractConfiguration {
         }
         return filters;
     }
-    public List<FeatureSetConfiguration> getRecordGeomapFeatureSetConfigs() {
-        List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = this.getLocalConfigurationsAt("maps.record.featureSets.featureSet");
-        return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
+    public List<FeatureSetConfiguration> getRecordGeomapFeatureSetConfigs(String templateName) {
+        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getLocalConfigurationsAt("maps.record.template"), templateName, true);
+        if(template != null) {            
+            List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = template.configurationsAt("featureSets.featureSet");
+            return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     private static Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
@@ -5436,13 +5433,18 @@ public class Configuration extends AbstractConfiguration {
 
     }
 
-    public String getRecordGeomapMarker(String type) {
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.record.marker");
-        return configs.stream()
-                .filter(config -> config.getString("[@type]", "").equals(type))
-                .findAny()
-                .map(config -> config.getString(".", ""))
-                .orElse("");
+    public String getRecordGeomapMarker(String templateName, String type) {
+        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getLocalConfigurationsAt("maps.record.template"), templateName, true);
+        if(template != null) {            
+            List<HierarchicalConfiguration<ImmutableNode>> configs = template.configurationsAt("marker");
+            return configs.stream()
+                    .filter(config -> config.getString("[@type]", "").equals(type))
+                    .findAny()
+                    .map(config -> config.getString(".", ""))
+                    .orElse("");
+        } else {
+            return "";
+        }
     }
 
     /**
