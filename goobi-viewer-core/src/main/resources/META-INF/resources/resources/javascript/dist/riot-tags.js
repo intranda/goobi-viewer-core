@@ -2892,7 +2892,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
-riot.tag2('featuresetfilter', '<ul><li each="{filter in filters}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
+riot.tag2('featuresetfilter', '<ul><li each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
 
 this.filters = [];
 
@@ -2910,27 +2910,40 @@ this.on("mount", () => {
 })
 
 this.createFilters = function(filterMap, featureGroups) {
+	let filters = [];
+	for (const entry of filterMap.entries()) {
+		let layerName = entry[0];
+		let filterConfigs = entry[1];
+		let groups = featureGroups.filter(g => this.getLayerName(g) == layerName);
+		if(layerName && filterConfigs && filterConfigs.length > 0 && groups.length > 0) {
+			filterConfigs.forEach(filterConfig => {
+				let filter = {
+						field: filterConfig.value,
+						label: filterConfig.label,
+						styleClass: filterConfig.styleClass,
+						layers: groups,
+						options: this.findValues(groups, filterConfig.value).map(v => {
+							return {
+								name: v,
+								field: filterConfig.value
+							}
+						}),
+					};
+				filters.push(filter);
+			});
+		}
+	}
+	return filters.filter(filter => filter.options.length > 1);
+}.bind(this)
 
-	let layerNames = featureGroups.map(layer => {
-		let label = layer.config.label;
-		let labelString = viewerJS.iiif.getValue(label, this.opts.defaultLocale);
-		return labelString;
-	})
-	let filterOptions = layerNames.flatMap(name => filterMap.get(name));
-	return filterOptions.filter(f => f != undefined).map(filter => {
-		let f = {
-			field: filter.value,
-			label: filter.label,
-			options: this.findValues(featureGroups, filter.value).map(v => {
-				return {
-					name: v,
-					field: filter.value
-				}
-			}),
-		};
-		return f;
-	})
-	.filter(filter => filter.options.length > 1);
+this.getLayerName = function(layer) {
+	let name = viewerJS.iiif.getValue(layer.config.label, this.opts.defaultLocale);
+	return name;
+}.bind(this)
+
+this.getFilterName = function(filter) {
+	let name = viewerJS.iiif.getValue(filter.label, this.opts.defaultLocale);
+	return name;
 }.bind(this)
 
 this.findValues = function(featureGroups, filterField) {
@@ -2946,7 +2959,7 @@ this.findEntities = function(featureGroups, filterField) {
 this.resetFilter = function(event) {
 
 	let filter = event.item.filter;
-	this.featureGroups.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
 
 }.bind(this)
 
@@ -2954,13 +2967,15 @@ this.setFilter = function(event) {
 
 	let filter = this.getFilterForField(event.item.option.field);
 	let value = event.item.option.name;
-	this.featureGroups.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
 }.bind(this)
 
 this.isShowMarker = function(entity, filter, value) {
 
+	let filters = this.filters.filter(f => f.layers.filter(g => filter.layers.includes(g)).length > 0);
+
 	filter.selectedValue = value;
-	let match = this.filters.map(filter => {
+	let match = filters.map(filter => {
 		if(filter.selectedValue) {
 			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
 
@@ -2997,7 +3012,6 @@ this.setFeatureGroup = function(event) {
 }.bind(this)
 
 this.getLabel = function(featureGroup) {
-	console.log("get label for ", featureGroup.config.label);
 	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
 }.bind(this)
 
@@ -3006,7 +3020,7 @@ this.isActive = function(featureGroup) {
 }.bind(this)
 
 });
-riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', 'onclick="{preventBubble}"', function(opts) {
+riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', 'onclick="{preventBubble}"', function(opts) {
 
 this.entities = [];
 this.filteredEntities = undefined;
@@ -3028,8 +3042,10 @@ this.on("mount", () => {
 this.setEntities = function(entities) {
 	this.entities = [];
 	this.filteredEntities = undefined;
-	this.refs["search"].value = "";
-	if(entities && entities.length) {
+	if(this.refs["search"]) {
+		this.refs["search"].value = "";
+	}
+	if(entities?.length || this.opts.showAlways) {
 		this.entities = entities;
 		this.show();
 		this.update();
@@ -3037,7 +3053,9 @@ this.setEntities = function(entities) {
 }.bind(this)
 
 this.getVisibleEntities = function() {
-	if(this.filteredEntities === undefined) {
+	if(!this.entities) {
+		return [];
+	} else if(this.filteredEntities === undefined) {
 		return this.entities;
 	} else {
 		return this.filteredEntities;

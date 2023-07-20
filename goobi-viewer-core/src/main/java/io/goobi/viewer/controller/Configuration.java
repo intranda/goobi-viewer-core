@@ -844,7 +844,8 @@ public class Configuration extends AbstractConfiguration {
             List<LabeledValue> fields = config.configurationsAt("field").stream().map(c -> {
                 String field = c.getString(".");
                 String label = c.getString("[@label]", "");
-                return new LabeledValue(field, label);
+                String styleClass = c.getString("[@styleClass]", "");
+                return new LabeledValue(field, label, styleClass);
             })
                     .collect(Collectors.toList());
             filters.put(groupName, fields);

@@ -43,7 +43,8 @@ public class FeatureSetConfiguration {
         return filterConfigs.stream().map(c -> {
             String field = c.getString("field");
             String label = c.getString("field[@label]", "");
-            return new LabeledValue(field, label);
+            String styleClass = c.getString("field[@styleClass]", "");
+            return new LabeledValue(field, label, styleClass);
         })
         .collect(Collectors.toList());
     }

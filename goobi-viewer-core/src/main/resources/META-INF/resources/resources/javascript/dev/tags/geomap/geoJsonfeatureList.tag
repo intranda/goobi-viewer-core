@@ -5,10 +5,10 @@
 		<h4 class="custom-map__sidebar-inner-heading">
 			<rawhtml content="{getListLabel()}"></rawhtml>
 		</h4>
-		<input class="custom-map__sidebar-inner-search-input" type="text" ref="search"  oninput="{filterList}"></input>
+		<input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search"  oninput="{filterList}"></input>
 	</div>
 	<div class="custom-map__sidebar-inner-bottom">
-	<ul class="custom-map__inner-wrapper-list">
+	<ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list">
 		<li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}">
 			<a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a>
 		</li>
@@ -40,8 +40,10 @@ this.on("mount", () => {
 setEntities(entities) {
 	this.entities = [];
 	this.filteredEntities = undefined;
-	this.refs["search"].value = "";
-	if(entities && entities.length) {		
+	if(this.refs["search"]) {		
+		this.refs["search"].value = "";
+	}
+	if(entities?.length || this.opts.showAlways) {		
 		this.entities = entities;
 		this.show();
 		this.update();
@@ -49,7 +51,9 @@ setEntities(entities) {
 }
 
 getVisibleEntities() {
-	if(this.filteredEntities === undefined) {
+	if(!this.entities) {
+		return [];
+	} else if(this.filteredEntities === undefined) {
 		return this.entities;
 	} else {
 		return this.filteredEntities;

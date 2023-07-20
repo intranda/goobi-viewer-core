@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,8 +62,8 @@ public class RecordGeoMap {
         GeoMap geoMap = new GeoMap();
         
         this.createDocStructFeatureSet(geoMap, mainStruct);
-        this.featureSetConfigs.stream().filter(config -> "metadata".equals(config.getType())).forEach(config -> createMetadataFeatureSet(geoMap, mainStruct, config));
         this.featureSetConfigs.stream().filter(config -> "relation".equals(config.getType())).forEach(config -> createRelatedDocumentFeatureSet(geoMap, relatedDocuments, config));
+        this.featureSetConfigs.stream().filter(config -> "metadata".equals(config.getType())).forEach(config -> createMetadataFeatureSet(geoMap, mainStruct, config));
 
         return geoMap;
     }
@@ -75,21 +76,50 @@ public class RecordGeoMap {
         geoMap.addFeatureSet(featureSet);        
 
         GeoCoordinateConverter converter = new GeoCoordinateConverter(config.getLabelConfig());
-        featureSet.setFeatures(docs.stream()
-                .distinct()
-                .filter(d -> StringUtils.isNotBlank(d.getFirstValue("NORM_COORDS_GEOJSON")))
-                .map(doc -> converter.getGeojsonPoints(doc, "NORM_COORDS_GEOJSON", "MD_VALUE"))
-                .flatMap(Collection::stream)
-                .map(GeoMapFeature::getJsonObject)
-                .map(Object::toString)
-                .collect(Collectors.toList()));
+        
+        Map<GeoMapFeature, List<GeoMapFeature>> featureMap = docs.stream()
+        .distinct()
+        .filter(d -> matchesQuery(d, config.getQuery()))
+        .filter(d -> StringUtils.isNotBlank(d.getFirstValue("NORM_COORDS_GEOJSON")))
+        .map(doc -> converter.getGeojsonPoints(doc, "NORM_COORDS_GEOJSON", "MD_VALUE"))
+        .flatMap(Collection::stream)
+        .collect(Collectors.groupingBy(Function.identity()));
+        
+        List<String> features = featureMap.entrySet().stream()
+        .map(entry -> {
+            GeoMapFeature main = entry.getKey();
+            main.setEntities(entry.getValue().stream().map(GeoMapFeature::getEntities).flatMap(List::stream).collect(Collectors.toList()));
+            return main;
+        })
+        .map(GeoMapFeature::getJsonObject)
+        .map(Object::toString)
+        .collect(Collectors.toList());
+        
+        featureSet.setFeatures(features);      
   
+    }
+
+
+    private boolean matchesQuery(MetadataContainer container, String query) {
+        if(StringUtils.isBlank(query)) {
+            return true;
+        } else if(query.contains(":")) {
+            String field = query.substring(0, query.indexOf(":"));
+            String value = query.substring(query.indexOf(":")+1);
+            if(StringUtils.isNoneBlank(field, value)) {
+                return container.getFirstValue(field).equalsIgnoreCase(value);
+            } else {
+                return false;
+            }
+        } else {
+            return query.equalsIgnoreCase(container.getLabel().getValue().orElse(""));
+        }
     }
 
 
     private void createMetadataFeatureSet(GeoMap geoMap, StructElement mainStruct, FeatureSetConfiguration config) {
         SolrFeatureSet featureSet = new SolrFeatureSet();
-        featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), false)));
+        featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
         featureSet.setSolrQuery(String.format("+DOCTYPE:METADATA +LABEL:(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
         featureSet.setMarkerTitleField(config.getLabelConfig());
         featureSet.setAggregateResults(true);
@@ -150,7 +180,7 @@ public class RecordGeoMap {
         for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
 //            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
             List<LabeledValue> translatedValues = entry.getValue().stream()
-                    .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale)))
+                    .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale), v.getStyleClass()))
                     .collect(Collectors.toList());
             translatedMap.put(entry.getKey(), translatedValues);
                     

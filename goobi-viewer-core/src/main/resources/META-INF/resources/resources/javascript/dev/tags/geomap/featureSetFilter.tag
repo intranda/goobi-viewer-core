@@ -1,7 +1,7 @@
 <featureSetFilter>
 
 <ul>
-	<li each="{filter in filters}">
+	<li each="{filter in filters}"  class="{filter.styleClass}">
 			<label>{filter.label}</label>
 			<div>
 				<input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"/>
@@ -34,27 +34,40 @@ this.on("mount", () => {
 })
 
 createFilters(filterMap, featureGroups) {
-	
-	let layerNames = featureGroups.map(layer => {
-		let label = layer.config.label;
-		let labelString = viewerJS.iiif.getValue(label, this.opts.defaultLocale);
-		return labelString;
-	})
-	let filterOptions = layerNames.flatMap(name => filterMap.get(name));
-	return filterOptions.filter(f => f != undefined).map(filter => {
-		let f = {
-			field: filter.value,
-			label: filter.label,
-			options: this.findValues(featureGroups, filter.value).map(v => {
-				return {
-					name: v,
-					field: filter.value
-				}
-			}),
-		};
-		return f;
-	})
-	.filter(filter => filter.options.length > 1);
+	let filters = [];
+	for (const entry of filterMap.entries()) {
+		let layerName = entry[0];
+		let filterConfigs = entry[1];
+		let groups = featureGroups.filter(g => this.getLayerName(g) == layerName);
+		if(layerName && filterConfigs && filterConfigs.length > 0 && groups.length > 0) {
+			filterConfigs.forEach(filterConfig => {
+				let filter = {
+						field: filterConfig.value,
+						label: filterConfig.label,
+						styleClass: filterConfig.styleClass,
+						layers: groups,
+						options: this.findValues(groups, filterConfig.value).map(v => {
+							return {
+								name: v,
+								field: filterConfig.value
+							}
+						}),
+					};
+				filters.push(filter);
+			});
+		}
+	}
+	return filters.filter(filter => filter.options.length > 1);
+}
+
+getLayerName(layer) {
+	let name = viewerJS.iiif.getValue(layer.config.label, this.opts.defaultLocale);
+	return name;
+}
+
+getFilterName(filter) {
+	let name = viewerJS.iiif.getValue(filter.label, this.opts.defaultLocale);
+	return name;
 }
 
 findValues(featureGroups, filterField) {
@@ -70,7 +83,7 @@ findEntities(featureGroups, filterField) {
 resetFilter(event) {
 	//console.log("reset ", event.item.filter);
 	let filter = event.item.filter;
-	this.featureGroups.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
 // 	this.featureGroups.forEach(g => g.showMarkers());
 }
 
@@ -78,13 +91,15 @@ setFilter(event) {
 	//console.log("set ", event.item.option);
 	let filter = this.getFilterForField(event.item.option.field);
 	let value = event.item.option.name;
-	this.featureGroups.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
 }
 
 isShowMarker(entity, filter, value) {
 // 	console.log("isShowMarker", entity, filter, value);
+	let filters = this.filters.filter(f => f.layers.filter(g => filter.layers.includes(g)).length > 0);
+
 	filter.selectedValue = value;
-	let match = this.filters.map(filter => {
+	let match = filters.map(filter => {
 		if(filter.selectedValue) {
 			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
 // 			console.log("filter " + filter.label + " shows: " + show + " for entity ", entity);

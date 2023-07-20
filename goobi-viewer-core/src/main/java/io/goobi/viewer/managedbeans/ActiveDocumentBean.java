@@ -2286,23 +2286,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
-        RecordGeoMap widget = this.geoMaps.get(getPersistentIdentifier());
-//        if (widget == null) {
-            ComplexMetadataContainer md = this.viewManager.getTopStructElement().getMetadataDocuments();
-            if (md instanceof RelationshipMetadataContainer) {
-                RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
-                List<MetadataContainer> docs = rmc.getFieldNames().stream()
-                        .map(rmc::getMetadata)
-                        .flatMap(List::stream)
-                        .distinct()
-                        .map(rmc::getRelatedRecord)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-                widget = new RecordGeoMap(getTopDocument(), docs);
-                this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
-            }
-//        }
-        return widget.getGeoMap();
+       return getRecordGeoMap().getGeoMap();
     }
     
     public RecordGeoMap getRecordGeoMap() throws DAOException, PresentationException, IndexUnreachableException {
