@@ -16,7 +16,7 @@ public class FeatureSetConfigurationTest extends AbstractTest {
     public void testReadConfiguation() {
         
         Configuration config = DataManager.getInstance().getConfiguration();
-        List<FeatureSetConfiguration> configs = config.getRecordGeomapFeatureSetConfigs();
+        List<FeatureSetConfiguration> configs = config.getRecordGeomapFeatureSetConfigs("");
         
         assertEquals(2, configs.size());
         

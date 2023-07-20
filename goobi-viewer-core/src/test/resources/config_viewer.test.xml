@@ -1370,45 +1370,47 @@
 	    <token>some.token</token>
 	  </mapbox>
 	  <record>
-	  	<featureSets>
-    		<featureSet type="metadata">
-	    		<name>set_metadata_1</name>
-	        	<marker>maps_marker_1</marker>
-    			<query>MD_A:A MD_B:B*</query>
-    			<filters>
-    				<filter>
-    					<field label="">MD_METADATATYPE</field>
-    				</filter>
-    			</filters>
-    		</featureSet>
-    		<featureSet type="event">
-	    		<name>set_event_2</name>
-	        	<marker>maps_marker_2</marker>
-    			<query>DOCTYPE:event</query>
-    			<filters>
-    				<filter>
-    					<field label="">MD_EVENTTYPE</field>
-    				</filter>
-    				<filter>
-    					<field label="">MD_TYPE</field>
-    				</filter>
-    			</filters>
-    		</featureSet>
-    	</featureSets>
-	  	<metadata>
-       		<title>
-            	<template name="_DEFAULT">
-                	<metadata label="" value="{NORM_NAME}">
-                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
-					</metadata>
-				</template>
-				<template name="MD_BIOGRAPHY_JOURNEY">
-                		<metadata label="" value="Journey to {MD_LOCATION}">
-                    			<param type="field" key="MD_LOCATION" />
-                		</metadata>
-				</template>
-       		</title>
-       	</metadata>
+	  	<template name="_DEFAULT">
+		  	<featureSets>
+	    		<featureSet type="metadata">
+		    		<name>set_metadata_1</name>
+		        	<marker>maps_marker_1</marker>
+	    			<query>MD_A:A MD_B:B*</query>
+	    			<filters>
+	    				<filter>
+	    					<field label="">MD_METADATATYPE</field>
+	    				</filter>
+	    			</filters>
+	    		</featureSet>
+	    		<featureSet type="event">
+		    		<name>set_event_2</name>
+		        	<marker>maps_marker_2</marker>
+	    			<query>DOCTYPE:event</query>
+	    			<filters>
+	    				<filter>
+	    					<field label="">MD_EVENTTYPE</field>
+	    				</filter>
+	    				<filter>
+	    					<field label="">MD_TYPE</field>
+	    				</filter>
+	    			</filters>
+	    		</featureSet>
+	    	</featureSets>
+		  	<metadata>
+	       		<title>
+	            	<template name="_DEFAULT">
+	                	<metadata label="" value="{NORM_NAME}">
+	                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
+						</metadata>
+					</template>
+					<template name="MD_BIOGRAPHY_JOURNEY">
+	                		<metadata label="" value="Journey to {MD_LOCATION}">
+	                    			<param type="field" key="MD_LOCATION" />
+	                		</metadata>
+					</template>
+	       		</title>
+	       	</metadata>
+      	</template>
       </record>
 	</maps>
 
