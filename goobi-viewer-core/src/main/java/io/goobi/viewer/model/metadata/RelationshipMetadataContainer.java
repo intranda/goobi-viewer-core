@@ -155,4 +155,19 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             return super.getAllValues(field, filterField, boostedValues, locale);
         }
     }
+    
+    @Override
+    public List<String> getMetadataValues(String metadataField, String filterField, String filterValue, String valueField, Locale locale) {
+        Stream<ComplexMetadata> stream = this.getMetadata(metadataField).stream();
+        if(StringUtils.isNoneBlank(filterField, filterValue)) {
+            stream = stream.filter(cm -> cm.getValues(filterField, locale).contains(filterValue));
+        }
+        if(valueField != null &&  valueField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX)) {
+            String relatedField = valueField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
+            return stream.map(this::getRelatedRecord).map(related -> related.getValues(relatedField, locale))
+            .flatMap(List::stream).collect(Collectors.toList());
+        } else {            
+            return stream.map(cm -> cm.getValues(valueField, locale)).flatMap(List::stream).collect(Collectors.toList());
+        }
+    }
 }
