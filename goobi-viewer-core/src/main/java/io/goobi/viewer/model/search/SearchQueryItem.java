@@ -666,7 +666,7 @@ public class SearchQueryItem implements Serializable {
                                 suffix = "*";
                                 useValue = useValue.substring(0, useValue.length() - 1);
                             }
-                            if (values.size() > 1 && StringUtils.isNotBlank(values.get(1))) {
+                            if (isRange() && values.size() > 1 && StringUtils.isNotBlank(values.get(1))) {
                                 // Range search
                                 sbItem.append('[')
                                         .append(ClientUtils.escapeQueryChars(useValue))
@@ -691,7 +691,7 @@ public class SearchQueryItem implements Serializable {
                                 // TODO do not add negated terms
                             }
                         }
-                        if (values.size() < 2 || StringUtils.isBlank(values.get(1))) {
+                        if (valueSplit.length > 1 || values.size() < 2 || StringUtils.isBlank(values.get(1))) {
                             moreThanOneValue = true;
                         }
 
@@ -704,10 +704,7 @@ public class SearchQueryItem implements Serializable {
 
         sbItem.append(')');
 
-        String item = sbItem.toString();
-        item = item.replace("\\~", "~");
-
-        return item;
+        return sbItem.toString().replace("\\~", "~");
     }
 
     /** {@inheritDoc} */
