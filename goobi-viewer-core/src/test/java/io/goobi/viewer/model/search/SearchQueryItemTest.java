@@ -189,10 +189,10 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
     @Test
     public void generateQuery_shouldGenerateRangeQueryCorrectly() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
-        item.setField(SolrConstants.YEAR);
+        item.setField("MD_YEARPUBLISH");
         item.setValue(" 1900 ");
         item.setValue2(" 2020 ");
-        Assert.assertEquals("+(YEAR:([1900 TO 2020]))", item.generateQuery(new HashSet<>(), true, false));
+        Assert.assertEquals("+(MD_YEARPUBLISH:([1900 TO 2020]))", item.generateQuery(new HashSet<>(), true, false));
     }
 
     /**
