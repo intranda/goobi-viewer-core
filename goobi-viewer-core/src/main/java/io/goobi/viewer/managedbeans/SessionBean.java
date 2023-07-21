@@ -22,8 +22,10 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -65,6 +67,11 @@ public class SessionBean implements Serializable{
 
     public void cleanSessionObjects() {
         this.sessionObjects = new ConcurrentHashMap<String, Object>();
+    }
+    
+    public void removeObjects(String keyRegex) {
+        List<String> keys = this.sessionObjects.keySet().stream().filter(key -> key.matches(keyRegex)).collect(Collectors.toList());
+        keys.forEach(this.sessionObjects::remove);
     }
 
 }
