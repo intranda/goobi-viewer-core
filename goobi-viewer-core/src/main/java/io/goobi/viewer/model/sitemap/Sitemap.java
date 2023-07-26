@@ -94,7 +94,7 @@ public class Sitemap {
     public List<File> generate(String viewerRootUrl, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {
         this.viewerRootUrl = viewerRootUrl;
-        if (!this.viewerRootUrl.endsWith("/")) {
+        if (this.viewerRootUrl != null && !this.viewerRootUrl.endsWith("/")) {
             this.viewerRootUrl += "/";
         }
         // Sitemap index root
@@ -134,7 +134,7 @@ public class Sitemap {
                 .append(SolrConstants.DATEDELETED)
                 .append(":*)")
                 .append(SearchHelper.getAllSuffixes(null, true, true));
-        logger.debug("Sitemap: sitemap query: {}", sbQuery.toString());
+        logger.debug("Sitemap: sitemap query: {}", sbQuery);
         String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
                 SolrConstants.DOCTYPE, SolrConstants.ISANCHOR, SolrConstants.THUMBPAGENO };
         String[] pageFields = { SolrConstants.ORDER };
@@ -172,27 +172,21 @@ public class Sitemap {
             }
             if (solrDoc.getFieldValue(SolrConstants.ISANCHOR) != null && (Boolean) solrDoc.getFieldValue(SolrConstants.ISANCHOR)) {
                 // Anchor
-                {
-                    // Anchor TOC URL
-                    currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
 
-                    increment(timestampModified);
-                }
-                {
-                    // Anchor metadata URL
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
+                // Anchor TOC URL
+                currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
+                increment(timestampModified);
 
-                    increment(timestampModified);
-                }
+                // Anchor metadata URL
+                currentDocSitemap.getRootElement()
+                        .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
+                increment(timestampModified);
             } else if (DocType.GROUP.toString().equals(solrDoc.getFieldValue(SolrConstants.DOCTYPE))) {
                 // Group
-                {
-                    // Group TOC URL
-                    currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
 
-                    increment(timestampModified);
-                }
+                // Group TOC URL
+                currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
+                increment(timestampModified);
             } else {
                 // Record
                 {
@@ -200,20 +194,15 @@ public class Sitemap {
                     int order = solrDoc.containsKey(SolrConstants.THUMBPAGENO) ? (int) solrDoc.getFieldValue(SolrConstants.THUMBPAGENO) : 1;
                     currentDocSitemap.getRootElement()
                             .addContent(createUrlElement(pi, order, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
-
                     increment(timestampModified);
-                }
-                {
+
                     // Record metadata URL
                     currentDocSitemap.getRootElement()
                             .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
-
                     increment(timestampModified);
-                }
-                {
+
                     // Record TOC URL
                     currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
-
                     increment(timestampModified);
                 }
 
@@ -249,9 +238,9 @@ public class Sitemap {
             }
             recordIndex++;
             if (recordIndex % 50 == 0) {
-                logger.debug("Sitemap: parsed record " + recordIndex);
+                logger.debug("Sitemap: parsed record {}", recordIndex);
                 long end = System.nanoTime();
-                logger.debug("Sitemap: parsing 50 records took " + ((end - start) / 1e9) + " seconds");
+                logger.debug("Sitemap: parsing 50 records took {}" + " seconds", ((end - start) / 1e9));
                 start = end;
             }
         }
