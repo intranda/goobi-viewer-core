@@ -113,9 +113,13 @@ public class ImageHandler {
         String escFilename = StringTools.encodeUrl(filename);
             if (isRestrictedUrl(filepath)) {
                 String escFilepath = StringTools.escapeCriticalUrlChracters(filepath, true);
+                if(this.urls != null) {                    
+                    return this.urls.path(ApiUrls.EXTERNAL_IMAGES).params(escFilepath).build();
+                } else {                    
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                sb.append("image").append("/-/").append(escFilepath).append("/info.json");
+                sb.append("image/-/").append(escFilepath).append("/info.json");
                 return sb.toString();
+                }
             } else if (isExternalUrl(filepath)) {
                 return filepath;
             } else if(urls != null) {
