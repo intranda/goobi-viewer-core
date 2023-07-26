@@ -31,16 +31,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -53,10 +51,9 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
-import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Sitemap generation.
@@ -97,6 +94,9 @@ public class Sitemap {
     public List<File> generate(String viewerRootUrl, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {
         this.viewerRootUrl = viewerRootUrl;
+        if (!this.viewerRootUrl.endsWith("/")) {
+            this.viewerRootUrl += "/";
+        }
         // Sitemap index root
         docIndex.setRootElement(new Element("sitemapindex", nsSitemap));
 
@@ -282,7 +282,7 @@ public class Sitemap {
                 // loc
                 Element eleLoc = new Element("loc", nsSitemap);
                 eleCurrectIndexSitemap.addContent(eleLoc);
-                eleLoc.setText(viewerRootUrl + '/' + "sitemap" + docListSitemap.size() + ".xml.gz");
+                eleLoc.setText(viewerRootUrl + "sitemap" + docListSitemap.size() + ".xml.gz");
 
                 // lastmod
                 Element eleLastmod = new Element("lastmod", nsSitemap);
