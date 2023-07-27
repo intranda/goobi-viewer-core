@@ -3410,27 +3410,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     @Test
-    public void test_getGeomapFeatureMainDocumentFields() {
-        StringMatchConfiguration config = DataManager.getInstance().getConfiguration().getGeomapFeatureMainDocumentFields();
-        assertNotNull(config);
-        assertTrue(config.test("PI"));
-        assertTrue(config.test("MD_TITLE"));
-        assertFalse(config.test("test"));
-        assertFalse(config.test("MD_TITLE_UNTOKENIZED"));
-    }
-
-    @Test
-    public void test_getGeomapFeatureMetadataDocumentFields() {
-        StringMatchConfiguration config = DataManager.getInstance().getConfiguration().getGeomapFeatureMetadataDocumentFields();
-        assertNotNull(config);
-        assertTrue(config.test("PI"));
-        assertTrue(config.test("LABEL"));
-        assertTrue(config.test("MD_TITLE"));
-        assertFalse(config.test("MD_ROLE"));
-        assertFalse(config.test("MD_TITLE_UNTOKENIZED"));
-    }
-
-    @Test
     public void test_getGeomapFilters() {
         Map<String, List<LabeledValue>> filters = DataManager.getInstance().getConfiguration().getGeomapFilters();
         assertEquals(3, filters.size());

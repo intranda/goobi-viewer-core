@@ -1347,19 +1347,6 @@
 					</template>
         		</title>
         	</option>
-        	<mainDocumentFields>
-        		<regex>
-	        		<include>(PI|MD_ROLE|MD_TITLE|MD_VALUE|LABEL|NORM_NAME|MD_CREATOR|MD_BIOGRAPHY|METADATA_TYPE|MD_LOCATION)(_.+)?</include>
-	        		<exclude>FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH</exclude>
-        		</regex>
-        	</mainDocumentFields>
-        	<metadataDocumentFields>
-        		<list>
-        			<value>MD_TITLE</value>
-        			<value>LABEL</value>
-        			<value>PI</value>
-        		</list>
-        	</metadataDocumentFields>
         </metadata>
 	  <coordinateFields>
 	  	<field>MD_GEOJSON_POINT</field>

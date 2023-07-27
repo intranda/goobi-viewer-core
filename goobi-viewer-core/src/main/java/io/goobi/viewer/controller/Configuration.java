@@ -63,7 +63,6 @@ import io.goobi.viewer.controller.model.FeatureSetConfiguration;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
-import io.goobi.viewer.controller.model.StringMatchConfiguration;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -811,14 +810,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return Collections.emptyList();
-    }
-
-    public StringMatchConfiguration getGeomapFeatureMainDocumentFields() {
-        return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.mainDocumentFields"));
-    }
-
-    public StringMatchConfiguration getGeomapFeatureMetadataDocumentFields() {
-        return StringMatchConfiguration.fromConfig(getLocalConfigurationAt("maps.metadata.metadataDocumentFields"));
     }
 
     public View getGeomapDefaultView() {

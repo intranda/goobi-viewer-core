@@ -2915,6 +2915,7 @@ this.createFilters = function(filterMap, featureGroups) {
 		let layerName = entry[0];
 		let filterConfigs = entry[1];
 		let groups = featureGroups.filter(g => this.getLayerName(g) == layerName);
+		console.log("create filters ", layerName, filterConfigs, groups);
 		if(layerName && filterConfigs && filterConfigs.length > 0 && groups.length > 0) {
 			filterConfigs.forEach(filterConfig => {
 				let filter = {
@@ -2947,13 +2948,16 @@ this.getFilterName = function(filter) {
 }.bind(this)
 
 this.findValues = function(featureGroups, filterField) {
+	console.log("find values ", featureGroups, filterField);
 	return Array.from(new Set(this.findEntities(featureGroups, filterField)
 	.map(e => e[filterField]).map(a => a[0])
 	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
 }.bind(this)
 
 this.findEntities = function(featureGroups, filterField) {
-	return featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+	let entities = featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+	console.log("find entitites", entities);
+	return entities;
 }.bind(this)
 
 this.resetFilter = function(event) {
