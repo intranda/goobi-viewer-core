@@ -1464,7 +1464,6 @@ public final class SearchHelper {
         if (string == null) {
             return null;
         }
-        string = Normalizer.normalize(string, Normalizer.Form.NFD);
 
         // Replace entire hyperink elements with spaces
         Matcher m = patternHyperlink.matcher(string);
@@ -1477,6 +1476,8 @@ public final class SearchHelper {
             sb.append(string.substring(m.end()));
             string = sb.toString();
         }
+        
+        string = Normalizer.normalize(string, Normalizer.Form.NFD);
 
         // string = string.replaceAll(patternHyperlink.pattern(), " ");
         string = string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
