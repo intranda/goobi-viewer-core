@@ -455,7 +455,7 @@ public class Metadata implements Serializable {
                         // No-day format hack
                         try {
                             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
-                            LocalDate date = LocalDate.parse(value);
+                            LocalDate date = LocalDate.parse(value + "-01");
                             value = date.format(dateTimeFormatter);
                         } catch (DateTimeParseException e1) {
                             logger.warn("Error parsing {} as date", value);
