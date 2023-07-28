@@ -147,7 +147,17 @@ public class MetadataContainer {
     }
     
     public void addAll(String key, Collection<IMetadataValue> values) {
-        values.forEach(v -> this.add(key, v));
+        this.addAll(key, values, false);
+    }
+    
+    public void addAll(String key, Collection<IMetadataValue> values, boolean overwrite) {
+        values.forEach(v -> {
+            if(overwrite) {
+                this.put(key, List.of(v));
+            } else {
+                this.add(key, v);
+            }
+        });
     }
 
     public void remove(String key) {
@@ -175,7 +185,7 @@ public class MetadataContainer {
         
         List<ComplexMetadata> childDocs = ComplexMetadata.getMetadataFromDocuments(children);
         List<Entry<String, List<IMetadataValue>>> allChildDocValues = childDocs.stream().map(mdDoc -> mdDoc.getMetadata().entrySet()).flatMap(Set::stream).filter(e -> childDocFieldNameFilter.test(e.getKey())).collect(Collectors.toList());
-        allChildDocValues.forEach(e -> entity.addAll(e.getKey(),  e.getValue()));
+        allChildDocValues.forEach(e -> entity.addAll(e.getKey(),  e.getValue(), true));
         return entity;
     }
     
