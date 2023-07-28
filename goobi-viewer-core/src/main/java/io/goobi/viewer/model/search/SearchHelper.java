@@ -166,7 +166,7 @@ public final class SearchHelper {
     /** Constant <code>patternYearRange</code> */
     public static Pattern patternYearRange = Pattern.compile("\\[[0-9]+ TO [0-9]+\\]");
     /** Constant <code>patternHyperlink</code> */
-    public static Pattern patternHyperlink = Pattern.compile("(<a .*<\\/a>)");
+    public static Pattern patternHyperlink = Pattern.compile("(<a (?:(?!<\\/a>).)*<\\/a>)");
 
     public static final Pattern patternAllItems = Pattern.compile(
             "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");
@@ -1433,7 +1433,7 @@ public final class SearchHelper {
         if (term.length() < 2) {
             return phrase;
         }
-
+        
         StringBuilder sb = new StringBuilder();
         String normalizedPhrase = normalizeString(phrase);
         String normalizedTerm = normalizeString(term);
@@ -1464,7 +1464,6 @@ public final class SearchHelper {
         if (string == null) {
             return null;
         }
-        string = Normalizer.normalize(string, Normalizer.Form.NFD);
 
         // Replace entire hyperink elements with spaces
         Matcher m = patternHyperlink.matcher(string);
@@ -1477,8 +1476,10 @@ public final class SearchHelper {
             sb.append(string.substring(m.end()));
             string = sb.toString();
         }
+        
+        string = Normalizer.normalize(string, Normalizer.Form.NFD);
 
-        string = string.replaceAll(patternHyperlink.pattern(), " ");
+        // string = string.replaceAll(patternHyperlink.pattern(), " ");
         string = string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
         string = Normalizer.normalize(string, Normalizer.Form.NFC);
         return string;

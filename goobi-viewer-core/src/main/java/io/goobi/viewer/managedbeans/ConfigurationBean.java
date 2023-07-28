@@ -790,7 +790,6 @@ public class ConfigurationBean implements Serializable {
                 .collect(Collectors.toList());
     }
 
-
     /**
      * <p>
      * getTocIndentation.
@@ -1437,18 +1436,19 @@ public class ConfigurationBean implements Serializable {
     }
 
     public String getGeomapFiltersAsJson() {
-        Locale locale =  BeanUtils.getLocale();
+        Locale locale = BeanUtils.getLocale();
         Map<String, List<LabeledValue>> map = DataManager.getInstance().getConfiguration().getGeomapFilters();
         Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
         for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
-//            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
-            List<LabeledValue> translatedValues = entry.getValue().stream()
+            //            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
+            List<LabeledValue> translatedValues = entry.getValue()
+                    .stream()
                     .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale), v.getStyleClass()))
                     .collect(Collectors.toList());
             translatedMap.put(entry.getKey(), translatedValues);
-                    
+
         }
-        return  new JSONObject(translatedMap).toString();
+        return new JSONObject(translatedMap).toString();
     }
 
     public List<SelectItem> getGeomapFeatureTitleOptions() {
@@ -1459,13 +1459,21 @@ public class ConfigurationBean implements Serializable {
                 .map(item -> new SelectItem(item.getValue(), ViewerResourceBundle.getTranslation(item.getLabel(), BeanUtils.getLocale())))
                 .collect(Collectors.toList());
     }
-    
+
     public List<Metadata> getMetadataConfiguration(String type) {
         return getMetadataConfiguration(type, "_DEFAULT");
     }
-    
+
     public List<Metadata> getMetadataConfiguration(String type, String template) {
         return DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(type, template, true, true);
     }
 
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public String getPageType(String name) {
+        return DataManager.getInstance().getConfiguration().getPageType(PageType.getByName(name));
+    }
 }
