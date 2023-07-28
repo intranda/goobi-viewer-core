@@ -166,7 +166,7 @@ public class GeoCoordinateConverter {
 
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
-                .search(finalQuery, 0, 10_000, null, null, getSolrFieldsForMainQuery(coordinateFields, markerTitleField), filterQueries, params);
+                .search(finalQuery, 0, 10_000, null, null, getSolrFieldsForMainQuery(coordinateFields, markerTitleField, aggregateResults), filterQueries, params);
         SolrDocumentList docs = response.getResults();
 
         if (aggregateResults) {
@@ -190,14 +190,16 @@ public class GeoCoordinateConverter {
 
     }
 
-    public List<String> getSolrFieldsForMainQuery(List<String> coordinateFields, String markerTitleField) {
-        Set<String> fieldList = new HashSet<>(coordinateFields);
+    public List<String> getSolrFieldsForMainQuery(List<String> coordinateFields, String markerTitleField, boolean aggregateResults) {
+        //only get coordinate fields for main document if results are not aggregated. Otherwise coordinates come from expanded results
+        Set<String> fieldList = aggregateResults ?  new HashSet<>() : new HashSet<>(coordinateFields);
         fieldList.addAll(getLanguageFields(markerTitleField));
         fieldList.add(SolrConstants.DOCTYPE);
         fieldList.add(SolrConstants.DOCSTRCT);
         fieldList.add(SolrConstants.PI);
         fieldList.add(SolrConstants.PI_TOPSTRUCT);
         fieldList.add(SolrConstants.MD_VALUE);
+        fieldList.addAll(getSolrFields(this.entityTitleConfigs.values()));
         fieldList.addAll(getSolrFields(this.featureTitleConfigs.values()));
         return new ArrayList<>(fieldList);
     }
@@ -251,9 +253,10 @@ public class GeoCoordinateConverter {
         String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
         List<String> points = new ArrayList<>();
         points.addAll(children.stream()
-                .limit(1)
                 .map(c -> SolrTools.getMetadataValues(c, metadataField))
                 .flatMap(List::stream)
+                .filter(StringUtils::isNotBlank)
+                .limit(1)
                 .collect(Collectors.toList()));
         List<GeoMapFeature> docFeatures = getFeatures(points);
         addMetadataToFeature(doc, children, docFeatures);
