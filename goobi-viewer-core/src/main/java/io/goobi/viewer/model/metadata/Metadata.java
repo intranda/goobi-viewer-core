@@ -444,14 +444,22 @@ public class Metadata implements Serializable {
                     value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                     break;
                 case DATEFIELD:
+                    String outputPattern =
+                            StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : BeanUtils.getNavigationHelper().getDatePattern();
+                    String altOutputPattern = outputPattern.replace("dd/", "");
                     try {
-                        String outputPattern =
-                                StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : BeanUtils.getNavigationHelper().getDatePattern();
                         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
                         LocalDate date = LocalDate.parse(value);
                         value = date.format(dateTimeFormatter);
                     } catch (DateTimeParseException e) {
-                        logger.error("Error parsing {} as date", value);
+                        // No-day format hack
+                        try {
+                            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
+                            LocalDate date = LocalDate.parse(value);
+                            value = date.format(dateTimeFormatter);
+                        } catch (DateTimeParseException e1) {
+                            logger.warn("Error parsing {} as date", value);
+                        }
                     }
                     value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                     break;
