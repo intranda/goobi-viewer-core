@@ -164,7 +164,7 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         }
         if(valueField != null &&  valueField.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX)) {
             String relatedField = valueField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
-            return stream.map(this::getRelatedRecord).map(related -> related.getValues(relatedField, locale))
+            return stream.map(this::getRelatedRecord).filter(Objects::nonNull).map(related -> related.getValues(relatedField, locale))
             .flatMap(List::stream).collect(Collectors.toList());
         } else {            
             return stream.map(cm -> cm.getValues(valueField, locale)).flatMap(List::stream).collect(Collectors.toList());
