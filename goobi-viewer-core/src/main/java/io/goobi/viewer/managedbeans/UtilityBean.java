@@ -1,12 +1,16 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+
+import io.goobi.viewer.controller.DateTools;
 
 @Named("utils")
 @ApplicationScoped
@@ -28,6 +32,14 @@ public class UtilityBean implements Serializable{
             }
         }
         return map;
+    }
+    
+    public LocalDate getAsDate(String string) {
+        return DateTools.parseDateFromString(string).toLocalDate();
+    }
+    
+    public LocalDateTime getAsDateTime(String string) {
+        return DateTools.parseDateFromString(string);
     }
 
 }

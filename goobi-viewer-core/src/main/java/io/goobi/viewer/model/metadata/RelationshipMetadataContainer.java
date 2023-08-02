@@ -160,31 +160,6 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         return this.metadataMap.values().stream().flatMap(Collection::stream).filter(md -> StringUtils.isBlank(fieldName) ? true : fieldName.equals(md.getField()));
     }
     
-    /**
-     * Get all field values of the given field from all metadata documents from the filterField in the given locale
-     * If the field is prefixed with 'related.', then search in the related documents rather than the (relationship) metadata documents
-     * @param field  The field for which to return the values
-     * @param filterField   Look only in metadata documents for this fied. If blank, look in all metadata documents
-     * @param locale    The language for which to find values. If a value is not available for the language, a default value will be used if possible
-     */
-    @Override
-    public List<String> getAllValues(String field, String filterField, List<String> boostedValues, Locale locale) {
-        if(field != null &&  field.startsWith(FIELD_IN_RELATED_DOCUMENT_PREFIX)) {
-            String relatedField = field.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
-            List<String> stream = getAllMetadataByField(filterField)
-                    .map(this::getRelatedRecord)
-                    .filter(Objects::nonNull)
-                    .map(rec -> rec.getValues(relatedField, locale)).flatMap(List::stream).distinct()
-                    .collect(Collectors.toList());
-            if (boostedValues != null && !boostedValues.isEmpty()) {
-                stream.sort((k, l) -> StringTools.sortByList(k, l, boostedValues));
-            }
-            return stream;
-        } else {
-            return super.getAllValues(field, filterField, boostedValues, locale);
-        }
-    }
-    
     @Override
     public List<String> getMetadataValues(String metadataField, String filterField, String filterValue, String valueField, Locale locale) {
         Stream<ComplexMetadata> stream = this.getMetadata(metadataField).stream();

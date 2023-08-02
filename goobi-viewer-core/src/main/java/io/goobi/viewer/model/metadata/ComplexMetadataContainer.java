@@ -108,20 +108,15 @@ public class ComplexMetadataContainer {
     public Collection<String> getFieldNames() {
         return metadataMap.keySet();
     }
-    
-    public List<String> getAllValues(String field, String filterField, List<String> boostedValues, Locale locale) {
-        List<ComplexMetadata> mds = this.getMetadata(field);
-        Stream<String> stream = mds
-                .stream()
-                .filter(md -> StringUtils.isBlank(filterField) ? true : filterField.equals(md.getFirstValue((Locale) null)))
-                .map(md -> md.getValues(locale))
-                .flatMap(List::stream)
-                .distinct();
-        if (boostedValues != null && !boostedValues.isEmpty()) {
-            stream = stream.sorted((k, l) -> StringTools.sortByList(k, l, boostedValues));
-        }
-        return stream.collect(Collectors.toList());
+
+    public List<String> getMetadataValues(String metadataField, String valueField, Locale locale) {
+        return getMetadataValues(metadataField, "", "", valueField, locale);
     }
+    
+    public String getMetadataValue(String metadataField, String valueField, Locale locale) {
+        return getMetadataValues(metadataField, "", "", valueField, locale).stream().findAny().orElse("");
+    }
+    
     
     public List<String> getMetadataValues(String metadataField, String filterField, String filterValue, String valueField, Locale locale) {
         Stream<ComplexMetadata> stream = this.getMetadata(metadataField).stream();

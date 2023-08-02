@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1993,6 +1994,10 @@ public class NavigationHelper implements Serializable {
     public String getCurrentTime() {
         return Long.toString(System.currentTimeMillis());
     }
+    
+    public LocalDate getCurrentDate() {
+        return LocalDate.now();
+    }
 
     public String returnTo(String page) {
         return page;
@@ -2012,4 +2017,5 @@ public class NavigationHelper implements Serializable {
         List<Integer> range = IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
         return range;
     }
+    
 }
