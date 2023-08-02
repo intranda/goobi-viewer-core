@@ -917,6 +917,12 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
+    public String getPIFromFieldValue(String value, String field) throws PresentationException, IndexUnreachableException {
+        String query = "{field}:\"{value}\"".replace("{field}", field).replace("{value}", value);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, List.of(SolrConstants.PI));
+        return Optional.ofNullable(doc).map(d -> d.getFirstValue(SolrConstants.PI)).map(Object::toString).orElse("");
+    }
+    
     /**
      * <p>
      * setPersistentIdentifier.

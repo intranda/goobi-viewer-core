@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,16 +82,18 @@ public class ComplexMetadataContainer {
         return streamMetadata(field, sortField, sortLanguage, filterField, filterValue, limit).collect(Collectors.toList());
     }
 
-    public long getNumEntries(String field, String filterField, String filterValue) {
+    public long getNumEntries(String field, String filterField, String filterMatcher) {
         return getMetadata(field).stream()
-                .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, null).equalsIgnoreCase(filterValue))
+                .filter(m -> StringUtils.isBlank(filterField) || Pattern.matches(filterMatcher, m.getFirstValue(filterField, null)))
                 .count();
     }
 
-    protected Stream<ComplexMetadata> streamMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue,
+    protected Stream<ComplexMetadata> streamMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterMatcher,
             long listSizeLimit) {
         Stream<ComplexMetadata> stream = getMetadata(field).stream()
-                .filter(m -> StringUtils.isBlank(filterField) || m.getFirstValue(filterField, null).equalsIgnoreCase(filterValue));
+                .filter(m -> StringUtils.isBlank(filterField) || Pattern.matches(filterMatcher, m.getFirstValue(filterField, null)));
+        List<ComplexMetadata> list = stream.collect(Collectors.toList());
+        stream = list.stream();
         if (StringUtils.isNotBlank(sortField)) {
             stream = stream.sorted((m1, m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage))
                     * (isDescendingOrder() ? -1 : 1));
