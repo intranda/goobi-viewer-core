@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ import io.goobi.viewer.controller.DateTools;
 public class UtilityBean implements Serializable {
 
     public Map createMap(List list) {
-        Map map = new HashMap<>();
+        Map map = new LinkedHashMap<>();
         if (list != null && list.size() > 1) {
             for (int i = 0; i < list.size() - 1; i += 2) {
                 int keyIndex = i;
