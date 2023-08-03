@@ -93,11 +93,10 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             .filter(m -> Optional.ofNullable(getRelatedRecord(m)).map(r ->  Pattern.matches(filterMatcher, r.getFirstValue(relatedFilterField))).orElse(false))   
             .count();
         } else {
-            return getMetadata(field).stream()
+           return getMetadata(field).stream()
                     .filter(m -> StringUtils.isBlank(filterField) || Pattern.matches(filterMatcher, m.getFirstValue(filterField, null)))
-             .filter(m -> hideUninkedEntries ? getRelatedRecord(m) != null : true)
+             .filter(m -> !hideUninkedEntries || getRelatedRecord(m) != null)
              .count();
-
         }
     }
     

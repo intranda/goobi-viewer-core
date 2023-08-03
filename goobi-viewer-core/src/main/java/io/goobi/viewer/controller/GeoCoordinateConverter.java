@@ -391,7 +391,7 @@ public class GeoCoordinateConverter {
     private static Predicate<String> getFeatureFieldFilter(boolean aggregateHits) {
         if(aggregateHits) {            
             return new StringMatchConfiguration(".*",
-                    "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH|NORM_NAME|MD_LOCATION");
+                    "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH|NORM_NAME|MD_LOCATION|MD_DESCRIPTION.*");
         } else {
             return new StringMatchConfiguration(".*",
                     "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH");
