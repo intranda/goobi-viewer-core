@@ -382,7 +382,7 @@
         
        	<formats>
 			<date>
-				<en>MM/dd/yyyy</en>
+				<en>dd/MM/yyyy</en>
 				<fr>dd/MM/yyyy</fr>
 				<es>dd/MM/yyyy</es>
 				<de>dd.MM.yyyy</de>
