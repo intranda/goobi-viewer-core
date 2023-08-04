@@ -733,18 +733,22 @@ public class NavigationHelper implements Serializable {
         if (locale == null) {
             return "yyyy-MM-dd";
         }
-
-        switch (locale.getLanguage()) {
-            case "de":
-                return "dd.MM.yyyy";
-            case "en":
-                return "MM/dd/yyyy";
-            case "es":
-            case "fr":
-                return "dd/MM/yyyy";
-            default:
-                return "yyyy-MM-dd";
-        }
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getStringFormat("date", locale)
+                .orElseGet(() -> {
+                    switch (locale.getLanguage()) {
+                        case "de":
+                            return "dd.MM.yyyy";
+                        case "en":
+                            return "MM/dd/yyyy";
+                        case "es":
+                        case "fr":
+                            return "dd/MM/yyyy";
+                        default:
+                            return "yyyy-MM-dd";
+                    }
+                });
     }
 
     /**
@@ -1994,7 +1998,7 @@ public class NavigationHelper implements Serializable {
     public String getCurrentTime() {
         return Long.toString(System.currentTimeMillis());
     }
-    
+
     public LocalDate getCurrentDate() {
         return LocalDate.now();
     }
@@ -2017,5 +2021,5 @@ public class NavigationHelper implements Serializable {
         List<Integer> range = IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
         return range;
     }
-    
+
 }

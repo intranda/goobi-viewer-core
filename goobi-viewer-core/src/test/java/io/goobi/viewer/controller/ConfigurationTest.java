@@ -3422,4 +3422,9 @@ public class ConfigurationTest extends AbstractTest {
         assertEquals("C", filters.get("Y").get(1).getValue());
         assertEquals("c", filters.get("Y").get(1).getLabel());
     }
+    
+    @Test
+    public void testGetDateFormat() {
+        assertEquals("dd/MM/yyyy", DataManager.getInstance().getConfiguration().getStringFormat("date", Locale.ENGLISH).orElse("Not configured"));
+    }
 }

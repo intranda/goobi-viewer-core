@@ -379,6 +379,15 @@
         
         <!-- name: Goobi viewer instance description -->
         <description>Goobi viewer TEST desc</description>
+        
+       	<formats>
+			<date>
+				<en>MM/dd/yyyy</en>
+				<fr>dd/MM/yyyy</fr>
+				<es>dd/MM/yyyy</es>
+				<de>dd.MM.yyyy</de>
+			</date>
+		</formats>
 	</viewer>
 
 	<search>

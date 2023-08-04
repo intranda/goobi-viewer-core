@@ -5859,4 +5859,10 @@ public class Configuration extends AbstractConfiguration {
     public static boolean isLanguageVersionOtherThan(String field, String language) {
         return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
     }
+    
+    public Optional<String> getStringFormat(String type, Locale locale) {
+
+        String path = String.format("viewer.formats.%s.%s", type, locale.getLanguage());
+        return Optional.ofNullable(getLocalString(path, null));
+    }
 }
