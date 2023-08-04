@@ -24,13 +24,10 @@ this.entities = [];
 this.filteredEntities = undefined;
 
 this.on("mount", () => {
-	console.log("mount geoJsonFeatureList", this.opts);
 	this.opts.featureGroups.forEach(group => {
 		group.onFeatureClick.subscribe(f => { 
-			console.log("clicked on :", f);
 			this.title = f.properties?.title;
 			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getLabel(e)?.length > 0));
-			console.log("entities", this.entities);
 		});
 	})
 	this.opts.geomap.onMapClick.subscribe(e => this.hide());

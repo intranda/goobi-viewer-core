@@ -12,13 +12,11 @@ this.featureGroups = [];
 this.on("mount", () => {
 	this.featureGroups = opts.featureGroups;
 	this.geomap = opts.geomap;
-	console.log("init featureSetSelector with ", this.featureGroups);
 	this.update();
 })
 
 setFeatureGroup(event) {
 	let featureGroup = event.item.featureGroup;
-	console.log("change to featureSet ", featureGroup, this.geomap);
 	this.geomap.setActiveLayers([featureGroup]);
 }
 

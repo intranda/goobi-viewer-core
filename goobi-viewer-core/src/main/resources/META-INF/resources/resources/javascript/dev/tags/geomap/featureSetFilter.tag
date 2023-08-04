@@ -21,7 +21,6 @@
 this.filters = [];
 
 this.on("mount", () => {
-	console.log("mounting featureSetFilter with", this.opts);
 	this.geomap = this.opts.geomap;
 	this.featureGroups = this.opts.featureGroups;
 	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
@@ -39,7 +38,6 @@ createFilters(filterMap, featureGroups) {
 		let layerName = entry[0];
 		let filterConfigs = entry[1];
 		let groups = featureGroups.filter(g => this.getLayerName(g) == layerName);
-		console.log("create filters ", layerName, filterConfigs, groups);
 		if(layerName && filterConfigs && filterConfigs.length > 0 && groups.length > 0) {
 			filterConfigs.forEach(filterConfig => {
 				let filter = {
@@ -72,7 +70,6 @@ getFilterName(filter) {
 }
 
 findValues(featureGroups, filterField) {
-	console.log("find values ", featureGroups, filterField);
 	return Array.from(new Set(this.findEntities(featureGroups, filterField)
 	.map(e => e[filterField]).map(a => a[0])
 	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
@@ -80,36 +77,29 @@ findValues(featureGroups, filterField) {
 
 findEntities(featureGroups, filterField) {
 	let entities = featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
-	console.log("find entitites", entities);
 	return entities;
 }
 
 resetFilter(event) {
-	//console.log("reset ", event.item.filter);
 	let filter = event.item.filter;
 	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
-// 	this.featureGroups.forEach(g => g.showMarkers());
 }
 
 setFilter(event) {
-	//console.log("set ", event.item.option);
 	let filter = this.getFilterForField(event.item.option.field);
 	let value = event.item.option.name;
 	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
 }
 
 isShowMarker(entity, filter, value) {
-// 	console.log("isShowMarker", entity, filter, value);
 	let filters = this.filters.filter(f => f.layers.filter(g => filter.layers.includes(g)).length > 0);
 
 	filter.selectedValue = value;
 	let match = filters.map(filter => {
 		if(filter.selectedValue) {
 			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
-// 			console.log("filter " + filter.label + " shows: " + show + " for entity ", entity);
 			return show;
 		} else {
-// 			console.log("filter " + filter.label + " shows all");
 			return true;	
 		}
 	})
