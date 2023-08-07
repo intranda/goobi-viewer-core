@@ -94,7 +94,7 @@ public class CMSPageTemplateEditBeanTest {
 
     private CMSTemplateManager createTemplateManager() {
         CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);
-        CMSComponent component = new CMSComponent(null, NAME_COMPONENT, DESCRIPTION_COMPONENT, null, FILENAME_COMPONENT, CMSComponentScope.PAGEVIEW, Collections.emptyMap());
+        CMSComponent component = new CMSComponent(null, NAME_COMPONENT, DESCRIPTION_COMPONENT, null, FILENAME_COMPONENT, CMSComponentScope.PAGEVIEW, Collections.emptyMap(), null);
         Mockito.when(templateManager.getComponent(FILENAME_COMPONENT)).thenReturn(Optional.of(component));
         return templateManager;
     }
