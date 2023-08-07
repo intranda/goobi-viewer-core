@@ -31,14 +31,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -1464,17 +1469,31 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     public List<CMSComponentGroup> getGroupedPageViewComponents() {
         List<CMSComponent> components = getPageViewComponents();
-        List<CMSComponentGroup> groups = new ArrayList<>();
+        Map<String, CMSComponentGroup> groups = new LinkedHashMap<>();
         CMSComponentGroup currentGroup = null;
+        int componentIndex = 0;
         for (CMSComponent cmsComponent : components) {
-            String groupName = cmsComponent.getAttributeValue(HTML_GROUP);
-            if (currentGroup == null || !Objects.equals(currentGroup.getName(), groupName)) {
-                currentGroup = new CMSComponentGroup(groupName);
-                groups.add(currentGroup);
+            
+            Map<String, List<CMSContentItem>> map = new LinkedHashMap<>();
+            for (CMSContentItem item : cmsComponent.getContentItems()) {
+                List<CMSContentItem> items = map.merge(item.getHtmlGroup(), List.of(item), ListUtils::union);
             }
-            currentGroup.addComponent(cmsComponent);
+                    
+
+            for (Entry<String, List<CMSContentItem>> entry : map.entrySet()) {
+                if(!groups.containsKey(entry.getKey())) {
+                    currentGroup = new CMSComponentGroup(entry.getKey());
+                    groups.put(entry.getKey(), currentGroup);
+                } else {
+                    currentGroup = groups.get(entry.getKey());
+                }
+                cmsComponent.setOrder(componentIndex);
+                CMSComponent groupComponent = new CMSComponent(cmsComponent, entry.getValue());
+                currentGroup.addComponent(groupComponent);
+            }
+            componentIndex++;
         }
-        return groups;
+        return new ArrayList<>(groups.values());
     }
 
     public List<CMSComponent> getPageViewComponents() {
