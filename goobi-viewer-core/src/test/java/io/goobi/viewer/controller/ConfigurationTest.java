@@ -53,6 +53,7 @@ import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleTyp
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
@@ -283,7 +284,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getSearchHitsPerPageValues_shouldReturnAllValues() throws Exception {
         Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues().size());
     }
-    
 
     /**
      * @see Configuration#isDisplaySearchHitNumbers()
@@ -615,7 +615,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getRssTitle_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("title_value", DataManager.getInstance().getConfiguration().getRssTitle());
     }
-    
 
     /**
      * @see Configuration#getMetadataListTypes(String)
@@ -2045,7 +2044,11 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSearchFilters_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getSearchFilters().size());
+        List<SearchFilter> result = DataManager.getInstance().getConfiguration().getSearchFilters();
+        Assert.assertEquals(6, result.size());
+        Assert.assertEquals("filter_ALL", result.get(0).getLabel());
+        Assert.assertEquals("ALL", result.get(0).getField());
+        Assert.assertTrue(result.get(0).isDefaultFilter());
     }
 
     /**
@@ -2466,7 +2469,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, results.size());
         Assert.assertEquals("MD_ACCESSLOCATIONS", results.get(0));
     }
-    
+
     /**
      * @see Configuration#getDisplayAdditionalMetadataSnippetFields()
      * @verifies return correct values
@@ -2665,7 +2668,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getDfgViewerUrl_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("dfg-viewer_value", DataManager.getInstance().getConfiguration().getDfgViewerUrl());
     }
-    
+
     /**
      * @see Configuration#getDfgViewerSourcefileField()
      * @verifies return correct value

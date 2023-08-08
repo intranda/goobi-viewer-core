@@ -399,7 +399,7 @@
 			will be rendered as a radio button. Syntax is "filter_" + Solr field name 
 			(so that individual labels can be added). -->
 		<filters>
-            <filter>filter_ALL</filter>
+            <filter default="true">filter_ALL</filter>
             <filter>filter_DEFAULT</filter>
             <filter>filter_FULLTEXT</filter>
             <filter>filter_NORMDATATERMS</filter>

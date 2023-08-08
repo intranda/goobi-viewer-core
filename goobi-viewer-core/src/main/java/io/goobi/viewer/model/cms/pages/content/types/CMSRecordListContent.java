@@ -187,7 +187,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
-            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
+            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter());
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(this.getSortField());
                 searchBean.setSortString(this.getSortField());
