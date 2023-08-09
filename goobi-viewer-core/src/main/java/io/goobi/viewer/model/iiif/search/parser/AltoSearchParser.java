@@ -110,8 +110,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @return a {@link java.lang.String} object.
      */
     public String getText(List<Line> lines) {
-        String text = lines.stream().map(Line::getContent).collect(Collectors.joining(" "));
-        return text;
+        return lines.stream().map(Line::getContent).collect(Collectors.joining(" "));
     }
 
     /**
@@ -137,7 +136,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     public List<Word> getWords(AltoDocument doc) {
         return doc.getAllPagesAsList()
                 .stream()
-                .flatMap(p -> p.getAllWordsAsList().stream().filter(w -> w instanceof Word).map(w -> (Word) w))
+                .flatMap(p -> p.getAllWordsAsList().stream().filter(Word.class::isInstance).map(w -> (Word) w))
                 .collect(Collectors.toList());
     }
 
@@ -237,15 +236,15 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @return a {@link java.lang.String} object.
      */
     public String getSucceedingText(Word w, int maxLength) {
-        String after = "";
         Child sibling = w.getNextSibling();
-        while (sibling != null && after.length() < maxLength) {
+        StringBuilder sb = new StringBuilder();
+        while (sibling != null && sb.length() < maxLength) {
             if (sibling instanceof Word) {
-                after = after + " " + ((Word) sibling).getSubsContent();
+                sb.append(' ').append(((Word) sibling).getSubsContent());
             }
             sibling = sibling.getNextSibling();
         }
-        return after;
+        return sb.toString();
     }
 
 }
