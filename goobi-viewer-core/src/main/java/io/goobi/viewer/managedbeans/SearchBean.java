@@ -155,7 +155,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     int activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
     /** Currently selected filter for the regular search. Possible values can be configured. */
-    private SearchFilter currentSearchFilter = SearchHelper.SEARCH_FILTER_ALL;
+    private SearchFilter currentSearchFilter = DataManager.getInstance().getConfiguration().getDefaultSearchFilter();
     /** Solr query generated from the user's input (does not include facet filters or blacklists). */
     String searchStringInternal = "";
     /** User-entered search query that is displayed in the search field after the search. */
@@ -561,7 +561,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     protected void resetSimpleSearchParameters() {
         logger.trace("resetSimpleSearchParameters");
-        currentSearchFilter = SearchHelper.SEARCH_FILTER_ALL;
+        currentSearchFilter = DataManager.getInstance().getConfiguration().getDefaultSearchFilter();
         generateSimpleSearchString("");
 
         searchString = "";

@@ -34,6 +34,7 @@ public class SearchFilter implements Serializable {
 
     private String label;
     private String field;
+    private boolean defaultFilter = false;
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -88,11 +89,13 @@ public class SearchFilter implements Serializable {
      *
      * @param label a {@link java.lang.String} object.
      * @param field a {@link java.lang.String} object.
+     * @param defaultFilter
      * @should set attributes correctly
      */
-    public SearchFilter(String label, String field) {
+    public SearchFilter(String label, String field, boolean defaultFilter) {
         this.label = label;
         this.field = field;
+        this.defaultFilter = defaultFilter;
     }
 
     /**
@@ -137,5 +140,19 @@ public class SearchFilter implements Serializable {
      */
     public void setField(String field) {
         this.field = field;
+    }
+
+    /**
+     * @return the defaultFilter
+     */
+    public boolean isDefaultFilter() {
+        return defaultFilter;
+    }
+
+    /**
+     * @param defaultFilter the defaultFilter to set
+     */
+    public void setDefaultFilter(boolean defaultFilter) {
+        this.defaultFilter = defaultFilter;
     }
 }

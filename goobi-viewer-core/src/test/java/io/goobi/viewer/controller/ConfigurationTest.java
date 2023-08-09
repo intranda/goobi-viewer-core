@@ -22,9 +22,7 @@
 package io.goobi.viewer.controller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,7 +43,6 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.model.LabeledValue;
-import io.goobi.viewer.controller.model.StringMatchConfiguration;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -60,6 +57,7 @@ import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleTyp
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
@@ -623,7 +621,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getRssTitle_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("title_value", DataManager.getInstance().getConfiguration().getRssTitle());
     }
-    
 
     /**
      * @see Configuration#getMetadataListTypes(String)
@@ -644,6 +641,28 @@ public class ConfigurationTest extends AbstractTest {
         List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes("cms_");
         Assert.assertEquals(1, result.size());
         Assert.assertEquals("cms_fooBar", result.get(0));
+    }
+
+    /**
+     * @see Configuration#getMetadataConfigurationForTemplate(String,String,boolean,boolean)
+     * @verifies throw IllegalArgumentException if type null
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getMetadataConfigurationForTemplate_shouldThrowIllegalArgumentExceptionIfTypeNull() throws Exception {
+        DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(null, Configuration.VALUE_DEFAULT, false, false);
+    }
+
+    /**
+     * @see Configuration#getMetadataConfigurationForTemplate(String,String,boolean,boolean)
+     * @verifies return empty list if list type not found
+     */
+    @Test
+    public void getMetadataConfigurationForTemplate_shouldReturnEmptyListIfListTypeNotFound() throws Exception {
+        List<Metadata> result = DataManager.getInstance()
+                .getConfiguration()
+                .getMetadataConfigurationForTemplate("sometype", Configuration.VALUE_DEFAULT, false, false);
+        Assert.assertTrue(result.isEmpty());
+        result.add(new Metadata()); // Make sure list is mutable
     }
 
     /**
@@ -2125,7 +2144,11 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSearchFilters_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getSearchFilters().size());
+        List<SearchFilter> result = DataManager.getInstance().getConfiguration().getSearchFilters();
+        Assert.assertEquals(6, result.size());
+        Assert.assertEquals("filter_ALL", result.get(0).getLabel());
+        Assert.assertEquals("ALL", result.get(0).getField());
+        Assert.assertTrue(result.get(0).isDefaultFilter());
     }
 
     /**
@@ -2645,7 +2668,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMetadataFromSubnodeConfig_shouldLoadReplaceRulesCorrectly() throws Exception {
-        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "_DEFAULT");
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, Configuration.VALUE_DEFAULT);
         Assert.assertEquals(6, metadataList.size());
         Metadata mdTitle = metadataList.get(2);
         Assert.assertEquals("MD_TITLE", mdTitle.getLabel());
@@ -3024,7 +3047,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getDocstructNavigationTypes_shouldReturnAllConfiguredValues() throws Exception {
         {
-            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("_DEFAULT", true);
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(Configuration.VALUE_DEFAULT, true);
             Assert.assertEquals(2, result.size());
             Assert.assertEquals("prologue", result.get(0));
             Assert.assertEquals("chapter", result.get(1));

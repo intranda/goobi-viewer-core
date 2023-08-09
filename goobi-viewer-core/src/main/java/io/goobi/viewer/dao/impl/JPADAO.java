@@ -130,6 +130,8 @@ public class JPADAO implements IDAO {
     private static final String PARAM_STOREMODE = "jakarta.persistence.cache.storeMode";
     private static final String PARAM_STOREMODE_VALUE_REFRESH = "REFRESH";
 
+    private static final String MSG_EXCEPTION_CMS = "Exception \"{}\" when trying to get CMS pages. Returning empty list.";
+
     static final String QUERY_ELEMENT_AND = " AND ";
     private static final String QUERY_ELEMENT_DESC = " DESC";
     private static final String QUERY_ELEMENT_JOIN = " JOIN ";
@@ -2814,7 +2816,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSPage o");
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
+                logger.error(MSG_EXCEPTION_CMS, e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -2885,7 +2887,7 @@ public class JPADAO implements IDAO {
 
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
+                logger.error(MSG_EXCEPTION_CMS, e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -3165,7 +3167,7 @@ public class JPADAO implements IDAO {
             }
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
@@ -3238,7 +3240,7 @@ public class JPADAO implements IDAO {
                 q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error(MSG_EXCEPTION_CMS, e.toString());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -3257,7 +3259,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error(MSG_EXCEPTION_CMS, e.toString());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -3400,7 +3402,7 @@ public class JPADAO implements IDAO {
                 Collections.sort(list);
                 return list;
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error(MSG_EXCEPTION_CMS, e.toString());
                 return new ArrayList<>();
             } finally {
                 close(em);

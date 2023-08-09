@@ -48,6 +48,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.model.job.download.DownloadOption;
+import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
@@ -596,4 +599,107 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Assert.assertEquals(url, viewManager.getExternalDownloadUrl());
     }
+
+    /**
+     * @see ViewManager#getCopyrightIndicatorStatusName()
+     * @verifies return locked status if locked most restrictive status found
+     */
+    @Test
+    public void getCopyrightIndicatorStatusName_shouldReturnLockedStatusIfLockedMostRestrictiveStatusFound() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        se.metadataFields.put("MD_ACCESSCONDITION", Arrays.asList("Freier Zugang", "Eingeschränker Zugang", "Gesperrter Zugang"));
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        Assert.assertEquals(Status.LOCKED.name(), viewManager.getCopyrightIndicatorStatusName());
+    }
+
+    /**
+     * @see ViewManager#getCopyrightIndicatorStatusName()
+     * @verifies return partial status if partial most restrictive status found
+     */
+    @Test
+    public void getCopyrightIndicatorStatusName_shouldReturnPartialStatusIfPartialMostRestrictiveStatusFound() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        se.metadataFields.put("MD_ACCESSCONDITION", Arrays.asList("Freier Zugang", "Eingeschränker Zugang"));
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        Assert.assertEquals(Status.PARTIAL.name(), viewManager.getCopyrightIndicatorStatusName());
+    }
+
+    /**
+     * @see ViewManager#getCopyrightIndicatorStatusName()
+     * @verifies return open status if no restrictive statuses found
+     */
+    @Test
+    public void getCopyrightIndicatorStatusName_shouldReturnOpenStatusIfNoRestrictiveStatusesFound() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        Assert.assertEquals(Status.OPEN.name(), viewManager.getCopyrightIndicatorStatusName());
+    }
+
+    /**
+     * @see ViewManager#getCopyrightIndicatorStatuses()
+     * @verifies return correct statuses
+     */
+    @Test
+    public void getCopyrightIndicatorStatuses_shouldReturnCorrectStatuses() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        se.metadataFields.put("MD_ACCESSCONDITION", Arrays.asList("Eingeschränker Zugang", "Gesperrter Zugang"));
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        List<CopyrightIndicatorStatus> result = viewManager.getCopyrightIndicatorStatuses();
+        assertEquals(2, result.size());
+    }
+
+    /**
+     * @see ViewManager#getCopyrightIndicatorStatuses()
+     * @verifies return open status if no statuses found
+     */
+    @Test
+    public void getCopyrightIndicatorStatuses_shouldReturnOpenStatusIfNoStatusesFound() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        List<CopyrightIndicatorStatus> result = viewManager.getCopyrightIndicatorStatuses();
+        assertEquals(1, result.size());
+        assertEquals(Status.OPEN, result.get(0).getStatus());
+    }
+
+    /**
+     * @see ViewManager#getCopyrightIndicatorLicense()
+     * @verifies return correct license
+     */
+    @Test
+    public void getCopyrightIndicatorLicense_shouldReturnCorrectLicense() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        se.metadataFields.put("MD_ACCESSCONDITIONCOPYRIGHT", Arrays.asList("VGWORT"));
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        CopyrightIndicatorLicense license = viewManager.getCopyrightIndicatorLicense();
+        assertNotNull(license);
+        assertEquals("COPYRIGHT_DESCRIPTION_VGWORT", license.getDescription());
+    }
+
+    /**
+     * @see ViewManager#getCopyrightIndicatorLicense()
+     * @verifies return default license if no licenses found
+     */
+    @Test
+    public void getCopyrightIndicatorLicense_shouldReturnDefaultLicenseIfNoLicensesFound() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        CopyrightIndicatorLicense license = viewManager.getCopyrightIndicatorLicense();
+        assertNotNull(license);
+        assertEquals("", license.getDescription());
+    }
+
 }

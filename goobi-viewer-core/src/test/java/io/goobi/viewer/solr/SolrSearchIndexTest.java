@@ -22,6 +22,7 @@
 package io.goobi.viewer.solr;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -51,6 +52,30 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrSearchIndexTest.class);
+
+    /**
+     * @see SolrSearchIndex#isSolrIndexOnline()
+     * @verifies return true if solr online
+     */
+    @Test
+    public void isSolrIndexOnline_shouldReturnTrueIfSolrOnline() throws Exception {
+        assertTrue(DataManager.getInstance().getSearchIndex().isSolrIndexOnline());
+    }
+
+    /**
+     * @see SolrSearchIndex#isSolrIndexOnline()
+     * @verifies return false if solr offline
+     */
+    @Test
+    public void isSolrIndexOnline_shouldReturnFalseIfSolrOffline() throws Exception {
+        String solrUrl = DataManager.getInstance().getConfiguration().getSolrUrl();
+        DataManager.getInstance().getConfiguration().overrideValue("urls.solr", "https://locahost:1234/solr");
+        try {
+            assertFalse(DataManager.getInstance().getSearchIndex().isSolrIndexOnline());
+        } finally {
+            DataManager.getInstance().getConfiguration().overrideValue("urls.solr", solrUrl);
+        }
+    }
 
     /**
      * @see SolrSearchIndex#search(String,int,int,List,boolean,List,String,List)

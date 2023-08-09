@@ -133,6 +133,8 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
 
+    static final String VALUE_DEFAULT = "_DEFAULT";
+
     private Set<String> stopwords;
 
     /**
@@ -427,7 +429,11 @@ public class Configuration extends AbstractConfiguration {
      * @param template
      * @param fallbackToDefaultTemplate
      * @param topstructValueFallbackDefaultValue
-     * @return
+     * @return List of metadata configurations
+     * @should throw IllegalArgumentException if type null
+     * @should return empty list if no metadata lists configured
+     * @should return empty list if metadataList contains no templates
+     * @should return empty list if list type not found
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
@@ -835,9 +841,10 @@ public class Configuration extends AbstractConfiguration {
         }
         return filters;
     }
+
     public List<FeatureSetConfiguration> getRecordGeomapFeatureSetConfigs(String templateName) {
         HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getLocalConfigurationsAt("maps.record.template"), templateName, true);
-        if(template != null) {            
+        if (template != null) {
             List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = template.configurationsAt("featureSets.featureSet");
             return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
         } else {
@@ -4449,17 +4456,36 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<SearchFilter> getSearchFilters() {
-        List<String> filterStrings = getLocalList("search.filters.filter");
-        List<SearchFilter> ret = new ArrayList<>(filterStrings.size());
-        for (String filterString : filterStrings) {
+        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.filters.filter");
+        if (elements == null) {
+            return new ArrayList<>();
+        }
+
+        List<SearchFilter> ret = new ArrayList<>(elements.size());
+        for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
+            String filterString = sub.getString(".");
             if (filterString.startsWith("filter_")) {
-                ret.add(new SearchFilter(filterString, filterString.substring(7)));
+                ret.add(new SearchFilter(filterString, filterString.substring(7), sub.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false)));
             } else {
                 logger.error("Invalid search filter definition: {}", filterString);
             }
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public SearchFilter getDefaultSearchFilter() {
+        for (SearchFilter filter : getSearchFilters()) {
+            if (filter.isDefaultFilter()) {
+                return filter;
+            }
+        }
+
+        return SearchHelper.SEARCH_FILTER_ALL;
     }
 
     /**
@@ -5426,7 +5452,7 @@ public class Configuration extends AbstractConfiguration {
 
     public String getRecordGeomapMarker(String templateName, String type) {
         HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getLocalConfigurationsAt("maps.record.template"), templateName, true);
-        if(template != null) {            
+        if (template != null) {
             List<HierarchicalConfiguration<ImmutableNode>> configs = template.configurationsAt("marker");
             return configs.stream()
                     .filter(config -> config.getString("[@type]", "").equals(type))
@@ -5859,7 +5885,7 @@ public class Configuration extends AbstractConfiguration {
     public static boolean isLanguageVersionOtherThan(String field, String language) {
         return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
     }
-    
+
     public Optional<String> getStringFormat(String type, Locale locale) {
 
         String path = String.format("viewer.formats.%s.%s", type, locale.getLanguage());

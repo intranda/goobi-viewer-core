@@ -3951,6 +3951,9 @@ public class ViewManager implements Serializable {
     /**
      * 
      * @return The most restrictive status name of the configured statuses
+     * @should return locked status if locked most restrictive status found
+     * @should return partial status if partial most restrictive status found
+     * @should return open status if no restrictive statuses found
      */
     public String getCopyrightIndicatorStatusName() {
         Status ret = Status.OPEN;
@@ -3972,6 +3975,8 @@ public class ViewManager implements Serializable {
     /**
      * 
      * @return copyrightIndicatorStatuses
+     * @should return correct statuses
+     * @should return open status if no statuses found
      */
     public List<CopyrightIndicatorStatus> getCopyrightIndicatorStatuses() {
         if (copyrightIndicatorStatuses == null) {
@@ -3999,6 +4004,8 @@ public class ViewManager implements Serializable {
 
     /**
      * @return the copyrightIndicatorLicense
+     * @should return correct license
+     * @should return default license if no licenses found
      */
     public CopyrightIndicatorLicense getCopyrightIndicatorLicense() {
         if (copyrightIndicatorLicense == null) {
