@@ -1478,7 +1478,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             for (CMSContentItem item : cmsComponent.getContentItems()) {
                 List<CMSContentItem> items = map.merge(item.getHtmlGroup(), List.of(item), ListUtils::union);
             }
-                    
 
             for (Entry<String, List<CMSContentItem>> entry : map.entrySet()) {
                 if(!groups.containsKey(entry.getKey())) {

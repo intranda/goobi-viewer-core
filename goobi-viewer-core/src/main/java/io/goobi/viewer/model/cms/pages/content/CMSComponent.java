@@ -72,7 +72,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public CMSComponent(CMSComponent template, List<CMSContentItem> items) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
-                template.getScope(),template.getAttributes(), template.getOrder(), Optional.empty());
+                template.getScope(),template.getAttributes(), template.getOrder(), Optional.ofNullable(template.getPersistentComponent()));
         List<CMSContentItem> newItems = items.stream().map(CMSContentItem::new).collect(Collectors.toList());
         this.contentItems.addAll(newItems);
     }
