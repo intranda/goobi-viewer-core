@@ -126,7 +126,7 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
 
-    private static final String VALUE_DEFAULT = "_DEFAULT";
+    static final String VALUE_DEFAULT = "_DEFAULT";
 
     private Set<String> stopwords;
 
@@ -422,7 +422,11 @@ public class Configuration extends AbstractConfiguration {
      * @param template
      * @param fallbackToDefaultTemplate
      * @param topstructValueFallbackDefaultValue
-     * @return
+     * @return List of metadata configurations
+     * @should throw IllegalArgumentException if type null
+     * @should return empty list if no metadata lists configured
+     * @should return empty list if metadataList contains no templates
+     * @should return empty list if list type not found
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
@@ -4273,18 +4277,18 @@ public class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
+
     /**
      * 
      * @return
      */
     public SearchFilter getDefaultSearchFilter() {
-        for(SearchFilter filter : getSearchFilters()) {
-            if(filter.isDefaultFilter()) {
+        for (SearchFilter filter : getSearchFilters()) {
+            if (filter.isDefaultFilter()) {
                 return filter;
             }
         }
-        
+
         return SearchHelper.SEARCH_FILTER_ALL;
     }
 

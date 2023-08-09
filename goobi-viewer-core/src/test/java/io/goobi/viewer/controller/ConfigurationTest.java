@@ -638,6 +638,28 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getMetadataConfigurationForTemplate(String,String,boolean,boolean)
+     * @verifies throw IllegalArgumentException if type null
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getMetadataConfigurationForTemplate_shouldThrowIllegalArgumentExceptionIfTypeNull() throws Exception {
+        DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(null, Configuration.VALUE_DEFAULT, false, false);
+    }
+
+    /**
+     * @see Configuration#getMetadataConfigurationForTemplate(String,String,boolean,boolean)
+     * @verifies return empty list if list type not found
+     */
+    @Test
+    public void getMetadataConfigurationForTemplate_shouldReturnEmptyListIfListTypeNotFound() throws Exception {
+        List<Metadata> result = DataManager.getInstance()
+                .getConfiguration()
+                .getMetadataConfigurationForTemplate("sometype", Configuration.VALUE_DEFAULT, false, false);
+        Assert.assertTrue(result.isEmpty());
+        result.add(new Metadata()); // Make sure list is mutable
+    }
+
+    /**
      * @see Configuration#getSearchHitMetadataForTemplate(String)
      * @verifies return correct template configuration
      */
@@ -2568,7 +2590,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMetadataFromSubnodeConfig_shouldLoadReplaceRulesCorrectly() throws Exception {
-        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "_DEFAULT");
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, Configuration.VALUE_DEFAULT);
         Assert.assertEquals(6, metadataList.size());
         Metadata mdTitle = metadataList.get(2);
         Assert.assertEquals("MD_TITLE", mdTitle.getLabel());
@@ -2947,7 +2969,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getDocstructNavigationTypes_shouldReturnAllConfiguredValues() throws Exception {
         {
-            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("_DEFAULT", true);
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(Configuration.VALUE_DEFAULT, true);
             Assert.assertEquals(2, result.size());
             Assert.assertEquals("prologue", result.get(0));
             Assert.assertEquals("chapter", result.get(1));
