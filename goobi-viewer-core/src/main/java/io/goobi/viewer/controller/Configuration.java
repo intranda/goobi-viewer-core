@@ -4269,7 +4269,7 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
             String filterString = sub.getString(".");
             if (filterString.startsWith("filter_")) {
-                ret.add(new SearchFilter(filterString, filterString.substring(7), sub.getBoolean("[@default]", false)));
+                ret.add(new SearchFilter(filterString, filterString.substring(7), sub.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false)));
             } else {
                 logger.error("Invalid search filter definition: {}", filterString);
             }

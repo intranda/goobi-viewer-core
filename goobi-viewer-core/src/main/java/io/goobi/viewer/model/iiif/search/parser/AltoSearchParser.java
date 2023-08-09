@@ -95,7 +95,7 @@ public class AltoSearchParser extends AbstractSearchParser {
             int indexStart = matcher.start(1);
             int indexEnd = matcher.end(1);
             List<Line> containingLines = getContainingLines(lines, indexStart, indexEnd);
-            Range<Integer> range = Range.between(indexStart, indexEnd);
+            Range<Integer> range = Range.of(indexStart, indexEnd);
             map.put(range, containingLines);
         }
         return map;
