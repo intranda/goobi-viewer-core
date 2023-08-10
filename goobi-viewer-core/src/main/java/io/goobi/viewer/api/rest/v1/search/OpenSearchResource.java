@@ -82,15 +82,12 @@ public class OpenSearchResource {
     public String getXml() {
         String xml = null;
         try {
-            String rootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
-            //            String url = rootUrl + "/resources/opensearch/opensearch.xml";
-            //            logger.trace(url);
-
-            java.nio.file.Path xmlFile = Paths.get("opensearch.xml");
+            String xmlFilePath = servletRequest.getServletContext().getRealPath("WEB-INF/classes/opensearch.xml");
+            java.nio.file.Path xmlFile = Paths.get(xmlFilePath);
             Document doc = XmlTools.readXmlFile(xmlFile);
             if (doc != null) {
+                String rootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
                 xml = XmlTools.getStringFromElement(doc, StandardCharsets.UTF_8.name());
-                // xml = NetTools.getWebContentGET(url);
                 xml = xml.replace("{name}", DataManager.getInstance().getConfiguration().getName())
                         .replace("{description}", DataManager.getInstance().getConfiguration().getDescription())
                         .replace("{applicationUrl}", rootUrl);
@@ -110,6 +107,5 @@ public class OpenSearchResource {
         }
 
         return xml;
-
     }
 }
