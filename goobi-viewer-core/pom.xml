@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>23.07-SNAPSHOT</version>
+	<version>23.08-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -93,7 +93,7 @@
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.6.0-SNAPSHOT</iiif-api-model.version>
-		<normdataimporter.version>1.10.2</normdataimporter.version>
+		<normdataimporter.version>1.10.3</normdataimporter.version>
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
@@ -1140,7 +1140,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.12.1</version>
+						<version>10.12.2</version>
 					</dependency>
 				</dependencies>
 				<executions>
