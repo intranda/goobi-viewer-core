@@ -110,7 +110,7 @@ public class Search implements Serializable {
 
     /** Currently selected filter for the regular search. Possible values can be configured. */
     @Column(name = "search_filter")
-    private String searchFilter = SearchHelper.SEARCH_FILTER_ALL.getField();
+    private String searchFilter = DataManager.getInstance().getConfiguration().getDefaultSearchFilter().getField();
 
     @Column(name = "query", nullable = false, columnDefinition = "LONGTEXT")
     private String query;

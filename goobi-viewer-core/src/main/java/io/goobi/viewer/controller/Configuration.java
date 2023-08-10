@@ -126,7 +126,7 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
 
-    private static final String VALUE_DEFAULT = "_DEFAULT";
+    static final String VALUE_DEFAULT = "_DEFAULT";
 
     private Set<String> stopwords;
 
@@ -422,7 +422,11 @@ public class Configuration extends AbstractConfiguration {
      * @param template
      * @param fallbackToDefaultTemplate
      * @param topstructValueFallbackDefaultValue
-     * @return
+     * @return List of metadata configurations
+     * @should throw IllegalArgumentException if type null
+     * @should return empty list if no metadata lists configured
+     * @should return empty list if metadataList contains no templates
+     * @should return empty list if list type not found
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
@@ -4256,17 +4260,36 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<SearchFilter> getSearchFilters() {
-        List<String> filterStrings = getLocalList("search.filters.filter");
-        List<SearchFilter> ret = new ArrayList<>(filterStrings.size());
-        for (String filterString : filterStrings) {
+        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.filters.filter");
+        if (elements == null) {
+            return new ArrayList<>();
+        }
+
+        List<SearchFilter> ret = new ArrayList<>(elements.size());
+        for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
+            String filterString = sub.getString(".");
             if (filterString.startsWith("filter_")) {
-                ret.add(new SearchFilter(filterString, filterString.substring(7)));
+                ret.add(new SearchFilter(filterString, filterString.substring(7), sub.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false)));
             } else {
                 logger.error("Invalid search filter definition: {}", filterString);
             }
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public SearchFilter getDefaultSearchFilter() {
+        for (SearchFilter filter : getSearchFilters()) {
+            if (filter.isDefaultFilter()) {
+                return filter;
+            }
+        }
+
+        return SearchHelper.SEARCH_FILTER_ALL;
     }
 
     /**

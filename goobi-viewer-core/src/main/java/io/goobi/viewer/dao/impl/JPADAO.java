@@ -130,6 +130,8 @@ public class JPADAO implements IDAO {
     private static final String PARAM_STOREMODE = "jakarta.persistence.cache.storeMode";
     private static final String PARAM_STOREMODE_VALUE_REFRESH = "REFRESH";
 
+    private static final String MSG_EXCEPTION_CMS = "Exception \"{}\" when trying to get CMS pages. Returning empty list.";
+
     static final String QUERY_ELEMENT_AND = " AND ";
     private static final String QUERY_ELEMENT_DESC = " DESC";
     private static final String QUERY_ELEMENT_JOIN = " JOIN ";
@@ -164,7 +166,7 @@ public class JPADAO implements IDAO {
      * @param inPersistenceUnitName a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-     public JPADAO(String inPersistenceUnitName) throws DAOException {
+    public JPADAO(String inPersistenceUnitName) throws DAOException {
         logger.trace("JPADAO({})", inPersistenceUnitName);
         //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
         //        System.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, DataManager.getInstance().getConfiguration().getConfigLocalPath() + "persistence.xml");
@@ -2814,7 +2816,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSPage o");
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
+                logger.error(MSG_EXCEPTION_CMS, e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -2885,7 +2887,7 @@ public class JPADAO implements IDAO {
 
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.getMessage());
+                logger.error(MSG_EXCEPTION_CMS, e.getMessage());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -3165,7 +3167,7 @@ public class JPADAO implements IDAO {
             }
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
@@ -3238,7 +3240,7 @@ public class JPADAO implements IDAO {
                 q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error(MSG_EXCEPTION_CMS, e.toString());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -3257,7 +3259,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error(MSG_EXCEPTION_CMS, e.toString());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -3400,7 +3402,7 @@ public class JPADAO implements IDAO {
                 Collections.sort(list);
                 return list;
             } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
+                logger.error(MSG_EXCEPTION_CMS, e.toString());
                 return new ArrayList<>();
             } finally {
                 close(em);
@@ -4105,7 +4107,7 @@ public class JPADAO implements IDAO {
             StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM ").append(className).append(" a").append(" ").append(filter);
             Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-            
+
             return (long) q.getSingleResult();
         } finally {
             close(em);
@@ -6823,21 +6825,21 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            
+
             em.getTransaction().begin();
 
             Query q = em.createQuery("DELETE FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
             q.setParameter("date", date);
             int deleted = q.executeUpdate();
-            
+
             em.getTransaction().commit();
-            
+
             return deleted;
         } finally {
             close(em);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public List<ViewerMessage> getViewerMessages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
@@ -6882,15 +6884,15 @@ public class JPADAO implements IDAO {
         String filterQuery = "";
         if (StringUtils.isNotBlank(filterValue)) {
             filterQuery += " WHERE (a.taskName LIKE :value OR a.messageId LIKE :value";
-            try {                        
+            try {
                 params.put("valueStatus", MessageStatus.valueOf(filterValue.toUpperCase()));
                 filterQuery += " OR a.messageStatus = :valueStatus";
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 //noop
             }
             filterQuery += " OR :valueProperty MEMBER OF (a.properties)";
-            params.put("valueProperty", filterValue );
-            
+            params.put("valueProperty", filterValue);
+
             filterQuery += ")";
             params.put("value", "%" + filterValue + "%");
         }
@@ -6903,7 +6905,7 @@ public class JPADAO implements IDAO {
         String filterQuery = "";
         Map<String, Object> params = new HashMap<>();
         if (filters != null) {
-                filterQuery = addViewerMessageFilterQuery(filters, params);
+            filterQuery = addViewerMessageFilterQuery(filters, params);
         }
         long count = getFilteredRowCount("ViewerMessage", filterQuery, params);
         return count;
@@ -7021,7 +7023,7 @@ public class JPADAO implements IDAO {
     public boolean updateHighlight(HighlightData object) throws DAOException {
         return updateEntity(object);
     }
-    
+
     @Override
     public boolean deleteHighlight(Long id) throws DAOException {
         return deleteEntity(id, HighlightData.class);
@@ -7041,35 +7043,37 @@ public class JPADAO implements IDAO {
     public List<HighlightData> getHighlightsForDate(LocalDateTime date) throws DAOException {
         return getMatchingEntities(HighlightData.class,
                 "(:date BETWEEN o.dateStart AND o.dateEnd)"
-                + " OR "
-                + "(o.dateStart IS NULL AND :date < o.dateEnd)"
-                + " OR "
-                + "(o.dateEnd IS NULL AND :date > o.dateStart)"
-                + " OR "
-                + "(o.dateStart IS NULL AND o.dateEnd IS NULL)", Map.of("date", date));
+                        + " OR "
+                        + "(o.dateStart IS NULL AND :date < o.dateEnd)"
+                        + " OR "
+                        + "(o.dateEnd IS NULL AND :date > o.dateStart)"
+                        + " OR "
+                        + "(o.dateStart IS NULL AND o.dateEnd IS NULL)",
+                Map.of("date", date));
     }
-    
+
     @Override
     public List<HighlightData> getPastHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightData> data = getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
+        List<HighlightData> data =
+                getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
         return data;
     }
-    
+
     @Override
     public List<HighlightData> getFutureHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightData> data = getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
+        List<HighlightData> data =
+                getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
         return data;
     }
-    
 
     @Override
     public List<HighlightData> getHighlights(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters) throws DAOException {
         return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters);
     }
-    
+
     private boolean addEntity(Serializable obj) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -7086,7 +7090,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     private boolean updateEntity(Serializable obj) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -7103,7 +7107,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     private <T> T getEntity(Long id, Class<T> clazz) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -7115,7 +7119,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private <T> List<T> getAllEntities(Class<T> clazz) throws DAOException {
         preQuery();
@@ -7129,7 +7133,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private <T> List<T> getMatchingEntities(Class<T> clazz, String whereClause, Map<String, Object> params) throws DAOException {
         preQuery();
@@ -7145,7 +7149,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     private <T> boolean deleteEntity(Long id, Class<T> clazz) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -7169,9 +7173,10 @@ public class JPADAO implements IDAO {
             throws DAOException {
         return getEntities(clazz, first, pageSize, sortField, descending, filters, null, Collections.emptyMap());
     }
-    
+
     @SuppressWarnings("unchecked")
-    private <T> List<T> getEntities(Class<T> clazz, int first, int pageSize, String sortField, boolean descending, Map<String, String> filters, String whereClause, Map<String, Object> whereClauseParams)
+    private <T> List<T> getEntities(Class<T> clazz, int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
+            String whereClause, Map<String, Object> whereClauseParams)
             throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -7185,7 +7190,7 @@ public class JPADAO implements IDAO {
                 sbQuery.append(" WHERE (").append(filterQuery).append(")");
             }
 
-            if(StringUtils.isNotBlank(whereClause)) {
+            if (StringUtils.isNotBlank(whereClause)) {
                 if (filters != null && !filters.isEmpty()) {
                     sbQuery.append(" AND ");
                 } else {
@@ -7194,7 +7199,7 @@ public class JPADAO implements IDAO {
                 sbQuery.append("(").append(whereClause).append(")");
                 whereClauseParams.forEach((key, value) -> params.put(key, value));
             }
-            
+
             if (StringUtils.isNotEmpty(sortField)) {
                 sbQuery.append(" ORDER BY a.").append(sortField);
                 if (descending) {
@@ -7216,26 +7221,27 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     private String addFilterQueries(Map<String, String> filters, Map<String, Object> params, Character entityVariable) {
         Stream<String> queries = filters.entrySet().stream().map(entry -> getFilterQuery(entry.getKey(), entry.getValue(), params, entityVariable));
         return "(" + queries.collect(Collectors.joining(") OR (")) + ")";
     }
-    
+
     /**
-     * returns  String in the form "a.field LIKE :field if filterValue is a string or "a.field = :field" otherwise
-     * @param filterField   A field name to search in
-     * @param filterValue   The value to search for
-     * @param params        a parameter
+     * returns String in the form "a.field LIKE :field if filterValue is a string or "a.field = :field" otherwise
+     * 
+     * @param filterField A field name to search in
+     * @param filterValue The value to search for
+     * @param params a parameter
      * @param entityVariable
      * @return
      */
     private String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {
-        if(filterValue != null && filterValue instanceof String) {            
+        if (filterValue != null && filterValue instanceof String) {
             String query = String.format("%c.%s LIKE :%s", entityVariable, filterField, filterField);
-            params.put(filterField, "%"+filterValue+"%");
+            params.put(filterField, "%" + filterValue + "%");
             return query;
-        } else if(filterValue != null) {
+        } else if (filterValue != null) {
             String query = String.format("%c.%s = :%s", entityVariable, filterField, filterField);
             params.put(filterField, filterValue);
             return query;

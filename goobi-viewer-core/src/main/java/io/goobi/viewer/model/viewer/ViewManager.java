@@ -180,7 +180,7 @@ public class ViewManager implements Serializable {
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
-    private CopyrightIndicatorStatus copyrightIndicatorStatus = null;
+    private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
 
     /**
@@ -3948,28 +3948,62 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @return copyrightIndicatorStatus
+     * @return The most restrictive status name of the configured statuses
+     * @should return locked status if locked most restrictive status found
+     * @should return partial status if partial most restrictive status found
+     * @should return open status if no restrictive statuses found
      */
-    public CopyrightIndicatorStatus getCopyrightIndicatorStatus() {
-        if (copyrightIndicatorStatus == null) {
-            String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();
-            if (StringUtils.isNotEmpty(field)) {
-                String value = topStructElement.getMetadataValue(field);
-                if (StringUtils.isNotEmpty(value)) {
-                    copyrightIndicatorStatus = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue(value);
-                }
-            }
-            // Default
-            if (copyrightIndicatorStatus == null) {
-                copyrightIndicatorStatus = new CopyrightIndicatorStatus(Status.OPEN, "COPYRIGHT_STATUS_OPEN");
+    public String getCopyrightIndicatorStatusName() {
+        Status ret = Status.OPEN;
+        for (CopyrightIndicatorStatus status : getCopyrightIndicatorStatuses()) {
+            switch (status.getStatus()) {
+                case LOCKED:
+                    return Status.LOCKED.name();
+                case PARTIAL:
+                    ret = Status.PARTIAL;
+                    break;
+                default:
+                    break;
             }
         }
 
-        return copyrightIndicatorStatus;
+        return ret.name();
+    }
+
+    /**
+     * 
+     * @return copyrightIndicatorStatuses
+     * @should return correct statuses
+     * @should return open status if no statuses found
+     */
+    public List<CopyrightIndicatorStatus> getCopyrightIndicatorStatuses() {
+        if (copyrightIndicatorStatuses == null) {
+            copyrightIndicatorStatuses = new ArrayList<>();
+            String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();
+            if (StringUtils.isNotEmpty(field)) {
+                List<String> values = topStructElement.getMetadataValues(field);
+                if (!values.isEmpty()) {
+                    for (String value : values) {
+                        CopyrightIndicatorStatus status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue(value);
+                        if (status != null) {
+                            copyrightIndicatorStatuses.add(status);
+                        }
+                    }
+                }
+            }
+            // Default
+            if (copyrightIndicatorStatuses.isEmpty()) {
+                copyrightIndicatorStatuses.add(new CopyrightIndicatorStatus(Status.OPEN, "COPYRIGHT_STATUS_OPEN"));
+            }
+        }
+
+        return copyrightIndicatorStatuses;
     }
 
     /**
      * @return the copyrightIndicatorLicense
+     * @should return correct license
+     * @should return default license if no licenses found
      */
     public CopyrightIndicatorLicense getCopyrightIndicatorLicense() {
         if (copyrightIndicatorLicense == null) {

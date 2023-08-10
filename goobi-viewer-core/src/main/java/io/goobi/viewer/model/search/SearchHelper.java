@@ -115,7 +115,7 @@ public final class SearchHelper {
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX</code> */
-    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ]|[,]|[・]";
+    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ,・]";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
     public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁ$##";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
@@ -129,7 +129,7 @@ public final class SearchHelper {
     /** Constant <code>SEARCH_TYPE_CALENDAR=3</code> */
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
-    public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
+    public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL", false);
     public static final String TITLE_TERMS = "_TITLE_TERMS";
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
     public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":{0})^20.0";

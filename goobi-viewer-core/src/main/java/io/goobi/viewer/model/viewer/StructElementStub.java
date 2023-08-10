@@ -663,8 +663,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         List<String> values = getMetadataValues(fieldName);
         if (!values.isEmpty()) {
             return values.get(0);
-        } else if (fieldName != null && !fieldName.contains("_LANG_")) {
-            return getMetadataValue(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
+        } else if (fieldName != null && !fieldName.contains(SolrConstants.MIDFIX_LANG)) {
+            return getMetadataValue(fieldName + SolrConstants.MIDFIX_LANG + BeanUtils.getLocale().getLanguage().toUpperCase());
         }
 
         return null;
@@ -680,8 +680,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         List<String> values = metadataFields.get(fieldName);
         if (values != null) {
             return values;
-        } else if (fieldName != null && !fieldName.contains("_LANG_")) {
-            return getMetadataValues(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
+        } else if (fieldName != null && !fieldName.contains(SolrConstants.MIDFIX_LANG)) {
+            return getMetadataValues(fieldName + SolrConstants.MIDFIX_LANG + BeanUtils.getLocale().getLanguage().toUpperCase());
         }
 
         return Collections.emptyList();
@@ -771,10 +771,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         List<String> fieldNames = this.getMetadataFields()
                 .keySet()
                 .stream()
-                .filter(key -> key.equals(fieldName) || key.startsWith(fieldName + "_LANG_"))
+                .filter(key -> key.equals(fieldName) || key.startsWith(fieldName + SolrConstants.MIDFIX_LANG))
                 .collect(Collectors.toList());
         Map<String, List<String>> valueMap =
-                fieldNames.stream().collect(Collectors.toMap(field -> getLanguage(field), field -> getMetadataValues(field)));
+                fieldNames.stream().collect(Collectors.toMap(field -> getLanguage(field), this::getMetadataValues));
         if (valueMap.size() == 1 && valueMap.containsKey(MultiLanguageMetadataValue.DEFAULT_LANGUAGE)) {
             //only default language: Simple MEtadata value
             return new SimpleMetadataValue(StringUtils.join(valueMap.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE), "; "));
@@ -784,8 +784,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     private static String getLanguage(String fieldName) {
-        if (fieldName.contains("_LANG_")) {
-            return fieldName.substring(fieldName.indexOf("_LANG_") + "_LANG_".length());
+        if (fieldName.contains(SolrConstants.MIDFIX_LANG)) {
+            return fieldName.substring(fieldName.indexOf(SolrConstants.MIDFIX_LANG) + SolrConstants.MIDFIX_LANG.length());
         }
 
         return MultiLanguageMetadataValue.DEFAULT_LANGUAGE;

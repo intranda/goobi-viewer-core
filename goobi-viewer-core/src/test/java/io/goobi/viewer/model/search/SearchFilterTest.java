@@ -24,8 +24,6 @@ package io.goobi.viewer.model.search;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.model.search.SearchFilter;
-
 public class SearchFilterTest {
 
     /**
@@ -34,8 +32,9 @@ public class SearchFilterTest {
      */
     @Test
     public void SearchFilter_shouldSetAttributesCorrectly() throws Exception {
-        SearchFilter searchFilter = new SearchFilter("label_value", "field_value");
+        SearchFilter searchFilter = new SearchFilter("label_value", "field_value", true);
         Assert.assertEquals("label_value", searchFilter.getLabel());
         Assert.assertEquals("field_value", searchFilter.getField());
+        Assert.assertTrue(searchFilter.isDefaultFilter());
     }
 }
