@@ -22,6 +22,8 @@
 package io.goobi.viewer.api.rest.v1.search;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,15 +35,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -50,9 +54,8 @@ import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * <p>
- * Endpoint for opensearch (https://opensearchfoundation.org/) within the viewer instance.
- * The url is referenced in the header of the template.html in the viewer-theme.
- * This resource returns the xml-document in /resources/opensearch/opensearch.xml
+ * Endpoint for opensearch (https://opensearchfoundation.org/) within the viewer instance. The url is referenced in the header of the template.html in
+ * the viewer-theme. This resource returns the xml-document in /resources/opensearch/opensearch.xml
  * </p>
  */
 @Path(ApiUrls.OPENSEARCH)
@@ -75,29 +78,34 @@ public class OpenSearchResource {
      */
     @GET
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags= {"search"}, summary="Endpoint for opensearch api")
+    @Operation(tags = { "search" }, summary = "Endpoint for opensearch api")
     public String getXml() {
         String xml = null;
         try {
             String rootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
-            String url = rootUrl + "/resources/opensearch/opensearch.xml";
-            logger.trace(url);
-            xml = NetTools.getWebContentGET(url);
-            xml = xml.replace("{name}", DataManager.getInstance().getConfiguration().getName())
-                    .replace("{description}", DataManager.getInstance().getConfiguration().getDescription())
-                    .replace("{applicationUrl}", rootUrl);
-            Matcher resourceUrlMatcher = Pattern.compile(RESOURCE_URL_REGEX).matcher(xml);
-            Optional<NavigationHelper> onh = BeanUtils.getBeanFromRequest(servletRequest, "navigationHelper", NavigationHelper.class);
-            while(resourceUrlMatcher.find()) {
-                String path = resourceUrlMatcher.group(1);
-                String resourcePath = onh.map(nh -> nh.getResource(path)).orElse(rootUrl + "/resources/themes/"+DataManager.getInstance().getConfiguration().getTheme()+path);
-                xml = xml.replaceFirst(RESOURCE_URL_REGEX, resourcePath);
+            //            String url = rootUrl + "/resources/opensearch/opensearch.xml";
+            //            logger.trace(url);
+
+            java.nio.file.Path xmlFile = Paths.get("opensearch.xml");
+            Document doc = XmlTools.readXmlFile(xmlFile);
+            if (doc != null) {
+                xml = XmlTools.getStringFromElement(doc, StandardCharsets.UTF_8.name());
+                // xml = NetTools.getWebContentGET(url);
+                xml = xml.replace("{name}", DataManager.getInstance().getConfiguration().getName())
+                        .replace("{description}", DataManager.getInstance().getConfiguration().getDescription())
+                        .replace("{applicationUrl}", rootUrl);
+                Matcher resourceUrlMatcher = Pattern.compile(RESOURCE_URL_REGEX).matcher(xml);
+                Optional<NavigationHelper> onh = BeanUtils.getBeanFromRequest(servletRequest, "navigationHelper", NavigationHelper.class);
+                while (resourceUrlMatcher.find()) {
+                    String path = resourceUrlMatcher.group(1);
+                    String resourcePath = onh.map(nh -> nh.getResource(path))
+                            .orElse(rootUrl + "/resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + path);
+                    xml = xml.replaceFirst(RESOURCE_URL_REGEX, resourcePath);
+                }
             }
         } catch (ClientProtocolException e) {
             logger.error(e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (HTTPException e) {
+        } catch (IOException | JDOMException e) {
             logger.error(e.getMessage());
         }
 
