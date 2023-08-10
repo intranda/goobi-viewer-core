@@ -147,7 +147,8 @@ public class MetadataBuilder {
                         LocalDate date = LocalDate.parse(keyValue.getValueOrFallback(locale) + "-01");
                         dateString = date.format(dateTimeFormatter);
                     } catch (DateTimeParseException e1) {
-                        logger.warn("Error parsing {} as date", value);
+                        // Keep original value
+                        dateString = keyValue.getValueOrFallback(locale);
                     }
                 }
                 dateString = dateString.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
@@ -165,7 +166,8 @@ public class MetadataBuilder {
                             LocalDate date = LocalDate.parse(altKeyValue.getValueOrFallback(locale) + "-01");
                             dateString = date.format(dateTimeFormatter);
                         } catch (DateTimeParseException e2) {
-                            logger.warn("Error parsing {} as date", value);
+                            // Keep original value
+                            dateString = altKeyValue.getValueOrFallback(locale);
                         }
                     }
                     dateString = dateString.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
