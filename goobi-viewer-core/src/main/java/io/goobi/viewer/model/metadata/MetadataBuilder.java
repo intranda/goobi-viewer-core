@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
@@ -44,37 +46,54 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.viewer.ViewManager;
 
 public class MetadataBuilder {
 
+    private static final Logger logger = LogManager.getLogger(MetadataBuilder.class);
+
     private final Map<String, List<IMetadataValue>> values;
-    
+
     public MetadataBuilder(MetadataContainer metadata) {
         this(metadata.getMetadata());
     }
-    
+
     public MetadataBuilder(SolrDocument doc) {
         this(MetadataContainer.createMetadataEntity(doc));
     }
-    
+
     public MetadataBuilder(ComplexMetadata metadata) {
         this(metadata.getMetadata());
     }
-    
+
     public MetadataBuilder(Map<String, List<IMetadataValue>> values) {
         this.values = values;
     }
-    
+
     public IMetadataValue build(Metadata metadataConfiguration) {
         return createFromConfig(metadataConfiguration, values);
     }
-    
+
+    /**
+     * 
+     * @param config
+     * @param metadata
+     * @return
+     */
     private static IMetadataValue createFromConfig(Metadata config, Map<String, List<IMetadataValue>> metadata) {
         IMetadataValue title = new MultiLanguageMetadataValue();
         for (MetadataParameter param : config.getParams()) {
             IMetadataValue value;
-            IMetadataValue keyValue = Optional.ofNullable(param.getKey()).map(metadata::get).map(l -> l.get(0)).map(IMetadataValue::copy).orElse(new SimpleMetadataValue(""));
-            IMetadataValue altKeyValue = Optional.ofNullable(param.getAltKey()).map(metadata::get).map(l -> l.get(0)).map(IMetadataValue::copy).orElse(new SimpleMetadataValue(""));
+            IMetadataValue keyValue = Optional.ofNullable(param.getKey())
+                    .map(metadata::get)
+                    .map(l -> l.get(0))
+                    .map(IMetadataValue::copy)
+                    .orElse(new SimpleMetadataValue(""));
+            IMetadataValue altKeyValue = Optional.ofNullable(param.getAltKey())
+                    .map(metadata::get)
+                    .map(l -> l.get(0))
+                    .map(IMetadataValue::copy)
+                    .orElse(new SimpleMetadataValue(""));
             switch (param.getType()) {
                 case TRANSLATEDFIELD:
                     value = getTranslatedFieldValue(param, keyValue, altKeyValue);
@@ -86,8 +105,12 @@ public class MetadataBuilder {
                     value = getDateFieldValue(param, keyValue, altKeyValue);
                     break;
                 default:
-                    value = Optional.ofNullable(metadata.get(param.getKey())).map(List::stream).flatMap(Stream::findFirst)
-                            .orElse(Optional.ofNullable(metadata.get(param.getAltKey())).map(List::stream).flatMap(Stream::findFirst)
+                    value = Optional.ofNullable(metadata.get(param.getKey()))
+                            .map(List::stream)
+                            .flatMap(Stream::findFirst)
+                            .orElse(Optional.ofNullable(metadata.get(param.getAltKey()))
+                                    .map(List::stream)
+                                    .flatMap(Stream::findFirst)
                                     .orElse(new SimpleMetadataValue("")));
                     break;
             }
@@ -97,27 +120,62 @@ public class MetadataBuilder {
         return title;
     }
 
+    /**
+     * 
+     * @param param
+     * @param keyValue
+     * @param altKeyValue
+     * @return
+     */
     public static IMetadataValue getDateFieldValue(MetadataParameter param, IMetadataValue keyValue, IMetadataValue altKeyValue) {
         IMetadataValue value = new MultiLanguageMetadataValue();
         for (Locale locale : IPolyglott.getLocalesStatic()) {
-            String outputPattern = BeanUtils.getNavigationHelper().getDatePattern(locale);
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
+            String outputPattern =
+                    StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : BeanUtils.getNavigationHelper().getDatePattern();
+            String altOutputPattern = outputPattern.replace("dd/", "");
+            String dateString = "";
+
             try {
-                LocalDate date = LocalDate.parse(keyValue.getValueOrFallback(locale));
-                String dateString = date.format(dateTimeFormatter);
+                try {
+                    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
+                    LocalDate date = LocalDate.parse(keyValue.getValueOrFallback(locale));
+                    dateString = date.format(dateTimeFormatter);
+                } catch (DateTimeParseException e) {
+                    // No-day format hack
+                    try {
+                        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
+                        LocalDate date = LocalDate.parse(keyValue.getValueOrFallback(locale) + "-01");
+                        dateString = date.format(dateTimeFormatter);
+                    } catch (DateTimeParseException e1) {
+                        logger.warn("Error parsing {} as date", value);
+                    }
+                }
                 dateString = dateString.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                 value.setValue(dateString, locale);
             } catch (DateTimeParseException | NullPointerException e) {
                 try {
-                    LocalDate date = LocalDate.parse(altKeyValue.getValueOrFallback(locale));
-                    String dateString = date.format(dateTimeFormatter);
+                    try {
+                        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
+                        LocalDate date = LocalDate.parse(altKeyValue.getValueOrFallback(locale));
+                        dateString = date.format(dateTimeFormatter);
+                    } catch (DateTimeParseException e) {
+                        // No-day format hack
+                        try {
+                            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
+                            LocalDate date = LocalDate.parse(altKeyValue.getValueOrFallback(locale) + "-01");
+                            dateString = date.format(dateTimeFormatter);
+                        } catch (DateTimeParseException e1) {
+                            logger.warn("Error parsing {} as date", value);
+                        }
+                    }
+                    dateString = dateString.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                     value.setValue(dateString, locale);
                 } catch (DateTimeParseException | NullPointerException e1) {
                     value.setValue(keyValue.isEmpty() ? altKeyValue.getValueOrFallback(locale) : keyValue.getValueOrFallback(locale), locale);
                 }
             }
         }
-        if(value.isEmpty()) {
+        if (value.isEmpty()) {
             value = ViewerResourceBundle.getTranslations(Optional.ofNullable(param.getDefaultValue()).orElse(""));
         }
         return value;
@@ -140,7 +198,8 @@ public class MetadataBuilder {
         Map<String, String> languageLabelMap = new HashMap<>();
         for (String language : languages) {
             String langValue = title.getValue(language)
-                    .orElse(title.getValue().orElse(ViewerResourceBundle.getTranslation(config.getMasterValue(), Locale.forLanguageTag(language), true)))
+                    .orElse(title.getValue()
+                            .orElse(ViewerResourceBundle.getTranslation(config.getMasterValue(), Locale.forLanguageTag(language), true)))
                     .replace(placeholder1, value.getValue(language).orElse(value.getValue().orElse("")))
                     .replace(placeholder2, value.getValue(language).orElse(value.getValue().orElse("")));
             languageLabelMap.put(language, langValue);
@@ -153,9 +212,9 @@ public class MetadataBuilder {
     private static IMetadataValue getFieldValue(MetadataParameter param, IMetadataValue keyValue, IMetadataValue altKeyValue) {
         IMetadataValue value;
         if (keyValue != null) {
-                value = keyValue;
+            value = keyValue;
         } else if (altKeyValue != null) {
-                value = altKeyValue;
+            value = altKeyValue;
         } else if (StringUtils.isNotBlank(param.getDefaultValue())) {
             // Translate key, if no index field found
             value = new SimpleMetadataValue(param.getDefaultValue());
@@ -168,13 +227,13 @@ public class MetadataBuilder {
     private static IMetadataValue getTranslatedFieldValue(MetadataParameter param, IMetadataValue keyValue, IMetadataValue altKeyValue) {
         IMetadataValue value;
         if (keyValue != null) {
-            if(keyValue instanceof SimpleMetadataValue) {
+            if (keyValue instanceof SimpleMetadataValue) {
                 value = ViewerResourceBundle.getTranslations(keyValue.getValue().orElse(""));
             } else {
                 value = keyValue;
             }
         } else if (altKeyValue != null) {
-            if(altKeyValue instanceof SimpleMetadataValue) {
+            if (altKeyValue instanceof SimpleMetadataValue) {
                 value = ViewerResourceBundle.getTranslations(altKeyValue.getValue().orElse(""));
             } else {
                 value = altKeyValue;
@@ -187,5 +246,5 @@ public class MetadataBuilder {
         }
         return value;
     }
-    
+
 }
