@@ -158,13 +158,13 @@ public class MetadataBuilder {
                         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
                         LocalDate date = LocalDate.parse(altKeyValue.getValueOrFallback(locale));
                         dateString = date.format(dateTimeFormatter);
-                    } catch (DateTimeParseException e) {
+                    } catch (DateTimeParseException e1) {
                         // No-day format hack
                         try {
                             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
                             LocalDate date = LocalDate.parse(altKeyValue.getValueOrFallback(locale) + "-01");
                             dateString = date.format(dateTimeFormatter);
-                        } catch (DateTimeParseException e1) {
+                        } catch (DateTimeParseException e2) {
                             logger.warn("Error parsing {} as date", value);
                         }
                     }
