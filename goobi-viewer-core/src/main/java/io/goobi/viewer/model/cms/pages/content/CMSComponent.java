@@ -421,5 +421,13 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public boolean isPaged() {
         return this.contentItems.stream().map(CMSContentItem::getContent).anyMatch(PagedCMSContent.class::isInstance);
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.label);
+        Optional.ofNullable(getPersistentComponent()).ifPresent(p-> sb.append(" id: ").append(p.getId()));
+        sb.append(" / ").append(this.getContentItems().size()).append(" content items");
+        return sb.toString();
+    }
 
 }

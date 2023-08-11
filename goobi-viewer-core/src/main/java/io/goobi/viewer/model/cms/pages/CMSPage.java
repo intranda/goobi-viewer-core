@@ -1473,22 +1473,33 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         CMSComponentGroup currentGroup = null;
         int componentIndex = 0;
         for (CMSComponent cmsComponent : components) {
-            
-            Map<String, List<CMSContentItem>> map = new LinkedHashMap<>();
-            for (CMSContentItem item : cmsComponent.getContentItems()) {
-                List<CMSContentItem> items = map.merge(item.getHtmlGroup(), List.of(item), ListUtils::union);
-            }
 
-            for (Entry<String, List<CMSContentItem>> entry : map.entrySet()) {
-                if(!groups.containsKey(entry.getKey())) {
-                    currentGroup = new CMSComponentGroup(entry.getKey());
-                    groups.put(entry.getKey(), currentGroup);
+            if (cmsComponent.getContentItems().isEmpty()) {
+                if(groups.containsKey("")) {
+                    currentGroup = groups.get("");
                 } else {
-                    currentGroup = groups.get(entry.getKey());
+                    currentGroup = new CMSComponentGroup("");
+                    groups.put("", currentGroup);
                 }
                 cmsComponent.setOrder(componentIndex);
-                CMSComponent groupComponent = new CMSComponent(cmsComponent, entry.getValue());
-                currentGroup.addComponent(groupComponent);
+                currentGroup.addComponent(cmsComponent);
+            } else {
+                Map<String, List<CMSContentItem>> map = new LinkedHashMap<>();
+                for (CMSContentItem item : cmsComponent.getContentItems()) {
+                    List<CMSContentItem> items = map.merge(item.getHtmlGroup(), List.of(item), ListUtils::union);
+                }
+
+                for (Entry<String, List<CMSContentItem>> entry : map.entrySet()) {
+                    if (!groups.containsKey(entry.getKey())) {
+                        currentGroup = new CMSComponentGroup(entry.getKey());
+                        groups.put(entry.getKey(), currentGroup);
+                    } else {
+                        currentGroup = groups.get(entry.getKey());
+                    }
+                    cmsComponent.setOrder(componentIndex);
+                    CMSComponent groupComponent = new CMSComponent(cmsComponent, entry.getValue());
+                    currentGroup.addComponent(groupComponent);
+                }
             }
             componentIndex++;
         }
