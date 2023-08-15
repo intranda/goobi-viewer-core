@@ -137,7 +137,9 @@ public class StatisticsSummaryBuilder {
         if (!fields.isEmpty()) {
             fields.add(StatisticsLuceneFields.DATE);
         }
-        SolrDocumentList docs = search(getSolrQuery(filter), fields);
+        SolrDocumentList docs =
+                // search(getSolrQuery(filter), fields);
+                this.searchIndex.search(getSolrQuery(filter), fields);
         return docs.stream().reduce(StatisticsSummary.empty(), this::add, StatisticsSummary::add);
     }
 
@@ -222,7 +224,8 @@ public class StatisticsSummaryBuilder {
             try {
                 String completeFilter = "+({}) +(ISWORK:true ISANCHOR:true DOCTYPE:GROUP)".replace("{}", filter.getFilterQuery());
                 identifiersToInclude.addAll(
-                        search(completeFilter, Collections.singletonList(SolrConstants.PI))
+                        //search(completeFilter, Collections.singletonList(SolrConstants.PI))
+                        this.searchIndex.search(completeFilter, Collections.singletonList(SolrConstants.PI))
                                 .stream()
                                 .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
                                 .collect(Collectors.toList()));
