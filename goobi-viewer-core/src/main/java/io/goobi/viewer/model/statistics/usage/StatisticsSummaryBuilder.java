@@ -102,7 +102,7 @@ public class StatisticsSummaryBuilder {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public StatisticsSummary loadSummary(StatisticsSummaryFilter filter) throws DAOException, IndexUnreachableException, PresentationException {
+    public StatisticsSummary loadSummary(StatisticsSummaryFilter filter) throws IndexUnreachableException, PresentationException {
         return loadFromSolr(filter);
     }
 
@@ -121,6 +121,13 @@ public class StatisticsSummaryBuilder {
         return days.stream().reduce(StatisticsSummary.empty(), (s, d) -> add(s, d, identifiersToInclude), StatisticsSummary::add);
     }
 
+    /**
+     * 
+     * @param filter
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     private StatisticsSummary loadFromSolr(StatisticsSummaryFilter filter) throws IndexUnreachableException, PresentationException {
         List<String> identifiersToInclude = getFilteredIdentifierList(filter);
         if (filter.hasFilterQuery() && identifiersToInclude.isEmpty()) {
@@ -202,16 +209,23 @@ public class StatisticsSummaryBuilder {
         return sb.toString();
     }
 
-    private List<String> getFilteredIdentifierList(StatisticsSummaryFilter filter) throws IndexUnreachableException {
+    /**
+     * 
+     * @param filter
+     * @return
+     * @throws IndexUnreachableException
+     * @should extract pi from filter correctly
+     */
+    List<String> getFilteredIdentifierList(StatisticsSummaryFilter filter) throws IndexUnreachableException {
         List<String> identifiersToInclude = new ArrayList<>();
         if (StringUtils.isNotBlank(filter.getFilterQuery())) {
             try {
                 String completeFilter = "+({}) +(ISWORK:* ISANCHOR:*)".replace("{}", filter.getFilterQuery());
                 identifiersToInclude.addAll(
-                         search(completeFilter, Collections.singletonList(SolrConstants.PI))
-                        .stream()
-                        .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
-                        .collect(Collectors.toList()));
+                        search(completeFilter, Collections.singletonList(SolrConstants.PI))
+                                .stream()
+                                .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
+                                .collect(Collectors.toList()));
             } catch (PresentationException e) {
                 throw new IndexUnreachableException(e.toString());
             }
