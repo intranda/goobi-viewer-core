@@ -56,6 +56,7 @@ public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
 
         SolrSearchIndex searchIndex = createSolrRecords();
         createSolrStatistics(searchIndex);
+        assertNotNull(searchIndex);
 
         StatisticsSummaryBuilder builder = new StatisticsSummaryBuilder(dao, searchIndex);
 
