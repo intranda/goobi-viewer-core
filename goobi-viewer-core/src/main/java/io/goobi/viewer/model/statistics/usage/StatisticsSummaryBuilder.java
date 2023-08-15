@@ -220,7 +220,7 @@ public class StatisticsSummaryBuilder {
         List<String> identifiersToInclude = new ArrayList<>();
         if (StringUtils.isNotBlank(filter.getFilterQuery())) {
             try {
-                String completeFilter = "+({}) +(ISWORK:* ISANCHOR:*)".replace("{}", filter.getFilterQuery());
+                String completeFilter = "+({}) +(ISWORK:true ISANCHOR:true DOCTYPE:GROUP)".replace("{}", filter.getFilterQuery());
                 identifiersToInclude.addAll(
                         search(completeFilter, Collections.singletonList(SolrConstants.PI))
                                 .stream()
