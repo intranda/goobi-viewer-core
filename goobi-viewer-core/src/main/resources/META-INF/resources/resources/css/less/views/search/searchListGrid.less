@@ -59,8 +59,11 @@
 					padding: 5px;
 				}
 				&.-extraMetadataForGrid {
+					margin-bottom: 0;
 					h3 {
+						min-height: 70px;
 						text-align: left;
+						-webkit-line-clamp: 3;
 					}
 				}
 			}
@@ -90,6 +93,7 @@
 					display: block !important;
 					padding: 1rem;
 					.search-list__hit-text {
+						font-size: 13px;
 						display: flex;
 						flex-direction: column;
 						.search-list__hit-text-label {
