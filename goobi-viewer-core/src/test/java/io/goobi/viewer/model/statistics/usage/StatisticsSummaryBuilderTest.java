@@ -82,16 +82,8 @@ public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
         Mockito.when(resp.getResults()).thenReturn(docs);
         Mockito.when(searchIndex.search(
                 Mockito.contains("DOCTYPE:" + StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE),
-                Mockito.anyInt(),
-                Mockito.anyInt(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.anyList(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.any()))
-                .thenReturn(resp);
+                Mockito.anyList()))
+                .thenReturn(docs);
     }
 
     private static SolrSearchIndex createSolrRecords() throws PresentationException, IndexUnreachableException {
@@ -105,15 +97,7 @@ public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
         SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
         Mockito.when(searchIndex.search(
                 Mockito.eq("+(DC:test) +(ISWORK:true ISANCHOR:true DOCTYPE:GROUP)"),
-                Mockito.anyInt(),
-                Mockito.anyInt(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.anyList(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.any())).thenReturn(resp);
+                Mockito.anyList())).thenReturn(docs);
         return searchIndex;
     }
 
@@ -158,5 +142,4 @@ public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
         assertEquals(1, result.size());
         assertEquals(AbstractSolrEnabledTest.PI_KLEIUNIV, result.get(0));
     }
-
 }
