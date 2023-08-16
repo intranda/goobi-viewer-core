@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.statistics.usage;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -37,6 +38,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -44,7 +47,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
-public class StatisticsSummaryBuilderTest {
+public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
 
     @Test
     public void test_filterResults() throws DAOException, IndexUnreachableException, PresentationException {
@@ -53,6 +56,7 @@ public class StatisticsSummaryBuilderTest {
 
         SolrSearchIndex searchIndex = createSolrRecords();
         createSolrStatistics(searchIndex);
+        assertNotNull(searchIndex);
 
         StatisticsSummaryBuilder builder = new StatisticsSummaryBuilder(dao, searchIndex);
 
@@ -78,16 +82,8 @@ public class StatisticsSummaryBuilderTest {
         Mockito.when(resp.getResults()).thenReturn(docs);
         Mockito.when(searchIndex.search(
                 Mockito.contains("DOCTYPE:" + StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE),
-                Mockito.anyInt(),
-                Mockito.anyInt(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.anyList(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.any()))
-                .thenReturn(resp);
+                Mockito.anyList()))
+                .thenReturn(docs);
     }
 
     private static SolrSearchIndex createSolrRecords() throws PresentationException, IndexUnreachableException {
@@ -100,16 +96,8 @@ public class StatisticsSummaryBuilderTest {
                 Date.from(LocalDate.of(2022, 8, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()), SolrConstants.PI, "PI_04")));
         SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
         Mockito.when(searchIndex.search(
-                Mockito.eq("+(DC:test) +(ISWORK:* ISANCHOR:*)"), 
-                Mockito.anyInt(),
-                Mockito.anyInt(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.anyList(),
-                Mockito.any(),
-                Mockito.any(),
-                Mockito.any())).thenReturn(resp);
+                Mockito.eq("+(DC:test) +(ISWORK:true ISANCHOR:true DOCTYPE:GROUP)"),
+                Mockito.anyList())).thenReturn(docs);
         return searchIndex;
     }
 
@@ -141,4 +129,17 @@ public class StatisticsSummaryBuilderTest {
         return dao;
     }
 
+    /**
+     * @see StatisticsSummaryBuilder#getFilteredIdentifierList(StatisticsSummaryFilter)
+     * @verifies extract pi from filter correctly
+     */
+    @Test
+    public void getFilteredIdentifierList_shouldExtractPiFromFilterCorrectly() throws Exception {
+        StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        IDAO dao = createDAOData();
+        List<String> result = new StatisticsSummaryBuilder(dao, DataManager.getInstance().getSearchIndex()).getFilteredIdentifierList(filter);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(AbstractSolrEnabledTest.PI_KLEIUNIV, result.get(0));
+    }
 }

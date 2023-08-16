@@ -37,8 +37,6 @@ import javax.ws.rs.WebApplicationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.client.solrj.SolrRequest.METHOD;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
@@ -102,7 +100,7 @@ public class StatisticsSummaryBuilder {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public StatisticsSummary loadSummary(StatisticsSummaryFilter filter) throws DAOException, IndexUnreachableException, PresentationException {
+    public StatisticsSummary loadSummary(StatisticsSummaryFilter filter) throws IndexUnreachableException, PresentationException {
         return loadFromSolr(filter);
     }
 
@@ -121,6 +119,13 @@ public class StatisticsSummaryBuilder {
         return days.stream().reduce(StatisticsSummary.empty(), (s, d) -> add(s, d, identifiersToInclude), StatisticsSummary::add);
     }
 
+    /**
+     * 
+     * @param filter
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     private StatisticsSummary loadFromSolr(StatisticsSummaryFilter filter) throws IndexUnreachableException, PresentationException {
         List<String> identifiersToInclude = getFilteredIdentifierList(filter);
         if (filter.hasFilterQuery() && identifiersToInclude.isEmpty()) {
@@ -130,7 +135,9 @@ public class StatisticsSummaryBuilder {
         if (!fields.isEmpty()) {
             fields.add(StatisticsLuceneFields.DATE);
         }
-        SolrDocumentList docs = search(getSolrQuery(filter), fields);
+        SolrDocumentList docs =
+                // search(getSolrQuery(filter), fields);
+                this.searchIndex.search(getSolrQuery(filter), fields);
         return docs.stream().reduce(StatisticsSummary.empty(), this::add, StatisticsSummary::add);
     }
 
@@ -202,16 +209,24 @@ public class StatisticsSummaryBuilder {
         return sb.toString();
     }
 
-    private List<String> getFilteredIdentifierList(StatisticsSummaryFilter filter) throws IndexUnreachableException {
+    /**
+     * 
+     * @param filter
+     * @return
+     * @throws IndexUnreachableException
+     * @should extract pi from filter correctly
+     */
+    List<String> getFilteredIdentifierList(StatisticsSummaryFilter filter) throws IndexUnreachableException {
         List<String> identifiersToInclude = new ArrayList<>();
         if (StringUtils.isNotBlank(filter.getFilterQuery())) {
             try {
-                String completeFilter = "+({}) +(ISWORK:* ISANCHOR:*)".replace("{}", filter.getFilterQuery());
+                String completeFilter = "+({}) +(ISWORK:true ISANCHOR:true DOCTYPE:GROUP)".replace("{}", filter.getFilterQuery());
                 identifiersToInclude.addAll(
-                         search(completeFilter, Collections.singletonList(SolrConstants.PI))
-                        .stream()
-                        .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
-                        .collect(Collectors.toList()));
+                        //search(completeFilter, Collections.singletonList(SolrConstants.PI))
+                        this.searchIndex.search(completeFilter, Collections.singletonList(SolrConstants.PI))
+                                .stream()
+                                .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
+                                .collect(Collectors.toList()));
             } catch (PresentationException e) {
                 throw new IndexUnreachableException(e.toString());
             }
@@ -223,10 +238,4 @@ public class StatisticsSummaryBuilder {
         StatisticsSummary dailyStatsSummary = new StatisticsSummary(dailyStats, identifiersToInclude);
         return summary.add(dailyStatsSummary);
     }
-
-    private SolrDocumentList search(String query, List<String> fields) throws PresentationException, IndexUnreachableException {
-        QueryResponse resp = this.searchIndex.search(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, fields, null, null, METHOD.POST);
-        return resp.getResults();
-    }
-
 }

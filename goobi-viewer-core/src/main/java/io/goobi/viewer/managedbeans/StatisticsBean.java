@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -332,10 +333,22 @@ public class StatisticsBean implements Serializable {
         return JsonTools.shortFormatVersionString(DataManager.getInstance().getIndexerVersion());
     }
 
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     public StatisticsSummary getUsageStatisticsForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException {
         if (StringUtils.isNotBlank(pi)) {
             StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
-            return new StatisticsSummaryBuilder().loadSummary(filter);
+            try {
+                return new StatisticsSummaryBuilder().loadSummary(filter);
+            } catch (WebApplicationException e) {
+                logger.error(e.getMessage());
+            }
         }
         return new StatisticsSummary(Collections.emptyMap());
     }
