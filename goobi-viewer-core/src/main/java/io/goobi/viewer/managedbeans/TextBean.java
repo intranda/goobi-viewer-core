@@ -109,7 +109,7 @@ public class TextBean implements Serializable {
             logger.trace("topDocument is null");
             return null;
         }
-        if (!topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase())) {
+        if (!topDocument.isHasTeiForLanguage(language)) {
             logger.trace("Field not found:{}", SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
             return null;
         }

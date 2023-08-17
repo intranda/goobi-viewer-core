@@ -2310,7 +2310,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (metadataViewOnly == null) {
@@ -2411,7 +2411,7 @@ public class ViewManager implements Serializable {
      * @return true if full-text view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topStructElement != null
@@ -2811,7 +2811,19 @@ public class ViewManager implements Serializable {
      * @throws ViewerConfigurationException
      */
     public String getFulltextMimeType() throws ViewerConfigurationException {
-        // TODO TEI full-text discriminator
+        return getFulltextMimeType(null);
+    }
+
+    /**
+     * 
+     * @param language
+     * @return TEI mime type if TEI files are indexed; mime type from the loaded full-text of the current page otherwise
+     * @throws ViewerConfigurationException
+     */
+    public String getFulltextMimeType(String language) throws ViewerConfigurationException {
+        if (topStructElement != null && topStructElement.isHasTeiForLanguage(language)) {
+            return StringConstants.MIMETYPE_TEI;
+        }
         PhysicalElement currentImg = getCurrentPage();
         if (currentImg != null) {
             return currentImg.getFulltextMimeType();
