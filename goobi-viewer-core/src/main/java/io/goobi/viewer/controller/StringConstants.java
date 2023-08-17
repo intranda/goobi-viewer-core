@@ -3,11 +3,14 @@ package io.goobi.viewer.controller;
 public class StringConstants {
 
     public static final String DEFAULT = "default";
-    
+
     public static final String HTML_BR = "<br />";
     public static final String HTML_BR_ESCAPED = "&lt;br /&gt;";
 
+    public static final String MIMETYPE_TEI = "application/tei+xml";
+    public static final String MIMETYPE_TEXT_HTML = "text/html";
     public static final String MIMETYPE_TEXT_PLAIN = "text/plain";
+    public static final String MIMETYPE_TEXT_XML = "text/xml";
 
     public static final String LOG_PRESENTATION_EXCEPTION_THROWN_HERE = "PresentationException thrown here: {}";
 

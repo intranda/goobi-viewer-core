@@ -496,6 +496,11 @@
 		<action onPostback="false">#{navigationHelper.setPreferredView('fulltext')}</action>
 		<action onPostback="false">#{activeDocumentBean.openFulltext}</action>
 	</url-mapping>
+    <url-mapping id="fulltext3">
+        <pattern value="/fulltext/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{language:activeDocumentBean.selectedRecordLanguage}/" />
+        <view-id value="/viewFulltext.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="fulltext4">
 		<pattern value="/fulltext/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewFulltext.xhtml" />

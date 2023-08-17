@@ -86,14 +86,28 @@
 
 					<!-- Full-text -->
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayFulltextViewLink}">
-						<li
-							class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
-							<h:outputLink
-								value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
-								<h:outputText value="#{msg.fulltext}" />
-								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.fulltext}"/>
-							</h:outputLink>
-						</li>
+					    <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType != 'application/tei+xml'}"> 
+						    <li class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
+							    <h:outputLink
+								    value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
+								    <h:outputText value="#{msg.fulltext}" />
+								    <f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.fulltext}"/>
+							    </h:outputLink>
+						    </li>
+						</ui:fragment>
+						
+						<ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType == 'application/tei+xml'}"> 
+						    <ui:repeat var="lang" value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topDocument)}">
+                                <div class="widget-change-local__item  #{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage == lang ? 'focus' : ''}">
+                                    <div class="widget-change-local__item-text">
+                                        <h:commandLink action="pretty:fulltext2" actionListener="#{activeDocumentBean.setSelectedRecordLanguage(lang)}">
+                                            #{msg[lang.concat('_WCL')]}
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </ui:fragment>
+						
 					</h:panelGroup>
 
 					<!-- External full-text URL -->

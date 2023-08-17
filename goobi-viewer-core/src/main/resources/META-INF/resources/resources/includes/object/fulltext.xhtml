@@ -45,6 +45,13 @@
         
         <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType != 'text/plain'}">        
 	        <div class="view-fulltext__content">
+	        
+	            <!-- TEI files -->
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType == 'application/tei+xml'}"> 
+                    <h:outputText escape="false" value="#{textBean.getTeiText(activeDocumentBean.viewManager.topDocument, activeDocumentBean.selectedRecordLanguage)}" /> 
+                </ui:fragment>
+	        
+	            <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType != 'application/tei+xml'}"> 
 	        	<!-- Single page mode -->
 	        	<ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
 	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentPage.fullText != null}"
@@ -69,6 +76,7 @@
 	                		value="#{activeDocumentBean.viewManager.currentRightPage.get().fullText}" escape="false" />
 	            		<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentRightPage.get().fullText == null}" />
 	            	</ui:fragment>
+	            </ui:fragment>
 	            </ui:fragment>
 	        </div>
         </ui:fragment>

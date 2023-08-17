@@ -33,7 +33,8 @@ import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.ocr.tei.convert.HtmlToTEIConvert.ConverterMode;
+import de.intranda.digiverso.ocr.tei.TEIBuilder;
+import de.intranda.digiverso.ocr.tei.convert.TeiToHtmlConvert;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -48,8 +49,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.text.tei.PopoverNoteReplacer;
-import io.goobi.viewer.model.text.tei.TeiToHtmlConverter;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -65,8 +64,6 @@ public class TextBean implements Serializable {
     private static final long serialVersionUID = 7458534493098897433L;
 
     private static final Logger logger = LoggerFactory.getLogger(TextBean.class);
-
-    public static final Namespace NAMESPACE_TEI = Namespace.getNamespace("tei", "http://www.tei-c.org/ns/1.0");
 
     /** Empty constructor. */
     public TextBean() {
@@ -131,19 +128,19 @@ public class TextBean implements Serializable {
                 return null;
             }
             List<Element> eleListAbstract = XmlTools.evaluateToElements("tei:teiHeader/tei:profileDesc/tei:abstract[@xml:id='" + abstractType
-                    + "'][@xml:lang='" + lang.getIsoCode() + "']", doc.getRootElement(), Collections.singletonList(NAMESPACE_TEI));
+                    + "'][@xml:lang='" + lang.getIsoCode() + "']", doc.getRootElement(), Collections.singletonList(TEIBuilder.NAMESPACE_TEI));
             if (eleListAbstract == null || eleListAbstract.isEmpty()) {
                 eleListAbstract = XmlTools.evaluateToElements(
                         // Fallback to English
                         "tei:teiHeader/tei:profileDesc/tei:abstract[@xml:id='" + abstractType + "'][@xml:lang='eng']", doc.getRootElement(),
-                        Collections.singletonList(NAMESPACE_TEI));
+                        Collections.singletonList(TEIBuilder.NAMESPACE_TEI));
                 if (eleListAbstract == null || eleListAbstract.isEmpty()) {
                     logger.debug("No abstract found");
                     return null;
                 }
             }
             String abstractRaw = XmlTools.getStringFromElement(eleListAbstract.get(0), StringTools.DEFAULT_ENCODING);
-            String abstractConverted = new TeiToHtmlConverter(ConverterMode.resource, new PopoverNoteReplacer()).convert(abstractRaw, null);
+            String abstractConverted = new TeiToHtmlConvert().convert(abstractRaw);
             abstractConverted = abstractConverted.replaceAll("<abstract.*?>", "").replace("</abstract>", "");
 
             // Check whether the text contains just empty tags with no visible text and return null if that is the case
@@ -248,7 +245,7 @@ public class TextBean implements Serializable {
                         eleNewRoot.addContent(ele.clone());
                     }
                     String html = XmlTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
-                    return new TeiToHtmlConverter(ConverterMode.resource, new PopoverNoteReplacer()).convert(html, language);
+                    return new TeiToHtmlConvert().setLanguage(language).convert(html);
                 }
             }
         } catch (FileNotFoundException e) {

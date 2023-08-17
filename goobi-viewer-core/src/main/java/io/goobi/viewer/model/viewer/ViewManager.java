@@ -2310,8 +2310,9 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException 
      */
-    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (metadataViewOnly == null) {
             // Display object view criteria
             if (isDisplayObjectViewLink()) {
@@ -2410,13 +2411,15 @@ public class ViewManager implements Serializable {
      * @return true if full-text view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException 
      */
-    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException {
+    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topStructElement != null
-                && topStructElement.isFulltextAvailable()
-                && !isFilesOnly()
-                && getCurrentPage() != null
-                && getCurrentPage().isFulltextAccessPermission();
+                && ((topStructElement.isFulltextAvailable()
+                        && !isFilesOnly()
+                        && getCurrentPage() != null
+                        && getCurrentPage().isFulltextAccessPermission()) || StringConstants.MIMETYPE_TEI.equals(getFulltextMimeType()));
+        // TODO tweak conditions as necessary
     }
 
     /**
@@ -2802,12 +2805,13 @@ public class ViewManager implements Serializable {
     /**
      *
      *
-     * @return the probable mimeType of the fulltext of the current page. Loads the fulltext of that page if neccessary
+     * @return the probable mimeType of the fulltext of the current page. Loads the fulltext of that page if necessary
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
     public String getFulltextMimeType() throws ViewerConfigurationException {
+        // TODO TEI full-text discriminator
         PhysicalElement currentImg = getCurrentPage();
         if (currentImg != null) {
             return currentImg.getFulltextMimeType();
