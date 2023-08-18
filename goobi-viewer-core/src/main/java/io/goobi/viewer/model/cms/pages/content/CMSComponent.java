@@ -424,9 +424,13 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(this.label);
-        Optional.ofNullable(getPersistentComponent()).ifPresent(p-> sb.append(" id: ").append(p.getId()));
-        sb.append(" / ").append(this.getContentItems().size()).append(" content items");
+        StringBuilder sb = new StringBuilder(this.label == null ? "" : this.label);
+        if(this.getPersistentComponent() != null) {
+            sb.append(" id: ").append(this.getPersistentComponent().getId());
+        }        
+        if(this.getContentItems() != null) {            
+            sb.append(" / ").append(this.getContentItems().size()).append(" content items");
+        }
         return sb.toString();
     }
 
