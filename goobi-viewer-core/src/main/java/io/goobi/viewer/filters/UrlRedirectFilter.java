@@ -132,6 +132,13 @@ public class UrlRedirectFilter implements Filter {
             logger.trace("Refuse prefetch request");
             return true;
         }
+        
+        String purpose = httpRequest.getHeader("sec-purpose");
+        if(purpose != null && "prefetch".equalsIgnoreCase(purpose)) {
+            logger.trace("Refuse prefetch request");
+            return true;
+        }
+        
         return false;
     }
 
