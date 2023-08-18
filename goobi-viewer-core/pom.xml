@@ -90,7 +90,7 @@
 		<!-- intranda libraries -->
 		<alto.version>1.5.11</alto.version>
 		<ics.version>3.9.1</ics.version>
-		<tei-conversion.version>1.2.3-SNAPSHOT</tei-conversion.version>
+		<tei-conversion.version>1.3.0-SNAPSHOT</tei-conversion.version>
 
 		<iiif-api-model.version>2.5.0</iiif-api-model.version>
 		<normdataimporter.version>1.10.3</normdataimporter.version>
