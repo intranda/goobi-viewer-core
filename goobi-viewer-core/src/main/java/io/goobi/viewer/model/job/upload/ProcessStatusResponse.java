@@ -39,11 +39,13 @@ public class ProcessStatusResponse {
 
     private String title;
     
-    private String project;
-
     private int id;
 
     private boolean processCompleted;
+    
+    private String project;
+    
+    private String ruleset;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "CET")
     private Date creationDate;
@@ -156,5 +158,13 @@ public class ProcessStatusResponse {
     
     public void setProject(String project) {
         this.project = project;
+    }
+    
+    public String getRuleset() {
+        return ruleset;
+    }
+    
+    public void setRuleset(String ruleset) {
+        this.ruleset = ruleset;
     }
 }
