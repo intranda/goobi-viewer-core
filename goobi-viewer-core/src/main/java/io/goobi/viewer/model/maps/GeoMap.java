@@ -399,4 +399,8 @@ public class GeoMap implements Serializable {
     public boolean hasFeatures() {
         return this.featureSets.stream().anyMatch(FeatureSet::hasFeatures);
     }
+
+    public boolean shouldOpenPopoversOnHover() {
+        return this.featureSets.stream().allMatch(f -> f.isQueryResultSet());
+    }
 }

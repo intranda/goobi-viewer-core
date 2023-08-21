@@ -99,6 +99,7 @@ public class DynamicContentBuilder {
                                 } else {
                                     composite.getAttributes().put("linkTarget", "_blank");
                                 }
+                                composite.getAttributes().put("popoverOnHover",  map.shouldOpenPopoversOnHover());
                             }
                         } else {
                             logger.error("Cannot build GeoMap content. No map found with id = " + id);
