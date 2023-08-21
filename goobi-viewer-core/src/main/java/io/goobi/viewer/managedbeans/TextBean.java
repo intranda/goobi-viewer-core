@@ -26,12 +26,12 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.ocr.tei.TEIBuilder;
 import de.intranda.digiverso.ocr.tei.convert.TeiToHtmlConvert;
@@ -63,7 +63,7 @@ public class TextBean implements Serializable {
 
     private static final long serialVersionUID = 7458534493098897433L;
 
-    private static final Logger logger = LoggerFactory.getLogger(TextBean.class);
+    private static final Logger logger = LogManager.getLogger(TextBean.class);
 
     /** Empty constructor. */
     public TextBean() {
