@@ -2411,14 +2411,14 @@ public class ViewManager implements Serializable {
      * @return true if full-text view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @throws PresentationException
      */
-    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topStructElement != null
                 && ((topStructElement.isFulltextAvailable()
                         && !isFilesOnly()
                         && getCurrentPage() != null
-                        && getCurrentPage().isFulltextAccessPermission()) || StringConstants.MIMETYPE_TEI.equals(getFulltextMimeType()));
+                        && getCurrentPage().isFulltextAccessPermission()) || isRecordHasTEIFiles());
         // TODO tweak conditions as necessary
     }
 
@@ -2645,38 +2645,35 @@ public class ViewManager implements Serializable {
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                     BeanUtils.getRequest()).isGranted();
-            return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
+            return access && (!isBelowFulltextThreshold(0.0001) || isRecordHasTEIFiles());
         } catch (RecordNotFoundException e) {
             return false;
         }
     }
 
     /**
+     * TODO Check for language-specific TEI files
+     * 
      * @return true if there are any TEI files associated directly with the top document
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private boolean isWorkHasTEIFiles() throws IndexUnreachableException, PresentationException {
+    public boolean isRecordHasTEIFiles() throws IndexUnreachableException, PresentationException {
         if (workHasTEIFiles == null) {
-            long teiDocs = DataManager.getInstance()
+            SolrDocument doc = DataManager.getInstance()
                     .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                    .getFirstDoc(new StringBuilder("+").append(SolrConstants.PI)
                             .append(':')
                             .append(pi)
-                            .append(" + ")
+                            .append(" +")
                             .append(SolrConstants.DOCTYPE)
                             .append(":")
                             .append(SolrConstants.DOCSTRCT)
-                            .append(" +")
-                            .append(SolrConstants.FILENAME_TEI)
-                            .append(":*")
-                            .toString());
-            int threshold = 1;
-            logger.trace("{} of pages have tei", teiDocs);
-            if (teiDocs < threshold) {
-                workHasTEIFiles = false;
+                            .toString(), Arrays.asList(SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + "*"));
+            if (doc != null) {
+                workHasTEIFiles = !doc.getFieldNames().isEmpty();
             } else {
-                workHasTEIFiles = true;
+                workHasTEIFiles = false;
             }
         }
 
@@ -2821,6 +2818,7 @@ public class ViewManager implements Serializable {
      * @throws ViewerConfigurationException
      */
     public String getFulltextMimeType(String language) throws ViewerConfigurationException {
+        logger.trace("getFulltextMimeType: {}", language);
         if (topStructElement != null && topStructElement.isHasTeiForLanguage(language)) {
             return StringConstants.MIMETYPE_TEI;
         }

@@ -1101,7 +1101,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * Important: hits have to have 3 Pretty parameters (e.g. /image/nextHit/PPN123/1/)
+     * Important: hits have to have 4 Pretty parameters (e.g. /image/nextHit/PPN123/1/LOG_0001/)
      *
      * @param type
      * @return
