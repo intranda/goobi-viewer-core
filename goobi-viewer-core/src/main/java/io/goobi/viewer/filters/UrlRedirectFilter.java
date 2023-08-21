@@ -80,6 +80,9 @@ public class UrlRedirectFilter implements Filter {
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             String url = httpRequest.getRequestURI();
+            
+            // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
+            // will point to the prefetched page rather than the actual current page
             if (isPrefetchingRequest(httpRequest)) {
                 return;
             }
