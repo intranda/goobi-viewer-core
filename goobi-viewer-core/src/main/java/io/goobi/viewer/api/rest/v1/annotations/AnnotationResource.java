@@ -21,7 +21,13 @@
  */
 package io.goobi.viewer.api.rest.v1.annotations;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
 import java.io.IOException;
 
@@ -39,10 +45,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.IncomingAnnotation;
 import de.intranda.api.annotation.wa.SpecificResource;
-import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
@@ -117,8 +124,7 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page)
-            throws ContentLibException, DAOException {
+    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page) throws ContentLibException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotationPage(page);
     }
@@ -176,7 +182,7 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
     @ApiResponse(responseCode = "501",
             description = "Persisting this king of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
-    public IAnnotation addAnnotation(IAnnotation anno) throws DAOException, NotImplementedException {
+    public IAnnotation addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
         if (pAnno != null) {
@@ -237,32 +243,30 @@ public class AnnotationResource {
      */
     public CrowdsourcingAnnotation createPersistentAnnotation(IAnnotation anno) {
         CrowdsourcingAnnotation pAnno = null;
-        if (anno instanceof WebAnnotation) {
-            IResource target = anno.getTarget();
-            String template;
-            if (target instanceof Manifest2) {
-                template = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).build();
-            } else if (target instanceof Canvas2) {
-                template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
-            } else if (target instanceof SpecificResource) {
-                //assume specific resources are on a canvas
-                template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
-            } else {
-                //TODO: implement handling IIIF 3 resources
-                return null;//not implemented
-            }
+        IResource target = anno.getTarget();
+        String template;
+        if (target instanceof Manifest2) {
+            template = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).build();
+        } else if (target instanceof Canvas2) {
+            template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
+        } else if (target instanceof SpecificResource) {
+            //assume specific resources are on a canvas
+            template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
+        } else {
+            //TODO: implement handling IIIF 3 resources
+            return null;//not implemented
+        }
 
-            String pi = urls.parseParameter(template, servletRequest.getRequestURI(), "pi");
-            String pageNoString = urls.parseParameter(template, servletRequest.getRequestURI(), "pageNo");
-            Integer pageNo = null;
-            if (StringUtils.isNotBlank(pageNoString) && pageNoString.matches("\\d+")) {
-                pageNo = Integer.parseInt(pageNoString);
-            }
-            pAnno = new CrowdsourcingAnnotation((WebAnnotation) anno, null, pi, pageNo);
-            User user = getUser();
-            if (user != null) {
-                pAnno.setCreator(user);
-            }
+        String pi = urls.parseParameter(template, target.getId().toString(), "pi");
+        String pageNoString = urls.parseParameter(template, target.getId().toString(), "pageNo");
+        Integer pageNo = null;
+        if (StringUtils.isNotBlank(pageNoString) && pageNoString.matches("\\d+")) {
+            pageNo = Integer.parseInt(pageNoString);
+        }
+        pAnno = new CrowdsourcingAnnotation((AbstractAnnotation) anno, null, pi, pageNo);
+        User user = getUser();
+        if (user != null) {
+            pAnno.setCreator(user);
         }
         return pAnno;
     }

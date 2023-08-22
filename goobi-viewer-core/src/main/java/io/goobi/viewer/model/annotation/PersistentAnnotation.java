@@ -49,6 +49,7 @@ import org.apache.logging.log4j.LogManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.ITypedResource;
 import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
@@ -165,7 +166,7 @@ public abstract class PersistentAnnotation {
      *
      * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      */
-    public PersistentAnnotation(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
+    public PersistentAnnotation(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         this.dateCreated = source.getCreated();
         this.dateModified = source.getModified();
         this.motivation = source.getMotivation();

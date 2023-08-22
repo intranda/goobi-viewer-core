@@ -32,16 +32,20 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement
-@JsonPropertyOrder({ "result", "title", "id", "creationDate", "processCompleted", "step" })
+@JsonPropertyOrder({ "result", "title", "id", "creationDate", "processCompleted", "step", "project"})
 public class ProcessStatusResponse {
 
     private String result; // success, error
 
     private String title;
-
+    
     private int id;
 
     private boolean processCompleted;
+    
+    private String project;
+    
+    private String ruleset;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "CET")
     private Date creationDate;
@@ -146,5 +150,21 @@ public class ProcessStatusResponse {
      */
     public void setProperties(List<PropertyResponse> properties) {
         this.properties = properties;
+    }
+    
+    public String getProject() {
+        return project;
+    }
+    
+    public void setProject(String project) {
+        this.project = project;
+    }
+    
+    public String getRuleset() {
+        return ruleset;
+    }
+    
+    public void setRuleset(String ruleset) {
+        this.ruleset = ruleset;
     }
 }

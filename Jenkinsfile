@@ -50,7 +50,7 @@ pipeline {
       }
       steps {
         withCredentials([string(credentialsId: 'jenkins-sonarcloud', variable: 'TOKEN')]) {
-          sh 'mvn -f goobi-viewer-core/pom.xml verify sonar:sonar -Dsonar.login=$TOKEN'
+          sh 'mvn -f goobi-viewer-core/pom.xml verify sonar:sonar -Dsonar.token=$TOKEN'
         }
       }
     }
