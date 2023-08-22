@@ -36,6 +36,8 @@ import jakarta.persistence.Transient;
 @DiscriminatorColumn(name = "feature_source")
 public abstract class FeatureSet implements Serializable {
 
+    private static final float DEFAULT_FILL_OPACITY = 0.2f;
+    private static final String DEFAULT_MARKER_COLOR = "#FF5F1F";
     private static final long serialVersionUID = -5349708948761030268L;
     protected static final String DEFAULT_MARKER_NAME = "default";
 
@@ -102,6 +104,20 @@ public abstract class FeatureSet implements Serializable {
     
     public void setName(TranslatedText name) {
         this.name = name;
+    }
+    
+    public String getColor() {
+        if (StringUtils.isNotBlank(marker)) {   
+            GeoMapMarker m = DataManager.getInstance().getConfiguration().getGeoMapMarker(this.marker);
+            if (m != null) {
+                return m.getMarkerColor();
+            }
+        }
+        return DEFAULT_MARKER_COLOR;
+    }
+    
+    public float getFillOpacity() {
+        return DEFAULT_FILL_OPACITY;
     }
     
 }

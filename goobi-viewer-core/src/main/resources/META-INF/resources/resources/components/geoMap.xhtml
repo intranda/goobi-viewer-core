@@ -74,15 +74,16 @@
 					            	enabled: #{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()},
 					            	heatmapUrl: "#{geoMapBean.heatmapUrl}",
 					            	featureUrl: "#{geoMapBean.featureUrl}",
-					        	    filterQuery: "#{cc.attrs.featureSet.solrQueryEncoded}",
-					        	    labelField: "#{cc.attrs.featureSet.markerTitleField}",
-					            }, style : {
+					        	    filterQuery: "#{featureSet.solrQueryEncoded}",
+					        	    labelField: "#{featureSet.markerTitleField}",
+					            }, 
+					            style : {
 					            	stroke: true,
-					            	color: '#FF5F1F',
+					            	color: '#{featureSet.color}',
 					            	opactity: 0.9,
 					            	fill: true,
-					            	fillColor: "#FF5F1F",
-					            	fillOpacity: 0.6,
+					            	fillColor: '#{featureSet.color}',
+					            	fillOpacity: #{featureSet.fillOpacity},
 					            	radius: 15
 					            }
 				            },

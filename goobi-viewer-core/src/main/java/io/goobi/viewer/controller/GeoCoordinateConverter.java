@@ -39,6 +39,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -50,6 +52,9 @@ import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.util.PrettyURLBuilder;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
@@ -87,6 +92,7 @@ public class GeoCoordinateConverter {
     //    private final Configuration config;
     private final Map<String, Metadata> featureTitleConfigs;
     private final Map<String, Metadata> entityTitleConfigs;
+    private final HttpServletRequest servletRequest;
 
     public GeoCoordinateConverter() {
         this("");
@@ -95,12 +101,20 @@ public class GeoCoordinateConverter {
     public GeoCoordinateConverter(String markerTitleConfig) {
         this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations(markerTitleConfig);
         this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapEntityConfigurations(markerTitleConfig);
+        this.servletRequest = null;
     }
 
     public GeoCoordinateConverter(Map<String, Metadata> featureTitleConfigs, Map<String, Metadata> entityTitleConfigs) {
         super();
         this.featureTitleConfigs = featureTitleConfigs;
         this.entityTitleConfigs = entityTitleConfigs;
+        this.servletRequest = null;
+    }
+
+    public GeoCoordinateConverter(HttpServletRequest servletRequest) {
+        this.servletRequest = servletRequest;
+        this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations("");
+        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapEntityConfigurations("");        
     }
 
     /**
@@ -198,6 +212,8 @@ public class GeoCoordinateConverter {
         fieldList.add(SolrConstants.DOCSTRCT);
         fieldList.add(SolrConstants.PI);
         fieldList.add(SolrConstants.PI_TOPSTRUCT);
+        fieldList.add(SolrConstants.THUMBPAGENO);
+        fieldList.add(SolrConstants.LOGID);
         fieldList.add(SolrConstants.MD_VALUE);
         fieldList.addAll(getSolrFields(this.entityTitleConfigs.values()));
         fieldList.addAll(getSolrFields(this.featureTitleConfigs.values()));
@@ -209,6 +225,8 @@ public class GeoCoordinateConverter {
         fieldList.add(SolrConstants.DOCTYPE);
         fieldList.add(SolrConstants.DOCSTRCT);
         fieldList.add(SolrConstants.PI_TOPSTRUCT);
+        fieldList.add(SolrConstants.THUMBPAGENO);
+        fieldList.add(SolrConstants.LOGID);
         fieldList.add(SolrConstants.MD_VALUE);
         fieldList.add("MD_REFID");
         fieldList.addAll(getSolrFields(this.entityTitleConfigs.values()));
@@ -281,6 +299,8 @@ public class GeoCoordinateConverter {
         points.addAll(SolrTools.getMetadataValues(doc, metadataField));
         List<GeoMapFeature> docFeatures = getFeatures(points);
         addMetadataToFeature(doc, Collections.emptyList(), docFeatures);
+        docFeatures.forEach(feature -> setLink(feature, doc));
+        docFeatures.forEach(f -> f.setDocumentId((String) doc.getFieldValue(SolrConstants.LOGID)));
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(
                 Optional.ofNullable(doc).map(mc -> mc.getFirstValue("DOCSTRCT")).orElse("_DEFAULT"), this.featureTitleConfigs.get("_DEFAULT"));
         Metadata entityLabelConfig = this.entityTitleConfigs.getOrDefault(
@@ -288,6 +308,37 @@ public class GeoCoordinateConverter {
         setLabels(docFeatures, titleConfig, title, entityLabelConfig);
 
         return docFeatures;
+    }
+
+    private void setLink(GeoMapFeature feature, SolrDocument doc) {
+        String pi = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT))
+                .or(() -> Optional.of(SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI)))
+                .orElse("");
+        String pageNo = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.THUMBPAGENO))
+                .orElse("");
+        String logId = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LOGID))
+                .orElse("");
+        
+        PrettyContext pretty = getPrettyContext();
+        if(pretty != null) {
+            if(StringUtils.isNoneBlank(pi, pageNo, logId)) {
+                feature.setLink(PrettyUrlTools.getAbsolutePageUrl(pretty, "object3", pi, pageNo, logId));
+            } else if(StringUtils.isNotBlank(pi)) {
+                feature.setLink(PrettyUrlTools.getAbsolutePageUrl(pretty, "object1", pi));
+            } 
+        }
+    }
+
+    public PrettyContext getPrettyContext() {
+        PrettyContext pretty = null;
+        try {            
+            pretty = PrettyContext.getCurrentInstance();
+        } catch(IllegalStateException e) {
+            if(this.servletRequest != null) {
+                pretty = PrettyContext.getCurrentInstance(this.servletRequest);
+            }
+        }
+        return pretty;
     }
 
     public Collection<GeoMapFeature> getGeojsonPoints(MetadataContainer doc, String metadataField, String titleField) {

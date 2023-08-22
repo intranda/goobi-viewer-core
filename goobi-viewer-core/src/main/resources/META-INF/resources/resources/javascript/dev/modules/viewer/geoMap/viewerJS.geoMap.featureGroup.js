@@ -40,6 +40,11 @@ var viewerJS = ( function( viewer ) {
             markerIcon : {
 				html: '<div><span>\${count}</span></div>', 	
 			},
+			cluster: {
+                spiderfyDistanceMultiplier: 1.0,
+                showCoverageOnHover: true,
+                maxClusterRadius: 80,
+       		},
             search: {
             	openSearchOnMarkerClick: true,
             	searchUrlTemplate : '/viewer/search/-/WKT_COORDS:"Intersects(POINT({lng} {lat})) distErrPct=0"/1/-/-/',
@@ -109,6 +114,7 @@ var viewerJS = ( function( viewer ) {
             	if(feature.properties && feature.properties.highlighted) {
 					let style = $.extend(true, {}, this.config.style);
 					style.color = this.config.style.highlightColor;
+					style.fillColor = this.config.style.highlightColor;
 					return style;       		
             	} else {
 	            	return this.config.style;
@@ -575,7 +581,9 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
 		this.hideMarkers();
 		this.markers.filter(m => this.getCount(m.feature.properties))
 		.forEach(m => {
-			m.setIcon(this.getMarkerIcon(m.feature.properties));
+			if(m.setIcon) {				
+				m.setIcon(this.getMarkerIcon(m.feature.properties));
+			}
 			if(this.cluster) {
 				this.cluster.addLayer(m);
 			} else {

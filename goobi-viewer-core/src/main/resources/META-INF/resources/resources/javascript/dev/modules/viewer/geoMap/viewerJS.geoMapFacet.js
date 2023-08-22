@@ -123,6 +123,7 @@ var viewerJS = ( function ( viewer ) {
 		let hitsLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.hitsLayer)
 		hitsLayer.init(features, false);
 		hitsLayer.onFeatureClick.subscribe(f => {
+			console.log("clicked on ", f);
 			if(f.properties && f.properties.link) {
 				$(this.config.search.loader).show();
 				window.location.assign(f.properties.link);

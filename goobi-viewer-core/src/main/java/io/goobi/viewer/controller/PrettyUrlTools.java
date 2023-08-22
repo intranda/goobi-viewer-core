@@ -111,8 +111,11 @@ public class PrettyUrlTools {
     }
 
     public static String getRelativePageUrl(String prettyId, Object... parameters) {
-        URL mappedUrl =
-                PrettyContext.getCurrentInstance()
+        return getRelativePageUrl(PrettyContext.getCurrentInstance(), prettyId, parameters);
+    }
+    
+    public static String getRelativePageUrl(PrettyContext pretty, String prettyId, Object... parameters) {
+        URL mappedUrl = pretty
                         .getConfig()
                         .getMappingById(prettyId)
                         .getPatternParser()
@@ -121,7 +124,11 @@ public class PrettyUrlTools {
     }
 
     public static String getAbsolutePageUrl(String prettyId, Object... parameters) {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + getRelativePageUrl(prettyId, parameters);
+        return getAbsolutePageUrl(PrettyContext.getCurrentInstance(), prettyId, parameters);
+    }
+    
+    public static String getAbsolutePageUrl(PrettyContext pretty, String prettyId, Object... parameters) {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + getRelativePageUrl(pretty, prettyId, parameters);
     }
 
     public static String getRecordURI(String pi, String imageNo, String logId, PageType pageType) {
