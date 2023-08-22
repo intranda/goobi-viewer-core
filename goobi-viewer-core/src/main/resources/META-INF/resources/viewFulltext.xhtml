@@ -57,7 +57,9 @@
 					</div>
 				</div>
 
-                <viewerComponent:imageControls />
+                <ui:fragment rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}">
+                    <viewerComponent:imageControls />
+                </ui:fragment>
 
                 <h:form id="viewFulltextForm" prependId="false">
                     <div id="view_fulltext_wrapp" class="view-fulltext__wrapper">

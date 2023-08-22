@@ -2609,6 +2609,16 @@ public class ViewManager implements Serializable {
 
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
+    
+    /**
+     * 
+     * @return true if record full-text is generated from TEI documents; false otherwise
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
+     */
+    public boolean isFulltextFromTEI() throws IndexUnreachableException, PresentationException {
+        return isRecordHasTEIFiles();
+    }
 
     /**
      *

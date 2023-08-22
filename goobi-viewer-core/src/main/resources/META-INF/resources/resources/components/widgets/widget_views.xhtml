@@ -86,7 +86,7 @@
 
 					<!-- Full-text -->
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayFulltextViewLink}">
-					    <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordHasTEIFiles}"> 
+					    <ui:fragment rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}"> 
 						    <li class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
 							    <h:outputLink
 								    value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
@@ -97,7 +97,7 @@
 						</ui:fragment>
 						
 						<!-- TEI full-text -->
-						<ui:fragment rendered="#{activeDocumentBean.viewManager.recordHasTEIFiles}"> 
+						<ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}"> 
 						    <ui:repeat var="lang" value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
                                 <div class="widget-change-local__item  #{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage == lang ? 'focus' : ''}">
                                     <div class="widget-change-local__item-text">
