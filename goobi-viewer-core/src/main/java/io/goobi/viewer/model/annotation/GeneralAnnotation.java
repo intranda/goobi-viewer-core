@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.annotation;
 
+import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.wa.WebAnnotation;
 
 public class GeneralAnnotation extends PersistentAnnotation {
@@ -33,7 +34,7 @@ public class GeneralAnnotation extends PersistentAnnotation {
         super(source);
     }
 
-    public GeneralAnnotation(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
+    public GeneralAnnotation(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         super(source, id, targetPI, targetPage);
     }
 

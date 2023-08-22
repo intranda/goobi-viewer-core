@@ -27,7 +27,7 @@ import java.util.Set;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-
+import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.wa.WebAnnotation;
 
 /**
@@ -61,7 +61,7 @@ public class CrowdsourcingAnnotation extends PersistentAnnotation {
      * @param targetPI
      * @param targetPage
      */
-    public CrowdsourcingAnnotation(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
+    public CrowdsourcingAnnotation(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         super(source, id, targetPI, targetPage);
     }
 
