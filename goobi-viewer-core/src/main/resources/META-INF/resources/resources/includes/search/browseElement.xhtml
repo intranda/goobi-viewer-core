@@ -46,7 +46,7 @@
 	                         <ul>
 	                             <ui:repeat value="#{browseElement.structElements}" varStatus="stat" var="struct">
 	                                 <li>
-	                                 	<a href="#{navigationHelper.applicationUrl}#{browseElement.url}" aria-label="#{msg[struct.docStructType]}">
+	                                 	<a href="#{struct.url}" aria-label="#{msg[struct.docStructType]}">
 	                                         <h:outputText value="#{msg[struct.docStructType]}" />
 	                                 	</a>
 	                                 </li>
