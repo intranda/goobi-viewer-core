@@ -25,9 +25,11 @@
 		         <div class="admin__radio-switch">
 		            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 		            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.published ? null : 'false'}"/>
+		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}"
+		                value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.published ? null : 'false'}"/>
 					<h:outputLabel for="cmsPageStatusVisibility_no" value="#{msg.no}" />
-		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.published ? 'false' : null}"/>
+		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}"
+		         	    value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.published ? 'false' : null}"/>
 		         	<h:outputLabel for="cmsPageStatusVisibility_yes" value="#{msg.yes}" />
 					<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{cmsPageEditBean.selectedPage.published}"
         				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
