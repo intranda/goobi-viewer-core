@@ -141,9 +141,8 @@ public class LanguageHelper {
         if (languageConfig == null) {
             throw new IllegalArgumentException("No matching language found for " + isoCode);
         }
-        Language language = createLanguage(languageConfig);
-
-        return language;
+        
+        return createLanguage(languageConfig);
     }
 
     /**

@@ -169,7 +169,7 @@ public class ActiveDocumentBean implements Serializable {
     /** Available languages for this record. */
     private List<String> recordLanguages;
     /** Currently selected language for multilingual records. */
-    private String selectedRecordLanguage;
+    private Language selectedRecordLanguage;
 
     private Boolean deleteRecordKeepTrace;
 
@@ -543,8 +543,8 @@ public class ActiveDocumentBean implements Serializable {
             recordLanguages = viewManager.getTopStructElement().getMetadataValues(SolrConstants.LANGUAGE);
             // If the record has metadata language versions, pre-select the current locale as the record language
             //            if (StringUtils.isBlank(selectedRecordLanguage) && !recordLanguages.isEmpty()) {
-            if (StringUtils.isBlank(selectedRecordLanguage) && navigationHelper != null) {
-                selectedRecordLanguage = navigationHelper.getLocaleString();
+            if (selectedRecordLanguage == null && navigationHelper != null) {
+                selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage(navigationHelper.getLocaleString());
             }
 
             // Prepare a new bookshelf item
@@ -1691,7 +1691,7 @@ public class ActiveDocumentBean implements Serializable {
                     return label;
                 }
             }
-            String label = viewManager.getTopStructElement().getLabel(selectedRecordLanguage);
+            String label = viewManager.getTopStructElement().getLabel(selectedRecordLanguage.getIsoCodeOld());
             if (StringUtils.isNotEmpty(label)) {
                 return label;
             }
@@ -1945,10 +1945,21 @@ public class ActiveDocumentBean implements Serializable {
      * Getter for the field <code>selectedRecordLanguage</code>.
      * </p>
      *
-     * @return the selectedRecordLanguage
+     * @return the 639_1 code for selectedRecordLanguage
      */
     public String getSelectedRecordLanguage() {
-        return selectedRecordLanguage;
+        return selectedRecordLanguage.getIsoCodeOld();
+    }
+    
+    /**
+     * <p>
+     * Getter for the field <code>selectedRecordLanguage</code>.
+     * </p>
+     *
+     * @return the 639_2B code for selectedRecordLanguage
+     */
+    public String getSelectedRecordLanguage3() {
+        return selectedRecordLanguage.getIsoCode();
     }
 
     /**
@@ -1958,24 +1969,19 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @param selectedRecordLanguage the selectedRecordLanguage to set
      */
-    public void setSelectedRecordLanguage(String selectedRecordLanguage) {
-        logger.trace("setSelectedRecordLanguage: {}", selectedRecordLanguage);
-        if (selectedRecordLanguage != null && selectedRecordLanguage.length() == 3) {
-            // Map ISO-3 codes to their ISO-2 variant
-            Language language = DataManager.getInstance().getLanguageHelper().getLanguage(selectedRecordLanguage);
-            if (language != null) {
-                logger.trace("Mapped language found: {}", language.getIsoCodeOld());
-                this.selectedRecordLanguage = language.getIsoCodeOld();
-            } else {
-                logger.warn("Language not found for code: {}", selectedRecordLanguage);
-                this.selectedRecordLanguage = selectedRecordLanguage;
-            }
-        } else {
-            this.selectedRecordLanguage = selectedRecordLanguage;
+    public void setSelectedRecordLanguage(String selectedRecordLanguageCode) {
+        logger.trace("setSelectedRecordLanguage: {}", selectedRecordLanguageCode);
+        if (selectedRecordLanguageCode != null) {
+            this.selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage(selectedRecordLanguageCode);
         }
+        if (this.selectedRecordLanguage == null) {
+            logger.warn("Language not found: {}", selectedRecordLanguageCode);
+            this.selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage(ViewerResourceBundle.getDefaultLocale().getLanguage());
+        }
+
         MetadataBean mdb = BeanUtils.getMetadataBean();
-        if (mdb != null) {
-            mdb.setSelectedRecordLanguage(this.selectedRecordLanguage);
+        if (mdb != null && this.selectedRecordLanguage != null) {
+            mdb.setSelectedRecordLanguage(this.selectedRecordLanguage.getIsoCodeOld());
         }
     }
 

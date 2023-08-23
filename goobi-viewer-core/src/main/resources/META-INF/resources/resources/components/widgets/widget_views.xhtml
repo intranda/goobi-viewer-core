@@ -99,15 +99,13 @@
 						<!-- TEI full-text -->
 						<ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}"> 
 						    <ui:repeat var="lang" value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
-                                <div class="widget-change-local__item  #{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage == lang ? 'focus' : ''}">
-                                    <div class="widget-change-local__item-text">
-                                        <h:outputLink
-                                            value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{lang}/">
-                                            <h:outputText value="#{msg[lang.concat('_WCL')]}" />
-                                            <f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg[lang.concat('_WCL')]}"/>
-                                        </h:outputLink>
-                                    </div>
-                                </div>
+                                <li class="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage3 == lang ? 'active' : ''}">
+                                    <h:outputLink
+                                        value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{lang}/">
+                                        <h:outputText value="#{msg[lang.concat('_WCL')]}" />
+                                        <f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg[lang.concat('_WCL')]}"/>
+                                    </h:outputLink>
+                                </li>
                             </ui:repeat>
                         </ui:fragment>
 						

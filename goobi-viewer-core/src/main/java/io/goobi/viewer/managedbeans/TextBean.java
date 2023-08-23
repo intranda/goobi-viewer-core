@@ -203,13 +203,21 @@ public class TextBean implements Serializable {
         return currentFulltext;
     }
 
+    /**
+     * 
+     * @param topDocument
+     * @return
+     */
     public List<String> getRecordLanguages(StructElement topDocument) {
         return topDocument.getMetadataFields()
                 .keySet()
                 .stream()
                 .filter(field -> field.matches(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG
                         + "\\w{1,3}"))
-                .map(field -> field.substring(field.lastIndexOf("_") + 1).toLowerCase())
+                .map(field -> DataManager.getInstance()
+                        .getLanguageHelper()
+                        .getLanguage(field.substring(field.lastIndexOf("_") + 1).toLowerCase())
+                        .getIsoCode())
                 .collect(Collectors.toList());
     }
 
