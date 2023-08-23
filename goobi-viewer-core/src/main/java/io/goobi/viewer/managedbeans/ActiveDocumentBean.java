@@ -1950,7 +1950,7 @@ public class ActiveDocumentBean implements Serializable {
     public String getSelectedRecordLanguage() {
         return selectedRecordLanguage.getIsoCodeOld();
     }
-    
+
     /**
      * <p>
      * Getter for the field <code>selectedRecordLanguage</code>.
@@ -1976,7 +1976,11 @@ public class ActiveDocumentBean implements Serializable {
         }
         if (this.selectedRecordLanguage == null) {
             logger.warn("Language not found: {}", selectedRecordLanguageCode);
-            this.selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage(ViewerResourceBundle.getDefaultLocale().getLanguage());
+            this.selectedRecordLanguage =
+                    DataManager.getInstance().getLanguageHelper().getLanguage(ViewerResourceBundle.getDefaultLocale().getLanguage());
+            if (selectedRecordLanguage == null) {
+                this.selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage("en");
+            }
         }
 
         MetadataBean mdb = BeanUtils.getMetadataBean();
