@@ -75,6 +75,9 @@ public class SearchQueryItem implements Serializable {
 
     private SearchBean searchBean;
     private final String template;
+    /** Optional label message key, if different from field. */
+    private String label;
+    /** Index field to search. */
     private String field;
     /** This operator now describes the relation of this item with the other items rather than between terms within this item's query! */
     private SearchItemOperator operator = SearchItemOperator.AND;
@@ -255,6 +258,25 @@ public class SearchQueryItem implements Serializable {
      */
     public String getSelectType() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSelectType(field, template, false);
+    }
+
+    /**
+     * @return the label
+     * @should return field if label empty
+     */
+    public String getLabel() {
+        if (StringUtils.isEmpty(label)) {
+            return field;
+        }
+
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**

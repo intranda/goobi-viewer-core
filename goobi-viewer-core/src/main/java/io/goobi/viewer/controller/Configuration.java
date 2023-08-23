@@ -1596,7 +1596,7 @@ public class Configuration extends AbstractConfiguration {
                 // logger.trace("Field {} belongs to different language; skipping", field);
                 continue;
             }
-            String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, null);
+            String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, field);
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);

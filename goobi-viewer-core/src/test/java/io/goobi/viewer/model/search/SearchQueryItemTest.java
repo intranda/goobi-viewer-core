@@ -270,4 +270,15 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.toggleDisplaySelectItems();
         Assert.assertFalse(item.isDisplaySelectItems());
     }
+
+    /**
+     * @see SearchQueryItem#getLabel()
+     * @verifies return field if label empty
+     */
+    @Test
+    public void getLabel_shouldReturnFieldIfLabelEmpty() throws Exception {
+        SearchQueryItem item = new SearchQueryItem();
+        item.setField("MD_FIELD");
+        Assert.assertEquals("MD_FIELD", item.getLabel());
+    }
 }
