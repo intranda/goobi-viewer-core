@@ -2662,7 +2662,6 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * TODO Check for language-specific TEI files
      * 
      * @return true if there are any TEI files associated directly with the top document
      * @throws PresentationException
