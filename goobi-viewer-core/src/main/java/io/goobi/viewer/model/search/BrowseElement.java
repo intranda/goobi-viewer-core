@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -1252,6 +1253,16 @@ public class BrowseElement implements Serializable {
      */
     public List<Metadata> getMetadataList() {
         return metadataListMap.get(Configuration.METADATA_LIST_TYPE_SEARCH_HIT);
+    }
+    
+    public List<String> getMetadataValues(String field) {
+        return getMetadataListForLocale(field, BeanUtils.getLocale()).stream().flatMap(md -> md.getValues().stream())
+         .map(value -> value.getCombinedValue()).collect(Collectors.toList());
+     }
+    
+    public String getFirstMetadataValue(String field) {
+       return getMetadataListForLocale(field, BeanUtils.getLocale()).stream().flatMap(md -> md.getValues().stream()).findFirst()
+        .map(value -> value.getCombinedValue()).orElse("");
     }
 
     /**
