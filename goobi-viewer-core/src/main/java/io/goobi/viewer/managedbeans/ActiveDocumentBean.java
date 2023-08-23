@@ -1953,17 +1953,6 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * <p>
-     * Getter for the field <code>selectedRecordLanguage</code>.
-     * </p>
-     *
-     * @return the 639_2B code for selectedRecordLanguage
-     */
-    public String getSelectedRecordLanguage3() {
-        return selectedRecordLanguage.getIsoCode();
-    }
-
-    /**
-     * <p>
      * Setter for the field <code>selectedRecordLanguage</code>.
      * </p>
      *
@@ -1987,6 +1976,26 @@ public class ActiveDocumentBean implements Serializable {
         if (mdb != null && this.selectedRecordLanguage != null) {
             mdb.setSelectedRecordLanguage(this.selectedRecordLanguage.getIsoCodeOld());
         }
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>selectedRecordLanguage</code>.
+     * </p>
+     *
+     * @return the 639_2B code for selectedRecordLanguage
+     */
+    public String getSelectedRecordLanguage3() {
+        return selectedRecordLanguage.getIsoCode();
+    }
+
+    /**
+     * Setter to match getSelectedRecordLanguage3() for URL patterns.
+     * 
+     * @param selectedRecordLanguageCode
+     */
+    public void setSelectedRecordLanguage3(String selectedRecordLanguageCode) {
+        setSelectedRecordLanguage(selectedRecordLanguageCode);
     }
 
     /**
