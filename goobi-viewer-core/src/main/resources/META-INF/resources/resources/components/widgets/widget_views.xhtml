@@ -102,7 +102,7 @@
                                 <li class="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage3 == lang ? 'active' : ''}">
                                     <h:outputLink
                                         value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{lang}/">
-                                        <h:outputText value="#{msg[lang.concat('_WCL')]}" />
+                                        <h:outputText value="#{msg.fulltext}: #{msg[lang]}" />
                                         <f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg[lang.concat('_WCL')]}"/>
                                     </h:outputLink>
                                 </li>
