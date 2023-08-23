@@ -268,6 +268,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.parentPageId = original.parentPageId;
         this.wrapperElementClass = original.wrapperElementClass;
         this.useAsDefaultRecordView = original.useAsDefaultRecordView;
+        this.searchable = original.searchable;
 
         if (original.properties != null) {
             this.properties = new ArrayList<>(original.properties.size());

@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-
+import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
@@ -68,7 +68,7 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
      * @param targetPI
      * @param targetPage
      */
-    public Comment(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
+    public Comment(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         super(source, id, targetPI, targetPage);
     }
 
