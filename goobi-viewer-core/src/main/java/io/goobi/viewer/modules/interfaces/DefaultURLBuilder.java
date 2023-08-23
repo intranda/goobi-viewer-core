@@ -83,6 +83,7 @@ public class DefaultURLBuilder implements IURLBuilder {
         } else {
             PageType pageType = getPageType(ele);
             if (PageType.viewFulltext.equals(pageType) && ele.isHasTeiFiles()) {
+                // Add language to the URL if record has TEI full-text
                 url = new StringBuilder().append(pageType.getName())
                         .append('/')
                         .append(ele.getPi())
