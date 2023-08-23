@@ -497,12 +497,12 @@
 		<action onPostback="false">#{activeDocumentBean.openFulltext}</action>
 	</url-mapping>
     <url-mapping id="fulltext3">
-        <pattern value="/fulltext/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{language:activeDocumentBean.selectedRecordLanguage}/" />
+        <pattern value="/fulltext/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{language:activeDocumentBean.selectedRecordLanguage3}/" />
         <view-id value="/viewFulltext.xhtml" />
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
     <url-mapping id="fulltext3active">
-        <pattern value="/!fulltext/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{language:activeDocumentBean.selectedRecordLanguage}/" />
+        <pattern value="/!fulltext/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{language:activeDocumentBean.selectedRecordLanguage3}/" />
         <view-id value="/viewFulltext.xhtml" />
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
@@ -512,7 +512,7 @@
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="fulltext5">
-        <pattern value="/fulltext/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{language:activeDocumentBean.selectedRecordLanguage}/#{logId:activeDocumentBean.logid}/" />
+        <pattern value="/fulltext/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{language:activeDocumentBean.selectedRecordLanguage3}/#{logId:activeDocumentBean.logid}/" />
         <view-id value="/viewFulltext.xhtml" />
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
