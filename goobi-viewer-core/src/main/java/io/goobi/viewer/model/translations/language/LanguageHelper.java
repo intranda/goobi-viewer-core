@@ -119,6 +119,9 @@ public class LanguageHelper {
      * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
      */
     public Language getLanguage(String isoCode) {
+        if (isoCode == null) {
+            return null;
+        }
         HierarchicalConfiguration<ImmutableNode> languageConfig = null;
         try {
             if (isoCode.length() == 3) {
@@ -141,7 +144,7 @@ public class LanguageHelper {
         if (languageConfig == null) {
             throw new IllegalArgumentException("No matching language found for " + isoCode);
         }
-        
+
         return createLanguage(languageConfig);
     }
 
