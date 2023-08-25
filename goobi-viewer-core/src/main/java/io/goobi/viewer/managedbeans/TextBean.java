@@ -216,6 +216,7 @@ public class TextBean implements Serializable {
      * 
      * @param topDocument
      * @return
+     * @should return return all tei languages
      */
     public List<String> getRecordLanguages(StructElement topDocument) {
         return topDocument.getMetadataFields()

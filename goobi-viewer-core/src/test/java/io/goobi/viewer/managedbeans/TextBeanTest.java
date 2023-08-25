@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -100,7 +101,7 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
         se.setPi("DE_2013_Riedel_PolitikUndCo_241__248");
         se.getMetadataFields().put("FILENAME_TEI_LANG_EN", Collections.singletonList(teiFile.toAbsolutePath().toString()));
 
-        assertNull(bean.getAbstract(se, "ProfileDescAbstractLong", "jp"));
+        assertNull(bean.getAbstract(se, "ProfileDescAbstractLong", "ja"));
     }
 
     //    /**
@@ -126,6 +127,20 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
     @Test
     public void getTeiText_shouldReturnNullIfTopDocumentNull() throws Exception {
         assertNull(bean.getTeiText(null, "en"));
+    }
+
+    /**
+     * @see TextBean#getRecordLanguages(StructElement)
+     * @verifies return return all tei languages
+     */
+    @Test
+    public void getRecordLanguages_shouldReturnReturnAllTeiLanguages() throws Exception {
+        StructElement se = new StructElement();
+        se.getMetadataFields().put("FILENAME_TEI_LANG_DE", Collections.emptyList());
+        se.getMetadataFields().put("FILENAME_TEI_LANG_EN", Collections.emptyList());
+        se.getMetadataFields().put("FILENAME_TEI_LANG_JA", Collections.emptyList());
+
+        assertEquals(3, bean.getRecordLanguages(se).size());
     }
 
     /**
