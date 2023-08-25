@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -93,5 +93,24 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
                         .singletonList("src/test/data/viewer/DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml"));
 
         assertNull(bean.getAbstract(se, "ProfileDescAbstractLong", "jp"));
+    }
+
+    /**
+     * @see TextBean#getTeiText(StructElement,String)
+     * @verifies return null if topDocument null
+     */
+    @Test
+    public void getTeiText_shouldReturnNullIfTopDocumentNull() throws Exception {
+        assertNull(bean.getTeiText(null, "en"));
+    }
+
+    /**
+     * @see TextBean#removeEmptyParagraphs(String)
+     * @verifies remove empty paragraph tags correctly
+     */
+    @Test
+    public void removeEmptyParagraphs_shouldRemoveEmptyParagraphTagsCorrectly() throws Exception {
+        String tei = "<tei><p>Lorem ipsum</p><p></p><p/><p /><br/><p>foo bar</p></tei>";
+        Assert.assertEquals("<tei><p>Lorem ipsum</p><p>foo bar</p></tei>", TextBean.removeEmptyParagraphs(tei));
     }
 }

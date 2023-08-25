@@ -176,6 +176,8 @@ public class TextBean implements Serializable {
      * @throws RecordNotFoundException
      * @throws IOException
      * @throws FileNotFoundException
+     * @should return text correctly
+     * @should return null if topDocument null
      */
     public String getTeiText(StructElement topDocument, String language)
             throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
