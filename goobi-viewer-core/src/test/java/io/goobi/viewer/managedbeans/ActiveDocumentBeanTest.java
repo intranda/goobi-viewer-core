@@ -212,6 +212,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getUrl_shouldConstructUrlCorrectly() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
+        navigationHelper.setLocaleString("en");
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();

@@ -773,6 +773,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * 
+     * @param language
+     * @return
+     */
+    public boolean isHasTeiForLanguage(String language) {
+        if (StringUtils.isNotEmpty(language)) {
+            logger.trace("isHasTeiForLanguage:" + SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
+            return getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
+        }
+
+        return getMetadataFields().containsKey(SolrConstants.FILENAME_TEI);
+    }
+
+    /**
      * Returns a stub representation of this object that only contains simple members to conserve memory.
      *
      * @return a {@link io.goobi.viewer.model.viewer.StructElementStub} object.

@@ -370,9 +370,7 @@ public class DataFileTools {
         }
 
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
-        Path filePath = Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
-
-        return filePath;
+        return Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
     }
 
     /**

@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
@@ -83,7 +84,20 @@ public class DefaultURLBuilder implements IURLBuilder {
             url = "cms/" + ele.getPi().substring(3) + "/";
         } else {
             PageType pageType = getPageType(ele);
-            url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
+            if (PageType.viewFulltext.equals(pageType) && ele.isHasTeiFiles()) {
+                // Add language to the URL if record has TEI full-text
+                url = new StringBuilder().append(pageType.getName())
+                        .append('/')
+                        .append(ele.getPi())
+                        .append('/')
+                        .append(ele.getImageNo())
+                        .append('/')
+                        .append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
+                        .append("/")
+                        .toString();
+            } else {
+                url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
+            }
         }
 
         // logger.trace("generateUrl: {}", url);

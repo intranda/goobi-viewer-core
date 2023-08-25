@@ -518,11 +518,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public String getDisplayMimeType() {
         String fullMimetype = getFullMimeType(getMimeType(), fileName);
-        if(fullMimetype.matches("(?i)image/png")) {
+        if (fullMimetype.matches("(?i)image/png")) {
             return fullMimetype;
-        } else {
-            return "image/jpeg";
         }
+        return "image/jpeg";
     }
 
     /**

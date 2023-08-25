@@ -49,6 +49,7 @@ import com.rometools.rome.io.SyndFeedOutput;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -359,7 +360,7 @@ public class RSSFeed {
                     logger.error(e.getMessage());
                 }
             }
-            description.setType("text/html");
+            description.setType(StringConstants.MIMETYPE_TEXT_HTML);
             descValue = new StringBuilder(imageHtmlElement != null
                     ? new StringBuilder(imageHtmlElement).append("<div style=\"display:block;margin-left:5px;\">").toString() : "").append("<p>")
                             .append(bookSeries)

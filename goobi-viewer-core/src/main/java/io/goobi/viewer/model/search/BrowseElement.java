@@ -122,6 +122,8 @@ public class BrowseElement implements Serializable {
     @JsonIgnore
     private boolean hasMedia = false;
     @JsonIgnore
+    private boolean hasTeiFiles = false;
+    @JsonIgnore
     private boolean showThumbnail = false;
     @JsonIgnore
     private long numVolumes = 0;
@@ -357,6 +359,9 @@ public class BrowseElement implements Serializable {
                         || this.mimeType.startsWith("text")/*sandboxed*/);
 
         showThumbnail = hasImages || hasMedia || isAnchor() || cmsPage;
+
+        // TEI files
+        hasTeiFiles = structElement.getMetadataFields().keySet().stream().filter(k -> k.startsWith(SolrConstants.FILENAME_TEI)).count() > 0;
 
         //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
@@ -1034,6 +1039,20 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @return the hasTeiFiles
+     */
+    public boolean isHasTeiFiles() {
+        return hasTeiFiles;
+    }
+
+    /**
+     * @param hasTeiFiles the hasTeiFiles to set
+     */
+    public void setHasTeiFiles(boolean hasTeiFiles) {
+        this.hasTeiFiles = hasTeiFiles;
+    }
+
+    /**
      * @return the showThumbnail
      */
     public boolean isShowThumbnail() {
@@ -1120,7 +1139,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * Important: hits have to have 3 Pretty parameters (e.g. /image/nextHit/PPN123/1/)
+     * Important: hits have to have 4 Pretty parameters (e.g. /image/nextHit/PPN123/1/LOG_0001/)
      *
      * @param type
      * @return
