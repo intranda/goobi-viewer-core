@@ -66,6 +66,7 @@ public class TextBean implements Serializable {
     private static final long serialVersionUID = 7458534493098897433L;
 
     private static final Logger logger = LogManager.getLogger(TextBean.class);
+ 
 
     /** Empty constructor. */
     public TextBean() {
@@ -247,6 +248,8 @@ public class TextBean implements Serializable {
      * 
      * @param filePath
      * @return
+     * @should load text correctly
+     * @should return null if file not found
      */
     public static String loadTeiFulltext(String filePath) {
         try {
@@ -265,7 +268,7 @@ public class TextBean implements Serializable {
                 }
             }
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.warn(e.getMessage());
         } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }

@@ -24,6 +24,9 @@ package io.goobi.viewer.managedbeans;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +38,8 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.viewer.StructElement;
 
 public class TextBeanTest extends AbstractSolrEnabledTest {
+
+    private static String DATA_PATH_TEI = "src/test/resources/data/viewer/tei/";
 
     private TextBean bean;
 
@@ -52,14 +57,16 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getAbstract_shouldReturnAbstractCorrectly() throws Exception {
+        Path teiFile = Paths.get(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
+        assertTrue(Files.isRegularFile(teiFile));
+
         StructElement se = new StructElement();
         se.setPi("DE_2013_Riedel_PolitikUndCo_241__248");
-        se.getMetadataFields()
-                .put("FILENAME_TEI_LANG_EN", Collections
-                        .singletonList("src/test/data/viewer/DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml"));
+        se.getMetadataFields().put("FILENAME_TEI_LANG_EN", Collections.singletonList(teiFile.toAbsolutePath().toString()));
 
         String result = bean.getAbstract(se, "ProfileDescAbstractLong", "en");
         assertTrue(StringUtils.isNotEmpty(result));
+        assertTrue(result.startsWith("<html"));
     }
 
     /**
@@ -86,14 +93,31 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getAbstract_shouldReturnNullIfTopDocumentHasNoTeiForLanguage() throws Exception {
+        Path teiFile = Paths.get(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
+        assertTrue(Files.isRegularFile(teiFile));
+
         StructElement se = new StructElement();
         se.setPi("DE_2013_Riedel_PolitikUndCo_241__248");
-        se.getMetadataFields()
-                .put("FILENAME_TEI_LANG_EN", Collections
-                        .singletonList("src/test/data/viewer/DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml"));
+        se.getMetadataFields().put("FILENAME_TEI_LANG_EN", Collections.singletonList(teiFile.toAbsolutePath().toString()));
 
         assertNull(bean.getAbstract(se, "ProfileDescAbstractLong", "jp"));
     }
+
+    //    /**
+    //     * @see TextBean#getTeiText(StructElement,String)
+    //     * @verifies return text correctly
+    //     */
+    //    @Test
+    //    public void getTeiText_shouldReturnTextCorrectly() throws Exception {
+    //        StructElement se = new StructElement();
+    //        se.setPi(PI_KLEIUNIV);
+    //        se.getMetadataFields()
+    //                .put("FILENAME_TEI_LANG_EN", Collections
+    //                        .singletonList(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml"));
+    //
+    //        String result = bean.getTeiText(se, "en");
+    //        assertTrue(StringUtils.isNotEmpty(result));
+    //    }
 
     /**
      * @see TextBean#getTeiText(StructElement,String)
@@ -112,5 +136,27 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
     public void removeEmptyParagraphs_shouldRemoveEmptyParagraphTagsCorrectly() throws Exception {
         String tei = "<tei><p>Lorem ipsum</p><p></p><p/><p /><br/><p>foo bar</p></tei>";
         Assert.assertEquals("<tei><p>Lorem ipsum</p><p>foo bar</p></tei>", TextBean.removeEmptyParagraphs(tei));
+    }
+
+    /**
+     * @see TextBean#loadTeiFulltext(String)
+     * @verifies load text correctly
+     */
+    @Test
+    public void loadTeiFulltext_shouldLoadTextCorrectly() throws Exception {
+        Path teiFile = Paths.get(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
+        assertTrue(Files.isRegularFile(teiFile));
+        assertTrue(StringUtils.isNotEmpty(
+                TextBean.loadTeiFulltext(teiFile.toAbsolutePath().toString())));
+    }
+
+    /**
+     * @see TextBean#loadTeiFulltext(String)
+     * @verifies return null if file not found
+     */
+    @Test
+    public void loadTeiFulltext_shouldReturnNullIfFileNotFound() throws Exception {
+        assertNull(
+                TextBean.loadTeiFulltext(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_xxx.xml"));
     }
 }
