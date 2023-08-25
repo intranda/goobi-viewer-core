@@ -86,7 +86,12 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getAbstract_shouldReturnNullIfTopDocumentHasNoTeiForLanguage() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        StructElement se = new StructElement();
+        se.setPi("DE_2013_Riedel_PolitikUndCo_241__248");
+        se.getMetadataFields()
+                .put("FILENAME_TEI_LANG_EN", Collections
+                        .singletonList("src/test/data/viewer/DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml"));
+
+        assertNull(bean.getAbstract(se, "ProfileDescAbstractLong", "jp"));
     }
 }
