@@ -21,20 +21,18 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import java.net.URI;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
 
 /**
  * @author florian
@@ -63,4 +61,18 @@ public class AbstractBuilderTest extends AbstractTest {
 
     }
 
+    @Test
+    public void testMetadataContained() {
+        List<String> fieldNames = List.of("MD_TEST", "MD_BLA*");
+        
+        assertTrue(builder.contained("MD_TEST", fieldNames));
+        assertTrue(builder.contained("MD_TEST_LANG_DE", fieldNames));
+        assertFalse(builder.contained("MD_TEST_2", fieldNames));
+        
+        assertTrue(builder.contained("MD_BLA", fieldNames));
+        assertTrue(builder.contained("MD_BLA_LANG_EN", fieldNames));
+        assertTrue(builder.contained("MD_BLA_2", fieldNames));
+
+    }
+    
 }
