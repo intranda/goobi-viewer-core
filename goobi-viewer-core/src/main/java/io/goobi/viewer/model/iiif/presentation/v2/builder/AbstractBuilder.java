@@ -51,6 +51,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -348,9 +349,23 @@ public abstract class AbstractBuilder {
      * @param displayFields
      * @return
      */
-    private static boolean contained(String field, List<String> displayFields) {
-
-        return displayFields.stream().map(displayField -> displayField.replace("*", "")).anyMatch(displayField -> field.startsWith(displayField));
+    protected boolean contained(String field, List<String> displayFields) {
+        return displayFields.stream().anyMatch(displayField -> matches(field, displayField));
+    }
+    
+    private boolean matches(String field, String template) {
+        
+        String cleanedTemplate = template.replace("*", "");
+        String cleanedField = field.replaceAll("_LANG_\\w{2,3}", "");
+        if(template.startsWith("*") && template.endsWith("*")) {
+            return cleanedField.contains(cleanedTemplate);
+        } else if(template.startsWith("*")) {
+            return cleanedField.endsWith(cleanedTemplate);
+        } else if(template.endsWith("*")) {
+            return cleanedField.startsWith(cleanedTemplate);
+        } else {
+            return Objects.equals(cleanedTemplate, cleanedField);
+        }        
     }
 
     /**

@@ -13,6 +13,7 @@ public class StringConstants {
     public static final String MIMETYPE_TEXT_PLAIN = "text/plain";
     public static final String MIMETYPE_TEXT_XML = "text/xml";
 
+    public static final String LOG_LOADING = "Loading {}";
     public static final String LOG_PRESENTATION_EXCEPTION_THROWN_HERE = "PresentationException thrown here: {}";
 
     public static final String LOREM_IPSUM =

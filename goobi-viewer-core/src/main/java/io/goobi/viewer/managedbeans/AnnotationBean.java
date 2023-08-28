@@ -99,7 +99,7 @@ public class AnnotationBean implements Serializable {
                         filters.putAll(getFilters());
                         List<CrowdsourcingAnnotation> ret =
                                 DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                        exportSelection = new SelectionManager<Long>(ret.stream().map(CrowdsourcingAnnotation::getId).collect(Collectors.toList()));
+                        exportSelection = new SelectionManager<>(ret.stream().map(CrowdsourcingAnnotation::getId).collect(Collectors.toList()));
                         return ret;
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
@@ -252,6 +252,10 @@ public class AnnotationBean implements Serializable {
     public boolean isSelectAll() {
         return false;
         //this.exportSelection.isSelectAll();
+    }
+
+    public void downloadAllAnnotations() throws IOException, DAOException {
+        downloadAnnotations(DataManager.getInstance().getDao().getAllAnnotations(null, false));
     }
 
     /**

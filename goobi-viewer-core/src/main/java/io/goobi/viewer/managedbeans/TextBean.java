@@ -38,7 +38,9 @@ import de.intranda.digiverso.ocr.tei.convert.TeiToHtmlConvert;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -64,6 +66,7 @@ public class TextBean implements Serializable {
     private static final long serialVersionUID = 7458534493098897433L;
 
     private static final Logger logger = LogManager.getLogger(TextBean.class);
+ 
 
     /** Empty constructor. */
     public TextBean() {
@@ -98,6 +101,10 @@ public class TextBean implements Serializable {
      * @param abstractType
      * @param language
      * @return
+     * @should return abstract correctly
+     * @should throw IllegalArgumentException if language null
+     * @should return null if topDocument null
+     * @should return null if topDocument has no tei for language
      */
     public String getAbstract(StructElement topDocument, String abstractType, String language) {
         logger.trace("getAbstract: {}", language);
@@ -110,13 +117,14 @@ public class TextBean implements Serializable {
             return null;
         }
         if (!topDocument.isHasTeiForLanguage(language)) {
-            logger.trace("Field not found:{}", SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
+            logger.trace("Field not found: {}{}{}", SolrConstants.FILENAME_TEI, SolrConstants.MIDFIX_LANG, language);
             return null;
         }
+
         String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
         try {
             String filePath = DataFileTools.getTextFilePath(topDocument.getPi(), fileName, SolrConstants.FILENAME_TEI);
-            logger.trace("Loading {}", filePath);
+            logger.trace(StringConstants.LOG_LOADING, filePath);
             Document doc = XmlTools.getDocumentFromString(FileTools.getStringFromFilePath(filePath), null);
             if (doc == null || doc.getRootElement() == null) {
                 logger.trace("Could not construct XML document");
@@ -124,11 +132,11 @@ public class TextBean implements Serializable {
             }
             Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
             if (lang == null) {
-                logger.error("Langguage not found: {}", language);
+                logger.error("Language not defined: {}", language);
                 return null;
             }
             List<Element> eleListAbstract = XmlTools.evaluateToElements("tei:teiHeader/tei:profileDesc/tei:abstract[@xml:id='" + abstractType
-                    + "'][@xml:lang='" + lang.getIsoCode() + "']", doc.getRootElement(), Collections.singletonList(TEIBuilder.NAMESPACE_TEI));
+                    + "'][@xml:lang='" + lang.getIsoCode() + "']", doc.getRootElement(), Collections.singletonList(TEITools.NAMESPACE_TEI));
             if (eleListAbstract == null || eleListAbstract.isEmpty()) {
                 eleListAbstract = XmlTools.evaluateToElements(
                         // Fallback to English
@@ -141,7 +149,7 @@ public class TextBean implements Serializable {
             }
             String abstractRaw = XmlTools.getStringFromElement(eleListAbstract.get(0), StringTools.DEFAULT_ENCODING);
             String abstractConverted = new TeiToHtmlConvert().convert(abstractRaw);
-            abstractConverted = abstractConverted.replaceAll("<abstract.*?>", "").replace("</abstract>", "");
+            abstractConverted = abstractConverted.replaceAll("<abstract[^>]*?>", "").replace("</abstract>", "");
 
             // Check whether the text contains just empty tags with no visible text and return null if that is the case
             String abstractReduced = removeEmptyParagraphs(abstractConverted);
@@ -169,6 +177,8 @@ public class TextBean implements Serializable {
      * @throws RecordNotFoundException
      * @throws IOException
      * @throws FileNotFoundException
+     * @should return text correctly
+     * @should return null if topDocument null
      */
     public String getTeiText(StructElement topDocument, String language)
             throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
@@ -190,16 +200,15 @@ public class TextBean implements Serializable {
                         + language.toUpperCase())) {
             String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
             String filePath = DataFileTools.getTextFilePath(topDocument.getPi(), fileName, SolrConstants.FILENAME_TEI);
-            logger.trace("Loading {}", filePath);
+            logger.trace(StringConstants.LOG_LOADING, filePath);
             currentFulltext = loadTeiFulltext(filePath);
         } else if (topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI)) {
             String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI);
             String filePath = DataFileTools.getTextFilePath(topDocument.getPi(), fileName, SolrConstants.FILENAME_TEI);
-            logger.trace("Loading {}", filePath);
+            logger.trace(StringConstants.LOG_LOADING, filePath);
             currentFulltext = loadTeiFulltext(filePath);
         }
 
-        // logger.trace(currentFulltext);
         return currentFulltext;
     }
 
@@ -207,6 +216,7 @@ public class TextBean implements Serializable {
      * 
      * @param topDocument
      * @return
+     * @should return return all tei languages
      */
     public List<String> getRecordLanguages(StructElement topDocument) {
         return topDocument.getMetadataFields()
@@ -239,6 +249,8 @@ public class TextBean implements Serializable {
      * 
      * @param filePath
      * @return
+     * @should load text correctly
+     * @should return null if file not found
      */
     public static String loadTeiFulltext(String filePath) {
         try {
@@ -257,7 +269,7 @@ public class TextBean implements Serializable {
                 }
             }
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.warn(e.getMessage());
         } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
