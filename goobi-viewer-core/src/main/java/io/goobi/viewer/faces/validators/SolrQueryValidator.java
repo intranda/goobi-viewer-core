@@ -73,8 +73,6 @@ public class SolrQueryValidator implements Validator<String> {
             } else {
                 Messages.info(component.getClientId(), "");
             }
-
-            return;
         } catch (SolrServerException | RemoteSolrException e) {
             if (SolrTools.isQuerySyntaxError(e)) {
                 logger.debug(e.getMessage());
@@ -92,12 +90,12 @@ public class SolrQueryValidator implements Validator<String> {
     /**
      *
      * @param query
-     * @return
+     * @return Hit count
      * @throws SolrServerException
      * @throws IOException
      */
     public static long getHitCount(String query) throws SolrServerException, IOException {
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().testQuery(query);
-            return resp.getResults().getNumFound();
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().testQuery(query);
+        return resp.getResults().getNumFound();
     }
 }

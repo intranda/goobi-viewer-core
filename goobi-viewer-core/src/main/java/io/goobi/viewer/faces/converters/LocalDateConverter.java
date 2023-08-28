@@ -23,8 +23,6 @@ package io.goobi.viewer.faces.converters;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.Arrays;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -39,7 +37,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 @FacesConverter("localDateConverter")
 public class LocalDateConverter implements Converter<LocalDate> {
-
+    
+    private static final String ATTRIBUTE_DATA_FORMAT = "data-format";
 
     /* (non-Javadoc)
      * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)
@@ -47,16 +46,14 @@ public class LocalDateConverter implements Converter<LocalDate> {
     @Override
     public LocalDate getAsObject(FacesContext context, UIComponent component, String value) {
         if (StringUtils.isNotBlank(value)) {
-            if(component != null && component.getAttributes().get("data-format") != null) {
-                String format = (String) component.getAttributes().get("data-format");
+            if (component != null && component.getAttributes().get(ATTRIBUTE_DATA_FORMAT) != null) {
+                String format = (String) component.getAttributes().get(ATTRIBUTE_DATA_FORMAT);
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
-                LocalDate date = LocalDate.parse(value, dateTimeFormatter);
-                return date;
-            } else {
-                LocalDate date = LocalDate.parse(value);
-                return date;
+                return LocalDate.parse(value, dateTimeFormatter);
             }
+            return LocalDate.parse(value);
         }
+
         return null;
     }
 
@@ -66,16 +63,14 @@ public class LocalDateConverter implements Converter<LocalDate> {
     @Override
     public String getAsString(FacesContext context, UIComponent component, LocalDate value) {
         if (value != null) {
-            if(component != null && component.getAttributes().get("data-format") != null) {
-                String format = (String) component.getAttributes().get("data-format");
+            if (component != null && component.getAttributes().get(ATTRIBUTE_DATA_FORMAT) != null) {
+                String format = (String) component.getAttributes().get(ATTRIBUTE_DATA_FORMAT);
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
-                String text = value.format(dateTimeFormatter);
-                return text;
-            } else {
-                String text = value.toString();
-                return text;
+                return value.format(dateTimeFormatter);
             }
+            return value.toString();
         }
+
         return null;
     }
 
