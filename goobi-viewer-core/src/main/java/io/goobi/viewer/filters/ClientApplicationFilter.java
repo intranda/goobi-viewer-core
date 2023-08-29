@@ -16,7 +16,6 @@
 package io.goobi.viewer.filters;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -27,8 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -48,12 +47,12 @@ public class ClientApplicationFilter implements Filter {
     public ClientApplicationFilter() {
         this.clientManager = getClientManagerFromDataManager();
     }
-    
+
     public ClientApplicationFilter(ClientApplicationManager clientManager) {
         this.clientManager = clientManager;
     }
-    
-    private ClientApplicationManager getClientManagerFromDataManager() {
+
+    private static ClientApplicationManager getClientManagerFromDataManager() {
         try {
             return DataManager.getInstance().getClientManager();
         } catch (DAOException e) {
@@ -61,36 +60,37 @@ public class ClientApplicationFilter implements Filter {
             return null;
         }
     }
-    
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if(clientManager == null) {
+        if (clientManager == null) {
             logger.error("No ClientManager available. No client registration possible");
-        } else if(request instanceof HttpServletRequest) {            
+        } else if (request instanceof HttpServletRequest) {
             String clientIdentifier = ClientApplicationManager.getClientIdentifier((HttpServletRequest) request);
-            if(StringUtils.isNotBlank(clientIdentifier)) {
+            if (StringUtils.isNotBlank(clientIdentifier)) {
                 try {
-                    ClientApplication client = DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier).orElse(null);
-                    if(client != null) {
-                        if(clientManager.registerClientInSession(client, ((HttpServletRequest) request).getSession())) {                            
-                            logger.trace("Registered client " + client.getName() + " in http session");
+                    ClientApplication client =
+                            DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier).orElse(null);
+                    if (client != null) {
+                        if (clientManager.registerClientInSession(client, ((HttpServletRequest) request).getSession())) {
+                            logger.trace("Registered client {} in http session", client.getName());
                         } else {
-                            logger.trace("Client " + client.getName() + " attempts to register but client rights are not granted for this client");
+                            logger.trace("Client {} attempts to register but client rights are not granted for this client", client.getName());
                         }
                     } else {
                         logger.debug("Unknown client requests registration. Saving to database");
-                        client = DataManager.getInstance().getClientManager().persistNewClient(clientIdentifier, (HttpServletRequest)request);
+                        client = DataManager.getInstance().getClientManager().persistNewClient(clientIdentifier, (HttpServletRequest) request);
                     }
-                    if(client != null && response instanceof HttpServletResponse) {
-                        ((HttpServletResponse) response).setHeader(ClientApplicationManager.CLIENT_RESPONSE_HEADER, client.getAccessStatus().toString());
+                    if (client != null && response instanceof HttpServletResponse) {
+                        ((HttpServletResponse) response).setHeader(ClientApplicationManager.CLIENT_RESPONSE_HEADER,
+                                client.getAccessStatus().toString());
                     }
                 } catch (DAOException e) {
                     logger.error("Error registering client application for sesseion", e);
                 }
             }
         }
-        
+
         chain.doFilter(request, response);
     }
-
 }

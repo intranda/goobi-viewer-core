@@ -32,6 +32,14 @@
                             <div class="admin__table-paginator">
                                 <viewerComponent:dataTablePaginator tableValues="#{annotationBean.lazyModelAnnotations}" />
                             </div>
+                            <!-- DOWNLOAD ALL -->
+                            <!--
+                            <div>
+                                <div class="admin__overlay-bar-message">#{msg.admin__crowdsourcing_annotations_export_all_excel_file}:</div>
+                                <h:commandButton value="#{msg.save}" styleClass="btn btn--success admin__overlay-bar-action"
+                                    action="#{annotationBean.downloadAllAnnotations()}" />
+                            </div>
+                            -->
                             <!-- FILTER -->
                             <div class="admin__table-filter">
                                 <!-- TODO: ADD FILTER FOR targetPI, TOO -->
@@ -125,9 +133,11 @@
                             </ui:repeat>
                         </div>
                     </div>
+                    
                     <div class="admin__overlay-bar">
                     	<div class="admin__overlay-bar-message">#{msg.admin__crowdsourcing_annotations_export_excel_file}:</div>
-                    	<h:commandButton value="#{msg.save}" styleClass="btn btn--success admin__overlay-bar-action" action="#{annotationBean.downloadSelectedAnnotations()}" />
+                    	<h:commandButton value="#{msg.save}" styleClass="btn btn--success admin__overlay-bar-action"
+                    	    action="#{annotationBean.downloadSelectedAnnotations()}" />
                     </div>
 		            <script type="text/javascript">
 		                $( document ).ready( function() {

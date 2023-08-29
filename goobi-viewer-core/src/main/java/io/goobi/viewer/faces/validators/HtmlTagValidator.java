@@ -47,7 +47,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class HtmlTagValidator implements Validator<String> {
 
     private static final List<String> allowedTags =
-            Arrays.asList(new String[] { "br", "b", "strong", "em", "i", "mark", "small", "del", "ins", "sub", "sup" });
+            Arrays.asList("br", "b", "strong", "em", "i", "mark", "small", "del", "ins", "sub", "sup");
 
     /**
      * {@inheritDoc}

@@ -58,7 +58,10 @@ public class SelectItemBuilder {
     public static <T> SortedMap<String, List<T>> getAsAlphabeticallySortedMap(List<T> items, Function<T, String> sortValueSupplier) {
         Map<String, List<T>> unsortedMap = items.stream()
                 .collect(Collectors.toMap(
-                        i -> Optional.ofNullable(sortValueSupplier.apply(i)).map(s -> s.substring(0, 1)).map(s -> s.toUpperCase()).orElse(i.toString()), //key is the first character of the sortValue 
+                        i -> Optional.ofNullable(sortValueSupplier.apply(i))
+                                .map(s -> s.substring(0, 1))
+                                .map(String::toUpperCase)
+                                .orElse(i.toString()), //key is the first character of the sortValue 
                         Arrays::asList, //values are lists of <T>
                         (l1, l2) -> new ArrayList<>(CollectionUtils.union(l1, l2)))); //combine lists by building union
         return new TreeMap<>(unsortedMap);
@@ -67,7 +70,10 @@ public class SelectItemBuilder {
     /**
      * Create a List of {@link SelectItem selectItems} from the given map, grouped into OptGroups for each map key
      * 
-     * @param sortedMap Map of items to include in selectItems
+     * @param map Map of items to include in selectItems
+     * @param valueSupplier
+     * @param labelSupplier
+     * @param descriptionSupplier
      * @return
      */
     public static <T> List<SelectItem> getAsGroupedSelectItems(Map<String, List<T>> map, Function<T, Object> valueSupplier,
@@ -84,6 +90,7 @@ public class SelectItemBuilder {
             group.setSelectItems(groupItems);
             items.add(group);
         }
+        
         return items;
     }
 }
