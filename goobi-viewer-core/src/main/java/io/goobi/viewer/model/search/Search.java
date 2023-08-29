@@ -369,7 +369,7 @@ public class Search implements Serializable {
         }
 
         String finalQuery =
-                SearchHelper.buildFinalQuery(currentQuery, true, aggregationType) + subElementQueryFilterSuffix;
+                SearchHelper.buildFinalQuery(currentQuery + subElementQueryFilterSuffix, true, aggregationType);
         logger.debug("Final main query: {}", finalQuery);
         if (hitsCount == 0) {
             // Add custom filter query
