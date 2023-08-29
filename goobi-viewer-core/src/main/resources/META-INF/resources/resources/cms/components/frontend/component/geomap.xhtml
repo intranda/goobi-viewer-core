@@ -12,6 +12,7 @@
 
     <composite:interface>
 		<composite:attribute name="component" required="true"/>
+		<composite:attribute name="geomap" required="false" default="#{cc.attrs.component.getContentItem('geomap').content.map}"/>
     </composite:interface>
 
     <composite:implementation>
@@ -32,9 +33,7 @@
 
 				<div id="templateGeoMap" class="tpl-geomap">
 					<ui:fragment rendered="#{cc.attrs.component.hasContent('geomap')}">
-						<viewerComponent:geoMap
-							geoMap="#{cc.attrs.component.getContentItem('geomap').content.map}">
-						</viewerComponent:geoMap>
+						<viewerComponent:geoMap clusterMarkers="true" geoMap="#{geoMapBean.getFromCache(cc.attrs.geomap)}"/>
 					</ui:fragment>
 				</div>
 
