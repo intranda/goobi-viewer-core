@@ -1877,4 +1877,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("bar", group.getQueryItems().get(5).getValue());
         Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(5).getOperator());
     }
+
+    /**
+     * @see SearchHelper#prepareQuery(String)
+     * @verifies wrap query correctly
+     */
+    @Test
+    public void prepareQuery_shouldWrapQueryCorrectly() throws Exception {
+        assertEquals("+(foo:bar)", SearchHelper.prepareQuery("foo:bar"));
+    }
 }
