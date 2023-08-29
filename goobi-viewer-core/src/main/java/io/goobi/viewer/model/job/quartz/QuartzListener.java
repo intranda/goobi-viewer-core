@@ -22,9 +22,12 @@
 
 package io.goobi.viewer.model.job.quartz;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
@@ -155,18 +158,31 @@ public class QuartzListener implements ServletContextListener {
     }
 
     private List<RecurringTaskTrigger> loadOrCreateTriggers() throws DAOException {
-        List<RecurringTaskTrigger> triggers = dao.getRecurringTaskTriggers();
-        if(triggers.isEmpty()) {
-            triggers.add(new RecurringTaskTrigger(TaskType.INDEX_USAGE_STATISTICS, DEFAULT_SCHEDULER_EXPRESSION));
-            triggers.add(new RecurringTaskTrigger(TaskType.NOTIFY_SEARCH_UPDATE, DEFAULT_SCHEDULER_EXPRESSION));
-            triggers.add(new RecurringTaskTrigger(TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS, DEFAULT_SCHEDULER_EXPRESSION));
-            triggers.add(new RecurringTaskTrigger(TaskType.UPDATE_SITEMAP, DEFAULT_SCHEDULER_EXPRESSION));
-            triggers.add(new RecurringTaskTrigger(TaskType.UPDATE_UPLOAD_JOBS, DEFAULT_SCHEDULER_EXPRESSION));
-            for (RecurringTaskTrigger trigger : triggers) {
-                dao.addRecurringTaskTrigger(trigger);
-            }
+        Map<String, RecurringTaskTrigger> storedTriggers = dao.getRecurringTaskTriggers().stream().collect(Collectors.toMap(RecurringTaskTrigger::getTaskType, Function.identity()));
+        List<RecurringTaskTrigger> triggers = new ArrayList<>();
+        
+        addTrigger(storedTriggers, triggers, TaskType.INDEX_USAGE_STATISTICS);
+        addTrigger(storedTriggers, triggers, TaskType.NOTIFY_SEARCH_UPDATE);
+        addTrigger(storedTriggers, triggers, TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS);
+        addTrigger(storedTriggers, triggers, TaskType.UPDATE_SITEMAP);
+        addTrigger(storedTriggers, triggers, TaskType.UPDATE_UPLOAD_JOBS);
+        if(config.isGeomapCachingEnabled()) {
+            addTrigger(storedTriggers, triggers, TaskType.CACHE_GEOMAPS);
+        } else if(storedTriggers.containsKey(TaskType.CACHE_GEOMAPS.name())) {
+            dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.CACHE_GEOMAPS.name()).getId());
         }
         return triggers;
+    }
+
+    public void addTrigger(Map<String, RecurringTaskTrigger> storedTriggers, List<RecurringTaskTrigger> triggers, TaskType taskType)
+            throws DAOException {
+        if(storedTriggers.containsKey(taskType.name())) {
+            triggers.add(storedTriggers.get(taskType.name()));
+        } else {
+            RecurringTaskTrigger trigger = new RecurringTaskTrigger(taskType, DEFAULT_SCHEDULER_EXPRESSION);
+            triggers.add(trigger);
+            dao.addRecurringTaskTrigger(trigger);
+        }
     }
     
     /**

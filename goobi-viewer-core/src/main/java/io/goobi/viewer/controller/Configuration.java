@@ -5891,4 +5891,16 @@ public class Configuration extends AbstractConfiguration {
         String path = String.format("viewer.formats.%s.%s", type, locale.getLanguage());
         return Optional.ofNullable(getLocalString(path, null));
     }
+
+    public boolean isGeomapCachingEnabled() {
+        return getLocalBoolean("maps.caching[@enabled]",false);
+    }
+    
+    public long getCMSGeomapCachingUpdateInterval() {
+        return getLocalInt("maps.caching.updateInterval", 5);
+    }
+    
+    public long getCMSGeomapCachingTimeToLive() {
+        return getLocalInt("maps.caching.timeToLive", 6);
+    }
 }

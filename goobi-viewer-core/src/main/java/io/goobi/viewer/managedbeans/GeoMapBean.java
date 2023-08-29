@@ -347,4 +347,12 @@ public class GeoMapBean implements Serializable {
     public boolean isActiveFeatureSet(FeatureSet featureSet) {
         return this.activeFeatureSet != null && this.activeFeatureSet.equals(featureSet);
     }
+    
+    public GeoMap getFromCache(GeoMap geomap) {
+        if(geomap != null && geomap.getId() != null && DataManager.getInstance().getConfiguration().isGeomapCachingEnabled()) {                
+            return BeanUtils.getPersistentStorageBean().getIfRecentOrPut("cms_geomap_" + geomap.getId(), geomap, DataManager.getInstance().getConfiguration().getCMSGeomapCachingTimeToLive());
+        } else {
+            return geomap;
+        }
+    }
 }

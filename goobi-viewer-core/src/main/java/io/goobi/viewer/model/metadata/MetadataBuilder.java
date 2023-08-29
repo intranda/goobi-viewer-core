@@ -43,10 +43,9 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.StringConstants;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.viewer.ViewManager;
 
 public class MetadataBuilder {
 
@@ -131,7 +130,7 @@ public class MetadataBuilder {
         IMetadataValue value = new MultiLanguageMetadataValue();
         for (Locale locale : IPolyglott.getLocalesStatic()) {
             String outputPattern =
-                    StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : BeanUtils.getNavigationHelper().getDatePattern();
+                    StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : NavigationHelper.getDatePattern(locale);
             String altOutputPattern = outputPattern.replace("dd/", "");
             String dateString = "";
 

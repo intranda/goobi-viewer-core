@@ -729,7 +729,7 @@ public class NavigationHelper implements Serializable {
         return getDatePattern(locale);
     }
 
-    public String getDatePattern(Locale locale) {
+    public static String getDatePattern(Locale locale) {
         if (locale == null) {
             return "yyyy-MM-dd";
         }
