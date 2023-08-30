@@ -743,15 +743,14 @@ public class ActiveDocumentBean implements Serializable {
      * </p>
      *
      * @param imageToShow Single page number (1) or range (2-3)
-     * @throws PresentationException
      */
-    public void setImageToShow(String imageToShow) throws PresentationException {
+    public void setImageToShow(String imageToShow) {
         synchronized (lock) {
-            if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^[0-9]+(-[0-9]+)?$")) {
+            if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^\\d+(-\\d+)?$")) {
                 this.imageToShow = imageToShow;
             } else {
-                throw new PresentationException(
-                        "The passed image number " + imageToShow + " contains illegal characters");
+                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
+                this.imageToShow = "1";
             }
             if (viewManager != null) {
                 viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
