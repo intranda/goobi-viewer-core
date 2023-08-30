@@ -47,7 +47,7 @@
  		//Hightlight the marker belonging to a given SOLR document
     	let highlightDocumentId = this.config.documentIdToHighlight;
     	if(highlightDocumentId) {
-    		console.log("highlight", highlightDocumentId);
+    		//console.log("highlight", highlightDocumentId);
     	    this.config.map.layers.map(layer => layer.features).flat().filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
     	}
 		this.geoMap = new viewerJS.GeoMap(this.config.map);
@@ -66,13 +66,17 @@
 	   	    //link to search url on feature click
 	    	if(layer.config.search.openSearchOnMarkerClick) {
 				let searchUrlTemplate = layer.config.search.searchUrlTemplate;
-	            layer.onFeatureClick.subscribe( (feature) => {
+	            layer.onFeatureClick.subscribe( (feature) => { 
 					// viewerJS.notifications.confirm("Do you want to show search results for this location?")
 					// .then(() => {
-						$(layer.config.search.loader).show();
-						let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
-						queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
-						window.open(queryUrl, layer.config.search.linkTarget);
+//						console.log("click in feature", feature);
+						let featuresToShow = feature.properties?.entities?.filter(e => e.visible !== false).filter(e => e.title?.length > 0);
+						if(featuresToShow.length == 0) {
+							$(layer.config.search.loader).show();
+							let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
+							queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
+							window.open(queryUrl, layer.config.search.linkTarget);
+						} 
 					// })
 	            });
 	        }

@@ -3021,7 +3021,7 @@ this.on("mount", () => {
 	this.opts.featureGroups.forEach(group => {
 		group.onFeatureClick.subscribe(f => {
 			this.title = f.properties?.title;
-			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getLabel(e)?.length > 0));
+			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => e.title?.length > 0));
 		});
 	})
 	this.opts.geomap.onMapClick.subscribe(e => this.hide());
@@ -3029,6 +3029,7 @@ this.on("mount", () => {
 })
 
 this.setEntities = function(entities) {
+	console.log("show entities", entities, this.opts.showAlways);
 	this.entities = [];
 	this.filteredEntities = undefined;
 	if(this.refs["search"]) {
