@@ -132,7 +132,6 @@ public class TextBean implements Serializable {
             }
             Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
             if (lang == null) {
-                logger.error("Language not defined: {}", language);
                 return null;
             }
             List<Element> eleListAbstract = XmlTools.evaluateToElements("tei:teiHeader/tei:profileDesc/tei:abstract[@xml:id='" + abstractType

@@ -660,11 +660,14 @@ public class TextResourceBuilder {
      * @return a {@link java.util.List} object.
      */
     public List<java.nio.file.Path> getTEIFiles(String pi, String langCode) {
-        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         try {
             java.nio.file.Path teiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getTeiFolder());
             List<java.nio.file.Path> filePaths = new ArrayList<>();
             if (Files.exists(teiPath)) {
+                Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
+                if (language == null) {
+                    return Collections.emptyList();
+                }
                 // This will return the file with the requested language or alternatively the first file in the TEI folder
                 try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
                     filePaths = teiFiles
@@ -698,18 +701,22 @@ public class TextResourceBuilder {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public java.nio.file.Path getCMDIFile(String pi, String langCode) throws IOException, PresentationException, IndexUnreachableException {
-        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = null;
         logger.trace("CMDI: {}", cmdiPath.toAbsolutePath().toString());
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
+                final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
+                if (language == null) {
+                    return null;
+                }
                 filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
                         .findFirst()
                         .orElse(null);
             }
         }
+        
         return filePath;
     }
 

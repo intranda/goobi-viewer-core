@@ -1092,7 +1092,12 @@ public class ConfigurationBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIso639_1(String language) {
-        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCodeOld();
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        if (lang != null) {
+            return lang.getIsoCodeOld();
+        }
+
+        return language;
     }
 
     /**
@@ -1104,7 +1109,12 @@ public class ConfigurationBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIso639_2B(String language) {
-        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCode();
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        if (lang != null) {
+            return lang.getIsoCode();
+        }
+
+        return language;
     }
 
     /**
@@ -1118,6 +1128,9 @@ public class ConfigurationBean implements Serializable {
      */
     public String getTranslation(String language, String locale) {
         Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        if (lang == null) {
+            return language;
+        }
         switch (locale.toLowerCase()) {
             case "de":
             case "ger":

@@ -545,6 +545,10 @@ public class ActiveDocumentBean implements Serializable {
             //            if (StringUtils.isBlank(selectedRecordLanguage) && !recordLanguages.isEmpty()) {
             if (selectedRecordLanguage == null && navigationHelper != null) {
                 selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage(navigationHelper.getLocaleString());
+                if (selectedRecordLanguage == null) {
+                    selectedRecordLanguage =
+                            DataManager.getInstance().getLanguageHelper().getLanguage(navigationHelper.getDefaultLocale().getLanguage());
+                }
             }
 
             // Prepare a new bookshelf item
@@ -1964,7 +1968,6 @@ public class ActiveDocumentBean implements Serializable {
             this.selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage(selectedRecordLanguageCode);
         }
         if (this.selectedRecordLanguage == null) {
-            logger.warn("Language not found: {}", selectedRecordLanguageCode);
             this.selectedRecordLanguage =
                     DataManager.getInstance().getLanguageHelper().getLanguage(ViewerResourceBundle.getDefaultLocale().getLanguage());
             if (selectedRecordLanguage == null) {
