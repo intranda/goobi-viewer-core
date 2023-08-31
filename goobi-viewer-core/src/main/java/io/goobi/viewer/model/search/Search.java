@@ -375,6 +375,7 @@ public class Search implements Serializable {
             // Add custom filter query
             if (StringUtils.isNotEmpty(customFilterQuery)) {
                 activeFacetFilterQueries.add(customFilterQuery);
+                logger.trace("Added custom filter query: {}", customFilterQuery);
             }
 
             // Search without active facets to determine range facets min/max
