@@ -34,7 +34,10 @@ import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 
 import de.intranda.digiverso.ocr.tei.TEIBuilder;
+import de.intranda.digiverso.ocr.tei.convert.HtmlToTEIConvert.ConverterMode;
 import de.intranda.digiverso.ocr.tei.convert.TeiToHtmlConvert;
+import de.intranda.digiverso.ocr.tei.convert.wiener.PopoverNoteReplacer;
+import de.intranda.digiverso.ocr.tei.convert.wiener.TeiToHtmlConverter;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -66,7 +69,6 @@ public class TextBean implements Serializable {
     private static final long serialVersionUID = 7458534493098897433L;
 
     private static final Logger logger = LogManager.getLogger(TextBean.class);
- 
 
     /** Empty constructor. */
     public TextBean() {
@@ -264,7 +266,8 @@ public class TextBean implements Serializable {
                         eleNewRoot.addContent(ele.clone());
                     }
                     String html = XmlTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
-                    return new TeiToHtmlConvert().setLanguage(language).convert(html);
+                    // return new TeiToHtmlConvert().setLanguage(language).convert(html);
+                    return new TeiToHtmlConverter(ConverterMode.resource, new PopoverNoteReplacer()).convert(html, language);
                 }
             }
         } catch (FileNotFoundException e) {
