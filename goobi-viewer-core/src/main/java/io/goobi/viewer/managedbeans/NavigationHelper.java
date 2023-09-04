@@ -729,10 +729,15 @@ public class NavigationHelper implements Serializable {
         return getDatePattern(locale);
     }
 
+    public static String getDatePattern(String language) {
+        return getDatePattern(Locale.forLanguageTag(language));
+    }
+
     public static String getDatePattern(Locale locale) {
         if (locale == null) {
             return "yyyy-MM-dd";
         }
+
         return DataManager.getInstance()
                 .getConfiguration()
                 .getStringFormat("date", locale)
@@ -759,20 +764,9 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getDatePatternjQueryDatePicker() {
-        if (locale == null) {
-            return "yy-mm-dd";
-        }
-
-        switch (locale.getLanguage()) {
-            case "de":
-                return "dd.mm.yy";
-            case "en":
-                return "mm/dd/yy";
-            case "es":
-                return "dd/mm/yy";
-            default:
-                return "yy-mm-dd";
-        }
+        String pattern = getDatePattern();
+        pattern = pattern.replace("MM", "mm").replace("yyyy", "yy");
+        return pattern;
     }
 
     /**
