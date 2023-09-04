@@ -116,8 +116,8 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             
             if (StringUtils.isNotBlank(sortField)) {
                 stream = stream.sorted((m1, m2) -> {
-                    String v1 = Optional.ofNullable(getRelatedRecord(m1)).map(c -> c.getFirstValue(sortField, sortLanguage)).orElse(m1.getFirstValue(sortField, sortLanguage));
-                    String v2 = Optional.ofNullable(getRelatedRecord(m2)).map(c -> c.getFirstValue(sortField, sortLanguage)).orElse(m2.getFirstValue(sortField, sortLanguage));
+                    String v1 = Optional.ofNullable(getRelatedRecord(m1)).map(c -> c.getFirstValue(sortField, sortLanguage)).filter(StringUtils::isNotBlank).orElse(m1.getFirstValue(sortField, sortLanguage));
+                    String v2 = Optional.ofNullable(getRelatedRecord(m2)).map(c -> c.getFirstValue(sortField, sortLanguage)).filter(StringUtils::isNotBlank).orElse(m2.getFirstValue(sortField, sortLanguage));
                     return v1.compareTo(v2) * (isDescendingOrder() ? -1 : 1);
                 });
             }
@@ -131,8 +131,8 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             String relatedSortField = sortField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
             Stream<ComplexMetadata> stream = super.streamMetadata(field, "", sortLanguage, filterField, filterMatcher, Integer.MAX_VALUE);
             stream = stream.sorted((m1, m2) -> {
-                String v1 = Optional.ofNullable(getRelatedRecord(m1)).map(c -> c.getFirstValue(relatedSortField, sortLanguage)).orElse(m1.getFirstValue(relatedSortField, sortLanguage));
-                String v2 = Optional.ofNullable(getRelatedRecord(m2)).map(c -> c.getFirstValue(relatedSortField, sortLanguage)).orElse(m2.getFirstValue(relatedSortField, sortLanguage));
+                String v1 = Optional.ofNullable(getRelatedRecord(m1)).map(c -> c.getFirstValue(relatedSortField, sortLanguage)).filter(StringUtils::isNotBlank).orElse(m1.getFirstValue(relatedSortField, sortLanguage));
+                String v2 = Optional.ofNullable(getRelatedRecord(m2)).map(c -> c.getFirstValue(relatedSortField, sortLanguage)).filter(StringUtils::isNotBlank).orElse(m2.getFirstValue(relatedSortField, sortLanguage));
                 return v1.compareTo(v2) * (isDescendingOrder() ? -1 : 1);
             });
             if(hideUnlinkedRecords) {
