@@ -1,0 +1,37 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface>
+        	<composite:attribute name="imageSizeWidth" required="false" default="300" />
+        	<composite:attribute name="imageSizeHeight" required="false" default="300" />
+    </composite:interface>
+
+    <composite:implementation>
+    	
+    	<div class="highlight_history__history">
+	    	<ui:repeat var="highlight" value="#{highlightsBean.getHighlightsBefore(navigationHelper.today)}">
+	    		<div class="highlight_history__item">
+	    			
+	    			<ui:fragment rendered="#{highlight.hasImageURI()}">
+						<a class="highlighted-object__link" href ="#{highlightsBean.getUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}" >
+							<figure class="highlighted-object__figure">
+								<img class="highlighted-object__image"
+									alt="#{highlight.data.name.textOrDefault}" 
+									title="#{msg.image}: #{highlight.data.name.textOrDefault}"
+									src="#{highlight.getImageURI(cc.attrs.imageSizeWidth, cc.attrs.imageSizeHeight)}" />
+								<figcaption class="highlighted-object__image-title">#{highlight.data.name.textOrDefault}</figcaption>
+							</figure>
+						</a>
+					</ui:fragment>
+	    		
+	    		</div>
+	    	</ui:repeat>
+    	</div>
+
+	</composite:implementation>
+</ui:composition>

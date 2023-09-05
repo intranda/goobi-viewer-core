@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1985,6 +1986,10 @@ public class NavigationHelper implements Serializable {
 
     public String returnTo(String page) {
         return page;
+    }
+    
+    public LocalDate getToday() {
+        return LocalDate.now();
     }
 
     public String getTranslationsAsJson(List<String> keys) {

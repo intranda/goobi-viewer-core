@@ -24,8 +24,11 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -274,6 +277,11 @@ public class HighlightsBean implements Serializable {
 
     public void setEditStatus(EditStatus editStatus) {
         this.editStatus = editStatus;
+    }
+    
+    public List<Highlight> getHighlightsBefore(LocalDate date) throws DAOException {
+        return dao.getPastHighlightsForDate(0, Integer.MAX_VALUE, "dateStart", true, Map.of(), date.atStartOfDay())
+                .stream().filter(HighlightData::isEnabled).map(Highlight::new).collect(Collectors.toList());
     }
 
 }
