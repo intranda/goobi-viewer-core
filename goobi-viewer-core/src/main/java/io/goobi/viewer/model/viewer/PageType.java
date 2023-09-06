@@ -144,7 +144,7 @@ public enum PageType {
     editHistory("crowd/editHistory"),
 
     // The order of page types handled by CMS here determines the listing order of static pages
-    index("index", PageTypeHandling.cms),
+    index("index", "home", PageTypeHandling.cms),
     search("search", PageTypeHandling.cms),
     advancedSearch("searchadvanced"),
     browse("browse", PageTypeHandling.cms),
