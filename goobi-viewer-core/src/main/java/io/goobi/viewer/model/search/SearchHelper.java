@@ -2846,11 +2846,12 @@ public final class SearchHelper {
      *
      * @param query a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @should wrap query correctly
      */
     public static String prepareQuery(String query) {
         StringBuilder sbQuery = new StringBuilder();
         if (StringUtils.isNotEmpty(query)) {
-            sbQuery.append('(').append(query).append(')');
+            sbQuery.append("+(").append(query).append(')');
         } else {
             // Collection browsing (no search query)
             String docstructWhitelistFilterQuery = getDocstrctWhitelistFilterQuery();

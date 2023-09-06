@@ -44,13 +44,13 @@
                                 <!-- TODO INLINE CSS -->
                                 <div class="col-3 d-flex" style="min-height:42px;" role="gridcell">
                                     <div class="admin__table-data">
-                                        <span>#{msg[page.pageName]}</span>
+                                        <span>#{msg[page.pageType.label]}</span>
                                         <ui:fragment rendered="#{page.hasCmsPage}">
-                                        <a href="#{cmsBean.getUrl(page.cmsPage)}" class="admin__table-action-link" target="_blank" rel="noopener" aria-label="#{msg.button__preview}: #{msg[page.pageName]}">#{msg.button__preview}</a>
+                                        <a href="#{cmsBean.getUrl(page.cmsPage)}" class="admin__table-action-link" target="_blank" rel="noopener" aria-label="#{msg.button__preview}: #{msg[page.pageType.label]}">#{msg.button__preview}</a>
                                         </ui:fragment>
                                     </div>
                                 </div>
-                                <div class="col-3 d-flex align-items-center" role="gridcell">/#{page.pageName}/</div>
+                                <div class="col-3 d-flex align-items-center" role="gridcell">/#{page.pageType.label}/</div>
                                 <div class="col-6 d-flex align-items-center" role="gridcell">
                                     <div class="custom-control custom-control--select">
                                         <h:selectOneMenu converter="cmsPageConverter" value="#{page.cmsPage}">

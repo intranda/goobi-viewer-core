@@ -274,6 +274,10 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             s.setPage(getCurrentListPage());
             searchBean.setHitsPerPage(this.getElementsPerPage());
             searchBean.setLastUsedSearchPage();
+            // When searching for sub-elements, make sure the main query is not empty so that it's not replaced with a standard "top level only" query
+            if (includeStructureElements) {
+                s.setQuery("*:*");
+            }
             s.setCustomFilterQuery(this.solrQuery);
             s.execute(facets, null, searchBean.getHitsPerPage(), locale, true,
                     this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);

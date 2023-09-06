@@ -137,12 +137,14 @@ public class LanguageHelper {
                 languageConfig = getConfig().configurationsAt("language[iso_639-1=\"" + isoCode + "\"]").get(0);
             }
         } catch (IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("No matching language found for " + isoCode);
+            logger.warn("No matching language found for {}", isoCode);
+            return null;
         } catch (Throwable e) {
             throw new IllegalArgumentException(e);
         }
         if (languageConfig == null) {
-            throw new IllegalArgumentException("No matching language found for " + isoCode);
+            logger.warn("No matching language found for {}", isoCode);
+            return null;
         }
 
         return createLanguage(languageConfig);

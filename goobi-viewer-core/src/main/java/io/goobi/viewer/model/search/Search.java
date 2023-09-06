@@ -372,9 +372,8 @@ public class Search implements Serializable {
         }
 
         String finalQuery =
-                SearchHelper.buildFinalQuery(currentQuery, true, aggregationType) + subElementQueryFilterSuffix;
+                SearchHelper.buildFinalQuery(currentQuery + subElementQueryFilterSuffix, true, aggregationType);
         logger.debug("Final main query: {}", finalQuery);
-
         logger.trace("result groups: {}", this.resultGroups.size());
         for (SearchResultGroup resultGroup : this.resultGroups) {
             searchResultGroup(resultGroup, currentQuery, finalQuery, subElementQueryFilterSuffix, activeFacetFilterQueries, params, searchTerms,

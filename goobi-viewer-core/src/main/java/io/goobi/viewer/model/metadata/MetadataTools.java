@@ -472,7 +472,7 @@ public class MetadataTools {
             try {
                 lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
             } catch (IllegalArgumentException e) {
-                logger.warn("No language found for " + lang);
+                logger.warn("No language found for {}", lang);
             }
             if (lang != null) {
                 return lang.getIsoCodeOld();
