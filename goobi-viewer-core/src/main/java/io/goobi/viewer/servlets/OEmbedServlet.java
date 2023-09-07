@@ -231,7 +231,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
             return new OEmbedRecord(origUrl);
         }
         String pi = urlSplit[1];
-        int page = Integer.parseInt(urlSplit[2]);
+        int page = urlSplit.length > 2 ? Integer.parseInt(urlSplit[2]) : 1;
         long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
         if (iddoc == 0) {
             return null;
