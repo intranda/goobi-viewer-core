@@ -504,6 +504,7 @@
             <!-- field type="oneline": Fields in this list will have multiple values written into a single string, without line breaks. -->
             <field type="oneline">MD_ACCESSLOCATIONS</field>
             <field type="snippet">MD_DESCRIPTION</field>
+            <field type="nohighlight">MD_REFID</field>
 		</displayAdditionalMetadata>
         
         <metadata>

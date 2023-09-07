@@ -1678,6 +1678,19 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getDisplayAdditionalMetadataSnippetFields() {
         return getDisplayAdditionalMetadataFieldsByType("snippet", false);
     }
+    
+    /**
+     * <p>
+     * getDisplayAdditionalMetadataNoHighlightFields.
+     * </p>
+     *
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataNoHighlightFields() {
+        return getDisplayAdditionalMetadataFieldsByType("nohighlight", false);
+    }
+
 
     /**
      *

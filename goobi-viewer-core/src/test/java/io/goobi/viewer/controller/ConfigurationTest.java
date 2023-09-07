@@ -2581,6 +2581,18 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, results.size());
         Assert.assertEquals("MD_DESCRIPTION", results.get(0));
     }
+    
+    /**
+     * @see Configuration#getDisplayAdditionalMetadataNoHighlightFields()
+     * @verifies return correct values
+     */
+    @Test
+    public void getDisplayAdditionalMetadataNoHighlightFields_shouldReturnCorrectValues() throws Exception {
+        List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataNoHighlightFields();
+        Assert.assertNotNull(results);
+        Assert.assertEquals(1, results.size());
+        Assert.assertEquals("MD_REFID", results.get(0));
+    }
 
     @Test
     public void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws Exception {
