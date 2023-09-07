@@ -24,10 +24,10 @@ package io.goobi.viewer.servlets;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.servlets.oembed.OEmbedRecord;
 
-public class OEmbedServletTest extends AbstractTest {
+public class OEmbedServletTest extends AbstractSolrEnabledTest {
 
     /**
      * @see OEmbedServlet#parseUrl(String)
