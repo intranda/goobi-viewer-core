@@ -213,6 +213,8 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
      * @throws URISyntaxException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should parse url with page number correctly
+     * @should parse url without page number correctly
      */
     static OEmbedRecord parseUrl(String origUrl) throws URISyntaxException, PresentationException, IndexUnreachableException {
         if (origUrl == null) {
