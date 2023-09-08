@@ -842,15 +842,16 @@ public class SolrTools {
      * 
      * @param query
      * @return cleaned up query
-     * @should remove braces
+     * @should remove brace pairs
      * @should keep join parameter
+     * @should keep single braces
      */
     public static String cleanUpQuery(String query) {
         if (StringUtils.isBlank(query)) {
             return query;
         }
 
-        return query.replaceAll("[{}]", "").replace("!join from=PI_TOPSTRUCT to=PI", "{!join from=PI_TOPSTRUCT to=PI}");
+        return query.replaceAll("\\{(.+)\\}", "$1").replace("!join from=PI_TOPSTRUCT to=PI", "{!join from=PI_TOPSTRUCT to=PI}");
     }
 
     /**

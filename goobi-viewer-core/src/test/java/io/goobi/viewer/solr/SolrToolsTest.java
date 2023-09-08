@@ -288,10 +288,10 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#cleanUpQuery(String)
-     * @verifies remove braces
+     * @verifies remove brace pairs
      */
     @Test
-    public void cleanUpQuery_shouldRemoveBraces() throws Exception {
+    public void cleanUpQuery_shouldRemoveBracePairs() throws Exception {
         Assert.assertEquals("foo:bar", SolrTools.cleanUpQuery("{foo:bar}"));
     }
 
@@ -301,6 +301,16 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void cleanUpQuery_shouldKeepJoinParameter() throws Exception {
-        Assert.assertEquals("{!join from=PI_TOPSTRUCT to=PI}foo:bar", SolrTools.cleanUpQuery("{!join from=PI_TOPSTRUCT to=PI}{foo:bar}"));
+        Assert.assertEquals("{!join from=PI_TOPSTRUCT to=PI}foo:bar", SolrTools.cleanUpQuery("{!join from=PI_TOPSTRUCT to=PI}foo:bar"));
+    }
+
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies keep single braces
+     */
+    @Test
+    public void cleanUpQuery_shouldKeepSingleBraces() throws Exception {
+        Assert.assertEquals("\\{u.a.", SolrTools.cleanUpQuery("\\{u.a."));
     }
 }
