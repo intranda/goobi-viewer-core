@@ -333,7 +333,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         }
         
         CMSContentItem newContentItem = new CMSContentItem(item);
-        newContentItem.getContent().setOwningComponent(this.persistentComponent);
+        this.persistentComponent.addContent(newContentItem.getContent());
         return newContentItem;
 
     }
