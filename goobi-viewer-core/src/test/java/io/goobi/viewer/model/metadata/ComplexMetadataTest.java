@@ -1,5 +1,25 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.metadata;
-
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,9 +55,9 @@ public class ComplexMetadataTest {
         doc.setField("MD_TITLE_LANG_DE", TITLE_DE);
         doc.setField("MD_TITLE_LANG_EN", TITLE_EN);
         doc.setField(SolrConstants.YEAR, YEAR);
-        
+
         ComplexMetadata md = ComplexMetadata.getFromSolrDoc(doc);
-        
+
         assertEquals(PI, md.getTopStructIdentifier());
         assertEquals(IDDOC_OWNER, md.getOwnerId());
         assertEquals(IDDOC, md.getId());
@@ -46,7 +66,7 @@ public class ComplexMetadataTest {
         assertEquals(TITLE_DE, md.getFirstValue(SolrConstants.TITLE, Locale.GERMAN));
         assertEquals(TITLE_EN, md.getFirstValue(SolrConstants.TITLE, Locale.ENGLISH));
     }
-    
+
     @Test
     public void testMultiDoc() {
         List<SolrDocument> docs = new ArrayList<>();
@@ -74,7 +94,7 @@ public class ComplexMetadataTest {
             doc.setField("MD_VALUE", TITLE_EN);
             docs.add(doc);
         }
-        
+
         ComplexMetadata md = ComplexMetadata.getFromMultilanganguageDocs(docs);
         assertEquals(PI, md.getTopStructIdentifier());
         assertEquals(IDDOC_OWNER, md.getOwnerId());
@@ -83,11 +103,11 @@ public class ComplexMetadataTest {
         assertEquals(TITLE_DE, md.getFirstValue(SolrConstants.TITLE, Locale.GERMAN));
         assertEquals(TITLE_EN, md.getFirstValue(SolrConstants.TITLE, Locale.ENGLISH));
     }
-    
+
     @Test
     public void testMultiMetadata() {
         List<SolrDocument> docs = new ArrayList<>();
-        
+
         {
             SolrDocument doc = new SolrDocument();
             doc.setField(SolrConstants.PI_TOPSTRUCT, PI);
@@ -112,7 +132,7 @@ public class ComplexMetadataTest {
             doc.setField("MD_VALUE", TITLE_EN);
             docs.add(doc);
         }
-        
+
         {
             SolrDocument doc = new SolrDocument();
             doc.setField(SolrConstants.PI_TOPSTRUCT, PI);
@@ -137,7 +157,7 @@ public class ComplexMetadataTest {
             doc.setField("MD_VALUE", TITLE_EN + "_2");
             docs.add(doc);
         }
-        
+
         {
             SolrDocument doc = new SolrDocument();
             doc.setField(SolrConstants.PI_TOPSTRUCT, PI);
@@ -161,15 +181,14 @@ public class ComplexMetadataTest {
             docs.add(doc);
         }
 
-        
         List<ComplexMetadata> mds = ComplexMetadata.getMetadataFromDocuments(docs);
-        
+
         assertEquals(4, mds.size());
         assertEquals(1, mds.stream().filter(md -> "Bambi".equals(md.getFirstValue("MD_RELATIONSHIP_EVENT", null))).count());
         assertEquals(1, mds.stream().filter(md -> "Oscar".equals(md.getFirstValue("MD_RELATIONSHIP_EVENT", null))).count());
-        assertEquals(1, mds.stream().filter(md -> TITLE_DE.equals(md.getFirstValue("MD_TITLE", Locale.GERMAN))).count());        
-        assertEquals(1, mds.stream().filter(md -> (TITLE_DE + "_2").equals(md.getFirstValue("MD_TITLE", Locale.GERMAN))).count());        
-        
+        assertEquals(1, mds.stream().filter(md -> TITLE_DE.equals(md.getFirstValue("MD_TITLE", Locale.GERMAN))).count());
+        assertEquals(1, mds.stream().filter(md -> (TITLE_DE + "_2").equals(md.getFirstValue("MD_TITLE", Locale.GERMAN))).count());
+
     }
 
 }

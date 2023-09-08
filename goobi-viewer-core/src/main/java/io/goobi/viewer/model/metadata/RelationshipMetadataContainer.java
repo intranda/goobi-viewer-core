@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.metadata;
 
 import java.util.Collection;
@@ -16,7 +37,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
@@ -52,9 +72,9 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         String id = relationship.getFirstValue(RELATIONSHIP_ID_REFERENCE, null);
         if(StringUtils.isNotBlank(id)) {
             return this.relatedDocumentMap.get(id);
-        } else {
-            return null;
         }
+        
+        return null;
     }
  
     public static RelationshipMetadataContainer loadRelationshipMetadata(String pi, SolrSearchIndex searchIndex, List<String> recordFields) throws PresentationException, IndexUnreachableException {
@@ -66,13 +86,13 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         .collect(Collectors.joining(" "));
         if(StringUtils.isBlank(recordIdentifiers)) {
             return new RelationshipMetadataContainer(container.metadataMap, Collections.emptyMap());
-        } else {            
-            String query = String.format(RELATED_RECORD_QUERY_FORMAT, recordIdentifiers);
-            SolrDocumentList recordDocs = searchIndex.search(query, recordFields);
-            Map<String, MetadataContainer> map = recordDocs.stream()
-                    .collect(Collectors.toMap(doc -> SolrTools.getSingleFieldStringValue(doc, DOCUMENT_IDENTIFIER), MetadataContainer::createMetadataEntity));
-            return new RelationshipMetadataContainer(container.metadataMap, map);
         }
+        
+        String query = String.format(RELATED_RECORD_QUERY_FORMAT, recordIdentifiers);
+        SolrDocumentList recordDocs = searchIndex.search(query, recordFields);
+        Map<String, MetadataContainer> map = recordDocs.stream()
+                .collect(Collectors.toMap(doc -> SolrTools.getSingleFieldStringValue(doc, DOCUMENT_IDENTIFIER), MetadataContainer::createMetadataEntity));
+        return new RelationshipMetadataContainer(container.metadataMap, map);
     }
 
     public static ComplexMetadataContainer loadRelationshipMetadata(String pi, SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
@@ -92,12 +112,12 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             return super.streamMetadata(field, null, null, null, null, Integer.MAX_VALUE)
             .filter(m -> Optional.ofNullable(getRelatedRecord(m)).map(r ->  Pattern.matches(filterMatcher, r.getFirstValue(relatedFilterField))).orElse(false))   
             .count();
-        } else {
-           return getMetadata(field).stream()
+        }
+        
+        return getMetadata(field).stream()
                     .filter(m -> StringUtils.isBlank(filterField) || Pattern.matches(filterMatcher, m.getFirstValue(filterField, null)))
              .filter(m -> !hideUninkedEntries || getRelatedRecord(m) != null)
              .count();
-        }
     }
     
     @Override
@@ -112,7 +132,7 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         if(searchInRelatedRecords) {
             String relatedFilterField = filterField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
             Stream<ComplexMetadata> stream = super.streamMetadata(field, sortField, sortLanguage, "", filterMatcher, Integer.MAX_VALUE)
-            .filter(m -> Optional.ofNullable(getRelatedRecord(m)).map(record -> Pattern.matches(filterMatcher, record.getFirstValue(relatedFilterField))).orElse(false));   
+            .filter(m -> Optional.ofNullable(getRelatedRecord(m)).map(rec -> Pattern.matches(filterMatcher, rec.getFirstValue(relatedFilterField))).orElse(false));   
             
             if (StringUtils.isNotBlank(sortField)) {
                 stream = stream.sorted((m1, m2) -> {
@@ -169,8 +189,8 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             String relatedField = valueField.replace(FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
             return stream.map(this::getRelatedRecord).filter(Objects::nonNull).map(related -> related.getValues(relatedField, locale))
             .flatMap(List::stream).collect(Collectors.toList());
-        } else {            
-            return stream.map(cm -> cm.getValues(valueField, locale)).flatMap(List::stream).collect(Collectors.toList());
         }
+        
+        return stream.map(cm -> cm.getValues(valueField, locale)).flatMap(List::stream).collect(Collectors.toList());
     }
 }
