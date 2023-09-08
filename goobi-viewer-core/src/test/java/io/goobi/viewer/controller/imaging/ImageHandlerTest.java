@@ -21,8 +21,6 @@
  */
 package io.goobi.viewer.controller.imaging;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -38,9 +36,6 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.ConfigurationTest;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 

@@ -21,12 +21,12 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -53,5 +53,4 @@ class MetadataBuilderTest {
         assertEquals(" (Gallery)", translation.getValue("en").orElse(""));
         assertEquals("Gallery", value.getValue("en").orElse(""));
     }
-
 }

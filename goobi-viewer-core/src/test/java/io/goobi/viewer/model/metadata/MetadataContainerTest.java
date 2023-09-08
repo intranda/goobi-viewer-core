@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 class MetadataContainerTest {
 

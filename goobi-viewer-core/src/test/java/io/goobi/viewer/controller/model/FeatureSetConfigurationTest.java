@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.controller.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -60,5 +60,4 @@ public class FeatureSetConfigurationTest extends AbstractTest {
         assertEquals("MD_TYPE", configs.get(1).getFilters().get(1).getValue());
 
     }
-
 }
