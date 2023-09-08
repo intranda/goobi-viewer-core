@@ -34,7 +34,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.solr.SolrConstants;
 
-class ComplexMetadataContainerTest extends AbstractTest {
+public class ComplexMetadataContainerTest extends AbstractTest {
 
     List<SolrDocument> metadataDocs;
 

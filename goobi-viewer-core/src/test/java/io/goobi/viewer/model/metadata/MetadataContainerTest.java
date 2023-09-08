@@ -30,7 +30,7 @@ import java.util.Map;
 import org.apache.solr.common.SolrDocument;
 import org.junit.Test;
 
-class MetadataContainerTest {
+public class MetadataContainerTest {
 
     @Test
     void test_translatedFieldsFromSingleDocument() {
