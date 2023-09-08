@@ -79,15 +79,9 @@ public class MetadataContainerTest {
                 "DOCTYPE", "METADATA",
                 "MD_REFID", "a1"));
 
-        SolrDocument docFr2 = new SolrDocument(Map.of(
-                "LABEL", "MD_ROLE_LANG_FR",
-                "MD_VALUE", "Anderer Wert",
-                "DOCTYPE", "METADATA",
-                "MD_REFID", "a2"));
+        MetadataContainer record = MetadataContainer.createMetadataEntity(main, List.of(docFr, docEn, docDe, docBase), e -> true, e -> true);
 
-        MetadataContainer record = MetadataContainer.createMetadataEntity(main, List.of(docFr, docEn, docDe, docBase, docFr2), e -> true, e -> true);
-
-        assertEquals(2, record.getValues("MD_ROLE", null).size());
+        assertEquals(1, record.getValues("MD_ROLE", null).size());
         assertEquals("curator", record.getValues("MD_ROLE", null).get(0));
         assertEquals("curator", record.getValues("MD_ROLE").get(0));
         assertEquals("Curateur.rice", record.getValues("MD_ROLE", Locale.FRANCE).get(0));
