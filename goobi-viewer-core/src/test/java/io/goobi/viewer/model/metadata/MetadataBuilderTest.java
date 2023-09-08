@@ -35,7 +35,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 public class MetadataBuilderTest {
 
     @Test
-    void test() {
+    public void test() {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue(Map.of("en", "Gallery", "de", "Gallerie"));
         Map<String, List<IMetadataValue>> metadata = Map.of(
                 "MD_ROLE", List.of(value));
