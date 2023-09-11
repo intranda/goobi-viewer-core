@@ -24,7 +24,7 @@
 		        <h3><h:outputText value="#{activeDocumentBean.viewManager.currentStructElement.label}" escape="false" /></h3>
 		    </div>
 		    <!-- AUDIO -->          
-		    <div id="audioContainer" class="view-object-content__audio">
+		    <div id="audioContainer" class="view-object-content__audio" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
 		        <audio 
 		            id="audio_container" 
 		            autoplay="autoplay" 
