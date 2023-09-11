@@ -96,6 +96,7 @@ public class PersistentStorageBean implements Serializable {
      * @param timeToLiveMinutes the maximum age in minutes the stored object may have to be returned. If it's older, it will be replaced with the passed object
      * @return  the object stored under the given key if viable, otherwise the given object
      */
+    @SuppressWarnings("unchecked")
     public synchronized <T> T getIfRecentOrPut(String key, T object, long timeToLiveMinutes) {
         Instant oldestViable = Instant.now().minus(timeToLiveMinutes, ChronoUnit.MINUTES);
         if(contains(key) && !olderThan(key, oldestViable)) {
