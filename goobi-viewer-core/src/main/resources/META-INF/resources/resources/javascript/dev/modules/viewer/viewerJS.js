@@ -585,16 +585,6 @@ var viewerJS = (function () {
 	
 	}
 
-    // init bootstrap 4 popovers
-	$(document).ready(function(){
-	    try {	        
-	        $('[data-toggle="popover"]').popover({
-	            trigger : 'hover'
-	        });
-	    } catch(error) {
-	        //no bootstrap defined
-	    }
-	});
 	
 	
     // CONTENT ITEMS JS DRAFT
