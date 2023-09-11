@@ -53,7 +53,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.json.JSONObject;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -68,7 +67,6 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -1969,7 +1967,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the 639_1 code for selectedRecordLanguage
      */
     public String getSelectedRecordLanguage() {
-        return selectedRecordLanguage.getIsoCodeOld();
+        return Optional.ofNullable(selectedRecordLanguage).map(Language::getIsoCodeOld).orElse(navigationHelper.getLocale().getLanguage());
     }
 
     /**
@@ -2006,7 +2004,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the 639_2B code for selectedRecordLanguage
      */
     public String getSelectedRecordLanguage3() {
-        return selectedRecordLanguage.getIsoCode();
+        return Optional.ofNullable(selectedRecordLanguage).map(Language::getIsoCode).orElse(navigationHelper.getLocale().getLanguage());
     }
 
     /**

@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
@@ -225,10 +227,11 @@ public class TextBean implements Serializable {
                 .stream()
                 .filter(field -> field.matches(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG
                         + "\\w{1,3}"))
-                .map(field -> DataManager.getInstance()
+                .map(field -> Optional.ofNullable(DataManager.getInstance()
                         .getLanguageHelper()
-                        .getLanguage(field.substring(field.lastIndexOf("_") + 1).toLowerCase())
-                        .getIsoCode())
+                        .getLanguage(field.substring(field.lastIndexOf("_") + 1).toLowerCase()))
+                        .map(Language::getIsoCode).orElse(null))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
