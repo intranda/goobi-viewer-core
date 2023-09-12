@@ -3021,7 +3021,7 @@ this.on("mount", () => {
 	this.opts.featureGroups.forEach(group => {
 		group.onFeatureClick.subscribe(f => {
 			this.title = f.properties?.title;
-			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => e.title?.length > 0));
+			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getEntityLabel(e)?.length > 0));
 		});
 	})
 	this.opts.geomap.onMapClick.subscribe(e => this.hide());
@@ -3029,7 +3029,7 @@ this.on("mount", () => {
 })
 
 this.setEntities = function(entities) {
-	console.log("show entities", entities, this.opts.showAlways);
+
 	this.entities = [];
 	this.filteredEntities = undefined;
 	if(this.refs["search"]) {
@@ -3075,10 +3075,6 @@ this.getListLabel = function() {
 	if(this.title) {
 		let label = viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
 		return label;
-	}
-	if(this.entities.length) {
-		let labels = this.opts.listLabelFormat;
-		return this.getLabel(this.entities[0], labels);
 	}
 }.bind(this)
 
