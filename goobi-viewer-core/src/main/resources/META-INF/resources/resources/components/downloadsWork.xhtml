@@ -98,7 +98,7 @@
 
                             <!-- MARCXML -->
                             <ui:fragment
-                                rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and activeDocumentBean.viewManager.topStructElement.sourceDocFormat != 'DUBLINCORE'}">
+                                rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
                                 <a
                                     id="marc"
                                     href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
