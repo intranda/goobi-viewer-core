@@ -124,10 +124,12 @@
                                                     </div>
                                                 </h:panelGroup>
                                                 
+                                                <!-- SELECTABLE VALUES -->
                                                 <h:panelGroup rendered="#{queryItem.displaySelectItems}">
                                                     <!-- BADGES -->
                                                     <ui:fragment rendered="#{queryItem.selectType == 'badges'}">
-                                                        <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
+                                                        <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}" varStatus="valueStatus">
+                                                            <h:panelGroup id="advsearch_value_group_0-#{status.count}-#{valueStatus.count}">
                                                             <button type="button" class="btn btn--link"
                                                                 jsf:action="#{queryItem.toggleValue(item.one)}" title="#{msg[item.two]}">
                                                                 <ui:fragment rendered="#{queryItem.isValueSet(item.one)}">
@@ -136,26 +138,27 @@
                                                                 <ui:fragment rendered="#{!queryItem.isValueSet(item.one)}">
                                                                     <div class="badge badge-light">#{item.two}</div>
                                                                 </ui:fragment>
-                                                                <f:ajax render="@form" />
+                                                                <f:ajax render="advsearch_value_group_0-#{status.count}-#{valueStatus.count}" />
                                                             </button>
+                                                            </h:panelGroup>
                                                         </c:forEach>
                                                     </ui:fragment> 
                                                 
-                                                 <!-- CHECKBOXES -->
-                                                <ui:fragment rendered="#{queryItem.selectType == 'checkboxes'}">
-                                                <ui:repeat var="selectable" value="#{queryItem.getCheckboxSelectables(navigationHelper.localeString)}">
-                                                    <li>
-                                                        <label> 
-                                                            <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}">
-                                                                <f:ajax event="valueChange" render="@this"></f:ajax>
-                                                            </h:selectBooleanCheckbox> #{selectable.label}
-                                                        </label>
-                                                    </li>
-                                                </ui:repeat>
-                                                </ui:fragment> 
+                                                    <!-- CHECKBOXES -->
+                                                    <ui:fragment rendered="#{queryItem.selectType == 'checkboxes'}">
+                                                        <ui:repeat var="selectable" value="#{queryItem.getCheckboxSelectables(navigationHelper.localeString)}">
+                                                            <li>
+                                                                <label> 
+                                                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}">
+                                                                        <f:ajax event="valueChange" render="@this"></f:ajax>
+                                                                    </h:selectBooleanCheckbox> #{selectable.label}
+                                                                </label>
+                                                            </li>
+                                                        </ui:repeat>
+                                                    </ui:fragment> 
                                                 
-                                                <!-- DROP-DOWN-CHECKBOXES -->
-                                                <ui:fragment rendered="#{queryItem.selectType == 'dropdowncheckboxes'}">
+                                                    <!-- DROP-DOWN-CHECKBOXES -->
+                                                    <ui:fragment rendered="#{queryItem.selectType == 'dropdowncheckboxes'}">
                                                         <div class="cms-module__option-dropdown">
                                                             <div class="cms-module__option-dropdown-trigger"
                                                                 data-toggle="option-dropdown">#{msg.select}</div>
@@ -172,20 +175,20 @@
                                                                 </ui:repeat>
                                                             </ul>
                                                         </div>
-                                                </ui:fragment>
+                                                    </ui:fragment>
                                                 
-                                                 <!-- DROP-DOWN -->
-                                                <ui:fragment rendered="#{queryItem.selectType == 'dropdown'}">
-                                                    <div class="custom-control custom-control--select multiple">
-                                                       <h:selectManyMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
-                                                           value="#{queryItem.values}">
-                                                           <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
-                                                               <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
-                                                           </c:forEach>
-                                                           <f:passThroughAttribute name="aria-label" value="#{msg.cms_collections_err_noselection}" />
-                                                       </h:selectManyMenu>
-                                                    </div>
-                                                </ui:fragment>
+                                                    <!-- DROP-DOWN -->
+                                                    <ui:fragment rendered="#{queryItem.selectType == 'dropdown'}">
+                                                        <div class="custom-control custom-control--select multiple">
+                                                            <h:selectManyMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
+                                                                value="#{queryItem.values}">
+                                                                <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
+                                                                    <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
+                                                                </c:forEach>
+                                                                <f:passThroughAttribute name="aria-label" value="#{msg.cms_collections_err_noselection}" />
+                                                            </h:selectManyMenu>
+                                                        </div>
+                                                    </ui:fragment>
                                                 </h:panelGroup>
                                             </div>
                                         </h:panelGroup>
