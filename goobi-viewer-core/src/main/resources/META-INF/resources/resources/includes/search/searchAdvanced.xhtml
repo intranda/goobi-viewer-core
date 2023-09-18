@@ -93,7 +93,7 @@
                                 </c:choose>
                                     
                                         <!-- INPUT FIELD -->
-                                        <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.count}">
+                                        <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.count}" styleClass="search-advanced__value-group" >
                                             <div class="search-advanced__input-col">
                                                 <!-- TEXT INPUT FIELD + RANGE -->
                                                 <h:panelGroup rendered="#{!queryItem.displaySelectItems}">
@@ -125,18 +125,18 @@
                                                 </h:panelGroup>
                                                 
                                                 <!-- SELECTABLE VALUES -->
-                                                <h:panelGroup rendered="#{queryItem.displaySelectItems}">
+                                                <h:panelGroup rendered="#{queryItem.displaySelectItems}" layout="block">
                                                     <!-- BADGES -->
                                                     <ui:fragment rendered="#{queryItem.selectType == 'badges'}">
                                                         <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}" varStatus="valueStatus">
                                                             <h:panelGroup id="advsearch_value_group_0-#{status.count}-#{valueStatus.count}">
-                                                            <button type="button" class="btn btn--link"
+                                                            <button type="button" class="btn btn--link search-advanced__button-badge"
                                                                 jsf:action="#{queryItem.toggleValue(item.one)}" title="#{msg[item.two]}">
                                                                 <ui:fragment rendered="#{queryItem.isValueSet(item.one)}">
-                                                                    <div class="badge badge-warning"><strong>#{item.two}</strong></div>
-                                                                </ui:fragment>
+                                                                    <span class="badge badge-warning"><strong>#{item.two}</strong></span>
+                                                                </ui:fragment> 
                                                                 <ui:fragment rendered="#{!queryItem.isValueSet(item.one)}">
-                                                                    <div class="badge badge-light">#{item.two}</div>
+                                                                    <span class="badge badge-light">#{item.two}</span>
                                                                 </ui:fragment>
                                                                 <f:ajax render="advsearch_value_group_0-#{status.count}-#{valueStatus.count}" />
                                                             </button>
