@@ -196,7 +196,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
     /** Fuzzy search switch. */
-    private boolean fuzzySearchEnabled = false;
+    private boolean fuzzySearchEnabled = true;
 
     private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
     private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save

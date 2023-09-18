@@ -255,54 +255,8 @@ var viewerJS = ( function( viewer ) {
                 
                 $( '.search-list__hits' ).fadeTo(300,1);
             } );
-            
-            // get child hits            
-            $( '[data-toggle="hit-content"]' ).each( function() {
-                var currBtn = $( this );
-                var currIdDoc = $( this ).attr( 'data-iddoc' );
-                var currUrl = _getApiUrl( currIdDoc, _defaults.hitsPerCall );
-                
-                if ( _debug ) {
-                    console.log( 'Current API Call URL: ', currUrl );
-                }
-                
-                _promise = viewer.helper.getRemoteData( currUrl );
-                
-                currBtn.find( _defaults.hitContentLoaderSelector ).css( 'display', 'inline-block' );
-                
-                // get data and render hits if data is valid
-                _promise.then( function( data ) {
-                    if(data.hitsDisplayed == 0) {
-                        //any hits are hidden. Hide whole subhits section
-                        currBtn.hide();
-                    } else if ( data.hitsDisplayed < _defaults.hitsPerCall ) {
-                        // render child hits into the DOM
-                        _renderChildHits( data, currBtn );
-                        // set current button active, remove loader and show content
-                        currBtn.toggleClass( 'in' ).find( _defaults.hitContentLoaderSelector ).hide();
-                        currBtn.next().show();
-                        // set event to toggle current hits
-                        currBtn.off().on( 'click', function() {
-                            $( this ).toggleClass( 'in' ).next().slideToggle();
-                        } );
-                    }
-                    else {
-                        // remove loader
-                        currBtn.find( _defaults.hitContentLoaderSelector ).hide();
-                        // set event to toggle current hits
-                        currBtn.off().on( 'click', function() {
-                            // render child hits into the DOM
-                            _renderChildHits( data, currBtn );
-                            // check if more children exist and render link
-                            _renderGetMoreChildren( data, currIdDoc, currBtn );
-                            $( this ).toggleClass( 'in' ).next().slideToggle();
-                        } );
-                    }
-                } ).then( null, function() {
-                    currBtn.next().append( viewer.helper.renderAlert( 'alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false ) );
-                    console.error( 'ERROR: viewer.searchList.init - ', error );
-                } );
-            } );
+
+			this.initSubHits();
             
             //init thumbnail toggle            
             let $thumbToggle = $('[data-action="toggle-thumbs"]');
@@ -352,6 +306,35 @@ var viewerJS = ( function( viewer ) {
                 });
             }
         },
+        initSubHits: function() {
+			            
+            // get child hits            
+            $( '[data-toggle="hit-content"]' ).on( "click", function() {
+                var $currBtn = $( this );
+                
+                let scriptName = this.dataset.loadHitsScript;
+                let toggleArea = document.querySelector( "div[data-toggle-id='"+this.dataset.toggleId+"']"  );
+                let hitsDisplayed = $(toggleArea).find(".search-list__hit-content-set").length;
+                if(_debug) {
+					console.log("clicked hit-content", this, scriptName, toggleArea, hitsDisplayed);
+				}
+
+				$currBtn.toggleClass( 'in' );
+				$(toggleArea).slideToggle();
+				if(hitsDisplayed == 0) {
+					window[scriptName](); //execute commandScript to load child hits
+				}
+			})
+		},
+		    
+	    showAjaxLoader: function(loaderId) {
+	    	let loader = document.getElementById(loaderId);
+	    	$(loader).show();
+	    },
+	    hideAjaxLoader: function(loaderId) {
+	    	let loader = document.getElementById(loaderId);
+	    	$(loader).hide();
+	    }
     };
     
     /**
