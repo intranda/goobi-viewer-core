@@ -2223,6 +2223,7 @@ public class ViewManager implements Serializable {
             return false;
         }
         // Only allow PDF downloads for records coming from METS files
+        // TODO Allow METS_MARC once supported
         if (!SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat())) {
             return false;
         }
@@ -2611,12 +2612,12 @@ public class ViewManager implements Serializable {
 
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
-    
+
     /**
      * 
      * @return true if record full-text is generated from TEI documents; false otherwise
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
     public boolean isFulltextFromTEI() throws IndexUnreachableException, PresentationException {
         return isRecordHasTEIFiles();
