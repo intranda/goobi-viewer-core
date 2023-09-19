@@ -2310,24 +2310,32 @@ public class ActiveDocumentBean implements Serializable {
        return getRecordGeoMap().getGeoMap();
     }
     
-    public RecordGeoMap getRecordGeoMap() throws DAOException, PresentationException, IndexUnreachableException {
-        RecordGeoMap widget = this.geoMaps.get(getPersistentIdentifier());
-//      if (widget == null) {
-          ComplexMetadataContainer md = this.viewManager.getTopStructElement().getMetadataDocuments();
-          if (md instanceof RelationshipMetadataContainer) {
-              RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
-              List<MetadataContainer> docs = rmc.getFieldNames().stream()
-                      .map(rmc::getMetadata)
-                      .flatMap(List::stream)
-                      .distinct()
-                      .map(rmc::getRelatedRecord)
-                      .filter(Objects::nonNull)
-                      .collect(Collectors.toList());
-              widget = new RecordGeoMap(getTopDocument(), docs);
-              this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
-          }
-//      }
-      return widget; 
+    public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
+        RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
+        if(map == null) {
+            ComplexMetadataContainer md = Optional.ofNullable(this).map(b -> b.viewManager).map(ViewManager::getTopStructElement).map(t -> {
+                try {
+                    return t.getMetadataDocuments();
+                } catch (PresentationException | IndexUnreachableException e) {
+                    return null;
+                }
+            }).orElse(null);
+            if (md instanceof RelationshipMetadataContainer) {
+                RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
+                List<MetadataContainer> docs = rmc.getFieldNames().stream()
+                        .map(rmc::getMetadata)
+                        .flatMap(List::stream)
+                        .distinct()
+                        .map(rmc::getRelatedRecord)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                map = new RecordGeoMap(getTopDocument(), docs);
+                this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
+            } else {
+                map = new RecordGeoMap();
+            }
+        }
+      return map; 
     }
 
     /**
