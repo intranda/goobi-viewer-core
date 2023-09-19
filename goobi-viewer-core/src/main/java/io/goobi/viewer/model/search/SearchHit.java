@@ -35,7 +35,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -715,6 +717,14 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         return false;
+    }
+    
+    public int getHitCount() {
+        int total = 0;
+        for (Integer num : hitTypeCounts.values()) {
+            total += num;
+        }
+        return total;
     }
 
     /**

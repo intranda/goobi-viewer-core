@@ -32,8 +32,7 @@ var viewerJS = ( function( viewer ) {
     var _searchListShowThumbs = false;
     var _defaults = {
         contextPath: '',
-        restApiPath: '/api/v1/search/hit/',
-        hitsPerCall: 20,
+        maxChildHitsToRenderOnStart: 5,
         resetSearchSelector: '#resetCurrentSearch',
         searchInputSelector: '#currentSearchInput',
         searchTriggerSelector: '#slCurrentSearchTrigger',
@@ -309,22 +308,25 @@ var viewerJS = ( function( viewer ) {
         initSubHits: function() {
 			            
             // get child hits            
-            $( '[data-toggle="hit-content"]' ).on( "click", function() {
-                var $currBtn = $( this );
+            $( '[data-toggle="hit-content"]' )
+            .filter( (index, button) => parseInt(button.dataset.childhits) <= _defaults.maxChildHitsToRenderOnStart )
+            .each( (index, button) => this.openChildHits(button));
+		},
+		openChildHits: function(button) {
+			var $currBtn = $( button );
                 
-                let scriptName = this.dataset.loadHitsScript;
-                let toggleArea = document.querySelector( "div[data-toggle-id='"+this.dataset.toggleId+"']"  );
-                let hitsDisplayed = $(toggleArea).find(".search-list__hit-content-set").length;
-                if(_debug) {
-					console.log("clicked hit-content", this, scriptName, toggleArea, hitsDisplayed);
-				}
+            let scriptName = button.dataset.loadHitsScript;
+            let toggleArea = document.querySelector( "div[data-toggle-id='"+button.dataset.toggleId+"']"  );
+            let hitsDisplayed = $(toggleArea).find(".search-list__hit-content-set").length;
+            if(_debug) {
+				console.log("clicked hit-content", button, scriptName, toggleArea, hitsDisplayed);
+			}
 
-				$currBtn.toggleClass( 'in' );
-				$(toggleArea).slideToggle();
-				if(hitsDisplayed == 0) {
-					window[scriptName](); //execute commandScript to load child hits
-				}
-			})
+			$currBtn.toggleClass( 'in' );
+			$(toggleArea).slideToggle();
+			if(hitsDisplayed == 0) {
+				window[scriptName](); //execute commandScript to load child hits
+			}
 		},
 		    
 	    showAjaxLoader: function(loaderId) {

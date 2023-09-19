@@ -107,7 +107,9 @@
 
                             <!-- CONTENT -->
                                 <!-- GET CHILD HITS -->
-                                <button type="button" class="btn btn--clean" data-toggle="hit-content" data-toggle-id="childHits_#{status.index}" data-load-hits-script="loadChildHits_#{status.index}">
+                               <ui:fragment rendered="#{hit.hasHitCount}">
+                                <button onclick="viewerJS.searchList.openChildHits(this)" type="button" class="btn btn--clean" 
+                                data-toggle="hit-content" data-toggle-id="childHits_#{status.index}" data-load-hits-script="loadChildHits_#{status.index}" data-childhits="#{hit.hitCount}">
                                     <ui:fragment rendered="#{hit.hitsPopulated == 0}">
 	                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
                                     </ui:fragment>
@@ -140,18 +142,18 @@
                                         <f:param value="#{hit.ugcHitCount}" />
                                     </h:outputFormat>
                                 </button>
-                                <o:commandScript name="loadChildHits_#{status.index}" action="#{hit.loadChildHits(10)}" render="childHitGroup" 
+                                <o:commandScript name="loadChildHits_#{status.index}" action="#{hit.loadChildHits(20)}" render="childHitGroup" 
                                 onbegin="viewerJS.searchList.showAjaxLoader('search_subhits_ajaxloader_#{status.index}')" oncomplete="viewerJS.searchList.hideAjaxLoader('search_subhits_ajaxloader_#{status.index}')">
                                 </o:commandScript>
                             <div class="search-list__hit-content"  data-toggle-id="childHits_#{status.index}" style="display: none">
-                            <h:panelGroup id="childHitGroup" rendered="#{hit.hasHitCount}">
+                            <h:panelGroup id="childHitGroup">
                             	<ui:repeat var="childHit" value="#{hit.children}">
                             		<div class="search-list__hit-content-set">
                             			<div class="search-list__hit-text-area">
                             				<div class="search-list__struct-title">
                             					<h4>
                             						<a href="#{request.contextPath}/#{childHit.url}">
-                            							#{childHit.browseElement.label}
+                            							<h:outputFormat escape="false" value="#{childHit.displayText}"/>
                             						</a>
                             					</h4>
                             				</div>
@@ -159,9 +161,7 @@
                             					<ui:repeat var="grandChildHit" value="#{childHit.children}">
                             						<dl class="dl-horizontal">
                             							<dt>
-                            								<ui:fragment rendered="#{grandChildHit.type == 'PAGE'}">
-	                            								<i class="#{grandChildHit.iconClassForType}" title="#{grandChildHit.translatedType}" aria-hidden="true"></i>
-                            								</ui:fragment>
+	                            							<i class="#{grandChildHit.iconClassForType}" title="#{grandChildHit.translatedType}" aria-hidden="true"></i>
                             							</dt>
                             							<dd>
                             								<a href="#{request.contextPath}/#{grandChildHit.url}"><h:outputFormat escape="false" value="#{grandChildHit.displayText}"/></a>
@@ -186,7 +186,7 @@
                             </h:panelGroup>
 
                             </div>
-
+							</ui:fragment>
                         </div>
                     </ui:repeat>
                     <!-- EXPAND LINK -->
@@ -217,6 +217,7 @@
             var searchSortingDropdownConfig = {};
             var searchListConfig = {
         		listStyle: "#{listStyle}",
+        		maxChildHitsToRenderOnStart: 7,
             };
             
              viewerJS.searchList.init( searchListConfig ); 
