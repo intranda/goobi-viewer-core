@@ -177,18 +177,21 @@
                                                         </div>
                                                     </ui:fragment>
                                                 
-                                                    <!-- DROP-DOWN -->
-                                                    <ui:fragment rendered="#{queryItem.selectType == 'dropdown'}">
-                                                        <div class="custom-control custom-control--select multiple">
-                                                            <h:selectManyMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
-                                                                value="#{queryItem.values}">
-                                                                <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
-                                                                    <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
-                                                                </c:forEach>
-                                                                <f:passThroughAttribute name="aria-label" value="#{msg.cms_collections_err_noselection}" />
-                                                            </h:selectManyMenu>
-                                                        </div>
-                                                    </ui:fragment>
+	                                                <!-- DROP-DOWN -->
+	                                                 <ui:fragment rendered="#{queryItem.selectType == 'dropdown'}">
+	                                                    <div class="custom-control custom-control--select">
+	                                                        <h:selectOneMenu id="advsearch_value_select_x0-#{status.count}" styleClass="value-text"
+	                                                            value="#{queryItem.value}">
+	                                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+	                                                            <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
+	                                                                <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
+	                                                            </c:forEach>
+	                                                            <f:passThroughAttribute name="aria-label" value="#{msg.cms_collections_err_noselection}" />
+	                                                        </h:selectOneMenu>
+	                                                    </div>
+	                                               </ui:fragment>
+
+
                                                 </h:panelGroup>
                                             </div>
                                         </h:panelGroup>
