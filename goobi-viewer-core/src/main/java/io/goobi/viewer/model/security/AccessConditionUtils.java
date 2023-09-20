@@ -775,7 +775,7 @@ public class AccessConditionUtils {
         // pi already checked -> look in the session
         // logger.debug("permissions key: {}: {}", key, permissions.get(key)); // Sonar considers this log msg a security issue, so leave it commented out when not needed
 
-        AccessPermission ret = null;
+        AccessPermission ret = AccessPermission.denied();
         if (permissions.containsKey(key) && permissions.get(key) != null) {
             ret = permissions.get(key);
             //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, ret.isGranted(), pi, contentFileName,
