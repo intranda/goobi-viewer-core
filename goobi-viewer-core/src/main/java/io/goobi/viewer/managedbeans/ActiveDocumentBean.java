@@ -1572,11 +1572,12 @@ public class ActiveDocumentBean implements Serializable {
         if (viewManager == null) {
             return null;
         }
-
-        if (viewManager.getToc() == null) {
-            viewManager.setToc(createTOC());
+        synchronized (viewManager) {
+            if (viewManager.getToc() == null) {
+                viewManager.setToc(createTOC());
+            }
+            return viewManager.getToc();
         }
-        return viewManager.getToc();
     }
 
     /**
