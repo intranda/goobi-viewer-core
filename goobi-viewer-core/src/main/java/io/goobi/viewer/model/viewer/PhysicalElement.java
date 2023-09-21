@@ -1434,7 +1434,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     IPrivilegeHolder.PRIV_ZOOM_IMAGES).isGranted();
         }
         logger.trace("FacesContext not found");
-
         return false;
 
     }
@@ -1833,5 +1832,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     .collect(Collectors.toList());
             return mapper.writeValueAsString(shapes);
         }
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s %s (%s)", getPi(), getOrder(), getOrderLabel());
     }
 }
