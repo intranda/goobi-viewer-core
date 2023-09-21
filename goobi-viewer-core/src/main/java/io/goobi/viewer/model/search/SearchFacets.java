@@ -1298,4 +1298,10 @@ public class SearchFacets implements Serializable {
         }
         return "";
     }
+    
+    public int getActiveFacetsSize() {
+       return  this.getAllAvailableFacets().keySet().stream()
+        .mapToInt(this::getActiveFacetsSizeForField)
+        .sum();
+    }
 }
