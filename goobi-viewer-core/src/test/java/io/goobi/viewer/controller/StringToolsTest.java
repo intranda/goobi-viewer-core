@@ -308,18 +308,13 @@ public class StringToolsTest {
     @Test
     public void testCleanHtml() {
         
-        String html = "<p><span data-sheets-value=\"{\"1\":2,\"2\":\"Kremer, Boris, and Alex Reding. My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz] = from 1 June to 27 October 2006. Luxembourg: Dexia-BIL, 2006. Print.\"}\" data-sheets-userformat=\"{\"2\":15107,\"3\":{\"1\":0},\"4\":{\"1\":2,\"2\":16777215},\"11\":4,\"12\":0,\"14\":{\"1\":2,\"2\":3815994},\"15\":\"\\\"Source Sans Pro\\\", \\\"Helvetica Neue\\\", Helvetica, Arial, sans-serif\",\"16\":11}\">Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
-        
-        String cleaned = StringTools.cleanUserGeneratedData(html);
-        
+        String html = "<p><script>alert('SPAM')</script><span data-sheets-value=\"{\"1\":2,\"2\":\"Kremer, Boris, and Alex Reding. My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz] = from 1 June to 27 October 2006. Luxembourg: Dexia-BIL, 2006. Print.\"}\" data-sheets-userformat=\"{\"2\":15107,\"3\":{\"1\":0},\"4\":{\"1\":2,\"2\":16777215},\"11\":4,\"12\":0,\"14\":{\"1\":2,\"2\":3815994},\"15\":\"\\\"Source Sans Pro\\\", \\\"Helvetica Neue\\\", Helvetica, Arial, sans-serif\",\"16\":11}\">Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
+        String expectHtmlCleanted = "<p><span>Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
+
+            
         String htmlCleaned = Jsoup.clean(html, Safelist.relaxed());
         
-        
-        System.out.println(html);
-        System.out.println("--------------------------");
-        System.out.println(cleaned);
-        System.out.println("--------------------------");
-        System.out.println(htmlCleaned);
+        assertEquals(expectHtmlCleanted, htmlCleaned);
         
     }
 }
