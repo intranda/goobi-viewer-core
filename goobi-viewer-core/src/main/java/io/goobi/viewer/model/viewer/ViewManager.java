@@ -612,7 +612,7 @@ public class ViewManager implements Serializable {
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
-        
+
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(page, scale));
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType()) > 0) {
@@ -1954,16 +1954,26 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
+        return getTeiUrlForAllPages(BeanUtils.getLocale().getLanguage());
+    }
+
+    /**
+     * 
+     * @param language
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getTeiUrlForAllPages(String language) throws IndexUnreachableException {
         String localPi = getPi();
         return DataManager.getInstance()
                 .getRestApiManager()
                 .getContentApiManager()
                 .map(urls -> urls.path(RECORDS_RECORD, RECORDS_TEI_LANG)
-                        .params(localPi, BeanUtils.getLocale().getLanguage())
+                        .params(localPi, language)
                         .build())
                 .orElse("");
     }
-
+    
     /**
      * Return the url to a REST service delivering the fulltext of the current page as TEI
      *

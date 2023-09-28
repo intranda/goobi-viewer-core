@@ -202,18 +202,36 @@
                         
                         <!-- TEI (WORK) -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForWork}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
-                                id="teiWork" 
-                                class="badge badge-dark widget-usage__work-download-tei" 
-                                title="#{msg.downloadWorkTei}"
-								data-toggle="tooltip"
-								data-placement="top"
-								data-trigger="hover"
-                                target="_blank" rel="nofollow noopener"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
-                                #{msg.TEI}
-                            </a>
+                            <!-- MULTILANGUAGE -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}"> 
+                                <ui:repeat var="lang" value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
+                                    <a href="#{activeDocumentBean.viewManager.getTeiUrlForAllPages(lang)}"
+                                        id="teiWork" 
+                                        class="badge badge-dark widget-usage__work-download-tei" 
+                                        title="#{msg.downloadWorkTei}"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        data-trigger="hover"
+                                        target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
+                                        #{msg.TEI} (#{lang})
+                                    </a>
+                                </ui:repeat>
+                            </ui:fragment>
+                            <!-- SINGLE LANGUAGE -->
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}"> 
+                                <a href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
+                                    id="teiWork" 
+                                    class="badge badge-dark widget-usage__work-download-tei" 
+                                    title="#{msg.downloadWorkTei}"
+								    data-toggle="tooltip"
+								    data-placement="top"
+								    data-trigger="hover"
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
+                                    #{msg.TEI}
+                                </a>
+                            </ui:fragment>
                         </ui:fragment>
 
                         <!-- FULLTEXT (WORK) -->
