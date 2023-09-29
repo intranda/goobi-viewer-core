@@ -13,7 +13,7 @@
     <!-- IMAGE CONTAINER -->
     <div id="objectContainer" class="view-object__object-3d">        
         <!-- MAP -->
-        <div id="world" class="view-object__object-3d-world">
+        <div id="world" class="view-object__object-3d-world" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
             <div id="ajaxloader_image">
                 <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
             </div>

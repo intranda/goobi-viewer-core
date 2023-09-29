@@ -68,6 +68,7 @@
 					            	linkTarget : "#{cc.attrs.linkTarget}",
 					            	loader: "##{cc.attrs.mapId} .ajax_loader",
 				           		},
+				           		<ui:fragment rendered="#{featureSet.queryResultSet}">
 					            heatmap: {
 					            	enabled: #{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()},
 					            	heatmapUrl: "#{geoMapBean.heatmapUrl}",
@@ -75,6 +76,7 @@
 					        	    filterQuery: "#{featureSet.solrQueryEncoded}",
 					        	    labelField: "#{featureSet.markerTitleField}",
 					            }, 
+					            </ui:fragment>
 					            style : {
 					            	stroke: true,
 					            	color: '#{featureSet.color}',

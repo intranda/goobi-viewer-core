@@ -53,7 +53,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.json.JSONObject;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -68,7 +67,6 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -1574,11 +1572,12 @@ public class ActiveDocumentBean implements Serializable {
         if (viewManager == null) {
             return null;
         }
-
-        if (viewManager.getToc() == null) {
-            viewManager.setToc(createTOC());
+        synchronized (viewManager) {
+            if (viewManager.getToc() == null) {
+                viewManager.setToc(createTOC());
+            }
+            return viewManager.getToc();
         }
-        return viewManager.getToc();
     }
 
     /**
@@ -1969,7 +1968,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the 639_1 code for selectedRecordLanguage
      */
     public String getSelectedRecordLanguage() {
-        return selectedRecordLanguage.getIsoCodeOld();
+        return Optional.ofNullable(selectedRecordLanguage).map(Language::getIsoCodeOld).orElse(navigationHelper.getLocale().getLanguage());
     }
 
     /**
@@ -2006,7 +2005,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the 639_2B code for selectedRecordLanguage
      */
     public String getSelectedRecordLanguage3() {
-        return selectedRecordLanguage.getIsoCode();
+        return Optional.ofNullable(selectedRecordLanguage).map(Language::getIsoCode).orElse(navigationHelper.getLocale().getLanguage());
     }
 
     /**
@@ -2312,24 +2311,32 @@ public class ActiveDocumentBean implements Serializable {
        return getRecordGeoMap().getGeoMap();
     }
     
-    public RecordGeoMap getRecordGeoMap() throws DAOException, PresentationException, IndexUnreachableException {
-        RecordGeoMap widget = this.geoMaps.get(getPersistentIdentifier());
-//      if (widget == null) {
-          ComplexMetadataContainer md = this.viewManager.getTopStructElement().getMetadataDocuments();
-          if (md instanceof RelationshipMetadataContainer) {
-              RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
-              List<MetadataContainer> docs = rmc.getFieldNames().stream()
-                      .map(rmc::getMetadata)
-                      .flatMap(List::stream)
-                      .distinct()
-                      .map(rmc::getRelatedRecord)
-                      .filter(Objects::nonNull)
-                      .collect(Collectors.toList());
-              widget = new RecordGeoMap(getTopDocument(), docs);
-              this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
-          }
-//      }
-      return widget; 
+    public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
+        RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
+        if(map == null) {
+            ComplexMetadataContainer md = Optional.ofNullable(this).map(b -> b.viewManager).map(ViewManager::getTopStructElement).map(t -> {
+                try {
+                    return t.getMetadataDocuments();
+                } catch (PresentationException | IndexUnreachableException e) {
+                    return null;
+                }
+            }).orElse(null);
+            if (md instanceof RelationshipMetadataContainer) {
+                RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
+                List<MetadataContainer> docs = rmc.getFieldNames().stream()
+                        .map(rmc::getMetadata)
+                        .flatMap(List::stream)
+                        .distinct()
+                        .map(rmc::getRelatedRecord)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                map = new RecordGeoMap(getTopDocument(), docs);
+                this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
+            } else {
+                map = new RecordGeoMap();
+            }
+        }
+      return map; 
     }
 
     /**

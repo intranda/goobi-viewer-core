@@ -182,7 +182,7 @@
 	<url-mapping id="searchadvanced">
 		<pattern value="/searchadvanced/" />
         <!-- TODO replace with correct page -->
-		<view-id value="/searchListGroups.xhtml" />
+		<view-id value="/searchAdvanced.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.facets.resetActiveFacets}</action>
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
@@ -319,8 +319,7 @@
 	<!-- ADVANCED SEARCH -->
 	   <url-mapping id="searchAdvanced1">
         <pattern value="/searchadvanced/#{activeFacetString:searchBean.facets.activeFacetString}/" />
-        <!-- TODO replace with correct page -->
-        <view-id value="/searchListGroups.xhtml" />
+        <view-id value="/searchAdvanced.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
         <action onPostback="false">#{searchBean.setActiveResultGroupName('-')}</action>
@@ -329,23 +328,20 @@
     <url-mapping id="searchAdvanced4">
         <!-- TODO is searchStringForUrl correct for advanced search?! -->
         <pattern value="/searchadvanced/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
-        <!-- TODO replace with correct page -->
-        <view-id value="/searchListGroups.xhtml" />
+        <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
     <url-mapping id="searchAdvanced5">
         <pattern value="/searchadvanced/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
-        <!-- TODO replace with correct page -->
-        <view-id value="/searchListGroups.xhtml" />
+        <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
 	<url-mapping id="searchAdvanced6">
 		<pattern value="/searchadvanced/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/-/" />
-		<!-- TODO replace with correct page -->
-        <view-id value="/searchListGroups.xhtml" />
+        <view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 	</url-mapping>
 
@@ -702,13 +698,6 @@
 		<action onPostback="false">#{downloadBean.openDownloadAction()}</action>
 	</url-mapping>
     
-    <!-- PERSON -->
-    <url-mapping id="person1">
-        <pattern value="/person/#{pi:activeDocumentBean.persistentIdentifier}/" />
-        <view-id value="/viewPerson.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-
 	<!-- BOOKMARKS -->
     <url-mapping id="bookmarkLists">
         <pattern value="/bookmarks/" />
