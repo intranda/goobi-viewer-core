@@ -93,7 +93,7 @@
 		<tei-conversion.version>1.3.0</tei-conversion.version>
 
 		<iiif-api-model.version>2.6.0</iiif-api-model.version>
-		<normdataimporter.version>1.10.3</normdataimporter.version>
+		<normdataimporter.version>1.10.4</normdataimporter.version>
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
