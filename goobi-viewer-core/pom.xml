@@ -97,7 +97,7 @@
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
-		<citationstyles.version>23.5</citationstyles.version>
+		<citationstyles.version>23.9</citationstyles.version>
 		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
 		<commons-codec.version>1.16.0</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
