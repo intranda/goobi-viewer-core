@@ -836,6 +836,15 @@ public class SearchHit implements Comparable<SearchHit> {
     public SolrDocument getSolrDoc() {
         return this.solrDoc;
     }
+    
+    public String getCssClass() {
+        String docStructType = this.getBrowseElement().getDocStructType();
+        if(StringUtils.isNotBlank(docStructType)) {
+            return "docstructtype__" + docStructType;
+        } else {
+            return "";
+        }
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

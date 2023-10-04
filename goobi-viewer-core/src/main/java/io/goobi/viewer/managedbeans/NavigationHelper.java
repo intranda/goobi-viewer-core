@@ -136,7 +136,7 @@ public class NavigationHelper implements Serializable {
     private final String theme;
 
     /** Currently selected page from the main navigation bar. */
-    private String currentPage = "index";
+    private String currentPage = HOME_PAGE;
 
     private boolean isCmsPage = false;
 
@@ -726,20 +726,34 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getDatePattern() {
+        return getDatePattern(locale);
+    }
+
+    public static String getDatePattern(String language) {
+        return getDatePattern(Locale.forLanguageTag(language));
+    }
+
+    public static String getDatePattern(Locale locale) {
         if (locale == null) {
             return "yyyy-MM-dd";
         }
 
-        switch (locale.getLanguage()) {
-            case "de":
-                return "dd.MM.yyyy";
-            case "en":
-                return "MM/dd/yyyy";
-            case "es":
-                return "dd/MM/yyyy";
-            default:
-                return "yyyy-MM-dd";
-        }
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getStringFormat("date", locale)
+                .orElseGet(() -> {
+                    switch (locale.getLanguage()) {
+                        case "de":
+                            return "dd.MM.yyyy";
+                        case "en":
+                            return "MM/dd/yyyy";
+                        case "es":
+                        case "fr":
+                            return "dd/MM/yyyy";
+                        default:
+                            return "yyyy-MM-dd";
+                    }
+                });
     }
 
     /**
@@ -750,20 +764,9 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getDatePatternjQueryDatePicker() {
-        if (locale == null) {
-            return "yy-mm-dd";
-        }
-
-        switch (locale.getLanguage()) {
-            case "de":
-                return "dd.mm.yy";
-            case "en":
-                return "mm/dd/yy";
-            case "es":
-                return "dd/mm/yy";
-            default:
-                return "yy-mm-dd";
-        }
+        String pattern = getDatePattern();
+        pattern = pattern.replace("MM", "mm").replace("yyyy", "yy");
+        return pattern;
     }
 
     /**
@@ -793,6 +796,7 @@ public class NavigationHelper implements Serializable {
      * </p>
      */
     public void reload() {
+        //noop
     }
 
     /**
@@ -803,8 +807,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getApplicationUrl() {
-        String applicationUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
-        return applicationUrl;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
     }
 
     /**
@@ -1693,7 +1696,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getPreviousView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = "/";//getApplicationUrl();
+            previousUrl = "/";
         }
         return previousUrl;
     }
@@ -1729,7 +1732,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = "/";//getApplicationUrl();
+            previousUrl = "/";
         }
         return previousUrl;
     }
@@ -1738,7 +1741,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request).map(ViewerPath::getCombinedPrettyfiedUrl).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = "/";//getApplicationUrl();
+            previousUrl = "/";
         } else if (previousUrl.endsWith("/")) {
             previousUrl = previousUrl.substring(0, previousUrl.length() - 1);
         }
@@ -1947,15 +1950,21 @@ public class NavigationHelper implements Serializable {
     public void addSearchUrlWithCurrentSortStringToHistory() {
         ViewHistory.getCurrentView(BeanUtils.getRequest())
                 .ifPresent(path -> {
-                    ViewerPath sortStringPath = setupRandomSearchSeed(path);
+                    ViewerPath sortStringPath = setupRandomSearchSeed(path, getLocaleString());
                     if (sortStringPath != path) {
                         ViewHistory.setCurrentView(sortStringPath, BeanUtils.getSession());
                     }
                 });
     }
 
-    private static ViewerPath setupRandomSearchSeed(ViewerPath path) {
-        String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
+    /**
+     * 
+     * @param path
+     * @param language
+     * @return
+     */
+    private static ViewerPath setupRandomSearchSeed(ViewerPath path, String language) {
+        String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(language);
         if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(defaultSortField)) {
             String parameterPath = path.getParameterPath().toString();
             if (StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
@@ -1984,6 +1993,10 @@ public class NavigationHelper implements Serializable {
         return Long.toString(System.currentTimeMillis());
     }
 
+    public LocalDate getCurrentDate() {
+        return LocalDate.now();
+    }
+
     public String returnTo(String page) {
         return page;
     }
@@ -2006,4 +2019,5 @@ public class NavigationHelper implements Serializable {
         List<Integer> range = IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
         return range;
     }
+
 }

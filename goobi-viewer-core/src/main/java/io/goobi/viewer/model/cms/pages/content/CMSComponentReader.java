@@ -87,7 +87,7 @@ public class CMSComponentReader {
 
         String filename = FilenameUtils.getBaseName(templateFile.getFileName().toString());
         CMSComponent component =
-                new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, scope, attributes);
+                new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, scope, attributes, null);
 
         List<Element> contentElements = XmlTools.evaluateToElements("content/item", templateDoc.getRootElement(), null);
 
@@ -101,12 +101,13 @@ public class CMSComponentReader {
                         XmlTools.evaluateToFirstElement("jsfComponent/name", element, null).map(Element::getText).orElse(null);
                 String elementLabel = XmlTools.evaluateToFirstElement("label", element, null).map(Element::getText).orElse(null);
                 String elementDesc = XmlTools.evaluateToFirstElement("description", element, null).map(Element::getText).orElse(null);
+                String htmlGroup = XmlTools.evaluateToFirstElement("htmlGroup", element, null).map(Element::getText).orElse(null);
                 String componentId = element.getAttributeValue("id");
                 String requiredString = element.getAttributeValue("required", "false");
                 boolean required = !requiredString.equalsIgnoreCase("false");
 
                 CMSContent content = createContentFromClassName(className);
-                CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc,
+                CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc, htmlGroup,
                         new JsfComponent(elementJsfComponentLibrary, elementJsfComponentName), component, required);
 
                 component.addContentItem(item);

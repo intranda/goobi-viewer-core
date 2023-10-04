@@ -34,7 +34,7 @@ import io.goobi.viewer.model.translations.language.Language;
  *
  */
 @FacesConverter("languageConverter")
-public class LanguageConverter implements Converter<Language>{
+public class LanguageConverter implements Converter<Language> {
 
     /* (non-Javadoc)
      * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)

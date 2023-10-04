@@ -21,7 +21,7 @@
     <!-- SEARCH LIST HITS --> 
     <div class="search-list__hits #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : 'noClass'}">
         <!-- SEARCH LIST SORTING -->
-        <h:panelGroup rendered="#{showSortingOptions and search.hitsCount > 1}">
+        <h:panelGroup rendered="#{!searchBean.currentSearch.groupPreviewMode and showSortingOptions and search.hitsCount > 1}">
         	<h2 class="-sr-only">#{msg.searchHitNavigation}:</h2>
             <div class="search-list__nav-helper-wrapper">
             	<ui:fragment rendered="#{displayHitsPerPage}">
@@ -56,10 +56,10 @@
                             <h:form prependId="false" onkeypress="if( event.keyCode == 13){event.keyCode=0;}">
 	                            <h:selectOneMenu value="#{searchBean.searchSortingOption}" id="sortSelect"
 	                                converter="searchSortingOptionConverter" pt:onchange="$('[data-execute=\'search\']').click()">
-	                            	<f:selectItems value="#{searchBean.searchSortingOptions}"
+	                            	<f:selectItems value="#{searchBean.getSearchSortingOptions(navigationHelper.localeString)}"
 	                            					var="option"
 	                            					itemLabel="#{option.label}"
-	                            					itemValue="#{option}"/>
+	                            					itemValue="#{option}" />
 	                            </h:selectOneMenu>
 <!-- 	                            <h:commandButton styleClass="d-none" id="executeSort" action="pretty:newSearch5"></h:commandButton> -->
 	                            <h:commandButton styleClass="d-none" pt:data-execute="search" action="#{search.changeSorting()}"></h:commandButton>
@@ -73,7 +73,7 @@
 			        	classSuffix="-top"
 			            itemCount="#{search.lastPage}" 
 			            itemActive="#{search.currentPage}" 
-			            urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
+			            urlPrefix="#{search.currentSearchUrlRoot}/#{searchBean.activeResultGroupName}/#{search.exactSearchString}/"
 			            urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
 
                </div>
@@ -85,69 +85,84 @@
         <div class="clearfix"></div>
         
         <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
-            <ui:repeat value="#{searchBean.currentSearch.hits}" var="hit" varStatus="status">
-                <div class="search-list__hit">
-                    <!-- COinS IMPLEMENTATION -->
-                    <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
-                    <!-- HEADER -->
-                    <header class="search-list__hit-header">
-                        <ui:include src="/resources/includes/search/browseElement.xhtml">
-                        	<ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
-                        	<ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
-                        </ui:include>
-                    </header>
+            <ui:repeat value="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
+                <ui:fragment rendered="#{not empty resultGroup.hits}">
+                    <ui:fragment rendered="#{searchBean.displayResultGroupNames}">
+                        <h2>#{msg[resultGroup.name]} (#{resultGroup.hitsCount})</h2>
+                    </ui:fragment>
+                    <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
+                        <div class="search-list__hit #{hit.cssClass}">
+                
+                            <!-- COinS IMPLEMENTATION -->
+                            <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
+                    
+                            <!-- HEADER -->
+                            <header class="search-list__hit-header">
+                                <ui:include src="/resources/includes/search/browseElement.xhtml">
+                                    <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
+                        	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
+                                </ui:include>
+                            </header>
 
-                    <!-- CONTENT -->
-                    <h:panelGroup rendered="#{hit.hasHitCount}">
-                        <!-- GET CHILD HITS -->
-                        <button type="button" class="btn btn--clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
-                            <i class="fa fa-caret-right" aria-hidden="true"></i>
-                            <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
-                                <f:param value="#{hit.cmsPageHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.docstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
-                                <h:outputText rendered="#{hit.cmsPageHitCount > 0}" value=", " />
-                                <f:param value="#{hit.docstructHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.pageHitCount > 0}" value="#{msg.searchChildFulltextHitCount}">
-                                <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
-                                <f:param value="#{hit.pageHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.metadataHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
-                                <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
-                                <f:param value="#{hit.metadataHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
-                                <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
-                                <f:param value="#{hit.eventHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
-                                <h:outputText
-                                    rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
-                                    value=", " />
-                                <f:param value="#{hit.ugcHitCount}" />
-                            </h:outputFormat>
+                            <!-- CONTENT -->
+                            <h:panelGroup rendered="#{hit.hasHitCount}">
+                                <!-- GET CHILD HITS -->
+                                <button type="button" class="btn btn--clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
+                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                    <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
+                                        <f:param value="#{hit.cmsPageHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.docstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
+                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0}" value=", " />
+                                        <f:param value="#{hit.docstructHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.pageHitCount > 0}" value="#{msg.searchChildFulltextHitCount}">
+                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
+                                        <f:param value="#{hit.pageHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.metadataHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
+                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
+                                        <f:param value="#{hit.metadataHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
+                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
+                                        <f:param value="#{hit.eventHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
+                                        <h:outputText
+                                         rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
+                                         value=", " />
+                                        <f:param value="#{hit.ugcHitCount}" />
+                                    </h:outputFormat>
                             
-                            <!-- LOADER -->
-                            <span class="search-list__loader">
-                                <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-fluid" alt="Search List Loader" />
-                            </span>
-                        </button>
-                    </h:panelGroup>
+                                    <!-- LOADER -->
+                                    <span class="search-list__loader">
+                                        <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-fluid" alt="Search List Loader" />
+                                    </span>
+                                </button>
+                            </h:panelGroup>
 
-                    <div class="search-list__hit-content"></div>
-                </div>
+                            <div class="search-list__hit-content"></div>
+                        </div>
+                    </ui:repeat>
+                    <!-- EXPAND LINK -->
+                    <ui:fragment rendered="#{searchBean.activeResultGroupName eq '-' and resultGroup.displayExpandUrl}">
+                        <a href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records}</a>
+                    </ui:fragment>
+                </ui:fragment>
             </ui:repeat>
         </h:form>
 
         <!-- PAGINATOR -->
-        <viewerComponent:simplePaginator 
-        	classSuffix="-top"
-            itemCount="#{search.lastPage}" 
-            itemActive="#{search.currentPage}" 
-            urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
-            urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
-        <div class="clearfix"></div>
+        <ui:fragment rendered="#{!searchBean.currentSearch.groupPreviewMode}">
+            <viewerComponent:simplePaginator 
+        	   classSuffix="-top"
+                itemCount="#{search.lastPage}" 
+                itemActive="#{search.currentPage}" 
+                urlPrefix="#{search.currentSearchUrlRoot}/#{searchBean.activeResultGroupName}/#{search.exactSearchString}/"
+                urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
+            <div class="clearfix"></div>
+        </ui:fragment>
 
     </div>
 

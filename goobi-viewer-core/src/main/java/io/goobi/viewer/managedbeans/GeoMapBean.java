@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -31,19 +32,25 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.omnifaces.util.Faces;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.maps.FeatureSet;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.maps.ManualFeatureSet;
+import io.goobi.viewer.model.maps.SolrFeatureSet;
 
 /**
  * Bean for managing {@link GeoMaps} in the admin Backend
@@ -58,6 +65,8 @@ public class GeoMapBean implements Serializable {
     private static final long serialVersionUID = 2602901072184103402L;
 
     private GeoMap currentMap = null;
+
+    private ManualFeatureSet activeFeatureSet = null;
 
     private String selectedLanguage;
 
@@ -85,6 +94,13 @@ public class GeoMapBean implements Serializable {
      */
     public void setCurrentMap(GeoMap currentMap) {
         this.currentMap = new GeoMap(currentMap);
+        this.activeFeatureSet = this.currentMap.getFeatureSets()
+                .stream()
+                .filter(s -> !s.isQueryResultSet())
+                .findFirst()
+                .map(ManualFeatureSet.class::cast)
+                .orElse(null);
+
     }
 
     /**
@@ -95,7 +111,9 @@ public class GeoMapBean implements Serializable {
      */
     public void setCurrentMapId(Long mapId) throws DAOException {
         GeoMap orig = DataManager.getInstance().getDao().getGeoMap(mapId);
-        this.currentMap = new GeoMap(orig);
+        if (orig != null) {
+            setCurrentMap(orig);
+        }
     }
 
     public Long getCurrentMapId() {
@@ -113,6 +131,7 @@ public class GeoMapBean implements Serializable {
      */
     public void saveCurrentMap() throws DAOException {
         boolean saved = false;
+        boolean redirect = false;
         if (this.currentMap == null) {
             throw new IllegalArgumentException("No map selected. Cannot save");
         } else if (this.currentMap.getId() == null) {
@@ -120,6 +139,7 @@ public class GeoMapBean implements Serializable {
             this.currentMap.setDateUpdated(LocalDateTime.now());
             this.currentMap.setCreator(BeanUtils.getUserBean().getUser());
             saved = DataManager.getInstance().getDao().addGeoMap(this.currentMap);
+            redirect = true;
         } else {
             this.currentMap.setDateUpdated(LocalDateTime.now());
             saved = DataManager.getInstance().getDao().updateGeoMap(this.currentMap);
@@ -130,6 +150,9 @@ public class GeoMapBean implements Serializable {
             Messages.error("notify__save_map__error");
         }
         this.loadedMaps = null;
+        if (redirect) {
+            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.currentMap.getId()));
+        }
     }
 
     public void deleteMap(GeoMap map) throws DAOException {
@@ -220,9 +243,9 @@ public class GeoMapBean implements Serializable {
         return !getAllMaps().isEmpty();
     }
 
-    public String getCoordinateSearchQueryTemplate(GeoMap map) {
+    public String getCoordinateSearchQueryTemplate(SolrFeatureSet featureSet) {
         String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
-        String filterQuery = map != null ? map.getSolrQuery() : "";
+        String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "";
         String query = locationQuery;
         if (StringUtils.isNotBlank(filterQuery)) {
             query = "(" + locationQuery + ") AND (" + filterQuery + ")";
@@ -231,7 +254,7 @@ public class GeoMapBean implements Serializable {
                 .getConfig()
                 .getMappingById("newSearch5")
                 .getPatternParser()
-                .getMappedURL(query, "1", "-", "-");
+                .getMappedURL("-", query, "1", "-", "-");
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
@@ -249,5 +272,87 @@ public class GeoMapBean implements Serializable {
                 .getDataApiManager()
                 .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_SEARCH).build())
                 .orElse("");
+    }
+
+    public void addFeatureSet(GeoMap map, String type) {
+        if (map != null && type != null) {
+            switch (type) {
+                case "MANUAL":
+                    ManualFeatureSet featureSet = new ManualFeatureSet();
+                    map.addFeatureSet(featureSet);
+                    this.setActiveFeatureSet(featureSet);
+                    break;
+                case "SOLR_QUERY":
+                    map.addFeatureSet(new SolrFeatureSet());
+                    break;
+            }
+        }
+    }
+
+    public void removeFeatureSet(GeoMap map, FeatureSet set) {
+        if (map != null && map.getFeatureSets().contains(set)) {
+            map.removeFeatureSet(set);
+        }
+    }
+
+    public void setCurrentGeoMapType(GeoMapType type) {
+
+        if (currentMap != null) {
+            FeatureSet featureSet = null;
+            switch (type) {
+                case MANUAL:
+                    featureSet = new ManualFeatureSet();
+                    break;
+                case SOLR_QUERY:
+                    featureSet = new SolrFeatureSet();
+            }
+            currentMap.setFeatureSets(Collections.singletonList(featureSet));
+        }
+    }
+
+    public FeatureSet getActiveFeatureSet() {
+        return activeFeatureSet;
+    }
+
+    public void setActiveFeatureSet(ManualFeatureSet activeFeatureSet) {
+        this.activeFeatureSet = activeFeatureSet;
+    }
+
+    public String getActiveFeatureSetAsString() throws PresentationException {
+        if (this.activeFeatureSet != null) {
+            return this.activeFeatureSet.getFeaturesAsString();
+        } else {
+            return "";
+        }
+    }
+
+    public void setActiveFeatureSetAsString(String features) {
+        if (this.activeFeatureSet != null) {
+            this.activeFeatureSet.setFeaturesAsString(features);
+        }
+    }
+
+    public void setActiveFeatureSet() {
+        Integer index = Faces.getRequestParameter("index", Integer.class);
+        if (this.currentMap != null && index != null && index >= 0 && index < this.currentMap.getFeatureSets().size()) {
+            FeatureSet newActiveSet = this.currentMap.getFeatureSets().get(index);
+            if (newActiveSet instanceof ManualFeatureSet) {
+                setActiveFeatureSet((ManualFeatureSet) newActiveSet);
+            }
+        } else {
+            setActiveFeatureSet(null);
+        }
+    }
+
+    public boolean isActiveFeatureSet(FeatureSet featureSet) {
+        return this.activeFeatureSet != null && this.activeFeatureSet.equals(featureSet);
+    }
+    
+    public GeoMap getFromCache(GeoMap geomap) {
+        if(geomap != null && geomap.getId() != null && DataManager.getInstance().getConfiguration().isGeomapCachingEnabled()) {                
+            return BeanUtils.getPersistentStorageBean().getIfRecentOrPut("cms_geomap_" + geomap.getId(), geomap, DataManager.getInstance().getConfiguration().getCMSGeomapCachingTimeToLive());
+        } else {
+            return geomap;
+        }
     }
 }

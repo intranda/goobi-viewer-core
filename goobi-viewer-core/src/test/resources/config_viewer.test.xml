@@ -55,7 +55,7 @@
     <annotationFolder>annotations</annotationFolder>
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
-	<hotfolder>hotfolder</hotfolder>
+	<hotfolder>target/hotfolder</hotfolder>
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
     <!-- umlautsFile: location of the goobi_opacUmlaut.txt file for process title creation -->
@@ -379,6 +379,15 @@
         
         <!-- name: Goobi viewer instance description -->
         <description>Goobi viewer TEST desc</description>
+        
+       	<formats>
+			<date>
+				<en>dd/MM/yyyy</en>
+				<fr>dd/MM/yyyy</fr>
+				<es>dd/MM/yyyy</es>
+				<de>dd.MM.yyyy</de>
+			</date>
+		</formats>
 	</viewer>
 
 	<search>
@@ -411,11 +420,13 @@
             <!-- field: Fields used for sorting. Fields must be configured as 'multiValued="false"' in the Solr schema. Multiple (escaped) semicolon-separated
                 fields can be used for  hierarchical sorting (e.g. <luceneField>SORT_FIELD1\;SORT_FIELD2\;SORT_FIELD3</luceneField>). -->
             <field>RELEVANCE</field>
-            <field default="true">RANDOM</field>
+            <field>RANDOM</field>
             <field>SORT_CREATOR</field>
-            <field dropDownAscMessageKey="searchSortingDropdown_az" dropDownDescMessageKey="searchSortingDropdown_za">SORT_TITLE</field>
+            <field default="true" dropDownAscMessageKey="searchSortingDropdown_az" dropDownDescMessageKey="searchSortingDropdown_za">SORT_TITLE_LANG_DE</field>
+            <field default="true" dropDownAscMessageKey="searchSortingDropdown_az" dropDownDescMessageKey="searchSortingDropdown_za">SORT_TITLE_LANG_EN</field>
             <field>!DATECREATED</field>
             <field>SORT_YEARPUBLISH\;SORT_TITLE</field>
+            
 			
             <!-- static: Sorting fields defined here will always used silently prior to the visible sorting fields. These fields can be used to always place
                 certain records on top, for example. -->
@@ -441,25 +452,28 @@
 			<defaultItemNumber>3</defaultItemNumber>
 			<!-- advancedSearchFields: index fields to be used in advanced search -->
 			<searchFields>
-				<field hierarchical="true" visible="true">DC</field>
-				<field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
-				<field>MD_CREATOR</field>
-				<field>MD_PUBLISHER</field>
-				<field>MD_PLACEPUBLISH</field>
-				<field range="true">MD_YEARPUBLISH</field>
-				<field>MD_SHELFMARK</field>
-				<field label="-----">#SEPARATOR1#</field>
-				<field>MD_FOO_LANG_EN</field>
-				<field>MD_FOO_LANG_DE</field>
-				<field>MD_FOO_LANG_ES</field>
+                <template name="_DEFAULT">
+				    <field hierarchical="true" visible="true">DC</field>
+				    <field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
+				    <field>MD_CREATOR</field>
+				    <field>MD_PUBLISHER</field>
+				    <field>MD_PLACEPUBLISH</field>
+				    <field range="true">MD_YEARPUBLISH</field>
+				    <field>MD_SHELFMARK</field>
+				    <field label="-----">#SEPARATOR1#</field>
+				    <field>MD_FOO_LANG_EN</field>
+				    <field>MD_FOO_LANG_DE</field>
+				    <field>MD_FOO_LANG_ES</field>
+                    <field displaySelectItemsThreshold="20" selectType="badges">DOCSTRCT</field>
+                </template>
 			</searchFields>
 		</advanced>
         <!-- @enabled: Enables the timeline search (default is true) -->
         <timeline enabled="false">
-			<!-- Moegliche Werte fuer Startjahr und Endjahr sind ganze Jahre (auch 
-				Minus) sowie fuer Startjahr weiter der Wert MIN und fuer Endjahr der Wert 
-				MAX. Bei MIN wird das kleinste verfuegbare Jahr aus dem solrIndex als Startwert 
-				genommen, bei MAX das groesste Verfuegbare als Endjahr -->
+            <!-- Possible values for startyear and endyear are whole years (also minus)
+                 as well as the value MIN for startyear and the value MAX for endyear.
+                 For MIN, the smallest available year from the index is taken as the
+                 start value; for MAX, the largest available year is taken as the end year. -->
 			<startyear>1861</startyear>
 			<endyear>1865</endyear>
             <!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the 
@@ -490,6 +504,7 @@
             <!-- field type="oneline": Fields in this list will have multiple values written into a single string, without line breaks. -->
             <field type="oneline">MD_ACCESSLOCATIONS</field>
             <field type="snippet">MD_DESCRIPTION</field>
+            <field type="nohighlight">MD_REFID</field>
 		</displayAdditionalMetadata>
         
         <metadata>
@@ -542,6 +557,13 @@
             <facetQuery>(FACET_DC:"foo" OR FACET_DC:foo.*)</facetQuery>
             <facetQuery>(FACET_DC:"bar" OR FACET_DC:bar.*)</facetQuery>
         </useFacetsAsExpandQuery>
+        
+        <!--  -->
+        <resultGroups enabled="true">
+            <group name="lido_objects" useAsAdvancedSearchTemplate="true" query="SOURCEDOCFORMAT:LIDO" />
+            <group name="monographs" query="DOCSTRCT:monograph" />
+            <group name="stories" query="+DOCSTRCT:&quot;cms_page&quot; +MD_CATEGORY:&quot;story&quot;" />
+        </resultGroups>
 	</search>
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
@@ -739,6 +761,18 @@
 				</metadata>
 			</template>
 		</metadataList>
+        
+        <!-- metadataList[@type="highlight"]: defines metadata that is displayed in the highlight views. The syntax is the same as in metadataView -->
+        <metadataList type="highlight">
+            <template name="_DEFAULT">
+                <metadata label="PI" value="">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_SHELFMARK" value="">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+            </template>
+        </metadataList>
         
         <metadataList type="cms_fooBar">
             <template name="_DEFAULT">
@@ -1289,6 +1323,41 @@
 	    <marker icon="fa-coffee"  markerColor="pink" shape="star" prefix="fa" iconColor="black" iconRotate="270">maps__marker_4</marker>
 	    <marker icon="fa-number"  number="42" svg="true">maps__marker_5</marker>
 	  </markers>
+	  <filters>
+	  		<filter>
+				<field>D</field>
+			</filter>
+			<filter>
+				<featureGroup>X</featureGroup>
+				<field label="">A</field>
+			</filter>
+			<filter>
+				<featureGroup>Y</featureGroup>
+				<field label="b">B</field>
+				<field label="c">C</field>
+			</filter>
+		</filters>
+	  <metadata>
+		  <option label="cms__geomaps__popup_content__option__none" name=""/>
+        	<option label="cms__geomaps__popup_content__option__place" name="NORM_NAME">
+        		<title>
+        			<template name="_DEFAULT">
+	                	<metadata label="" value="{NORM_NAME}">
+	                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
+						</metadata>
+					</template>
+				</title>
+        	</option>
+        	<option label="cms__geomaps__popup_content__option__metadata" name="MD_VALUE">
+        		<title>
+	        		<template name="_DEFAULT">
+	                	<metadata label="" value="{MD_VALUE}">
+	                    			<param type="field" key="MD_VALUE" altKey="LABEL" />
+						</metadata>
+					</template>
+        		</title>
+        	</option>
+        </metadata>
 	  <coordinateFields>
 	  	<field>MD_GEOJSON_POINT</field>
 	  	<field>NORM_COORDS_GEOJSON</field>
@@ -1297,6 +1366,49 @@
 	  <mapbox>
 	    <token>some.token</token>
 	  </mapbox>
+	  <record>
+	  	<template name="_DEFAULT">
+		  	<featureSets>
+	    		<featureSet type="metadata">
+		    		<name>set_metadata_1</name>
+		        	<marker>maps_marker_1</marker>
+	    			<query>MD_A:A MD_B:B*</query>
+	    			<filters>
+	    				<filter>
+	    					<field label="">MD_METADATATYPE</field>
+	    				</filter>
+	    			</filters>
+	    		</featureSet>
+	    		<featureSet type="event">
+		    		<name>set_event_2</name>
+		        	<marker>maps_marker_2</marker>
+	    			<query>DOCTYPE:event</query>
+	    			<filters>
+	    				<filter>
+	    					<field label="">MD_EVENTTYPE</field>
+	    				</filter>
+	    				<filter>
+	    					<field label="">MD_TYPE</field>
+	    				</filter>
+	    			</filters>
+	    		</featureSet>
+	    	</featureSets>
+		  	<metadata>
+	       		<title>
+	            	<template name="_DEFAULT">
+	                	<metadata label="" value="{NORM_NAME}">
+	                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
+						</metadata>
+					</template>
+					<template name="MD_BIOGRAPHY_JOURNEY">
+	                		<metadata label="" value="Journey to {MD_LOCATION}">
+	                    			<param type="field" key="MD_LOCATION" />
+	                		</metadata>
+					</template>
+	       		</title>
+	       	</metadata>
+      	</template>
+      </record>
 	</maps>
 
     <archives enabled="true">

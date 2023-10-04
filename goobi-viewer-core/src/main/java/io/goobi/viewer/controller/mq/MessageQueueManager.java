@@ -22,6 +22,7 @@
 
 package io.goobi.viewer.controller.mq;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
@@ -95,6 +96,8 @@ import io.goobi.viewer.model.job.TaskType;
 @Startup
 public class MessageQueueManager {
 
+    static final String ACTIVE_MQ_CONFIG_FILENAME = "config_activemq.xml";
+
     private static final int SERVER_REGISTRY_PORT = 1095;
 
     public static final String QUEUE_NAME_VIEWER = "viewer";
@@ -113,7 +116,11 @@ public class MessageQueueManager {
     public MessageQueueManager() throws DAOException, IOException {
         this.instances = generateTicketHandlers();
         this.dao = DataManager.getInstance().getDao();
-        this.config = new ActiveMQConfig("config_activemq.xml");
+        try {            
+            this.config = new ActiveMQConfig(ACTIVE_MQ_CONFIG_FILENAME);
+        } catch(FileNotFoundException e) {
+            this.config = null;
+        }
     }
 
     public MessageQueueManager(ActiveMQConfig config, IDAO dao) {
@@ -508,6 +515,10 @@ public class MessageQueueManager {
     private ObjectName getQueueViewBeanName(String queueName) throws MalformedObjectNameException {
         String name = String.format("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=%s", queueName);
         return new ObjectName(name);
+    }
+    
+    public boolean hasConfig() {
+        return this.config != null;
     }
 
 }

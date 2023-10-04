@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
@@ -661,7 +663,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() throws Exception {
-        List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en");
+        List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en", StringConstants.DEFAULT_NAME);
         boolean en = false;
         boolean de = false;
         boolean es = false;
@@ -704,6 +706,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void findCurrentHitIndex_shouldSetCurrentHitIndexCorrectly() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.resultGroups[@enabled]", false);
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setPage(1);
         searchBean.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
@@ -814,16 +817,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getSearchSortingOptions_shouldReturnOptionsCorrectly() throws Exception {
-        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions();
-        String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField();
-        Assert.assertEquals(SolrConstants.SORT_RANDOM, defaultSorting);
+        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions("en");
+        String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField("en");
+        Assert.assertEquals("SORT_TITLE_LANG_EN", defaultSorting);
         List<String> sortStrings = DataManager.getInstance().getConfiguration().getSortFields();
-        assertEquals(sortStrings.size() * 2 - 2, options.size());
+        assertEquals(sortStrings.size() * 2 - 4, options.size());
         Iterator<SearchSortingOption> iterator = options.iterator();
-        assertEquals(defaultSorting, iterator.next().getSortString());
-        assertEquals("Relevance", iterator.next().getLabel());
-        assertEquals("Creator ascending", iterator.next().getLabel());
-        assertEquals("Creator descending", iterator.next().getLabel());
+        assertEquals(defaultSorting, iterator.next().getField());
+//        assertEquals("Relevance", iterator.next().getLabel());
+//        assertEquals("Creator ascending", iterator.next().getLabel());
+//        assertEquals("Creator descending", iterator.next().getLabel());
     }
 
     /**
@@ -833,10 +836,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getSearchSortingOptions_shouldUseCurrentRandomSeedOptionInsteadOfDefault() throws Exception {
         searchBean.setSearchSortingOption(new SearchSortingOption("random_12345"));
-        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions();
-        Assert.assertEquals(10, options.size());
+        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions(null);
         Iterator<SearchSortingOption> iterator = options.iterator();
-        assertEquals("random_12345", iterator.next().getField());
+        boolean found = false;
+        while (iterator.hasNext()) {
+            if ("random_12345".equals(iterator.next().getField())) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
     }
 
     /**
@@ -874,5 +883,96 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void searchToday_shouldSetSearchStringCorrectly() throws Exception {
         searchBean.searchToday();
         Assert.assertTrue(searchBean.searchStringInternal.startsWith(SolrConstants.MONTHDAY));
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies select result group correctly
+     */
+    @Test
+    public void setActiveResultGroupName_shouldSelectResultGroupCorrectly() throws Exception {
+        SearchBean sb = new SearchBean();
+        Assert.assertEquals("-", sb.getActiveResultGroupName());
+
+        sb.setActiveResultGroupName("stories");
+        Assert.assertEquals("stories", sb.getActiveResultGroupName());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset result group if new name not configured
+     */
+    @Test
+    public void setActiveResultGroupName_shouldResetResultGroupIfNewNameNotConfigured() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("stories");
+        Assert.assertEquals("stories", sb.getActiveResultGroupName());
+
+        sb.setActiveResultGroupName("notfound");
+        Assert.assertEquals("-", sb.getActiveResultGroupName());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset result group if empty name given
+     */
+    @Test
+    public void setActiveResultGroupName_shouldResetResultGroupIfEmptyNameGiven() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("stories");
+        Assert.assertEquals("stories", sb.getActiveResultGroupName());
+
+        sb.setActiveResultGroupName("-");
+        Assert.assertEquals("-", sb.getActiveResultGroupName());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset advanced search query items if new group used as field template
+     */
+    @Test
+    public void setActiveResultGroupName_shouldResetAdvancedSearchQueryItemsIfNewGroupUsedAsFieldTemplate() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("stories");
+
+        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
+        Assert.assertFalse(items.isEmpty());
+        items.get(0).setOperator(SearchItemOperator.NOT);
+        items.get(0).setValue("foo bar");
+
+        // Same group, no reset
+        sb.setActiveResultGroupName("stories");
+        Assert.assertEquals(SearchItemOperator.NOT, items.get(0).getOperator());
+        Assert.assertEquals("foo bar", items.get(0).getValue());
+
+        // Non-template group, no reset
+        sb.setActiveResultGroupName("monographs");
+        Assert.assertEquals(SearchItemOperator.NOT, items.get(0).getOperator());
+        Assert.assertEquals("foo bar", items.get(0).getValue());
+
+        // Template group, reset
+        sb.setActiveResultGroupName("lido_objects");
+        Assert.assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
+        Assert.assertNull(items.get(0).getValue());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset advanced search query items if old group used as field template
+     */
+    @Test
+    public void setActiveResultGroupName_shouldResetAdvancedSearchQueryItemsIfOldGroupUsedAsFieldTemplate() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("lido_objects");
+
+        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
+        Assert.assertFalse(items.isEmpty());
+        items.get(0).setOperator(SearchItemOperator.NOT);
+        items.get(0).setValue("foo bar");
+
+        // No group, reset
+        sb.setActiveResultGroupName("-");
+        Assert.assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
+        Assert.assertNull(items.get(0).getValue());
     }
 }

@@ -50,12 +50,11 @@ public class FloatingNumberConverter implements Converter {
         value = value.replaceAll(REPLACEMENT_REGEX, "");
         if (StringUtils.isBlank(value)) {
             return null;
-        } else {
-            try {
-                return Double.parseDouble(value);
-            } catch (NumberFormatException e) {
-                return null;
-            }
+        }
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 

@@ -153,8 +153,8 @@
     <cms_media_item_metadata owner_media_item_id="1" language="de" name="Bild 1" description="Beschreibung 1" />
     <cms_media_item_metadata owner_media_item_id="1" language="en" name="Image 1" description="Description 1" />
 		
-	<cms_geomap geomap_id="1" creator_id="1" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" map_type="1" initial_view="{&quot;zoom&quot;:8,&quot;center&quot;:[6.501159667968751,49.89109559573688]}"></cms_geomap>
-    <cms_geomap geomap_id="2" creator_id="3" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" map_type="1" initial_view="{&quot;zoom&quot;:5,&quot;center&quot;:[11.073397,49.451993]}"></cms_geomap>
+	<cms_geomap geomap_id="1" creator_id="1" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" initial_view="{&quot;zoom&quot;:8,&quot;center&quot;:[6.501159667968751,49.89109559573688]}"></cms_geomap>
+    <cms_geomap geomap_id="2" creator_id="3" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" initial_view="{&quot;zoom&quot;:5,&quot;center&quot;:[11.073397,49.451993]}"></cms_geomap>
     
     <cms_geomap_translation translation_id="1" language="de" tag="Title" value="Kartentitel 1" owner_id="1"></cms_geomap_translation>
     <cms_geomap_translation translation_id="2" language="de" tag="Description" value="Kartenbeschreibung 1" owner_id="1"></cms_geomap_translation>
@@ -162,8 +162,11 @@
     <cms_geomap_translation translation_id="4" language="en" tag="Description" value="Map description 1" owner_id="1"></cms_geomap_translation>
     <cms_geomap_translation translation_id="5" language="de" tag="Title" value="Kartentitel 2" owner_id="2"></cms_geomap_translation>
     
-    <cms_geomap_features geomap_id="1" features="{&quot;view&quot;:{&quot;center&quot;:[6.064453125000001,49.57795219958587],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[6.064453125000001,49.57795219958587],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:1,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:{&quot;de&quot;:[&quot;Hauptstadt des gleichnamigen Fürstentums. &lt;a target=\&quot;_blank\&quot; href=\&quot;https://en.wikipedia.org/wiki/Luxembourg\&quot;>Wikipedia&lt;\/a>&quot;]},&quot;title&quot;:{&quot;de&quot;:[&quot;Luxemburg&quot;],&quot;en&quot;:[&quot;Luxembourg&quot;],&quot;fr&quot;:[&quot;Luxembourg&quot;]}}}"></cms_geomap_features>
-    <cms_geomap_features geomap_id="2" features="{&quot;view&quot;:{&quot;center&quot;:[9.799804687500002,51.449899262572615],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[9.799804687500002,51.449899262572615],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:2,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:&quot;&quot;,&quot;title&quot;:{&quot;de&quot;:[&quot;Irgendwo in Deutschland&quot;]}}}"></cms_geomap_features>
+    <cms_geomap_featureset featureset_id="1" owner_geomap="1" feature_source="manual"></cms_geomap_featureset>
+    <cms_geomap_featureset featureset_id="2" owner_geomap="2" feature_source="manual"></cms_geomap_featureset>
+    
+    <cms_geomap_features featureset_id="1" features="{&quot;view&quot;:{&quot;center&quot;:[6.064453125000001,49.57795219958587],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[6.064453125000001,49.57795219958587],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:1,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:{&quot;de&quot;:[&quot;Hauptstadt des gleichnamigen Fürstentums. &lt;a target=\&quot;_blank\&quot; href=\&quot;https://en.wikipedia.org/wiki/Luxembourg\&quot;>Wikipedia&lt;\/a>&quot;]},&quot;title&quot;:{&quot;de&quot;:[&quot;Luxemburg&quot;],&quot;en&quot;:[&quot;Luxembourg&quot;],&quot;fr&quot;:[&quot;Luxembourg&quot;]}}}"></cms_geomap_features>
+    <cms_geomap_features featureset_id="2" features="{&quot;view&quot;:{&quot;center&quot;:[9.799804687500002,51.449899262572615],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[9.799804687500002,51.449899262572615],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:2,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:&quot;&quot;,&quot;title&quot;:{&quot;de&quot;:[&quot;Irgendwo in Deutschland&quot;]}}}"></cms_geomap_features>
     	
     <cms_sliders source_type="0" slider_id="1" name="Query Slider" description="Slider from solr query" style="base" query="PI:1 PI:2 PI:3" />
     <cms_sliders source_type="1" slider_id="2" name="Collections Slider" description="Slider from collections" style="base" collections="dcone,dctwo,dcthree" />

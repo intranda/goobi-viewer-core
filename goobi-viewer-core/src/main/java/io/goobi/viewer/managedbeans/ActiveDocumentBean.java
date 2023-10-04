@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -59,6 +61,7 @@ import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -86,8 +89,12 @@ import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
-import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapFeature;
+import io.goobi.viewer.model.maps.ManualFeatureSet;
+import io.goobi.viewer.model.maps.RecordGeoMap;
+import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
+import io.goobi.viewer.model.metadata.MetadataContainer;
+import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -175,7 +182,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private String clearCacheMode;
 
-    private Map<String, GeoMap> geoMaps = new HashMap<>();
+    private Map<String, RecordGeoMap> geoMaps = new HashMap<>();
 
     private int reloads = 0;
 
@@ -186,7 +193,7 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
-
+    
     /**
      * Empty constructor.
      */
@@ -613,15 +620,22 @@ public class ActiveDocumentBean implements Serializable {
                 IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-
-                for (String language : name.getLanguages()) {
+                List<String> languages = new ArrayList<>(name.getLanguages());  //temporary variable to avoid ConcurrentModificationException
+                Map<String, String> truncatedNames = new HashMap<>();
+                for (String language : languages) {
                     String translation = name.getValue(language).orElse(getPersistentIdentifier());
                     if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
                         translation =
                                 new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
                                         .append("...")
                                         .toString();
-                        name.setValue(translation, language);
+                        truncatedNames.put(language, translation);
+                    }
+                }
+                // Replace translation outside of the loop
+                if (!truncatedNames.isEmpty()) {
+                    for (Entry<String, String> entry : truncatedNames.entrySet()) {
+                        name.setValue(entry.getValue(), entry.getKey());
                     }
                 }
                 // Fallback using the identifier as the label
@@ -900,6 +914,12 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
+    public String getPIFromFieldValue(String value, String field) throws PresentationException, IndexUnreachableException {
+        String query = "{field}:\"{value}\"".replace("{field}", field).replace("{value}", value);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, List.of(SolrConstants.PI));
+        return Optional.ofNullable(doc).map(d -> d.getFirstValue(SolrConstants.PI)).map(Object::toString).orElse("");
+    }
+    
     /**
      * <p>
      * setPersistentIdentifier.
@@ -1552,11 +1572,12 @@ public class ActiveDocumentBean implements Serializable {
         if (viewManager == null) {
             return null;
         }
-
-        if (viewManager.getToc() == null) {
-            viewManager.setToc(createTOC());
+        synchronized (viewManager) {
+            if (viewManager.getToc() == null) {
+                viewManager.setToc(createTOC());
+            }
+            return viewManager.getToc();
         }
-        return viewManager.getToc();
     }
 
     /**
@@ -1672,7 +1693,7 @@ public class ActiveDocumentBean implements Serializable {
             TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
                 String label = null;
-                String labelTemplate = "_DEFAULT";
+                String labelTemplate = StringConstants.DEFAULT_NAME;
                 if (getViewManager() != null) {
                     labelTemplate = getViewManager().getTopStructElement().getDocStructType();
                 }
@@ -1947,7 +1968,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the 639_1 code for selectedRecordLanguage
      */
     public String getSelectedRecordLanguage() {
-        return selectedRecordLanguage.getIsoCodeOld();
+        return Optional.ofNullable(selectedRecordLanguage).map(Language::getIsoCodeOld).orElse(navigationHelper.getLocale().getLanguage());
     }
 
     /**
@@ -1984,7 +2005,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the 639_2B code for selectedRecordLanguage
      */
     public String getSelectedRecordLanguage3() {
-        return selectedRecordLanguage.getIsoCode();
+        return Optional.ofNullable(selectedRecordLanguage).map(Language::getIsoCode).orElse(navigationHelper.getLocale().getLanguage());
     }
 
     /**
@@ -2287,12 +2308,35 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
-        GeoMap widget = this.geoMaps.get(getPersistentIdentifier());
-        if (widget == null) {
-            widget = generateGeoMap(getPersistentIdentifier());
-            this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
+       return getRecordGeoMap().getGeoMap();
+    }
+    
+    public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
+        RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
+        if(map == null) {
+            ComplexMetadataContainer md = Optional.ofNullable(this).map(b -> b.viewManager).map(ViewManager::getTopStructElement).map(t -> {
+                try {
+                    return t.getMetadataDocuments();
+                } catch (PresentationException | IndexUnreachableException e) {
+                    return null;
+                }
+            }).orElse(null);
+            if (md instanceof RelationshipMetadataContainer) {
+                RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
+                List<MetadataContainer> docs = rmc.getFieldNames().stream()
+                        .map(rmc::getMetadata)
+                        .flatMap(List::stream)
+                        .distinct()
+                        .map(rmc::getRelatedRecord)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                map = new RecordGeoMap(getTopDocument(), docs);
+                this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
+            } else {
+                map = new RecordGeoMap();
+            }
         }
-        return widget;
+      return map; 
     }
 
     /**
@@ -2310,10 +2354,11 @@ public class ActiveDocumentBean implements Serializable {
 
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
-            map.setType(GeoMapType.MANUAL);
             map.setShowPopover(true);
-            map.setMarkerTitleField(null);
-            map.setMarker("default");
+
+            ManualFeatureSet featureSet = new ManualFeatureSet();
+            featureSet.setMarker("default");
+            map.addFeatureSet(featureSet);
 
             String mainDocQuery = String.format("PI:%s", pi);
             List<String> mainDocFields = PrettyUrlTools.getSolrFieldsToDeterminePageType();
@@ -2364,7 +2409,7 @@ public class ActiveDocumentBean implements Serializable {
                     for (String coordinateField : coordinateFields) {
                         String docType = solrDocument.getFieldValue(SolrConstants.DOCTYPE).toString();
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
-                        docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, labelField, null));
+                        docFeatures.addAll(new GeoCoordinateConverter().getGeojsonPoints(solrDocument, null, coordinateField, labelField));
                     }
                     if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT")) {
                         docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
@@ -2378,7 +2423,7 @@ public class ActiveDocumentBean implements Serializable {
             //remove dubplicates
             features = features.stream().distinct().collect(Collectors.toList());
             if (!features.isEmpty()) {
-                map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
+                featureSet.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
             }
             return map;
         } catch (IndexUnreachableException e) {
@@ -2542,5 +2587,10 @@ public class ActiveDocumentBean implements Serializable {
 
         return false;
     }
+
+    public List<String> getGeomapFilters() {
+        return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
+    }
+
 
 }

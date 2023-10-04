@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.faces.model.SelectItem;
 
@@ -227,5 +228,10 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
 
         logger.debug("Loaded {} pages for '{}'.", ret.size(), pi);
         return ret;
+    }
+
+    @Override
+    public PhysicalElement findPageForFilename(String filename) {
+        return this.pages.values().stream().filter(page -> filename.equalsIgnoreCase(page.getFileName())).findAny().orElse(null);
     }
 }

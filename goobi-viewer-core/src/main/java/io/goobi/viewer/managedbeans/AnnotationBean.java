@@ -250,7 +250,8 @@ public class AnnotationBean implements Serializable {
      * @return always false to deselect the select all button when loading the page
      */
     public boolean isSelectAll() {
-        return false;//this.exportSelection.isSelectAll();
+        return false;
+        //this.exportSelection.isSelectAll();
     }
 
     public void downloadAllAnnotations() throws IOException, DAOException {

@@ -34,8 +34,7 @@
 					<ui:fragment rendered="#{!highlight.hasImageURI()}">
 						<a class="highlighted-object__no-image-link" href="#{highlightsBean.getUrl(highlight)}" title="#{msg.action__open_record}: #{highlight.data.name.textOrDefault}">#{highlight.data.name.textOrDefault}</a>
 					</ui:fragment>
-					
-					<ui:fragment rendered="#{cc.attrs.displayMetadata and not empty highlight.metadataList}">
+					<ui:fragment rendered="#{not empty highlight.metadataList}">
 					      <c:forEach items="#{highlight.metadataList}" var="metadata">
 	                            <h:panelGroup rendered="#{!metadata.blank}">
 	

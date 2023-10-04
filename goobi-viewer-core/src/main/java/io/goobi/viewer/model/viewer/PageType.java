@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
@@ -144,7 +145,7 @@ public enum PageType {
     editHistory("crowd/editHistory"),
 
     // The order of page types handled by CMS here determines the listing order of static pages
-    index("index", PageTypeHandling.cms),
+    index("index", "home", PageTypeHandling.cms),
     search("search", PageTypeHandling.cms),
     advancedSearch("searchadvanced"),
     browse("browse", PageTypeHandling.cms),
@@ -394,7 +395,7 @@ public enum PageType {
             logger.error("docstructTargetPageType configured for '{}' does not exist: {}", docStructType, preferredPageTypeName);
         }
         // Second choice: Use target page type configured as _DEFAULT, if available
-        String defaultPageTypeName = DataManager.getInstance().getConfiguration().getRecordTargetPageType("_DEFAULT");
+        String defaultPageTypeName = DataManager.getInstance().getConfiguration().getRecordTargetPageType(StringConstants.DEFAULT_NAME);
         PageType defaultPageType = PageType.getByName(defaultPageTypeName);
         if (StringUtils.isNotEmpty(defaultPageTypeName) && defaultPageType == null) {
             logger.error("docstructTargetPageType configured for '_DEFAULT' does not exist: {}", docStructType);

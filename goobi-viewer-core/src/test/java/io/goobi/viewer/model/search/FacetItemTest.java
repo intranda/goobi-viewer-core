@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -244,9 +245,32 @@ public class FacetItemTest extends AbstractTest {
     public void generateFilterLinkList_shouldSetLabelFromSeparateFieldIfConfiguredAndFound() throws Exception {
         Map<String, String> labelMap = new HashMap<>(1);
         List<IFacetItem> facetItems =
-                FacetItem.generateFilterLinkList("MD_CREATOR", Collections.singletonMap("Groos, Karl", 1L), false, -1, null, labelMap);
+                FacetItem.generateFilterLinkList(null, "MD_CREATOR", Collections.singletonMap("Groos, Karl", 1L), false, -1, null, labelMap);
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals("Karl", facetItems.get(0).getLabel());
+    }
+
+    /**
+     * @see FacetItem#generateFilterLinkList(List,String,Map,boolean,int,Locale,Map)
+     * @verifies prefer existing items
+     */
+    @Test
+    public void generateFilterLinkList_shouldPreferExistingItems() throws Exception {
+        // Regular
+        FacetItem existing1 = new FacetItem("MD_FOO:bar", false);
+        List<IFacetItem> facetItems1 =
+                FacetItem.generateFilterLinkList(Collections.singletonList(existing1), "MD_FOO", Collections.singletonMap("bar", 1L),
+                        false, -1, null, null);
+        Assert.assertEquals(1, facetItems1.size());
+        Assert.assertEquals("MD_FOO:bar", facetItems1.get(0).getLink());
+
+        // With groupToLength=1
+        FacetItem existing2 = new FacetItem("MD_FOO:B*", false);
+        List<IFacetItem> facetItems2 =
+                FacetItem.generateFilterLinkList(Collections.singletonList(existing2), "MD_FOO", Collections.singletonMap("bar", 1L),
+                        false, 1, null, null);
+        Assert.assertEquals(1, facetItems2.size());
+        Assert.assertEquals("MD_FOO:B*", facetItems2.get(0).getLink());
     }
 
     /**
@@ -260,7 +284,7 @@ public class FacetItemTest extends AbstractTest {
         valueMap.put("Cooper, Alice", 1L);
         valueMap.put("Campbell, Wayne", 1L);
         valueMap.put("Algar, Garth", 1L);
-        List<IFacetItem> facetItems = FacetItem.generateFilterLinkList("MD_CREATOR", valueMap, false, 1, null, labelMap);
+        List<IFacetItem> facetItems = FacetItem.generateFilterLinkList(null, "MD_CREATOR", valueMap, false, 1, null, labelMap);
         Assert.assertEquals(2, facetItems.size());
         Assert.assertEquals("A", facetItems.get(0).getLabel());
         Assert.assertEquals(1L, facetItems.get(0).getCount());
@@ -293,4 +317,27 @@ public class FacetItemTest extends AbstractTest {
         item.parseLink();
         Assert.assertEquals("b", item.getLabel());
     }
+
+    /**
+     * @see FacetItem#FacetItem(String,String,boolean)
+     * @verifies set label to value if no label value given
+     */
+    @Test
+    public void FacetItem_shouldSetLabelToValueIfNoLabelValueGiven() throws Exception {
+        List<IFacetItem> existingItems = new ArrayList<>(2);
+        existingItems.add(new FacetItem("MD_CREATOR:Groos, Karl", false).setCount(1));
+        existingItems.add(new FacetItem("MD_CREATOR:Doe, John", false).setCount(1));
+
+        Map<String, Long> newValueMap = new HashMap<>(2);
+        newValueMap.put("Montana, Tony", 1L);
+        newValueMap.put("Groos, Karl", 1L);
+        List<IFacetItem> facetItems =
+                FacetItem.generateFilterLinkList(existingItems, "MD_CREATOR", newValueMap, false, -1, null, null);
+        Assert.assertEquals(3, facetItems.size());
+        Assert.assertEquals("Doe, John", facetItems.get(0).getValue());
+        Assert.assertEquals("Groos, Karl", facetItems.get(1).getValue());
+        Assert.assertEquals(2, facetItems.get(1).getCount());
+        Assert.assertEquals("Montana, Tony", facetItems.get(2).getValue());
+    }
+
 }

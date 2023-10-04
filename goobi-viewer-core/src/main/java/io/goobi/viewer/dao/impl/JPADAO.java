@@ -6818,7 +6818,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public int deleteViewerMessagesBefore(LocalDateTime date)
             throws DAOException {
@@ -7127,7 +7126,7 @@ public class JPADAO implements IDAO {
         try {
             return em.createQuery(String.format("SELECT o FROM %s o", clazz.getSimpleName())).getResultList();
         } catch (PersistenceException e) {
-            logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e.toString(), clazz.getSimpleName());
+            logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e, clazz.getSimpleName());
             return new ArrayList<>();
         } finally {
             close(em);
@@ -7143,7 +7142,7 @@ public class JPADAO implements IDAO {
             params.forEach((name, value) -> q.setParameter(name, value));
             return q.getResultList();
         } catch (PersistenceException e) {
-            logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e.toString(), clazz.getSimpleName());
+            logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e, clazz.getSimpleName());
             return new ArrayList<>();
         } finally {
             close(em);

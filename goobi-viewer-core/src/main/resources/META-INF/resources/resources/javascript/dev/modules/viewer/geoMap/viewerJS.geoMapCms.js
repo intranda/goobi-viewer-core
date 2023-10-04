@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Display a map created in the administration backend/cms-section
+ * Display a map backed by GeoMap.java object
  * GeoJson coordinates are always [lng, lat]
  * 
  * @version 3.4.0
@@ -38,83 +38,50 @@
 	            mapId : "geomap",
 	            language: "en",
 	            iconPath: "/resources/images/map",
-	            layer: {
-	            	allowMovingFeatures: false,
-	           		popover: undefined,
-	           		popoverOnHover: false,
-	           		clusterMarkers: true,
-	           		markerIcon: undefined,
-	            }
-            },
-            search: {
-            	openSearchOnMarkerClick: true,
-            	searchUrlTemplate : '/viewer/search/-/WKT_COORDS:"Intersects(POINT({lng} {lat})) distErrPct=0"/1/-/-/',
-            	linkTarget : "_blank"
-            },
-            heatmap: {
-            	showSearchResultsHeatmap: false,
-            	heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
-            	featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
-            	filterQuery: "BOOL_WKT_COORDS:*",
-		        labelField: "LABEL",
-            }
+	        }
     }
     
     viewer.GeoMapCms = function(config) {
  		this.config = $.extend( true, {}, _defaults, config );
  		if(_debug)console.log("Initialize CMS-Geomap with config", config);
+ 		//Hightlight the marker belonging to a given SOLR document
+    	let highlightDocumentId = this.config.documentIdToHighlight;
+    	if(highlightDocumentId) {
+    		//console.log("highlight", highlightDocumentId);
+    	    this.config.map.layers.map(layer => layer.features).flat().filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
+    	}
 		this.geoMap = new viewerJS.GeoMap(this.config.map);
    }
    
-   viewer.GeoMapCms.prototype.init = function(view, features) {
-	    this.geoMap.init(view);
-	    this.config.map.layer.language = this.config.map.language;
-    	this.layer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.layer)
-
-		//when clicking on features with an associated link, open that link
-    	this.layer.onFeatureClick.subscribe(feature => {
-   	       if(feature.properties && feature.properties.link && !feature.properties.highlighted) {
-   	           window.location.assign(feature.properties.link);
-   	       }
-   	    });
-   	    
-   	    //link to search url on feature click
-    	if(this.config.search.openSearchOnMarkerClick) {
-			let searchUrlTemplate = this.config.search.searchUrlTemplate;
-            this.layer.onFeatureClick.subscribe( (feature) => {
-				// viewerJS.notifications.confirm("Do you want to show search results for this location?")
-				// .then(() => {
-					$(this.config.search.loader).show();
-					let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
-					queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
-					window.open(queryUrl, this.config.search.linkTarget);
-				// })
-            });
-        }
-    	
-    	//Hightlight the marker belinging to a given SOLR document
-    	let highlightDocumentId = this.config.documentIdToHighlight;
-    	if(highlightDocumentId) {
-    	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
-    	}
-    	
-    	//display search results as heatmap
-    	if(this.config.heatmap.showSearchResultsHeatmap) {	        	    
-        	let heatmapUrl = this.config.heatmap.heatmapUrl;
-        	let featureUrl = this.config.heatmap.featureUrl;
-        	
-        	this.heatmap = L.solrHeatmap(heatmapUrl, featureUrl, this.layer, {
-        	    field: "WKT_COORDS",
-        	    type: "clusters",
-        	    filterQuery: this.config.heatmap.filterQuery,
-        	    labelField: this.config.heatmap.labelField,
-        	    queryAdapter: "goobiViewer"    
-        	});
-        	this.heatmap.addTo(this.geoMap.map);
-    	}     	
-
-		//initialize layer
-     	this.layer.init(features, features?.length);
+   viewer.GeoMapCms.prototype.init = function(view) {
+   
+	    this.geoMap.layers.forEach(layer => {
+			layer.language = this.config.map.language;
+			//when clicking on features with an associated link, open that link
+	    	layer.onFeatureClick.subscribe(feature => {
+	   	       if(feature.properties && feature.properties.link && !feature.properties.highlighted) {
+	   	           window.location.assign(feature.properties.link);
+	   	       }
+	   	    });
+	   	    //link to search url on feature click
+	    	if(layer.config.search.openSearchOnMarkerClick) {
+				let searchUrlTemplate = layer.config.search.searchUrlTemplate;
+	            layer.onFeatureClick.subscribe( (feature) => { 
+					// viewerJS.notifications.confirm("Do you want to show search results for this location?")
+					// .then(() => {
+//						console.log("click in feature", feature);
+						let featuresToShow = feature.properties?.entities?.filter(e => e.visible !== false).filter(e => e.title?.length > 0);
+						if(featuresToShow.length == 0) {
+							$(layer.config.search.loader).show();
+							let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
+							queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
+							window.open(queryUrl, layer.config.search.linkTarget);
+						} 
+					// })
+	            });
+	        }
+		});
+	    return this.geoMap.init(view);
 	}
 	
 	return viewer;

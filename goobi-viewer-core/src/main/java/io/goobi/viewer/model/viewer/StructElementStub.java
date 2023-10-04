@@ -71,6 +71,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     protected boolean anchor = false;
     /** True if this element is a volume element. */
     protected boolean volume = false;
+    /** True if this element represents a CMS page. */
+    protected boolean cmsPage = false;
     /** Number of contained volumes (anchors only) */
     protected long numVolumes = 0;
     /** Volume label of this element (only for records that are part of a multi-volume record). */
@@ -212,6 +214,20 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public void setVolume(boolean volume) {
         this.volume = volume;
+    }
+
+    /**
+     * @return the cmsPage
+     */
+    public boolean isCmsPage() {
+        return cmsPage;
+    }
+
+    /**
+     * @param cmsPage the cmsPage to set
+     */
+    public void setCmsPage(boolean cmsPage) {
+        this.cmsPage = cmsPage;
     }
 
     /**
@@ -759,6 +775,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         return sb.toString();
     }
 
+    public boolean isHasMetadata(String fieldName) {
+       return this.getMetadataFields().containsKey(fieldName);
+    }
+    
     /**
      * <p>
      * getMultiLanguageMetadataValue.

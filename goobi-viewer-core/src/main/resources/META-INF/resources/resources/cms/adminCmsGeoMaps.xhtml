@@ -62,7 +62,7 @@
                                         </div>
                                         <div class="entity_list__item__content">
                                             <div class="entity_list__item__content__label">#{msg.type}:</div>
-                                            <div class="entity_list__item__content__value">#{msg['label__geomap_type__'.concat(map.type)]}</div>
+<!--                                             <div class="entity_list__item__content__value">#{msg['label__geomap_type__'.concat(map.type)]}</div> -->
                                             <ui:fragment rendered="#{map.description.length() > 0}">
                                                 <div class="entity_list__item__content__label">#{msg.description}:</div>
                                                 <div class="entity_list__item__content__value">#{map.description}</div>
@@ -101,15 +101,28 @@
                                                 let geoMap = new viewerJS.GeoMap({
                                                     mapId: "geomap_#{map.id}",
                                                     fixed: true,
-                                                    layer: {
-	                                                    popover: undefined,
-	                                                    clusterMarkers: "#{map.type}" == "SOLR_QUERY",
-                                                        markerIcon: (icon => icon)(#{map.markerAsJSON})
-                                                    }
+                                                    layers: [
+                                			            <ui:repeat value="#{map.featureSets}" var="featureSet">
+                                			            {
+	                                			            clusterMarkers : #{featureSet.queryResultSet},
+	    					            	    			popoverOnHover : #{featureSet.queryResultSet},
+	    					            	    			markerIcon : #{featureSet.markerAsJSON},
+	    					            	    			allowMovingFeatures: #{geoMapBean.isActiveFeatureSet(featureSet)},
+	                                                        features: #{featureSet.featuresAsString},
+	    					            	    			<ui:fragment rendered="#{featureSet.queryResultSet}">
+		    					            	    			heatmap: {
+		    					            	                	enabled: #{configurationBean.useHeatmapForCMSMaps()},
+		    					            	                	heatmapUrl:  "#{geoMapBean.heatmapUrl}",
+		    								    		          	featureUrl:  "#{geoMapBean.featureUrl}",
+		    					            	    		        filterQuery: "#{featureSet.solrQueryEncoded}",
+		    								    		      	    labelField:  "#{featureSet.markerTitleField}",
+		    					            	                },
+	    							    		      	    </ui:fragment>
+                                			            },
+                                			            </ui:repeat>
+                                                     ],
                                                 });
-                                                let view = #{map.initialView};
-                                                let features = #{map.featuresAsString};
-                                                geoMap.init(view, features);
+                                                geoMap.init(#{map.initialView});
                                             })
                                             </script>
                                     </div>

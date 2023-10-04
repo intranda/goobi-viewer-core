@@ -81,12 +81,12 @@
                                             <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                                 <li>
                                                     <h:outputLink rendered="#{configurationBean.isTranslateFacetFieldLabels(field.key)}"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                         #{msg[facet.label]} (#{facet.count})
                                                         <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
                                                     </h:outputLink>
                                                     <h:outputLink rendered="#{!configurationBean.isTranslateFacetFieldLabels(field.key)}"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                         #{facet.label} (#{facet.count})
                                                         <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.label}" />
                                                     </h:outputLink>

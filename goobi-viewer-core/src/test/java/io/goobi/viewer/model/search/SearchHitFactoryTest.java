@@ -320,4 +320,36 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
                 .getComboValueShort(0)
                 .contains("<span class=\"search-list--highlight\">ipsum</span> dolor"));
     }
+
+    /**
+     * @see SearchHitFactory#findAdditionalMetadataFieldsContainingSearchTerms(Map,Map,Set,String,String)
+     * @verifies not add highlighting to nohighlight fields
+     */
+    @Test
+    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddHighlightingToNohighlightFields() throws Exception {
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
+        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
+
+        StructElement se = new StructElement();
+        se.getMetadataFields().put("MD_IDENTIFIER", Collections.singletonList("id10T"));
+        Assert.assertEquals(1, se.getMetadataFields().size());
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "id10T", })));
+        searchTerms.put("MD_IDENTIFIER", new HashSet<>(Arrays.asList(new String[] { "id10T" })));
+
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
+        factory.getAdditionalMetadataNoHighlightFields().add("MD_IDENTIFIER");
+        List<MetadataWrapper> result =
+                factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
+                        String.valueOf(se.getLuceneId()), be.getLabel());
+        if (!result.isEmpty()) {
+            for (MetadataWrapper mw : result) {
+                be.getMetadataList().add(mw.getMetadata());
+            }
+        }
+
+        Assert.assertEquals(1, be.getMetadataList("MD_IDENTIFIER").size());
+        Assert.assertEquals("id10T", be.getMetadataList("MD_IDENTIFIER").get(0).getValues().get(0).getComboValueShort(0));
+    }
 }

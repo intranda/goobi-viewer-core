@@ -25,6 +25,7 @@ import java.sql.SQLException;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * extends cms_record_notes table by row 'note_type' which discriminates between the implementing classes. Existing notes are set to note_type =
@@ -41,7 +42,7 @@ public class CMSRecordNoteUpdate implements IModelUpdate {
      * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
      */
     @Override
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         dao.executeUpdate("UPDATE cms_record_notes SET note_type='SINGLE' WHERE note_type IS NULL");
         dao.executeUpdate("ALTER TABLE cms_record_notes MODIFY record_title varchar(4096)");
         dao.executeUpdate("ALTER TABLE cms_record_notes ALTER record_title SET DEFAULT ''");

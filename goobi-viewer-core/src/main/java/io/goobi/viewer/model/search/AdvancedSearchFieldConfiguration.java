@@ -28,6 +28,9 @@ public class AdvancedSearchFieldConfiguration {
 
     public static final int DEFAULT_THRESHOLD = 10;
 
+    public static final String SELECT_TYPE_BADGES = "badges";
+    public static final String SELECT_TYPE_DROPDOWN = "dropdown";
+
     private final String field;
     private String label;
     private boolean hierarchical;
@@ -36,6 +39,7 @@ public class AdvancedSearchFieldConfiguration {
     private boolean disabled;
     private boolean visible = false;
     private int displaySelectItemsThreshold = DEFAULT_THRESHOLD;
+    private String selectType = SELECT_TYPE_DROPDOWN;
 
     /**
      *
@@ -167,4 +171,21 @@ public class AdvancedSearchFieldConfiguration {
         this.displaySelectItemsThreshold = displaySelectItemsThreshold;
         return this;
     }
+
+    /**
+     * @return the selectType
+     */
+    public String getSelectType() {
+        return selectType;
+    }
+
+    /**
+     * @param selectType the selectType to set
+     * @return this
+     */
+    public AdvancedSearchFieldConfiguration setSelectType(String selectType) {
+        this.selectType = selectType;
+        return this;
+    }
+
 }

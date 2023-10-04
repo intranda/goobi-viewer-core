@@ -54,6 +54,10 @@ public class ViewerPage {
         this.label = label;
     }
 
+    /**
+     * 
+     * @param page
+     */
     public ViewerPage(CMSPage page) {
         this.label = page.getTitleTranslations();
         this.link = URI.create(page.getUrl());

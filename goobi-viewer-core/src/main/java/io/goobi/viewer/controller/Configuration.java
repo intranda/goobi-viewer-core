@@ -41,6 +41,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.faces.model.SelectItem;
+
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.XMLConfiguration;
@@ -57,6 +59,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.model.FeatureSetConfiguration;
+import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -69,6 +73,8 @@ import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
+import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataView;
@@ -76,6 +82,7 @@ import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
@@ -121,7 +128,7 @@ public class Configuration extends AbstractConfiguration {
     private static final String XML_PATH_ATTRIBUTE_TYPE = "[@type]";
     private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
 
-    private static final String XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD = "search.advanced.searchFields.field";
+    private static final String XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE = "search.advanced.searchFields.template";
     private static final String XML_PATH_SEARCH_SORTING_FIELD = "search.sorting.field";
     private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
     private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
@@ -479,18 +486,17 @@ public class Configuration extends AbstractConfiguration {
      * Returns the list of configured metadata for {@link Highlight}s which reference a record.
      *
      * @param template a {@link java.lang.String} object.
-     * @should return correct template configuration
      * @should return default template configuration if requested not found
-     * @should return default template if template is null
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getHighlightMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.highlightMetadataList.template");
-        if (templateList == null) {
-            return new ArrayList<>(); // must be a mutable list!
+        if (templateList != null && !templateList.isEmpty()) {
+            logger.warn("Old <searchHitMetadataList> configuration found - please migrate to <metadataList type=\"searchHit\">.");
+            return getMetadataForTemplate(template, templateList, true, true);
         }
 
-        return getMetadataForTemplate(template, templateList, true, true);
+        return getMetadataConfigurationForTemplate("highlight", template, true, true);
     }
 
     /**
@@ -584,22 +590,7 @@ public class Configuration extends AbstractConfiguration {
         if (templateList == null) {
             return new ArrayList<>();
         }
-
-        HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
-        HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
-            if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
-                usingTemplate = subElement;
-                break;
-            } else if (VALUE_DEFAULT.equals(subElement.getString(XML_PATH_ATTRIBUTE_NAME))) {
-                defaultTemplate = subElement;
-            }
-        }
-
-        // If the requested template does not exist in the config, use _DEFAULT
-        if (usingTemplate == null && fallbackToDefaultTemplate) {
-            usingTemplate = defaultTemplate;
-        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
         if (usingTemplate == null) {
             return new ArrayList<>();
         }
@@ -631,6 +622,39 @@ public class Configuration extends AbstractConfiguration {
             if (md != null) {
                 ret.add(md);
             }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Selects template from given list and optionally returns default template configuration.
+     * 
+     * @param templateList
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return
+     */
+    static HierarchicalConfiguration<ImmutableNode> selectTemplate(List<HierarchicalConfiguration<ImmutableNode>> templateList, String template,
+            boolean fallbackToDefaultTemplate) {
+        if (templateList == null) {
+            return null;
+        }
+
+        HierarchicalConfiguration<ImmutableNode> ret = null;
+        HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
+            if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
+                ret = subElement;
+                break;
+            } else if (StringConstants.DEFAULT_NAME.equals(subElement.getString(XML_PATH_ATTRIBUTE_NAME))) {
+                defaultTemplate = subElement;
+            }
+        }
+
+        // If the requested template does not exist in the config, use _DEFAULT
+        if (ret == null && fallbackToDefaultTemplate) {
+            ret = defaultTemplate;
         }
 
         return ret;
@@ -747,6 +771,100 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return getMetadataForTemplate(template, templateList, true, false);
+    }
+
+    public Map<String, Metadata> getGeomapFeatureConfigurations(String option) {
+        if (StringUtils.isBlank(option)) {
+            return Collections.emptyMap();
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .map(config -> config.configurationsAt("title.template"))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        return loadGeomapLabelConfigurations(templates);
+    }
+
+    public Map<String, Metadata> getGeomapEntityConfigurations(String option) {
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .map(config -> config.configurationsAt("entity.title.template"))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        return loadGeomapLabelConfigurations(templates);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public List<SelectItem> getGeomapFeatureTitleOptions() {
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.option");
+        if (configs != null && !configs.isEmpty()) {
+            return configs.stream()
+                    .map(config -> {
+                        String value = config.getString("[@name]", null);
+                        String label = config.getString("[@label]", value); //NOSONAR specific path
+                        return new SelectItem(value, label);
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
+    }
+
+    public View getGeomapDefaultView() {
+        double zoom = getLocalFloat("maps.view.zoom", 5f);
+        double lng = getLocalFloat("maps.view.center.lng", 11.073397f);
+        double lat = getLocalFloat("maps.view.center.lat", 49.451993f);
+        return new View(zoom, lng, lat);
+    }
+
+    public Map<String, List<LabeledValue>> getGeomapFilters() {
+        List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = this.getLocalConfigurationsAt("maps.filters.filter");
+        Map<String, List<LabeledValue>> filters = new HashMap<>();
+        for (HierarchicalConfiguration<ImmutableNode> config : filterConfigs) {
+            String groupName = config.getString("featureGroup", "");
+            List<LabeledValue> fields = config.configurationsAt("field").stream().map(c -> {
+                String field = c.getString(".");
+                String label = c.getString("[@label]", "");
+                String styleClass = c.getString("[@styleClass]", "");
+                return new LabeledValue(field, label, styleClass);
+            })
+                    .collect(Collectors.toList());
+            filters.put(groupName, fields);
+        }
+        return filters;
+    }
+
+    public List<FeatureSetConfiguration> getRecordGeomapFeatureSetConfigs(String templateName) {
+        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getLocalConfigurationsAt("maps.record.template"), templateName, true);
+        if (template != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = template.configurationsAt("featureSets.featureSet");
+            return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private static Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
+        if (templateList == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Metadata> map = new HashMap<>();
+        for (HierarchicalConfiguration<ImmutableNode> template : templateList) {
+            String name = template.getString("[@name]", "_DEFAULT");
+            Metadata md = getMetadataForTemplate(name, templateList, true, false).stream().findAny().orElse(null);
+            if (md != null) {
+                map.put(name, md);
+            }
+        }
+        return map;
     }
 
     /**
@@ -1445,11 +1563,24 @@ public class Configuration extends AbstractConfiguration {
      * getAdvancedSearchFields.
      * </p>
      *
-     * @should return all values
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @param language
      * @return a {@link java.util.List} object.
+     * @should return all values
+     * @should return skip fields that don't match given language
      */
-    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
+    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate, String language) {
+        logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate);
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return new ArrayList<>();
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
+        if (usingTemplate == null) {
+            return new ArrayList<>();
+        }
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = usingTemplate.configurationsAt("field");
         if (fieldList == null) {
             return new ArrayList<>();
         }
@@ -1457,16 +1588,21 @@ public class Configuration extends AbstractConfiguration {
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
         for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             String field = subElement.getString(".");
+
             if (StringUtils.isEmpty(field)) {
                 logger.warn("No advanced search field name defined, skipping.");
                 continue;
+            } else if (isLanguageVersionOtherThan(field, language != null ? language : "en")) {
+                // logger.trace("Field {} belongs to different language; skipping", field);
+                continue;
             }
-            String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, null);
+            String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, field);
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
             boolean visible = subElement.getBoolean("[@visible]", false);
             int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
+            String selectType = subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
@@ -1475,7 +1611,8 @@ public class Configuration extends AbstractConfiguration {
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
-                    .setDisplaySelectItemsThreshold(displaySelectItemsThreshold));
+                    .setDisplaySelectItemsThreshold(displaySelectItemsThreshold)
+                    .setSelectType(selectType));
         }
 
         return ret;
@@ -1541,6 +1678,19 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getDisplayAdditionalMetadataSnippetFields() {
         return getDisplayAdditionalMetadataFieldsByType("snippet", false);
     }
+    
+    /**
+     * <p>
+     * getDisplayAdditionalMetadataNoHighlightFields.
+     * </p>
+     *
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataNoHighlightFields() {
+        return getDisplayAdditionalMetadataFieldsByType("nohighlight", false);
+    }
+
 
     /**
      *
@@ -1580,11 +1730,13 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
+     * @param template
+     * @param fallbackToDefaultTemplate
      * @return a boolean.
      * @should return correct value
      */
-    public boolean isAdvancedSearchFieldHierarchical(String field) {
-        return isAdvancedSearchFieldHasAttribute(field, "hierarchical");
+    public boolean isAdvancedSearchFieldHierarchical(String field, String template, boolean fallbackToDefaultTemplate) {
+        return isAdvancedSearchFieldHasAttribute(field, "hierarchical", template, fallbackToDefaultTemplate);
     }
 
     /**
@@ -1593,11 +1745,13 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
+     * @param template
+     * @param fallbackToDefaultTemplate
      * @return a boolean.
      * @should return correct value
      */
-    public boolean isAdvancedSearchFieldRange(String field) {
-        return isAdvancedSearchFieldHasAttribute(field, "range");
+    public boolean isAdvancedSearchFieldRange(String field, String template, boolean fallbackToDefaultTemplate) {
+        return isAdvancedSearchFieldHasAttribute(field, "range", template, fallbackToDefaultTemplate);
     }
 
     /**
@@ -1609,18 +1763,28 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @should return correct value
      */
-    public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
-        return isAdvancedSearchFieldHasAttribute(field, "untokenizeForPhraseSearch");
+    public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field, String template, boolean fallbackToDefaultTemplate) {
+        return isAdvancedSearchFieldHasAttribute(field, "untokenizeForPhraseSearch", template, fallbackToDefaultTemplate);
     }
 
     /**
      *
      * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
      * @return
      * @should return correct value
      */
-    public int getAdvancedSearchFieldDisplaySelectItemsThreshold(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
+    public int getAdvancedSearchFieldDisplaySelectItemsThreshold(String field, String template, boolean fallbackToDefaultTemplate) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
+        if (usingTemplate == null) {
+            return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
+        }
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = usingTemplate.configurationsAt("field");
         if (fieldList == null) {
             return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
         }
@@ -1635,16 +1799,57 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     *
+     * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldSelectType(String field, String template, boolean fallbackToDefaultTemplate) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
+        if (usingTemplate == null) {
+            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        }
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = usingTemplate.configurationsAt("field");
+        if (fieldList == null) {
+            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
+            }
+        }
+
+        return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+    }
+
+    /**
      * <p>
      * isAdvancedSearchFieldHierarchical.
      * </p>
      *
      * @param field a {@link java.lang.String} object.
+     * @param template
+     * @param fallbackToDefaultTemplate
      * @return Label attribute value for the given field name
      * @should return correct value
      */
-    public String getAdvancedSearchFieldSeparatorLabel(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
+    public String getAdvancedSearchFieldSeparatorLabel(String field, String template, boolean fallbackToDefaultTemplate) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return null;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
+        if (usingTemplate == null) {
+            return null;
+        }
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = usingTemplate.configurationsAt("field");
         if (fieldList == null) {
             return null;
         }
@@ -1662,10 +1867,20 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param field Advanced search field name
      * @param attribute Attribute name
+     * @param template
+     * @param fallbackToDefaultTemplate
      * @return
      */
-    boolean isAdvancedSearchFieldHasAttribute(String field, String attribute) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_FIELD);
+    boolean isAdvancedSearchFieldHasAttribute(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return false;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
+        if (usingTemplate == null) {
+            return false;
+        }
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = usingTemplate.configurationsAt("field");
         if (fieldList == null) {
             return false;
         }
@@ -2927,10 +3142,12 @@ public class Configuration extends AbstractConfiguration {
      * getDefaultSortField.
      * </p>
      *
+     * @param language
      * @return a {@link java.lang.String} object.
      * @should return correct value
+     * @should return correct language value
      */
-    public String getDefaultSortField() {
+    public String getDefaultSortField(String language) {
         List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         if (fields == null || fields.isEmpty()) {
             return SolrConstants.SORT_RELEVANCE;
@@ -2938,7 +3155,10 @@ public class Configuration extends AbstractConfiguration {
 
         for (HierarchicalConfiguration<ImmutableNode> fieldConfig : fields) {
             if (fieldConfig.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false)) {
-                return fieldConfig.getString(".");
+                String field = fieldConfig.getString(".");
+                if (StringUtils.isEmpty(language) || !field.contains(SolrConstants.MIDFIX_LANG) || field.endsWith(language.toUpperCase())) {
+                    return field;
+                }
             }
 
         }
@@ -2960,15 +3180,17 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @param language
      * @return List of {@link SearchSortingOption}s from configured sorting fields
      * @should place default sorting field on top
      * @should handle descending configurations correctly
      * @should ignore secondary fields from default config
+     * @should ignore fields with mismatched language
      */
-    public List<SearchSortingOption> getSearchSortingOptions() {
+    public List<SearchSortingOption> getSearchSortingOptions(String language) {
         List<SearchSortingOption> options = new ArrayList<>();
         //default option
-        String defaultField = getDefaultSortField();
+        String defaultField = getDefaultSortField(language);
         if (defaultField.charAt(0) == '!') {
             defaultField = defaultField.substring(1);
         }
@@ -2986,7 +3208,9 @@ public class Configuration extends AbstractConfiguration {
                 field = field.substring(0, field.indexOf(";"));
             }
             SearchSortingOption option = new SearchSortingOption(field, true);
-            if (!options.contains(option)) {
+            // Add option unless already in the list or there's a direct language mismatch
+            if (!options.contains(option) && (StringUtils.isEmpty(language) || !option.getField().contains(SolrConstants.MIDFIX_LANG)
+                    || option.getField().endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase()))) {
                 options.add(new SearchSortingOption(field, true));
                 // Add descending option for most fields
                 if (!SolrConstants.SORT_RANDOM.equals(field) && !SolrConstants.SORT_RELEVANCE.equals(field)) {
@@ -3905,22 +4129,7 @@ public class Configuration extends AbstractConfiguration {
         if (templateList == null) {
             return new ArrayList<>();
         }
-
-        HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
-        HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
-            if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
-                usingTemplate = subElement;
-                break;
-            } else if (VALUE_DEFAULT.equals(subElement.getString(XML_PATH_ATTRIBUTE_NAME))) {
-                defaultTemplate = subElement;
-            }
-        }
-
-        // If the requested template does not exist in the config, use _DEFAULT
-        if (usingTemplate == null && fallbackToDefaultTemplate) {
-            usingTemplate = defaultTemplate;
-        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
         if (usingTemplate == null) {
             return new ArrayList<>();
         }
@@ -4000,7 +4209,7 @@ public class Configuration extends AbstractConfiguration {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;
                     break;
-                } else if (VALUE_DEFAULT.equals(templateName)) {
+                } else if (StringConstants.DEFAULT_NAME.equals(templateName)) {
                     defaultTemplate = subElement;
                 }
             }
@@ -4049,7 +4258,7 @@ public class Configuration extends AbstractConfiguration {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;
                     break;
-                } else if (VALUE_DEFAULT.equals(templateName)) {
+                } else if (StringConstants.DEFAULT_NAME.equals(templateName)) {
                     defaultTemplate = subElement;
                 }
             }
@@ -5254,6 +5463,20 @@ public class Configuration extends AbstractConfiguration {
 
     }
 
+    public String getRecordGeomapMarker(String templateName, String type) {
+        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getLocalConfigurationsAt("maps.record.template"), templateName, true);
+        if (template != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> configs = template.configurationsAt("marker");
+            return configs.stream()
+                    .filter(config -> config.getString("[@type]", "").equals(type))
+                    .findAny()
+                    .map(config -> config.getString(".", ""))
+                    .orElse("");
+        } else {
+            return "";
+        }
+    }
+
     /**
      * @param config
      * @param marker
@@ -5277,6 +5500,9 @@ public class Configuration extends AbstractConfiguration {
             marker.setShadow(config.getBoolean("[@shadow]", marker.isShadow()));
             marker.setUseDefault(config.getBoolean("[@useDefaultIcon]", marker.isUseDefault()));
             marker.setHighlightIcon(config.getString("[@highlightIcon]", marker.getHighlightIcon()));
+            marker.setType(Optional.ofNullable(MarkerType.getTypeByName(config.getString("[@type]", MarkerType.EXTRA_MARKERS.getName())))
+                    .orElse(MarkerType.EXTRA_MARKERS));
+            marker.setClassName(config.getString("[@class]", ""));
             return marker;
         }
         return new GeoMapMarker("");
@@ -5302,7 +5528,7 @@ public class Configuration extends AbstractConfiguration {
             if (name.equalsIgnoreCase(subConf.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 conf = subConf;
                 break;
-            } else if (VALUE_DEFAULT.equalsIgnoreCase(subConf.getString(XML_PATH_ATTRIBUTE_NAME))) {
+            } else if (StringConstants.DEFAULT_NAME.equalsIgnoreCase(subConf.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 defaultConf = subConf;
             }
         }
@@ -5439,6 +5665,43 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getAllowedFacetsForExpandQuery() {
         return getLocalList("search.useFacetsAsExpandQuery.facetQuery");
+    }
+
+    /**
+     *
+     * @return
+     * @should return correct value
+     */
+    public boolean isSearchResultGroupsEnabled() {
+        return getLocalBoolean("search.resultGroups[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all configured elements
+     */
+    public List<SearchResultGroup> getSearchResultGroups() {
+        List<SearchResultGroup> ret = new ArrayList<>();
+
+        List<HierarchicalConfiguration<ImmutableNode>> groupNodes = getLocalConfigurationsAt("search.resultGroups.group");
+        for (HierarchicalConfiguration<ImmutableNode> groupNode : groupNodes) {
+            String name = groupNode.getString(XML_PATH_ATTRIBUTE_NAME);
+            if (StringUtils.isBlank(name)) {
+                logger.warn("search/resultGroups/group/@name may not be empty.");
+                continue;
+            }
+            String query = groupNode.getString("[@query]");
+            if (StringUtils.isBlank(query)) {
+                logger.warn("search/resultGroups/group/@query may not be empty.");
+                continue;
+            }
+            int previewHitCount = groupNode.getInt("[@previewHitCount]", 10);
+            boolean useAsAdvancedSearchTemplate = groupNode.getBoolean("[@useAsAdvancedSearchTemplate]", false);
+            ret.add(new SearchResultGroup(name, query, previewHitCount, useAsAdvancedSearchTemplate));
+        }
+
+        return ret;
     }
 
     /**
@@ -5625,5 +5888,32 @@ public class Configuration extends AbstractConfiguration {
 
     public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
+    }
+
+    /**
+     * @param field
+     * @param language
+     * @return
+     */
+    public static boolean isLanguageVersionOtherThan(String field, String language) {
+        return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
+    }
+
+    public Optional<String> getStringFormat(String type, Locale locale) {
+
+        String path = String.format("viewer.formats.%s.%s", type, locale.getLanguage());
+        return Optional.ofNullable(getLocalString(path, null));
+    }
+
+    public boolean isGeomapCachingEnabled() {
+        return getLocalBoolean("maps.caching[@enabled]",false);
+    }
+    
+    public long getCMSGeomapCachingUpdateInterval() {
+        return getLocalInt("maps.caching.updateInterval", 5);
+    }
+    
+    public long getCMSGeomapCachingTimeToLive() {
+        return getLocalInt("maps.caching.timeToLive", 6);
     }
 }

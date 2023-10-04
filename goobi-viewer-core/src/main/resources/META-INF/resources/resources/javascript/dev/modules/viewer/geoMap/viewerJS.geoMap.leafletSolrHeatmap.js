@@ -384,7 +384,6 @@ if (typeof L !== 'undefined') {
 	       		return _this._createMarker(_this._computeTotalChildHits(cluster));
 	       	}
 	    });
-	
 		_this.featureGroup.removeAllMarkers();
 	
 	    $.each(_this.facetHeatmap.counts_ints2D, function(row, value) {

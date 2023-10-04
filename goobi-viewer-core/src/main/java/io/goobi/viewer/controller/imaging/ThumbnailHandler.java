@@ -29,12 +29,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -57,6 +58,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -175,12 +179,30 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(String pi, int width, int height)
             throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        return getImageUrl(pi, width, height, "jpg");
+    }
+    
+    /**
+     * Returns a link to the representative image for the given pi with the given width and height. If the pi doesn't match an indexed item, null is
+     * returned
+     *
+     * @param pi the persistent identifier of the work which representative we want
+     * @param width the width of the image
+     * @param height the height of the image
+     * @param the file extension of the desiref format. Possible values are 'jpg', 'tif' and 'png'
+     * @return The url string or null of no work is found
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public String getImageUrl(String pi, int width, int height, String format)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
 
         if (iiifUrlHandler.getUrlManager() != null) {
             String size = "!" + width + "," + height;
             return iiifUrlHandler.getUrlManager()
                     .path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF)
-                    .params(pi, "full", size, "0", StringConstants.DEFAULT, "jpg")
+                    .params(pi, "full", size, "0", StringConstants.DEFAULT, format)
                     .build();
         }
 
@@ -320,9 +342,13 @@ public class ThumbnailHandler {
      */
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
-        IPageLoader pageLoader = AbstractPageLoader.create(struct);
-        return pageLoader.getPage(order);
+        if(doc != null) {
+            StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+            IPageLoader pageLoader = AbstractPageLoader.create(struct);
+            return pageLoader.getPage(order);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -337,6 +363,33 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
         return getThumbnailUrl(page, getScale(width, height));
     }
+    
+    /**
+     * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
+     * bounds and keeps the image proportions
+     *
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param width a int.
+     * @param height a int.
+     * @param the file extension of the desiref format. Possible values are 'jpg', 'tif' and 'png'
+     * @return a {@link java.lang.String} object.
+     */
+    public String getImageUrl(PhysicalElement page, int width, int height, String format) {
+        return getImageUrl(page, getScale(width, height), getImageFileFormat(page, format));
+    }
+
+    public static ImageFileFormat getImageFileFormat(PhysicalElement page, String format) {
+        if ("MASTER".equalsIgnoreCase(format)) {
+            return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
+        } else {
+            ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);  
+            if(iff == null) {
+                return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
+            } else {
+                return iff;
+            }
+        }
+    }
 
     /**
      * <p>
@@ -348,6 +401,22 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(PhysicalElement page, Scale scale) {
+        return getImageUrl(page, scale, ImageFileFormat.JPG);
+    }
+        
+        
+        /**
+         * <p>
+         * getThumbnailUrl.
+         * </p>
+         *
+         * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+         * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+         * @param the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
+         * @return a {@link java.lang.String} object.
+         */
+        public String getImageUrl(PhysicalElement page, Scale scale, ImageFileFormat format) {
+
 
         String path = getImagePath(page);
         if (path == null) {
@@ -360,7 +429,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, null, scale, null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT, "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT, format.getFileExtension());
         }
     }
 
@@ -566,7 +635,7 @@ public class ThumbnailHandler {
         if (path == null) {
             return "";
         }
-        ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(path);
+        ImageFileFormat format = getImageFileFormat(page, path);
         if (format == null) {
             logger.warn("Format not recognized for: {}", path);
             return "";
@@ -699,12 +768,40 @@ public class ThumbnailHandler {
      *         digital material and - depending on configuration - anchors)
      */
     private String getImagePath(StructElement doc) {
+        if (doc == null) {
+            return null;
+        }
+        // logger.trace("getImagePath: {}", doc.getPi());
+
         String thumbnailUrl = null;
         String anchorThumbnailMode = DataManager.getInstance().getConfiguration().getAnchorThumbnailMode();
 
-        if (doc == null) {
-            return null;
+        if (doc.isCmsPage() && doc.getPi().startsWith("CMS")) {
+            // CMS page
+            int id = Integer.parseInt(doc.getPi().substring(3));
+            try {
+                CMSPage page = DataManager.getInstance().getDao().getCMSPage(id);
+                if (page != null) {
+                    CMSMediaContent item = page.getPersistentComponents()
+                            .stream()
+                            .map(PersistentCMSComponent::getContentItems)
+                            .flatMap(List::stream)
+                            .filter(CMSMediaContent.class::isInstance)
+                            .map(CMSMediaContent.class::cast)
+                            .findFirst()
+                            .orElse(null);
+                    if (item != null) {
+                        thumbnailUrl = item.getUrl();
+                    }
+                } else {
+                    logger.warn("CMS page not found: {}", id);
+                }
+            } catch (DAOException | UnsupportedEncodingException e) {
+                logger.error(e.getMessage());
+            }
+
         } else if (doc.isAnchor()) {
+            // Anchor
             if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(anchorThumbnailMode)) {
                 thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
             } else if (ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(anchorThumbnailMode)) {
@@ -712,7 +809,7 @@ public class ThumbnailHandler {
                     StructElement volume = doc.getFirstVolume(Arrays.asList(REQUIRED_SOLR_FIELDS));
                     if (volume != null) {
                         String volumeImagePath = getImagePath(volume);
-                        if(StringUtils.isNotBlank(volumeImagePath) && !URI.create(volumeImagePath).isAbsolute()) {                            
+                        if (StringUtils.isNotBlank(volumeImagePath) && !URI.create(volumeImagePath).isAbsolute()) {
                             thumbnailUrl = volume.getPi() + "/" + getImagePath(volume);
                         } else {
                             thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
@@ -780,6 +877,7 @@ public class ThumbnailHandler {
                                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                                 break;
                             default:
+                                logger.warn("mime type not suppoerted: {}", baseMimeType);
                                 break;
                         }
                     }

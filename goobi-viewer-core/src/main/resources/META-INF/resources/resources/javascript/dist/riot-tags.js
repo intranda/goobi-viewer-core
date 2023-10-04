@@ -806,7 +806,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
+riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" aria-label="Start" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" aria-label="End" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
 
 
 		this.yearList = [1];
@@ -819,9 +819,11 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 			this.rangeFillColor = window.getComputedStyle(this.refs?.range)?.backgroundColor;
 			this.rangeOpacity = window.getComputedStyle(this.refs?.range)?.opacity;
 
+			let completeYearMap = this.generateCompleteYearMap(this.opts.datamap);
+
 			let chartElement = this.refs.chart;
-			this.yearList = Array.from(this.opts.datamap.keys()).map(y => parseInt(y));
-			this.yearValues = Array.from(this.opts.datamap.values());
+			this.yearList = Array.from(completeYearMap.keys()).map(y => parseInt(y));
+			this.yearValues = Array.from(completeYearMap.values());
 			this.startYear = parseInt(opts.startYear);
 			this.endYear = parseInt(opts.endYear);
 			this.minYear = this.yearList[0];
@@ -909,6 +911,18 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 				this.update();
 			}
 		})
+
+		this.generateCompleteYearMap = function(datamap) {
+			let keys = Array.from(datamap.keys());
+			let startYear = parseInt(keys[0]);
+			let endYear = parseInt(keys[keys.length-1]);
+			let yearMap = new Map();
+			for(let year = startYear; year <= endYear; year++) {
+				let value = datamap.get(year.toString());
+				yearMap.set(year, value !== undefined ? value : 0);
+			}
+			return yearMap;
+		}.bind(this)
 
 		this.drawInitialRange = function() {
 			var points = this.chart.getDatasetMeta(0).data;
@@ -1155,7 +1169,7 @@ this.initSlider = function() {
 
 			},
 		}
-	console.log("init slider", this.opts, options);
+
     $( this.refs.slider ).slider(options);
 }.bind(this)
 
@@ -2878,6 +2892,233 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
+riot.tag2('featuresetfilter', '<ul><li each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
+
+this.filters = [];
+
+this.on("mount", () => {
+	this.geomap = this.opts.geomap;
+	this.featureGroups = this.opts.featureGroups;
+	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+	this.geomap.onActiveLayerChange.subscribe(groups => {
+		this.featureGroups = groups;
+		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+ 		this.update();
+	})
+	this.update();
+})
+
+this.createFilters = function(filterMap, featureGroups) {
+	let filters = [];
+	for (const entry of filterMap.entries()) {
+		let layerName = entry[0];
+		let filterConfigs = entry[1];
+		let groups = featureGroups.filter(g => this.getLayerName(g) == layerName);
+		if(layerName && filterConfigs && filterConfigs.length > 0 && groups.length > 0) {
+			filterConfigs.forEach(filterConfig => {
+				let filter = {
+						field: filterConfig.value,
+						label: filterConfig.label,
+						styleClass: filterConfig.styleClass,
+						layers: groups,
+						options: this.findValues(groups, filterConfig.value).map(v => {
+							return {
+								name: v,
+								field: filterConfig.value
+							}
+						}),
+					};
+				filters.push(filter);
+			});
+		}
+	}
+	return filters.filter(filter => filter.options.length > 1);
+}.bind(this)
+
+this.getLayerName = function(layer) {
+	let name = viewerJS.iiif.getValue(layer.config.label, this.opts.defaultLocale);
+	return name;
+}.bind(this)
+
+this.getFilterName = function(filter) {
+	let name = viewerJS.iiif.getValue(filter.label, this.opts.defaultLocale);
+	return name;
+}.bind(this)
+
+this.findValues = function(featureGroups, filterField) {
+	return Array.from(new Set(this.findEntities(featureGroups, filterField)
+	.map(e => e[filterField]).map(a => a[0])
+	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
+}.bind(this)
+
+this.findEntities = function(featureGroups, filterField) {
+	let entities = featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+	return entities;
+}.bind(this)
+
+this.resetFilter = function(event) {
+	let filter = event.item.filter;
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
+}.bind(this)
+
+this.setFilter = function(event) {
+	let filter = this.getFilterForField(event.item.option.field);
+	let value = event.item.option.name;
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
+}.bind(this)
+
+this.isShowMarker = function(entity, filter, value) {
+	let filters = this.filters.filter(f => f.layers.filter(g => filter.layers.includes(g)).length > 0);
+
+	filter.selectedValue = value;
+	let match = filters.map(filter => {
+		if(filter.selectedValue) {
+			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
+			return show;
+		} else {
+			return true;
+		}
+	})
+	.every(match => match);
+	return match;
+}.bind(this)
+
+this.getFilterForField = function(field) {
+	return this.filters.find(f => f.field == field);
+}.bind(this)
+
+});
+riot.tag2('featuresetselector', '<div class="tab" if="{featureGroups.length > 1}"><button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? \'-active\':\'\'}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button></div>', '', '', function(opts) {
+
+this.featureGroups = [];
+
+this.on("mount", () => {
+	this.featureGroups = opts.featureGroups;
+	this.geomap = opts.geomap;
+	this.update();
+})
+
+this.setFeatureGroup = function(event) {
+	let featureGroup = event.item.featureGroup;
+	this.geomap.setActiveLayers([featureGroup]);
+}.bind(this)
+
+this.getLabel = function(featureGroup) {
+	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
+}.bind(this)
+
+this.isActive = function(featureGroup) {
+	return featureGroup.active;
+}.bind(this)
+
+});
+riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', 'onclick="{preventBubble}"', function(opts) {
+
+this.entities = [];
+this.filteredEntities = undefined;
+
+this.on("mount", () => {
+	this.opts.featureGroups.forEach(group => {
+		group.onFeatureClick.subscribe(f => {
+			this.title = f.properties?.title;
+			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getEntityLabel(e)?.length > 0));
+		});
+	})
+	this.opts.geomap.onMapClick.subscribe(e => this.hide());
+	this.hide();
+})
+
+this.setEntities = function(entities) {
+
+	this.entities = [];
+	this.filteredEntities = undefined;
+	if(this.refs["search"]) {
+		this.refs["search"].value = "";
+	}
+	if(entities?.length || this.opts.showAlways) {
+		this.entities = entities;
+		this.show();
+		this.update();
+	}
+}.bind(this)
+
+this.getVisibleEntities = function() {
+	if(!this.entities) {
+		return [];
+	} else if(this.filteredEntities === undefined) {
+		return this.entities;
+	} else {
+		return this.filteredEntities;
+	}
+}.bind(this)
+
+this.preventBubble = function(e) {
+	event.stopPropagation();
+}.bind(this)
+
+this.filterList = function(e) {
+	let filter = e.target.value;
+	if(filter) {
+		this.filteredEntities = this.entities.filter(e => this.getLabel(e).toLowerCase().includes(filter.toLowerCase() ));
+	} else {
+		this.filteredEntities = undefined;
+	}
+}.bind(this)
+
+this.getEntityLabel = function(entity) {
+	if(entity) {
+		return this.getLabel(entity);
+	}
+}.bind(this)
+
+this.getListLabel = function() {
+	if(this.title) {
+		let label = viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
+	}
+}.bind(this)
+
+this.getLink = function(entity) {
+	if(entity) {
+		let labels = this.opts.entityLinkFormat;
+		label = labels.map(format => {
+			let groups = [...format.matchAll(/\${(.*?)}/g)];
+			let l = "";
+			groups.forEach(group => {
+				if(group.length > 1) {
+					let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+					if(value) {
+						l += format.replaceAll(group[0], value ? value : "");
+					}
+				}
+			})
+			return l;
+		}).join("");
+		return label;
+
+	}
+}.bind(this)
+
+this.getLabel = function(entity) {
+
+	if(entity.title) {
+		let label = viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
+	} else {
+		return "";
+	}
+
+}.bind(this)
+
+this.hide = function() {
+	this.root.style.display = "none";
+}.bind(this)
+
+this.show = function() {
+	this.root.style.display = "block";
+}.bind(this)
+
+});
 riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
@@ -2891,11 +3132,11 @@ this.on("mount", function() {
 	    this.initGeocoder(this.geoMap);
 	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
 	}
-	this.hitsLayer = this.initHitsLayer(this.geoMap);
+ 	this.hitsLayer = this.initHitsLayer(this.geoMap);
 	if(this.opts.toggleFeatures) {
 		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
 	}
-	if(this.opts.heatmap?.showSearchResultsHeatmap) {
+	if(this.opts.heatmap?.enabled) {
 		this.heatmap = this.initHeatmap(this.hitsLayer)
 	}
 });
@@ -3152,7 +3393,9 @@ this.getType = function(layer) {
 
 this.initHitsLayer = function(map) {
     this.opts.hitsLayer.language = viewerJS.translator.language;
-	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
+	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
+	map.layers.push(hitsLayer);
+	console.log("init hits layer ", this.opts.hitsLayer, hitsLayer, this.opts.features);
 	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {
 		if(f.properties && f.properties.link) {
@@ -3588,6 +3831,14 @@ this.addCloseHandler = function() {
 });
 
 
+riot.tag2('rawhtml', '', '', '', function(opts) {
+  this.on("mount", () => {
+	    this.root.innerHTML = opts.content;
+	  })
+  this.on("updated", () => {
+    this.root.innerHTML = opts.content;
+  })
+});
 riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description">{this.opts.description}</div></a>', '', '', function(opts) {
 });
 riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {

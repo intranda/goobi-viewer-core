@@ -63,6 +63,8 @@ public class CMSContentItem {
     private final String label;
 
     private final String description;
+    
+    private final String htmlGroup;
 
     private final JsfComponent jsfComponent;
 
@@ -80,6 +82,7 @@ public class CMSContentItem {
         this.jsfComponent = orig.jsfComponent;
         this.required = orig.required;
         this.owningComponent = orig.owningComponent;
+        this.htmlGroup = orig.htmlGroup;
     }
 
     /**
@@ -87,7 +90,7 @@ public class CMSContentItem {
      * @param itemId
      * @param content
      */
-    public CMSContentItem(String itemId, CMSContent content, String label, String description, JsfComponent jsfComponent,
+    public CMSContentItem(String itemId, CMSContent content, String label, String description, String htmlGroup, JsfComponent jsfComponent,
             CMSComponent owningComponent, boolean required) {
         if (StringUtils.isNotBlank(itemId)) {
             this.itemId = itemId;
@@ -106,6 +109,7 @@ public class CMSContentItem {
         this.jsfComponent = jsfComponent;
         this.required = required;
         this.owningComponent = owningComponent;
+        this.htmlGroup = htmlGroup;
     }
 
     public boolean isRequired() {
@@ -203,8 +207,24 @@ public class CMSContentItem {
         return Optional.ofNullable(this.content).map(CMSMediaContent.class::isInstance).orElse(false);
     }
 
+    public String getHtmlGroup() {
+        return Optional.ofNullable(htmlGroup).orElse("");
+    }
+    
     public CMSComponent getOwningComponent() {
         return owningComponent;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(itemId);
+        if(this.content != null) {
+            sb.append(" - ").append(this.content.getClass().getSimpleName());
+        }
+        if(StringUtils.isNotBlank(this.getHtmlGroup())) {
+            sb.append(" (").append(this.getHtmlGroup()).append(")");
+        }
+        return sb.toString();
     }
 
 }

@@ -255,6 +255,9 @@ public class AccessConditionUtils {
                     .search(query, "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 1, null,
                             Arrays.asList(SolrConstants.ACCESSCONDITION));
             if (results != null) {
+                if (results.isEmpty()) {
+                    logger.debug("No hits for permission check query: {}", query); //NOSONAR this will help identify index inconsistencies
+                }
                 for (SolrDocument doc : results) {
                     Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
                     if (fieldsAccessConddition != null) {
@@ -772,10 +775,9 @@ public class AccessConditionUtils {
         // pi already checked -> look in the session
         // logger.debug("permissions key: {}: {}", key, permissions.get(key)); // Sonar considers this log msg a security issue, so leave it commented out when not needed
 
-        AccessPermission ret = null;
         if (permissions.containsKey(key) && permissions.get(key) != null) {
-            ret = permissions.get(key);
-            //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
+            return permissions.get(key);
+            //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, ret.isGranted(), pi, contentFileName,
             //                    request.getSession().getId());
         } else {
             // TODO check for all images and save to map
@@ -785,14 +787,12 @@ public class AccessConditionUtils {
                 AccessPermission pageAccess = entry.getValue();
                 permissions.put(newKey, pageAccess);
             }
-            ret = permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
-            // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, access); // Sonar considers this log msg a security issue, so leave it commented out when not needed
             if (request != null) {
                 request.getSession().setAttribute(attributeName, permissions);
             }
+            return  permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
+            // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, ret.isGranted()); // Sonar considers this log msg a security issue, so leave it commented out when not needed
         }
-
-        return ret;
     }
 
     /**

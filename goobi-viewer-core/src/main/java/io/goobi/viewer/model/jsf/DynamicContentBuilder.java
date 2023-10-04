@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.Resource;
@@ -47,8 +48,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.CMSSlider;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -100,6 +99,7 @@ public class DynamicContentBuilder {
                                 } else {
                                     composite.getAttributes().put("linkTarget", "_blank");
                                 }
+                                composite.getAttributes().put("popoverOnHover",  map.shouldOpenPopoversOnHover());
                             }
                         } else {
                             logger.error("Cannot build GeoMap content. No map found with id = " + id);
@@ -174,6 +174,9 @@ public class DynamicContentBuilder {
             faceletContext.includeFacelet(implementation, componentResource.getURL());
         } catch (IOException e) {
             throw new FacesException(e);
+        } catch (ELException e) {
+            logger.error("Error rendering composite", e);
+            return composite;
         } finally {
             parent.popComponentFromEL(context);
         }

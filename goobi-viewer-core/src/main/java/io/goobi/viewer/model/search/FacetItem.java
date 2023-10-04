@@ -214,6 +214,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Constructs facet items from the list of given field:value combinations. Always sorted by the label translation.
      *
+     * @param existingFacetsItems List of previously generated items (e.g. via other result groups) to combine with new items
      * @param field Facet field
      * @param values Map containing facet values and their counts
      * @param hierarchical true if facet field is hierarchical; false otherwise
@@ -224,11 +225,12 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should add priority values first
      * @should set label from separate field if configured and found
      * @should group values by starting character correctly
+     * @should augment existing items with new values
+     * @should prefer existing items
      */
-    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, int groupToLength,
-            Locale locale,  Map<String, String> labelMap) {
+    public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, Map<String, Long> values,
+            boolean hierarchical, int groupToLength, Locale locale, Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field);
-        List<IFacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
 
@@ -246,42 +248,54 @@ public class FacetItem implements Serializable, IFacetItem {
             }
         }
 
+        List<IFacetItem> retList = new ArrayList<>();
         Map<String, FacetItem> existingItems = new HashMap<>();
+        // Add supplied existing items
+        if (existingFacetsItems != null) {
+            for (IFacetItem item : existingFacetsItems) {
+                if (item instanceof FacetItem) {
+                    retList.add(item);
+                    existingItems.put(item.getLink(), (FacetItem) item);
+                    //                    if (item.getField().equals("MD_TITLE_LANG_FR"))
+                    //                        logger.trace("Existing item: {}", item.getLink());
+                }
+            }
+        }
+
         for (Entry<String, Long> entry : values.entrySet()) {
             // Skip reversed values
             if (entry.getKey().charAt(0) == 1) {
                 continue;
             }
             String useValue;
+            String label;
             if (groupToLength > 0 && entry.getKey().length() > groupToLength) {
-                useValue = entry.getKey().substring(0, groupToLength);
-                // logger.trace("value: {}", entry.getKey());
+                label = entry.getKey().substring(0, groupToLength).toUpperCase();
+                useValue = label + "*";
             } else {
                 useValue = entry.getKey();
+                label = useValue;
             }
-
-            String label = useValue;
 
             String key = field + ":" + useValue;
-            if (labelMap != null && labelMap.containsKey(key)) {
-                label = labelMap.get(key);
-                logger.trace("using label from map: {}", label);
-            }
-
-            if (StringUtils.isEmpty(field)) {
-                label = new StringBuilder(useValue).append(SolrConstants.SUFFIX_DD).toString();
-            }
-            String linkValue = useValue;
-            if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
-                linkValue = '"' + linkValue + '"';
-            } else if (groupToLength > 0) {
-                linkValue += '*';
-            }
-            String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
-
             if (existingItems.containsKey(key)) {
+                //                if (field.equals("MD_TITLE_LANG_FR"))
+                //                    logger.trace("Key already exists: {}", key);
                 existingItems.get(key).increaseCount(entry.getValue());
             } else {
+                if (labelMap != null && labelMap.containsKey(key)) {
+                    label = labelMap.get(key);
+                    logger.trace("using label from map: {}", label);
+                }
+
+                if (StringUtils.isEmpty(field)) {
+                    label = new StringBuilder(useValue).append(SolrConstants.SUFFIX_DD).toString();
+                }
+                String linkValue = useValue;
+                if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                    linkValue = '"' + linkValue + '"';
+                }
+                String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
                 FacetItem facetItem =
                         new FacetItem(field, link, StringTools.intern(label), ViewerResourceBundle.getTranslation(label, locale), entry.getValue(),
                                 hierarchical);
@@ -289,6 +303,8 @@ public class FacetItem implements Serializable, IFacetItem {
                     priorityValueMap.put(useValue, facetItem);
                 } else {
                     retList.add(facetItem);
+                    //                    if (field.equals("MD_TITLE_LANG_FR"))
+                    //                        logger.trace("Adding new key: {}", key);
                 }
 
                 existingItems.put(key, facetItem);
@@ -309,6 +325,13 @@ public class FacetItem implements Serializable, IFacetItem {
                 break;
             case "alphabetical_desc":
                 Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
+                Collections.reverse(retList);
+                break;
+            case "alphanumerical":
+                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
+                break;
+            case "alphanumerica_desc":
+                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
                 Collections.reverse(retList);
                 break;
             default:
@@ -747,8 +770,7 @@ public class FacetItem implements Serializable, IFacetItem {
         public int compare(IFacetItem o1, IFacetItem o2) {
             String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
             String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
-            int ret = label1.compareTo(label2);
-            return ret;
+            return label1.compareTo(label2);
         }
 
     }

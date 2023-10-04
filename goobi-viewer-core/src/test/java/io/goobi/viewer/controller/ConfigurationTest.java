@@ -28,8 +28,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
@@ -39,6 +42,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -54,6 +58,7 @@ import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
@@ -74,6 +79,7 @@ public class ConfigurationTest extends AbstractTest {
     private static final Logger logger = LogManager.getLogger(ConfigurationTest.class);
 
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
+    public static final int NUM_ALL_SEARCH_SORTING_OPTIONS = 12;
 
     /**
      * @see Configuration#getConfigLocalPath()
@@ -309,7 +315,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getHotfolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("hotfolder", DataManager.getInstance().getConfiguration().getHotfolder());
+        Assert.assertEquals("target/hotfolder", DataManager.getInstance().getConfiguration().getHotfolder());
     }
 
     /**
@@ -623,7 +629,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getMetadataListTypes_shouldReturnAllMetadataListTypesIfPrefixEmpty() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes(null);
-        Assert.assertEquals(3, result.size());
+        Assert.assertEquals(4, result.size());
     }
 
     /**
@@ -684,6 +690,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getSearchHitMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
         Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(null).size());
+    }
+    
+    /**
+     * @see Configuration#getHighlightMetadataForTemplate(String)
+     * @verifies return default template configuration if requested not found
+     */
+    @Test
+    public void getHighlightMetadataForTemplate_shouldReturnDefaultTemplateConfigurationIfRequestedNotFound() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getHighlightMetadataForTemplate("notfound").size());
     }
 
     /**
@@ -1405,7 +1420,16 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getDefaultSortField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(SolrConstants.SORT_RANDOM, DataManager.getInstance().getConfiguration().getDefaultSortField());
+        Assert.assertEquals("SORT_TITLE_LANG_DE", DataManager.getInstance().getConfiguration().getDefaultSortField(null));
+    }
+
+    /**
+     * @see Configuration#getDefaultSortField(String)
+     * @verifies return correct language value
+     */
+    @Test
+    public void getDefaultSortField_shouldReturnCorrectLanguageValue() throws Exception {
+        Assert.assertEquals("SORT_TITLE_LANG_EN", DataManager.getInstance().getConfiguration().getDefaultSortField("en"));
     }
 
     /**
@@ -1414,9 +1438,9 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSearchSortingOptions_shouldPlaceDefaultSortingFieldOnTop() throws Exception {
-        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
-        Assert.assertEquals(10, result.size());
-        Assert.assertEquals(SolrConstants.SORT_RANDOM, result.get(0).getField());
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions(null);
+        Assert.assertEquals(NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
+        Assert.assertEquals("SORT_TITLE_LANG_DE", result.get(0).getField());
     }
 
     /**
@@ -1425,10 +1449,10 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSearchSortingOptions_shouldHandleDescendingConfigurationsCorrectly() throws Exception {
-        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
-        Assert.assertEquals(10, result.size());
-        Assert.assertEquals(SolrConstants.DATECREATED, result.get(6).getField());
-        Assert.assertEquals(SolrConstants.DATECREATED, result.get(7).getField());
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions(null);
+        Assert.assertEquals(NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
+        Assert.assertEquals(SolrConstants.DATECREATED, result.get(8).getField());
+        Assert.assertEquals(SolrConstants.DATECREATED, result.get(9).getField());
     }
 
     /**
@@ -1437,8 +1461,20 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSearchSortingOptions_shouldIgnoreSecondaryFieldsFromDefaultConfig() throws Exception {
-        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
-        Assert.assertEquals(10, result.size());
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions(null);
+        Assert.assertEquals(NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
+        Assert.assertEquals("SORT_YEARPUBLISH", result.get(10).getField());
+        Assert.assertEquals("SORT_YEARPUBLISH", result.get(11).getField());
+    }
+
+    /**
+     * @see Configuration#getSearchSortingOptions(String)
+     * @verifies ignore fields with mismatched language
+     */
+    @Test
+    public void getSearchSortingOptions_shouldIgnoreFieldsWithMismatchedLanguage() throws Exception {
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions("en");
+        Assert.assertEquals(NUM_ALL_SEARCH_SORTING_OPTIONS - 2, result.size());
         Assert.assertEquals("SORT_YEARPUBLISH", result.get(8).getField());
         Assert.assertEquals("SORT_YEARPUBLISH", result.get(9).getField());
     }
@@ -1504,9 +1540,9 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getSortFields_shouldReturnReturnAllConfiguredElements() throws Exception {
         List<String> fields = DataManager.getInstance().getConfiguration().getSortFields();
-        Assert.assertEquals(6, fields.size());
-        Assert.assertEquals("!" + SolrConstants.DATECREATED, fields.get(4));
-        Assert.assertEquals("SORT_YEARPUBLISH;SORT_TITLE", fields.get(5));
+        Assert.assertEquals(7, fields.size());
+        Assert.assertEquals("!" + SolrConstants.DATECREATED, fields.get(5));
+        Assert.assertEquals("SORT_YEARPUBLISH;SORT_TITLE", fields.get(6));
     }
 
     /**
@@ -1578,15 +1614,33 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
-        List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
-        Assert.assertEquals(11, result.size());
+        List<AdvancedSearchFieldConfiguration> result =
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, Locale.ENGLISH.getLanguage());
+        Assert.assertEquals(10, result.size());
         Assert.assertTrue(result.get(0).isHierarchical());
         Assert.assertTrue(result.get(0).isVisible());
-        Assert.assertTrue(result.get(5).isRange());
         Assert.assertTrue(result.get(1).isUntokenizeForPhraseSearch());
+        Assert.assertTrue(result.get(5).isRange());
         Assert.assertEquals("#SEPARATOR1#", result.get(7).getField());
         Assert.assertEquals("-----", result.get(7).getLabel());
         Assert.assertTrue(result.get(7).isDisabled());
+        Assert.assertEquals(20, result.get(9).getDisplaySelectItemsThreshold());
+        Assert.assertEquals(AdvancedSearchFieldConfiguration.SELECT_TYPE_BADGES, result.get(9).getSelectType());
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchFields(String,boolean,String)
+     * @verifies return skip fields that don't match given language
+     */
+    @Test
+    public void getAdvancedSearchFields_shouldReturnSkipFieldsThatDontMatchGivenLanguage() throws Exception {
+        List<AdvancedSearchFieldConfiguration> result =
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en");
+        Assert.assertEquals(10, result.size());
+
+        Assert.assertEquals("MD_FOO_LANG_EN", result.get(8).getField());
+        Assert.assertEquals("MD_FOO_LANG_DE",
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "de").get(8).getField());
     }
 
     /**
@@ -1595,7 +1649,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldHierarchical_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(SolrConstants.DC));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(SolrConstants.DC, null, true));
     }
 
     /**
@@ -1604,8 +1658,8 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldRange_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(SolrConstants.DC));
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange("MD_YEARPUBLISH"));
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(SolrConstants.DC, null, true));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange("MD_YEARPUBLISH", null, true));
     }
 
     /**
@@ -1614,8 +1668,8 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldUntokenizeForPhraseSearch_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC));
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch("MD_TITLE"));
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC, null, true));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch("MD_TITLE", null, true));
     }
 
     /**
@@ -1624,7 +1678,31 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getAdvancedSearchFieldSeparatorLabel_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("-----", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSeparatorLabel("#SEPARATOR1#"));
+        Assert.assertEquals("-----", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSeparatorLabel("#SEPARATOR1#", null, true));
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchFieldDisplaySelectItemsThreshold(String,String,boolean)
+     * @verifies return correct value
+     */
+    @Test
+    public void getAdvancedSearchFieldDisplaySelectItemsThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(20,
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getAdvancedSearchFieldDisplaySelectItemsThreshold(SolrConstants.DOCSTRCT, StringConstants.DEFAULT_NAME, false));
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchFieldSelectType(String,String,boolean)
+     * @verifies return correct value
+     */
+    @Test
+    public void getAdvancedSearchFieldSelectType_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(AdvancedSearchFieldConfiguration.SELECT_TYPE_BADGES,
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getAdvancedSearchFieldSelectType(SolrConstants.DOCSTRCT, StringConstants.DEFAULT_NAME, false));
     }
 
     /**
@@ -2503,6 +2581,18 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, results.size());
         Assert.assertEquals("MD_DESCRIPTION", results.get(0));
     }
+    
+    /**
+     * @see Configuration#getDisplayAdditionalMetadataNoHighlightFields()
+     * @verifies return correct values
+     */
+    @Test
+    public void getDisplayAdditionalMetadataNoHighlightFields_shouldReturnCorrectValues() throws Exception {
+        List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataNoHighlightFields();
+        Assert.assertNotNull(results);
+        Assert.assertEquals(1, results.size());
+        Assert.assertEquals("MD_REFID", results.get(0));
+    }
 
     @Test
     public void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws Exception {
@@ -3208,6 +3298,29 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isSearchResultGroupsEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSearchResultGroupsEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled());
+    }
+
+    /**
+     * @see Configuration#getSearchResultGroups()
+     * @verifies return all configured elements
+     */
+    @Test
+    public void getSearchResultGroups_shouldReturnAllConfiguredElements() throws Exception {
+        List<SearchResultGroup> groups = DataManager.getInstance().getConfiguration().getSearchResultGroups();
+        Assert.assertEquals(3, groups.size());
+
+        Assert.assertEquals("lido_objects", groups.get(0).getName());
+        Assert.assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
+        Assert.assertTrue(groups.get(0).isUseAsAdvancedSearchTemplate());
+    }
+
+    /**
      * @see Configuration#isCopyrightIndicatorEnabled()
      * @verifies return correct value
      */
@@ -3313,5 +3426,40 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
+    }
+
+    @Test
+    public void test_getGeomapFeatureTitleOptions() {
+        List<SelectItem> items = DataManager.getInstance().getConfiguration().getGeomapFeatureTitleOptions();
+        assertEquals(3, items.size());
+
+        assertEquals("cms__geomaps__popup_content__option__none", items.get(0).getLabel());
+        assertEquals("", items.get(0).getValue());
+
+        assertEquals("cms__geomaps__popup_content__option__place", items.get(1).getLabel());
+        assertEquals("NORM_NAME", items.get(1).getValue());
+
+        assertEquals("cms__geomaps__popup_content__option__metadata", items.get(2).getLabel());
+        assertEquals("MD_VALUE", items.get(2).getValue());
+
+    }
+
+    @Test
+    public void test_getGeomapFilters() {
+        Map<String, List<LabeledValue>> filters = DataManager.getInstance().getConfiguration().getGeomapFilters();
+        assertEquals(3, filters.size());
+        assertEquals("D", filters.get("").get(0).getValue());
+        assertEquals("", filters.get("").get(0).getLabel());
+        assertEquals("A", filters.get("X").get(0).getValue());
+        assertEquals("", filters.get("X").get(0).getLabel());
+        assertEquals("B", filters.get("Y").get(0).getValue());
+        assertEquals("b", filters.get("Y").get(0).getLabel());
+        assertEquals("C", filters.get("Y").get(1).getValue());
+        assertEquals("c", filters.get("Y").get(1).getLabel());
+    }
+    
+    @Test
+    public void testGetDateFormat() {
+        assertEquals("dd/MM/yyyy", DataManager.getInstance().getConfiguration().getStringFormat("date", Locale.ENGLISH).orElse("Not configured"));
     }
 }

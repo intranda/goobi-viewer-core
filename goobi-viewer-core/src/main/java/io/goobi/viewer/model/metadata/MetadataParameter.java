@@ -59,6 +59,7 @@ public class MetadataParameter implements Serializable {
 
         FIELD("field"),
         TRANSLATEDFIELD("translatedfield"),
+        DATEFIELD("datefield"),
         WIKIFIELD("wikifield"),
         WIKIPERSONFIELD("wikipersonfield"),
         LINK_MAPS("linkMaps"),
@@ -119,6 +120,7 @@ public class MetadataParameter implements Serializable {
     private String prefix;
     private String suffix;
     private String condition = "";
+    private String pattern = "";
     private boolean addUrl = false;
     private boolean topstructValueFallback = false;
     private boolean removeHighlighting = false;
@@ -164,10 +166,8 @@ public class MetadataParameter implements Serializable {
         } else if (!key.equals(other.key)) {
             return false;
         }
-        if (type != other.type) {
-            return false;
-        }
-        return true;
+
+        return type == other.type;
     }
 
     /**
@@ -363,6 +363,22 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * @return the pattern
+     */
+    public String getPattern() {
+        return pattern;
+    }
+
+    /**
+     * @param pattern the pattern to set
+     * @return this
+     */
+    public MetadataParameter setPattern(String pattern) {
+        this.pattern = pattern;
+        return this;
+    }
+
+    /**
      * <p>
      * isAddUrl.
      * </p>
@@ -451,6 +467,12 @@ public class MetadataParameter implements Serializable {
                 .toString();
     }
 
+    /**
+     * 
+     * @param config
+     * @param topstructValueFallbackDefaultValue
+     * @return
+     */
     public static MetadataParameter createFromConfig(HierarchicalConfiguration<ImmutableNode> config, boolean topstructValueFallbackDefaultValue) {
         String fieldType = config.getString(XML_PATH_ATTRIBUTE_TYPE);
         String source = config.getString("[@source]", null);
@@ -462,6 +484,7 @@ public class MetadataParameter implements Serializable {
         String prefix = config.getString("[@prefix]", "").replace("_SPACE_", " ");
         String suffix = config.getString("[@suffix]", "").replace("_SPACE_", " ");
         String condition = config.getString(XML_PATH_ATTRIBUTE_CONDITION);
+        String pattern = config.getString("[@pattern]");
         boolean addUrl = config.getBoolean(XML_PATH_ATTRIBUTE_URL, false);
         boolean topstructValueFallback = config.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
         boolean removeHighlighting = config.getBoolean("[@removeHighlighting]", false);
@@ -516,6 +539,7 @@ public class MetadataParameter implements Serializable {
                 .setPrefix(prefix)
                 .setSuffix(suffix)
                 .setCondition(condition)
+                .setPattern(pattern)
                 .setAddUrl(addUrl)
                 .setTopstructValueFallback(topstructValueFallback)
                 .setRemoveHighlighting(removeHighlighting)

@@ -318,7 +318,7 @@ public class CMSTemplateManager implements Serializable {
                         .collect(Collectors.toList());
             }
         } catch (IOException e) {
-            throw new IllegalArgumentException("Error reading files from " + path, e);
+            logger.warn("Failed to read template files from {}. Cause: {}", path, e.toString());
         }
 
         if (templateList == null) {

@@ -138,7 +138,7 @@
 									<h:form styleClass="widget-usage__download-image-size-form">
 										<fieldset>
 											<ui:repeat varStatus="status" var="option"
-												value="#{activeDocumentBean.viewManager.downloadOptionsForCurrentImage}">
+												value="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage)}">
 												<div class="widget-usage__download-image-size-option-wrapper">
 													<input class="widget-usage__download-image-size-input"
 													   onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
@@ -191,7 +191,7 @@
 												pt:data-triggerjs="downloadImageButtonTrigger"
 												title="#{msg.downloadButton}" target="_blank"
 												rel="nofollow noopener" aria-label="#{msg.downloadButton}"
-												value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
+												value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption, activeDocumentBean.viewManager.currentPage)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
 				                                             #{msg.downloadButton}
 				                            </h:outputLink>
 				                            <div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>

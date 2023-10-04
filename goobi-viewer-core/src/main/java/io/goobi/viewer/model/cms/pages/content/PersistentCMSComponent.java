@@ -202,6 +202,11 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
         this.templateFilename = templateFilename;
     }
 
+    public void addContent(CMSContent content) {
+        this.contentItems.add(content);
+        content.setOwningComponent(this);
+    }
+    
     @Override
     public boolean isComplete(Locale locale) {
         for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {

@@ -22,12 +22,10 @@
 package io.goobi.viewer.controller;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -47,27 +45,28 @@ import io.goobi.viewer.solr.SolrTools;
  *
  */
 public class PrettyUrlTools {
-    
+
     private static final Logger logger = LogManager.getLogger(PrettyUrlTools.class);
+
+    private PrettyUrlTools() {
+    }
 
     public static String getRecordUrl(SolrDocument doc, PageType pageType) {
         String pi = doc.containsKey(SolrConstants.PI_TOPSTRUCT) ? doc.getFirstValue(SolrConstants.PI_TOPSTRUCT).toString() : "";
-        if(StringUtils.isNotBlank(pi)) {
+        if (StringUtils.isNotBlank(pi)) {
             String logId = doc.containsKey(SolrConstants.LOGID) ? doc.getFirstValue(SolrConstants.LOGID).toString() : "";
             String thumbPageNo = doc.containsKey(SolrConstants.THUMBPAGENO) ? doc.getFirstValue(SolrConstants.THUMBPAGENO).toString() : "";
-            if(StringUtils.isNotBlank(logId)) {
+            if (StringUtils.isNotBlank(logId)) {
                 return getRecordURI(pi, thumbPageNo, logId, pageType);
-            } else {
-                return getRecordURI(pi, pageType);
             }
-        } else {
-            return "";
+            return getRecordURI(pi, pageType);
         }
+
+        return "";
     }
 
-
     public static PageType getPreferredPageType(SolrDocument doc) {
-        if(!doc.containsKey(SolrConstants.PI)) {
+        if (!doc.containsKey(SolrConstants.PI)) {
             throw new IllegalArgumentException("Can only get preferred pageType from main record document, i.e. one containing a PI field");
         }
         String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
@@ -75,8 +74,7 @@ public class PrettyUrlTools {
         boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
         Boolean hasImages = (Boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE);
 
-        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false);
-        return pageType;
+        return PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false);
     }
 
     public static List<String> getSolrFieldsToDeterminePageType() {
@@ -94,7 +92,7 @@ public class PrettyUrlTools {
 
     public static String getRecordURI(String pi, PageType pageType) {
         String prettyId = "";
-        switch(pageType) {
+        switch (pageType) {
             case viewMetadata:
                 prettyId = "metadata1";
                 break;
@@ -113,22 +111,31 @@ public class PrettyUrlTools {
     }
 
     public static String getRelativePageUrl(String prettyId, Object... parameters) {
-        URL mappedUrl =
-                PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId)
-                .getPatternParser().getMappedURL(parameters);
+        return getRelativePageUrl(PrettyContext.getCurrentInstance(), prettyId, parameters);
+    }
+    
+    public static String getRelativePageUrl(PrettyContext pretty, String prettyId, Object... parameters) {
+        URL mappedUrl = pretty
+                        .getConfig()
+                        .getMappingById(prettyId)
+                        .getPatternParser()
+                        .getMappedURL(parameters);
         return mappedUrl.toString();
     }
 
     public static String getAbsolutePageUrl(String prettyId, Object... parameters) {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + getRelativePageUrl(prettyId, parameters);
+        return getAbsolutePageUrl(PrettyContext.getCurrentInstance(), prettyId, parameters);
     }
-
+    
+    public static String getAbsolutePageUrl(PrettyContext pretty, String prettyId, Object... parameters) {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + getRelativePageUrl(pretty, prettyId, parameters);
+    }
 
     public static String getRecordURI(String pi, String imageNo, String logId, PageType pageType) {
         String prettyId = "";
         imageNo = StringUtils.isNotBlank(imageNo) ? imageNo : "-";
         logId = StringUtils.isNotBlank(logId) ? logId : "-";
-        switch(pageType) {
+        switch (pageType) {
             case viewMetadata:
                 prettyId = "metadata3";
                 break;
@@ -146,10 +153,9 @@ public class PrettyUrlTools {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
-
     public static void redirectToUrl(String url) {
         final FacesContext context = FacesContext.getCurrentInstance();
-        if(context != null) {            
+        if (context != null) {
             try {
                 context.getExternalContext().redirect(url);
             } catch (IOException e) {
@@ -158,6 +164,6 @@ public class PrettyUrlTools {
         } else {
             logger.error("Failed to redirect to url: No FacesContext available");
         }
-        
+
     }
 }

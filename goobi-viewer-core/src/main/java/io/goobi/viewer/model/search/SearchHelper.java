@@ -132,7 +132,7 @@ public final class SearchHelper {
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL", false);
     public static final String TITLE_TERMS = "_TITLE_TERMS";
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
-    public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":{0})^20.0";
+    public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":({0}))^20.0";
     public static final String EMBEDDED_QUERY_TEMPLATE = "_query_:\"{0}\"";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
@@ -166,7 +166,7 @@ public final class SearchHelper {
     /** Constant <code>patternYearRange</code> */
     public static Pattern patternYearRange = Pattern.compile("\\[[0-9]+ TO [0-9]+\\]");
     /** Constant <code>patternHyperlink</code> */
-    public static Pattern patternHyperlink = Pattern.compile("(<a .*<\\/a>)");
+    public static Pattern patternHyperlink = Pattern.compile("(<a (?:(?!<\\/a>).)*<\\/a>)");
 
     public static final Pattern patternAllItems = Pattern.compile(
             "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");
@@ -344,6 +344,7 @@ public final class SearchHelper {
             String s = query.replaceAll("[\n\r]", "_");
             logger.trace("searchWithAggregation: {}", s);
         }
+        logger.trace("hitsPerPage: {}", rows);
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
         if (resp.getResults() == null) {
@@ -1432,7 +1433,7 @@ public final class SearchHelper {
         if (term.length() < 2) {
             return phrase;
         }
-
+        
         StringBuilder sb = new StringBuilder();
         String normalizedPhrase = normalizeString(phrase);
         String normalizedTerm = normalizeString(term);
@@ -1463,7 +1464,6 @@ public final class SearchHelper {
         if (string == null) {
             return null;
         }
-        string = Normalizer.normalize(string, Normalizer.Form.NFD);
 
         // Replace entire hyperink elements with spaces
         Matcher m = patternHyperlink.matcher(string);
@@ -1476,8 +1476,10 @@ public final class SearchHelper {
             sb.append(string.substring(m.end()));
             string = sb.toString();
         }
+        
+        string = Normalizer.normalize(string, Normalizer.Form.NFD);
 
-        string = string.replaceAll(patternHyperlink.pattern(), " ");
+        // string = string.replaceAll(patternHyperlink.pattern(), " ");
         string = string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
         string = Normalizer.normalize(string, Normalizer.Form.NFC);
         return string;
@@ -2108,6 +2110,8 @@ public final class SearchHelper {
      * 
      * @param query
      * @param facetString
+     * @param template Advanced search fields template
+     * @param language
      * @return
      * @should parse phrase search query correctly
      * @should parse regular search query correctly
@@ -2116,9 +2120,10 @@ public final class SearchHelper {
      * @should parse items from facet string correctly
      * @should parse mixed search query correctly
      */
-    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString) {
+    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString, String template, String language) {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
-        SearchQueryGroup ret = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        SearchQueryGroup ret =
+                new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, true, language), template);
 
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
@@ -2310,7 +2315,7 @@ public final class SearchHelper {
                         default:
                             item.setOperator(operator);
                             item.setField(pair.getOne());
-                            if (DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(pair.getOne())) {
+                            if (DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(pair.getOne(), template, true)) {
                                 String[] valueSplit = pair.getTwo().split(" TO ");
                                 item.setValue(valueSplit[0]);
                                 item.setValue2(valueSplit[1]);

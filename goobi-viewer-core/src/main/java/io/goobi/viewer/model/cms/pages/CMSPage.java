@@ -31,7 +31,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,12 +43,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue.ValuePair;
@@ -189,7 +194,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * A {@link CMSPageTemplate} used to create this page. Must be null if the page hasn't been created using a template. Used to apply user
      * privileges for templates to pages derived from that template as well as determining if a page may be edited by a user
      */
-    @JoinColumn(name = "page_template_id")
+    @Column(name = "page_template_id")
     private Long templateId = null;
     @Transient
     private CMSPageTemplate template = null;
@@ -206,6 +211,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     @Column(name = "wrapper_element_class")
     private String wrapperElementClass = "";
+
+    /** If true, text contents of this page are exported for indexing. */
+    @Column(name = "searchable", nullable = false, columnDefinition = "boolean default false")
+    private boolean searchable;
 
     @Transient
     private String sidebarElementString = null;
@@ -259,6 +268,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.parentPageId = original.parentPageId;
         this.wrapperElementClass = original.wrapperElementClass;
         this.useAsDefaultRecordView = original.useAsDefaultRecordView;
+        this.searchable = original.searchable;
 
         if (original.properties != null) {
             this.properties = new ArrayList<>(original.properties.size());
@@ -355,18 +365,23 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         CMSPage other = (CMSPage) obj;
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         return true;
     }
 
@@ -1049,6 +1064,20 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
+     * @return the searchable
+     */
+    public boolean isSearchable() {
+        return searchable;
+    }
+
+    /**
+     * @param searchable the searchable to set
+     */
+    public void setSearchable(boolean searchable) {
+        this.searchable = searchable;
+    }
+
+    /**
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
      *
      * @return Number of deleted files
@@ -1148,6 +1177,45 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             }
         }
         return ret;
+    }
+
+    /**
+     * Exports relevant page contents as JDOM2 document for indexing
+     * 
+     * @return {@link Document}
+     * @should create doc correctly
+     */
+    public Document exportAsXml() {
+        Document doc = new Document();
+        doc.setRootElement(new Element("cmsPage").setAttribute("id", "CMS" + getId()));
+        doc.getRootElement().addContent(new Element("title").setText(getTitle()));
+
+        // Categories
+        Element eleCategories = new Element("categories");
+        doc.getRootElement().addContent(eleCategories);
+        for (CMSCategory cat : getCategories()) {
+            eleCategories.addContent(new Element("category").setText(cat.getName()));
+        }
+
+        // Texts from content items
+        List<TranslatedText> texts = getComponents()
+                .stream()
+                .map(CMSComponent::getTranslatableContentItems)
+                .flatMap(List::stream)
+                .map(CMSContentItem::getContent)
+                .map(TranslatableCMSContent.class::cast)
+                .map(TranslatableCMSContent::getText)
+                .collect(Collectors.toList());
+
+        for (TranslatedText text : texts) {
+            for (ValuePair pair : text.getValues()) {
+                if (StringUtils.isNotBlank(pair.getValue())) {
+                    doc.getRootElement().addContent(new Element("text").setText(pair.getValue()).setAttribute("lang", pair.getLanguage()));
+                }
+            }
+        }
+
+        return doc;
     }
 
     /**
@@ -1402,17 +1470,41 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     public List<CMSComponentGroup> getGroupedPageViewComponents() {
         List<CMSComponent> components = getPageViewComponents();
-        List<CMSComponentGroup> groups = new ArrayList<>();
+        Map<String, CMSComponentGroup> groups = new LinkedHashMap<>();
         CMSComponentGroup currentGroup = null;
+        int componentIndex = 0;
         for (CMSComponent cmsComponent : components) {
-            String groupName = cmsComponent.getAttributeValue(HTML_GROUP);
-            if (currentGroup == null || !Objects.equals(currentGroup.getName(), groupName)) {
-                currentGroup = new CMSComponentGroup(groupName);
-                groups.add(currentGroup);
+
+            if (cmsComponent.getContentItems().isEmpty()) {
+                if(groups.containsKey("")) {
+                    currentGroup = groups.get("");
+                } else {
+                    currentGroup = new CMSComponentGroup("");
+                    groups.put("", currentGroup);
+                }
+                cmsComponent.setOrder(componentIndex);
+                currentGroup.addComponent(cmsComponent);
+            } else {
+                Map<String, List<CMSContentItem>> map = new LinkedHashMap<>();
+                for (CMSContentItem item : cmsComponent.getContentItems()) {
+                    List<CMSContentItem> items = map.merge(item.getHtmlGroup(), List.of(item), ListUtils::union);
+                }
+
+                for (Entry<String, List<CMSContentItem>> entry : map.entrySet()) {
+                    if (!groups.containsKey(entry.getKey())) {
+                        currentGroup = new CMSComponentGroup(entry.getKey());
+                        groups.put(entry.getKey(), currentGroup);
+                    } else {
+                        currentGroup = groups.get(entry.getKey());
+                    }
+                    cmsComponent.setOrder(componentIndex);
+                    CMSComponent groupComponent = new CMSComponent(cmsComponent, entry.getValue());
+                    currentGroup.addComponent(groupComponent);
+                }
             }
-            currentGroup.addComponent(cmsComponent);
+            componentIndex++;
         }
-        return groups;
+        return new ArrayList<>(groups.values());
     }
 
     public List<CMSComponent> getPageViewComponents() {

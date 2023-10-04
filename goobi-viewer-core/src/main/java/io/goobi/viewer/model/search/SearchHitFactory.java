@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.search;
 
 import java.util.ArrayList;
@@ -52,6 +73,8 @@ public class SearchHitFactory {
             new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
     private Set<String> additionalMetadataSnippetFields =
             new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataSnippetFields());
+    private Set<String> additionalMetadataNoHighlightFields =
+            new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataNoHighlightFields());
     private int proximitySearchDistance;
 
     private ThumbnailHandler thumbnailHandler;
@@ -259,6 +282,7 @@ public class SearchHitFactory {
      * @should translate configured field values correctly
      * @should write one line fields into a single string
      * @should truncate snippet fields correctly
+     * @should not add highlighting to nohighlight fields
      */
     List<MetadataWrapper> findAdditionalMetadataFieldsContainingSearchTerms(
             Map<String, List<String>> availableMetadata, Map<String, Set<String>> searchTerms, Set<String> existingMetadataFields, String iddoc,
@@ -316,9 +340,10 @@ public class SearchHitFactory {
                                 String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
+                                    String translatedValue = fieldValue;
                                     if (additionalMetadataTranslateFields != null && (additionalMetadataTranslateFields.contains(docFieldName)
                                             || additionalMetadataTranslateFields.contains(SearchHelper.adaptField(docFieldName, null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
@@ -326,7 +351,12 @@ public class SearchHitFactory {
                                     if (sb.length() > 0) {
                                         sb.append(", ");
                                     }
-                                    sb.append(highlightedValue);
+                                    if (additionalMetadataNoHighlightFields != null && additionalMetadataNoHighlightFields.contains(docFieldName)) {
+                                        // No highlighting
+                                        sb.append(translatedValue);
+                                    } else {
+                                        sb.append(highlightedValue);
+                                    }
                                 }
                             }
                             if (sb.length() > 0) {
@@ -362,18 +392,32 @@ public class SearchHitFactory {
                                 }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
+                                    String translatedValue = fieldValue;
                                     if (additionalMetadataTranslateFields != null && (additionalMetadataTranslateFields.contains(entry.getKey())
                                             || additionalMetadataTranslateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    if (!addedValues.contains(docFieldName + ":" + highlightedValue)) {
-                                        ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", highlightedValue))
-                                                .setValuePair(
-                                                        new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue)));
-                                        addedValues.add(docFieldName + ":" + highlightedValue);
+                                    if (additionalMetadataNoHighlightFields != null && additionalMetadataNoHighlightFields.contains(docFieldName)) {
+                                        // No highlighting
+                                        if (!addedValues.contains(docFieldName + ":" + translatedValue)) {
+                                            ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "",
+                                                    translatedValue))
+                                                    .setValuePair(
+                                                            new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale),
+                                                                    translatedValue)));
+                                            addedValues.add(docFieldName + ":" + translatedValue);
+                                        }
+                                    } else {
+                                        if (!addedValues.contains(docFieldName + ":" + highlightedValue)) {
+                                            ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", highlightedValue))
+                                                    .setValuePair(
+                                                            new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale),
+                                                                    highlightedValue)));
+                                            addedValues.add(docFieldName + ":" + highlightedValue);
+                                        }
                                     }
                                 }
                             }
@@ -396,9 +440,10 @@ public class SearchHitFactory {
                                 String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
+                                    String translatedValue = fieldValue;
                                     if (additionalMetadataTranslateFields != null && (additionalMetadataTranslateFields.contains(entry.getKey())
                                             || additionalMetadataTranslateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
@@ -406,7 +451,12 @@ public class SearchHitFactory {
                                     if (sb.length() > 0) {
                                         sb.append(", ");
                                     }
-                                    sb.append(highlightedValue);
+                                    if (additionalMetadataNoHighlightFields != null && additionalMetadataNoHighlightFields.contains(entry.getKey())) {
+                                        // No highlighting
+                                        sb.append(translatedValue);
+                                    } else {
+                                        sb.append(highlightedValue);
+                                    }
                                 }
                             }
                             if (sb.length() > 0) {
@@ -438,19 +488,31 @@ public class SearchHitFactory {
                                 }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
+                                    String translatedValue = fieldValue;
                                     if (additionalMetadataTranslateFields != null && (additionalMetadataTranslateFields.contains(entry.getKey())
                                             || additionalMetadataTranslateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    if (!addedValues.contains(entry.getKey() + ":" + highlightedValue)) {
-                                        ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", highlightedValue))
-                                                .setValuePair(
-                                                        new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale),
-                                                                highlightedValue)));
-                                        addedValues.add(entry.getKey() + ":" + highlightedValue);
+                                    if (additionalMetadataNoHighlightFields != null && additionalMetadataNoHighlightFields.contains(entry.getKey())) {
+                                        // No highlighting
+                                        if (!addedValues.contains(entry.getKey() + ":" + translatedValue)) {
+                                            ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", translatedValue))
+                                                    .setValuePair(
+                                                            new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale),
+                                                                    translatedValue)));
+                                            addedValues.add(entry.getKey() + ":" + translatedValue);
+                                        }
+                                    } else {
+                                        if (!addedValues.contains(entry.getKey() + ":" + highlightedValue)) {
+                                            ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", highlightedValue))
+                                                    .setValuePair(
+                                                            new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale),
+                                                                    highlightedValue)));
+                                            addedValues.add(entry.getKey() + ":" + highlightedValue);
+                                        }
                                     }
                                 }
                             }
@@ -494,9 +556,9 @@ public class SearchHitFactory {
     }
 
     /**
-     * @param additionalMetadataOneLineFields the additionalMetadataOneLineFields to set
+     * @return the additionalMetadataNoHighlightFields
      */
-    public void setAdditionalMetadataOneLineFields(Set<String> additionalMetadataOneLineFields) {
-        this.additionalMetadataOneLineFields = additionalMetadataOneLineFields;
+    public Set<String> getAdditionalMetadataNoHighlightFields() {
+        return additionalMetadataNoHighlightFields;
     }
 }

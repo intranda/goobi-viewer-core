@@ -25,9 +25,11 @@
 		         <div class="admin__radio-switch">
 		            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 		            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.published ? null : 'false'}"/>
+		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}"
+		                value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.published ? null : 'false'}"/>
 					<h:outputLabel for="cmsPageStatusVisibility_no" value="#{msg.no}" />
-		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.published ? 'false' : null}"/>
+		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}"
+		         	    value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.published ? 'false' : null}"/>
 		         	<h:outputLabel for="cmsPageStatusVisibility_yes" value="#{msg.yes}" />
 					<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{cmsPageEditBean.selectedPage.published}"
         				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
@@ -317,6 +319,31 @@
             	<div data-target="cmsPageJumpToQuickCSSLink" class="admin__small-info mt-2"><a target="_blank" href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}#quickCSS">#{msg.cms_wrapperElementClass_quickCSS}</a></div>
 
             </div>
+            
+            <div class="admin__default-block">
+                <!-- TEMPLATE TOGGLE + SETTINGS -->
+                 <h2>#{msg.cms__pageMetadata_searchable_title}</h2>
+                 
+                    <div class="admin__form-help-text in mb-4">#{msg.cms__pageMetadata_searchable_help}</div>
+            
+                     <div class="admin__radio-switch mb-3">
+
+                        <div class="admin__radio-switch">
+                            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
+                                Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
+                            <input type="radio" jsf:id="searchableToggle_no" pt:name="#{searchableToggle.clientId}" pt:data-toggle-action="toggleTemplateFunctions" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.searchable ? null : 'false'}"/>
+                            <h:outputLabel for="searchableToggle_no" value="#{msg.no}" />
+                            <input type="radio" jsf:id="searchableToggle_yes" pt:name="#{searchableToggle.clientId}" pt:data-toggle-action="toggleTemplateFunctions" value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.searchable ? 'false' : null}"/>
+                            <h:outputLabel for="searchableToggle_yes" value="#{msg.yes}" />
+                            <h:inputHidden id="searchableToggle_input" binding="#{searchableToggle}" value="#{cmsPageEditBean.selectedPage.searchable}"
+                                rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
+                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                         </div>
+
+
+                     </div>
+                    
+                    </div>
             
 	        <div id="saveAsTemplateWidget" class="admin__default-block">
 	            <!-- TEMPLATE TOGGLE + SETTINGS -->

@@ -122,6 +122,7 @@ public class LanguageHelper {
         if (isoCode == null) {
             return null;
         }
+        isoCode = isoCode.replaceAll("[\n\r]", "_");
         HierarchicalConfiguration<ImmutableNode> languageConfig = null;
         try {
             if (isoCode.length() == 3) {

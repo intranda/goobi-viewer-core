@@ -61,16 +61,17 @@
 									    msg: {
 									        action__toggle_map_markers : "#{msg.action__toggle_map_markers}"
 									    },
-									    heatmap: {
-											showSearchResultsHeatmap: #{configurationBean.useHeatmapForMapSearch()},
-											mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
-									    },
+									    
 									    hitsLayer: {
 									        style: {
 						      					fillOpacity: 0.02,
 						      					color: "#{configurationBean.markerForMapSearch.markerColor}"
 						      				},
-											markerIcon: (icon => icon)(#{configurationBean.markerForMapSearch.toJSONString()})
+											markerIcon: (icon => icon)(#{configurationBean.markerForMapSearch.toJSONString()}),
+											heatmap: {
+										    	enabled: #{configurationBean.useHeatmapForMapSearch()},
+												mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
+										    },
 									    },
 									    areaLayer: {
 						      				style : {

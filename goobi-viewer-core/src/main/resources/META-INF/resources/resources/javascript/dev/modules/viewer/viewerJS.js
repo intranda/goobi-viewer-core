@@ -102,6 +102,8 @@ var viewerJS = (function () {
         viewerJS.initFragmentActions();
        
         viewerJS.initRequiredInputs();
+        
+        viewerJS.initDisallowDownload();
                
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
@@ -128,6 +130,8 @@ var viewerJS = (function () {
         
         //input validation status
         viewerJS.validationStatus.init();
+        
+        
 
         // render warning if local storage is not useable
         if (!viewer.localStoragePossible) {
@@ -297,6 +301,7 @@ var viewerJS = (function () {
 			$('.widget-chronology-slider__item-input[data-toggle="tooltip"]').tooltip('enable');
 		});
 		
+		
 		//init empty translator instance
 	    var restApiURL = restURL.replace("/rest", "/api/v1");
 	    viewer.translator = new viewerJS.Translator(restApiURL, currentLang);
@@ -347,6 +352,14 @@ var viewerJS = (function () {
             }
         }
     }
+
+	viewer.initDisallowDownload = function() {
+		$("[data-allow-download='false']").each( (index, ele) => {
+			ele.addEventListener('contextmenu', function(e) {
+			  e.preventDefault();
+			});
+		})
+	}
 
     viewer.initFragmentNavigation = function () {
         if (window.location.hash) {
@@ -585,16 +598,6 @@ var viewerJS = (function () {
 	
 	}
 
-    // init bootstrap 4 popovers
-	$(document).ready(function(){
-	    try {	        
-	        $('[data-toggle="popover"]').popover({
-	            trigger : 'hover'
-	        });
-	    } catch(error) {
-	        //no bootstrap defined
-	    }
-	});
 	
 	
     // CONTENT ITEMS JS DRAFT

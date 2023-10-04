@@ -53,7 +53,7 @@ var viewerJS = ( function ( viewer ) {
 			}
 		},
 		heatmap: {
-			showSearchResultsHeatmap: true,
+			enabled: true,
 			heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
 			featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
 			mainQuery: "BOOL_WKT_COORDS:*",
@@ -90,12 +90,12 @@ var viewerJS = ( function ( viewer ) {
 
 	viewer.GeoMapFacet.prototype.init = function (features,  view ) {
 		this.area = this.getArea( this.config.areaString );
-		this.features = this.config.heatmap.showSearchResultsHeatmap ? {} : features;
+		this.features = this.config.heatmap.enabled ? {} : features;
 		this.geoMap.init(view);
 
 		this.drawLayer = this.initDrawLayer();
 		this.hitsLayer = this.initHitsLayer(this.features);
-		if(this.config.heatmap.showSearchResultsHeatmap) {
+		if(this.config.heatmap.enabled) {
 			this.heatmap = this.initHeatmap();
 		}
 
@@ -123,6 +123,7 @@ var viewerJS = ( function ( viewer ) {
 		let hitsLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.hitsLayer)
 		hitsLayer.init(features, false);
 		hitsLayer.onFeatureClick.subscribe(f => {
+			console.log("clicked on ", f);
 			if(f.properties && f.properties.link) {
 				$(this.config.search.loader).show();
 				window.location.assign(f.properties.link);

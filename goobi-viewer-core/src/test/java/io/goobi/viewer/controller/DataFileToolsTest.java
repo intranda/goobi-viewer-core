@@ -43,6 +43,19 @@ public class DataFileToolsTest extends AbstractTest {
         Assert.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_METS));
     }
+    
+
+    /**
+     * @see DataFileTools#getDataFolders(String,String[])
+     * @verifies return all requested data folders
+     */
+    @Test
+    public void getDataFolders_shouldReturnAllRequestedDataFolders() throws Exception {
+        Assert.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
+                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS_MARC));
+        Assert.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
+                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_METS_MARC));
+    }
 
     /**
      * @see DataFileTools#getSourceFilePath(String,String,String)

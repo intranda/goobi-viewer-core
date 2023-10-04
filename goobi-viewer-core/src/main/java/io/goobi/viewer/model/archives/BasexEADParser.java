@@ -291,19 +291,14 @@ public class BasexEADParser {
         List<Element> clist = null;
         Element archdesc = element.getChild("archdesc", NAMESPACE_EAD);
         if (archdesc != null) {
-            String type = archdesc.getAttributeValue("otherlevel");
-            if (StringUtils.isBlank(type)) {
-                type = archdesc.getAttributeValue("level");
-            }
-            entry.setNodeType(type);
+            setNodeType(archdesc, entry);
             Element dsc = archdesc.getChild("dsc", NAMESPACE_EAD);
             if (dsc != null) {
                 clist = dsc.getChildren("c", NAMESPACE_EAD);
             }
 
         } else {
-            String type = element.getAttributeValue("level");
-            entry.setNodeType(type);
+            setNodeType(element, entry);
 
         }
 
@@ -343,6 +338,14 @@ public class BasexEADParser {
         }
 
         return entry;
+    }
+
+    public static void setNodeType(Element node, ArchiveEntry entry) {
+        String type = node.getAttributeValue("otherlevel");
+        if (StringUtils.isBlank(type)) {
+            type = node.getAttributeValue("level");
+        }
+        entry.setNodeType(type);
     }
 
     /**

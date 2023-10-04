@@ -158,7 +158,26 @@
 				</h:inputText>
 			</div>
 		</div>
-		
+			
+        <!-- RESULT GROUP -->
+        <div class="admin__content-component-input-group">
+            <div class="admin__content-component-input-label">
+                <label for="resultGroupName">#{msg.cms_resultGroup}:</label>
+            </div>
+            <div class="admin__content-component-input-field">
+                <div class="custom-control custom-control--select">
+                    <h:selectOneMenu id="resultGroupName" styleClass="form-control"
+                        value="#{cc.attrs.contentItem.content.resultGroupName}">
+                        <f:selectItem itemValue="" itemLabel="#{msg.select}" />
+                        <f:selectItems value="#{cmsBean.possibleResultGroupNames}" var="name"
+                            itemValue="#{name}" itemLabel="#{msg[name]} (#{name})" />
+                        <f:passThroughAttribute name="aria-label"
+                            value="#{msg.cms_resultGroup}" />
+                    </h:selectOneMenu>
+                </div>
+            </div>
+        </div>
+
         <!-- HIT LIST CONFIGURATION -->
         <h:panelGroup id="metadataListTypeGroup">
             <ui:fragment rendered="#{cc.attrs.contentItem.content.view.label == 'searchListTileView'}">

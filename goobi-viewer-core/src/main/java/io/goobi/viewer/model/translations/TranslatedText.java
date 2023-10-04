@@ -31,12 +31,14 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.serialization.TranslatedTextSerializer;
+import io.goobi.viewer.controller.JsonTools;
 
 /**
  * Translations for some text for a set of locales. Text can be set and retrieved for each locale individually.
@@ -322,5 +324,9 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
         } else {
             return true;
         }
+    }
+    
+    public String getAsJson() throws JsonProcessingException {
+        return JsonTools.getAsJson(this);
     }
 }

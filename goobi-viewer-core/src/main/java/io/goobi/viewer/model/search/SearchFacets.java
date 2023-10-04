@@ -379,6 +379,7 @@ public class SearchFacets implements Serializable {
      * @return
      */
     public List<IFacetItem> getAvailableFacetsForField(String field, boolean excludeSelected) {
+        logger.trace("getAvailableFacetsForField: {}", field);
         List<IFacetItem> facetItems = availableFacets.get(field);
         if (facetItems == null) {
             return Collections.emptyList();
@@ -411,7 +412,7 @@ public class SearchFacets implements Serializable {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -804,12 +805,16 @@ public class SearchFacets implements Serializable {
         return new ArrayList<>(valueRanges.get(field).keySet());
     }
 
-    public String getValueRangeAsJsonMap(String field) throws PresentationException, IndexUnreachableException {
+    /**
+     * 
+     * @param field
+     * @return
+     */
+    public String getValueRangeAsJsonMap(String field) {
         if (!maxValues.containsKey(field)) {
             return "[]";
-        } else {
-            return new JSONObject(valueRanges.get(field)).toString();
         }
+        return new JSONObject(valueRanges.get(field)).toString();
     }
 
     /**
@@ -848,7 +853,7 @@ public class SearchFacets implements Serializable {
             return;
         }
 
-        SortedMap<Integer, Long> intValues = new TreeMap<Integer, Long>();
+        SortedMap<Integer, Long> intValues = new TreeMap<>();
         if (counts != null) {
             for (Entry<String, Long> e : counts.entrySet()) {
                 if (e.getKey() == null || e.getValue() == null) {
@@ -1292,5 +1297,11 @@ public class SearchFacets implements Serializable {
             return this.getGeoFacetting().getFeature();
         }
         return "";
+    }
+    
+    public int getActiveFacetsSize() {
+       return  this.getAllAvailableFacets().keySet().stream()
+        .mapToInt(this::getActiveFacetsSizeForField)
+        .sum();
     }
 }

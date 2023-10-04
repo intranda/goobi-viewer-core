@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -58,7 +59,7 @@ public class SearchTest extends AbstractTest {
     @Test
     public void testParseGeoCoordsPoint() {
         String fieldValue ="[13.587443500000063 54.3766782, 13.568806999999993 54.364621, 13.57175570000004 54.38059639999999, 13.576777300000003 54.38823009999999, 13.632939999999962 54.35865]";
-        List<IArea> locs = Search.getLocations(fieldValue);
+        List<IArea> locs = GeoCoordinateConverter.getLocations(fieldValue);
         assertEquals(5, locs.size());
         Location location = new Location(locs.get(0), "Label", URI.create("#"));
         //System.out.println(location.getGeoJson());
@@ -68,7 +69,7 @@ public class SearchTest extends AbstractTest {
     public void testParseGeoCoordsPolygon() {
         String fieldValue ="[POLYGON((28.88222222222222 41.13361111111111, 29.06888888888889 41.13361111111111, 29.06888888888889 40.974444444444444, 28.88222222222222 40.974444444444444, 28.88222222222222 41.13361111111111)), "
                 + "POLYGON((18.15 44.96666666666667, 30.033333333333335 44.96666666666667, 30.033333333333335 39.333333333333336, 18.15 39.333333333333336, 18.15 44.96666666666667))]";
-        List<IArea> locs = Search.getLocations(fieldValue);
+        List<IArea> locs = GeoCoordinateConverter.getLocations(fieldValue);
         assertEquals(2, locs.size());
         Location location = new Location(locs.get(0), "Label", URI.create("#"));
         //System.out.println(location.getGeoJson());

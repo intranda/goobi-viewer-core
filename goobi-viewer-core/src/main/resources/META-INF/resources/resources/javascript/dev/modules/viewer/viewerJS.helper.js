@@ -297,7 +297,7 @@ var viewerJS = ( function( viewer ) {
 
             // enable bootstrap popovers
             $( '[data-toggle="popover"]' ).popover( {
-            	placement: 'auto bottom',
+            	placement: 'bottom',
 	            trigger: 'hover',
 	            html: true
             } );

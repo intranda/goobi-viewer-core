@@ -11,7 +11,7 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- VIEW VIDEO -->
-    <div id="videoContainer" class="view-object__video">
+    <div id="videoContainer" class="view-object__video" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
         <video 
             id="videoFile"
             class="view-object__video-file" 

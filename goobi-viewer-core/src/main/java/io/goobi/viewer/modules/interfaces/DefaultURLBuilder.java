@@ -81,6 +81,8 @@ public class DefaultURLBuilder implements IURLBuilder {
                     url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
                     break;
             }
+        } else if (ele.isCmsPage() && ele.getPi().startsWith("CMS")) {
+            url = "cms/" + ele.getPi().substring(3) + "/";
         } else {
             PageType pageType = getPageType(ele);
             if (PageType.viewFulltext.equals(pageType) && ele.isHasTeiFiles()) {
@@ -100,7 +102,7 @@ public class DefaultURLBuilder implements IURLBuilder {
             }
         }
 
-        logger.trace("generateUrl: {}", url);
+        // logger.trace("generateUrl: {}", url);
         return url;
 
     }

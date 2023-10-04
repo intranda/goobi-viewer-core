@@ -95,5 +95,9 @@ public class RecurringTaskTrigger {
         this.lastTimeTriggered = lastTimeTriggered;
     }
     
+    @Override
+    public String toString() {
+        return "Recurring Task " + getTaskType() + " (" + getScheduleExpression() + ")";
+    }
     
 }

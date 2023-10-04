@@ -269,6 +269,7 @@ public class DataFileTools {
      * @param dataRepository a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
      * @should construct METS file path correctly
+     * @should construct METS_MARC file path correctly
      * @should construct LIDO file path correctly
      * @should construct DenkXweb file path correctly
      * @should throw IllegalArgumentException if fileName is null
@@ -284,6 +285,7 @@ public class DataFileTools {
         }
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
             case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
@@ -296,6 +298,7 @@ public class DataFileTools {
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_LIDO:

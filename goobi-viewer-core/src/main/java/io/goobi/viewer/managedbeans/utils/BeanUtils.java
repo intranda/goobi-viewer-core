@@ -63,6 +63,7 @@ import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.SessionBean;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -354,6 +355,10 @@ public class BeanUtils {
      */
     public static ActiveDocumentBean getActiveDocumentBean() {
         return (ActiveDocumentBean) getBeanByName("activeDocumentBean", ActiveDocumentBean.class);
+    }
+    
+    public static PersistentStorageBean getPersistentStorageBean() {
+        return (PersistentStorageBean) getBeanByName("applicationBean", PersistentStorageBean.class);
     }
 
     /**

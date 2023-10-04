@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -168,7 +169,7 @@ public class MetadataBean {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
                 loadMetadata(index, locale);
-                this.currentMetadataLocale = locale;    //store locale used for translations so it can be checked for changes later on
+                this.currentMetadataLocale = locale; //store locale used for translations so it can be checked for changes later on
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error("Error loading metadatalist ", e);
                 return Collections.emptyList();
@@ -349,5 +350,18 @@ public class MetadataBean {
      */
     public void setActiveMetadataView(MetadataView activeMetadataView) {
         this.activeMetadataView = activeMetadataView;
+    }
+
+    /**
+     * 
+     * @param fields
+     * @return
+     */
+    public List<String> getComplexMetadataFieldsToList(String... fields) {
+        if (fields != null) {
+            return Arrays.asList(fields);
+        }
+
+        return List.of("MD_DATESTART", "MD_DATEEND", "MD_TYPE");
     }
 }

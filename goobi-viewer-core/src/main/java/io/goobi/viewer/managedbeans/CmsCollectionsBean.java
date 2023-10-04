@@ -708,6 +708,6 @@ public class CmsCollectionsBean implements Serializable {
     public String getSearchUrl(CMSCollection collection) {
         String filter = collection.getSolrField() + ":" + collection.getSolrFieldValue();
         filter = StringTools.encodeUrl(filter);
-        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", 1, "-", filter);
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", "-", 1, "-", filter);
     }
 }

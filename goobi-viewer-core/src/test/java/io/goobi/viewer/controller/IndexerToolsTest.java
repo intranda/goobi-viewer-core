@@ -21,14 +21,18 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class IndexerToolsTest {
+import io.goobi.viewer.AbstractTest;
+
+public class IndexerToolsTest extends AbstractTest {
 
     /**
      * @see IndexerTools#deleteRecord(String,boolean,Path)
@@ -36,7 +40,7 @@ public class IndexerToolsTest {
      */
     @Test
     public void deleteRecord_shouldCreateDeleteFileCorrectly() throws Exception {
-        Path hotfolder = Paths.get("src/test/resources", DataManager.getInstance().getConfiguration().getHotfolder());
+        Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
         }
@@ -60,7 +64,7 @@ public class IndexerToolsTest {
      */
     @Test
     public void deleteRecord_shouldCreatePurgeFileCorrectly() throws Exception {
-        Path hotfolder = Paths.get("src/test/resources", DataManager.getInstance().getConfiguration().getHotfolder());
+        Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
         }
@@ -75,6 +79,48 @@ public class IndexerToolsTest {
             if (!Files.isDirectory(hotfolder)) {
                 Files.delete(hotfolder);
             }
+        }
+    }
+
+    /**
+     * @see IndexerTools#findNamingScheme(String,String,File[])
+     * @verifies return original baseName if no files exist
+     */
+    @Test
+    public void findNamingScheme_shouldReturnOriginalBaseNameIfNoFilesExist() throws Exception {
+        Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
+        try {
+            if (!Files.exists(hotfolder)) {
+                Files.createDirectory(hotfolder);
+            }
+            Assert.assertTrue(Files.isDirectory(hotfolder));
+
+            Assert.assertEquals("foo", IndexerTools.findNamingScheme("foo", "xml"));
+        } finally {
+            FileUtils.deleteDirectory(hotfolder.toFile());
+        }
+    }
+
+    /**
+     * @see IndexerTools#findNamingScheme(String,String,File[])
+     * @verifies return alternative naming scheme if initial name already exists
+     */
+    @Test
+    public void findNamingScheme_shouldReturnAlternativeNamingSchemeIfInitialNameAlreadyExists() throws Exception {
+        Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
+        try {
+            if (!Files.exists(hotfolder)) {
+                Files.createDirectory(hotfolder);
+            }
+            Assert.assertTrue(Files.isDirectory(hotfolder));
+
+            Path dataFolder = Paths.get(hotfolder.toAbsolutePath().toString(), "foo_data");
+            Files.createDirectory(dataFolder);
+            Assert.assertTrue(Files.isDirectory(dataFolder));
+
+            Assert.assertTrue(IndexerTools.findNamingScheme("foo", "xml", dataFolder.toFile()).startsWith("foo#"));
+        } finally {
+            FileUtils.deleteDirectory(hotfolder.toFile());
         }
     }
 }

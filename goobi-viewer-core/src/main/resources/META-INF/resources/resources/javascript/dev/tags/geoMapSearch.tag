@@ -24,11 +24,11 @@ this.on("mount", function() {
 	    this.initGeocoder(this.geoMap);
 	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
 	}
-	this.hitsLayer = this.initHitsLayer(this.geoMap);
+ 	this.hitsLayer = this.initHitsLayer(this.geoMap);
 	if(this.opts.toggleFeatures) {   
 		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
 	}
-	if(this.opts.heatmap?.showSearchResultsHeatmap) {	    
+	if(this.opts.heatmap?.enabled) {	    
 		this.heatmap = this.initHeatmap(this.hitsLayer)
 	}
 }); 
@@ -286,7 +286,9 @@ getType(layer) {
 
 initHitsLayer(map) {
     this.opts.hitsLayer.language = viewerJS.translator.language;
-	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
+	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
+	map.layers.push(hitsLayer);
+	console.log("init hits layer ", this.opts.hitsLayer, hitsLayer, this.opts.features);
 	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {
 		if(f.properties && f.properties.link) {

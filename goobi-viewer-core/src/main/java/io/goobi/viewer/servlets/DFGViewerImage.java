@@ -109,7 +109,7 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
             String uri = BeanUtils.getImageDeliveryBean()
                     .getIiif()
                     .getIIIFImageUrl(baseUri, RegionRequest.FULL, new Scale.ScaleToWidth(width), new Rotation(rotation), Colortype.DEFAULT,
-                            ImageFileFormat.valueOf(format.toUpperCase()));
+                            ImageFileFormat.getImageFileFormatFromFileExtension(format));
             response.sendRedirect(uri);
         } catch (IllegalArgumentException | ViewerConfigurationException | IOException | IllegalRequestException e) {
             try {
@@ -119,4 +119,5 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
             }
         }
     }
+
 }

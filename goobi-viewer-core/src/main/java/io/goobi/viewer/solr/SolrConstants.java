@@ -306,6 +306,8 @@ public class SolrConstants {
     public static final String SUFFIX_DD = "_DD";
     /** Constant <code>SOURCEDOCFORMAT_METS="METS"</code> */
     public static final String SOURCEDOCFORMAT_METS = "METS";
+    /** Constant <code>SOURCEDOCFORMAT_METS_MARC="METS_MARC"</code> */
+    public static final String SOURCEDOCFORMAT_METS_MARC = "METS_MARC";
     /** Constant <code>SOURCEDOCFORMAT_LIDO="LIDO"</code> */
     public static final String SOURCEDOCFORMAT_LIDO = "LIDO";
     /** Constant <code>SOURCEDOCFORMAT_DENKXWEB="DENKXWEB"</code> */
@@ -355,4 +357,5 @@ public class SolrConstants {
     public static final String SOLR_QUERY_AND = " AND ";
     public static final String SOLR_QUERY_OR = " OR ";
     public static final String SOLR_QUERY_TRUE = ":true";
+    public static final String MD_VALUE = "MD_VALUE";
 }
