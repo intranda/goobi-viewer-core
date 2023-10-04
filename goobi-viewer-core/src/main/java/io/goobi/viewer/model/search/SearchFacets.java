@@ -52,6 +52,7 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Current faceting settings for a search.
@@ -369,7 +370,7 @@ public class SearchFacets implements Serializable {
      * @should not contain currently used facets
      */
     public List<IFacetItem> getLimitedFacetListForField(String field) {
-        return getAvailableFacetsForField(field, false);
+        return getAvailableFacetsForField(field, true);
     }
 
     /**
@@ -1159,14 +1160,7 @@ public class SearchFacets implements Serializable {
      * @return a boolean.
      */
     public boolean isHasWrongLanguageCode(String field, String language) {
-        if (field == null) {
-            throw new IllegalArgumentException("field may not be null");
-        }
-        if (language == null) {
-            throw new IllegalArgumentException("language may not be null");
-        }
-
-        return field.contains(SolrConstants.MIDFIX_LANG) && !field.endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase());
+        return SolrTools.isHasWrongLanguageCode(field, language);
     }
 
     /**
@@ -1298,10 +1292,12 @@ public class SearchFacets implements Serializable {
         }
         return "";
     }
-    
+
     public int getActiveFacetsSize() {
-       return  this.getAllAvailableFacets().keySet().stream()
-        .mapToInt(this::getActiveFacetsSizeForField)
-        .sum();
+        return this.getAllAvailableFacets()
+                .keySet()
+                .stream()
+                .mapToInt(this::getActiveFacetsSizeForField)
+                .sum();
     }
 }
