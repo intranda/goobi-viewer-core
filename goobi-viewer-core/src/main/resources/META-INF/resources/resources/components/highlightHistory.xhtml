@@ -14,7 +14,7 @@
     <composite:implementation>
     	
     	<div class="highlight_history__history">
-	    	<ui:repeat var="highlight" value="#{highlightsBean.getHighlightsBefore(navigationHelper.today)}">
+	    	<ui:repeat var="highlight" value="#{highlightsBean.getHighlightsBefore(navigationHelper.currentDate)}">
 	    		<div class="highlight_history__item">
 	    			
 	    			<ui:fragment rendered="#{highlight.hasImageURI()}">
