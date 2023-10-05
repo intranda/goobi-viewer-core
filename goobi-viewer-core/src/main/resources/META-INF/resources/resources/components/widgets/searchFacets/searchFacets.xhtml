@@ -50,7 +50,7 @@
 
                                     <ul>
                                         <!-- ACTIVE FACETS -->
-                                        <ui:repeat value="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
+                                        <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
                                             <li class="active">
                                                 <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
                                                     <div class="row">
@@ -74,24 +74,17 @@
                                                     </ui:fragment>
                                                 </h:commandLink>
                                             </li>
-                                        </ui:repeat>
+                                        </c:forEach>
 
                                         <!-- AVAILABLE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
-                                            <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
-                                                <li>
-                                                    <h:outputLink rendered="#{configurationBean.isTranslateFacetFieldLabels(field.key)}"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
-                                                        #{msg[facet.label]} (#{facet.count})
-                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
-                                                    </h:outputLink>
-                                                    <h:outputLink rendered="#{!configurationBean.isTranslateFacetFieldLabels(field.key)}"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
-                                                        #{facet.label} (#{facet.count})
-                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.label}" />
-                                                    </h:outputLink>
-                                                </li>
-                                            </ui:fragment>
+                                            <li>
+                                                <h:outputLink
+                                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                    #{msg[facet.translatedLabel]} (#{facet.count})
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                </h:outputLink>
+                                            </li>
                                         </ui:repeat>
                                     </ul>
 
