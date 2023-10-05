@@ -604,4 +604,18 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         facets.setActiveFacetString("FIELD:foo;;FIELD:bar;;");
         Assert.assertFalse(facets.isUnselectedValuesAvailable());
     }
+
+    /**
+     * @see SearchFacets#isUnselectedValuesAvailable()
+     * @verifies return false if only range facets available
+     */
+    @Test
+    public void isUnselectedValuesAvailable_shouldReturnFalseIfOnlyRangeFacetsAvailable() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("FIELD", new ArrayList<>(Collections.singletonList(new FacetItem("FIELD:foo", "Foo", false))));
+        facets.getAvailableFacets().put(SolrConstants.YEAR, new ArrayList<>(Collections.singletonList(new FacetItem("YEAR:1980", false))));
+
+        facets.setActiveFacetString("FIELD:foo;;");
+        Assert.assertFalse(facets.isUnselectedValuesAvailable());
+    }
 }
