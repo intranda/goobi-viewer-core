@@ -54,24 +54,14 @@
                                             <li class="active">
                                                 <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
                                                     <div class="row">
-                                                        <ui:fragment rendered="#{configurationBean.isTranslateFacetFieldLabels(field.key)}">
-                                                            <div class="col-11">#{msg[facet.label]}</div>
-                                                        </ui:fragment>
-                                                        <ui:fragment rendered="#{!configurationBean.isTranslateFacetFieldLabels(field.key)}">
-                                                            <div class="col-11">#{facet.label}</div>
-                                                        </ui:fragment>
+                                                        <div class="col-11">#{facet.translatedLabel}</div>
                                                         <div class="col-1">
                                                             <i class="fa fa-times" aria-hidden="true"></i>
                                                         </div>
                                                     </div>
                                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                     <f:passThroughAttribute name="data-placement" value="top" />
-                                                    <ui:fragment rendered="#{configurationBean.isTranslateFacetFieldLabels(field.key)}">
-                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
-                                                    </ui:fragment>
-                                                    <ui:fragment rendered="#{!configurationBean.isTranslateFacetFieldLabels(field.key)}">
-                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.label}" />
-                                                    </ui:fragment>
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
                                                 </h:commandLink>
                                             </li>
                                         </c:forEach>
