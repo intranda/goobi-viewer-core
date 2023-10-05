@@ -95,7 +95,7 @@ public class CollectionViewBean implements Serializable {
             boolean ignoreHierarchy) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         return getCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy, "");
     }
-    
+
     public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
             boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = getCollectionId(content);
@@ -108,7 +108,7 @@ public class CollectionViewBean implements Serializable {
                 logger.debug("Not matching collection element for id {} on page {}", content.getItemId(), content.getOwningPage().getId());
             }
         } else {
-            if(!Objects.equals(collection.getTopVisibleElement(), topVisibleElement)) {
+            if (!Objects.equals(collection.getTopVisibleElement(), topVisibleElement)) {
                 collection.setTopVisibleElement(topVisibleElement);
                 collection.populateCollectionList();
             }
@@ -203,8 +203,10 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * Querys solr for a list of all values of the set collectionField which my serve as a collection
-     *
+     * Queries Solr for a list of all values of the set collectionField which my serve as a collection
+     * 
+     * @param content
+     * @param ignoreHierarchy If true, sub-collections will be omitted
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -213,11 +215,14 @@ public class CollectionViewBean implements Serializable {
             return Collections.singletonList("");
         }
         Map<String, CollectionResult> dcStrings = getColletionMap(content);
+        for (String s : dcStrings.keySet()) {
+            logger.trace("DC: " + s);
+        }
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(content.getCollectionName()) || c.startsWith(content.getCollectionName() + "."))
-                .filter(c -> (ignoreHierarchy) ? true
-                        : (StringUtils.isBlank(content.getCollectionName()) ? !c.contains(".")
+                .filter(c -> !(ignoreHierarchy) ||
+                        (StringUtils.isBlank(content.getCollectionName()) ? !c.contains(".")
                                 : !c.replace(content.getCollectionName() + ".", "").contains(".")))
                 .collect(Collectors.toList());
         Collections.sort(list);
