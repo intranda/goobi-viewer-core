@@ -93,7 +93,7 @@ public class CollectionViewBean implements Serializable {
      */
     public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
             boolean ignoreHierarchy) throws PresentationException, IndexUnreachableException, IllegalRequestException {
-        return getCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy, "");
+        return getCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy, content.getCollectionName());
     }
 
     public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
@@ -145,7 +145,7 @@ public class CollectionViewBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
-    public CollectionView initializeCollection(CMSCollectionContent content, int numBaseLevels, boolean displayParents, boolean openExpanded,
+    public CollectionView initializeCollection(CMSCollectionContent content, int numBaseLevels, boolean openExpanded, boolean displayParents,
             boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IllegalRequestException, IndexUnreachableException {
         if (StringUtils.isBlank(content.getSolrField())) {
             throw new PresentationException("No solr field provided to create collection view");
