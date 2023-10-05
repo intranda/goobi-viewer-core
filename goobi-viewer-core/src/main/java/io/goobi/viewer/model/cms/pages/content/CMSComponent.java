@@ -260,6 +260,10 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return this.attributes.get(key);
     }
 
+    public boolean getBooleanAttributeValue(String key, boolean defaultValue) {
+        return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getBooleanValue).orElse(defaultValue);
+    }
+    
     public String getAttributeValue(String key) {
         return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getValue).orElse("");
     }
