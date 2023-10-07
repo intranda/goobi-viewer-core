@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -412,6 +413,16 @@ public class Search implements Serializable {
         }
 
         List<String> allFacetFields = SearchHelper.facetifyList(DataManager.getInstance().getConfiguration().getAllFacetFields());
+        if (locale != null) {
+            Set<String> toRemove = new HashSet<>();
+            for (String field : allFacetFields) {
+                if (SolrTools.isHasWrongLanguageCode(field, locale.getLanguage())) {
+                    toRemove.add(field);
+                    logger.trace("Ignore configured facet field {} due to language mismatch.", field);
+                }
+            }
+            allFacetFields.removeAll(toRemove);
+        }
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
         if (facets.getGeoFacetting().isActive()) {

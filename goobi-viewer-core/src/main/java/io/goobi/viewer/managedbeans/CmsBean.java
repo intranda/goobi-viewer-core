@@ -841,12 +841,11 @@ public class CmsBean implements Serializable {
         return currentPage.getComponents()
                 .stream()
                 .flatMap(comp -> comp.getContentItems().stream())
-                .map(CMSContentItem::getContent)
                 .map(content -> {
                     try {
-                        return content.handlePageLoad(resetSearch);
+                        return content.getContent().handlePageLoad(resetSearch, content.getOwningComponent());
                     } catch (PresentationException e) {
-                        logger.error("Error handling page load for page {} in content {}", content.getOwningPage().getId(), content.getItemId(), e);
+                        logger.error("Error handling page load for page {} in content {}", content.getContent().getOwningPage().getId(), content.getItemId(), e);
                         return "";
                     }
                 })

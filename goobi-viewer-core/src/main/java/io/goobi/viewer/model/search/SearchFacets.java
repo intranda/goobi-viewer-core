@@ -52,6 +52,7 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Current faceting settings for a search.
@@ -308,6 +309,7 @@ public class SearchFacets implements Serializable {
      * @return a boolean.
      */
     public boolean isFacetListSizeSufficient(String field) {
+        // logger.trace("isFacetListSizeSufficient: {}", field);
         if (availableFacets.get(field) != null) {
             if (SolrConstants.DOCSTRCT_SUB.equals(field)) {
                 return getAvailableFacetsListSizeForField(field) > 0;
@@ -369,7 +371,7 @@ public class SearchFacets implements Serializable {
      * @should not contain currently used facets
      */
     public List<IFacetItem> getLimitedFacetListForField(String field) {
-        return getAvailableFacetsForField(field, false);
+        return getAvailableFacetsForField(field, true);
     }
 
     /**
@@ -405,10 +407,12 @@ public class SearchFacets implements Serializable {
      * @return true if any available facet field has at least one unselected value; false otherwise
      * @should return true if a facet field has selectable values
      * @should return false of no selectable values found
+     * @should return false if only range facets available
      */
     public boolean isUnselectedValuesAvailable() {
         for (String field : getAvailableFacets().keySet()) {
-            if (!getAvailableFacetsForField(field, true).isEmpty()) {
+            if (!getAvailableFacetsForField(field, true).isEmpty()
+                    && !DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(field)) {
                 return true;
             }
         }
@@ -917,6 +921,7 @@ public class SearchFacets implements Serializable {
      * @return
      */
     public String getActiveFacetStringPrefix(boolean urlEncode) {
+        // logger.trace("getActiveFacetStringPrefix");
         if (urlEncode) {
             try {
                 return URLEncoder.encode(generateFacetPrefix(new ArrayList<>(activeFacets), true), SearchBean.URL_ENCODING);
@@ -1034,8 +1039,8 @@ public class SearchFacets implements Serializable {
      * Returns configured facet fields of regular and hierarchical type only.
      * </p>
      *
-     * @should return all facet items in correct order
      * @return a {@link java.util.Map} object.
+     * @should return all facet items in correct order
      */
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
         return getAvailableFacets(Arrays.asList("", "hierarchical"));
@@ -1159,14 +1164,7 @@ public class SearchFacets implements Serializable {
      * @return a boolean.
      */
     public boolean isHasWrongLanguageCode(String field, String language) {
-        if (field == null) {
-            throw new IllegalArgumentException("field may not be null");
-        }
-        if (language == null) {
-            throw new IllegalArgumentException("language may not be null");
-        }
-
-        return field.contains(SolrConstants.MIDFIX_LANG) && !field.endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase());
+        return SolrTools.isHasWrongLanguageCode(field, language);
     }
 
     /**
@@ -1298,10 +1296,12 @@ public class SearchFacets implements Serializable {
         }
         return "";
     }
-    
+
     public int getActiveFacetsSize() {
-       return  this.getAllAvailableFacets().keySet().stream()
-        .mapToInt(this::getActiveFacetsSizeForField)
-        .sum();
+        return this.getAllAvailableFacets()
+                .keySet()
+                .stream()
+                .mapToInt(this::getActiveFacetsSizeForField)
+                .sum();
     }
 }

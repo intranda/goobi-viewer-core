@@ -88,6 +88,14 @@
                 <ignoreVersion type="regex">3.*</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.ocpsoft.rewrite" artifactId="rewrite-*">
+            <ignoreVersions>
+                <ignoreVersion>10.0.0.Final</ignoreVersion>
+                <ignoreVersion>9.0.0.Final</ignoreVersion>
+                <ignoreVersion>8.0.0.Final</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+
 
     </rules>
 </ruleset>

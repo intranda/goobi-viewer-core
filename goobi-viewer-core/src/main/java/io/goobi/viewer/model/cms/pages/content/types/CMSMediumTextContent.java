@@ -40,6 +40,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.translations.TranslatedText;
@@ -150,7 +151,7 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         return null;
     }
 

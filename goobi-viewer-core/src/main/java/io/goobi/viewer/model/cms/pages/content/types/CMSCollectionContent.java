@@ -38,6 +38,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CollectionViewBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -218,7 +219,7 @@ public class CMSCollectionContent extends CMSContent {
      * call {@link CollectionView#reset(boolean) CollectionView#reset(true)} on the CollectionView stored in the cmsBean for this item, if any
      */
     @Override
-    public String handlePageLoad(boolean resetResults) {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) {
         BeanUtils.getCollectionViewBean().getCollectionIfStored(this).ifPresent(c -> c.reset(true));
         return "";
     }

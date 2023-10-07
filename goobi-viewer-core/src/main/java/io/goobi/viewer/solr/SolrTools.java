@@ -515,6 +515,26 @@ public class SolrTools {
     }
 
     /**
+     * 
+     * @param field
+     * @param language
+     * @return true if language code different
+     * @should return true if language code different
+     * @should return false if language code same
+     * @should return false if no language code
+     */
+    public static boolean isHasWrongLanguageCode(String field, String language) {
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+        if (language == null) {
+            throw new IllegalArgumentException("language may not be null");
+        }
+
+        return field.contains(SolrConstants.MIDFIX_LANG) && !field.endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase());
+    }
+
+    /**
      * <p>
      * isQuerySyntaxError.
      * </p>

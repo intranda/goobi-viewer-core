@@ -132,7 +132,7 @@ public abstract class CMSContent {
      * @return a jsf action response
      * @throws PresentationException
      */
-    public abstract String handlePageLoad(boolean resetResults) throws PresentationException;
+    public abstract String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException;
 
     public abstract boolean isEmpty();
 
