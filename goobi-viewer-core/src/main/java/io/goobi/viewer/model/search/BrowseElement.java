@@ -75,7 +75,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 /**
- * Representation of a search hit. TODO integrate into SearchHit
+ * Representation of a search hit.
  */
 public class BrowseElement implements Serializable {
 

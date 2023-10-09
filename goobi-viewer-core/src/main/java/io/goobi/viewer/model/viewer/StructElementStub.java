@@ -651,7 +651,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * Returns the first meetadata value for the language speciic version of the given field name. If no value is found, the value of the generic
+     * Returns the first metadata value for the language specific version of the given field name. If no value is found, the value of the generic
      * version is returned.
      *
      * @param fieldName Solr field name
