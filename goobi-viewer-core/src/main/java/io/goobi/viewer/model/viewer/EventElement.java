@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -377,4 +377,20 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         return searchHitMetadata;
     }
 
+    /**
+     * 
+     * @param locale
+     * @return searchHitMetadata minus any fields that don't match the given locale
+     */
+    public List<Metadata> getSearchHitListForLocale(Locale locale) {
+        return Metadata.filterMetadata(searchHitMetadata, locale != null ? locale.getLanguage() : null, null);
+    }
+
+    /**
+     * 
+     * @return searchHitMetadata minus any fields that don't match the current locale
+     */
+    public List<Metadata> getSearchHitMetadataForCurrentLocale() {
+        return getSearchHitListForLocale(BeanUtils.getLocale());
+    }
 }
