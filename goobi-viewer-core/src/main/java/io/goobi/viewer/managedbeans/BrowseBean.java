@@ -422,9 +422,9 @@ public class BrowseBean implements Serializable {
             }
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
-            String browsingMenuFieldForCurrentLanguage = getBrowsingMenuFieldForLanguage(navigationHelper.getLocaleString());
+            String browsingMenuFieldForCurrentLanguage = getBrowsingMenuFieldForLanguage(locale.getLanguage());
             if (availableStringFilters.get(browsingMenuFieldForCurrentLanguage) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, 0, new BrowseTermComparator(locale));
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, 0, new BrowseTermComparator(locale), locale.getLanguage());
                 if (availableStringFilters.get(browsingMenuFieldForCurrentLanguage) == null || filterQuery != null) {
                     logger.trace("Populating search term filters for field '{}'...", browsingMenuFieldForCurrentLanguage);
                     availableStringFilters.put(browsingMenuFieldForCurrentLanguage, new ArrayList<>());
@@ -466,7 +466,7 @@ public class BrowseBean implements Serializable {
                 throw new RedirectException("");
             }
 
-            hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, useFilterQuery);
+            hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, useFilterQuery, locale.getLanguage());
             if (hitsCount == 0) {
                 resetTerms();
                 return "searchTermList";
@@ -487,7 +487,7 @@ public class BrowseBean implements Serializable {
             // Get terms for the current page
             logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
             terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, useFilterQuery, 0, SolrSearchIndex.MAX_HITS,
-                    new BrowseTermComparator(locale));
+                    new BrowseTermComparator(locale), locale.getLanguage());
 
             for (int i = start; i < end; ++i) {
                 if (i >= terms.size()) {

@@ -109,6 +109,18 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
+     * 
+     * @param language
+     * @return
+     */
+    public String getFieldForLanguage(String language) {
+        if (field != null && field.endsWith(SolrConstants.MIDFIX_LANG + "{}")) {
+            return field.replace("{}", language.toUpperCase());
+        }
+        return field;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>sortField</code>.
      * </p>

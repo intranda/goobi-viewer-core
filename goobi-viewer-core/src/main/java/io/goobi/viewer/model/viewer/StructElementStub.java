@@ -670,7 +670,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * Returns the first meetadata value for the given field name.
+     * Returns the first metadata value for the given field name.
      *
      * @param fieldName Solr field name.
      * @return a {@link java.lang.String} object.

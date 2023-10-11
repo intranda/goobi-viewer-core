@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +41,9 @@ public class BrowseBeanTest extends AbstractTest {
     public void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfNoLanguageWasGiven() throws Exception {
         BrowseBean bb = new BrowseBean();
         List<String> result = bb.getBrowsingMenuItems(null);
-        Assert.assertEquals(2, result.size());
-        Assert.assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
-        Assert.assertEquals("MD_SHELFMARK", result.get(1));
+        assertEquals(2, result.size());
+        assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
+        assertEquals("MD_SHELFMARK", result.get(1));
     }
 
     /**
@@ -52,10 +54,10 @@ public class BrowseBeanTest extends AbstractTest {
     public void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfTheyDontMatchGivenLanguage() throws Exception {
         BrowseBean bb = new BrowseBean();
         List<String> result = bb.getBrowsingMenuItems("en");
-        Assert.assertEquals(3, result.size());
-        Assert.assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
-        Assert.assertEquals("MD_TITLE_LANG_EN_UNTOKENIZED", result.get(1));
-        Assert.assertEquals("MD_SHELFMARK", result.get(2));
+        assertEquals(3, result.size());
+        assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
+        assertEquals("MD_TITLE_LANG_EN_UNTOKENIZED", result.get(1));
+        assertEquals("MD_SHELFMARK", result.get(2));
     }
 
     /**
@@ -65,8 +67,8 @@ public class BrowseBeanTest extends AbstractTest {
     @Test
     public void getCollectionHierarchy_shouldReturnHierarchyCorrectly() throws Exception {
         BrowseBean bb = new BrowseBean();
-        Assert.assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
-        Assert.assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
+        assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
+        assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
     }
 
     /**
@@ -82,7 +84,7 @@ public class BrowseBeanTest extends AbstractTest {
         bb.getAvailableStringFilters().add("0-9");
         bb.getAvailableStringFilters().add("A");
         bb.getAvailableStringFilters().add("B");
-        Assert.assertEquals("A", bb.selectRedirectFilter());
+        assertEquals("A", bb.selectRedirectFilter());
     }
 
     /**
@@ -96,7 +98,7 @@ public class BrowseBeanTest extends AbstractTest {
         bb.availableStringFilters.put("foo", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("0-9");
-        Assert.assertEquals("0-9", bb.selectRedirectFilter());
+       assertEquals("0-9", bb.selectRedirectFilter());
     }
 
     /**
@@ -110,6 +112,28 @@ public class BrowseBeanTest extends AbstractTest {
         bb.availableStringFilters.put("foo", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("?");
-        Assert.assertEquals("!", bb.selectRedirectFilter());
+       assertEquals("!", bb.selectRedirectFilter());
+    }
+
+    /**
+     * @see BrowseBean#getBrowsingMenuFieldForLanguage(String)
+     * @verifies return field for given language if placeholder found
+     */
+    @Test
+    public void getBrowsingMenuFieldForLanguage_shouldReturnFieldForGivenLanguageIfPlaceholderFound() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        bb.setBrowsingMenuField("MD_FOO_LANG_{}");
+        assertEquals("MD_FOO_LANG_EN", bb.getBrowsingMenuFieldForLanguage("en"));
+    }
+
+    /**
+     * @see BrowseBean#getBrowsingMenuFieldForLanguage(String)
+     * @verifies return browsingMenuField if no language placeholder
+     */
+    @Test
+    public void getBrowsingMenuFieldForLanguage_shouldReturnBrowsingMenuFieldIfNoLanguagePlaceholder() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        bb.setBrowsingMenuField("MD_FOO");
+        assertEquals("MD_FOO", bb.getBrowsingMenuFieldForLanguage("en"));
     }
 }
