@@ -143,7 +143,7 @@
                                         <f:param value="#{hit.ugcHitCount}" />
                                     </h:outputFormat>
                                 </button>
-                                <o:commandScript name="loadChildHits_#{status.index}" action="#{hit.loadChildHits(20)}" render="childHitGroup" 
+                                <o:commandScript name="loadChildHits_#{status.index}" action="#{hit.loadChildHits(configurationBean.searchChildHitsToLoadOnExpand)}" render="childHitGroup" 
                                 onbegin="viewerJS.searchList.showAjaxLoader('search_subhits_ajaxloader_#{status.index}')" oncomplete="viewerJS.searchList.hideAjaxLoader('search_subhits_ajaxloader_#{status.index}')">
                                 </o:commandScript>
                             <div class="search-list__hit-content"  data-toggle-id="childHits_#{status.index}" style="display: none">
@@ -218,7 +218,7 @@
             var searchSortingDropdownConfig = {};
             var searchListConfig = {
         		listStyle: "#{listStyle}",
-        		maxChildHitsToRenderOnStart: 7,
+        		maxChildHitsToRenderOnStart: #{configurationBean.searchChildHitsInitialLoadLimit},
             };
             
              viewerJS.searchList.init( searchListConfig ); 

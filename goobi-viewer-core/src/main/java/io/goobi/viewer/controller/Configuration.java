@@ -1511,6 +1511,15 @@ public class Configuration extends AbstractConfiguration {
     public boolean isDisplaySearchHitNumbers() {
         return getLocalBoolean("search.displayHitNumbers[@enabled]", false);
     }
+    
+
+    public int getSearchChildHitsInitialLoadLimit() {
+        return getLocalInt("search.childHits.initialLoadLimit", 5);
+    }
+    
+    public int getSearchChildHitsToLoadOnExpand() {
+        return getLocalInt("search.childHits.loadOnExpand", 20);
+    }
 
     /**
      * <p>
@@ -5916,4 +5925,5 @@ public class Configuration extends AbstractConfiguration {
     public long getCMSGeomapCachingTimeToLive() {
         return getLocalInt("maps.caching.timeToLive", 6);
     }
+
 }
