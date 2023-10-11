@@ -534,7 +534,8 @@ public class BrowseBean implements Serializable {
 
         String numericalFilter = null;
         String alphaFilter = null;
-        String browsingMenuFieldForCurrentLanguage = getBrowsingMenuFieldForLanguage(navigationHelper.getLocaleString());
+        String browsingMenuFieldForCurrentLanguage =
+                getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null);
         for (String filter : availableStringFilters.get(browsingMenuFieldForCurrentLanguage)) {
             switch (filter) {
                 case "0-9":
@@ -721,7 +722,7 @@ public class BrowseBean implements Serializable {
      * @return the availableStringFilters
      */
     public List<String> getAvailableStringFilters() {
-        return availableStringFilters.get(getBrowsingMenuFieldForLanguage(navigationHelper.getLocaleString()));
+        return availableStringFilters.get(getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null));
     }
 
     /**
