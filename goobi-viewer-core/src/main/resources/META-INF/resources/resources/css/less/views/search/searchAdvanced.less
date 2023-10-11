@@ -89,6 +89,13 @@
                 opacity: 0.4;
             }
         }
+		.cms-module__option-dropdown label {
+		  white-space: nowrap;
+		  text-overflow: ellipsis;
+		  overflow: hidden;
+		  max-width: 100%;
+			display: block;
+		}
     }
 	&__input-group-field {
 		position: relative;
@@ -147,7 +154,7 @@
             }
         }
         span {
-            display: none;
+            //display: none;
         }
         .form-group {
             margin: 0;
@@ -192,6 +199,21 @@
 	@gap-sizer: 20px;
 	.admin__radio-switch {
 		label {}
+	}
+	&__value-group {
+		min-width: 0;
+	} 
+	&__button-badge {
+		max-width: 100%;
+		.badge {
+			font-size: 12px; 
+			overflow: hidden;
+			  text-overflow: ellipsis;
+			  max-width: 100%;
+		}
+		.badge-light {
+			background: #f3f3f3;
+		}
 	}
 }
 

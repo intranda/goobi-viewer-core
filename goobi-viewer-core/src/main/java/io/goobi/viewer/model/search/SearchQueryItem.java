@@ -239,12 +239,12 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * 
-     * @return
+     * @return true if selected field is "all fields"; false otherwise
      */
     public boolean isAllFields() {
         return ADVANCED_SEARCH_ALL_FIELDS.equals(field);
     }
-
+    
     /**
      *
      * @return

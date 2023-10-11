@@ -554,8 +554,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Deprecated
     public String getCurrentMasterImageUrl() throws IndexUnreachableException, DAOException {
-        return getCurrentMasterImageUrl(Scale.MAX);
+        return getMasterImageUrl(Scale.MAX, getCurrentPage());
     }
 
     /**
@@ -568,18 +569,18 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getCurrentMasterImageUrl(Scale scale) throws IndexUnreachableException, DAOException {
+    public String getMasterImageUrl(Scale scale, PhysicalElement page) throws IndexUnreachableException, DAOException {
 
-        PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper()).map(nh -> nh.getCurrentPageType()).orElse(null);
+        PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper()).map(NavigationHelper::getCurrentPageType).orElse(null);
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
-        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(getCurrentPage(), scale));
+        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(page, scale));
         logger.trace("Master image URL: {}", sb);
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
-                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> {
+                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(page).map(text -> {
                     try {
                         return "&watermarkText=" + URLEncoder.encode(text, StringTools.DEFAULT_ENCODING);
                     } catch (UnsupportedEncodingException e) {
@@ -605,18 +606,19 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getCurrentThumbnailUrlForDownload(Scale scale) throws IndexUnreachableException, DAOException {
+    public String getThumbnailUrlForDownload(Scale scale, PhysicalElement page) throws IndexUnreachableException, DAOException {
 
-        PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper()).map(nh -> nh.getCurrentPageType()).orElse(null);
+        PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper()).map(NavigationHelper::getCurrentPageType).orElse(null);
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
-        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale));
+
+        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(page, scale));
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter()
-                        .getWatermarkTextIfExists(getCurrentPage())
+                        .getWatermarkTextIfExists(page)
                         .map(text -> {
                             try {
                                 return "&watermarkText=" + URLEncoder.encode(text, StringTools.DEFAULT_ENCODING);
@@ -670,10 +672,10 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getPageDownloadUrl(DownloadOption option) throws IndexUnreachableException, DAOException {
+    public String getPageDownloadUrl(DownloadOption option, PhysicalElement page) throws IndexUnreachableException, DAOException {
         logger.trace("getPageDownloadUrl: {}", option);
         if (option == null || !option.isValid()) {
-            option = getDownloadOptionsForCurrentImage().stream()
+            option = getDownloadOptionsForPage(page).stream()
                     .findFirst()
                     .orElse(null);
             if (option == null) {
@@ -691,9 +693,9 @@ public class ViewManager implements Serializable {
         switch (option.getFormat().toLowerCase()) {
             case "jpg":
             case "jpeg":
-                return getCurrentThumbnailUrlForDownload(scale);
+                return getThumbnailUrlForDownload(scale, page);
             default:
-                return getCurrentMasterImageUrl(scale);
+                return getMasterImageUrl(scale, page);
         }
 
     }
@@ -754,8 +756,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public List<DownloadOption> getDownloadOptionsForCurrentImage() throws IndexUnreachableException, DAOException {
-        PhysicalElement page = getCurrentPage();
+    public List<DownloadOption> getDownloadOptionsForPage(PhysicalElement page) throws IndexUnreachableException, DAOException {
         if (page != null && page.isHasImage()) {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
             String imageFilename = page.getFirstFileName();
@@ -797,6 +798,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Deprecated
     public String getMasterImageUrlForDownload(String boxSizeInPixel) throws IndexUnreachableException, DAOException {
         if (boxSizeInPixel == null) {
             throw new IllegalArgumentException("boxSizeInPixel may not be null");
@@ -811,7 +813,7 @@ public class ViewManager implements Serializable {
             throw new IllegalArgumentException("Not a valid size parameter: " + boxSizeInPixel);
         }
 
-        return getCurrentMasterImageUrl(scale);
+        return getMasterImageUrl(scale, getCurrentPage());
     }
 
     /**
@@ -1952,16 +1954,26 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
+        return getTeiUrlForAllPages(BeanUtils.getLocale().getLanguage());
+    }
+
+    /**
+     * 
+     * @param language
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getTeiUrlForAllPages(String language) throws IndexUnreachableException {
         String localPi = getPi();
         return DataManager.getInstance()
                 .getRestApiManager()
                 .getContentApiManager()
                 .map(urls -> urls.path(RECORDS_RECORD, RECORDS_TEI_LANG)
-                        .params(localPi, BeanUtils.getLocale().getLanguage())
+                        .params(localPi, language)
                         .build())
                 .orElse("");
     }
-
+    
     /**
      * Return the url to a REST service delivering the fulltext of the current page as TEI
      *
@@ -2223,6 +2235,7 @@ public class ViewManager implements Serializable {
             return false;
         }
         // Only allow PDF downloads for records coming from METS files
+        // TODO Allow METS_MARC once supported
         if (!SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat())) {
             return false;
         }
@@ -2611,12 +2624,12 @@ public class ViewManager implements Serializable {
 
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
-    
+
     /**
      * 
      * @return true if record full-text is generated from TEI documents; false otherwise
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
     public boolean isFulltextFromTEI() throws IndexUnreachableException, PresentationException {
         return isRecordHasTEIFiles();

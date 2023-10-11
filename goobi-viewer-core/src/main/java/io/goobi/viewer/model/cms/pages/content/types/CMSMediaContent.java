@@ -52,6 +52,7 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -203,7 +204,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         return null;
     }
 

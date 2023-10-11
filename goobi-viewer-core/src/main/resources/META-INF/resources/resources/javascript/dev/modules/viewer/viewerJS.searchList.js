@@ -158,7 +158,7 @@ var viewerJS = ( function( viewer ) {
 			}
             
             // load thumbnails before appying search list style
-            console.log("Load search hits with style " + _searchListStyle);
+           // console.log("Load search hits with style " + _searchListStyle);
             switch ( _searchListStyle ) { 
                 case 'default':
 				case 'details':

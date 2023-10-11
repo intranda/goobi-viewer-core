@@ -1434,7 +1434,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     IPrivilegeHolder.PRIV_ZOOM_IMAGES).isGranted();
         }
         logger.trace("FacesContext not found");
-
         return false;
 
     }
@@ -1446,7 +1445,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws DAOException
      */
     public boolean isAccessPermissionImageDownload() throws IndexUnreachableException, DAOException {
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
                     IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES).isGranted();
@@ -1833,5 +1832,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     .collect(Collectors.toList());
             return mapper.writeValueAsString(shapes);
         }
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s %s (%s)", getPi(), getOrder(), getOrderLabel());
     }
 }

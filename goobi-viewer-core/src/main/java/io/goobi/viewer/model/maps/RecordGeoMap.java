@@ -66,17 +66,34 @@ public class RecordGeoMap {
     private final IDAO dao;
     private final List<FeatureSetConfiguration> featureSetConfigs;
 
+    /**
+     * Create a new geomap with features from the given StructElement and related documents
+     */
     public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments) throws DAOException {
         this(struct, relatedDocuments, DataManager.getInstance().getDao(),
                 DataManager.getInstance().getConfiguration().getRecordGeomapFeatureSetConfigs(struct.getDocStructType()));
     }
 
+    /**
+     * Create a new geomap with features from the given StructElement and related documents
+     */
     public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments, IDAO dao, List<FeatureSetConfiguration> featureSetConfigs) {
         this.dao = dao;
         this.mainStruct = struct;
         this.relatedDocuments = new ArrayList<>(relatedDocuments);
         this.featureSetConfigs = featureSetConfigs;
         this.geoMap = createMap();
+    }
+    
+    /**
+     * empty geomap without features
+     */
+    public RecordGeoMap() {
+        this.dao = null;
+        this.mainStruct = null;
+        this.relatedDocuments = new ArrayList<>();
+        this.featureSetConfigs = new ArrayList<>();
+        this.geoMap = new GeoMap();
     }
 
     private GeoMap createMap() {

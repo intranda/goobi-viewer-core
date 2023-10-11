@@ -301,6 +301,7 @@ public class ProcessDataResolver {
         }
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
             case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
@@ -313,6 +314,7 @@ public class ProcessDataResolver {
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
                 sb.append(config.getIndexedMetsFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_LIDO:

@@ -45,6 +45,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
@@ -136,7 +137,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder,
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         return null;
     }
 

@@ -29,6 +29,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -54,5 +56,9 @@ public class MessagesBean {
     
     private IMetadataValue getTranslations(String value) {
         return ViewerResourceBundle.getTranslations(value);
+    }
+    
+    public String cleanHtml(String html) {
+        return Jsoup.clean(html, Safelist.relaxed());
     }
 }

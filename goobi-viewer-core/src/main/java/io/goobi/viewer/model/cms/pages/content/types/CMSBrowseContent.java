@@ -35,6 +35,7 @@ import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import jakarta.persistence.Column;
@@ -98,7 +99,7 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         if (this.browse == null) {
             this.browse = this.initBrowse();
         }

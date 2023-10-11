@@ -112,8 +112,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     public FacetItem(Count count) {
-        this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(),
-                Messages.translate(count.getName(), BeanUtils.getLocale()), count.getCount(), false);
+        this(count.getFacetField().getName(), count.getName() + ":" + count.getName(), count.getName(), count.getCount(), false);
     }
 
     /**
@@ -125,10 +124,10 @@ public class FacetItem implements Serializable, IFacetItem {
      * @param count {@link Integer}
      * @param hierarchical
      */
-    private FacetItem(String field, String link, String label, String translatedLabel, long count, boolean hierarchical) {
+    private FacetItem(String field, String link, String label, long count, boolean hierarchical) {
         this.field = field;
         this.label = label;
-        this.translatedLabel = translatedLabel;
+        this.translatedLabel = DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(field) ? ViewerResourceBundle.getTranslation(label, BeanUtils.getLocale()) : label;
         this.count = count;
         this.hierarchial = hierarchical;
         setLink(link.trim());
@@ -297,7 +296,7 @@ public class FacetItem implements Serializable, IFacetItem {
                 }
                 String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
                 FacetItem facetItem =
-                        new FacetItem(field, link, StringTools.intern(label), ViewerResourceBundle.getTranslation(label, locale), entry.getValue(),
+                        new FacetItem(field, link, StringTools.intern(label), entry.getValue(),
                                 hierarchical);
                 if (!priorityValues.isEmpty() && priorityValues.contains(useValue)) {
                     priorityValueMap.put(useValue, facetItem);
@@ -414,7 +413,7 @@ public class FacetItem implements Serializable, IFacetItem {
                 label += SolrConstants.SUFFIX_DD;
             }
             String link = StringUtils.isNotEmpty(field) ? field + ":" + ClientUtils.escapeQueryChars(String.valueOf(value)) : String.valueOf(value);
-            retList.add(new FacetItem(field, link, label, ViewerResourceBundle.getTranslation(label, locale), values.get(String.valueOf(value)),
+            retList.add(new FacetItem(field, link, label, values.get(String.valueOf(value)),
                     hierarchical));
         }
 
@@ -800,4 +799,5 @@ public class FacetItem implements Serializable, IFacetItem {
         }
 
     }
+
 }

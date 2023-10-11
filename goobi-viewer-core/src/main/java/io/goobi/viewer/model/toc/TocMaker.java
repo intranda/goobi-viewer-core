@@ -165,8 +165,7 @@ public class TocMaker {
         LinkedHashMap<String, List<TOCElement>> ret = new LinkedHashMap<>();
         ret.put(StringConstants.DEFAULT_NAME, new ArrayList<TOCElement>());
 
-        // TODO Remove the check for METS once format-agnostic way of generating PDFs has been implemented
-        boolean sourceFormatPdfAllowed = SolrConstants.SOURCEDOCFORMAT_METS.equals(structElement.getSourceDocFormat());
+        boolean sourceFormatPdfAllowed = SolrConstants.SOURCEDOCFORMAT_METS.equals(structElement.getSourceDocFormat()); // TODO Allow METS_MARC once supported
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(new StringBuilder(SolrConstants.IDDOC).append(':').append(structElement.getLuceneId()).toString(),
@@ -315,8 +314,7 @@ public class TocMaker {
      * @throws DAOException
      */
     private static void buildGroupToc(List<TOCElement> ret, List<String> groupIdFields, String groupIdValue, boolean sourceFormatPdfAllowed,
-            String mimeType)
-            throws PresentationException, IndexUnreachableException,  DAOException {
+            String mimeType) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("addMembersToGroup: {}", groupIdValue);
         if (ret == null) {
             throw new IllegalArgumentException("ret may not be null");

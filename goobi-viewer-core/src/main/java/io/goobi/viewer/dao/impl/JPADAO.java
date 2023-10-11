@@ -5711,7 +5711,8 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query qItems = em.createQuery("SELECT item FROM CMSSliderContent item");
+            Query qItems = em.createQuery("SELECT item FROM CMSSliderContent item WHERE item.slider = :slider");
+            qItems.setParameter("slider", slider);
             List<CMSContent> itemList = qItems.getResultList();
             return itemList.stream()
                     .map(CMSContent::getOwningComponent)
