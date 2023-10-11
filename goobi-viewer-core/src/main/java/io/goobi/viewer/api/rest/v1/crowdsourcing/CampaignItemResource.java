@@ -265,7 +265,7 @@ public class CampaignItemResource {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
             if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus)) {
                 anno.setAccessCondition(getPublishedAccessCondition(campaign));
-                if(campaign.isReviewModeActive() && user.isPresent()) {
+                if (campaign.isReviewModeActive() && user.isPresent()) {
                     anno.setReviewer(user.get());
                 }
             }
@@ -292,7 +292,7 @@ public class CampaignItemResource {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
             if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus)) {
                 anno.setAccessCondition(getPublishedAccessCondition(campaign));
-                if(campaign.isReviewModeActive() && user.isPresent()) {
+                if (campaign.isReviewModeActive() && user.isPresent()) {
                     anno.setReviewer(user.get());
                 }
             }

@@ -1261,7 +1261,7 @@ public class SolrSearchIndex {
 
         return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
     }
-    
+
     /**
      * Catches the filename of the page with the given basename under the given ip. Used in case a filename is requested without the file extension
      *
@@ -1284,7 +1284,8 @@ public class SolrSearchIndex {
                 .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.FILENAME)
                 .append(":")
-                .append(basename).append(".*");
+                .append(basename)
+                .append(".*");
 
         SolrDocumentList hits = search(sbQuery.toString(), Collections.singletonList(SolrConstants.FILENAME));
         if (hits.isEmpty()) {

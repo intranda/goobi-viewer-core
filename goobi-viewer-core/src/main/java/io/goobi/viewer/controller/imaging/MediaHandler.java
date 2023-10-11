@@ -67,18 +67,17 @@ public class MediaHandler {
      */
     public String getMediaUrl(String type, String format, String pi, String filename) throws IllegalRequestException {
 
-
-
-        if(urls != null) {
-            if(type.equalsIgnoreCase("audio")) {
+        if (urls != null) {
+            if (type.equalsIgnoreCase("audio")) {
                 return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_AUDIO).params(pi, format, filename).build();
-            } else if(type.equalsIgnoreCase("video")){
+            } else if (type.equalsIgnoreCase("video")) {
                 return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_VIDEO).params(pi, format, filename).build();
             } else {
                 throw new IllegalRequestException("Unknown media type " + type);
             }
         } else {
-            return DataManager.getInstance().getConfiguration().getIIIFApiUrl() + URL_TEMPLATE.replace("{mimeType}", type + "/" + format).replace("{identifier}", pi).replace("{filename}", filename);
+            return DataManager.getInstance().getConfiguration().getIIIFApiUrl()
+                    + URL_TEMPLATE.replace("{mimeType}", type + "/" + format).replace("{identifier}", pi).replace("{filename}", filename);
         }
 
     }

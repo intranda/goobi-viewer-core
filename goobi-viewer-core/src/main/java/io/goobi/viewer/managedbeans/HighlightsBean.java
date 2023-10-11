@@ -115,9 +115,10 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Testing constructor explicitly initializing required properties
-     * @param dao       The {@link IDAO} in which to store the highlight data
-     * @param navigationHelper  {@link NavigationHelper} to handle URL resolving
-     * @param imaging       {@link ImageDeliveryBean} to handle image URL creation
+     * 
+     * @param dao The {@link IDAO} in which to store the highlight data
+     * @param navigationHelper {@link NavigationHelper} to handle URL resolving
+     * @param imaging {@link ImageDeliveryBean} to handle image URL creation
      */
     public HighlightsBean(IDAO dao, NavigationHelper navigationHelper, ImageDeliveryBean imaging) {
         this.dao = dao;
@@ -154,15 +155,18 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get a {@link TableDataProvider} to all saved {@link Highlight highlights}
-     * @return  a {@link TableDataProvider}
+     * 
+     * @return a {@link TableDataProvider}
      */
     public TableDataProvider<Highlight> getAllObjectsProvider() {
         return allObjectsProvider;
     }
 
     /**
-     * Get a {@link TableDataProvider} to all current {@link Highlight highlights}. That is all highlights which are valid for the current date and set to active
-     * @return  a {@link TableDataProvider}
+     * Get a {@link TableDataProvider} to all current {@link Highlight highlights}. That is all highlights which are valid for the current date and
+     * set to active
+     * 
+     * @return a {@link TableDataProvider}
      */
     public TableDataProvider<Highlight> getCurrentObjectsProvider() {
         return currentObjectsProvider;
@@ -170,8 +174,9 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the URL to the highlighted object. Either the record page URL of the URL given in highlight creation
+     * 
      * @param the highlight object
-     * @return  the URL
+     * @return the URL
      */
     public String getUrl(Highlight object) {
         if (object != null) {
@@ -195,6 +200,7 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Delete a {@link Highlight}
+     * 
      * @param object
      */
     public void deleteObject(Highlight object) {
@@ -209,6 +215,7 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the currently selected {@link Highlight}
+     * 
      * @return a {@link Highlight}
      */
     public Highlight getSelectedObject() {
@@ -217,6 +224,7 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Set the {@link Highlight} selected for editing
+     * 
      * @param selectedObject
      */
     public void setSelectedObject(Highlight selectedObject) {
@@ -233,6 +241,7 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Set the {@link Highlight} selected for editing via its database id
+     * 
      * @param id
      */
     public void setSelectedObjectId(long id) {
@@ -260,7 +269,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Check if the currently selected highlight has been persisted already
-     * @return  true if {@link #getSelectedObject()} has no database id and has thus not been persisted yet
+     * 
+     * @return true if {@link #getSelectedObject()} has no database id and has thus not been persisted yet
      */
     public boolean isNewObject() {
         return this.selectedObject != null && this.selectedObject.getData().getId() == null;
@@ -268,6 +278,7 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Persist the given {@link Highlight} to the database
+     * 
      * @param object
      * @throws DAOException
      */
@@ -293,7 +304,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * If a {@link Highlight} has been selected and it points to a record (rather than a URL), retrieve the metadata for this record
-     * @return  A {@link MetadataElement} with metadata for the related record if one exists. Otherwise null
+     * 
+     * @return A {@link MetadataElement} with metadata for the related record if one exists. Otherwise null
      */
     public MetadataElement getMetadataElement() {
         if (this.selectedObject != null) {
@@ -313,7 +325,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the currently displayed highlight. This highlight is randomly chosen from all highlights valid for the current day which are set to enabled
-     * @return  a {@link Highlight}
+     * 
+     * @return a {@link Highlight}
      * @throws DAOException
      */
     public Highlight getCurrentHighlight() throws DAOException {
@@ -330,8 +343,9 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get the URL of a representative image for the record related to the currently selected highlight if a highlight is selected and it refers to a record. 
-     * Otherwise return null
+     * Get the URL of a representative image for the record related to the currently selected highlight if a highlight is selected and it refers to a
+     * record. Otherwise return null
+     * 
      * @return A URL to the record for the selected highlight if one exists. Otherwise null
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -343,8 +357,9 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get the URL of a representative image for the record related to the currently selected highlight if a highlight is selected and it refers to a record. 
-     * Otherwise return null
+     * Get the URL of a representative image for the record related to the currently selected highlight if a highlight is selected and it refers to a
+     * record. Otherwise return null
+     * 
      * @return A URL to the record for the selected highlight if one exists. Otherwise null
      * @param width the desired width of the image. Chose '0' for original image width
      * @param height the desired height of the image. Chose '0' for original image height
@@ -364,7 +379,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get all objected contained in {@link #getCurrentObjectsProvider()}
-     * @return  A list of all currently active {@link Highlight}s
+     * 
+     * @return A list of all currently active {@link Highlight}s
      */
     public List<Highlight> getCurrentObjects() {
         return this.getCurrentObjectsProvider().getPaginatorList();
@@ -372,7 +388,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the current {@link EditStatus}
-     * @return  a {@link EditStatus}
+     * 
+     * @return a {@link EditStatus}
      */
     public EditStatus getEditStatus() {
         return editStatus;
@@ -380,21 +397,27 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Set the {@link #getEditStatus()}
+     * 
      * @param editStatus
      */
     public void setEditStatus(EditStatus editStatus) {
         this.editStatus = editStatus;
     }
-    
+
     /**
-     * Get all {@link Highlight}s which are not valid for the given date but were before. Only hightlights with {@link Highlight#isEnabled()} true are included
-     * @param date  the date up to which to return the highlights (exclusively)
-     * @return  A list of {@link Highlight}s
+     * Get all {@link Highlight}s which are not valid for the given date but were before. Only hightlights with {@link Highlight#isEnabled()} true are
+     * included
+     * 
+     * @param date the date up to which to return the highlights (exclusively)
+     * @return A list of {@link Highlight}s
      * @throws DAOException
      */
     public List<Highlight> getHighlightsBefore(LocalDate date) throws DAOException {
         return dao.getPastHighlightsForDate(0, Integer.MAX_VALUE, DAO_FIELD_DATE_START, true, Map.of(), date.atStartOfDay())
-                .stream().filter(HighlightData::isEnabled).map(Highlight::new).collect(Collectors.toList());
+                .stream()
+                .filter(HighlightData::isEnabled)
+                .map(Highlight::new)
+                .collect(Collectors.toList());
     }
 
 }

@@ -78,7 +78,7 @@ public class DatabaseUpdater {
             }
         }
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static List<IModelUpdate> instantiateUpdater() {
         List<IModelUpdate> updaterList = new ArrayList<>();

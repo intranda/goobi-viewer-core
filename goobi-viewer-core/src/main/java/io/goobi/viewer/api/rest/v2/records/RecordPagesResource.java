@@ -158,12 +158,12 @@ public class RecordPagesResource {
 
         URI uri = URI.create(apiPath.build());
         AnnotationPage annoPage = new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForPage(pi, pageNo, uri).getFirst();
-        if(annoPage != null) {
+        if (annoPage != null) {
             return annoPage;
         } else {
             return new AnnotationPage(uri);
         }
-//        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false);
+        //        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false);
     }
 
     @GET

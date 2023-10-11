@@ -44,7 +44,6 @@ public class HtmlParser {
     private static final String HTML_TAG_PATTERN_STRING = "(</\\w+>)|(<br\\s*/>)";
     private static final Pattern HTML_TAG_PATTERN = Pattern.compile(HTML_TAG_PATTERN_STRING);
 
-
     private static final Set<String> DISALLOWED_HTML_TAGS = Set.of("<script>");
     private static final Map<String, String> HTML_REPLACEMENTS = Map.ofEntries(new SimpleEntry<>("<br\\s?>", "<br />"));
 

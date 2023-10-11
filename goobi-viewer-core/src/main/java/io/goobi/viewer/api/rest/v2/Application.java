@@ -52,7 +52,6 @@ public class Application extends ResourceConfig {
 
     private static final Logger logger = LogManager.getLogger(Application.class);
 
-    
     /**
      * <p>
      * Constructor for ViewerApplication.
@@ -104,7 +103,6 @@ public class Application extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "io.swagger");
-
 
     }
 

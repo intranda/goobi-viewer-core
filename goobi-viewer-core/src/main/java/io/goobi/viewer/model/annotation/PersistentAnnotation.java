@@ -72,7 +72,7 @@ import io.goobi.viewer.model.security.user.User;
  *
  */
 @Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class PersistentAnnotation {
     private static final Logger logger = LogManager.getLogger(PersistentAnnotation.class);
 
@@ -135,8 +135,8 @@ public abstract class PersistentAnnotation {
     @Enumerated(EnumType.STRING)
     private PublicationStatus publicationStatus = PublicationStatus.CREATING;
 
-     @Transient
-     private User creator = null;
+    @Transient
+    private User creator = null;
 
     /**
      * empty constructor
@@ -308,7 +308,7 @@ public abstract class PersistentAnnotation {
      */
     public void setCreator(User creator) {
         this.creator = creator;
-        if(creator != null) {
+        if (creator != null) {
             this.creatorId = creator.getId();
         }
     }
@@ -664,7 +664,6 @@ public abstract class PersistentAnnotation {
         this.accessCondition = accessCondition;
     }
 
-
     /**
      * @param c
      * @param targetPI2
@@ -672,7 +671,7 @@ public abstract class PersistentAnnotation {
      * @return
      */
     private CrowdsourcingStatus getStatus(Campaign campaign, String pi, Integer page) {
-        if(page == null || StatisticMode.RECORD == campaign.getStatisticMode()) {
+        if (page == null || StatisticMode.RECORD == campaign.getStatisticMode()) {
             return campaign.getRecordStatus(pi);
         } else {
             return campaign.getPageStatus(pi, page);
@@ -728,7 +727,7 @@ public abstract class PersistentAnnotation {
 
     @Override
     public int hashCode() {
-        if(id == null) {
+        if (id == null) {
             return 0;
         } else {
             return id.hashCode();
@@ -737,8 +736,8 @@ public abstract class PersistentAnnotation {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            PersistentAnnotation other = (PersistentAnnotation)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            PersistentAnnotation other = (PersistentAnnotation) obj;
             return Objects.equals(this.body, other.body)
                     && Objects.equals(this.creatorId, other.creatorId)
                     && Objects.equals(this.generatorId, other.generatorId)

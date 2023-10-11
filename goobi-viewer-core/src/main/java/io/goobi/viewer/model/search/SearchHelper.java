@@ -1433,7 +1433,7 @@ public final class SearchHelper {
         if (term.length() < 2) {
             return phrase;
         }
-        
+
         StringBuilder sb = new StringBuilder();
         String normalizedPhrase = normalizeString(phrase);
         String normalizedTerm = normalizeString(term);
@@ -1476,7 +1476,7 @@ public final class SearchHelper {
             sb.append(string.substring(m.end()));
             string = sb.toString();
         }
-        
+
         string = Normalizer.normalize(string, Normalizer.Form.NFD);
 
         // string = string.replaceAll(patternHyperlink.pattern(), " ");

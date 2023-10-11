@@ -137,8 +137,8 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
         try {
             return Optional.ofNullable(dao.getComment(id));
         } catch (DAOException e) {
-           logger.error("Error loading comment with id " + id, e);
-           return Optional.empty();
+            logger.error("Error loading comment with id " + id, e);
+            return Optional.empty();
         }
     }
 

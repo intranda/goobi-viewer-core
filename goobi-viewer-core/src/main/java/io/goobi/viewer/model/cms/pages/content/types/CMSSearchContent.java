@@ -133,9 +133,9 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {
-                if(!component.getBooleanAttributeValue("useSearchGroups", true)) {                    
+                if (!component.getBooleanAttributeValue("useSearchGroups", true)) {
                     searchBean.setActiveResultGroup(SearchResultGroup.createDefaultGroup());
-                } else if(resetResults) {
+                } else if (resetResults) {
                     searchBean.setActiveResultGroup(null);
                 }
                 if (resetResults) {

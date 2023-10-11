@@ -56,7 +56,7 @@ import jakarta.persistence.Table;
 @Table(name = "mq_messages")
 @JsonInclude(Include.NON_EMPTY)
 public class ViewerMessage {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -79,7 +79,7 @@ public class ViewerMessage {
     @Column(name = "message_status")
     @Enumerated(EnumType.STRING)
     private MessageStatus messageStatus = MessageStatus.NEW;
-    
+
     @Column(name = "queue")
     private String queue;
 
@@ -154,22 +154,23 @@ public class ViewerMessage {
     public LocalDateTime getLastUpdateTime() {
         return lastUpdateTime;
     }
-    
+
     public String getQueue() {
         return queue;
     }
-    
+
     public void setQueue(String queue) {
         this.queue = queue;
     }
-    
+
     public boolean isProcessing() {
         return MessageStatus.PROCESSING.equals(getMessageStatus());
     }
 
     public static ViewerMessage parseJSON(String json) throws JsonMappingException, JsonProcessingException {
         return new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)    
-                .registerModule(new JavaTimeModule()).readValue(json, ViewerMessage.class);
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .registerModule(new JavaTimeModule())
+                .readValue(json, ViewerMessage.class);
     }
 }

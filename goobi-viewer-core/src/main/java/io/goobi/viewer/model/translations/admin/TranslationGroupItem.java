@@ -117,8 +117,8 @@ public abstract class TranslationGroupItem {
      *
      * @param language Requested language
      * @return <code>TranslationStatu</code>; FULL if all entries are FULL; NONE if all entries are NONE; PARTIAL otherwise
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      * @throws Exception
      */
     public TranslationStatus getTranslationStatusLanguage(String language) throws IndexUnreachableException, PresentationException {

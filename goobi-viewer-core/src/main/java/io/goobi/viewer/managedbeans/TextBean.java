@@ -230,7 +230,8 @@ public class TextBean implements Serializable {
                 .map(field -> Optional.ofNullable(DataManager.getInstance()
                         .getLanguageHelper()
                         .getLanguage(field.substring(field.lastIndexOf("_") + 1).toLowerCase()))
-                        .map(Language::getIsoCode).orElse(null))
+                        .map(Language::getIsoCode)
+                        .orElse(null))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }

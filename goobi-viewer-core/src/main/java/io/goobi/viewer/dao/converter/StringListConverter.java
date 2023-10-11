@@ -45,7 +45,7 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
      */
     @Override
     public String convertToDatabaseColumn(List<String> attribute) {
-        if(attribute == null || attribute.isEmpty()) {
+        if (attribute == null || attribute.isEmpty()) {
             return null;
         } else {
             return attribute.stream().map(s -> s.replace(",", "&comma;")).collect(Collectors.joining(","));
@@ -57,7 +57,7 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
      */
     @Override
     public List<String> convertToEntityAttribute(String dbData) {
-        if(StringUtils.isBlank(dbData)) {
+        if (StringUtils.isBlank(dbData)) {
             return new ArrayList<>();
         } else {
             return Arrays.asList(dbData.split(",")).stream().map(s -> s.replace("&comma;", ",")).collect(Collectors.toList());

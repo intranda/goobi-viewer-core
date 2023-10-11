@@ -1991,6 +1991,7 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Get the current time in milliseconds as string
+     * 
      * @return the current time in milliseconds as string
      */
     public String getCurrentTime() {
@@ -1999,7 +2000,8 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Get the current date as {@link LocalDate}
-     * @return  the current date as {@link LocalDate}
+     * 
+     * @return the current date as {@link LocalDate}
      */
     public LocalDate getCurrentDate() {
         return LocalDate.now();
@@ -2008,9 +2010,9 @@ public class NavigationHelper implements Serializable {
     /**
      * Simply returns the given string to redirect to a page via jsf
      * 
-     * @param page  the string to return
-     * @return  the passed string 'page'
-     * @deprecated  Apparently not used. And should be easily replacable by just entering the 'page' string in the action attribute
+     * @param page the string to return
+     * @return the passed string 'page'
+     * @deprecated Apparently not used. And should be easily replacable by just entering the 'page' string in the action attribute
      */
     @Deprecated(forRemoval = true)
     public String returnTo(String page) {

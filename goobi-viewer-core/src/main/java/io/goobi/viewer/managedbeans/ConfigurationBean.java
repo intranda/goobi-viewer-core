@@ -1305,11 +1305,11 @@ public class ConfigurationBean implements Serializable {
     public int getSearchChildHitsInitialLoadLimit() {
         return DataManager.getInstance().getConfiguration().getSearchChildHitsInitialLoadLimit();
     }
-    
+
     public int getSearchChildHitsToLoadOnExpand() {
         return DataManager.getInstance().getConfiguration().getSearchChildHitsToLoadOnExpand();
     }
-    
+
     /**
      *
      * @return

@@ -142,28 +142,29 @@ public class ClientApplicationsResource {
     @ApiResponse(responseCode = "200",
             description = "Any changes requested have been persisted. The current state of the client is contained within the response body as JSON")
     @ApiResponse(responseCode = "400", description = "The body is not a valid JSON object or contains invalid data")
-    @ApiResponse(responseCode = "401", description = "No authorization for access to this resource. See documentation about accessing protected resources")
+    @ApiResponse(responseCode = "401",
+            description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given clientIdentifier was found in database")
     @ApiResponse(responseCode = "500", description = "In interal error occured")
     public ClientApplication setClient(
             @PathParam("id") @Parameter(description = "client identifier") String clientIdentifier,
             ClientApplication update) throws DAOException, ContentNotFoundException {
         try {
-            
-                ClientApplication databaseClient = dao.getClientApplicationByClientId(clientIdentifier);
-                if (databaseClient != null) {
-                    if(clientManager.isNotAllClients(databaseClient)) {
-                        ClientApplication tempClient = new ClientApplication(databaseClient);
-                        updateClient(tempClient, update);
-                        tempClient.initializeSubnetMask();
-                        dao.saveClientApplication(tempClient);
-                        return tempClient;
-                    } else {
-                        throw new IllegalArgumentException("The requested client is internal static resource. It may not be changed");
-                    }
+
+            ClientApplication databaseClient = dao.getClientApplicationByClientId(clientIdentifier);
+            if (databaseClient != null) {
+                if (clientManager.isNotAllClients(databaseClient)) {
+                    ClientApplication tempClient = new ClientApplication(databaseClient);
+                    updateClient(tempClient, update);
+                    tempClient.initializeSubnetMask();
+                    dao.saveClientApplication(tempClient);
+                    return tempClient;
                 } else {
-                    throw new ContentNotFoundException("No client found with client-identifier '{}'".replace("{}", clientIdentifier));
+                    throw new IllegalArgumentException("The requested client is internal static resource. It may not be changed");
                 }
+            } else {
+                throw new ContentNotFoundException("No client found with client-identifier '{}'".replace("{}", clientIdentifier));
+            }
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException(e);
         }
@@ -177,8 +178,10 @@ public class ClientApplicationsResource {
     @GET
     @AuthorizationBinding
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Get a list of all registered clients", tags = { "clients" }, description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'.")
-    @ApiResponse(responseCode = "401", description = "No authorization for access to this resource. See documentation about accessing protected resources")
+    @Operation(summary = "Get a list of all registered clients", tags = { "clients" },
+            description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'.")
+    @ApiResponse(responseCode = "401",
+            description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "500", description = "In interal error occured")
     public List<ClientApplication> getAllClients() throws DAOException {
         return dao.getAllClientApplications().stream().filter(clientManager::isNotAllClients).collect(Collectors.toList());
@@ -194,11 +197,14 @@ public class ClientApplicationsResource {
     @javax.ws.rs.Path(CLIENTS_CLIENT)
     @AuthorizationBinding
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Get the client with the given client identifier", tags = { "clients" }, description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")
-    @ApiResponse(responseCode = "401", description = "No authorization for access to this resource. See documentation about accessing protected resources")
+    @Operation(summary = "Get the client with the given client identifier", tags = { "clients" },
+            description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")
+    @ApiResponse(responseCode = "401",
+            description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given 'id' was found in database")
     @ApiResponse(responseCode = "500", description = "In interal error occured")
-    public ClientApplication getClient(@PathParam("id") @Parameter(description = "client identifier") String clientIdentifier) throws DAOException, ContentNotFoundException {
+    public ClientApplication getClient(@PathParam("id") @Parameter(description = "client identifier") String clientIdentifier)
+            throws DAOException, ContentNotFoundException {
         ClientApplication client = dao.getClientApplicationByClientId(clientIdentifier);
         if (client == null) {
             throw new ContentNotFoundException("No client with client identifier '{}' found".replace("{}", clientIdentifier.toString()));

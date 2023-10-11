@@ -790,7 +790,7 @@ public class AccessConditionUtils {
             if (request != null) {
                 request.getSession().setAttribute(attributeName, permissions);
             }
-            return  permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
+            return permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
             // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, ret.isGranted()); // Sonar considers this log msg a security issue, so leave it commented out when not needed
         }
     }

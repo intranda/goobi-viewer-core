@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Named
 @SessionScoped
-public class SessionBean implements Serializable{
+public class SessionBean implements Serializable {
 
     private static final long serialVersionUID = 1408443482641406496L;
 
@@ -68,7 +68,7 @@ public class SessionBean implements Serializable{
     public void cleanSessionObjects() {
         this.sessionObjects = new ConcurrentHashMap<String, Object>();
     }
-    
+
     public void removeObjects(String keyRegex) {
         List<String> keys = this.sessionObjects.keySet().stream().filter(key -> key.matches(keyRegex)).collect(Collectors.toList());
         keys.forEach(this.sessionObjects::remove);

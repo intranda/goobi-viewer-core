@@ -74,7 +74,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
         if (e == null) {
             e = eParent;
         }
-        if(e instanceof WebApplicationException) {
+        if (e instanceof WebApplicationException) {
             status = ((WebApplicationException) e).getResponse().getStatusInfo().toEnum();
         } else if (e instanceof NotFoundException || e instanceof FileNotFoundException) {
             status = Status.NOT_FOUND;

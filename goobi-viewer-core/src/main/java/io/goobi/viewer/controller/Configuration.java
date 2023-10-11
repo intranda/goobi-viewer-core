@@ -1511,12 +1511,11 @@ public class Configuration extends AbstractConfiguration {
     public boolean isDisplaySearchHitNumbers() {
         return getLocalBoolean("search.displayHitNumbers[@enabled]", false);
     }
-    
 
     public int getSearchChildHitsInitialLoadLimit() {
         return getLocalInt("search.childHits.initialLoadLimit", 5);
     }
-    
+
     public int getSearchChildHitsToLoadOnExpand() {
         return getLocalInt("search.childHits.loadOnExpand", 20);
     }
@@ -1687,7 +1686,7 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getDisplayAdditionalMetadataSnippetFields() {
         return getDisplayAdditionalMetadataFieldsByType("snippet", false);
     }
-    
+
     /**
      * <p>
      * getDisplayAdditionalMetadataNoHighlightFields.
@@ -1699,7 +1698,6 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getDisplayAdditionalMetadataNoHighlightFields() {
         return getDisplayAdditionalMetadataFieldsByType("nohighlight", false);
     }
-
 
     /**
      *
@@ -5915,13 +5913,13 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public boolean isGeomapCachingEnabled() {
-        return getLocalBoolean("maps.caching[@enabled]",false);
+        return getLocalBoolean("maps.caching[@enabled]", false);
     }
-    
+
     public long getCMSGeomapCachingUpdateInterval() {
         return getLocalInt("maps.caching.updateInterval", 5);
     }
-    
+
     public long getCMSGeomapCachingTimeToLive() {
         return getLocalInt("maps.caching.timeToLive", 6);
     }

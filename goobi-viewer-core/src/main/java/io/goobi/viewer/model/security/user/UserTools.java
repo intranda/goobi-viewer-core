@@ -41,7 +41,7 @@ public class UserTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(UserTools.class);
-    
+
     private UserTools() {
     }
 

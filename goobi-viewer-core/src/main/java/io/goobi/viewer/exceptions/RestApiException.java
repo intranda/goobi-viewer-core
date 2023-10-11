@@ -59,7 +59,7 @@ public class RestApiException extends Exception {
         super(message, cause);
         this.statusCode = statusCode;
     }
-    
+
     public RestApiException(String message, Throwable cause, Status status) {
         this(message, cause, status.getStatusCode());
     }
@@ -76,7 +76,7 @@ public class RestApiException extends Exception {
         super(message);
         this.statusCode = statusCode;
     }
-    
+
     public RestApiException(String message, Status status) {
         this(message, status.getStatusCode());
     }
@@ -93,7 +93,7 @@ public class RestApiException extends Exception {
         super(cause);
         this.statusCode = statusCode;
     }
-    
+
     public RestApiException(Throwable cause, Status status) {
         this(cause, status.getStatusCode());
     }
@@ -108,7 +108,7 @@ public class RestApiException extends Exception {
     public int getStatusCode() {
         return statusCode;
     }
-    
+
     public Status getStatus() {
         return Status.fromStatusCode(statusCode);
     }

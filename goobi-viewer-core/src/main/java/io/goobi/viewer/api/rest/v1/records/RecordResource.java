@@ -203,8 +203,8 @@ public class RecordResource {
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format) throws DAOException
-           {
+                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
+            throws DAOException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
         if ("oa".equalsIgnoreCase(format)) {

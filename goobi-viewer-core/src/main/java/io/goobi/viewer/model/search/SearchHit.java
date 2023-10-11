@@ -565,10 +565,10 @@ public class SearchHit implements Comparable<SearchHit> {
     public String getTranslatedType() {
         return type != null ? SEARCH_HIT_TYPE_PREFIX + type.name() : "";
     }
-    
+
     public String getIconClassForType() {
-        if(type != null) {
-            switch(type) {
+        if (type != null) {
+            switch (type) {
                 case PAGE:
                     return "fa fa-file-text";
                 case PERSON:
@@ -718,7 +718,7 @@ public class SearchHit implements Comparable<SearchHit> {
 
         return false;
     }
-    
+
     public int getHitCount() {
         int total = 0;
         for (Integer num : hitTypeCounts.values()) {
@@ -898,22 +898,21 @@ public class SearchHit implements Comparable<SearchHit> {
         Collections.sort(getChildren());
 
     }
-    
+
     public String getDisplayText() {
-        if(this.type != null) {
-            switch(this.type) {
+        if (this.type != null) {
+            switch (this.type) {
                 case CMS:
                 case ACCESSDENIED:
                 case PAGE:
                     return this.getBrowseElement().getFulltextForHtml();
                 default:
                     return this.getBrowseElement().getLabelShort();
-                    
+
             }
         } else {
             return "";
         }
     }
-    
-    
+
 }

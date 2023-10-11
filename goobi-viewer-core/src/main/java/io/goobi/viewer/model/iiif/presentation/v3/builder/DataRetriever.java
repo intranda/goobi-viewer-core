@@ -300,7 +300,7 @@ public class DataRetriever {
     public List<String> getSolrFieldList() {
         Set<String> fields = new HashSet<>(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
         for (String string : REQUIRED_SOLR_FIELDS) {
-                fields.add(string);
+            fields.add(string);
         }
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
         if (StringUtils.isNotBlank(navDateField)) {
@@ -309,10 +309,10 @@ public class DataRetriever {
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFDescriptionFields());
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFLabelFields());
-        
+
         return new ArrayList<>(fields);
     }
-    
+
     /**
      * @param displayFields
      * @param allLocales

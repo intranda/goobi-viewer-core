@@ -233,7 +233,7 @@ public class CMSStaticPage implements Serializable {
 
         return false;
     }
-    
+
     public PageType getPageType() {
         return PageType.getByName(this.pageName);
     }

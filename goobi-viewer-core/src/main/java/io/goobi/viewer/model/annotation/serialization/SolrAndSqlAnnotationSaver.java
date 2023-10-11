@@ -42,7 +42,6 @@ public class SolrAndSqlAnnotationSaver implements AnnotationSaver {
         sqlSaver = new SqlAnnotationSaver();
     }
 
-
     @Override
     public void save(PersistentAnnotation... annotations) throws IOException {
         //first save to sql then to solr because solr will take longer anyway and sql is the main data-source

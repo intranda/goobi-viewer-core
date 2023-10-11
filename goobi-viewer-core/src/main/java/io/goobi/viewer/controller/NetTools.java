@@ -738,31 +738,33 @@ public class NetTools {
                 userAgent.matches(DataManager.getInstance().getConfiguration().getCrawlerDetectionRegex());
 
     }
-    
+
     /**
      * Append one or more query parameters to an existing URI
-     * @param uriString     the URI as a string
-     * @param queryParams   A list of parameters. Each element of the list is assumed to be a list of size 2, whith the first
-     * element being the parameter name and the second the parameter value. If the list has only one item, it is  assumed to be a parameter
-     * name without value, any elements after the second will be ignored
-     * @return  The URI with query params appended
+     * 
+     * @param uriString the URI as a string
+     * @param queryParams A list of parameters. Each element of the list is assumed to be a list of size 2, whith the first element being the
+     *            parameter name and the second the parameter value. If the list has only one item, it is assumed to be a parameter name without
+     *            value, any elements after the second will be ignored
+     * @return The URI with query params appended
      * @throws URISyntaxException
      */
     public static String addQueryParameters(String uriString, List<List<String>> queryParams) throws URISyntaxException {
         return addQueryParameters(new URI(uriString), queryParams).toString();
     }
-    
+
     /**
      * Append one or more query parameters to an existing URI
-     * @param uriString     the URI
-     * @param queryParams   A list of parameters. Each element of the list is assumed to be a list of size 2, whith the first
-     * element being the parameter name and the second the parameter value. If the list has only one item, it is  assumed to be a parameter
-     * name without value, any elements after the second will be ignored
-     * @return  The URI with query params appended
+     * 
+     * @param uriString the URI
+     * @param queryParams A list of parameters. Each element of the list is assumed to be a list of size 2, whith the first element being the
+     *            parameter name and the second the parameter value. If the list has only one item, it is assumed to be a parameter name without
+     *            value, any elements after the second will be ignored
+     * @return The URI with query params appended
      * @throws URISyntaxException
      */
     public static URI addQueryParameters(URI uri, List<List<String>> queryParams) {
-        if(queryParams != null) {
+        if (queryParams != null) {
             UriBuilder builder = UriBuilder.fromUri(uri);
             for (List<String> param : queryParams) {
                 builder.queryParam(param.stream().findFirst().orElse(""), param.stream().skip(1).findFirst().orElse(""));

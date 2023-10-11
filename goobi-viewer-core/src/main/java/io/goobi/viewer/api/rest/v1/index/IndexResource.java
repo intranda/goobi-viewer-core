@@ -236,7 +236,6 @@ public class IndexResource {
         }
     }
 
-
     /**
      *
      * @param expression
@@ -301,7 +300,7 @@ public class IndexResource {
             @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
             throws IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
-        
+
         String finalQuery = filterQuery;
         if (!finalQuery.startsWith("{!join")) {
             finalQuery =
@@ -312,10 +311,10 @@ public class IndexResource {
                             .toString();
         } else {
             //search query. Ignore all polygon results or the heatmap will have hits everywhere
-            if(finalQuery.endsWith(")")) {                
+            if (finalQuery.endsWith(")")) {
                 finalQuery = finalQuery.substring(0, finalQuery.length() - 1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
             } else {
-                finalQuery = finalQuery+ " -MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
+                finalQuery = finalQuery + " -MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
 
             }
         }
@@ -359,11 +358,12 @@ public class IndexResource {
         }
 
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
-        String objects = new GeoCoordinateConverter(servletRequest).getFeaturesFromSolrQuery(finalQuery, facetQueries, coordinateFields, labelField, false)
-                .stream()
-                .map(GeoMapFeature::getJsonObject)
-                .map(Object::toString)
-                .collect(Collectors.joining(","));
+        String objects =
+                new GeoCoordinateConverter(servletRequest).getFeaturesFromSolrQuery(finalQuery, facetQueries, coordinateFields, labelField, false)
+                        .stream()
+                        .map(GeoMapFeature::getJsonObject)
+                        .map(Object::toString)
+                        .collect(Collectors.joining(","));
         return "[" + objects + "]";
     }
 

@@ -28,13 +28,13 @@ public enum MessageStatus {
     WAIT("admin__tasks__status_wait"),
     PROCESSING("admin__tasks__status_processing"),
     NEW("admin__tasks__status_new");
-    
+
     private final String label;
-    
+
     private MessageStatus(String label) {
         this.label = label;
     }
-    
+
     public String getLabel() {
         return label;
     }

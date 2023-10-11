@@ -1476,7 +1476,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         for (CMSComponent cmsComponent : components) {
 
             if (cmsComponent.getContentItems().isEmpty()) {
-                if(groups.containsKey("")) {
+                if (groups.containsKey("")) {
                     currentGroup = groups.get("");
                 } else {
                     currentGroup = new CMSComponentGroup("");

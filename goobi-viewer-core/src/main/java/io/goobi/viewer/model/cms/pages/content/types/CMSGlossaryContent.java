@@ -52,7 +52,7 @@ public class CMSGlossaryContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "glossary";
 
-    @Column(name = "glossary", length=120)
+    @Column(name = "glossary", length = 120)
     private String glossaryName;
 
     public CMSGlossaryContent() {

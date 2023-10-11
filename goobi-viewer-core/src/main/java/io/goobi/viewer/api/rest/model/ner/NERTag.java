@@ -175,8 +175,9 @@ public class NERTag {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(NERTag.class)) {
             NERTag other = (NERTag) obj;
-            if (Objects.equals(this.getId(), other.getId()) && Objects.equals(this.getType(), other.getType()) && Objects.equals(this.getValue(), other.getValue())) {
-                        return true;
+            if (Objects.equals(this.getId(), other.getId()) && Objects.equals(this.getType(), other.getType())
+                    && Objects.equals(this.getValue(), other.getValue())) {
+                return true;
             }
         }
         return false;

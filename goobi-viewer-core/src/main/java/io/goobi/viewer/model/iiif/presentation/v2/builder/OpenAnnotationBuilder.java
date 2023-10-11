@@ -132,7 +132,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
         }
         return annoMap;
     }
-    
+
     public IAnnotation getCrowdsourcingAnnotation(String id) throws PresentationException, IndexUnreachableException {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(" +DOCTYPE:UGC");
@@ -174,7 +174,8 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
     public OpenAnnotation createUGCOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
-        String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID)).map(SolrTools::getAsString)
+        String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID))
+                .map(SolrTools::getAsString)
                 .map(i -> i.replace("annotation_", ""))
                 .orElse(doc.getFieldValue(SolrConstants.IDDOC).toString());
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);

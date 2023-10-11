@@ -183,7 +183,8 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder,
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<CMSPage> getNestedPagesByCategory(boolean random, boolean paged, CMSCategory category, CMSTemplateManager templateManager) throws DAOException {
+    public List<CMSPage> getNestedPagesByCategory(boolean random, boolean paged, CMSCategory category, CMSTemplateManager templateManager)
+            throws DAOException {
         if (nestedPages == null) {
             nestedPages = loadNestedPages(random, paged, templateManager);
         }

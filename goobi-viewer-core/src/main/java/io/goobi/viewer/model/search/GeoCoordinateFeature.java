@@ -54,7 +54,6 @@ public class GeoCoordinateFeature {
 
     public static final String SHAPE_POLYGON = "POLYGON";
 
-
     private final JSONObject feature;
     private final String predicate;
     private final String shape;
@@ -67,6 +66,7 @@ public class GeoCoordinateFeature {
 
     /**
      * Initialize as a polygon feature with the given points as vertices
+     * 
      * @param vertices
      */
     public GeoCoordinateFeature(double[][] points, String predicate, String shape) {
@@ -94,11 +94,11 @@ public class GeoCoordinateFeature {
     }
 
     public double[][] getVertices() {
-        JSONArray vertices =  feature.getJSONArray("vertices");
+        JSONArray vertices = feature.getJSONArray("vertices");
         double[][] points = new double[vertices.length()][2];
         for (int i = 0; i < vertices.length(); i++) {
             JSONArray vertex = vertices.getJSONArray(i);
-            points[i] = new double[]{vertex.getDouble(0), vertex.getDouble(1)};
+            points[i] = new double[] { vertex.getDouble(0), vertex.getDouble(1) };
         }
         return points;
     }
@@ -120,7 +120,7 @@ public class GeoCoordinateFeature {
     public static String getPredicate(String searchString) {
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
 
-        if(matcher.find()) {
+        if (matcher.find()) {
             String relation = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
             return relation;
         }
@@ -130,7 +130,7 @@ public class GeoCoordinateFeature {
     public static String getShape(String searchString) {
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
 
-        if(matcher.find()) {
+        if (matcher.find()) {
             String shape = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
             return shape;
         }
@@ -141,15 +141,15 @@ public class GeoCoordinateFeature {
 
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
 
-        if(matcher.find()) {
+        if (matcher.find()) {
             String allPoints = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_POINTS);
             String[] strPoints = allPoints.split(", ");
             double[][] points = new double[strPoints.length][2];
             for (int i = 0; i < strPoints.length; i++) {
                 try {
                     String[] strPoint = strPoints[i].split(" ");
-                    points[i] = new double[]{Double.parseDouble(strPoint[0]), Double.parseDouble(strPoint[1])};
-                } catch(NumberFormatException | IndexOutOfBoundsException e) {
+                    points[i] = new double[] { Double.parseDouble(strPoint[0]), Double.parseDouble(strPoint[1]) };
+                } catch (NumberFormatException | IndexOutOfBoundsException e) {
                     logger.warn("Unable to parse {} as double array", strPoints[i]);
                 }
             }
@@ -171,7 +171,7 @@ public class GeoCoordinateFeature {
      *
      */
     public String getShape() {
-       return this.shape;
+        return this.shape;
     }
 
     public String getPredicate() {
@@ -183,16 +183,16 @@ public class GeoCoordinateFeature {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            GeoCoordinateFeature other = (GeoCoordinateFeature)obj;
-            return  other.predicate.equals(this.predicate) &&
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            GeoCoordinateFeature other = (GeoCoordinateFeature) obj;
+            return other.predicate.equals(this.predicate) &&
                     other.shape.equals(this.shape) &&
                     Arrays.deepEquals(other.getVertices(), this.getVertices());
         } else {
             return false;
         }
     }
-    
+
     @Override
     public int hashCode() {
         return this.feature.hashCode();

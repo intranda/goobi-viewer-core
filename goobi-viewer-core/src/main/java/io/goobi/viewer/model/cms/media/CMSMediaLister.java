@@ -44,7 +44,12 @@ public class CMSMediaLister {
 
     public List<CMSMediaItem> getMediaItems(List<String> tags, Integer maxItems, Integer prioritySlots, boolean random) throws DAOException {
         List<CMSMediaItem> allItems = dao.getAllCMSMediaItems();
-        List<String> cleanedTags = Optional.ofNullable(tags).orElse(Collections.emptyList()).stream().filter(StringUtils::isNotBlank).map(String::toLowerCase).collect(Collectors.toList());
+        List<String> cleanedTags = Optional.ofNullable(tags)
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
         return allItems
                 .stream()
                 .filter(item -> cleanedTags.isEmpty() ||
@@ -54,8 +59,9 @@ public class CMSMediaLister {
                 .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
                 .collect(Collectors.toList());
     }
-    
-    public MediaList getMediaItems(List<String> tags, Integer maxItems, Integer prioritySlots, boolean random, HttpServletRequest request) throws DAOException {
+
+    public MediaList getMediaItems(List<String> tags, Integer maxItems, Integer prioritySlots, boolean random, HttpServletRequest request)
+            throws DAOException {
         return new MediaList(getMediaItems(tags, maxItems, prioritySlots, random), request);
     }
 }

@@ -37,10 +37,9 @@ public class SimpleMediaHolderConverter implements AttributeConverter<SimpleMedi
 
     private static final Logger logger = LogManager.getLogger(SimpleMediaHolderConverter.class);
 
-
     @Override
     public Long convertToDatabaseColumn(SimpleMediaHolder media) {
-        if(media != null && media.hasMediaItem()) {
+        if (media != null && media.hasMediaItem()) {
             return media.getMediaItem().getId();
         } else {
             return null;
@@ -49,7 +48,7 @@ public class SimpleMediaHolderConverter implements AttributeConverter<SimpleMedi
 
     @Override
     public SimpleMediaHolder convertToEntityAttribute(Long id) {
-        if(id != null) {
+        if (id != null) {
             try {
                 CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
                 return new SimpleMediaHolder(item);

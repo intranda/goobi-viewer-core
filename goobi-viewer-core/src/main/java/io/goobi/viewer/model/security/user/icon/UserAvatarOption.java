@@ -34,7 +34,7 @@ public enum UserAvatarOption {
     GRAVATAR;
 
     public UserAvatar getAvatar(User user) {
-        switch(this) {
+        switch (this) {
             case LOCAL:
                 return new LocalUserAvatar(user);
             case GRAVATAR:

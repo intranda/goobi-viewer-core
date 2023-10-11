@@ -59,7 +59,6 @@ public class MultiLanguageValue implements IPolyglott {
         return !this.translations.get(locale).isEmpty();
     }
 
-
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
      */
@@ -95,11 +94,11 @@ public class MultiLanguageValue implements IPolyglott {
     /**
      *
      * @param language
-     * @return  the translation for the given language if one exists
+     * @return the translation for the given language if one exists
      */
     public Translation getTranslation(Locale locale) {
         Translation t = translations.get(locale);
-        if(t == null) {
+        if (t == null) {
             throw new IllegalArgumentException("Invalid locale for translation '" + locale + "'");
         }
         return t;
@@ -143,7 +142,7 @@ public class MultiLanguageValue implements IPolyglott {
 
     /**
      * @param locale
-     * @return  true if this list has an entry for the given locale
+     * @return true if this list has an entry for the given locale
      */
     public boolean hasLocale(Locale locale) {
         return locale != null && this.translations.containsKey(locale);
@@ -156,6 +155,5 @@ public class MultiLanguageValue implements IPolyglott {
     public boolean isEmpty(Locale locale) {
         return this.translations.get(locale).isEmpty();
     }
-
 
 }

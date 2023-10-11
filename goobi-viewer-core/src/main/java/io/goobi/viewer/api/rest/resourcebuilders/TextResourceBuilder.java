@@ -716,7 +716,7 @@ public class TextResourceBuilder {
                         .orElse(null);
             }
         }
-        
+
         return filePath;
     }
 

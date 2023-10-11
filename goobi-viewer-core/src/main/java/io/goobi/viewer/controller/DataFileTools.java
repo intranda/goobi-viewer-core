@@ -556,19 +556,19 @@ public class DataFileTools {
         work.setPdfFolderPath(repository.resolve(DataManager.getInstance().getConfiguration().getPdfFolder()).resolve(pi));
 
         // collect files
-        if (work.getMediaFolderPath()!= null && Files.exists(work.getMediaFolderPath())) {
+        if (work.getMediaFolderPath() != null && Files.exists(work.getMediaFolderPath())) {
             try (Stream<Path> stream = Files.list(work.getMediaFolderPath())) {
                 List<Path> media = stream.sorted().collect(Collectors.toList());
                 work.setMediaFiles(media);
             }
         }
-        if (work.getPdfFolderPath()!= null && Files.exists(work.getPdfFolderPath())) {
+        if (work.getPdfFolderPath() != null && Files.exists(work.getPdfFolderPath())) {
             try (Stream<Path> stream = Files.list(work.getPdfFolderPath())) {
                 List<Path> pdfs = stream.sorted().collect(Collectors.toList());
                 work.setPdfFiles(pdfs);
             }
         }
-        if (work.getAltoFolderPath()!= null && Files.exists(work.getAltoFolderPath())) {
+        if (work.getAltoFolderPath() != null && Files.exists(work.getAltoFolderPath())) {
             try (Stream<Path> stream = Files.list(work.getAltoFolderPath())) {
                 List<Path> alto = stream.sorted().collect(Collectors.toList());
                 work.setAltoFiles(alto);
@@ -577,5 +577,5 @@ public class DataFileTools {
 
         return work;
     }
-    
+
 }

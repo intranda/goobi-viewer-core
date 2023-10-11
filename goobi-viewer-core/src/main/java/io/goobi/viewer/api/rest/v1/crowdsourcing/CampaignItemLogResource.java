@@ -71,7 +71,6 @@ public class CampaignItemLogResource {
     @Context
     private HttpServletResponse servletResponse;
 
-
     protected AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
     protected AnnotationsResourceBuilder annoBuilder = null;
 
@@ -97,12 +96,17 @@ public class CampaignItemLogResource {
     @Path("/{pi}/log")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public List<LogMessage> getLogForManifest( @PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
+    public List<LogMessage> getLogForManifest(@PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
             List<LogMessage> messages =
-                    campaign.getLogMessages().stream().filter(m -> m.getPi().equals(pi)).map(clm -> new LogMessage(clm, servletRequest)).sorted().collect(Collectors.toList());
+                    campaign.getLogMessages()
+                            .stream()
+                            .filter(m -> m.getPi().equals(pi))
+                            .map(clm -> new LogMessage(clm, servletRequest))
+                            .sorted()
+                            .collect(Collectors.toList());
             return messages;
         }
         throw new ContentNotFoundException("No campaign found with id " + campaignId);
@@ -147,11 +151,12 @@ public class CampaignItemLogResource {
             throws URISyntaxException, DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
-            Optional<CampaignLogMessage> message =  campaign.getLogMessages().stream().filter(m -> pi.equals(m.getPi()) &&  messageId.equals(m.getId())).findAny();
-            return message.map(clm -> new LogMessage(clm, servletRequest)).orElseThrow(() -> new ContentNotFoundException("No message found with id " + messageId));
+            Optional<CampaignLogMessage> message =
+                    campaign.getLogMessages().stream().filter(m -> pi.equals(m.getPi()) && messageId.equals(m.getId())).findAny();
+            return message.map(clm -> new LogMessage(clm, servletRequest))
+                    .orElseThrow(() -> new ContentNotFoundException("No message found with id " + messageId));
         }
         throw new ContentNotFoundException("No campaign found with id " + campaignId);
     }
-
 
 }

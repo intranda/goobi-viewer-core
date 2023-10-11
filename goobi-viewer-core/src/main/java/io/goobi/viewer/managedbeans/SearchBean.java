@@ -1519,7 +1519,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return "-";
     }
-    
+
     public void setActiveResultGroup(SearchResultGroup activeResultGroup) {
         this.activeResultGroup = activeResultGroup;
     }

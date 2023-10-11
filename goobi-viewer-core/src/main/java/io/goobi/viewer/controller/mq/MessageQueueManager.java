@@ -116,9 +116,9 @@ public class MessageQueueManager {
     public MessageQueueManager() throws DAOException, IOException {
         this.instances = generateTicketHandlers();
         this.dao = DataManager.getInstance().getDao();
-        try {            
+        try {
             this.config = new ActiveMQConfig(ACTIVE_MQ_CONFIG_FILENAME);
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             this.config = null;
         }
     }
@@ -267,7 +267,7 @@ public class MessageQueueManager {
     public void closeMessageServer() {
         try {
             for (DefaultQueueListener l : listeners) {
-                l.close();  //includes a join for the listener thread
+                l.close(); //includes a join for the listener thread
             }
             if (broker != null) {
                 broker.stop();
@@ -279,7 +279,6 @@ public class MessageQueueManager {
             logger.error(e);
         }
     }
-
 
     private void updateMessageStatus(ViewerMessage message, MessageStatus rv) {
         message.setMessageStatus(rv);
@@ -407,7 +406,8 @@ public class MessageQueueManager {
     public ActiveMQConnection getConnection() throws JMSException {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(config.getConnectorURI());
         connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
-        ActiveMQConnection connection = (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(), this.config.getPasswordAdmin()); //NOSONAR: Connection is closed in calling methods
+        ActiveMQConnection connection =
+                (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(), this.config.getPasswordAdmin()); //NOSONAR: Connection is closed in calling methods
         return connection;
     }
 
@@ -466,8 +466,9 @@ public class MessageQueueManager {
     public List<ViewerMessage> getWaitingMessages(String messageType) {
         List<ViewerMessage> messages = new ArrayList<>();
         String queueName = MessageQueueManager.getQueueForMessageType(messageType);
-        
-        try (QueueConnection connection = startConnection();QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
+
+        try (QueueConnection connection = startConnection();
+                QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
                 QueueBrowser browser = queueSession.createBrowser(queueSession.createQueue(queueName), "JMSType = '" + messageType + "'");) {
 
             Enumeration<?> messagesInQueue = browser.getEnumeration();
@@ -516,7 +517,7 @@ public class MessageQueueManager {
         String name = String.format("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=%s", queueName);
         return new ObjectName(name);
     }
-    
+
     public boolean hasConfig() {
         return this.config != null;
     }

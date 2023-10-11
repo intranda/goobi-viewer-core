@@ -90,7 +90,9 @@ public class CreateRecordBean implements Serializable {
      * @return a folder within the viewer temp_media directory
      */
     private Path getTempImagesDirectory() {
-        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome()).resolve(DataManager.getInstance().getConfiguration().getTempMediaFolder()).resolve(uuid + "_tif");
+        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome())
+                .resolve(DataManager.getInstance().getConfiguration().getTempMediaFolder())
+                .resolve(uuid + "_tif");
         return targetDir;
     }
 
@@ -222,10 +224,10 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Add any uploaded images to the record, move the images folder frm temp_media to hotfolder
-     * and write the record as Dublin Core xml to the viewer hotfolder
+     * Add any uploaded images to the record, move the images folder frm temp_media to hotfolder and write the record as Dublin Core xml to the viewer
+     * hotfolder
      *
-     * @return  the url of the create record page to allow creating a new record
+     * @return the url of the create record page to allow creating a new record
      */
     public String saveRecord() {
         DCRecordWriter writer = generateDCRecord();
@@ -266,7 +268,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return  A list of possible languages  to use for the record
+     * @return A list of possible languages to use for the record
      */
     public List<Language> getPossibleLanguages() {
         List<Language> languages = DataManager.getInstance().getLanguageHelper().getMajorLanguages();
@@ -276,7 +278,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return  A list of possible licenses to use for the record
+     * @return A list of possible licenses to use for the record
      */
     public List<LicenseDescription> getPossibleLicenses() {
         return DataManager.getInstance().getConfiguration().getLicenseDescriptions();
@@ -303,17 +305,16 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return  a UUID created by {@link UUID#randomUUID()}
+     * @return a UUID created by {@link UUID#randomUUID()}
      */
     private String createUUID() {
         return UUID.randomUUID().toString();
     }
 
-
     /**
      * Mark the record as not ready for indexing and delete all associated images
      *
-     * @return  the url of the create record page
+     * @return the url of the create record page
      */
     public String reset() {
         destroy();
@@ -321,8 +322,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Delete the {@link #tempImagesFolder} with all contained files if it still exists.
-     * Called when the user session ends
+     * Delete the {@link #tempImagesFolder} with all contained files if it still exists. Called when the user session ends
      */
     @PreDestroy
     public void destroy() {

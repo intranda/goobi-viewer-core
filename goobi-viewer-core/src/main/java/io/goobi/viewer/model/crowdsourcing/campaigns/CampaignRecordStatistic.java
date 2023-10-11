@@ -371,18 +371,17 @@ public class CampaignRecordStatistic implements Serializable {
         }
     }
 
-
     /**
      * Check both record status and all page status to check if any matches the given status
      *
      * @param status
      * @return false if status is null, otherwise true exactly if {@link #getStatus()} equals status or if any
-     * {@link CampaignRecordPageStatistic#getStatus()} of {@link #pageStatistics} returns true
+     *         {@link CampaignRecordPageStatistic#getStatus()} of {@link #pageStatistics} returns true
      */
     public boolean containsPageStatus(CrowdsourcingStatus status) {
-        if(status == null) {
+        if (status == null) {
             return false;
-        } else if(CrowdsourcingStatus.ANNOTATE.equals(status) && this.pageStatistics.size() < this.getTotalPages()) {
+        } else if (CrowdsourcingStatus.ANNOTATE.equals(status) && this.pageStatistics.size() < this.getTotalPages()) {
             //if not all pages have a pageStatstic, assume the others are in annotation status, so return true
             return true;
         } else {
@@ -394,7 +393,7 @@ public class CampaignRecordStatistic implements Serializable {
      * @return the totalPages
      */
     public Integer getTotalPages() {
-        if(totalPages == null) {
+        if (totalPages == null) {
             this.totalPages = calculateTotalPages();
         }
         return totalPages;
@@ -414,7 +413,7 @@ public class CampaignRecordStatistic implements Serializable {
         String query = String.format("PI:\"%s\"", pi);
         try {
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.NUMPAGES));
-            if(doc != null && doc.containsKey(SolrConstants.NUMPAGES)) {
+            if (doc != null && doc.containsKey(SolrConstants.NUMPAGES)) {
                 Integer numPages = (Integer) doc.getFieldValue(SolrConstants.NUMPAGES);
                 return numPages;
             } else {

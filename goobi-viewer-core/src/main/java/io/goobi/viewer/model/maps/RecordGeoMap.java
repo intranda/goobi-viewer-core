@@ -84,7 +84,7 @@ public class RecordGeoMap {
         this.featureSetConfigs = featureSetConfigs;
         this.geoMap = createMap();
     }
-    
+
     /**
      * empty geomap without features
      */

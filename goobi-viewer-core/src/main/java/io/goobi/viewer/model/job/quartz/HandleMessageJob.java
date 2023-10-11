@@ -35,41 +35,42 @@ import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.TaskType;
 
 /**
- * Cronjob 
+ * Cronjob
+ * 
  * @author florian
  *
  */
 public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, Job {
 
     private static final Logger logger = LogManager.getLogger(HandleMessageJob.class);
-    
+
     private final TaskType taskType;
     private final String cronSchedulerExpression;
-    
+
     public HandleMessageJob(TaskType taskType, String cronSchedulerExpression, MessageQueueManager messageBroker) {
         this.taskType = taskType;
         this.cronSchedulerExpression = cronSchedulerExpression;
     }
-    
+
     public HandleMessageJob() {
         this.taskType = null;
         this.cronSchedulerExpression = "";
     }
-    
+
     @Override
     public String getJobName() {
         return Optional.ofNullable(taskType).map(TaskType::name).orElse("");
     }
-    
+
     @Override
     public String getCronExpression() {
         return cronSchedulerExpression;
     }
-    
+
     public TaskType getTaskType() {
         return taskType;
     }
-    
+
     @Override
     public void execute(Map<String, Object> params, MessageQueueManager messageBroker) {
         TaskType type = TaskType.valueOf(params.get("taskType").toString());
@@ -78,13 +79,13 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
         params.forEach((key, value) -> {
             message.getProperties().put(key, value.toString());
         });
-        if(runInQueue) {
+        if (runInQueue) {
             try {
                 messageBroker.addToQueue(message);
             } catch (MessageQueueException e) {
                 logger.error("Cannot add job to message queue: {}", e.toString());
             }
-        } else {            
+        } else {
             messageBroker.handle(message);
         }
     }
