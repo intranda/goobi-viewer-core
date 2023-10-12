@@ -45,7 +45,7 @@ public class CMSSearchFacetsContent extends CMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "searchfacets";
 
-    @Column(name = "facet_field", length=40)
+    @Column(name = "facet_field", length = 40)
     private String facetField = "";
 
     public CMSSearchFacetsContent() {

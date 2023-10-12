@@ -46,39 +46,42 @@ import io.goobi.viewer.exceptions.DAOException;
  *
  */
 public class StatisticsIndexer {
-    
+
     /**
      * Absolute path to write index files to
      */
     private final Path hotfolder;
-    
+
     /**
      * default constructor
+     * 
      * @param hotfolder the {@link #hotfolder}
      */
     public StatisticsIndexer(Path hotfolder) {
         this.hotfolder = hotfolder;
     }
-    
+
     /**
      * constructor using the {@link #hotfolder} given by {@link Configuration#getHotfolder()}
+     * 
      * @throws DAOException
      */
     public StatisticsIndexer() throws DAOException {
         this(Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
     }
-    
+
     /**
      * Write index file to {@link #hotfolder} path for the given {@link DailySessionUsageStatistics}
+     * 
      * @param stats the statistics to index
-     * @return  The filepath to the index files
+     * @return The filepath to the index files
      * @throws DAOException
      * @throws IOException
      */
     public Path indexStatistics(DailySessionUsageStatistics stats) throws IOException {
         String json = createStatisticsJsonString(stats);
         return writeToHotfolder(stats.getDate(), json);
-  
+
     }
 
     private Path writeToHotfolder(LocalDate date, String json) throws IOException {

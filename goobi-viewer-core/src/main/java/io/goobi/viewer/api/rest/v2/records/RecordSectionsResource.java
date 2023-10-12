@@ -91,7 +91,7 @@ public class RecordSectionsResource {
     @Operation(tags = { "records", "iiif" }, summary = "IIIF 3.0 range of the section")
     @IIIFPresentationBinding
     public Range3 getRange()
-            throws  IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+            throws IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
         try {
             return new RangeBuilder(urls).build(pi, divId);

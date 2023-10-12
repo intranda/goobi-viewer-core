@@ -112,20 +112,19 @@ public class ComplexMetadataContainer {
     public List<String> getMetadataValues(String metadataField, String valueField, Locale locale) {
         return getMetadataValues(metadataField, "", "", valueField, locale);
     }
-    
+
     public String getMetadataValue(String metadataField, String valueField, Locale locale) {
         return getMetadataValues(metadataField, "", "", valueField, locale).stream().findAny().orElse("");
     }
-    
-    
+
     public List<String> getMetadataValues(String metadataField, String filterField, String filterValue, String valueField, Locale locale) {
         Stream<ComplexMetadata> stream = this.getMetadata(metadataField).stream();
-        if(StringUtils.isNoneBlank(filterField, filterValue)) {
+        if (StringUtils.isNoneBlank(filterField, filterValue)) {
             stream = stream.filter(cm -> cm.getValues(filterField, locale).contains(filterValue));
         }
         return stream.map(cm -> cm.getValues(valueField, locale)).flatMap(List::stream).collect(Collectors.toList());
     }
-    
+
     public String getFirstMetadataValue(String metadataField, String filterField, String filterValue, String valueField, Locale locale) {
         return getMetadataValues(metadataField, filterField, filterValue, valueField, locale).stream().findFirst().orElse("");
     }
@@ -147,6 +146,5 @@ public class ComplexMetadataContainer {
         SolrDocumentList metadataDocs = searchIndex.search(String.format(QUERY_FORMAT, pi), fieldList);
         return new ComplexMetadataContainer(metadataDocs);
     }
-
 
 }

@@ -39,17 +39,17 @@ public class CMSDocumentContent extends CMSMediaContent {
     public CMSDocumentContent(CMSDocumentContent orig) {
         super(orig);
     }
-    
+
     @Override
     public String getMediaFilter() {
         return CmsMediaBean.getDocumentFilter();
     }
-    
+
     @Override
     public String getMediaTypes() {
         return CmsMediaBean.getDocumentTypes();
     }
-    
+
     @Override
     public CMSContent copy() {
         return new CMSDocumentContent(this);

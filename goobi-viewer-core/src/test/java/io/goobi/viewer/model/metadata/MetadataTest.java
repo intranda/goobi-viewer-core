@@ -45,6 +45,7 @@ public class MetadataTest extends AbstractTest {
     @Test
     public void filterMetadata_shouldReturnLanguagespecificVersionOfAField() throws Exception {
         List<Metadata> metadataList = new ArrayList<>();
+        metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "föö"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE", "", "bar"));
         List<Metadata> filteredList = Metadata.filterMetadata(metadataList, "en", null);

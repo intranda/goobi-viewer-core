@@ -60,7 +60,7 @@ import io.goobi.viewer.model.security.LicenseType;
  */
 @Entity
 @Table(name = "ip_ranges")
-public class IpRange extends AbstractLicensee implements  Serializable {
+public class IpRange extends AbstractLicensee implements Serializable {
 
     private static final long serialVersionUID = 2221051822633497315L;
 
@@ -164,7 +164,6 @@ public class IpRange extends AbstractLicensee implements  Serializable {
         return false;
     }
 
-
     /**
      * <p>
      * canSatisfyAllAccessConditions.
@@ -196,7 +195,7 @@ public class IpRange extends AbstractLicensee implements  Serializable {
                 permissionMap.put(accessCondition, access);
             }
         }
-        
+
         return getAccessPermissionFromMap(permissionMap);
     }
 

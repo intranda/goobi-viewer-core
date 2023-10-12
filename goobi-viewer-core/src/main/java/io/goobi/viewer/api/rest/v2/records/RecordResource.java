@@ -100,17 +100,16 @@ public class RecordResource {
             DAOException, IllegalPathSyntaxException, ContentLibException {
         return new ManifestBuilder(urls).build(pi, servletRequest);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as annotation collection")
-    public IAnnotationCollection getAnnotationsForRecord() throws DAOException, IllegalRequestException
-           {
+    public IAnnotationCollection getAnnotationsForRecord() throws DAOException, IllegalRequestException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
         URI uri = URI.create(apiPath.build());
-//        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
+        //        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecord(pi, uri);
     }
 
@@ -124,19 +123,18 @@ public class RecordResource {
         URI uri = URI.create(apiPath.build());
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecordComments(pi, uri);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_ANNOTATIONS_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as an annotation collection page")
-    public AnnotationPage getAnnotationsPageForRecord() throws DAOException, IllegalRequestException
-           {
+    public AnnotationPage getAnnotationsPageForRecord() throws DAOException, IllegalRequestException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
         URI uri = URI.create(apiPath.build());
-//        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
+        //        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
         AnnotationPage annoPage = new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecord(pi, uri).getFirst();
-        if(annoPage != null) {
+        if (annoPage != null) {
             return annoPage;
         } else {
             return new AnnotationPage(uri);
@@ -152,14 +150,13 @@ public class RecordResource {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
         URI uri = URI.create(apiPath.build());
-        AnnotationPage annoPage = new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecordComments(pi, uri).getFirst();
-        if(annoPage != null) {
+        AnnotationPage annoPage =
+                new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecordComments(pi, uri).getFirst();
+        if (annoPage != null) {
             return annoPage;
         } else {
             return new AnnotationPage(uri);
         }
     }
-    
-    
 
 }

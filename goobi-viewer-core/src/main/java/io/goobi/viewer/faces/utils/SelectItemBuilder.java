@@ -90,7 +90,7 @@ public class SelectItemBuilder {
             group.setSelectItems(groupItems);
             items.add(group);
         }
-        
+
         return items;
     }
 }

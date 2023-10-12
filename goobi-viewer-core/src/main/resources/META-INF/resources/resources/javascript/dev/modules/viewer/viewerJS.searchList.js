@@ -32,8 +32,7 @@ var viewerJS = ( function( viewer ) {
     var _searchListShowThumbs = false;
     var _defaults = {
         contextPath: '',
-        restApiPath: '/api/v1/search/hit/',
-        hitsPerCall: 20,
+        maxChildHitsToRenderOnStart: 5,
         resetSearchSelector: '#resetCurrentSearch',
         searchInputSelector: '#currentSearchInput',
         searchTriggerSelector: '#slCurrentSearchTrigger',
@@ -255,54 +254,8 @@ var viewerJS = ( function( viewer ) {
                 
                 $( '.search-list__hits' ).fadeTo(300,1);
             } );
-            
-            // get child hits            
-            $( '[data-toggle="hit-content"]' ).each( function() {
-                var currBtn = $( this );
-                var currIdDoc = $( this ).attr( 'data-iddoc' );
-                var currUrl = _getApiUrl( currIdDoc, _defaults.hitsPerCall );
-                
-                if ( _debug ) {
-                    console.log( 'Current API Call URL: ', currUrl );
-                }
-                
-                _promise = viewer.helper.getRemoteData( currUrl );
-                
-                currBtn.find( _defaults.hitContentLoaderSelector ).css( 'display', 'inline-block' );
-                
-                // get data and render hits if data is valid
-                _promise.then( function( data ) {
-                    if(data.hitsDisplayed == 0) {
-                        //any hits are hidden. Hide whole subhits section
-                        currBtn.hide();
-                    } else if ( data.hitsDisplayed < _defaults.hitsPerCall ) {
-                        // render child hits into the DOM
-                        _renderChildHits( data, currBtn );
-                        // set current button active, remove loader and show content
-                        currBtn.toggleClass( 'in' ).find( _defaults.hitContentLoaderSelector ).hide();
-                        currBtn.next().show();
-                        // set event to toggle current hits
-                        currBtn.off().on( 'click', function() {
-                            $( this ).toggleClass( 'in' ).next().slideToggle();
-                        } );
-                    }
-                    else {
-                        // remove loader
-                        currBtn.find( _defaults.hitContentLoaderSelector ).hide();
-                        // set event to toggle current hits
-                        currBtn.off().on( 'click', function() {
-                            // render child hits into the DOM
-                            _renderChildHits( data, currBtn );
-                            // check if more children exist and render link
-                            _renderGetMoreChildren( data, currIdDoc, currBtn );
-                            $( this ).toggleClass( 'in' ).next().slideToggle();
-                        } );
-                    }
-                } ).then( null, function() {
-                    currBtn.next().append( viewer.helper.renderAlert( 'alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false ) );
-                    console.error( 'ERROR: viewer.searchList.init - ', error );
-                } );
-            } );
+
+			this.initSubHits();
             
             //init thumbnail toggle            
             let $thumbToggle = $('[data-action="toggle-thumbs"]');
@@ -352,318 +305,42 @@ var viewerJS = ( function( viewer ) {
                 });
             }
         },
+        initSubHits: function() {
+			            
+            // get child hits            
+            $( '[data-toggle="hit-content"]' )
+            .filter( (index, button) => parseInt(button.dataset.childhits) <= _defaults.maxChildHitsToRenderOnStart )
+            .each( (index, button) => this.openChildHits(button));
+		},
+		openChildHits: function(button) {
+			var $currBtn = $( button );
+                
+            let scriptName = button.dataset.loadHitsScript;
+            let toggleArea = document.querySelector( "div[data-toggle-id='"+button.dataset.toggleId+"']"  );
+            let hitsDisplayed = $(toggleArea).find(".search-list__hit-content-set").length;
+            if(_debug) {
+				console.log("clicked hit-content", button, scriptName, toggleArea, hitsDisplayed);
+			}
+
+			$currBtn.toggleClass( 'in' );
+			$(toggleArea).slideToggle();
+			if(hitsDisplayed == 0) {
+				window[scriptName](); //execute commandScript to load child hits
+			}
+		},
+		    
+	    showAjaxLoader: function(loaderId) {
+	    	let loader = document.getElementById(loaderId);
+	    	$(loader).show();
+	    },
+	    hideAjaxLoader: function(loaderId) {
+	    	let loader = document.getElementById(loaderId);
+	    	$(loader).hide();
+	    }
     };
-    
-    /**
-     * Method to get the full REST-API URL.
-     * 
-     * @method _getApiUrl
-     * @param {String} id The current IDDoc of the hit set.
-     * @returns {String} The full REST-API URL.
-     */
-    function _getApiUrl( id, hits ) {
-        if ( _debug ) {
-            console.log( '---------- _getApiUrl() ----------' );
-            console.log( '_getApiUrl: id = ', id );
-        }
-        
-        return _defaults.contextPath + _defaults.restApiPath + id + '/' + hits + '/';
-    }
-    
-    /**
-     * Method which renders the child hits into the DOM.
-     * 
-     * @method _renderChildHits
-     * @param {Object} data The data object which contains the child hits.
-     * @param {Object} $this The current child hits trigger.
-     * @returns {Object} An jquery object which contains the child hits.
-     */
-    function _renderChildHits( data, $this ) {
-        if ( _debug ) {
-            console.log( '---------- _renderChildHits() ----------' );
-            console.log( '_renderChildHits: data = ', data );
-            console.log( '_renderChildHits: $this = ', $this );
-        }
-        
-        var hitSet = null;
-        
-        // clean hit sets
-        $this.next().empty();
-        
-        // build hits
-        $.each( data.children, function( children, child ) {
-            hitSet = $( '<div class="search-list__hit-content-set" />' );
-            
-            let hitSetText = $("<div class='search-list__hit-text-area'></div>");
-            hitSet.append(hitSetText);
-            
-            // build title
-            hitSetText.append( _renderHitSetTitle( child.browseElement ) );
-            
-            // append metadata if exist
-            hitSetText.append( _renderMetdataInfo( child.foundMetadata, child.url ) );
-            
-            // append thumbnail image
-            hitSet.append( _renderThumbnail( child.browseElement, child.url ) );
-            
-            // build child hits
-            if ( child.hasChildren ) {
-                $.each( child.children, function( subChildren, subChild ) {
-                    hitSetText.append( _renderSubChildHits( subChild.browseElement, subChild.type, subChild.translatedType ) );
-                } );
-            } else {
-                hitSetText.append( _renderSubChildHits( child.browseElement, child.type, child.translatedType ) );
-            }
-            
-            // append complete set
-            $this.next().append( hitSet );
-        } );
-        
-    }
-    
-    function _renderThumbnail( browseElement, url ) {
-        let $thumb = $("<a class='search-list__subhit-thumbnail'><img></img></a>");
-        $thumb.find("img").attr("src", browseElement.thumbnailUrl);
-        $thumb.attr("href", _defaults.contextPath + "/" + url);
-        if(!_searchListShowThumbs) {
-            $thumb.css("display", "none");
-        }
-        return $thumb;
-    }
-    
-    /**
-     * Method which renders the hit set title.
-     * 
-     * @method _renderHitSetTitle
-     * @param {Object} data The data object which contains the hit set title values.
-     * @returns {Object} A jquery object which contains the hit set title.
-     */
-    function _renderHitSetTitle( data ) {
-        if ( _debug ) {
-            console.log( '---------- _renderHitSetTitle() ----------' );
-            console.log( '_renderHitSetTitle: data = ', data );
-        }
-        
-        var hitSetTitle = null;
-        var hitSetTitleH5 = null;
-        var hitSetTitleDl = null;
-        var hitSetTitleDt = null;
-        var hitSetTitleDd = null;
-        var hitSetTitleLink = null;
-        
-        hitSetTitle = $( '<div class="search-list__struct-title" />' );
-        hitSetTitleH5 = $( '<h4 />' );
-        if ( data.labelShort === 'TEI' ) {
-        	hitSetTitleLink = $( '<span />' ).html( data.labelShort );
-        }
-        else {
-        	hitSetTitleLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url ).html( data.labelShort );        	
-        }
-        hitSetTitleH5.append( hitSetTitleLink );
-        hitSetTitle.append( hitSetTitleH5 );
-        
-        return hitSetTitle;
-    }
-    
-    /**
-     * Method which renders metadata info.
-     * 
-     * @method _renderMetdataInfo
-     * @param {Object} data The data object which contains the sub hit values.
-     * @param {String} url The URL for the current work.
-     * @returns {Object} A jquery object which contains the metadata info.
-     */
-    function _renderMetdataInfo( data, url ) {
-        if ( _debug ) {
-            console.log( '---------- _renderMetdataInfo() ----------' );
-            console.log( '_renderMetdataInfo: data = ', data );
-            console.log( '_renderMetdataInfo: url = ', url );
-        }
-        
-        var metadataWrapper = null;
-        var metadataTable = null;
-        var metadataTableBody = null;
-        var metadataTableRow = null;
-        var metadataTableCellLeft = null;
-        var metadataTableCellRight = null;
-        var metadataKeyIcon = null;
-        var metadataKeyLink = null;
-        var metadataValueLink = null;
-        
-        if ( !$.isEmptyObject( data ) ) {
-            metadataWrapper = $( '<div class="search-list__metadata-info" />' );
-            metadataTable = $( '<table />' );
-            metadataTableBody = $( '<tbody />' );
-            
-            data.forEach( function( metadata ) {
-                // left cell
-                metadataTableCellLeft = $( '<td />' );
-                metadataKeyIcon = $( '<i />' ).attr( 'aria-hidden', 'true' ).addClass( 'fa fa-bookmark-o' );
-                metadataKeyLink = $( '<span />' ).html( metadata.one + ':' );
-                metadataTableCellLeft.append( metadataKeyIcon ).append( metadataKeyLink );
-                
-                // right cell
-                metadataTableCellRight = $( '<td />' );
-                metadataValueLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + url ).html( metadata.two );
-                metadataTableCellRight.append( metadataValueLink );
-                
-                // row
-                metadataTableRow = $( '<tr />' );
-                metadataTableRow.append( metadataTableCellLeft ).append( metadataTableCellRight );
-                
-                // body
-                metadataTableBody.append( metadataTableRow );
-            } );
-            
-            metadataTable.append( metadataTableBody );
-            metadataWrapper.append( metadataTable );
-            
-            return metadataWrapper;
-        }
-    }
-    
-    /**
-     * Method which renders sub child hits.
-     * 
-     * @method _renderSubChildHits
-     * @param {Object} data The data object which contains the sub hit values.
-     * @param {String} type The type of hit to render.
-     * @returns {Object} A jquery object which contains the sub child hits.
-     */
-    function _renderSubChildHits( data, type, title ) {
-        if ( _debug ) {
-            console.log( '---------- _renderSubChildHits() ----------' );
-            console.log( '_renderSubChildHits: data = ', data );
-            console.log( '_renderSubChildHits: type = ', type );
-            console.log( '_renderSubChildHits: title = ', title ); 
-        }
-        
-        var hitSetChildren = null;
-        var hitSetChildrenDl = null;
-        var hitSetChildrenDt = null;
-        var hitSetChildrenDd = null;
-        var hitSetChildrenLink = null;        
-        var iconTitle;
-        
-        if ( title === '' || title === null ) {
-        	iconTitle = '';
-        }
-        else {
-        	iconTitle = title;
-        }
-        
-        hitSetChildren = $( '<div class="search-list__struct-child-hits" />' );
-        hitSetChildrenDl = $( '<dl class="dl-horizontal" />' );
-        hitSetChildrenDt = $( '<dt />' );
-        // check hit type
-        switch ( type ) {
-            case 'PAGE':
-                hitSetChildrenDt.append( '<i class="fa fa-file-text" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'PERSON':
-                hitSetChildrenDt.append( '<i class="fa fa-user" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'CORPORATION':
-                hitSetChildrenDt.append( '<i class="fa fa-university" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'LOCATION':
-                hitSetChildrenDt.append( '<i class="fa fa-location-arrow" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'ADDRESS':
-                hitSetChildrenDt.append( '<i class="fa fa-envelope" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'SUBJECT':
-                hitSetChildrenDt.append( '<i class="fa fa-question-circle-o" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'PUBLISHER':
-                hitSetChildrenDt.append( '<i class="fa fa-copyright" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'COMMENT':
-                hitSetChildrenDt.append( '<i class="fa fa-comment-o" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'CMS':
-                hitSetChildrenDt.append( '<i class="fa fa-file-text-o" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'EVENT':
-                hitSetChildrenDt.append( '<i class="fa fa-calendar" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-            case 'ACCESSDENIED':
-                hitSetChildrenDt.append( '<i class="fa fa-lock" title="' + iconTitle + '" aria-hidden="true"></i>' );
-                break;
-        }
-        hitSetChildrenDd = $( '<dd />' );
-        hitSetChildrenLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url );
-        switch ( type ) {
-            case 'CMS':
-            case 'PAGE':
-            case 'ACCESSDENIED':
-                hitSetChildrenLink.append( data.fulltextForHtml );
-                break;
-            default:
-                hitSetChildrenLink.append( data.labelShort );
-                break;
-        }
-        hitSetChildrenDd.append( hitSetChildrenLink );
-        hitSetChildrenDl.append( hitSetChildrenDt ).append( hitSetChildrenDd );
-        if ( type !== null ) {        	
-        	hitSetChildren.append( hitSetChildrenDl );        	
-        }
-        
-        return hitSetChildren;
-    }
-    
-    /**
-     * Method to render a get more children link.
-     * 
-     * @method _renderGetMoreChildren
-     */
-    function _renderGetMoreChildren( data, iddoc, $this ) {
-        if ( _debug ) {
-            console.log( '---------- _renderGetMoreChildren() ----------' );
-            console.log( '_renderGetMoreChildren: data = ', data );
-            console.log( '_renderGetMoreChildren: iddoc = ', iddoc );
-            console.log( '_renderGetMoreChildren: $this = ', $this );
-        }
-        
-        var apiUrl = _getApiUrl( iddoc, _defaults.hitsPerCall + data.hitsDisplayed );
-        var hitContentMore = $( '<div />' );
-        var getMoreChildrenLink = $( '<button type="button" />' );
-        
-        if ( data.hasMoreChildren ) {
-            // build get more link
-            hitContentMore.addClass( 'search-list__hit-content-more' );
-            getMoreChildrenLink.addClass( 'btn btn--clean' );
-            getMoreChildrenLink.attr( 'data-api', apiUrl );
-            getMoreChildrenLink.attr( 'data-iddoc', iddoc );
-            getMoreChildrenLink.append( _defaults.msg.getMoreChildren );
-            hitContentMore.append( getMoreChildrenLink );
-            // append links
-            $this.next().append( hitContentMore );
-            // render new hit set
-            getMoreChildrenLink.off().on( 'click', function( event ) {
-                var currApiUrl = $( this ).attr( 'data-api' );
-                var parentOffset = $this.parent().offset().top;
-                
-                // get data and render hits if data is valid
-                _promise = viewer.helper.getRemoteData( currApiUrl );
-                _promise.then( function( data ) {
-                    // render child hits into the DOM
-                    _renderChildHits( data, $this );
-                    // check if more children exist and render link
-                    _renderGetMoreChildren( data, iddoc, $this );
-                } ).then( null, function() {
-                    $this.next().append( viewer.helper.renderAlert( 'alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false ) );
-                    console.error( 'ERROR: _renderGetMoreChildren - ', error );
-                } );
-            } );
-        }
-        else {
-            // clear and hide current get more link
-            $this.next().find( _defaults.hitContentMoreSelector ).empty().hide();
-            console.info( '_renderGetMoreChildren: No more child hits available' );
-            return false;
-        }
-    }
+
+
+
     
     return viewer;
     

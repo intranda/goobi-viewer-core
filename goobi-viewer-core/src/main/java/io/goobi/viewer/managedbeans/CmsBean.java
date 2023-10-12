@@ -845,7 +845,8 @@ public class CmsBean implements Serializable {
                     try {
                         return content.getContent().handlePageLoad(resetSearch, content.getOwningComponent());
                     } catch (PresentationException e) {
-                        logger.error("Error handling page load for page {} in content {}", content.getContent().getOwningPage().getId(), content.getItemId(), e);
+                        logger.error("Error handling page load for page {} in content {}", content.getContent().getOwningPage().getId(),
+                                content.getItemId(), e);
                         return "";
                     }
                 })

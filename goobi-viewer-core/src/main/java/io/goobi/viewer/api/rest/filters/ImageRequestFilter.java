@@ -124,7 +124,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
                     String redirectURI = request.getRequestURI().replace("/" + imageName + "/", "/" + filename.get() + "/");
                     response.sendRedirect(redirectURI);
                     return true;
-                } else if(imageName.matches("\\d+")) {
+                } else if (imageName.matches("\\d+")) {
                     filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
                     if (filename.isPresent()) {
                         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename.get());

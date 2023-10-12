@@ -25,10 +25,11 @@ import java.util.Collection;
 import java.util.function.Function;
 
 public class CheckboxSelectable<T> {
-    
+
     private final Collection<T> dataSet;
     private final T value;
-    private final Function<T,String> labelGetter;
+    private final Function<T, String> labelGetter;
+
     /**
      * @param dataSet
      * @param selectionSet
@@ -41,14 +42,14 @@ public class CheckboxSelectable<T> {
         this.value = value;
         this.labelGetter = labelGetter;
     }
-    
+
     public boolean isSelected() {
         return this.dataSet.contains(value);
     }
-    
+
     public void setSelected(boolean selected) {
-        if(selected) {
-            if(!this.dataSet.contains(this.value)) {
+        if (selected) {
+            if (!this.dataSet.contains(this.value)) {
                 this.dataSet.add(this.value);
             } else {
                 //already selected
@@ -57,11 +58,11 @@ public class CheckboxSelectable<T> {
             this.dataSet.remove(this.value);
         }
     }
-    
+
     public String getLabel() {
         return this.labelGetter.apply(this.value);
     }
-    
+
     @Override
     public String toString() {
         return value.toString() + ": " + isSelected();

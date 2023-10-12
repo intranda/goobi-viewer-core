@@ -112,7 +112,7 @@ public class ThumbnailHandler {
         this.iiifUrlHandler = iiifUrlHandler;
         this.staticImagesPath = staticImagesPath;
     }
-    
+
     public ThumbnailHandler(URI apiUrl, String staticImagesPath) {
         this(new IIIFUrlHandler(apiUrl), staticImagesPath);
     }
@@ -181,7 +181,7 @@ public class ThumbnailHandler {
             throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getImageUrl(pi, width, height, "jpg");
     }
-    
+
     /**
      * Returns a link to the representative image for the given pi with the given width and height. If the pi doesn't match an indexed item, null is
      * returned
@@ -342,7 +342,7 @@ public class ThumbnailHandler {
      */
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if(doc != null) {
+        if (doc != null) {
             StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
             IPageLoader pageLoader = AbstractPageLoader.create(struct);
             return pageLoader.getPage(order);
@@ -363,7 +363,7 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
         return getThumbnailUrl(page, getScale(width, height));
     }
-    
+
     /**
      * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
@@ -382,8 +382,8 @@ public class ThumbnailHandler {
         if ("MASTER".equalsIgnoreCase(format)) {
             return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
         } else {
-            ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);  
-            if(iff == null) {
+            ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);
+            if (iff == null) {
                 return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
             } else {
                 return iff;
@@ -403,20 +403,18 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(PhysicalElement page, Scale scale) {
         return getImageUrl(page, scale, ImageFileFormat.JPG);
     }
-        
-        
-        /**
-         * <p>
-         * getThumbnailUrl.
-         * </p>
-         *
-         * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-         * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-         * @param the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
-         * @return a {@link java.lang.String} object.
-         */
-        public String getImageUrl(PhysicalElement page, Scale scale, ImageFileFormat format) {
 
+    /**
+     * <p>
+     * getThumbnailUrl.
+     * </p>
+     *
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @param the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
+     * @return a {@link java.lang.String} object.
+     */
+    public String getImageUrl(PhysicalElement page, Scale scale, ImageFileFormat format) {
 
         String path = getImagePath(page);
         if (path == null) {
@@ -429,7 +427,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, null, scale, null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT, format.getFileExtension());
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT,
+                    format.getFileExtension());
         }
     }
 

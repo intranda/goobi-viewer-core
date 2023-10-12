@@ -45,11 +45,9 @@ public class PhysicalElementBuilder {
     /** Data repository name for the record to which this page belongs. */
     private String dataRepository;
 
-
     public PhysicalElement build() {
         return new PhysicalElement(physId, filePath, order, orderLabel, urn, purlPart, pi, mimeType, dataRepository);
     }
-
 
     /**
      * @return the pi
@@ -57,7 +55,6 @@ public class PhysicalElementBuilder {
     public String getPi() {
         return pi;
     }
-
 
     /**
      * @param pi the pi to set
@@ -68,14 +65,12 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-
     /**
      * @return the filePath
      */
     public String getFilePath() {
         return filePath;
     }
-
 
     /**
      * @param filePath the filePath to set
@@ -86,14 +81,12 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-
     /**
      * @return the order
      */
     public int getOrder() {
         return order;
     }
-
 
     /**
      * @param order the order to set
@@ -104,14 +97,12 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-
     /**
      * @return the orderLabel
      */
     public String getOrderLabel() {
         return orderLabel;
     }
-
 
     /**
      * @param orderLabel the orderLabel to set
@@ -122,14 +113,12 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-
     /**
      * @return the physId
      */
     public String getPhysId() {
         return physId;
     }
-
 
     /**
      * @param physId the physId to set
@@ -140,14 +129,12 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-
     /**
      * @return the urn
      */
     public String getUrn() {
         return urn;
     }
-
 
     /**
      * @param urn the urn to set
@@ -158,14 +145,12 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-
     /**
      * @return the purlPart
      */
     public String getPurlPart() {
         return purlPart;
     }
-
 
     /**
      * @param purlPart the purlPart to set
@@ -176,14 +161,12 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-
     /**
      * @return the mimeType
      */
     public String getMimeType() {
         return mimeType;
     }
-
 
     /**
      * @param mimeType the mimeType to set
@@ -194,14 +177,12 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-
     /**
      * @return the dataRepository
      */
     public String getDataRepository() {
         return dataRepository;
     }
-
 
     /**
      * @param dataRepository the dataRepository to set
@@ -211,6 +192,5 @@ public class PhysicalElementBuilder {
         this.dataRepository = dataRepository;
         return this;
     }
-
 
 }

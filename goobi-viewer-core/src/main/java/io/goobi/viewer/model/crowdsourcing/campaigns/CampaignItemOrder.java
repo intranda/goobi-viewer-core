@@ -27,14 +27,14 @@ public enum CampaignItemOrder {
 
     RANDOM,
     FIXED;
-    
+
     public static Optional<CampaignItemOrder> of(String string) {
-        if(StringUtils.isBlank(string)) {
+        if (StringUtils.isBlank(string)) {
             return Optional.empty();
         } else {
-            try {                
+            try {
                 return Optional.of(CampaignItemOrder.valueOf(string.toUpperCase()));
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 return Optional.empty();
             }
         }

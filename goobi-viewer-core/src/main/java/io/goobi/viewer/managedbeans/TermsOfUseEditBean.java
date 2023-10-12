@@ -163,5 +163,4 @@ public class TermsOfUseEditBean implements Serializable, IPolyglott {
         return (title == null || title.isEmpty()) && (desc == null || desc.isEmpty());
     }
 
-
 }

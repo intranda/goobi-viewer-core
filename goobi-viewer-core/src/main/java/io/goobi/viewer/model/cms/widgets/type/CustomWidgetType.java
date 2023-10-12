@@ -62,7 +62,7 @@ public enum CustomWidgetType implements WidgetContentType {
     public String getIconClass() {
         return iconClass;
     }
-    
+
     public String getLabel() {
         return label;
     }

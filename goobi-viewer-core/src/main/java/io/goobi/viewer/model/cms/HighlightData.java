@@ -69,7 +69,7 @@ public class HighlightData implements Serializable {
 
     @Column(name = "record_identifier")
     private String recordIdentifier;
-    
+
     @Column(name = "target_url")
     private String targetUrl;
 
@@ -87,7 +87,7 @@ public class HighlightData implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "image_mode")
     private ImageMode imageMode = ImageMode.RECORD_REPRESENTATIVE;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "target_type")
     private TargetType targetType = TargetType.RECORD;
@@ -96,7 +96,7 @@ public class HighlightData implements Serializable {
         RECORD,
         URL;
     }
-    
+
     public enum ImageMode {
         NO_IMAGE,
         UPLOADED_IMAGE,
@@ -106,7 +106,7 @@ public class HighlightData implements Serializable {
     public HighlightData() {
         //empty
     }
-    
+
     HighlightData(HighlightData source) {
         this.id = source.id;
         this.dateStart = source.dateStart;
@@ -155,7 +155,7 @@ public class HighlightData implements Serializable {
     public LocalDate getDateStart() {
         return Optional.ofNullable(dateStart).map(LocalDateTime::toLocalDate).orElse(null);
     }
-    
+
     public LocalDateTime getTimeStart() {
         return dateStart;
     }
@@ -167,7 +167,7 @@ public class HighlightData implements Serializable {
     public LocalDate getDateEnd() {
         return Optional.ofNullable(dateEnd).map(LocalDateTime::toLocalDate).map(date -> date.minusDays(1)).orElse(null);
     }
-    
+
     public LocalDateTime getTimeEnd() {
         return dateEnd;
     }
@@ -191,39 +191,39 @@ public class HighlightData implements Serializable {
     public void setImageMode(ImageMode imageMode) {
         this.imageMode = imageMode;
     }
-    
+
     public TargetType getTargetType() {
         return targetType;
     }
-    
+
     public void setTargetType(TargetType targetType) {
         this.targetType = targetType;
-        if(TargetType.URL == this.targetType && this.imageMode == ImageMode.RECORD_REPRESENTATIVE) {
+        if (TargetType.URL == this.targetType && this.imageMode == ImageMode.RECORD_REPRESENTATIVE) {
             this.imageMode = ImageMode.UPLOADED_IMAGE;
         }
     }
-    
+
     public String getTargetUrl() {
         return targetUrl;
     }
-    
+
     public void setTargetUrl(String targetUrl) {
         this.targetUrl = targetUrl;
     }
-    
+
     @Override
     public int hashCode() {
         return recordIdentifier == null ? 0 : recordIdentifier.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            HighlightData other = (HighlightData)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            HighlightData other = (HighlightData) obj;
             return Objects.equals(this.id, other.id) &&
                     Objects.equals(this.recordIdentifier, other.recordIdentifier) &&
-                    Objects.equals(this.dateStart, other.dateStart) && 
-                    Objects.equals(this.dateEnd, other.dateEnd) && 
+                    Objects.equals(this.dateStart, other.dateStart) &&
+                    Objects.equals(this.dateEnd, other.dateEnd) &&
                     Objects.equals(this.enabled, other.enabled) &&
                     Objects.equals(this.imageMode, other.imageMode) &&
                     Objects.equals(this.mediaItem, other.mediaItem) &&

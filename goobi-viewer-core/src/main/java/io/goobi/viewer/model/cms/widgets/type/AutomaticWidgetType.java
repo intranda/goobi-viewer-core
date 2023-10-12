@@ -44,7 +44,7 @@ public enum AutomaticWidgetType implements WidgetContentType {
         this.filename = filename;
         this.iconClass = iconClass;
     }
-    
+
     @Override
     public String getIconClass() {
         return this.iconClass;

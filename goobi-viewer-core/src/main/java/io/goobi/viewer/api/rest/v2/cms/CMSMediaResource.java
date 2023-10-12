@@ -124,6 +124,7 @@ public class CMSMediaResource {
     protected HttpServletResponse servletResponse;
     @Context
     private IDAO dao;
+
     /**
      * <p>
      * getMediaByTag.
@@ -538,7 +539,6 @@ public class CMSMediaResource {
             return mediaItems;
         }
     }
-
 
     /**
      * 

@@ -34,6 +34,7 @@ public class Point implements IArea {
 
     /**
      * First longitide in eastern direction, then latitude in northern direction
+     * 
      * @param lng
      * @param lat
      */
@@ -44,7 +45,7 @@ public class Point implements IArea {
 
     @Override
     public double[][] getVertices() {
-        return new double[][]{{lng, lat}};
+        return new double[][] { { lng, lat } };
     }
 
     /* (non-Javadoc)
@@ -72,7 +73,7 @@ public class Point implements IArea {
      */
     @Override
     public int hashCode() {
-        return Double.hashCode(lat*lng);
+        return Double.hashCode(lat * lng);
     }
 
     /* (non-Javadoc)
@@ -80,8 +81,8 @@ public class Point implements IArea {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            Point other = (Point)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            Point other = (Point) obj;
             return this.lat == other.lat && this.lng == other.lng;
         } else {
             return false;

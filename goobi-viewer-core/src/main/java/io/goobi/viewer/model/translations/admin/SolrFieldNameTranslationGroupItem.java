@@ -53,7 +53,7 @@ public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
     protected void loadEntries() throws IndexUnreachableException {
         List<String> keys;
         if (regex) {
-                keys = StringTools.filterStringsViaRegex(DataManager.getInstance().getSearchIndex().getAllFieldNames(), key);
+            keys = StringTools.filterStringsViaRegex(DataManager.getInstance().getSearchIndex().getAllFieldNames(), key);
         } else {
             keys = Collections.singletonList(key);
         }

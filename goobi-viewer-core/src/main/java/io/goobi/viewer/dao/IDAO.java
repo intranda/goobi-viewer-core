@@ -2591,9 +2591,8 @@ public interface IDAO {
 
     public boolean deleteUsageStatistics(long id) throws DAOException;
 
-
     public boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
-    
+
     public boolean deleteCMSContent(CMSContent content) throws DAOException;
 
     public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
@@ -2640,26 +2639,40 @@ public interface IDAO {
     public long getViewerMessageCount(Map<String, String> filters) throws DAOException;
 
     public List<RecurringTaskTrigger> getRecurringTaskTriggers() throws DAOException;
+
     public RecurringTaskTrigger getRecurringTaskTrigger(Long id) throws DAOException;
+
     public RecurringTaskTrigger getRecurringTaskTriggerForTask(TaskType task) throws DAOException;
+
     public boolean addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
+
     public boolean updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
+
     public boolean deleteRecurringTaskTrigger(Long id) throws DAOException;
 
     public int deleteViewerMessagesBefore(LocalDateTime date) throws DAOException;
-    
+
     public boolean addHighlight(HighlightData object) throws DAOException;
+
     public boolean updateHighlight(HighlightData object) throws DAOException;
+
     public boolean deleteHighlight(Long id) throws DAOException;
+
     public HighlightData getHighlight(Long id) throws DAOException;
+
     public List<HighlightData> getAllHighlights() throws DAOException;
-    public List<HighlightData> getHighlights(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+
+    public List<HighlightData> getHighlights(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+
     public List<HighlightData> getHighlightsForDate(LocalDateTime date) throws DAOException;
+
     public List<HighlightData> getPastHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException;
+
     public List<HighlightData> getFutureHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException;
-    
+
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
      *

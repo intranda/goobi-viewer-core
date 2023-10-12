@@ -103,7 +103,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
         }
         return annoMap;
     }
-    
+
     /**
      * Get all annotations for the given PI from the the DAO, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
      * converted to WebAnnotations here
@@ -113,7 +113,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException 
+     * @throws DAOException
      */
     public Map<Integer, List<WebAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget)
             throws DAOException {
@@ -163,7 +163,6 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
         return createUGCWebAnnotation(pi, doc, urlOnlyTarget);
     }
 
-
     /**
      * <p>
      * createWebAnnotation.
@@ -175,9 +174,10 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @return a {@link de.intranda.api.annotation.oa.WebAnnotation} object.
      */
     public WebAnnotation createUGCWebAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
-        String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID)).map(SolrTools::getAsString)
+        String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID))
+                .map(SolrTools::getAsString)
                 .map(i -> i.replace("annotation_", ""))
-                .orElse((String)doc.getFieldValue(SolrConstants.IDDOC));
+                .orElse((String) doc.getFieldValue(SolrConstants.IDDOC));
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(SolrTools::getAsString).orElse(null);
         URI annoURI = getRestBuilder().getAnnotationURI(id);
@@ -261,7 +261,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @throws DAOException 
+     * @throws DAOException
      */
     public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly)
             throws DAOException {

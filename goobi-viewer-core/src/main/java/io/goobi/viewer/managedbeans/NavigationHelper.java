@@ -1337,14 +1337,13 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getSearchUrl(int activeSearchType) {
+        // logger.trace("getSearchUrl: {}", activeSearchType);
 
         //If we are on a cms-page, return the cms page url
         try {
             Optional<ViewerPath> oView = ViewHistory.getCurrentView(BeanUtils.getRequest());
             if (oView.isPresent() && oView.get().isCmsPage() && oView.get().getCmsPage().hasSearchFunctionality()) {
-                String path =
-                        BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+", "/");
-                return path;
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+", "/");
             }
         } catch (Throwable e) {
             logger.error(e.toString(), e);
@@ -1991,6 +1990,7 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Get the current time in milliseconds as string
+     * 
      * @return the current time in milliseconds as string
      */
     public String getCurrentTime() {
@@ -1999,7 +1999,8 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Get the current date as {@link LocalDate}
-     * @return  the current date as {@link LocalDate}
+     * 
+     * @return the current date as {@link LocalDate}
      */
     public LocalDate getCurrentDate() {
         return LocalDate.now();
@@ -2008,9 +2009,9 @@ public class NavigationHelper implements Serializable {
     /**
      * Simply returns the given string to redirect to a page via jsf
      * 
-     * @param page  the string to return
-     * @return  the passed string 'page'
-     * @deprecated  Apparently not used. And should be easily replacable by just entering the 'page' string in the action attribute
+     * @param page the string to return
+     * @return the passed string 'page'
+     * @deprecated Apparently not used. And should be easily replacable by just entering the 'page' string in the action attribute
      */
     @Deprecated(forRemoval = true)
     public String returnTo(String page) {

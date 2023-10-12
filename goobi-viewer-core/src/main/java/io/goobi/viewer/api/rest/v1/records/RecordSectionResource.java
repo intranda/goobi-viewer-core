@@ -94,7 +94,7 @@ public class RecordSectionResource {
     @GET
     @javax.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records"}, summary = "Download ris as file")
+    @Operation(tags = { "records" }, summary = "Download ris as file")
     public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 
@@ -120,7 +120,7 @@ public class RecordSectionResource {
     @GET
     @javax.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records"}, summary = "Get ris as text")
+    @Operation(tags = { "records" }, summary = "Get ris as text")
     public String getRISAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
 
@@ -131,9 +131,10 @@ public class RecordSectionResource {
     @GET
     @javax.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = {"records", "iiif"}, summary = "Get IIIF 2.1.1 range for section")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 range for section")
     @IIIFPresentationBinding
-    public IPresentationModelElement getRange() throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException {
+    public IPresentationModelElement getRange() throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
+            ViewerConfigurationException, DAOException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         return builder.getRange(pi, divId);
     }
@@ -146,7 +147,7 @@ public class RecordSectionResource {
      */
     private StructElement getStructElement(String pi, String divId) throws PresentationException, IndexUnreachableException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("+PI_TOPSTRUCT:" + pi + " +DOCTYPE:DOCSTRCT +LOGID:" + divId, null);
-        StructElement struct = new StructElement(Long.valueOf((String)doc.getFieldValue(SolrConstants.IDDOC)), doc);
+        StructElement struct = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
         return struct;
     }
 

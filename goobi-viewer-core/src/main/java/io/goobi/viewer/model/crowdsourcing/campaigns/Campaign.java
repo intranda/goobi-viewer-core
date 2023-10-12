@@ -1731,7 +1731,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     public String getMediaFilter() {
         return CmsMediaBean.getImageFilter();
     }
-    
 
     @Override
     @JsonIgnore
@@ -1918,6 +1917,5 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     public String getAccessConditionValue() {
         return getTitle(IPolyglott.getDefaultLocale().getLanguage());
     }
-
 
 }

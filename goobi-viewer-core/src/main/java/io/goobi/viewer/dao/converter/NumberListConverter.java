@@ -45,7 +45,7 @@ public class NumberListConverter implements AttributeConverter<List<Long>, Strin
      */
     @Override
     public String convertToDatabaseColumn(List<Long> attribute) {
-        if(attribute == null || attribute.isEmpty()) {
+        if (attribute == null || attribute.isEmpty()) {
             return null;
         } else {
             return attribute.stream().map(s -> Long.toString(s)).collect(Collectors.joining(","));
@@ -57,7 +57,7 @@ public class NumberListConverter implements AttributeConverter<List<Long>, Strin
      */
     @Override
     public List<Long> convertToEntityAttribute(String dbData) {
-        if(StringUtils.isBlank(dbData)) {
+        if (StringUtils.isBlank(dbData)) {
             return new ArrayList<>();
         } else {
             return Arrays.asList(dbData.split(",")).stream().map(s -> Long.parseLong(s)).collect(Collectors.toList());

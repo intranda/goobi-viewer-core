@@ -109,7 +109,8 @@ public class ManifestBuilder extends AbstractBuilder {
 
     }
 
-    public IPresentationModelElement3 build(String pi, HttpServletRequest request) throws PresentationException, IndexUnreachableException, ViewerConfigurationException,
+    public IPresentationModelElement3 build(String pi, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException,
             IllegalPathSyntaxException, ContentLibException, URISyntaxException, DAOException {
 
         List<StructElement> documents = this.dataRetriever.getDocumentWithChildren(pi);
@@ -135,11 +136,11 @@ public class ManifestBuilder extends AbstractBuilder {
             ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
             URI uri = URI.create(apiPath.build());
             AnnotationPage crowdAnnos = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForRecord(pi, uri).getFirst();
-            if(crowdAnnos != null && !crowdAnnos.getItems().isEmpty()) {
+            if (crowdAnnos != null && !crowdAnnos.getItems().isEmpty()) {
                 manifest.addAnnotations(new InternalAnnotationPage(crowdAnnos));
             }
             AnnotationPage comments = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForRecordComments(pi, uri).getFirst();
-            if(comments != null && !comments.getItems().isEmpty()) {
+            if (comments != null && !comments.getItems().isEmpty()) {
                 manifest.addAnnotations(new InternalAnnotationPage(comments));
             }
         } catch (DAOException e) {
@@ -226,7 +227,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
     /**
      * @throws DAOException @throws URISyntaxException @throws ContentLibException @throws IllegalPathSyntaxException @param ele @param
-     * manifest @throws IndexUnreachableException @throws PresentationException @throws
+     *             manifest @throws IndexUnreachableException @throws PresentationException @throws
      */
     private void addPages(StructElement ele, Manifest3 manifest) throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException,
             ContentLibException, URISyntaxException, DAOException {
@@ -352,9 +353,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     private String getType(String format) {
-        if(StringUtils.isBlank(format)) {
+        if (StringUtils.isBlank(format)) {
             return "";
-        } else {            
+        } else {
             String typeString = format.replaceAll("\\/.*", "").toLowerCase();
             switch (typeString) {
                 case "image":
@@ -369,8 +370,8 @@ public class ManifestBuilder extends AbstractBuilder {
                     return "Text";
                 default:
                     return "Dataset";
-        }
-            
+            }
+
         }
     }
 

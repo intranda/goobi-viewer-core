@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
-
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -38,9 +37,9 @@ import io.goobi.viewer.model.log.LogMessage;
  * @author florian
  *
  */
- @Entity
- @Table(name = "cs_campaign_log")
- public class CampaignLogMessage extends LogMessage {
+@Entity
+@Table(name = "cs_campaign_log")
+public class CampaignLogMessage extends LogMessage {
 
     private static final long serialVersionUID = 2810349140888620668L;
 

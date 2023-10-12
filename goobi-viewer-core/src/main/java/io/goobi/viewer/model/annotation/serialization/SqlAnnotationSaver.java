@@ -60,12 +60,12 @@ public class SqlAnnotationSaver implements AnnotationSaver {
                 } catch (DAOException e) {
                     throw new IOException(e);
                 }
-            } else if(annotation instanceof CrowdsourcingAnnotation) {
+            } else if (annotation instanceof CrowdsourcingAnnotation) {
                 try {
                     if (annotation.getId() != null) {
-                        dao.updateAnnotation((CrowdsourcingAnnotation)annotation);
+                        dao.updateAnnotation((CrowdsourcingAnnotation) annotation);
                     } else {
-                        dao.addAnnotation((CrowdsourcingAnnotation)annotation);
+                        dao.addAnnotation((CrowdsourcingAnnotation) annotation);
                     }
                 } catch (DAOException e) {
                     throw new IOException(e);

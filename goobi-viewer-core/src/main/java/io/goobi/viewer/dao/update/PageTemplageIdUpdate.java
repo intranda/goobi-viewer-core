@@ -14,19 +14,19 @@ public class PageTemplageIdUpdate implements IModelUpdate {
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         int updates = 0;
         //rename TEMPLATEID column to page_template_id if the latter column has no entries
-        if(dao.columnsExists("cms_pages", "TEMPLATEID")) {
+        if (dao.columnsExists("cms_pages", "TEMPLATEID")) {
             boolean newColumnHasEntries = dao.getNativeQueryResults("SELECT page_template_id FROM cms_pages").stream().anyMatch(Objects::nonNull);
-            if(!newColumnHasEntries) {
+            if (!newColumnHasEntries) {
                 dao.executeUpdate("ALTER TABLE cms_pages DROP page_template_id;");
-                try {                    
+                try {
                     dao.executeUpdate("ALTER TABLE cms_pages RENAME COLUMN TEMPLATEID page_template_id;");
-                    if(!dao.columnsExists("cms_pages", "page_template_id")) {
+                    if (!dao.columnsExists("cms_pages", "page_template_id")) {
                         dao.executeUpdate("ALTER TABLE cms_pages CHANGE TEMPLATEID page_template_id bigint(20)");
                     }
-                } catch(DAOException e) {
+                } catch (DAOException e) {
                     //exception is  not reliable. Ignore for now and check result of operation later
                 }
-                if(!dao.columnsExists("cms_pages", "page_template_id")) {
+                if (!dao.columnsExists("cms_pages", "page_template_id")) {
                     dao.executeUpdate("ALTER TABLE cms_pages ADD COLUMN page_template_id bigint(20);");
                 }
                 updates += 1;

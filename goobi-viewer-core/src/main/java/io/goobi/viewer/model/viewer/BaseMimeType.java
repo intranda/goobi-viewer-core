@@ -64,7 +64,7 @@ public enum BaseMimeType {
         if (name == null) {
             return null;
         }
-        
+
         if (name.contains("/")) {
             name = name.substring(0, name.indexOf("/"));
         }
@@ -73,7 +73,7 @@ public enum BaseMimeType {
                 return o;
             }
         }
-        
+
         return null;
     }
 

@@ -75,7 +75,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 /**
- * Representation of a search hit. TODO integrate into SearchHit
+ * Representation of a search hit.
  */
 public class BrowseElement implements Serializable {
 
@@ -1273,15 +1273,20 @@ public class BrowseElement implements Serializable {
     public List<Metadata> getMetadataList() {
         return metadataListMap.get(Configuration.METADATA_LIST_TYPE_SEARCH_HIT);
     }
-    
+
     public List<String> getMetadataValues(String field) {
-        return getMetadataListForLocale(field, BeanUtils.getLocale()).stream().flatMap(md -> md.getValues().stream())
-         .map(value -> value.getCombinedValue()).collect(Collectors.toList());
-     }
-    
+        return getMetadataListForLocale(field, BeanUtils.getLocale()).stream()
+                .flatMap(md -> md.getValues().stream())
+                .map(value -> value.getCombinedValue())
+                .collect(Collectors.toList());
+    }
+
     public String getFirstMetadataValue(String field) {
-       return getMetadataListForLocale(field, BeanUtils.getLocale()).stream().flatMap(md -> md.getValues().stream()).findFirst()
-        .map(value -> value.getCombinedValue()).orElse("");
+        return getMetadataListForLocale(field, BeanUtils.getLocale()).stream()
+                .flatMap(md -> md.getValues().stream())
+                .findFirst()
+                .map(value -> value.getCombinedValue())
+                .orElse("");
     }
 
     /**

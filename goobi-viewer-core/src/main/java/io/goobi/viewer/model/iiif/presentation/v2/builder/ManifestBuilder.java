@@ -100,7 +100,6 @@ public class ManifestBuilder extends AbstractBuilder {
         super(apiUrlManager);
     }
 
-
     /**
      * <p>
      * generateManifest.
@@ -170,7 +169,6 @@ public class ManifestBuilder extends AbstractBuilder {
         }
     }
 
-
     private void addThumbnail(StructElement ele, final AbstractPresentationModelElement2 manifest) {
         try {
             String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele);
@@ -186,7 +184,6 @@ public class ManifestBuilder extends AbstractBuilder {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
     }
-
 
     private void addCmsPages(StructElement ele, final AbstractPresentationModelElement2 manifest) {
         try {
@@ -210,7 +207,6 @@ public class ManifestBuilder extends AbstractBuilder {
         }
     }
 
-
     private void addNavDate(StructElement ele, final AbstractPresentationModelElement2 manifest) {
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
         if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
@@ -224,24 +220,23 @@ public class ManifestBuilder extends AbstractBuilder {
         }
     }
 
-
     private void addLicences(final AbstractPresentationModelElement2 manifest) {
-        for(String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
+        for (String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
             try {
                 URI uri = new URI(license);
                 manifest.addLicense(uri);
-            } catch(URISyntaxException e) {
+            } catch (URISyntaxException e) {
                 logger.error("Configured license '" + license + "' is not a URI");
             }
         }
     }
 
-
     private void addLogo(StructElement ele, final AbstractPresentationModelElement2 manifest)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         List<String> logoUrl = getLogoUrl();
-        if(logoUrl.isEmpty()) {
-            Optional<String> url = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
+        if (logoUrl.isEmpty()) {
+            Optional<String> url =
+                    BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
             url.ifPresent(l -> logoUrl.add(l));
         }
         for (String url : logoUrl) {
@@ -256,7 +251,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     public void addSeeAlsos(AbstractPresentationModelElement2 manifest, StructElement ele) {
-        
+
         if (ele.isLidoRecord() && DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoLido()) {
             /*LIDO*/
             try {
@@ -268,7 +263,7 @@ public class ManifestBuilder extends AbstractBuilder {
             } catch (URISyntaxException e) {
                 logger.error("Unable to retrieve lido resolver url for {}", ele);
             }
-        } else if(DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoMets()) {
+        } else if (DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoMets()) {
             /*METS/MODS*/
             try {
                 LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
@@ -280,7 +275,7 @@ public class ManifestBuilder extends AbstractBuilder {
                 logger.error("Unable to retrieve mets resolver url for {}", ele);
             }
         }
-        
+
         List<ManifestLinkConfiguration> linkConfigurations = DataManager.getInstance().getConfiguration().getIIIFSeeAlsoMetadataConfigurations();
         for (ManifestLinkConfiguration config : linkConfigurations) {
             try {
@@ -289,7 +284,7 @@ public class ManifestBuilder extends AbstractBuilder {
                 String label = config.getLabel();
                 String format = config.getFormat();
                 String value = md.getCombinedValue(", ");
-                if(StringUtils.isNotBlank(value)) {                    
+                if (StringUtils.isNotBlank(value)) {
                     LinkingContent seeAlso = new LinkingContent(new URI(value));
                     seeAlso.setFormat(Format.fromMimeType(format));
                     seeAlso.setLabel(ViewerResourceBundle.getTranslations(label, true));
@@ -298,7 +293,7 @@ public class ManifestBuilder extends AbstractBuilder {
             } catch (IndexUnreachableException | PresentationException | URISyntaxException e) {
                 logger.error("Unable to create seeAlso link for " + config.getLabel(), e);
             }
-            
+
         }
     }
 
@@ -312,7 +307,7 @@ public class ManifestBuilder extends AbstractBuilder {
         this.getRenderings().forEach(link -> {
             try {
                 URI id = getLinkingPropertyUri(ele, link.target);
-                if(id != null) {
+                if (id != null) {
                     manifest.addRendering(link.getLinkingContent(id));
                 }
             } catch (URISyntaxException | PresentationException | IndexUnreachableException e) {
@@ -321,21 +316,22 @@ public class ManifestBuilder extends AbstractBuilder {
         });
     }
 
-    private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target) throws URISyntaxException, PresentationException, IndexUnreachableException {
+    private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target)
+            throws URISyntaxException, PresentationException, IndexUnreachableException {
 
-        if(!LinkingTarget.VIEWER.equals(target) && ele.isAnchor()) {
+        if (!LinkingTarget.VIEWER.equals(target) && ele.isAnchor()) {
             return null;
         }
-        if(target.equals(LinkingTarget.PDF) && !ele.isHasImages()) {
+        if (target.equals(LinkingTarget.PDF) && !ele.isHasImages()) {
             return null;
         }
 
         URI uri = null;
-        switch(target) {
+        switch (target) {
             case VIEWER:
                 String pageUrl = ele.getUrl(getMatchingPageType(ele));
                 uri = URI.create(pageUrl);
-                if(!uri.isAbsolute()) {
+                if (!uri.isAbsolute()) {
                     uri = URI.create(this.urls.getApplicationUrl() + pageUrl);
                 }
                 break;
@@ -359,12 +355,11 @@ public class ManifestBuilder extends AbstractBuilder {
         return uri;
     }
 
-
     private PageType getMatchingPageType(StructElement ele) {
         PageType pageType = PageType.viewMetadata;
-        if(ele.isHasImages()) {
+        if (ele.isHasImages()) {
             pageType = PageType.viewImage;
-        } else if(ele.isAnchor()) {
+        } else if (ele.isAnchor()) {
             pageType = PageType.viewToc;
         }
         return pageType;

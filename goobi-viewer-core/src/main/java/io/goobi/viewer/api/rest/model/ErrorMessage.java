@@ -44,7 +44,7 @@ public class ErrorMessage implements IResponseMessage {
         message = null;
         stackTrace = null;
     }
-    
+
     /**
      * <p>
      * Constructor for ErrorMessage.

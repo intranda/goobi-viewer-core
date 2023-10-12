@@ -193,7 +193,7 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
-    
+
     /**
      * Empty constructor.
      */
@@ -620,7 +620,7 @@ public class ActiveDocumentBean implements Serializable {
                 IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-                List<String> languages = new ArrayList<>(name.getLanguages());  //temporary variable to avoid ConcurrentModificationException
+                List<String> languages = new ArrayList<>(name.getLanguages()); //temporary variable to avoid ConcurrentModificationException
                 Map<String, String> truncatedNames = new HashMap<>();
                 for (String language : languages) {
                     String translation = name.getValue(language).orElse(getPersistentIdentifier());
@@ -919,7 +919,7 @@ public class ActiveDocumentBean implements Serializable {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, List.of(SolrConstants.PI));
         return Optional.ofNullable(doc).map(d -> d.getFirstValue(SolrConstants.PI)).map(Object::toString).orElse("");
     }
-    
+
     /**
      * <p>
      * setPersistentIdentifier.
@@ -2308,12 +2308,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
-       return getRecordGeoMap().getGeoMap();
+        return getRecordGeoMap().getGeoMap();
     }
-    
+
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
         RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
-        if(map == null) {
+        if (map == null) {
             ComplexMetadataContainer md = Optional.ofNullable(this).map(b -> b.viewManager).map(ViewManager::getTopStructElement).map(t -> {
                 try {
                     return t.getMetadataDocuments();
@@ -2323,7 +2323,8 @@ public class ActiveDocumentBean implements Serializable {
             }).orElse(null);
             if (md instanceof RelationshipMetadataContainer) {
                 RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
-                List<MetadataContainer> docs = rmc.getFieldNames().stream()
+                List<MetadataContainer> docs = rmc.getFieldNames()
+                        .stream()
                         .map(rmc::getMetadata)
                         .flatMap(List::stream)
                         .distinct()
@@ -2336,7 +2337,7 @@ public class ActiveDocumentBean implements Serializable {
                 map = new RecordGeoMap();
             }
         }
-      return map; 
+        return map;
     }
 
     /**
@@ -2591,6 +2592,5 @@ public class ActiveDocumentBean implements Serializable {
     public List<String> getGeomapFilters() {
         return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }
-
 
 }

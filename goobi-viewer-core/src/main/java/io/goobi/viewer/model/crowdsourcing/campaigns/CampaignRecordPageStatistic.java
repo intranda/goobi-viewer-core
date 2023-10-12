@@ -54,7 +54,6 @@ import io.goobi.viewer.model.security.user.User;
 @JsonInclude(Include.NON_EMPTY)
 public class CampaignRecordPageStatistic implements Serializable {
 
-
     private static final long serialVersionUID = -5449329014162706484L;
 
     @Id

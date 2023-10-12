@@ -63,7 +63,7 @@ public class CMSContentItem {
     private final String label;
 
     private final String description;
-    
+
     private final String htmlGroup;
 
     private final JsfComponent jsfComponent;
@@ -165,7 +165,8 @@ public class CMSContentItem {
         if (this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             this.uiComponent = new HtmlPanelGroup();
-            UIComponent wrapper = builder.createTag("div", Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper" ));
+            UIComponent wrapper = builder.createTag("div",
+                    Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper"));
             this.uiComponent.getChildren().add(wrapper);
             if (StringUtils.isBlank(this.getJsfComponent().getFilename())) {
                 logger.warn("No backend component available for contentItem {}", this.getContent().getBackendComponentName());
@@ -210,18 +211,18 @@ public class CMSContentItem {
     public String getHtmlGroup() {
         return Optional.ofNullable(htmlGroup).orElse("");
     }
-    
+
     public CMSComponent getOwningComponent() {
         return owningComponent;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(itemId);
-        if(this.content != null) {
+        if (this.content != null) {
             sb.append(" - ").append(this.content.getClass().getSimpleName());
         }
-        if(StringUtils.isNotBlank(this.getHtmlGroup())) {
+        if (StringUtils.isNotBlank(this.getHtmlGroup())) {
             sb.append(" (").append(this.getHtmlGroup()).append(")");
         }
         return sb.toString();

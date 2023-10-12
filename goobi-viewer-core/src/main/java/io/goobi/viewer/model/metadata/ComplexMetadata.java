@@ -123,9 +123,9 @@ public class ComplexMetadata {
         Map<String, List<IMetadataValue>> metadata = new HashMap<>();
         for (SolrDocument doc : docs) {
             Locale locale = SolrTools.getLocale(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
-//            if(locale == null) {
-//                locale = IPolyglott.getDefaultLocale();
-//            }
+            //            if(locale == null) {
+            //                locale = IPolyglott.getDefaultLocale();
+            //            }
             metadata = SolrTools.getTranslatedMetadata(doc, metadata, locale, getMetadataFilter());
         }
         md.metadata = metadata;

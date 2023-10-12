@@ -34,66 +34,72 @@ import org.json.JSONArray;
 
 /**
  * Class holding counts of requests of different {@link RequestType}s. Should be serialized to a string to dao storage
+ * 
  * @author florian
  */
 public class SessionRequestCounts {
 
     private final Map<RequestType, Long> counts = new HashMap<>();
-    
+
     /**
-     * Empty default constructor 
+     * Empty default constructor
      */
     public SessionRequestCounts() {
-        
+
     }
-    
+
     /**
      * Constructor to deserialize data from a string
+     * 
      * @param data
      */
     public SessionRequestCounts(String data) {
-        if(StringUtils.isNotBlank(data)) {            
+        if (StringUtils.isNotBlank(data)) {
             JSONArray array = new JSONArray(data);
             for (int i = 0; i < array.length(); i++) {
                 RequestType type = RequestType.getTypeForSessionCountIndex(i);
-                if(type != null) {                    
+                if (type != null) {
                     long count = array.getLong(i);
                     counts.put(type, count);
                 }
             }
         }
     }
-    
+
     /**
      * Set the total count of requests for a given {@link RequestType}
+     * 
      * @param type
      * @param count
      */
     public void setCount(RequestType type, long count) {
         this.counts.put(type, count);
     }
-    
+
     /**
      * Increment the total count of requests for a given {@link RequestType} by one
+     * 
      * @param type
      */
     public void incrementCount(RequestType type) {
         Long current = getCount(type);
-        setCount(type, current+1);
+        setCount(type, current + 1);
     }
-    
+
     /**
      * Get the total count of requests for a given {@link RequestType}
+     * 
      * @param type
      * @return
      */
     public Long getCount(RequestType type) {
         return Optional.ofNullable(this.counts.get(type)).orElse(0l);
     }
-    
+
     /**
      * Turn into a json representation
-     * @return  a json String
+     * 
+     * @return a json String
      */
     public String toJsonArray() {
         int numTypes = RequestType.values().length;
@@ -101,28 +107,28 @@ public class SessionRequestCounts {
         for (int index = 0; index < numTypes; index++) {
             RequestType type = RequestType.getTypeForSessionCountIndex(index);
             Long count = Optional.ofNullable(counts.get(type)).orElse(0l);
-            countsList.set(index, count);            
+            countsList.set(index, count);
         }
         return new JSONArray(countsList).toString();
     }
-    
+
     @Override
     public int hashCode() {
         return this.counts.hashCode();
     }
-    
+
     /**
-     * Two SessionRequestCounts are equal if the have the same request counts for all {@link RequestType}s 
+     * Two SessionRequestCounts are equal if the have the same request counts for all {@link RequestType}s
      */
     public boolean equals(Object o) {
-        if(o != null && o.getClass().equals(this.getClass())) {
-            SessionRequestCounts other = (SessionRequestCounts)o;
-            if(other.counts.size() == this.counts.size()) {
+        if (o != null && o.getClass().equals(this.getClass())) {
+            SessionRequestCounts other = (SessionRequestCounts) o;
+            if (other.counts.size() == this.counts.size()) {
                 for (Entry<RequestType, Long> entry : this.counts.entrySet()) {
                     RequestType type = entry.getKey();
                     Long thisCount = entry.getValue();
                     Long otherCount = other.counts.get(type);
-                    if(!Objects.equals(thisCount, otherCount)) {
+                    if (!Objects.equals(thisCount, otherCount)) {
                         return false;
                     }
                 }

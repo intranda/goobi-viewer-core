@@ -33,6 +33,7 @@ public class UsageStatisticsInformation {
     private final String startDate;
     private final String endDate;
     private final String query;
+
     /**
      * @param startDate
      * @param endDate
@@ -44,12 +45,14 @@ public class UsageStatisticsInformation {
         this.endDate = endDate;
         this.query = query == null ? "" : query;
     }
+
     /**
      * @return the startDate
      */
     public String getStartDate() {
         return startDate;
     }
+
     /**
      * @return the endDate
      */
@@ -59,20 +62,18 @@ public class UsageStatisticsInformation {
 
     @JsonIgnore
     public String getDateString() {
-        if(Objects.equals(startDate, endDate)) {
+        if (Objects.equals(startDate, endDate)) {
             return this.startDate;
         } else {
             return this.startDate + " - " + this.endDate;
         }
     }
-    
+
     /**
      * @return the query
      */
     public String getQuery() {
         return query;
     }
-    
-    
-    
+
 }

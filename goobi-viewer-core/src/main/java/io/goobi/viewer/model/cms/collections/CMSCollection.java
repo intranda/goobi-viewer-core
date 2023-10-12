@@ -667,7 +667,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     public String getMediaFilter() {
         return CmsMediaBean.getImageFilter();
     }
-    
+
     @Override
     public String getMediaTypes() {
         return CmsMediaBean.getImageTypes();

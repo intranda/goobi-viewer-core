@@ -41,7 +41,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
-import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 

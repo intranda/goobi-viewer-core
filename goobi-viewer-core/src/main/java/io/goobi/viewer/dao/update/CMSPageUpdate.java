@@ -228,7 +228,7 @@ public class CMSPageUpdate implements IModelUpdate {
      * @param pageLanguageVersions
      * @param title
      * @param dao
-     * @return  An optional containing a {@link PersistentCMSComponent}. Empty if no preview items were found
+     * @return An optional containing a {@link PersistentCMSComponent}. Empty if no preview items were found
      * @throws DAOException
      */
     private Optional<PersistentCMSComponent> createPreviewComponent(Map<Long, List<Map<String, Object>>> contentItemMap,
@@ -264,7 +264,7 @@ public class CMSPageUpdate implements IModelUpdate {
      * @param pageLanguageVersions
      * @param title
      * @param previewImage
-     * @return  A {@link TranslatedText} object containing all prreview text. Is empty if not preview text was found
+     * @return A {@link TranslatedText} object containing all prreview text. Is empty if not preview text was found
      */
     private static TranslatedText getPreviewText(Map<Long, List<Map<String, Object>>> contentItemMap,
             Map<String, Map<String, Object>> pageLanguageVersions,
@@ -282,7 +282,7 @@ public class CMSPageUpdate implements IModelUpdate {
      * @param pageLanguageVersions
      * @param itemId
      * @param dao
-     * @return  The {@link CMSMediaItem} for the given itemId. May be null
+     * @return The {@link CMSMediaItem} for the given itemId. May be null
      * @throws DAOException
      */
     private static CMSMediaItem getImage(Map<Long, List<Map<String, Object>>> contentItemMap, Map<String, Map<String, Object>> pageLanguageVersions,
@@ -303,7 +303,7 @@ public class CMSPageUpdate implements IModelUpdate {
      * @param contentItemMap
      * @param pageLanguageVersions
      * @param itemId
-     * @return  A {@link TranslatedText} for the given itemId. May be empty, but not null
+     * @return A {@link TranslatedText} for the given itemId. May be empty, but not null
      */
     private static TranslatedText getText(Map<Long, List<Map<String, Object>>> contentItemMap,
             Map<String, Map<String, Object>> pageLanguageVersions, String itemId) {
@@ -314,7 +314,6 @@ public class CMSPageUpdate implements IModelUpdate {
                 .collect(Collectors.toMap(Entry::getKey, e -> (String) e.getValue().get("html_fragment")));
         return new TranslatedText(new MultiLanguageMetadataValue(previewValues), IPolyglott.getDefaultLocale());
     }
-
 
     private Map<String, CMSContent> createContentObjects(Map<String, List<Map<String, Object>>> contentItemsMap) {
         Map<String, CMSContent> contentMap = new HashMap<>();
@@ -406,7 +405,6 @@ public class CMSPageUpdate implements IModelUpdate {
         }
         return null;
     }
-
 
     private static Map<String, Map<String, Object>> getContentItemsOfItemId(
             Map<String, Map<String, Object>> pageLanguageVersions,

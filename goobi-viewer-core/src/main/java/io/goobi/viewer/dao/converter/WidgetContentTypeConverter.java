@@ -39,6 +39,4 @@ public class WidgetContentTypeConverter implements AttributeConverter<WidgetCont
         return WidgetContentType.valueOf(dbData);
     }
 
-
-
 }

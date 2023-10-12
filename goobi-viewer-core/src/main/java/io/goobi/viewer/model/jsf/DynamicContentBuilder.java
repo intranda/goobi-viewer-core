@@ -58,24 +58,25 @@ public class DynamicContentBuilder {
 
     private static final Logger logger = LogManager.getLogger(DynamicContentBuilder.class);
 
-
     private FacesContext context = FacesContext.getCurrentInstance();
     private Application application = context.getApplication();
     private FaceletContext faceletContext = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
-    
+
     public UIComponent build(JsfComponent jsfComponent, UIComponent parent, Map<String, Object> attributes) throws PresentationException {
         try {
             UIComponent composite = loadCompositeComponent(parent, jsfComponent.getFilename(), jsfComponent.getLibrary());
-            if(composite != null && attributes != null) {
-                for(Entry<String, Object> entry : attributes.entrySet()) {
+            if (composite != null && attributes != null) {
+                for (Entry<String, Object> entry : attributes.entrySet()) {
                     composite.getAttributes().put(entry.getKey(), entry.getValue());
                 }
             }
             return composite;
-        } catch(FaceletException e) {
-            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+".\nCause: " + e.getMessage());
-        } catch(Throwable e) {
-            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+". Please check if the file exists and is a valid jsf composite component");
+        } catch (FaceletException e) {
+            throw new PresentationException(
+                    "error building jsf custom component from file " + jsfComponent.toString() + ".\nCause: " + e.getMessage());
+        } catch (Throwable e) {
+            throw new PresentationException("error building jsf custom component from file " + jsfComponent.toString()
+                    + ". Please check if the file exists and is a valid jsf composite component");
         }
     }
 
@@ -99,7 +100,7 @@ public class DynamicContentBuilder {
                                 } else {
                                     composite.getAttributes().put("linkTarget", "_blank");
                                 }
-                                composite.getAttributes().put("popoverOnHover",  map.shouldOpenPopoversOnHover());
+                                composite.getAttributes().put("popoverOnHover", map.shouldOpenPopoversOnHover());
                             }
                         } else {
                             logger.error("Cannot build GeoMap content. No map found with id = " + id);
@@ -151,7 +152,7 @@ public class DynamicContentBuilder {
         }
         return composite;
     }
-    
+
     /**
      * @param string2
      * @param string

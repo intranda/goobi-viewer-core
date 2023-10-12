@@ -32,8 +32,8 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 
 /**
- * Implementation of {@link WebAnnotationMetadataValueSerializer} which always writes the value as json-object, never as string.
- * This was, language info is always preserved
+ * Implementation of {@link WebAnnotationMetadataValueSerializer} which always writes the value as json-object, never as string. This was, language
+ * info is always preserved
  *
  * @author florian
  *
@@ -44,7 +44,6 @@ public class TranslatedTextSerializer extends WebAnnotationMetadataValueSerializ
     public void serialize(IMetadataValue element, JsonGenerator generator, SerializerProvider provicer) throws IOException, JsonProcessingException {
         super.serialize(element, generator, provicer);
     }
-
 
     /**
      * Always assume all translations are unique to write full translation info

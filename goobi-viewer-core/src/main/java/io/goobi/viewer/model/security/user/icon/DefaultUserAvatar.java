@@ -32,7 +32,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  * @author florian
  *
  */
-public class DefaultUserAvatar implements UserAvatar{
+public class DefaultUserAvatar implements UserAvatar {
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.user.icon.IconProvider#getIconUrl()
@@ -48,6 +48,5 @@ public class DefaultUserAvatar implements UserAvatar{
                 .map(NavigationHelper::getApplicationUrl)
                 .orElse("/") + "resources/images/backend/thumbnail_goobi_person.svg";
     }
-
 
 }

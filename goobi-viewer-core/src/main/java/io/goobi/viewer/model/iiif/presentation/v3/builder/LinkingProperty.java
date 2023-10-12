@@ -39,7 +39,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  */
 public class LinkingProperty {
 
-
     public static enum LinkingTarget {
         PLAINTEXT("Text", Format.TEXT_PLAIN, null),
         ALTO("Dataset", Format.TEXT_XML, "https://www.loc.gov/alto/"),
@@ -62,6 +61,7 @@ public class LinkingProperty {
 
     public final LinkingTarget target;
     public final IMetadataValue label;
+
     /**
      * @param type
      * @param target

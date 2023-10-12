@@ -571,7 +571,7 @@ public class BCrypt {
     public static String gensalt() {
         return gensalt(GENSALT_DEFAULT_LOG2_ROUNDS);
     }
-    
+
     /**
      * 
      * @param plaintext the plaintext password to verify

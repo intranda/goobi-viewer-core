@@ -50,7 +50,8 @@ public class IIIFPresentationAPIHandler {
      * @throws java.net.URISyntaxException if any.
      */
     public IIIFPresentationAPIHandler(AbstractApiUrlManager urls, Configuration configuration) throws URISyntaxException {
-        this.builder = new AbstractBuilder(urls) {};
+        this.builder = new AbstractBuilder(urls) {
+        };
     }
 
     /**

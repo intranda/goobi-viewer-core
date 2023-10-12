@@ -172,7 +172,7 @@ public class DownloadResource {
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
-        ViewerMessage message =  new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
+        ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
         // create new downloadjob
 
         DownloadJob job = new PDFDownloadJob(pi, logId, LocalDateTime.now(), DownloadBean.getTimeToLive());
@@ -181,12 +181,12 @@ public class DownloadResource {
             message.getProperties().put("email", email.toLowerCase());
         }
         message.getProperties().put("pi", pi);
-        if(StringUtils.isNotBlank(logId)) {            
+        if (StringUtils.isNotBlank(logId)) {
             message.getProperties().put("logId", logId);
         } else {
             message.getProperties().put("logId", "-");
         }
-        
+
         job.setStatus(JobStatus.WAITING);
         DataManager.getInstance().getDao().addDownloadJob(job);
 

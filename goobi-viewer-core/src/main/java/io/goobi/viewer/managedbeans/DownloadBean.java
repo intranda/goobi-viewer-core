@@ -174,7 +174,7 @@ public class DownloadBean implements Serializable {
                     os.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                if(GetAction.isClientAbort(e)) {
+                if (GetAction.isClientAbort(e)) {
                     logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
                     return;
                 } else {
