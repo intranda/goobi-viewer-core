@@ -119,7 +119,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getBrowsingMenuFields_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getBrowsingMenuFields().size());
+        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getBrowsingMenuFields().size());
     }
 
     /**
@@ -691,7 +691,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getSearchHitMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
         Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(null).size());
     }
-    
+
     /**
      * @see Configuration#getHighlightMetadataForTemplate(String)
      * @verifies return default template configuration if requested not found
@@ -2581,7 +2581,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, results.size());
         Assert.assertEquals("MD_DESCRIPTION", results.get(0));
     }
-    
+
     /**
      * @see Configuration#getDisplayAdditionalMetadataNoHighlightFields()
      * @verifies return correct values
@@ -3457,7 +3457,7 @@ public class ConfigurationTest extends AbstractTest {
         assertEquals("C", filters.get("Y").get(1).getValue());
         assertEquals("c", filters.get("Y").get(1).getLabel());
     }
-    
+
     @Test
     public void testGetDateFormat() {
         assertEquals("dd/MM/yyyy", DataManager.getInstance().getConfiguration().getStringFormat("date", Locale.ENGLISH).orElse("Not configured"));
