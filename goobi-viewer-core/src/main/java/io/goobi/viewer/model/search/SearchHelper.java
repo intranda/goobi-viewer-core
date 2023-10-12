@@ -1686,7 +1686,7 @@ public final class SearchHelper {
         }
 
         int ret = 0;
-        String facetField = SearchHelper.facetifyField(bmfc.getField());
+        String facetField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
         for (Count count : resp.getFacetField(facetField).getValues()) {
             if (count.getCount() == 0
                     || (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase()))) {
@@ -1740,7 +1740,7 @@ public final class SearchHelper {
             Pattern p = Pattern.compile("[\\d]");
             // Use hits (if sorting field is provided)
             for (SolrDocument doc : resp.getResults()) {
-                Collection<Object> termList = doc.getFieldValues(bmfc.getField());
+                Collection<Object> termList = doc.getFieldValues(bmfc.getFieldForLanguage(language));
                 String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
                 Set<String> usedTermsInCurrentDoc = new HashSet<>();
                 for (Object o : termList) {
@@ -1771,7 +1771,7 @@ public final class SearchHelper {
                 }
             }
         } else {
-            String facetField = SearchHelper.facetifyField(bmfc.getField());
+            String facetField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
             if (resp.getResults().isEmpty() && resp.getFacetField(facetField) != null) {
                 // If only browsing records and anchors, use faceting
                 logger.trace("using faceting: {}", facetField);
@@ -1785,11 +1785,11 @@ public final class SearchHelper {
                 // Without filtering or using alphabetical filtering
                 // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
                 //                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, aggregateHits));
+                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, true, language));
 
                 // Sequential processing (doesn't break the sorting done by Solr)
                 for (SolrDocument doc : resp.getResults()) {
-                    processSolrResult(doc, bmfc, startsWith, terms, true);
+                    processSolrResult(doc, bmfc, startsWith, terms, true, language);
                 }
             }
         }
@@ -1858,10 +1858,7 @@ public final class SearchHelper {
             }
         }
 
-        String facetField = SearchHelper.facetifyField(bmfc.getField());
-        List<String> facetFields = new ArrayList<>();
-        facetFields.add(facetField);
-
+        List<String> facetFields = Collections.singletonList(SearchHelper.facetifyField(bmfc.getFieldForLanguage(language)));
         Map<String, String> params = new HashMap<>();
         if (logger.isTraceEnabled()) {
             logger.trace("row count: {}", DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries));
@@ -1889,11 +1886,12 @@ public final class SearchHelper {
      * @param startsWith
      * @param terms Map of terms collected so far.
      * @param aggregateHits
+     * @param language
      */
     private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith,
-            ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits) {
+            ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits, String language) {
         // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
-        Collection<Object> termList = doc.getFieldValues(bmfc.getField());
+        Collection<Object> termList = doc.getFieldValues(bmfc.getFieldForLanguage(language));
         if (termList == null) {
             return;
         }

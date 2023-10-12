@@ -1042,6 +1042,7 @@ public class SolrSearchIndex {
             }
             logger.error("{} (this usually means Solr is returning an error); Query: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()),
                     solrQuery.getQuery());
+            e.printStackTrace();
             throw new IndexUnreachableException(e.getMessage());
         } catch (IOException e) {
             throw new IndexUnreachableException(e.getMessage());

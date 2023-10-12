@@ -850,6 +850,7 @@ public class BrowseBean implements Serializable {
      * @return List of browsing menu items
      * @should skip items for language-specific fields if no language was given
      * @should skip items for language-specific fields if they don't match given language
+     * @should return language-specific fields with placeholder
      */
     public List<String> getBrowsingMenuItems(String language) {
         if (language != null) {
@@ -858,8 +859,9 @@ public class BrowseBean implements Serializable {
         List<String> ret = new ArrayList<>();
         for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
             if (bmfc.getField().contains(SolrConstants.MIDFIX_LANG)
-                    && (language == null || !bmfc.getField().contains(SolrConstants.MIDFIX_LANG + language))) {
-                logger.trace("Skipped {}", bmfc.getField());
+                    && (language == null || !(bmfc.getField().endsWith(SolrConstants.MIDFIX_LANG + language)
+                            || bmfc.getField().endsWith(SolrConstants.MIDFIX_LANG + "{}")))) {
+                logger.trace("Skipped term browsing field {} due to language mismatch.", bmfc.getField());
                 continue;
             }
             ret.add(bmfc.getField());
