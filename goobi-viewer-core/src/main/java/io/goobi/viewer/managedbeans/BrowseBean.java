@@ -859,8 +859,8 @@ public class BrowseBean implements Serializable {
         List<String> ret = new ArrayList<>();
         for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
             if (bmfc.getField().contains(SolrConstants.MIDFIX_LANG)
-                    && (language == null || !(bmfc.getField().endsWith(SolrConstants.MIDFIX_LANG + language)
-                            || bmfc.getField().endsWith(SolrConstants.MIDFIX_LANG + "{}")))) {
+                    && (language == null || !(bmfc.getField().contains(SolrConstants.MIDFIX_LANG + language)
+                            || bmfc.getField().contains(SolrConstants.MIDFIX_LANG + "{}")))) {
                 logger.trace("Skipped term browsing field {} due to language mismatch.", bmfc.getField());
                 continue;
             }

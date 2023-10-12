@@ -53,10 +53,25 @@ public class BrowseBeanTest extends AbstractTest {
     public void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfTheyDontMatchGivenLanguage() throws Exception {
         BrowseBean bb = new BrowseBean();
         List<String> result = bb.getBrowsingMenuItems("en");
-        assertEquals(3, result.size());
+        assertEquals(4, result.size());
         assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
-        assertEquals("MD_TITLE_LANG_EN_UNTOKENIZED", result.get(1));
-        assertEquals("MD_SHELFMARK", result.get(2));
+        assertEquals("MD_TITLE_LANG_EN_UNTOKENIZED", result.get(2));
+        assertEquals("MD_SHELFMARK", result.get(3));
+    }
+
+    /**
+     * @see BrowseBean#getBrowsingMenuItems(String)
+     * @verifies return language-specific fields with placeholder
+     */
+    @Test
+    public void getBrowsingMenuItems_shouldReturnLanguagespecificFieldsWithPlaceholder() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        List<String> result = bb.getBrowsingMenuItems("en");
+        assertEquals(4, result.size());
+        assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
+        assertEquals("MD_ARTIST_LANG_{}", result.get(1));
+        assertEquals("MD_TITLE_LANG_EN_UNTOKENIZED", result.get(2));
+        assertEquals("MD_SHELFMARK", result.get(3));
     }
 
     /**
@@ -97,7 +112,7 @@ public class BrowseBeanTest extends AbstractTest {
         bb.availableStringFilters.put("foo", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("0-9");
-       assertEquals("0-9", bb.selectRedirectFilter());
+        assertEquals("0-9", bb.selectRedirectFilter());
     }
 
     /**
@@ -111,7 +126,7 @@ public class BrowseBeanTest extends AbstractTest {
         bb.availableStringFilters.put("foo", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("?");
-       assertEquals("!", bb.selectRedirectFilter());
+        assertEquals("!", bb.selectRedirectFilter());
     }
 
     /**
