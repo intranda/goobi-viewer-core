@@ -165,7 +165,7 @@
 
                 <!-- EVENT METADATA -->
                 <ui:repeat value="#{browseElement.events}" var="event">
-                    <ui:repeat value="#{event.searchHitMetadata}" var="eventMetadata">
+                    <ui:repeat value="#{event.searchHitMetadataForCurrentLocale}" var="eventMetadata">
                         <h:panelGroup rendered="#{!eventMetadata.blank}">
                             <div class="search-list__hit-text">
                                 <h:outputText value="#{msg[eventMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />

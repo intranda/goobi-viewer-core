@@ -1337,14 +1337,13 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getSearchUrl(int activeSearchType) {
+        // logger.trace("getSearchUrl: {}", activeSearchType);
 
         //If we are on a cms-page, return the cms page url
         try {
             Optional<ViewerPath> oView = ViewHistory.getCurrentView(BeanUtils.getRequest());
             if (oView.isPresent() && oView.get().isCmsPage() && oView.get().getCmsPage().hasSearchFunctionality()) {
-                String path =
-                        BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+", "/");
-                return path;
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+", "/");
             }
         } catch (Throwable e) {
             logger.error(e.toString(), e);
