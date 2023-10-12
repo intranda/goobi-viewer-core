@@ -1134,7 +1134,6 @@ public final class SearchHelper {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
-        try(Time time = DataManager.getInstance().getTiming().takeTime("truncateFulltext")) {
         // Remove HTML breaks
         fulltext = Jsoup.parse(fulltext).text();
         List<String> ret = new ArrayList<>();
@@ -1247,7 +1246,6 @@ public final class SearchHelper {
         }
 
         return ret;
-        }
     }
 
     /**

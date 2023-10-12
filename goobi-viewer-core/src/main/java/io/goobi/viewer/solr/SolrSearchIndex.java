@@ -521,8 +521,6 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public SolrDocument getDocumentByIddoc(String iddoc) throws IndexUnreachableException, PresentationException {
-        // logger.trace("getDocumentByIddoc: {}", iddoc);
-        try (Time time = DataManager.getInstance().getTiming().takeTime("getDocumentByIddoc")) {
 
         SolrDocument ret = null;
         SolrDocumentList hits =
@@ -533,7 +531,6 @@ public class SolrSearchIndex {
         }
 
         return ret;
-        }
     }
 
     /**

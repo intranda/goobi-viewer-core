@@ -113,7 +113,6 @@ public class AccessConditionUtils {
             throw new IllegalArgumentException("pi may not be null");
         }
 
-        try(Time time = DataManager.getInstance().getTiming().takeTime("checkAccess")) {
         switch (action) {
             case "image":
             case "application":
@@ -141,7 +140,6 @@ public class AccessConditionUtils {
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES); // TODO is priv checking needed here?
             default: // nothing
                 break;
-        }
         }
 
         return AccessPermission.denied();

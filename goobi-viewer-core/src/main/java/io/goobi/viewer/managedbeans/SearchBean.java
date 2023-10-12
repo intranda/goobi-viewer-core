@@ -911,9 +911,7 @@ public class SearchBean implements SearchInterface, Serializable {
             currentSearch.setResultGroups(Collections.singletonList(activeResultGroup));
         }
 
-        try(Time time = DataManager.getInstance().getTiming().takeTime("currentSearch.execute")) {            
-            currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
-        }
+        currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
     }
 
     /**
