@@ -76,8 +76,8 @@ public class ContentAssistResourceBuilder {
                     .collect(Collectors.toList());
 
             return list;
-        } catch(PresentationException e) {
-            if(e.getMessage() != null && e.getMessage().toLowerCase().contains("bad query")) {
+        } catch (PresentationException e) {
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("bad query")) {
                 throw new IllegalRequestException("Not a valid SOLR field: " + solrField);
             } else {
                 throw new IndexUnreachableException("Internal error in index:" + e.toString());

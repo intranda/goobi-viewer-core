@@ -48,7 +48,6 @@ public class SolrAnnotationSaver implements AnnotationSaver {
 
     private final static Logger logger = LogManager.getLogger(SolrAnnotationSaver.class);
 
-
     @Override
     public void save(PersistentAnnotation... annotations) throws IOException {
 
@@ -64,7 +63,7 @@ public class SolrAnnotationSaver implements AnnotationSaver {
     }
 
     protected void reindexTarget(Target target) {
-        if(target.page != null) {
+        if (target.page != null) {
             try {
                 IndexerTools.reIndexPage(target.pi, target.page);
             } catch (DAOException | PresentationException | IndexUnreachableException | IOException e) {
@@ -83,7 +82,7 @@ public class SolrAnnotationSaver implements AnnotationSaver {
         final static Map<String, Target> targetStore = new ConcurrentHashMap<>();
 
         Target(String pi, Integer page) {
-            if(StringUtils.isBlank(pi)) {
+            if (StringUtils.isBlank(pi)) {
                 throw new IllegalArgumentException("Target pi must not be empty");
             }
             this.pi = pi;
@@ -109,8 +108,8 @@ public class SolrAnnotationSaver implements AnnotationSaver {
 
         @Override
         public boolean equals(Object obj) {
-            if(obj != null && obj.getClass().equals(Target.class)) {
-                Target other = (Target)obj;
+            if (obj != null && obj.getClass().equals(Target.class)) {
+                Target other = (Target) obj;
                 return Objects.equals(this.pi, (other.pi)) && Objects.equals(this.page, (other.page));
             } else {
                 return false;

@@ -55,7 +55,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  * @author Florian Alpers
  */
 public abstract class HttpAuthenticationProvider implements IAuthenticationProvider {
-    
+
     private static final Logger logger = LogManager.getLogger(HttpAuthenticationProvider.class);
 
     /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */

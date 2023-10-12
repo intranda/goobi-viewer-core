@@ -91,7 +91,9 @@ public class RecordsImageResource {
     @GET
     @Path(RECORDS_IMAGE)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
-    @Operation(summary = "IIIF image identifier for the representative image of the process given by the identifier. Returns a IIIF 2.1.1 image information object", tags = { "iiif", "records" })
+    @Operation(
+            summary = "IIIF image identifier for the representative image of the process given by the identifier. Returns a IIIF 2.1.1 image information object",
+            tags = { "iiif", "records" })
     @ApiResponse(responseCode = "200", description = "Get the IIIF image information object as json")
     @ApiResponse(responseCode = "404", description = "Either the record or the file for the representative image doesn't exist")
     @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")

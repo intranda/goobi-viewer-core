@@ -120,7 +120,9 @@ public class TOCElement implements Serializable {
         pageType = PageType.determinePageType(docStructType, recordMimeType, anchorOrGroup, hasImages, false);
         urlPrefix = new StringBuilder().append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').toString();
         urlSuffix =
-                DataManager.getInstance().getUrlBuilder().buildPageUrl(topStructPi, pageNo != null ? Integer.valueOf(pageNo) : 1, logId, pageType, false);
+                DataManager.getInstance()
+                        .getUrlBuilder()
+                        .buildPageUrl(topStructPi, pageNo != null ? Integer.valueOf(pageNo) : 1, logId, pageType, false);
     }
 
     /* (non-Javadoc)
@@ -231,7 +233,10 @@ public class TOCElement implements Serializable {
         if (StringUtils.isNotBlank(url)) {
             Scale scale = new Scale.ScaleToBox(width, height);
             try {
-                return BeanUtils.getImageDeliveryBean().getIiif().getModifiedIIIFFUrl(thumbnailUrl, RegionRequest.FULL, scale, Rotation.NONE, Colortype.DEFAULT, ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl));
+                return BeanUtils.getImageDeliveryBean()
+                        .getIiif()
+                        .getModifiedIIIFFUrl(thumbnailUrl, RegionRequest.FULL, scale, Rotation.NONE, Colortype.DEFAULT,
+                                ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl));
             } catch (ViewerConfigurationException e) {
                 logger.error("Cannot reach ImageDeliveryBean for iiif url generation");
                 return thumbnailUrl;
@@ -417,7 +422,9 @@ public class TOCElement implements Serializable {
                     break;
                 case viewImage:
                     return urlPrefix
-                            + DataManager.getInstance().getUrlBuilder().buildPageUrl(topStructPi, Integer.valueOf(pageNo), logId, PageType.viewImage, false);
+                            + DataManager.getInstance()
+                                    .getUrlBuilder()
+                                    .buildPageUrl(topStructPi, Integer.valueOf(pageNo), logId, PageType.viewImage, false);
                 default:
                     return urlPrefix + urlSuffix;
             }

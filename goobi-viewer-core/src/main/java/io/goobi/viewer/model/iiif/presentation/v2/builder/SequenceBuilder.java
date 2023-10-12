@@ -131,7 +131,6 @@ public class SequenceBuilder extends AbstractBuilder {
 
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
 
-
         Sequence sequence = new Sequence(getSequenceURI(doc.getPi(), null));
 
         sequence.addWithin(manifest);
@@ -140,7 +139,7 @@ public class SequenceBuilder extends AbstractBuilder {
             manifest.setSequence(sequence);
         }
 
-        if(BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
+        if (BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
 
             IPageLoader pageLoader = AbstractPageLoader.create(doc);
             Map<Integer, Canvas2> canvasMap = new HashMap<>();

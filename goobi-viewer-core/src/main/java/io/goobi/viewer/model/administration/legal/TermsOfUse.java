@@ -55,7 +55,6 @@ public class TermsOfUse {
     private static final String TITLE_TAG = "label";
     private static final String DESCRIPTION_TAG = "description";
 
-
     /** Unique database ID. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -79,7 +78,7 @@ public class TermsOfUse {
     public TermsOfUse(TermsOfUse orig) {
         this.active = orig.active;
         this.id = orig.id;
-        for(TermsOfUseTranslation translation : orig.translations) {
+        for (TermsOfUseTranslation translation : orig.translations) {
             TermsOfUseTranslation copy = new TermsOfUseTranslation(translation);
             this.translations.add(copy);
         }
@@ -110,7 +109,7 @@ public class TermsOfUse {
 
     public TermsOfUseTranslation setTitle(String language, String value) {
         TermsOfUseTranslation translation = getTitle(language);
-        if(translation == null) {
+        if (translation == null) {
             translation = new TermsOfUseTranslation(language, value, this);
             translation.setTag(TITLE_TAG);
             this.translations.add(translation);
@@ -131,7 +130,7 @@ public class TermsOfUse {
 
     public TermsOfUseTranslation setDescription(String language, String value) {
         TermsOfUseTranslation translation = getDescription(language);
-        if(translation == null) {
+        if (translation == null) {
             translation = new TermsOfUseTranslation(language, value, this);
             translation.setTag(DESCRIPTION_TAG);
             this.translations.add(translation);
@@ -150,7 +149,7 @@ public class TermsOfUse {
     }
 
     private Stream<TermsOfUseTranslation> getForLanguage(Stream<TermsOfUseTranslation> translations, String language) {
-        if(StringUtils.isBlank(language)) {
+        if (StringUtils.isBlank(language)) {
             throw new IllegalArgumentException("Must provide non-empty language parameter to filter translations for language");
         }
         return translations.filter(t -> language.equals(t.getLanguage()));
@@ -165,13 +164,12 @@ public class TermsOfUse {
      */
     public void cleanTranslations() {
         Iterator<TermsOfUseTranslation> i = this.translations.iterator();
-        while(i.hasNext()) {
+        while (i.hasNext()) {
             TermsOfUseTranslation t = i.next();
-            if(StringUtils.isBlank(t.getValue())) {
+            if (StringUtils.isBlank(t.getValue())) {
                 i.remove();
             }
         }
     }
-
 
 }

@@ -107,7 +107,8 @@ public class ViewerPathBuilder {
      * @return A {@link io.goobi.viewer.model.urlresolution.ViewerPath} containing the complete path information
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl, String queryString) throws DAOException {
+    public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl, String queryString)
+            throws DAOException {
         serviceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", "");
         try {
             serviceUrl = URLEncoder.encode(serviceUrl, "utf-8").replace("%2F", "/");
@@ -256,8 +257,8 @@ public class ViewerPathBuilder {
             }
             boolean match = true;
             for (int i = 0; i < stringParts.length; i++) {
-            	String uriPart = uriParts[i];
-            	uriPart = cleanPathPart(uriPart);
+                String uriPart = uriParts[i];
+                uriPart = cleanPathPart(uriPart);
                 if (!stringParts[i].equals(uriPart)) {
                     match = false;
                 }
@@ -273,19 +274,19 @@ public class ViewerPathBuilder {
      * @return
      */
     private static String cleanPathPart(String uriPart) {
-        if(uriPart.startsWith("!")) {
-        	uriPart = uriPart.substring(1);
-        } else if(uriPart.startsWith("%21")) {
-        	//escaped '!'
-        	uriPart = uriPart.substring(3);
+        if (uriPart.startsWith("!")) {
+            uriPart = uriPart.substring(1);
+        } else if (uriPart.startsWith("%21")) {
+            //escaped '!'
+            uriPart = uriPart.substring(3);
         }
         return uriPart;
     }
 
     private static URI cleanPath(URI uri) {
-    	String string = uri.toString();
-    	string = cleanPathPart(string);
-    	return URI.create(string);
+        String string = uri.toString();
+        string = cleanPathPart(string);
+        return URI.create(string);
     }
 
     /**
@@ -334,7 +335,7 @@ public class ViewerPathBuilder {
      * @return
      */
     private static String getQueryString(String query) {
-        if(StringUtils.isBlank(query)) {
+        if (StringUtils.isBlank(query)) {
             return "";
         } else {
             return "?" + query;
@@ -346,7 +347,7 @@ public class ViewerPathBuilder {
      * @return
      */
     private static String getFragmentString(String fragment) {
-        if(StringUtils.isBlank(fragment)) {
+        if (StringUtils.isBlank(fragment)) {
             return "";
         } else {
             return "#" + fragment;

@@ -65,7 +65,7 @@ public class FeedbackBean implements Serializable {
     EMailSender emailSender;
     @Inject
     FacesContext facesContext;
-    
+
     private final Configuration config;
 
     private Feedback feedback;
@@ -75,11 +75,11 @@ public class FeedbackBean implements Serializable {
     public FeedbackBean() {
         this.config = DataManager.getInstance().getConfiguration();
     }
-    
+
     public FeedbackBean(Configuration config) {
         this.config = config;
     }
-    
+
     @PostConstruct
     public void init() {
         this.user = userBean.getUser();

@@ -36,15 +36,13 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public interface IPolyglott {
 
     /**
-     * If this returns true, an associated language tab should have the
-     * 'already-translated' class, otherwise the '-partly-translated' class unless {@link #isEmpty(Locale)}
-     * also returns true
+     * If this returns true, an associated language tab should have the 'already-translated' class, otherwise the '-partly-translated' class unless
+     * {@link #isEmpty(Locale)} also returns true
      *
      * @param locale
-     * @return true if {@link #isValid(Locale)} returns true for the given locale
-     * and all fields contain a value which have a value in the default locale.
-     * For the default locale, {@link #isComplete(Locale)} and {@link #isValid(Locale)} are identical.
-     * For implementations with only one field, both methods are also always identical
+     * @return true if {@link #isValid(Locale)} returns true for the given locale and all fields contain a value which have a value in the default
+     *         locale. For the default locale, {@link #isComplete(Locale)} and {@link #isValid(Locale)} are identical. For implementations with only
+     *         one field, both methods are also always identical
      */
     public boolean isComplete(Locale locale);
 
@@ -57,8 +55,7 @@ public interface IPolyglott {
     public boolean isValid(Locale locale);
 
     /**
-     * If this returns true, an associated language tab should have neither the
-     * 'already-translated' nor the '-partly-translated' class
+     * If this returns true, an associated language tab should have neither the 'already-translated' nor the '-partly-translated' class
      *
      * @param locale
      * @return true if no fields are filled for the given locale
@@ -73,6 +70,7 @@ public interface IPolyglott {
 
     /**
      * Set the locale to use for display and editing
+     * 
      * @param locale
      */
     public void setSelectedLocale(Locale locale);
@@ -140,7 +138,7 @@ public interface IPolyglott {
     public static Locale getCurrentLocale() {
         try {
             return BeanUtils.getInitialLocale();
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             return Locale.ENGLISH;
         }
     }

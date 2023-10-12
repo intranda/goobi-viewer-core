@@ -58,21 +58,21 @@ public class PersistentStorageBean implements Serializable {
 
     private Map<String, Pair<Object, Instant>> map = new HashMap<>();
 
-    @Inject 
+    @Inject
     transient private CMSTemplateManager templateManager;
-    @Inject 
+    @Inject
     transient private MessageQueueManager messageBroker;
     private IDAO dao;
-    
+
     @PostConstruct
     public void startup() throws DAOException {
         this.dao = DataManager.getInstance().getDao();
         new DatabaseUpdater(dao, templateManager).update();
     }
-    
+
     @PreDestroy
     public void shutdown() {
-        
+
     }
 
     public synchronized Object get(String key) {
@@ -86,20 +86,21 @@ public class PersistentStorageBean implements Serializable {
     public synchronized Object put(String key, Object object) {
         return map.put(key, Pair.of(object, Instant.now()));
     }
-    
+
     /**
-     * If the given key exists and the entry is no older than the given timeToLiveMinutes,
-     * return the object stored under the key, otherwise store the given object under the given key and return it
+     * If the given key exists and the entry is no older than the given timeToLiveMinutes, return the object stored under the key, otherwise store the
+     * given object under the given key and return it
      * 
-     * @param key   the identifier under which to store the object
-     * @param object    the object to store under the given key if the key doesn't exist yet or is older than timeToLiveMinutes
-     * @param timeToLiveMinutes the maximum age in minutes the stored object may have to be returned. If it's older, it will be replaced with the passed object
-     * @return  the object stored under the given key if viable, otherwise the given object
+     * @param key the identifier under which to store the object
+     * @param object the object to store under the given key if the key doesn't exist yet or is older than timeToLiveMinutes
+     * @param timeToLiveMinutes the maximum age in minutes the stored object may have to be returned. If it's older, it will be replaced with the
+     *            passed object
+     * @return the object stored under the given key if viable, otherwise the given object
      */
     @SuppressWarnings("unchecked")
     public synchronized <T> T getIfRecentOrPut(String key, T object, long timeToLiveMinutes) {
         Instant oldestViable = Instant.now().minus(timeToLiveMinutes, ChronoUnit.MINUTES);
-        if(contains(key) && !olderThan(key, oldestViable)) {
+        if (contains(key) && !olderThan(key, oldestViable)) {
             return (T) get(key);
         } else {
             put(key, object);
@@ -110,19 +111,19 @@ public class PersistentStorageBean implements Serializable {
     public boolean contains(String key) {
         return map.containsKey(key);
     }
-    
+
     public CMSTemplateManager getTemplateManager() {
         return templateManager;
     }
-    
+
     public void setTemplateManager(CMSTemplateManager templateManager) {
         this.templateManager = templateManager;
     }
-    
+
     public MessageQueueManager getMessageBroker() {
         return messageBroker;
     }
-    
+
     public void setMessageBroker(MessageQueueManager messageBroker) {
         this.messageBroker = messageBroker;
     }

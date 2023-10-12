@@ -115,6 +115,4 @@ public class Dataset {
         this.altoFiles = altoFiles;
     }
 
-
-
 }

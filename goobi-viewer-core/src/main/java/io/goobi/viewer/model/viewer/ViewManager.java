@@ -1973,7 +1973,7 @@ public class ViewManager implements Serializable {
                         .build())
                 .orElse("");
     }
-    
+
     /**
      * Return the url to a REST service delivering the fulltext of the current page as TEI
      *

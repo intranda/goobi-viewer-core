@@ -37,7 +37,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @FacesConverter("localDateConverter")
 public class LocalDateConverter implements Converter<LocalDate> {
-    
+
     private static final String ATTRIBUTE_DATA_FORMAT = "data-format";
 
     /* (non-Javadoc)

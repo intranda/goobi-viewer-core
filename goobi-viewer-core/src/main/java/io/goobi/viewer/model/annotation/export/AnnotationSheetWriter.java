@@ -66,7 +66,7 @@ public class AnnotationSheetWriter {
     private String getBodyType(CrowdsourcingAnnotation anno) {
         try {
             IResource body = annotationConverter.getBodyAsResource(anno);
-            if(body instanceof TypedResource) {
+            if (body instanceof TypedResource) {
                 return ((TypedResource) body).getType();
             }
         } catch (IOException e) {

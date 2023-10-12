@@ -34,9 +34,8 @@ import org.json.JSONArray;
 import com.sun.faces.facelets.el.ContextualCompositeMethodExpression;
 
 /**
- * java-backend for autocomplete composite component.
- * Handles the commandscript call with {@link #handleAutocomplete()}
- * and returns a call to the method given in the attribute 'items'
+ * java-backend for autocomplete composite component. Handles the commandscript call with {@link #handleAutocomplete()} and returns a call to the
+ * method given in the attribute 'items'
  *
  * @author florian
  *
@@ -50,8 +49,7 @@ public class Autocomplete extends UINamingContainer {
     }
 
     /**
-     * Retrieve the request parameter 'term' from a commandscript call and return the result
-     * of a call to the method given in attribute 'items'
+     * Retrieve the request parameter 'term' from a commandscript call and return the result of a call to the method given in attribute 'items'
      *
      * @throws IOException
      */
@@ -68,7 +66,7 @@ public class Autocomplete extends UINamingContainer {
 
     private List<String> getItems(String term) {
         ContextualCompositeMethodExpression items = (ContextualCompositeMethodExpression) getAttributes().get("items");
-        return (List<String>) items.invoke(getFacesContext().getELContext(), new String[]{term});
+        return (List<String>) items.invoke(getFacesContext().getELContext(), new String[] { term });
     }
 
 }

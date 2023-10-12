@@ -23,7 +23,7 @@ import javax.ws.rs.NameBinding;
 /**
  * @author florian
  *
- * Binding for downloading files belonging to a record
+ *         Binding for downloading files belonging to a record
  *
  */
 @NameBinding

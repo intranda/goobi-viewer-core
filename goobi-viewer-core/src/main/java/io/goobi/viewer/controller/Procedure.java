@@ -23,6 +23,7 @@ package io.goobi.viewer.controller;
 
 /**
  * Functional interface taking no arguments and having no return value
+ * 
  * @author florian
  *
  */

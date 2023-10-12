@@ -45,25 +45,26 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 
 public class EMailSender {
-    
+
     private static final Logger logger = LogManager.getLogger(EMailSender.class);
-    
+
     private final String smtpServer;
     private final String smtpUser;
-    private final String smtpPassword; 
-    private final String smtpSenderAddress; 
+    private final String smtpPassword;
+    private final String smtpSenderAddress;
     private final String smtpSenderName;
     private final String smtpSecurity;
     private final Integer smtpPort;
-    
+
     public EMailSender() {
         this(DataManager.getInstance().getConfiguration());
     }
-    
+
     public EMailSender(Configuration config) {
-        this(config.getSmtpServer(), config.getSmtpUser(), config.getSmtpPassword(), config.getSmtpSenderAddress(), config.getSmtpSenderName(), config.getSmtpSecurity(), config.getSmtpPort());
+        this(config.getSmtpServer(), config.getSmtpUser(), config.getSmtpPassword(), config.getSmtpSenderAddress(), config.getSmtpSenderName(),
+                config.getSmtpSecurity(), config.getSmtpPort());
     }
-    
+
     /**
      * @param smtpServer
      * @param smtpUser
@@ -95,7 +96,7 @@ public class EMailSender {
         this.smtpSecurity = smtpSecurity;
         this.smtpPort = smtpPort;
     }
-    
+
     /**
      * Sends an email to with the given subject and body to the given recipient list using the given SMTP parameters.
      *

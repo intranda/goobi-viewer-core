@@ -51,7 +51,7 @@ public class SelectPageItem extends SelectItem {
     @Override
     public Object getValue() {
         String value = super.getValue().toString();
-        if(doublePageMode) {
+        if (doublePageMode) {
             return value + "-" + value;
         } else {
             return value;

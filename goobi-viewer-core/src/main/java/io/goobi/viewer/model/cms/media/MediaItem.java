@@ -47,6 +47,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 /**
  * Simple representation of a cms-media-item
+ * 
  * @author florian
  *
  */
@@ -161,7 +162,7 @@ public class MediaItem {
     public Integer getOrder() {
         return order;
     }
-    
+
     public String getAltText() {
         return altText;
     }

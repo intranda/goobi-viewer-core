@@ -39,25 +39,25 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @RequestScoped
 public class MessagesBean {
 
-    public String createMessageKey(String...strings) {
+    public String createMessageKey(String... strings) {
         return Arrays.stream(strings).map(this::clean).collect(Collectors.joining("__"));
     }
-    
+
     private String clean(String string) {
-        if(StringUtils.isNotBlank(string)) {
+        if (StringUtils.isNotBlank(string)) {
             return string.toLowerCase().replaceAll("\\s", "_").replaceAll("[^\\w-]", "");
         }
         return "none";
     }
-    
+
     private String translate(String value, Locale language) {
         return ViewerResourceBundle.getTranslation(value, language);
     }
-    
+
     private IMetadataValue getTranslations(String value) {
         return ViewerResourceBundle.getTranslations(value);
     }
-    
+
     public String cleanHtml(String html) {
         return Jsoup.clean(html, Safelist.relaxed());
     }

@@ -70,6 +70,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
+import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
@@ -1519,7 +1520,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return "-";
     }
-    
+
     public void setActiveResultGroup(SearchResultGroup activeResultGroup) {
         this.activeResultGroup = activeResultGroup;
     }

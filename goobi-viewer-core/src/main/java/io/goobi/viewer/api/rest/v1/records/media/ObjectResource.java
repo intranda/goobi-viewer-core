@@ -113,10 +113,11 @@ public class ObjectResource {
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_3D_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
-    public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response) throws PresentationException, IndexUnreachableException {
+    public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response)
+            throws PresentationException, IndexUnreachableException {
 
         String objectURI = request.getRequestURL().toString().replaceAll("/(info.json)?$", "");
-//        String baseURI = objectURI.replace(filename, "");
+        //        String baseURI = objectURI.replace(filename, "");
         String baseFilename = FilenameUtils.getBaseName(filename);
         Path mediaDirectory = DataFileTools.getMediaFolder(pi);
 
@@ -125,13 +126,11 @@ public class ObjectResource {
             ObjectInfo info = new ObjectInfo(objectURI);
             info.setResources(resourceURIs);
             return info;
-        } catch (IOException | URISyntaxException  e) {
+        } catch (IOException | URISyntaxException e) {
             throw new PresentationException(e.getMessage(), e);
         }
 
     }
-
-
 
     /**
      * <p>
@@ -149,7 +148,8 @@ public class ObjectResource {
      */
     @GET
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
-    public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response) throws IOException, PresentationException, IndexUnreachableException {
+    public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response)
+            throws IOException, PresentationException, IndexUnreachableException {
 
         Path mediaDirectory = DataFileTools.getMediaFolder(pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(filename);
@@ -341,7 +341,7 @@ public class ObjectResource {
             try (DirectoryStream<java.nio.file.Path> directoryStream = Files.newDirectoryStream(resourceFolderPath)) {
                 for (java.nio.file.Path path : directoryStream) {
                     java.nio.file.Path relPath = resourceFolderPath.getParent().relativize(path);
-                    resourceURIs.add(new URI(baseURI + "/" +  relPath.toString().replace(File.separator, "/")));
+                    resourceURIs.add(new URI(baseURI + "/" + relPath.toString().replace(File.separator, "/")));
                 }
             }
         }

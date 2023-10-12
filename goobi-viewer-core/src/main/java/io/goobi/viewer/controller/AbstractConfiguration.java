@@ -67,7 +67,7 @@ public abstract class AbstractConfiguration {
             try {
                 return builderLocal.getConfiguration();
             } catch (ConfigurationException e) {
-                 logger.trace(e.getMessage());
+                logger.trace(e.getMessage());
             }
         }
 

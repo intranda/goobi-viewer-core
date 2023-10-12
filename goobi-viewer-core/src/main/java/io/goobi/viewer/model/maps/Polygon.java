@@ -65,7 +65,7 @@ public class Polygon implements IArea {
      */
     @Override
     public String getGeoJson() {
-        double[][][] coords = {getVertices()};
+        double[][][] coords = { getVertices() };
         JSONObject geometry = new JSONObject();
         geometry.put("coordinates", coords);
         geometry.put("type", "Polygon");
@@ -87,7 +87,7 @@ public class Polygon implements IArea {
             minLat = Math.min(minLat, point.lat);
             maxLat = Math.max(maxLat, point.lat);
         }
-        return Math.sqrt((maxLng-minLng)*(maxLng-minLng)+(maxLat-minLat)*(maxLat-minLat));
+        return Math.sqrt((maxLng - minLng) * (maxLng - minLng) + (maxLat - minLat) * (maxLat - minLat));
     }
 
     /* (non-Javadoc)
@@ -103,10 +103,10 @@ public class Polygon implements IArea {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            Polygon other = (Polygon)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            Polygon other = (Polygon) obj;
             return this.vertices.size() == other.vertices.size() &&
-                   this.vertices.stream().filter(v -> other.vertices.contains(v)).count() == this.vertices.size();
+                    this.vertices.stream().filter(v -> other.vertices.contains(v)).count() == this.vertices.size();
         } else {
             return false;
         }

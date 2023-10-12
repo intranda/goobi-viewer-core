@@ -163,7 +163,6 @@ public class LayerBuilder extends AbstractBuilder {
         return annoList;
     }
 
-
     /**
      * <p>
      * generateLayer.

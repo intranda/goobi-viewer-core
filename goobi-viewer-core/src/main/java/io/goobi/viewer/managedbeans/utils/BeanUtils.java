@@ -356,7 +356,7 @@ public class BeanUtils {
     public static ActiveDocumentBean getActiveDocumentBean() {
         return (ActiveDocumentBean) getBeanByName("activeDocumentBean", ActiveDocumentBean.class);
     }
-    
+
     public static PersistentStorageBean getPersistentStorageBean() {
         return (PersistentStorageBean) getBeanByName("applicationBean", PersistentStorageBean.class);
     }
@@ -434,7 +434,7 @@ public class BeanUtils {
     public static CalendarBean getCalendarBean() {
         return (CalendarBean) getBeanByName("calendarBean", CalendarBean.class);
     }
-    
+
     /**
      * <p>
      * getCaptchaBean.
@@ -533,7 +533,7 @@ public class BeanUtils {
 
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> getBeanFromRequest(HttpServletRequest request, String beanName, Class<T> clazz) {
         if (request != null && request.getSession() != null) {

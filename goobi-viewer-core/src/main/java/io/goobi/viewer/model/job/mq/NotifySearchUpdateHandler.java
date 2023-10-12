@@ -39,7 +39,6 @@ public class NotifySearchUpdateHandler implements MessageHandler<MessageStatus> 
 
     private static final Logger logger = LogManager.getLogger(NotifySearchUpdateHandler.class);
 
-    
     @Override
     public MessageStatus call(ViewerMessage ticket) {
         try {

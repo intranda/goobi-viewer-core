@@ -47,7 +47,7 @@ public class ServletUtils {
         }
         String scheme = request.getScheme(); // http
         String xForwardedProto = request.getHeader("x-forwarded-proto");
-        if(StringUtils.isNotBlank(xForwardedProto) && xForwardedProto.matches("https?")) {
+        if (StringUtils.isNotBlank(xForwardedProto) && xForwardedProto.matches("https?")) {
             scheme = xForwardedProto;
         }
         String serverName = request.getServerName(); // hostname.com

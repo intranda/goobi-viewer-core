@@ -71,7 +71,7 @@ public class SimpleMediaHolder implements CMSMediaHolder {
     public String getMediaFilter() {
         return filter;
     }
-    
+
     @Override
     public String getMediaTypes() {
         return filter;

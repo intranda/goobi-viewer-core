@@ -31,7 +31,9 @@ public class ThemeLink {
 
     public static interface Service {
         public String getLabelKey();
+
         public String getHelpKey();
+
         public String getInternalName();
     }
 
@@ -71,9 +73,9 @@ public class ThemeLink {
         private String labelKey, helpKey;
 
         private SocialMediaService(String labelKey, String helpKey) {
-                this.labelKey = labelKey;
-                this.helpKey = helpKey;
-            }
+            this.labelKey = labelKey;
+            this.helpKey = helpKey;
+        }
 
         public String getLabelKey() {
             return labelKey;

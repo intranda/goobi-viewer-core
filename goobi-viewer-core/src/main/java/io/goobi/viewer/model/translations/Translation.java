@@ -100,6 +100,7 @@ public class Translation {
 
     /**
      * Clone constructor
+     * 
      * @param t
      */
     public Translation(Translation t) {
@@ -272,7 +273,7 @@ public class Translation {
      */
     @Override
     public int hashCode() {
-        if(this.language != null) {
+        if (this.language != null) {
             return this.language.hashCode();
         } else {
             return 0;
@@ -284,8 +285,8 @@ public class Translation {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            Translation other = (Translation)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            Translation other = (Translation) obj;
             return StringUtils.equals(this.language, other.language) &&
                     StringUtils.equals(this.tag, other.tag);
         } else {

@@ -169,11 +169,11 @@ public class AdminCommentBean implements Serializable {
     public void setUserBean(UserBean userBean) {
         this.userBean = userBean;
     }
-    
+
     public UserBean getUserBean() {
         return userBean;
     }
-    
+
     /**
      *
      * @param userCommentsEnabled

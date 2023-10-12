@@ -54,8 +54,11 @@ public class LocalUserAvatar implements UserAvatar {
      */
     @Override
     public String getIconUrl(int size, HttpServletRequest request) {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager().map(urls -> getImageUrl(urls, this.userId, size))
-        .orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> getImageUrl(urls, this.userId, size))
+                .orElse("");
 
     }
 
@@ -66,9 +69,9 @@ public class LocalUserAvatar implements UserAvatar {
             return urls.path(USERS_USER_AVATAR_IMAGE, USERS_USER_AVATAR_IMAGE_IIIF)
                     .params(userId, Region.FULL_IMAGE, sizeString, 0, "default", format)
                     .query("updated", this.updated)
-//                    .query("timestamp", System.currentTimeMillis())
+                    //                    .query("timestamp", System.currentTimeMillis())
                     .build();
-        } catch(IOException e) {
+        } catch (IOException e) {
             return "";
         }
     }

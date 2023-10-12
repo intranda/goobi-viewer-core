@@ -226,7 +226,7 @@ public class AdminBean implements Serializable {
     }
 
     public String saveUserAction(User user, String returnPage) throws DAOException {
-        if(this.saveUserAction(user)) {            
+        if (this.saveUserAction(user)) {
             return returnPage;
         } else {
             return "";

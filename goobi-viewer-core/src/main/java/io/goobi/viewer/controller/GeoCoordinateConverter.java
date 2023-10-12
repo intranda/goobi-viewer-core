@@ -114,7 +114,7 @@ public class GeoCoordinateConverter {
     public GeoCoordinateConverter(HttpServletRequest servletRequest) {
         this.servletRequest = servletRequest;
         this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations("");
-        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapEntityConfigurations("");        
+        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapEntityConfigurations("");
     }
 
     /**
@@ -180,7 +180,8 @@ public class GeoCoordinateConverter {
 
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
-                .search(finalQuery, 0, 10_000, null, null, getSolrFieldsForMainQuery(coordinateFields, markerTitleField, aggregateResults), filterQueries, params);
+                .search(finalQuery, 0, 10_000, null, null, getSolrFieldsForMainQuery(coordinateFields, markerTitleField, aggregateResults),
+                        filterQueries, params);
         SolrDocumentList docs = response.getResults();
 
         if (aggregateResults) {
@@ -206,7 +207,7 @@ public class GeoCoordinateConverter {
 
     public List<String> getSolrFieldsForMainQuery(List<String> coordinateFields, String markerTitleField, boolean aggregateResults) {
         //only get coordinate fields for main document if results are not aggregated. Otherwise coordinates come from expanded results
-        Set<String> fieldList = aggregateResults ?  new HashSet<>() : new HashSet<>(coordinateFields);
+        Set<String> fieldList = aggregateResults ? new HashSet<>() : new HashSet<>(coordinateFields);
         fieldList.addAll(getLanguageFields(markerTitleField));
         fieldList.add(SolrConstants.DOCTYPE);
         fieldList.add(SolrConstants.DOCSTRCT);
@@ -318,23 +319,23 @@ public class GeoCoordinateConverter {
                 .orElse("");
         String logId = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LOGID))
                 .orElse("");
-        
+
         PrettyContext pretty = getPrettyContext();
-        if(pretty != null) {
-            if(StringUtils.isNoneBlank(pi, pageNo, logId)) {
+        if (pretty != null) {
+            if (StringUtils.isNoneBlank(pi, pageNo, logId)) {
                 feature.setLink(PrettyUrlTools.getAbsolutePageUrl(pretty, "object3", pi, pageNo, logId));
-            } else if(StringUtils.isNotBlank(pi)) {
+            } else if (StringUtils.isNotBlank(pi)) {
                 feature.setLink(PrettyUrlTools.getAbsolutePageUrl(pretty, "object1", pi));
-            } 
+            }
         }
     }
 
     public PrettyContext getPrettyContext() {
         PrettyContext pretty = null;
-        try {            
+        try {
             pretty = PrettyContext.getCurrentInstance();
-        } catch(IllegalStateException e) {
-            if(this.servletRequest != null) {
+        } catch (IllegalStateException e) {
+            if (this.servletRequest != null) {
                 pretty = PrettyContext.getCurrentInstance(this.servletRequest);
             }
         }
@@ -435,12 +436,13 @@ public class GeoCoordinateConverter {
 
     private static void addMetadataToFeature(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
 
-        MetadataContainer entity = MetadataContainer.createMetadataEntity(doc, children, getFeatureFieldFilter(children != null && !children.isEmpty()), getEntityFieldFilter());
+        MetadataContainer entity = MetadataContainer.createMetadataEntity(doc, children,
+                getFeatureFieldFilter(children != null && !children.isEmpty()), getEntityFieldFilter());
         docFeatures.forEach(f -> f.addEntity(entity));
     }
 
     private static Predicate<String> getFeatureFieldFilter(boolean aggregateHits) {
-        if(aggregateHits) {            
+        if (aggregateHits) {
             return new StringMatchConfiguration(".*",
                     "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH|NORM_NAME|MD_LOCATION|MD_DESCRIPTION.*");
         } else {

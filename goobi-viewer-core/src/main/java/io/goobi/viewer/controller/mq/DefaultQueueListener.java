@@ -79,7 +79,7 @@ public class DefaultQueueListener {
                 MessageConsumer consumer = sess.createConsumer(sess.createQueue(queueType));) {
             while (!shouldStop) {
                 waitForMessage(sess, consumer);
-                if(Thread.interrupted()) {
+                if (Thread.interrupted()) {
                     log.info("Queue listener for queue {} interrupted: exiting listener", queueType);
                     return;
                 }

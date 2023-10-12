@@ -36,26 +36,27 @@ public class StartQueueBrokerListener implements ServletContextListener {
 
     private static final Logger log = LogManager.getLogger(StartQueueBrokerListener.class);
 
-    @Inject 
+    @Inject
     transient private MessageQueueManager messageBroker;
 
     public StartQueueBrokerListener() {
         //noop
     }
-    
+
     public StartQueueBrokerListener(MessageQueueManager broker) {
         this.messageBroker = broker;
     }
-    
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        
+
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            if(this.messageBroker == null) {
+            if (this.messageBroker == null) {
                 log.error("No MessageQueueManager injected. Maybe class could not be initialized");
-            } else if(!this.messageBroker.hasConfig()) {
-                log.warn("ActiveMQ configuration file {} could not be loaded", ActiveMQConfig.getConfigResource(MessageQueueManager.ACTIVE_MQ_CONFIG_FILENAME));
-            } else if(this.messageBroker.initializeMessageServer()) {
+            } else if (!this.messageBroker.hasConfig()) {
+                log.warn("ActiveMQ configuration file {} could not be loaded",
+                        ActiveMQConfig.getConfigResource(MessageQueueManager.ACTIVE_MQ_CONFIG_FILENAME));
+            } else if (this.messageBroker.initializeMessageServer()) {
                 log.info("Successfully started ActiveMQ");
             } else {
                 log.error("ActiveMQ not initialized!");
@@ -63,13 +64,9 @@ public class StartQueueBrokerListener implements ServletContextListener {
         }
     }
 
-
-
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         this.messageBroker.closeMessageServer();
     }
-
-
 
 }

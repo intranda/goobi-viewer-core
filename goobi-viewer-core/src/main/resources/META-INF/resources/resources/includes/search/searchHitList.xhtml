@@ -7,6 +7,7 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:jsf="http://xmlns.jcp.org/jsf" 
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
@@ -106,10 +107,16 @@
                             </header>
 
                             <!-- CONTENT -->
-                            <h:panelGroup rendered="#{hit.hasHitCount}">
                                 <!-- GET CHILD HITS -->
-                                <button type="button" class="btn btn--clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
-                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                               <ui:fragment rendered="#{hit.hasHitCount}">
+                                <button onclick="viewerJS.searchList.openChildHits(this)" type="button" class="btn btn--clean" 
+                                data-toggle="hit-content" data-toggle-id="childHits_#{status.index}" data-load-hits-script="loadChildHits_#{status.index}" data-childhits="#{hit.hitCount}">
+                                    <ui:fragment rendered="#{hit.hitsPopulated == 0}">
+	                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{hit.hitsPopulated > 0}">
+	                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                    </ui:fragment>
                                     <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
                                         <f:param value="#{hit.cmsPageHitCount}" />
                                     </h:outputFormat>
@@ -135,15 +142,52 @@
                                          value=", " />
                                         <f:param value="#{hit.ugcHitCount}" />
                                     </h:outputFormat>
-                            
-                                    <!-- LOADER -->
-                                    <span class="search-list__loader">
-                                        <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-fluid" alt="Search List Loader" />
-                                    </span>
                                 </button>
+                                <o:commandScript name="loadChildHits_#{status.index}" action="#{hit.loadChildHits(configurationBean.searchChildHitsToLoadOnExpand)}" render="childHitGroup" 
+                                onbegin="viewerJS.searchList.showAjaxLoader('search_subhits_ajaxloader_#{status.index}')" oncomplete="viewerJS.searchList.hideAjaxLoader('search_subhits_ajaxloader_#{status.index}')">
+                                </o:commandScript>
+                            <div class="search-list__hit-content"  data-toggle-id="childHits_#{status.index}" style="display: none">
+                            <h:panelGroup id="childHitGroup">
+                            	<ui:repeat var="childHit" value="#{hit.children}">
+                            		<div class="search-list__hit-content-set">
+                            			<div class="search-list__hit-text-area">
+                            				<div class="search-list__struct-title">
+                            					<h4>
+                            						<a href="#{request.contextPath}/#{childHit.url}">
+                            							<h:outputFormat escape="false" value="#{childHit.displayText}"/>
+                            						</a>
+                            					</h4>
+                            				</div>
+                            				<div class="search-list__struct-child-hits">
+                            					<ui:repeat var="grandChildHit" value="#{childHit.children}">
+                            						<dl class="dl-horizontal">
+                            							<dt>
+	                            							<i class="#{grandChildHit.iconClassForType}" title="#{grandChildHit.translatedType}" aria-hidden="true"></i>
+                            							</dt>
+                            							<dd>
+                            								<a href="#{request.contextPath}/#{grandChildHit.url}"><h:outputFormat escape="false" value="#{grandChildHit.displayText}"/></a>
+                            							</dd>
+                            						</dl>
+                            					</ui:repeat>
+                            				</div>
+                            			</div>
+                            		</div>
+                            	</ui:repeat>
+                                <!-- LOADER -->
+                                <span class="search-list__loader" id="search_subhits_ajaxloader_#{status.index}">
+                                    <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-fluid" alt="Search List Loader" />
+                                </span>
+                            	<div class="search-list__hit-content-more">
+                            		<ui:fragment rendered="#{hit.hitsPopulated > 0 and hit.hitsPopulated lt hit.childDocs.size()}">
+	                            		<button type="button" class="btn btn--clean" onclick="loadChildHits_#{status.index}()">
+	                            		#{msg.searchList_getMoreHits}
+	                            		</button>
+                            		</ui:fragment>
+                            	</div>
                             </h:panelGroup>
 
-                            <div class="search-list__hit-content"></div>
+                            </div>
+							</ui:fragment>
                         </div>
                     </ui:repeat>
                     <!-- EXPAND LINK -->
@@ -169,14 +213,12 @@
 
 
     <script type="text/javascript">
+
         $( document ).ready( function() {
             var searchSortingDropdownConfig = {};
             var searchListConfig = {
-                contextPath: "#{request.contextPath}",
-                msg: {
-                    getMoreChildren: "#{msg.searchList_getMoreHits}"
-                },
         		listStyle: "#{listStyle}",
+        		maxChildHitsToRenderOnStart: #{configurationBean.searchChildHitsInitialLoadLimit},
             };
             
              viewerJS.searchList.init( searchListConfig ); 

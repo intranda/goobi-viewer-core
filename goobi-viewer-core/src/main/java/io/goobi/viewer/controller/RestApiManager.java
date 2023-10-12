@@ -87,9 +87,9 @@ public class RestApiManager {
 
     public Optional<AbstractApiUrlManager> getDataApiManager(Version version) {
         String apiUrl = this.config.getRestApiUrl();
-        if(isLegacyUrl(apiUrl)) {
+        if (isLegacyUrl(apiUrl)) {
             return Optional.empty();
-        } else if(Version.v2.equals(version)){
+        } else if (Version.v2.equals(version)) {
             return Optional.of(new io.goobi.viewer.api.rest.v2.ApiUrls(apiUrl.replace("/api/v1", "/api/v2")));
         } else {
             return Optional.of(new ApiUrls(apiUrl));
@@ -123,9 +123,9 @@ public class RestApiManager {
 
     public Optional<AbstractApiUrlManager> getContentApiManager(Version version) {
         String apiUrl = this.config.getIIIFApiUrl();
-        if(isLegacyUrl(apiUrl)) {
+        if (isLegacyUrl(apiUrl)) {
             return Optional.empty();
-        } else if(Version.v2.equals(version)){
+        } else if (Version.v2.equals(version)) {
             return Optional.of(new io.goobi.viewer.api.rest.v2.ApiUrls(apiUrl.replace("/api/v1", "/api/v2")));
         } else {
             return Optional.of(new ApiUrls(apiUrl));
@@ -157,7 +157,8 @@ public class RestApiManager {
      */
     public String getIIIFDataApiUrl() {
         return getDataApiManager(getVersionToUseForIIIF()).map(AbstractApiUrlManager::getApiUrl)
-                .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(DataManager.getInstance().getConfiguration().getRestApiUrl()));
+                .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl)
+                        .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl()));
     }
 
     /**
@@ -172,7 +173,8 @@ public class RestApiManager {
      */
     public String getIIIFContentApiUrl(Version version) {
         return getContentApiManager(version).map(AbstractApiUrlManager::getApiUrl)
-                .orElse(getContentApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(DataManager.getInstance().getConfiguration().getIIIFApiUrl()));
+                .orElse(getContentApiManager().map(AbstractApiUrlManager::getApiUrl)
+                        .orElse(DataManager.getInstance().getConfiguration().getIIIFApiUrl()));
     }
 
     public AbstractApiUrlManager getIIIFDataApiManager() {

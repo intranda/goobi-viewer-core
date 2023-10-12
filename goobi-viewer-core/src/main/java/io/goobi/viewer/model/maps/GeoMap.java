@@ -123,7 +123,7 @@ public class GeoMap implements Serializable {
     @PrivateOwned
     @JsonSerialize(using = TranslationListSerializer.class)
     private Set<MapTranslation> translations = new HashSet<>();
-    
+
     @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @JoinColumn(name = "owner_geomap")
     @PrivateOwned
@@ -137,15 +137,12 @@ public class GeoMap implements Serializable {
     @JsonIgnore
     private LocalDateTime dateUpdated;
 
-    
     @Column(name = "initial_view")
     private String initialView = null;
 
-
     @Transient
     private boolean showPopover = true;
-    
-    
+
     /**
      * Empty Constructor
      */
@@ -305,13 +302,12 @@ public class GeoMap implements Serializable {
      * @return the initialView or the default view from the config if no initial view has been set
      */
     public String getInitialView() {
-        if(StringUtils.isBlank(initialView)) {
+        if (StringUtils.isBlank(initialView)) {
             return DataManager.getInstance().getConfiguration().getGeomapDefaultView().getGeoJson();
-        } else {            
+        } else {
             return initialView;
         }
     }
-
 
     /**
      * Link to the html page to render for oembed
@@ -358,7 +354,6 @@ public class GeoMap implements Serializable {
     /**
      * Resets the cached feature string.
      */
-    
 
     public IMetadataValue getTitles() {
         synchronized (lockTranslations) {
@@ -379,23 +374,23 @@ public class GeoMap implements Serializable {
             return new MultiLanguageMetadataValue(titles);
         }
     }
-    
+
     public List<FeatureSet> getFeatureSets() {
         return featureSets;
     }
-    
+
     public void setFeatureSets(List<FeatureSet> featureSets) {
         this.featureSets = new ArrayList<>(featureSets);
     }
-    
+
     public void addFeatureSet(FeatureSet set) {
         this.featureSets.add(set);
     }
-    
+
     public void removeFeatureSet(FeatureSet set) {
         this.featureSets.remove(set);
     }
-    
+
     public boolean hasFeatures() {
         return this.featureSets.stream().anyMatch(FeatureSet::hasFeatures);
     }

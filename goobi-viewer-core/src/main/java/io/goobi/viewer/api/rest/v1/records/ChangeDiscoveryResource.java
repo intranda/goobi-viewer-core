@@ -46,7 +46,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
-
 /**
  * @author florian
  *
@@ -65,7 +64,6 @@ public class ChangeDiscoveryResource {
     @Inject
     private ApiUrls apiUrlManager;
 
-
     /**
      * Provides a view of the entire list of all activities by linking to the first and last page of the collection. The pages contain the actual
      * activity entries and are provided by {@link #getPage(int) /iiif/discovery/activities/&lt;pageNo&gt;/}. This resource also contains a count of
@@ -78,7 +76,7 @@ public class ChangeDiscoveryResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags= {"records", "iiif"},
+            tags = { "records", "iiif" },
             summary = "Get a IIIF change discovery activity stream of all record changes")
     @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification")
     @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")

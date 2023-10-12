@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Contains field names of STATISTICS_USAGE SOLR documents
+ * 
  * @author florian
  *
  */
@@ -50,35 +51,37 @@ public class StatisticsLuceneFields {
      */
     public static final String DATE = "STATISTICS_DATE";
     /**
-     * SOLR field prefix for fields containing request counts for individual record identifiers. 
-     * The full field name consists of the prefix followed by a record identifier
+     * SOLR field prefix for fields containing request counts for individual record identifiers. The full field name consists of the prefix followed
+     * by a record identifier
      */
     public static final String RECORD_STATISTICS_PREFIX = "STATISTICS_RECORD_";
 
     /**
      * Get the complete SOLR field name for a given record identifier
+     * 
      * @param pi the record identifier
      * @return
      */
     public static String getFieldName(String pi) {
         return RECORD_STATISTICS_PREFIX + pi;
     }
-    
+
     /**
      * Get the record identifier from the given SOLR field name
+     * 
      * @param fieldname
-     * @return  the record identifier
+     * @return the record identifier
      */
     public static String getPi(String fieldname) {
-        if(StringUtils.isNotBlank(fieldname) && fieldname.contains(RECORD_STATISTICS_PREFIX)) {
+        if (StringUtils.isNotBlank(fieldname) && fieldname.contains(RECORD_STATISTICS_PREFIX)) {
             return fieldname.replace(RECORD_STATISTICS_PREFIX, "");
         } else {
             return "";
         }
     }
-    
+
     private StatisticsLuceneFields() {
         //hide default constructor
     }
-    
+
 }

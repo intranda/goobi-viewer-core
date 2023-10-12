@@ -45,7 +45,6 @@ import io.swagger.v3.oas.annotations.Operation;
 @Path(ApiUrls.USERS)
 public class UserEndpoint {
 
-
     @Context
     private HttpServletRequest servletRequest;
     @Context

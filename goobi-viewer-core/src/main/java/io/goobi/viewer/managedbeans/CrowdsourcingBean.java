@@ -116,7 +116,7 @@ public class CrowdsourcingBean implements Serializable {
     private String targetIdentifier;
     /** Current page of the current record. */
     private int targetPage;
-    
+
     private final Configuration viewerConfig;
     private final IDAO dao;
 
@@ -128,14 +128,12 @@ public class CrowdsourcingBean implements Serializable {
             throw new IllegalStateException("Cannot get instance of DAO");
         }
     }
-    
+
     public CrowdsourcingBean(Configuration viewerConfig, IDAO dao) {
         this.viewerConfig = viewerConfig;
         this.dao = dao;
     }
-    
-    
-    
+
     /**
      * Initialize all campaigns as lazily loaded list
      */
@@ -626,7 +624,7 @@ public class CrowdsourcingBean implements Serializable {
      * @param targetCampaign the targetCampaign to set
      */
     public void setTargetCampaign(Campaign targetCampaign) {
-        if (this.targetCampaign != null &&  !this.targetCampaign.equals(targetCampaign)) {
+        if (this.targetCampaign != null && !this.targetCampaign.equals(targetCampaign)) {
             resetTarget();
         }
 
@@ -679,16 +677,16 @@ public class CrowdsourcingBean implements Serializable {
         }
     }
 
-    private String getNextTargetIdentifier(Campaign campaign, String currentIdentifier, CrowdsourcingStatus status, CampaignItemOrder ordering) throws PresentationException, IndexUnreachableException {
-        switch(ordering) {
-            case RANDOM: 
-                return  campaign.getRandomizedTarget(status, currentIdentifier, userBean.getUser());
+    private String getNextTargetIdentifier(Campaign campaign, String currentIdentifier, CrowdsourcingStatus status, CampaignItemOrder ordering)
+            throws PresentationException, IndexUnreachableException {
+        switch (ordering) {
+            case RANDOM:
+                return campaign.getRandomizedTarget(status, currentIdentifier, userBean.getUser());
             case FIXED:
             default:
                 return campaign.getNextTarget(status, currentIdentifier, userBean.getUser());
         }
     }
-
 
     /**
      * removes the target identifier (pi) from the bean, so that pi can be targeted again by random target resolution

@@ -69,6 +69,9 @@ import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.SpellingParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import de.intranda.monitoring.timer.Time;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -518,7 +521,7 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public SolrDocument getDocumentByIddoc(String iddoc) throws IndexUnreachableException, PresentationException {
-        // logger.trace("getDocumentByIddoc: {}", iddoc);
+
         SolrDocument ret = null;
         SolrDocumentList hits =
                 search(new StringBuilder(SolrConstants.IDDOC).append(':').append(SolrTools.cleanUpQuery(iddoc)).toString(), 0, 1, null, null, null)
@@ -1261,7 +1264,7 @@ public class SolrSearchIndex {
 
         return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
     }
-    
+
     /**
      * Catches the filename of the page with the given basename under the given ip. Used in case a filename is requested without the file extension
      *
@@ -1284,7 +1287,8 @@ public class SolrSearchIndex {
                 .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.FILENAME)
                 .append(":")
-                .append(basename).append(".*");
+                .append(basename)
+                .append(".*");
 
         SolrDocumentList hits = search(sbQuery.toString(), Collections.singletonList(SolrConstants.FILENAME));
         if (hits.isEmpty()) {

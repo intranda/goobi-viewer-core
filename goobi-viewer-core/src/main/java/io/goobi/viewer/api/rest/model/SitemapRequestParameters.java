@@ -55,5 +55,4 @@ public class SitemapRequestParameters extends TaskParameter {
         this.outputPath = outputPath;
     }
 
-
 }

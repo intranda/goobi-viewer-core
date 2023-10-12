@@ -58,7 +58,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     private final String description;
 
     private final String iconPath;
-    
+
     private Integer order = null;
 
     private final Map<String, CMSComponentAttribute> attributes;
@@ -72,11 +72,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public CMSComponent(CMSComponent template, List<CMSContentItem> items) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
-                template.getScope(),template.getAttributes(), template.getOrder(), Optional.ofNullable(template.getPersistentComponent()));
+                template.getScope(), template.getAttributes(), template.getOrder(), Optional.ofNullable(template.getPersistentComponent()));
         List<CMSContentItem> newItems = items.stream().map(CMSContentItem::new).collect(Collectors.toList());
         this.contentItems.addAll(newItems);
     }
-    
+
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
                 template.getScope(),
@@ -209,16 +209,16 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public String getTemplateFilename() {
         return templateFilename;
     }
-    
+
     public boolean isPageScope() {
-    	return CMSComponentScope.PAGEVIEW == this.scope;
+        return CMSComponentScope.PAGEVIEW == this.scope;
     }
 
     @Override
     public int compareTo(CMSComponent o) {
-    	int scopeCompare = Integer.compare(this.getScope().ordinal(), o.getScope().ordinal());
-    	int orderCompare = Integer.compare(this.getOrder(), o.getOrder());
-    	return scopeCompare * 100_000 + orderCompare;
+        int scopeCompare = Integer.compare(this.getScope().ordinal(), o.getScope().ordinal());
+        int orderCompare = Integer.compare(this.getOrder(), o.getOrder());
+        return scopeCompare * 100_000 + orderCompare;
     }
 
     public UIComponent getUiComponent() throws PresentationException {
@@ -263,7 +263,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public boolean getBooleanAttributeValue(String key, boolean defaultValue) {
         return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getBooleanValue).orElse(defaultValue);
     }
-    
+
     public String getAttributeValue(String key) {
         return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getValue).orElse("");
     }
@@ -332,10 +332,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
                 .findAny()
                 .orElse(null);
         if (content != null) {
-            return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getHtmlGroup(), item.getJsfComponent(), this,
+            return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getHtmlGroup(), item.getJsfComponent(),
+                    this,
                     item.isRequired());
         }
-        
+
         CMSContentItem newContentItem = new CMSContentItem(item);
         this.persistentComponent.addContent(newContentItem.getContent());
         return newContentItem;
@@ -425,14 +426,14 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public boolean isPaged() {
         return this.contentItems.stream().map(CMSContentItem::getContent).anyMatch(PagedCMSContent.class::isInstance);
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.label == null ? "" : this.label);
-        if(this.getPersistentComponent() != null) {
+        if (this.getPersistentComponent() != null) {
             sb.append(" id: ").append(this.getPersistentComponent().getId());
-        }        
-        if(this.getContentItems() != null) {            
+        }
+        if (this.getContentItems() != null) {
             sb.append(" / ").append(this.getContentItems().size()).append(" content items");
         }
         return sb.toString();
