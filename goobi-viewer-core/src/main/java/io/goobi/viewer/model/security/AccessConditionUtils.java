@@ -47,6 +47,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.contexts.ContextNotActiveException;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
@@ -112,6 +113,7 @@ public class AccessConditionUtils {
             throw new IllegalArgumentException("pi may not be null");
         }
 
+        try(Time time = DataManager.getInstance().getTiming().takeTime("checkAccess")) {
         switch (action) {
             case "image":
             case "application":
@@ -139,6 +141,7 @@ public class AccessConditionUtils {
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES); // TODO is priv checking needed here?
             default: // nothing
                 break;
+        }
         }
 
         return AccessPermission.denied();

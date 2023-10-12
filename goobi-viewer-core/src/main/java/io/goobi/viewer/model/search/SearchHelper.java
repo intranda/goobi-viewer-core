@@ -68,6 +68,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
@@ -85,7 +86,6 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
-import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -1134,7 +1134,7 @@ public final class SearchHelper {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
-
+        try(Time time = DataManager.getInstance().getTiming().takeTime("truncateFulltext")) {
         // Remove HTML breaks
         fulltext = Jsoup.parse(fulltext).text();
         List<String> ret = new ArrayList<>();
@@ -1247,6 +1247,7 @@ public final class SearchHelper {
         }
 
         return ret;
+        }
     }
 
     /**

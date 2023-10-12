@@ -69,6 +69,9 @@ import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.SpellingParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import de.intranda.monitoring.timer.Time;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -519,6 +522,8 @@ public class SolrSearchIndex {
      */
     public SolrDocument getDocumentByIddoc(String iddoc) throws IndexUnreachableException, PresentationException {
         // logger.trace("getDocumentByIddoc: {}", iddoc);
+        try (Time time = DataManager.getInstance().getTiming().takeTime("getDocumentByIddoc")) {
+
         SolrDocument ret = null;
         SolrDocumentList hits =
                 search(new StringBuilder(SolrConstants.IDDOC).append(':').append(SolrTools.cleanUpQuery(iddoc)).toString(), 0, 1, null, null, null)
@@ -528,6 +533,7 @@ public class SolrSearchIndex {
         }
 
         return ret;
+        }
     }
 
     /**
