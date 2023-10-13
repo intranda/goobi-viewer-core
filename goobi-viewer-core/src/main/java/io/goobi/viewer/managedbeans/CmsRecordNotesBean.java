@@ -212,6 +212,6 @@ public class CmsRecordNotesBean implements Serializable {
 
     public String getSearchUrlForNote(CMSMultiRecordNote note) {
         String query = BeanUtils.escapeCriticalUrlChracters(note.getQueryForSearch());
-        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", query, "1", "-", "-");
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, "1", "-", "-");
     }
 }
