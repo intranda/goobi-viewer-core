@@ -37,7 +37,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 public class SolrAnnotationDeleter implements AnnotationDeleter {
 
     public SolrAnnotationDeleter() throws IndexUnreachableException, DAOException {
-        if(!DataManager.getInstance().getSearchIndex().isSolrIndexOnline()) {
+        if (!DataManager.getInstance().getSearchIndex().isSolrIndexOnline()) {
             throw new IndexUnreachableException("Solr index at " + DataManager.getInstance().getSearchIndex().getSolrServerUrl() + " not reachable");
         }
     }
@@ -48,7 +48,7 @@ public class SolrAnnotationDeleter implements AnnotationDeleter {
     }
 
     protected void reindexTarget(String pi, Integer page) {
-        if(page != null) {
+        if (page != null) {
             try {
                 IndexerTools.reIndexPage(pi, page);
             } catch (DAOException | PresentationException | IndexUnreachableException | IOException e) {

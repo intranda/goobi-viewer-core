@@ -83,7 +83,6 @@ public class BasexEADParser {
 
     private Map<String, Entry<String, Boolean>> associatedRecordMap;
 
-
     //    private List<StringPair> eventList;
     //    private List<String> editorList;
 
@@ -104,15 +103,16 @@ public class BasexEADParser {
         this.associatedRecordMap = getAssociatedRecordPis(this.searchIndex);
     }
 
-    private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis(SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
-        if(searchIndex != null) {
-        return searchIndex
-                .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*",
-                        Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
-                .stream()
-                .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)),
-                        doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)),
-                                SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
+    private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis(SolrSearchIndex searchIndex)
+            throws PresentationException, IndexUnreachableException {
+        if (searchIndex != null) {
+            return searchIndex
+                    .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*",
+                            Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
+                    .stream()
+                    .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)),
+                            doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)),
+                                    SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
         } else {
             return Collections.emptyMap();
         }
@@ -158,8 +158,6 @@ public class BasexEADParser {
         }
     }
 
-
-
     /**
      * Loads the given database and parses the EAD document.
      *
@@ -180,7 +178,6 @@ public class BasexEADParser {
         // parse ead file
         return parseEadFile(document);
     }
-
 
     /**
      * Reads the hierarchy from the given EAD document.
@@ -214,13 +211,13 @@ public class BasexEADParser {
     private Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
         if (archive != null) {
             String response;
-                String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
-                logger.trace("URL: {}", url);
-                response = NetTools.getWebContentGET(url);
+            String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
+            logger.trace("URL: {}", url);
+            response = NetTools.getWebContentGET(url);
 
             // get xml root element
-                Document document = openDocument(response);
-                return document;
+            Document document = openDocument(response);
+            return document;
         }
         throw new IllegalStateException("Must provide database name before loading database");
     }
@@ -280,11 +277,10 @@ public class BasexEADParser {
         entry.setId(element.getAttributeValue("id"));
 
         Optional.ofNullable(eadheader)
-        .map(e -> e.getChild("filedesc", NAMESPACE_EAD))
-        .map(e -> e.getChild("titlestmt", NAMESPACE_EAD))
-        .map(e -> e.getChildText("titleproper", NAMESPACE_EAD))
-        .ifPresent(s -> entry.setLabel(s));
-
+                .map(e -> e.getChild("filedesc", NAMESPACE_EAD))
+                .map(e -> e.getChild("titlestmt", NAMESPACE_EAD))
+                .map(e -> e.getChildText("titleproper", NAMESPACE_EAD))
+                .ifPresent(s -> entry.setLabel(s));
 
         // nodeType
         // get child elements

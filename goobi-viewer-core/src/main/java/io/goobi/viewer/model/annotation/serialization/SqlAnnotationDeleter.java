@@ -51,10 +51,10 @@ public class SqlAnnotationDeleter implements AnnotationDeleter {
     @Override
     public void delete(PersistentAnnotation annotation) throws IOException {
         try {
-            if(annotation instanceof Comment) {
-                dao.deleteComment((Comment)annotation);
-            } else if(annotation instanceof CrowdsourcingAnnotation) {
-                dao.deleteAnnotation((CrowdsourcingAnnotation)annotation);
+            if (annotation instanceof Comment) {
+                dao.deleteComment((Comment) annotation);
+            } else if (annotation instanceof CrowdsourcingAnnotation) {
+                dao.deleteAnnotation((CrowdsourcingAnnotation) annotation);
             } else {
                 throw new IllegalArgumentException("Deleting not implemented for annotation class " + annotation.getClass());
             }

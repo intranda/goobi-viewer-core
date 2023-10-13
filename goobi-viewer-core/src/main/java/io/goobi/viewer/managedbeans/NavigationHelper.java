@@ -1970,6 +1970,7 @@ public class NavigationHelper implements Serializable {
                 SearchBean sb = BeanUtils.getSearchBean();
                 if (sb != null) {
                     String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5",
+                            sb.getActiveResultGroupName(),
                             sb.getExactSearchString(),
                             sb.getCurrentPage(),
                             sb.getSortString(),

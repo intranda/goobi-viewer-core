@@ -37,18 +37,19 @@ public enum TaskType {
     UPDATE_UPLOAD_JOBS("0 42 0 * * ?"),
     /** Move daily usage statistics to SOLR */
     INDEX_USAGE_STATISTICS("0 45 0 * * ?"),
-    /**Create a pdf for a record or part of record to be offered as download**/
+    /** Create a pdf for a record or part of record to be offered as download **/
     DOWNLOAD_PDF(""),
     /** Write single page pdfs to storage to be used when creating a full record pdf **/
     PRERENDER_PDF("0 35 0 * * ?"),
     /** Fill all CMS-Geomaps with features from SOLR to avoid loading that data during page load */
-    CACHE_GEOMAPS("*/5 * * * *")
-    ;
-    
+    CACHE_GEOMAPS("*/5 * * * *");
+
     private final String defaultCronExpression;
+
     private TaskType(String cronExpression) {
         this.defaultCronExpression = cronExpression;
     }
+
     public String getDefaultCronExpression() {
         return defaultCronExpression;
     }

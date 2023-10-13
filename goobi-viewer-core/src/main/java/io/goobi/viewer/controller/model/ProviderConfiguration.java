@@ -45,11 +45,11 @@ public class ProviderConfiguration {
     public final List<WebResourceConfiguration> homepages = new ArrayList<>();
 
     public ProviderConfiguration(String uri, String label) throws PresentationException {
-        if(uri == null) {
+        if (uri == null) {
             throw new PresentationException("URI must be provided");
         }
         this.uri = URI.create(uri);
-        if(StringUtils.isBlank(label)) {
+        if (StringUtils.isBlank(label)) {
             throw new PresentationException("Label must be provided");
         }
         this.label = label;

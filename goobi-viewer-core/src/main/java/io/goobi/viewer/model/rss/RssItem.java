@@ -23,7 +23,6 @@ package io.goobi.viewer.model.rss;
 
 import java.util.Date;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

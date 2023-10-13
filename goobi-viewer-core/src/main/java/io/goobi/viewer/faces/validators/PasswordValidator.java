@@ -73,9 +73,9 @@ public class PasswordValidator implements Validator<String> {
      */
     public static boolean validatePassword(String password) {
         /**
-         * Let the cery existance of a password be validated by a required="true" condition on the input element.
-         * When changing other properties of an existing user, it must be legal to keep the password input empty
-         * In this case, the password will not be updated anyway (see AdminBean#saveUserAction(User user)
+         * Let the cery existance of a password be validated by a required="true" condition on the input element. When changing other properties of an
+         * existing user, it must be legal to keep the password input empty In this case, the password will not be updated anyway (see
+         * AdminBean#saveUserAction(User user)
          */
         if (StringUtils.isEmpty(password)) {
             return true;

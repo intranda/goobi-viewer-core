@@ -200,12 +200,12 @@ public interface SearchInterface {
 
     /**
      * action to execute to change sort sort order of hits
+     * 
      * @return
      * @throws IOException
      */
     public String changeSorting() throws IOException;
 
-    
     /**
      * Return the base url of the current search page, without any search parameters
      *

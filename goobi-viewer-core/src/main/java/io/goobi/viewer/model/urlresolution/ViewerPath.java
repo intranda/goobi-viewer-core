@@ -77,7 +77,7 @@ public class ViewerPath implements Serializable {
      */
     private URI parameterPath;
     /**
-     *  The entire query string of the URL, starting with the character after the '?'. An empty String no query exists
+     * The entire query string of the URL, starting with the character after the '?'. An empty String no query exists
      */
     private String queryString = "";
     /**
@@ -201,7 +201,6 @@ public class ViewerPath implements Serializable {
     public void setParameterPath(URI parameterPath) {
         this.parameterPath = parameterPath;
     }
-
 
     /**
      * @return the queryString

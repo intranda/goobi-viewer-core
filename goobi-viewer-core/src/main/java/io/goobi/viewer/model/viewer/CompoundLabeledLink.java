@@ -102,7 +102,8 @@ public class CompoundLabeledLink extends LabeledLink {
         try {
             for (String col : hierarchy) {
                 String sortField = CollectionView.getCollectionDefaultSortField(col, sortFields);
-                HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(col, 1, field, sortField, splittingChar, displayNumberOfVolumesLevel);
+                HierarchicalBrowseDcElement collectionElement =
+                        new HierarchicalBrowseDcElement(col, 1, field, sortField, splittingChar, displayNumberOfVolumesLevel);
                 collectionElement.setInfo(new SimpleBrowseElementInfo(col, null, null));
                 // Actual collection size is expensive to determine at this point, so instead pretend it's larger than one so that no redirection to the first volume takes place for all collections
                 collectionElement.addToNumber(1);
@@ -112,7 +113,8 @@ public class CompoundLabeledLink extends LabeledLink {
             int subLinkWeight = weight;
             // Add collection hierarchy links with the same weight
             for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
-                links.add(new LabeledLink(collectionElement.getLabel(), CollectionView.getCollectionUrl(collectionElement, field, null), subLinkWeight));
+                links.add(new LabeledLink(collectionElement.getLabel(), CollectionView.getCollectionUrl(collectionElement, field, null),
+                        subLinkWeight));
             }
         } catch (PresentationException e) {
         } catch (DAOException e) {

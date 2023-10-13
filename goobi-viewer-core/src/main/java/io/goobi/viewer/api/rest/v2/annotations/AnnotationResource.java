@@ -122,7 +122,8 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page) throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
+    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page)
+            throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         AnnotationPage annoPage = builder.getWebAnnotationPage(page);
         return annoPage;
@@ -144,9 +145,10 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
-            AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-            WebAnnotation annotation =  builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
-            return annotation;
+        AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
+        WebAnnotation annotation =
+                builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
+        return annotation;
     }
 
     /**
@@ -165,8 +167,8 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
-            AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-            return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
+        AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
+        return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
     }
 
     /**

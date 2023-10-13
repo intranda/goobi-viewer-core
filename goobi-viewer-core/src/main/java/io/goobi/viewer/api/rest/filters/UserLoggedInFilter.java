@@ -50,12 +50,12 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-       if(!isUserLoggedIn(servletRequest)) {
-           Response response = Response.status(Response.Status.UNAUTHORIZED)
-                   .entity("You must be logged in to access this resource")
-                   .build();
-           requestContext.abortWith(response);
-       }
+        if (!isUserLoggedIn(servletRequest)) {
+            Response response = Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("You must be logged in to access this resource")
+                    .build();
+            requestContext.abortWith(response);
+        }
     }
 
     public static boolean isUserLoggedIn(HttpServletRequest request) {

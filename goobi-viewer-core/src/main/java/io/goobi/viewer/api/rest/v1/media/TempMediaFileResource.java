@@ -153,7 +153,6 @@ public class TempMediaFileResource {
         }
     }
 
-
     /**
      * Get a filename list of all uploaded files in the media directory of the given uuid
      *
@@ -232,8 +231,6 @@ public class TempMediaFileResource {
         }
     }
 
-
-
     public static String errorMessage(String string) {
         return message(string);
     }
@@ -255,7 +252,6 @@ public class TempMediaFileResource {
                 .resolve(Paths.get(foldername).getFileName());
         return targetDir;
     }
-
 
     /**
      * @param file

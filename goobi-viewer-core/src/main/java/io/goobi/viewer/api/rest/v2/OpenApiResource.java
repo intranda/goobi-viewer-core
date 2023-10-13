@@ -67,45 +67,45 @@ public class OpenApiResource {
     @Context
     ServletConfig servletConfig;
 
-    private static OpenAPI openApi  = null;
+    private static OpenAPI openApi = null;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public OpenAPI getOpenApi() {
-        OpenApiResource.initOpenApi(getApiUrls());        
+        OpenApiResource.initOpenApi(getApiUrls());
         return OpenApiResource.openApi;
     }
 
     private static void initOpenApi(List<String> apiUrls) {
-        if(OpenApiResource.openApi == null) {
+        if (OpenApiResource.openApi == null) {
             OpenApiResource.openApi = initSwagger(apiUrls);
         }
     }
 
     private static OpenAPI initSwagger(List<String> apiUrls) {
 
-            OpenAPI oas = new OpenAPI();
-            oas.info(getInfo());
-            oas.servers(getServers(apiUrls));
+        OpenAPI oas = new OpenAPI();
+        oas.info(getInfo());
+        oas.servers(getServers(apiUrls));
 
-            SwaggerConfiguration oasConfig = new SwaggerConfiguration()
-                    .openAPI(oas)
-                    .prettyPrint(true)
-                    .readAllResources(false);
+        SwaggerConfiguration oasConfig = new SwaggerConfiguration()
+                .openAPI(oas)
+                .prettyPrint(true)
+                .readAllResources(false);
 
-            Reader reader = new Reader(oasConfig);
-            OpenAPI openAPI = reader.read(Stream.of(
-                    CMSMediaImageResource3.class,
-                    CollectionsResource.class,
-                    ExternalImageResource.class,
-                    RecordsFilesImageResource.class,
-                    RecordsImageResource.class,
-                    RecordFilesResource.class,
-                    RecordPagesResource.class,
-                    RecordResource.class,
-                    RecordSectionsResource.class).collect(Collectors.toSet()));
+        Reader reader = new Reader(oasConfig);
+        OpenAPI openAPI = reader.read(Stream.of(
+                CMSMediaImageResource3.class,
+                CollectionsResource.class,
+                ExternalImageResource.class,
+                RecordsFilesImageResource.class,
+                RecordsImageResource.class,
+                RecordFilesResource.class,
+                RecordPagesResource.class,
+                RecordResource.class,
+                RecordSectionsResource.class).collect(Collectors.toSet()));
 
-            return openAPI;
+        return openAPI;
 
     }
 
@@ -123,9 +123,9 @@ public class OpenApiResource {
     private static List<Server> getServers(List<String> apiUrls) {
         List<Server> servers = new ArrayList<>();
         for (String url : apiUrls) {
-                Server server = new Server();
-                server.setUrl(url);
-                servers.add(server);
+            Server server = new Server();
+            server.setUrl(url);
+            servers.add(server);
         }
         return servers;
     }

@@ -745,7 +745,6 @@ public class ArchiveEntry {
         this.associatedRecordPi = associatedRecordPi;
     }
 
-
     /**
      * Get the parent node hierarchy of this node, optionally including the node itself The list is sorted with hightest hierarchy level first, so the
      * node itself will always be the last element, if included
@@ -773,7 +772,6 @@ public class ArchiveEntry {
         return id;
     }
 
-
     public boolean isContainsImage() {
         return this.containsImage;
     }
@@ -783,9 +781,11 @@ public class ArchiveEntry {
     }
 
     public String getFieldValue(String field) {
-        return getAllAreaLists().stream().filter(entry -> entry.getLabel().equals(field))
+        return getAllAreaLists().stream()
+                .filter(entry -> entry.getLabel().equals(field))
                 .map(ArchiveMetadataField::getValue)
                 .filter(StringUtils::isNotBlank)
-                .findAny().orElse(null);
-  }
+                .findAny()
+                .orElse(null);
+    }
 }

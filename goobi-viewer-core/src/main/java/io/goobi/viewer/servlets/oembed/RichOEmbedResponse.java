@@ -56,10 +56,10 @@ public class RichOEmbedResponse extends OEmbedResponse {
         this.type = "rich";
         this.width = 620;
         this.height = 350;
-        if(maxWidth != null) {
+        if (maxWidth != null) {
             this.width = Math.min(this.width, maxWidth);
         }
-        if(maxHeight != null) {
+        if (maxHeight != null) {
             this.height = Math.min(this.height, maxHeight);
         }
         generateHtml(record, width, height);
@@ -74,7 +74,7 @@ public class RichOEmbedResponse extends OEmbedResponse {
         if (record == null) {
             throw new IllegalArgumentException("record may not be null");
         }
-        if(record.isRichResponse()) {
+        if (record.isRichResponse()) {
             StringBuilder sb = new StringBuilder();
             sb.append("<iframe");
             sb.append(" src='");

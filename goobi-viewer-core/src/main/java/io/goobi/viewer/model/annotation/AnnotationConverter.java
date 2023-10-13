@@ -72,13 +72,15 @@ public class AnnotationConverter {
     private final AbstractApiUrlManager urls;
 
     public AnnotationConverter() {
-        this(DataManager.getInstance().getRestApiManager().getDataApiManager().orElseThrow(() -> new IllegalStateException("No api manager available")));
+        this(DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .orElseThrow(() -> new IllegalStateException("No api manager available")));
     }
 
     public AnnotationConverter(AbstractApiUrlManager urls) {
         this.urls = urls;
     }
-
 
     private URI getWebAnnotationURI(Long id) {
         return URI.create(this.urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(id).build());
@@ -116,7 +118,7 @@ public class AnnotationConverter {
                 } else {
                     resource = mapper.readValue(anno.getTarget(), TypedResource.class);
                 }
-            } catch(JsonParseException e) {
+            } catch (JsonParseException e) {
                 resource = new TextualResource(anno.getTarget());
             }
             return resource;
@@ -163,7 +165,7 @@ public class AnnotationConverter {
             mapper.registerModule(new JavaTimeModule());
             IResource resource = mapper.readValue(anno.getBody(), TextualResource.class);
             return resource;
-        } else if(StringUtils.isNotBlank(anno.getBody())){
+        } else if (StringUtils.isNotBlank(anno.getBody())) {
             return new TextualResource(anno.getBody());
         }
         return null;
@@ -187,7 +189,7 @@ public class AnnotationConverter {
             mapper.registerModule(new JavaTimeModule());
             IResource resource = mapper.readValue(anno.getBody(), de.intranda.api.annotation.oa.TextualResource.class);
             return resource;
-        } else if(StringUtils.isNotBlank(anno.getBody())){
+        } else if (StringUtils.isNotBlank(anno.getBody())) {
             return new TextualResource(anno.getBody());
         }
         return null;
@@ -201,7 +203,7 @@ public class AnnotationConverter {
      */
     public WebAnnotation getAsWebAnnotation(PersistentAnnotation anno) {
         URI uri;
-        if(anno instanceof Comment) {
+        if (anno instanceof Comment) {
             uri = getWebAnnotationCommentURI(anno.getId());
         } else {
             uri = getWebAnnotationURI(anno.getId());
@@ -254,7 +256,8 @@ public class AnnotationConverter {
     }
 
     public PersistentAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
-        CrowdsourcingAnnotation pa = new CrowdsourcingAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null), getPageNo(anno.getTarget()).orElse(null));
+        CrowdsourcingAnnotation pa = new CrowdsourcingAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null),
+                getPageNo(anno.getTarget()).orElse(null));
         return pa;
     }
 
@@ -264,7 +267,7 @@ public class AnnotationConverter {
      */
     private Optional<Long> getUserId(Agent creator) {
         String id = urls.parseParameter(urls.path(USERS, USERS_USERID).build(), creator.getId().toString(), "{userId}");
-        if(StringUtils.isNotBlank(id) && id.matches("\\d")) {
+        if (StringUtils.isNotBlank(id) && id.matches("\\d")) {
             return Optional.of(Long.parseLong(id));
         } else {
             return Optional.empty();
@@ -276,21 +279,21 @@ public class AnnotationConverter {
      * @return
      */
     private Optional<String> getPI(IResource target) {
-        if(target.getId() != null) {
+        if (target.getId() != null) {
             String uri = target.getId().toString();
 
-            String pi = urls.parseParameter(urls.path(RECORDS_PAGES,  RECORDS_PAGES_CANVAS).build(), uri, "{pi}");
-            if(StringUtils.isNotBlank(pi)) {
+            String pi = urls.parseParameter(urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build(), uri, "{pi}");
+            if (StringUtils.isNotBlank(pi)) {
                 return Optional.of(pi);
             }
 
-            pi = urls.parseParameter(urls.path(RECORDS_RECORD,  RECORDS_MANIFEST).build(), uri, "{pi}");
-            if(StringUtils.isNotBlank(pi)) {
+            pi = urls.parseParameter(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).build(), uri, "{pi}");
+            if (StringUtils.isNotBlank(pi)) {
                 return Optional.of(pi);
             }
 
-            pi = urls.parseParameter(urls.path(RECORDS_SECTIONS,  RECORDS_SECTIONS_RANGE).build(), uri, "{pi}");
-            if(StringUtils.isNotBlank(pi)) {
+            pi = urls.parseParameter(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).build(), uri, "{pi}");
+            if (StringUtils.isNotBlank(pi)) {
                 return Optional.of(pi);
             }
 
@@ -299,11 +302,11 @@ public class AnnotationConverter {
     }
 
     private Optional<String> getDivId(IResource target) {
-        if(target.getId() != null) {
+        if (target.getId() != null) {
             String uri = target.getId().toString();
 
-            String id = urls.parseParameter(urls.path(RECORDS_SECTIONS,  RECORDS_SECTIONS_RANGE).build(), uri, "{divId}");
-            if(StringUtils.isNotBlank(id)) {
+            String id = urls.parseParameter(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).build(), uri, "{divId}");
+            if (StringUtils.isNotBlank(id)) {
                 return Optional.of(id);
             }
 
@@ -316,10 +319,10 @@ public class AnnotationConverter {
      * @return
      */
     private Optional<Integer> getPageNo(IResource target) {
-        if(target.getId() != null) {
+        if (target.getId() != null) {
             String uri = target.getId().toString();
-            String pageNo = urls.parseParameter(urls.path(RECORDS_PAGES,  RECORDS_PAGES_CANVAS).build(), uri, "{pageNo}");
-            if(StringUtils.isNotBlank(pageNo) && pageNo.matches("\\d+")) {
+            String pageNo = urls.parseParameter(urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build(), uri, "{pageNo}");
+            if (StringUtils.isNotBlank(pageNo) && pageNo.matches("\\d+")) {
                 return Optional.of(Integer.parseInt(pageNo));
             }
         }
@@ -337,14 +340,14 @@ public class AnnotationConverter {
             String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
             if (StringUtils.isNotBlank(idString)) {
                 id = Long.parseLong(idString);
-//            } else {
-//                idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).build(), uri, "{id}");
-//                if (StringUtils.isNotBlank(idString)) {
-//                    id = Long.parseLong(idString);
-//                }
+                //            } else {
+                //                idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).build(), uri, "{id}");
+                //                if (StringUtils.isNotBlank(idString)) {
+                //                    id = Long.parseLong(idString);
+                //                }
             }
         }
-        if(id != null) {
+        if (id != null) {
             return id;
         } else {
             return null;

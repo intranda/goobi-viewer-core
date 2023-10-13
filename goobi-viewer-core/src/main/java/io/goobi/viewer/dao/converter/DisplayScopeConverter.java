@@ -40,16 +40,15 @@ public class DisplayScopeConverter implements AttributeConverter<DisplayScope, S
 
     @Override
     public DisplayScope convertToEntityAttribute(String dbData) {
-        if(StringUtils.isNotBlank(dbData)) {
+        if (StringUtils.isNotBlank(dbData)) {
             try {
                 return new DisplayScope(dbData);
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 return new DisplayScope(PageScope.RECORD, dbData);
             }
         } else {
             return new DisplayScope(PageScope.RECORD, "");
         }
     }
-
 
 }

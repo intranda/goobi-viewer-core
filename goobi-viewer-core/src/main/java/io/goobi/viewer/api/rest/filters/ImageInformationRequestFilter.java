@@ -53,8 +53,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * <p>
- * Forwards requests to IIIF image resources referencing a image number (Solr-field "ORDER") to
- * a requests with the appropriate filename
+ * Forwards requests to IIIF image resources referencing a image number (Solr-field "ORDER") to a requests with the appropriate filename
  * </p>
  */
 @Provider
@@ -74,15 +73,15 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext request) throws IOException {
         logger.trace("filter");
 
-            String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
-            String imageName = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
+        String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
+        String imageName = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
-            imageName = StringTools.decodeUrl(imageName);
-            // logger.trace("image: {}", imageName);
-            if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
-                //if page order is given for image filename, forward to url with correct filename
-                return;
-            }
+        imageName = StringTools.decodeUrl(imageName);
+        // logger.trace("image: {}", imageName);
+        if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
+            //if page order is given for image filename, forward to url with correct filename
+            return;
+        }
     }
 
     /**
@@ -109,22 +108,28 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
             if (filename.isPresent()) {
                 String filenameValue = filename.get();
                 request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filenameValue);
-                String redirectURI = DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> urls
-                        .path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
-                        .params(pi, filenameValue)
-                        .build())
+                String redirectURI = DataManager.getInstance()
+                        .getRestApiManager()
+                        .getContentApiManager()
+                        .map(urls -> urls
+                                .path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
+                                .params(pi, filenameValue)
+                                .build())
                         .orElse(request.getRequestURI().replace("/" + imageName, "/" + filenameValue));
                 response.sendRedirect(redirectURI);
                 return true;
-            } else if(imageName.matches("\\d+")) {
+            } else if (imageName.matches("\\d+")) {
                 filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
                 if (filename.isPresent()) {
                     String filenameValue = filename.get();
                     request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filenameValue);
-                    String redirectURI = DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> urls
-                            .path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
-                            .params(pi, filenameValue)
-                            .build())
+                    String redirectURI = DataManager.getInstance()
+                            .getRestApiManager()
+                            .getContentApiManager()
+                            .map(urls -> urls
+                                    .path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
+                                    .params(pi, filenameValue)
+                                    .build())
                             .orElse(request.getRequestURI().replace("/" + imageName, "/" + filenameValue));
                     response.sendRedirect(redirectURI);
                     return true;

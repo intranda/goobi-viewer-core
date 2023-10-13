@@ -77,7 +77,6 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         this.annotations = null; //load annotations in augemntReIndex... methods
     }
 
-
     /* (non-Javadoc)
      * @see io.goobi.viewer.modules.interfaces.IndexAugmenter#augmentReIndexRecord(java.lang.String, java.lang.String, java.lang.String)
      */
@@ -180,7 +179,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         List<CrowdsourcingAnnotation> annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, null, Motivation.COMMENTING);
         return annos;
     }
-    
+
     @Override
     public int hashCode() {
         return this.annotations == null ? 0 : this.annotations.hashCode();
@@ -191,12 +190,11 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(AnnotationIndexAugmenter.class)) {
-            return CollectionUtils.isEqualCollection(this.annotations, ((AnnotationIndexAugmenter)obj).annotations);
+        if (obj != null && obj.getClass().equals(AnnotationIndexAugmenter.class)) {
+            return CollectionUtils.isEqualCollection(this.annotations, ((AnnotationIndexAugmenter) obj).annotations);
         } else {
             return false;
         }
     }
-
 
 }

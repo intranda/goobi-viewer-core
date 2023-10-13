@@ -51,7 +51,7 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
 
     private static final String COMPONENT_NAME = "browse";
 
-    @Column(name = "solr_field", length=40)
+    @Column(name = "solr_field", length = 40)
     private String solrField;
 
     @Transient

@@ -29,7 +29,7 @@ public class ManifestLinkConfiguration {
     private final String label;
     private final String format;
     private final Metadata metadata;
-    
+
     /**
      * @param label
      * @param format
@@ -41,23 +41,23 @@ public class ManifestLinkConfiguration {
         this.format = format;
         this.metadata = metadata;
     }
-    
+
     /**
      * @return the label
      */
     public String getLabel() {
         return label;
     }
+
     /**
      * @return the format
      */
     public String getFormat() {
         return format;
     }
+
     public Metadata getMetadata() {
         return metadata;
     }
 
-    
-    
 }

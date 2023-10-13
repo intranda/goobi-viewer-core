@@ -42,8 +42,6 @@ public class SolrAndSqlAnnotationDeleter implements AnnotationDeleter {
         sqlDeleter = new SqlAnnotationDeleter();
     }
 
-
-
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationDeleter#delete(io.goobi.viewer.model.annotation.PersistentAnnotation)
      */

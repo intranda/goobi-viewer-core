@@ -299,9 +299,9 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
             case "GLOSSARY":
                 return new CMSGlossaryContent();
             case "MEDIA":
-                if(StringUtils.isNotBlank(mediaFilter) && mediaFilter.toLowerCase().contains(".pdf")) {
+                if (StringUtils.isNotBlank(mediaFilter) && mediaFilter.toLowerCase().contains(".pdf")) {
                     return new CMSDocumentContent();
-                } else {                    
+                } else {
                     return new CMSMediaContent();
                 }
             case "METADATA":

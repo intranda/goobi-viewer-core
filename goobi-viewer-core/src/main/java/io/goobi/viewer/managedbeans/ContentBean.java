@@ -131,8 +131,9 @@ public class ContentBean implements Serializable {
      */
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsOfPageForDisplay(PhysicalElement page)
             throws PresentationException, IndexUnreachableException, DAOException {
-        if(page != null) {
-            List<DisplayUserGeneratedContent> content = getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> ugc.isOnThisPage(page)).collect(Collectors.toList());
+        if (page != null) {
+            List<DisplayUserGeneratedContent> content =
+                    getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> ugc.isOnThisPage(page)).collect(Collectors.toList());
             return content;
         } else {
             return Collections.emptyList();
@@ -161,7 +162,7 @@ public class ContentBean implements Serializable {
         userGeneratedContentsForDisplay = new ArrayList<>();
 
         List<CrowdsourcingAnnotation> allAnnotationsForRecord = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
-        
+
         List<DisplayUserGeneratedContent> allContent = allAnnotationsForRecord.stream()
                 .filter(a -> a.getPublicationStatus().equals(PublicationStatus.PUBLISHED))
                 .filter(a -> StringUtils.isNotBlank(a.getBody()))
@@ -175,7 +176,7 @@ public class ContentBean implements Serializable {
             }
             boolean accessible = true;
             accessible = isAccessible(ugcContent, request);
-            if(!accessible) {
+            if (!accessible) {
                 continue;
             }
             userGeneratedContentsForDisplay.add(ugcContent);
@@ -183,7 +184,7 @@ public class ContentBean implements Serializable {
         logger.trace("Loaded {} user generated contents for pi {}", userGeneratedContentsForDisplay.size(), this.pi);
     }
 
-    public static boolean isAccessible(DisplayUserGeneratedContent content, HttpServletRequest request){
+    public static boolean isAccessible(DisplayUserGeneratedContent content, HttpServletRequest request) {
         if (content.getAccessCondition() != null) {
             logger.trace("UGC access condition: {}", content.getAccessCondition());
             String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + content.getPi() + " +" + SolrConstants.DOCTYPE + ":" + DocType.UGC.name();

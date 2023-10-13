@@ -78,8 +78,6 @@ public class Task {
         TOKEN;
     }
 
-
-
     public enum TaskStatus {
         CREATED,
         STARTED,

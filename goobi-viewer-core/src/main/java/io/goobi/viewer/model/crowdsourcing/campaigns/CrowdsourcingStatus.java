@@ -26,31 +26,31 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
  *
  */
 public enum CrowdsourcingStatus {
-        /**
-         * Annotations may be made to this resource
-         */
-        ANNOTATE,
-        /**
-         * Annotations are ready to be reviewed
-         */
-        REVIEW,
-        /**
-         * All annotations for this resource are accepted by the review process. The resource is not available for further annotating within this
-         * campaign; all annotations for this resource and campaign may be visible in iiif manifests and the viewer
-         */
-        FINISHED;
+    /**
+     * Annotations may be made to this resource
+     */
+    ANNOTATE,
+    /**
+     * Annotations are ready to be reviewed
+     */
+    REVIEW,
+    /**
+     * All annotations for this resource are accepted by the review process. The resource is not available for further annotating within this
+     * campaign; all annotations for this resource and campaign may be visible in iiif manifests and the viewer
+     */
+    FINISHED;
 
-        public String getName() {
-            return this.name();
-        }
+    public String getName() {
+        return this.name();
+    }
 
-        public static CrowdsourcingStatus forName(String name) {
-            for (CrowdsourcingStatus status : CrowdsourcingStatus.values()) {
-                if (status.getName().equalsIgnoreCase(name)) {
-                    return status;
-                }
+    public static CrowdsourcingStatus forName(String name) {
+        for (CrowdsourcingStatus status : CrowdsourcingStatus.values()) {
+            if (status.getName().equalsIgnoreCase(name)) {
+                return status;
             }
-            return null;
         }
+        return null;
+    }
 
 }

@@ -307,7 +307,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         if (this.metadataDocuments == null) {
             this.metadataDocuments = loadMetadataDocuments();
         }
-                
+
         return this.metadataDocuments;
     }
 

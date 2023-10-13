@@ -186,7 +186,7 @@ public class CampaignEndpoint {
         synchronized (pageLocks) {
             if (sessionLock != null) {
                 pageLocks.entrySet().forEach(entry -> {
-                    synchronized (entry) {  //NOSONAR       entry is in fact part of the property pageLocks and may be used for synchronization
+                    synchronized (entry) { //NOSONAR       entry is in fact part of the property pageLocks and may be used for synchronization
                         String httpSessionId = entry.getKey();
                         PageLock lock = entry.getValue();
                         if (sessionLock.campaignId == lock.campaignId &&

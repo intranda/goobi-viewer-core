@@ -63,25 +63,25 @@ public class QuartzListener implements ServletContextListener {
     private static final Logger log = LogManager.getLogger(QuartzListener.class);
 
     private static final String DEFAULT_SCHEDULER_EXPRESSION = "0 0 0 * * ?";
-    
+
     private final IDAO dao;
     private final Configuration config;
-    @Inject 
+    @Inject
     transient private MessageQueueManager messageBroker;
     @Inject
     private ServletContext context;
-    
+
     public QuartzListener() throws DAOException {
         this.dao = DataManager.getInstance().getDao();
         this.config = DataManager.getInstance().getConfiguration();
     }
-    
+
     public QuartzListener(IDAO dao, Configuration config, MessageQueueManager messageBroker) {
         this.dao = dao;
         this.config = config;
         this.messageBroker = messageBroker;
     }
-    
+
     /**
      * Restarts timed Jobs
      * 
@@ -104,7 +104,8 @@ public class QuartzListener implements ServletContextListener {
 
     /**
      * Starts timed updates of {@link HistoryAnalyserJob}
-     * @param servletContext 
+     * 
+     * @param servletContext
      * 
      * @throws SchedulerException
      */
@@ -116,22 +117,22 @@ public class QuartzListener implements ServletContextListener {
         try {
             List<RecurringTaskTrigger> triggers = loadOrCreateTriggers();
             for (RecurringTaskTrigger trigger : triggers) {
-                
+
                 //first check trigger cron expression and update it if necessary
                 String cronExpression = config.getQuartzSchedulerCronExpression(trigger.getTaskType());
-                if(!StringUtils.equals(trigger.getScheduleExpression(), cronExpression)) {
+                if (!StringUtils.equals(trigger.getScheduleExpression(), cronExpression)) {
                     trigger.setScheduleExpression(cronExpression);
                     this.dao.updateRecurringTaskTrigger(trigger);
                 }
-                
+
                 //Initialize CronJob
-                HandleMessageJob job = new HandleMessageJob(TaskType.valueOf(trigger.getTaskType()), trigger.getScheduleExpression() ,messageBroker);
+                HandleMessageJob job = new HandleMessageJob(TaskType.valueOf(trigger.getTaskType()), trigger.getScheduleExpression(), messageBroker);
                 JobDetail jobDetail = initializeCronJob(job, sched);
                 Map<String, Object> params = getParams(job.getTaskType(), true, servletContext);
                 sched.getContext().put(jobDetail.getKey().getName(), params);
-                
+
                 //set to pause depending on stored trigger status
-                if(TaskTriggerStatus.PAUSED.equals(trigger.getStatus())) {                    
+                if (TaskTriggerStatus.PAUSED.equals(trigger.getStatus())) {
                     sched.pauseJob(jobDetail.getKey());
                 }
             }
@@ -144,10 +145,10 @@ public class QuartzListener implements ServletContextListener {
         Map<String, Object> params = new HashMap<>();
         params.put("taskType", taskType.toString());
         params.put("runInQueue", runInQueue);
-        switch(taskType) {
+        switch (taskType) {
             case UPDATE_SITEMAP:
                 String rootUrl = this.config.getViewerBaseUrl();
-                String realPath =  servletContext.getRealPath("/");
+                String realPath = servletContext.getRealPath("/");
                 params.put("viewerRootUrl", rootUrl);
                 params.put("baseurl", realPath);
                 break;
@@ -158,17 +159,18 @@ public class QuartzListener implements ServletContextListener {
     }
 
     private List<RecurringTaskTrigger> loadOrCreateTriggers() throws DAOException {
-        Map<String, RecurringTaskTrigger> storedTriggers = dao.getRecurringTaskTriggers().stream().collect(Collectors.toMap(RecurringTaskTrigger::getTaskType, Function.identity()));
+        Map<String, RecurringTaskTrigger> storedTriggers =
+                dao.getRecurringTaskTriggers().stream().collect(Collectors.toMap(RecurringTaskTrigger::getTaskType, Function.identity()));
         List<RecurringTaskTrigger> triggers = new ArrayList<>();
-        
+
         addTrigger(storedTriggers, triggers, TaskType.INDEX_USAGE_STATISTICS);
         addTrigger(storedTriggers, triggers, TaskType.NOTIFY_SEARCH_UPDATE);
         addTrigger(storedTriggers, triggers, TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_SITEMAP);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_UPLOAD_JOBS);
-        if(config.isGeomapCachingEnabled()) {
+        if (config.isGeomapCachingEnabled()) {
             addTrigger(storedTriggers, triggers, TaskType.CACHE_GEOMAPS);
-        } else if(storedTriggers.containsKey(TaskType.CACHE_GEOMAPS.name())) {
+        } else if (storedTriggers.containsKey(TaskType.CACHE_GEOMAPS.name())) {
             dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.CACHE_GEOMAPS.name()).getId());
         }
         return triggers;
@@ -176,7 +178,7 @@ public class QuartzListener implements ServletContextListener {
 
     public void addTrigger(Map<String, RecurringTaskTrigger> storedTriggers, List<RecurringTaskTrigger> triggers, TaskType taskType)
             throws DAOException {
-        if(storedTriggers.containsKey(taskType.name())) {
+        if (storedTriggers.containsKey(taskType.name())) {
             triggers.add(storedTriggers.get(taskType.name()));
         } else {
             RecurringTaskTrigger trigger = new RecurringTaskTrigger(taskType, DEFAULT_SCHEDULER_EXPRESSION);
@@ -184,7 +186,7 @@ public class QuartzListener implements ServletContextListener {
             dao.addRecurringTaskTrigger(trigger);
         }
     }
-    
+
     /**
      * initializes given IViewerJob to run every minute
      *

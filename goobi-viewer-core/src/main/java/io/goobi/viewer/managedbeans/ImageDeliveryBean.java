@@ -612,7 +612,7 @@ public class ImageDeliveryBean implements Serializable {
     public String getCurrentImageDownloadUrl(int width, int height, String format) {
         return getCurrentPageIfExists().map(page -> getThumbs().getImageUrl(page, width, height, format)).orElse("");
     }
-    
+
     public String getCurrentImageDownloadUrl(DownloadOption option) {
         return getCurrentImageDownloadUrl(option.getBoxSizeInPixel().width, option.getBoxSizeInPixel().height, option.getFormat());
     }

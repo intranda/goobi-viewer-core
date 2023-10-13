@@ -63,7 +63,7 @@ public class Object3DHandler {
      * @return the url to the media file of the given pi and filename
      */
     public String getObjectUrl(String pi, String filename) {
-        if(this.urls != null) {
+        if (this.urls != null) {
             return this.urls.path(RECORDS_FILES_3D, RECORDS_FILES_3D_INFO).params(pi, filename).build();
         } else {
             return this.restApiUrl + URL_TEMPLATE.replace("{identifier}", pi).replace("{filename}", filename);

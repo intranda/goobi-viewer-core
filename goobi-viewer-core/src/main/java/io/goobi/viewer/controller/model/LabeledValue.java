@@ -26,25 +26,28 @@ public class LabeledValue {
     private final String label;
     private final String value;
     private final String styleClass;
-    
+
     public LabeledValue(String value, String label) {
         this(value, label, "");
     }
-    
+
     public LabeledValue(String value, String label, String styleClass) {
         super();
         this.label = label;
         this.value = value;
         this.styleClass = styleClass;
     }
+
     public String getLabel() {
         return label;
     }
+
     public String getValue() {
         return value;
     }
+
     public String getStyleClass() {
         return styleClass;
     }
-    
+
 }

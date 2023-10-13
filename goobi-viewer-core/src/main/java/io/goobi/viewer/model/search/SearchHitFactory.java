@@ -29,8 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -50,12 +51,11 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataWrapper;
-import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 public class SearchHitFactory {
 
@@ -117,9 +117,11 @@ public class SearchHitFactory {
      */
     public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext,
             HitType overrideType) throws PresentationException, IndexUnreachableException {
+
         List<String> fulltextFragments =
-                (fulltext == null || searchTerms == null) ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
-                        DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true, proximitySearchDistance);
+                (fulltext == null || searchTerms == null) ? null
+                        : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
+                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true, proximitySearchDistance);
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
         String docstructType = se.getDocStructType();
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
@@ -147,7 +149,6 @@ public class SearchHitFactory {
         BrowseElement browseElement = new BrowseElement(se, metadataListMap, locale,
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, cleanedUpSearchTerms,
                 thumbnailHandler);
-
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         if (DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled()) {
             Optional<String> labelValue = browseElement.getLabelAsMetadataValue().getValue();
@@ -351,7 +352,8 @@ public class SearchHitFactory {
                                     if (sb.length() > 0) {
                                         sb.append(", ");
                                     }
-                                    if (additionalMetadataNoHighlightFields != null && additionalMetadataNoHighlightFields.contains(docFieldName)) {
+                                    if (additionalMetadataNoHighlightFields != null
+                                            && additionalMetadataNoHighlightFields.contains(docFieldName)) {
                                         // No highlighting
                                         sb.append(translatedValue);
                                     } else {
@@ -400,7 +402,8 @@ public class SearchHitFactory {
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    if (additionalMetadataNoHighlightFields != null && additionalMetadataNoHighlightFields.contains(docFieldName)) {
+                                    if (additionalMetadataNoHighlightFields != null
+                                            && additionalMetadataNoHighlightFields.contains(docFieldName)) {
                                         // No highlighting
                                         if (!addedValues.contains(docFieldName + ":" + translatedValue)) {
                                             ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "",
@@ -451,7 +454,8 @@ public class SearchHitFactory {
                                     if (sb.length() > 0) {
                                         sb.append(", ");
                                     }
-                                    if (additionalMetadataNoHighlightFields != null && additionalMetadataNoHighlightFields.contains(entry.getKey())) {
+                                    if (additionalMetadataNoHighlightFields != null
+                                            && additionalMetadataNoHighlightFields.contains(entry.getKey())) {
                                         // No highlighting
                                         sb.append(translatedValue);
                                     } else {
@@ -496,7 +500,8 @@ public class SearchHitFactory {
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    if (additionalMetadataNoHighlightFields != null && additionalMetadataNoHighlightFields.contains(entry.getKey())) {
+                                    if (additionalMetadataNoHighlightFields != null
+                                            && additionalMetadataNoHighlightFields.contains(entry.getKey())) {
                                         // No highlighting
                                         if (!addedValues.contains(entry.getKey() + ":" + translatedValue)) {
                                             ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", translatedValue))

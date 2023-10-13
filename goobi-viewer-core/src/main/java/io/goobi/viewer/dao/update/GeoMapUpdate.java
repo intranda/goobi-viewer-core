@@ -84,7 +84,7 @@ public class GeoMapUpdate implements IModelUpdate {
             }
             maps.add(geomap);
         }
-        
+
         return maps;
     }
 
@@ -131,7 +131,7 @@ public class GeoMapUpdate implements IModelUpdate {
             }
 
         }
-        
+
         return featureSets;
     }
 

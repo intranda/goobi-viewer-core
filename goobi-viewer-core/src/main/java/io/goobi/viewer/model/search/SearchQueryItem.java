@@ -244,7 +244,7 @@ public class SearchQueryItem implements Serializable {
     public boolean isAllFields() {
         return ADVANCED_SEARCH_ALL_FIELDS.equals(field);
     }
-    
+
     /**
      *
      * @return

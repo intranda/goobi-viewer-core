@@ -789,15 +789,15 @@ public class StringTools {
         cleaned = Paths.get(cleaned).getFileName().toString();
         return cleaned;
     }
-    
+
     public static int sortByList(String v1, String v2, List<String> sorting) {
         int i1 = sorting.indexOf(v1);
         int i2 = sorting.indexOf(v2);
-        if(i1 > -1 && i2 > -1) {
+        if (i1 > -1 && i2 > -1) {
             return i1 - i2;
-        } else if(i1 > -1) {
+        } else if (i1 > -1) {
             return -1;
-        } else if(i2 > -1) {
+        } else if (i2 > -1) {
             return 1;
         } else {
             return v1.compareTo(v2);

@@ -55,12 +55,12 @@ public class RelatedDocumentSearch implements Serializable {
 
     private final transient SolrSearchIndex searchIndex;
     private final SearchBean searchBean;
-    
+
     public RelatedDocumentSearch(SolrSearchIndex searchIndex, SearchBean searchBean) {
         this.searchIndex = searchIndex;
         this.searchBean = searchBean;
     }
-    
+
     public RelatedDocumentSearch() {
         this(DataManager.getInstance().getSearchIndex(), BeanUtils.getSearchBean());
     }
@@ -69,18 +69,18 @@ public class RelatedDocumentSearch implements Serializable {
         List<String> ids = getRelatedProcessIdentifier(pi, relationshipField);
         String searchString = String.format(SEARCH_STRING_FORMAT, ids.stream().collect(Collectors.joining(SEARCH_STRING_IDENTIFIER_SEPARATOR)));
         return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", searchString, 1, searchBean.getSortString(), "-");
-        
-//        searchBean.setExactSearchString(searchString);
-//        return "pretty:newSearch5";
+
+        //        searchBean.setExactSearchString(searchString);
+        //        return "pretty:newSearch5";
     }
-    
+
     private List<String> getRelatedProcessIdentifier(String pi, String relationshipField) throws PresentationException, IndexUnreachableException {
-        
+
         return this.searchIndex.search(String.format(SEARCH_RELATIONSHIP_FORMAT, relationshipField, pi), List.of(RELATIONSHIP_ID_REFERENCE))
-        .stream().map(doc -> SolrTools.getSingleFieldStringValue(doc, RELATIONSHIP_ID_REFERENCE)).collect(Collectors.toList());
-        
+                .stream()
+                .map(doc -> SolrTools.getSingleFieldStringValue(doc, RELATIONSHIP_ID_REFERENCE))
+                .collect(Collectors.toList());
+
     }
-    
-     
-    
+
 }

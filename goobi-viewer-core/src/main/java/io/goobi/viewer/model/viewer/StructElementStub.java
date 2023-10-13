@@ -776,9 +776,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     public boolean isHasMetadata(String fieldName) {
-       return this.getMetadataFields().containsKey(fieldName);
+        return this.getMetadataFields().containsKey(fieldName);
     }
-    
+
     /**
      * <p>
      * getMultiLanguageMetadataValue.

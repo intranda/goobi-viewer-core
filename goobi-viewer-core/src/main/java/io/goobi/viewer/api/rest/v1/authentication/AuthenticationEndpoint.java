@@ -75,7 +75,6 @@ public class AuthenticationEndpoint {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-   
 
     /**
      * <p>

@@ -67,14 +67,14 @@ public class TermsOfUseBean implements Serializable {
 
     public String getTitle() {
         return this.termsOfUse.map(t -> t.getTitleIfExists(BeanUtils.getLocale().getLanguage())
-                    .orElse(t.getTitleIfExists(BeanUtils.getDefaultLocale().getLanguage())
+                .orElse(t.getTitleIfExists(BeanUtils.getDefaultLocale().getLanguage())
                         .orElse("")))
                 .orElse("");
     }
 
     public String getDescription() {
         return this.termsOfUse.map(t -> t.getDescriptionIfExists(BeanUtils.getLocale().getLanguage())
-                    .orElse(t.getDescriptionIfExists(BeanUtils.getDefaultLocale().getLanguage())
+                .orElse(t.getDescriptionIfExists(BeanUtils.getDefaultLocale().getLanguage())
                         .orElse("")))
                 .orElse("");
     }

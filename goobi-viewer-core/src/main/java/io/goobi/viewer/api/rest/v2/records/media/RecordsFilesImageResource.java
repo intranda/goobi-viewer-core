@@ -105,7 +105,7 @@ public class RecordsFilesImageResource extends ImageResource {
         String imageRequestPath = requestUrl.substring(baseEndIndex);
 
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        if(parts.size() == 4) {
+        if (parts.size() == 4) {
             //image request
             String region = parts.get(0);
             String size = parts.get(1);
@@ -116,10 +116,11 @@ public class RecordsFilesImageResource extends ImageResource {
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
             int maxUnzoomedImageWidth = DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
-            if(maxUnzoomedImageWidth > 0 &&
+            if (maxUnzoomedImageWidth > 0 &&
                     (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) ||
-                    scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
-                request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, new String[] {IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES});
+                            scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
+                request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE,
+                        new String[] { IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES });
             }
         } else {
             //image info request
@@ -131,7 +132,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = {"records"}, summary = "Returns the image for the given filename as PDF")
+    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();
@@ -140,7 +141,7 @@ public class RecordsFilesImageResource extends ImageResource {
         filename = pi + "_" + filename + ".pdf";
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-        if(context.getProperty("param:metsSource") != null) {
+        if (context.getProperty("param:metsSource") != null) {
             try {
                 String metsSource = context.getProperty("param:metsSource").toString();
                 String metsPath = PathConverter.getPath(PathConverter.toURI(metsSource)).resolve(pi + ".xml").toUri().toString();
@@ -160,7 +161,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 3.0 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
-       return super.redirectToCanonicalImageInfo();
+        return super.redirectToCanonicalImageInfo();
     }
 
     @Override

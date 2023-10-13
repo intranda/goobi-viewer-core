@@ -328,20 +328,20 @@ public abstract class AbstractBuilder {
     protected boolean contained(String field, List<String> displayFields) {
         return displayFields.stream().anyMatch(displayField -> matches(field, displayField));
     }
-    
+
     private boolean matches(String field, String template) {
-        
+
         String cleanedTemplate = template.replace("*", "");
         String cleanedField = field.replaceAll("_LANG_\\w{2,3}", "");
-        if(template.startsWith("*") && template.endsWith("*")) {
+        if (template.startsWith("*") && template.endsWith("*")) {
             return cleanedField.contains(cleanedTemplate);
-        } else if(template.startsWith("*")) {
+        } else if (template.startsWith("*")) {
             return cleanedField.endsWith(cleanedTemplate);
-        } else if(template.endsWith("*")) {
+        } else if (template.endsWith("*")) {
             return cleanedField.startsWith(cleanedTemplate);
         } else {
             return Objects.equals(cleanedTemplate, cleanedField);
-        }        
+        }
     }
 
     /**

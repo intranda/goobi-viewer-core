@@ -29,7 +29,7 @@ public class AbstractTaskManagerRequest {
     public String pi;
     public String logId;
     public String language;
-    
+
     public AbstractTaskManagerRequest(String type) {
         this.jobtype = "VIEWERDOWNLOAD";
         this.type = type;
@@ -42,6 +42,5 @@ public class AbstractTaskManagerRequest {
     public String getType() {
         return type;
     }
-    
-    
+
 }

@@ -92,13 +92,13 @@ public class MessageQueueBean implements Serializable {
 
     private boolean paused;
 
-    @Inject 
+    @Inject
     private transient MessageQueueManager messageBroker;
-    
+
     @Inject
     @Push
     PushContext messageQueueState;
-    
+
     private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
 
     public MessageQueueBean() {
@@ -115,7 +115,7 @@ public class MessageQueueBean implements Serializable {
     public void init() {
 
         if (this.messageBrokerStart) {
-            
+
             try {
                 connection = messageBroker.getConnection();
                 queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -128,13 +128,13 @@ public class MessageQueueBean implements Serializable {
         }
 
     }
-    
+
     @PreDestroy
     public void close() throws JMSException {
         if (this.queueSession != null) {
             this.queueSession.close();
         }
-        if(this.connection != null) {
+        if (this.connection != null) {
             this.connection.close();
         }
     }
@@ -150,20 +150,22 @@ public class MessageQueueBean implements Serializable {
 
     public void pauseQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-                paused = this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_VIEWER) && this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_PDF);
+            paused = this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_VIEWER)
+                    && this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_PDF);
         }
     }
 
     public void resumeQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            paused = !(this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_VIEWER) && this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_PDF));
+            paused = !(this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_VIEWER)
+                    && this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_PDF));
         }
     }
 
     public void clearQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-           this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_VIEWER);
-           this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_PDF);
+            this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_VIEWER);
+            this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_PDF);
         }
     }
 
@@ -184,13 +186,13 @@ public class MessageQueueBean implements Serializable {
     public List<ViewerMessage> getActiveQueryMesssages() {
         return getQueryMessages(this.messageType);
     }
-    
+
     public List<ViewerMessage> getQueryMessages(String messageType) {
 
         if (this.messageBroker != null && DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             return this.messageBroker.getWaitingMessages(messageType);
         }
-        
+
         return new ArrayList<>();
     }
 
@@ -213,7 +215,7 @@ public class MessageQueueBean implements Serializable {
      */
 
     public void deleteMessage(ViewerMessage ticket) {
-        
+
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             this.messageBroker.deleteMessage(ticket);
         }
@@ -279,7 +281,7 @@ public class MessageQueueBean implements Serializable {
     public TableDataProvider<ViewerMessage> getLazyModelViewerHistory() {
         return lazyModelViewerHistory;
     }
-    
+
     public void updateMessageQueueState() {
         messageQueueState.send("update");
         cleanOldMessages();
@@ -288,14 +290,14 @@ public class MessageQueueBean implements Serializable {
     private void cleanOldMessages() {
         try {
             int deleteAfterDays = DataManager.getInstance().getConfiguration().getActiveMQMessagePurgeInterval();
-            if(deleteAfterDays > 0) {                
-                LocalDateTime before =  LocalDateTime.now().minusDays(deleteAfterDays);
+            if (deleteAfterDays > 0) {
+                LocalDateTime before = LocalDateTime.now().minusDays(deleteAfterDays);
                 DataManager.getInstance().getDao().deleteViewerMessagesBefore(before);
             }
         } catch (DAOException e) {
             log.error(e);
         }
-        
+
     }
 
 }
