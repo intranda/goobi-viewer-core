@@ -109,6 +109,8 @@ public class FacetItem implements Serializable, IFacetItem {
         this.label = label;
         this.hierarchial = hierarchical;
         setLink(link.trim());
+        this.translatedLabel = DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(field)
+                ? ViewerResourceBundle.getTranslation(this.label, BeanUtils.getLocale()) : this.label;
     }
 
     public FacetItem(Count count) {
