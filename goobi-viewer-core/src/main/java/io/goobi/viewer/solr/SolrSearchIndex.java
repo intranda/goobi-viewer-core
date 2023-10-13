@@ -297,7 +297,7 @@ public class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(SolrTools.cleanUpQuery(fq));
-                logger.trace("adding filter query: {}", fq);
+                // logger.trace("adding filter query: {}", fq)
             }
         }
         if (params != null && !params.isEmpty()) {
@@ -333,7 +333,7 @@ public class SolrSearchIndex {
                 throw new PresentationException("Bad query: " + e.getMessage());
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()),
-                    solrQuery.getQuery(), e);
+                    solrQuery.getQuery());
             throw new IndexUnreachableException(e.getMessage());
         } catch (IOException e) {
             throw new IndexUnreachableException(e.getMessage());
