@@ -72,7 +72,7 @@
                 <!-- METADATA -->
                 <ui:fragment>
                     <div class="search-list__hit-metadata-first">
-                        <ui:repeat value="#{browseElement.metadataListForCurrentLocale}" var="browseElementMetadata">
+                        <c:forEach items="#{browseElement.metadataListForCurrentLocale}" var="browseElementMetadata">
                             <h:panelGroup rendered="#{!browseElementMetadata.blank}">
                                 <div class="search-list__hit-text">
                                     <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
@@ -91,7 +91,7 @@
                                     <!-- Custom multivalue separator-->
                                     <ui:fragment rendered="#{browseElementMetadata.separator != null}">
                                         <span class="metadata__element-wrapper-single-custom-wrapper search-list__hit-text-value">
-                                            <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
+                                            <c:forEach var="val" items="#{browseElementMetadata.values}" varStatus="status">
                                                 <ui:fragment rendered="#{browseElementMetadata.separator != null}">
                                                     <ui:fragment rendered="#{status.index gt 0}">
                                                         <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
@@ -104,19 +104,19 @@
                                                         </h:outputFormat>
                                                     </span>
                                                 </ui:fragment>
-                                            </ui:repeat>
+                                            </c:forEach>
                                         </span>
                                     </ui:fragment>
                                 </div>
                             </h:panelGroup>
-                        </ui:repeat>
+                        </c:forEach>
                     </div>
                 </ui:fragment>
                     
                 <!-- SECONDARY METADATA (ONLY FOR TILE VIEW) -->
                 <ui:fragment rendered="#{not empty browseElement.secondaryMetadataListForCurrentLocale}">
                     <div class="search-list__hit-metadata-second">
-                        <ui:repeat value="#{browseElement.secondaryMetadataListForCurrentLocale}" var="browseElementMetadata">
+                        <c:forEach items="#{browseElement.secondaryMetadataListForCurrentLocale}" var="browseElementMetadata">
                             <h:panelGroup rendered="#{!browseElementMetadata.blank}">
                                 <div class="search-list__hit-text">
                                     <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
@@ -135,7 +135,7 @@
                                     <!-- Custom multivalue separator-->
                                     <ui:fragment rendered="#{browseElementMetadata.separator != null}">
                                         <span class="metadata__element-wrapper-single-custom-wrapper search-list__hit-text-value">
-                                            <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
+                                            <c:forEach var="val" items="#{browseElementMetadata.values}" varStatus="status">
                                                 <ui:fragment rendered="#{browseElementMetadata.separator != null}">
                                                     <ui:fragment rendered="#{status.index gt 0}">
                                                         <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
@@ -148,12 +148,12 @@
                                                         </h:outputFormat>
                                                     </span>
                                                 </ui:fragment>
-                                            </ui:repeat>
+                                            </c:forEach>
                                         </span>
                                     </ui:fragment>
                                 </div>
                             </h:panelGroup>
-                        </ui:repeat>
+                        </c:forEach>
                     </div>
                 </ui:fragment>
 

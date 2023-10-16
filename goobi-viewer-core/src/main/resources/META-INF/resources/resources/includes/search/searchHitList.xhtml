@@ -87,12 +87,12 @@
         <div class="clearfix"></div>
         
         <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
-            <ui:repeat value="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
+            <c:forEach items="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
                 <ui:fragment rendered="#{not empty resultGroup.hits}">
                     <ui:fragment rendered="#{searchBean.displayResultGroupNames}">
                         <h2>#{msg[resultGroup.name]} (#{resultGroup.hitsCount})</h2>
                     </ui:fragment>
-                    <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
+                    <c:forEach items="#{resultGroup.hits}" var="hit" varStatus="status">
                         <div class="search-list__hit #{hit.cssClass}">
                 
                             <!-- COinS IMPLEMENTATION -->
@@ -189,13 +189,13 @@
                             </div>
 							</ui:fragment>
                         </div>
-                    </ui:repeat>
+                    </c:forEach>
                     <!-- EXPAND LINK -->
                     <ui:fragment rendered="#{groupPreviewMode and searchBean.activeResultGroupName eq '-' and resultGroup.displayExpandUrl}">
                         <a href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records}</a>
                     </ui:fragment>
                 </ui:fragment>
-            </ui:repeat>
+            </c:forEach>
         </h:form>
 
         <!-- PAGINATOR -->
