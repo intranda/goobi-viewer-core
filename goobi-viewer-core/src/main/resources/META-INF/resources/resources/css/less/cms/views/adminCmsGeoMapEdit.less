@@ -5,9 +5,20 @@
 
 /* TO DO GEO MAPS STRUCTURE XHTML, LESS */
 .admin {
+	&__geomap-edit-delete-wrapper {
+margin-top: 5px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+	}
   &__empty_form {
   }
-
+	#mapPanel {
+		margin-top: 25px;
+		#geomap {
+			display: block;
+		}
+	}
   &__content-inner-content {
     padding: 15px;
     .row > form {
@@ -107,14 +118,21 @@
     }
     .cms__geomap {
 		&__featureset_panel {
-			padding: 5px; 
-			margin: 5px 0;
-			border: 1px solid black;
-			z-index: 0;
-			&.-active {
-				border-color: limegreen;
+			width: 100%; 
+		  background: #f7f7f7;
+		  border: 1px solid #ddd;
+		  padding: 2rem;
+		  margin-bottom: 2.5rem;
+		&:hover {
+			.admin__content-component-delete {
+				opacity: 1;
 			}
-			select {
+		}
+			&.-active {
+				// border-color: #222;
+				background: #f2fff2;
+			}
+			select { 
 				z-index: 10;
 			}
 		}
@@ -140,6 +158,7 @@
       visibility: hidden;
       &.in {
         visibility: visible;
+		display: none;
       }
     }
     &__option_control {

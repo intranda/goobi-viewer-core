@@ -61,78 +61,86 @@
 					<h:form id="geoMapEditForm" prependId="false">
 						<h2>#{msg.cms__geomaps__metadata__title}</h2>
 						<h:panelGroup id="metadataPanel">
-							<ul class="nav nav-tabs" role="tablist">
-								<ui:repeat value="#{navigationHelper.supportedLanguages}"
-									var="language" varStatus="status">
-									<li role="presentation"
-										class="#{language == geoMapBean.selectedLanguage ? 'active' : ''}">
-										<!--                                     <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a> -->
-										<h:commandLink
-											action="#{geoMapBean.setSelectedLanguage(language)}"
-											value="#{language}" styleClass="-bluelink">
-											<f:passThroughAttribute name="role" value="tab" />
-											<f:ajax render="metadataPanel"></f:ajax>
-										</h:commandLink>
-									</li>
-								</ui:repeat>
-							</ul>
-							<div class="tab-content">
+						
+						<div class="admin__language-tabs">
+							<viewerComponent:localeSelector object="#{geoMapBean}" render="metadataPanel" />
+						</div>
+						 
+						
+<!-- 							<ul class="nav nav-tabs" role="tablist"> -->
+<!-- 								<ui:repeat value="#{navigationHelper.supportedLanguages}" -->
+<!-- 									var="language" varStatus="status"> -->
+									
+									
+									
+									
+<!-- 									<li role="presentation" -->
+<!-- 										class="#{language == geoMapBean.selectedLanguage ? 'active' : ''}"> -->
+<!-- 										                                    <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a> -->
+<!-- 										<h:commandLink -->
+<!-- 											action="#{geoMapBean.setSelectedLanguage(language)}" -->
+<!-- 											value="#{language}" styleClass="-bluelink"> -->
+<!-- 											<f:passThroughAttribute name="role" value="tab" /> -->
+<!-- 											<f:ajax render="metadataPanel"></f:ajax> -->
+<!-- 										</h:commandLink> -->
+<!-- 									</li> -->
+<!-- 								</ui:repeat> -->
+<!-- 							</ul> -->
+							
+							
+							
+							<div class="admin__default-block">
 								<ui:param name="language" value="de"></ui:param>
 								<!--                         	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
-								<div role="tabpanel" class="tab-pane active"
-									id="nameLanguage-#{geoMapBean.selectedLanguage}">
+								<div id="nameLanguage-#{geoMapBean.selectedLanguage}">
 
-									<div class="admin__content-inner-content__input_form">
+									<div class="admin__content-inner-content">
 										<!-- TITLE -->
-										<div class="input_form__option_group">
-											<div class="input_form__option_label">
-												<label for="mapTitle">#{msg.name}:</label>
+										<div class="form-group form-row">
+											<div class="col-2 control-label admin__form-label">
+												<label for="mapTitle">#{msg.name}<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}">*</ui:fragment>:</label>
 											</div>
-											<div
-												class="input_form__option_marker #{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language ? 'in' : ''}">
-												<div>*</div>
-											</div>
-											<div class="input_form__option_control">
+
+											<div class="col-9 admin__form-input cms-module__option-control">
 												<h:inputText id="mapTitle" styleClass="form-control"
 													value="#{geoMapBean.currentMap.getTitle(geoMapBean.selectedLanguage).value}"
 													required="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}"
 													requiredMessage="#{msg.error__title_required}" />
+												<div id="titleHelp"
+													class="admin__form-help-text">#{msg.cms__geomaps__metadata_title__help}</div>
 											</div>
-											<div class="input_form__option_help">
+											<div class="col-1 admin__form-help-icon">
 												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" for="titleHelp"
+													data-toggle="helptext" 
 													aria-label="inline help icon">
 													<i class="fa fa-question-circle" aria-hidden="true"></i>
 												</button>
 											</div>
-											<div id="titleHelp"
-												class="input_form__option_control_helptext">#{msg.cms__geomaps__metadata_title__help}</div>
+
 										</div>
 
 										<!-- DESCRIPTION -->
-										<div class="input_form__option_group">
-											<div class="input_form__option_label">
-												<label for="mapDes">#{msg.description}:</label>
+										<div class="form-group form-row">
+											<div class="col-2 control-label admin__form-label">
+												<label for="mapDes">#{msg.description}<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}">*</ui:fragment>:</label>
 											</div>
-											<div class="input_form__option_marker">
-												<div>*</div>
-											</div>
-											<div class="input_form__option_control">
+											<div class="col-9 admin__form-input cms-module__option-control">
 												<h:inputTextarea id="mapDesc" styleClass="form-control"
 													value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).value}">
 													<f:passThroughAttribute name="aria-label"
 														value="#{msg.description}" />
 												</h:inputTextarea>
+											<div id="descHelp"
+												class="admin__form-help-text">#{msg.cms__geomaps__metadata_description__help}</div>
 											</div>
-											<div class="input_form__option_help">
+											<div class="col-1 admin__form-help-icon">
 												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" for="descHelp"
+													data-toggle="helptext" 
 													aria-label="inline help icon">
 													<i class="fa fa-question-circle" aria-hidden="true"></i>
 												</button>
 											</div>
-											<div id="descHelp"
-												class="input_form__option_control_helptext">#{msg.cms__geomaps__metadata_description__help}</div>
+
 										</div>
 									</div>
 								</div>
@@ -147,18 +155,17 @@
 						</div>
 
 						<h:panelGroup id="featureSetsPanel">
-							<div class="admin__content-inner-content__input_form">
+							<div class="admin__default-block">
 								<ui:repeat var="featureSet"
 									value="#{geoMapBean.currentMap.featureSets}" varStatus="status">
+									<div class="admin__language-tabs">
+										<viewerComponent:localeSelector object="#{featureSet.name}" render="featureSetsPanel"></viewerComponent:localeSelector>
+									</div>
 									<div id="panelFeatureSet_#{status.index}"
 										class="cms__geomap__featureset_panel #{geoMapBean.isActiveFeatureSet(featureSet) ? '-active' : '' }">
 										<div>
 											<h4>Featureset #{status.index+1}</h4>
-											<button data-require-confirmation="true"
-												data-confirmation-text="#{msg.cms__geomap__delete_featureset__confirm}"
-												data-confirmation-target="[data-delete-button-index='#{status.index}']">
-												<i class="fa fa-trash"></i>
-											</button>
+
 											<button class="d-none" aria-hidden="true"
 												jsf:action="#{geoMapBean.removeFeatureSet(geoMapBean.currentMap, featureSet)}"
 												data-delete-button-index='#{status.index}'>
@@ -167,36 +174,34 @@
 													render="mapPanel featureSetsPanel"></f:ajax>
 											</button>
 										</div>
-										<div>
+
 											<!-- FEATURESET NAME -->
-											<div class="input_form__option_group">
-												<div class="input_form__option_label">
-													<label for="featureset_#{status.index}_name">#{msg.name}:</label>
+											<div class="form-group form-row">
+												<div class="col-2 control-label admin__form-label">
+													<label for="featureset_#{status.index}_name">#{msg.name}<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}">*</ui:fragment>:</label>
 												</div>
-												<div class="input_form__option_marker"></div>
-												<div class="input_form__option_control">
-													<viewerComponent:localeSelector object="#{featureSet.name}" render="featureSetsPanel"></viewerComponent:localeSelector>
+												<div class="col-9 admin__form-input cms-module__option-control">
+													
 													<h:inputText id="featureset_#{status.index}_name" styleClass="form-control" value="#{featureSet.name.text}"/>
+													<div id="titleHelp" class="admin__form-help-text">#{msg.cms__geomaps__featureset_name__help}</div>
 												</div>
-												<div class="input_form__option_help">
+												<div class="col-1 admin__form-help-icon">
 													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" for="titleHelp"
+														data-toggle="helptext" 
 														aria-label="inline help icon">
 														<i class="fa fa-question-circle" aria-hidden="true"></i>
 													</button>
 												</div>
-												<div id="titleHelp"
-													class="input_form__option_control_helptext">#{msg.cms__geomaps__featureset_name__help}</div>
+
 											</div>
 											<!-- MARKER -->
-											<div class="input_form__option_group">
-												<div class="input_form__option_label">
-													<label for="mapMarker">#{msg.cms__geomaps__marker__label}:</label>
+											<div class="form-group form-row">
+												<!-- LABEL -->
+												<div class="col-2 control-label admin__form-label">
+													<label for="mapMarker">#{msg.cms__geomaps__marker__label}<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}">*</ui:fragment>:</label>
 												</div>
-												<div class="input_form__option_marker">
-													<div>*</div>
-												</div>
-												<div class="input_form__option_control">
+												<!-- INPUT -->
+												<div class="col-9 admin__form-input cms-module__option-control">
 													<div class="custom-control custom-control--select">
 														<h:selectOneMenu id="mapMarker" styleClass="form-control"
 															value="#{featureSet.marker}" required="false"
@@ -207,28 +212,29 @@
 															<f:ajax execute="mapPanel" render="mapPanel" />
 														</h:selectOneMenu>
 													</div>
+													<!-- HELP TEXT -->
+													<div id="markerHelp" class="admin__form-help-text">#{msg.cms__geomaps__marker__help}</div>
 												</div>
-												<div class="input_form__option_help">
+												
+												<!-- HELP BUTTON -->
+												<div class="col-1 admin__form-help-icon">
 													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" for="markerHelp"
+														data-toggle="helptext" 
 														aria-label="inline help icon">
 														<i class="fa fa-question-circle" aria-hidden="true"></i>
 													</button>
 												</div>
-												<div id="markerHelp"
-													class="input_form__option_control_helptext">#{msg.cms__geomaps__marker__help}</div>
+											
 											</div>
-										</div>
+
 										<!-- SOLR QUERY -->
 										<ui:fragment rendered="#{featureSet.queryResultSet}">
-											<div class="input_form__option_group">
-												<div class="input_form__option_label">
-													<label for="solrQueryInput">#{msg.cms__geomaps__solrquery__label}:</label>
+											<div class="form-group form-row">
+												<div class="col-2 control-label admin__form-label">
+													<label for="solrQueryInput">#{msg.cms__geomaps__solrquery__label}*:</label>
 												</div>
-												<div class="input_form__option_marker in">
-													<div>*</div>
-												</div>
-												<div class="input_form__option_control">
+
+												<div class="col-9 admin__form-input cms-module__option-control">
 													<div class="input_form__option-message">
 														<h:messages for="solrQueryInput"
 															infoClass="cms-module__option-message-status success"
@@ -247,26 +253,24 @@
 															for="solrQueryInput" />
 														<f:ajax event="blur" render="mapPanel" />
 													</h:inputText>
-												</div>
-												<div class="input_form__option_help">
+													<div id="queryHelp"
+														class="admin__form-help-text">#{msg.cms__geomaps__solrquery__help}</div>
+													</div>
+												<div class="col-1 admin__form-help-icon">
 													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" for="queryHelp"
+														data-toggle="helptext"
 														aria-label="inline help icon">
 														<i class="fa fa-question-circle" aria-hidden="true"></i>
 													</button>
 												</div>
-												<div id="queryHelp"
-													class="input_form__option_control_helptext">#{msg.cms__geomaps__solrquery__help}</div>
+
 											</div>
-											<!-- PUPUP CONTENT -->
-											<div class="input_form__option_group">
-												<div class="input_form__option_label">
-													<label for="popupContent">#{msg.cms__geomaps__popup_content__label}:</label>
+											<!-- POPUP CONTENT -->
+											<div class="form-group form-row">
+												<div class="col-2 control-label admin__form-label">
+													<label for="popupContent">#{msg.cms__geomaps__popup_content__label}*:</label>
 												</div>
-												<div class="input_form__option_marker">
-													<div>*</div>
-												</div>
-												<div class="input_form__option_control">
+												<div class="col-9 admin__form-input cms-module__option-control">
 													<div class="custom-control custom-control--select">
 														<h:selectOneMenu id="popupContent"
 															styleClass="form-control"
@@ -281,8 +285,10 @@
 															<f:ajax execute="mapPanel" render="mapPanel" />
 														</h:selectOneMenu>
 													</div>
+													<div id="popupContentHelp_#{status.index}"
+														class="admin__form-help-text">#{msg.cms__geomaps__popup_content__help}</div>
 												</div>
-												<div class="input_form__option_help">
+												<div class="col-1 admin__form-help-icon">
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext"
 														for="popupContentHelp_#{status.index}"
@@ -290,68 +296,85 @@
 														<i class="fa fa-question-circle" aria-hidden="true"></i>
 													</button>
 												</div>
-												<div id="popupContentHelp_#{status.index}"
-													class="input_form__option_control_helptext">#{msg.cms__geomaps__popup_content__help}</div>
+
 											</div>
 											<!-- AGGREGATE RESULTS -->
-											<div class="input_form__option_group">
-												<div class="input_form__option_label">
+											<div class="form-group form-row">
+												<div class="col-2 control-label admin__form-label">
 													<label for="featureset_#{status.index}_aggregation">#{msg.cms__geomaps__aggregate_query_results__label}:</label>
 												</div>
 												<div class="input_form__option_marker"></div>
-												<div class="input_form__option_control">
+												<div class="col-9 admin__form-input cms-module__option-control">
 													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/>
+													<div id="titleHelp"
+													class="admin__form-help-text">#{msg.cms__geomaps__aggregate_query_results__help}</div>
 												</div>
-												<div class="input_form__option_help">
+												<div class="col-1 admin__form-help-icon">
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext" for="titleHelp"
 														aria-label="inline help icon">
 														<i class="fa fa-question-circle" aria-hidden="true"></i>
 													</button>
 												</div>
-												<div id="titleHelp"
-													class="input_form__option_control_helptext">#{msg.cms__geomaps__aggregate_query_results__help}</div>
+
 											</div>
 										</ui:fragment>
+										
+										<div class="admin__geomap-edit-delete-wrapper">
+											<button class="admin__content-component-delete -redlink" data-require-confirmation="true"
+												data-confirmation-text="#{msg.cms__geomap__delete_featureset__confirm}"
+												data-confirmation-target="[data-delete-button-index='#{status.index}']">
+												#{msg.delete}
+											</button>
+										</div>
+											
+											
 									</div>
 								</ui:repeat>
 
 									<!-- ADD FEATURESET -->
-									<ui:param name="featureSetType" value="#{MANUAL}" />
-									<div class="input_form__option_group">
-										<div class="input_form__option_label">
-											<label>#{msg.cms__geomap__add_featureset}</label>
-										</div>
+									
+									<div class="admin__content-component-add-area">
+									
+									
+										<ui:param name="featureSetType" value="#{MANUAL}" />
+										
+										<div class="admin__content-component-add-area-label">#{msg.cms__geomap__add_featureset}</div>
 										<div class="input_form__option_marker in"></div>
-										<div class="input_form__option_control">
-											<div class="custom-control custom-control--select">
-												<h:selectOneMenu class="form-control" value="#{featureSetType}">
-													<f:selectItem itemValue="MANUAL"
-														itemLabel="#{msg.select__geomap_type__MANUAL}" />
-													<f:selectItem itemValue="SOLR_QUERY"
-														itemLabel="#{msg.select__geomap_type__SOLR_QUERY}" />
-												</h:selectOneMenu>
-											</div>
+										
+										
+										<div class="admin__content-component-add-select-wrapper">
+												<div class="custom-control custom-control--select">
+													<h:selectOneMenu class="form-control" value="#{featureSetType}">
+														<f:selectItem itemValue="MANUAL"
+															itemLabel="#{msg.select__geomap_type__MANUAL}" />
+														<f:selectItem itemValue="SOLR_QUERY"
+															itemLabel="#{msg.select__geomap_type__SOLR_QUERY}" />
+													</h:selectOneMenu>
+												</div>
+											<button class="btn btn--full"
+												jsf:action="#{geoMapBean.addFeatureSet(geoMapBean.currentMap, featureSetType)}">
+												#{msg.add}
+												<f:ajax execute="featureSetsPanel mapPanel"
+													render="mapPanel featureSetsPanel"></f:ajax>
+												<o:skipValidators />
+											</button>
 										</div>
-										<div class="input_form__option_help">
-													<button class="btn btn--full"
-														jsf:action="#{geoMapBean.addFeatureSet(geoMapBean.currentMap, featureSetType)}">
-														#{msg.add}
-														<f:ajax execute="featureSetsPanel mapPanel"
-															render="mapPanel featureSetsPanel"></f:ajax>
-														<o:skipValidators />
-													</button>
-										</div>
+
+									
 									</div>
+									
+									
+
 								</div>
 						</h:panelGroup>
 						<o:commandScript name="setActiveFeatureSet"
 							action="#{geoMapBean.setActiveFeatureSet}"
 							execute="viewInput featuresInput"
 							render="featureSetsPanel mapPanel" />
-						<h:panelGroup id="mapPanel">
+						<h:panelGroup layout="block" id="mapPanel">
 
-							<div class="admin__content-inner-content__input_form">
+							<div class="admin__default-block">
 
 								<div>#{msg.cms__geomaps__map__help}</div>
 								<map class="input_form__geomap" id="geomap"></map>
