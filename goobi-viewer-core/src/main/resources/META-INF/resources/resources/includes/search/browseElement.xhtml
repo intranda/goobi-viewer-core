@@ -79,13 +79,13 @@
                                 
                                     <!-- Default multivalue separator (new line) -->
                                     <ui:fragment rendered="#{browseElementMetadata.separator == null}">
-                                        <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
+                                        <c:forEach var="val" items="#{browseElementMetadata.values}" varStatus="status">
                                             <h:outputFormat value="#{msg[val.masterValue]}" escape="false" styleClass="search-list__hit-text-value">
                                                 <c:forEach begin="0" end="#{browseElementMetadata.paramCount - 0}" var="ind">
                                                     <f:param value="#{val.getComboValueShort(ind)}" />
                                                 </c:forEach>
                                             </h:outputFormat>
-                                        </ui:repeat>
+                                        </c:forEach>
                                     </ui:fragment>
                                 
                                     <!-- Custom multivalue separator-->
@@ -123,13 +123,13 @@
                                 
                                     <!-- Default multivalue separator (new line) -->
                                     <ui:fragment rendered="#{browseElementMetadata.separator == null}">
-                                        <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
+                                        <c:forEach var="val" items="#{browseElementMetadata.values}" varStatus="status">
                                             <h:outputFormat value="#{msg[val.masterValue]}" escape="false" styleClass="search-list__hit-text-value">
                                                 <c:forEach begin="0" end="#{browseElementMetadata.paramCount - 0}" var="ind">
                                                     <f:param value="#{val.getComboValueShort(ind)}" />
                                                 </c:forEach>
                                             </h:outputFormat>
-                                        </ui:repeat>
+                                        </c:forEach>
                                     </ui:fragment>
                                 
                                     <!-- Custom multivalue separator-->
