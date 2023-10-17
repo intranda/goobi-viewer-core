@@ -70,7 +70,7 @@
                                         <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
                                             <li>
                                                 <h:outputLink
-                                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                     #{msg[facet.translatedLabel]} (#{facet.count})
                                                     <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
                                                 </h:outputLink>

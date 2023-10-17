@@ -757,11 +757,14 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
-     * getDatePatternjQueryDatePicker.
-     * </p>
+     * Get the date/time pattern for the current locale for use with jQuery date picker.
+     * Uses the value of {@link #getDatePattern()} and adapts the month and year patterns in the following way:
+     * <ul>
+     * <li> MM --> mm </li>
+     * <li> yyyy --> yy </li>
+     * </ul>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a date pattern suitable for jquery date picker
      */
     public String getDatePatternjQueryDatePicker() {
         String pattern = getDatePattern();
