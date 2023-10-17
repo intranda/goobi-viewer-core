@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -51,6 +52,7 @@ import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
+import io.goobi.viewer.model.translations.IPolyglott;
 
 /**
  * Bean for managing {@link GeoMaps} in the admin Backend
@@ -60,7 +62,7 @@ import io.goobi.viewer.model.maps.SolrFeatureSet;
  */
 @Named
 @ViewScoped
-public class GeoMapBean implements Serializable {
+public class GeoMapBean implements Serializable, IPolyglott {
 
     private static final long serialVersionUID = 2602901072184103402L;
 
@@ -68,7 +70,7 @@ public class GeoMapBean implements Serializable {
 
     private ManualFeatureSet activeFeatureSet = null;
 
-    private String selectedLanguage;
+    private Locale selectedLanguage;
 
     private List<GeoMap> loadedMaps = null;
 
@@ -76,7 +78,7 @@ public class GeoMapBean implements Serializable {
      *
      */
     public GeoMapBean() {
-        this.selectedLanguage = BeanUtils.getNavigationHelper().getLocaleString();
+        this.selectedLanguage = BeanUtils.getNavigationHelper().getLocale();
     }
 
     /**
@@ -195,14 +197,14 @@ public class GeoMapBean implements Serializable {
     /**
      * @return the selectedLanguage
      */
-    public String getSelectedLanguage() {
+    public Locale getSelectedLanguage() {
         return selectedLanguage;
     }
 
     /**
      * @param selectedLanguage the selectedLanguage to set
      */
-    public void setSelectedLanguage(String selectedLanguage) {
+    public void setSelectedLanguage(Locale selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
     }
 
@@ -356,5 +358,54 @@ public class GeoMapBean implements Serializable {
         } else {
             return geomap;
         }
+    }
+
+    /**
+     * Return true if the the current geomap is not null and its title in the given locale is not empty
+     * and the description is either not empty for the current locale of the description for the default
+     * locale is empty.
+     * Otherwise return false
+     */
+    @Override
+    public boolean isComplete(Locale locale) {
+        if(this.currentMap != null && locale != null) {
+            return
+                    !this.currentMap.getTitle(locale.getLanguage()).isEmpty() &&
+                    (this.currentMap.getDescription(IPolyglott.getDefaultLocale().getLanguage()).isEmpty() || 
+                    !this.currentMap.getDescription(locale.getLanguage()).isEmpty());
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Return true if the the current geomap is not null and its tile in the given locale is not empty
+     * Otherwise return false
+     */
+    @Override
+    public boolean isValid(Locale locale) {
+        if(this.currentMap != null && locale != null) {
+            return !this.currentMap.getTitle(locale.getLanguage()).isEmpty();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * return false if {@link #isValid(Locale)} returns true and vice versa
+     */
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return !this.isValid(locale);
+    }
+
+    @Override
+    public Locale getSelectedLocale() {
+        return this.getSelectedLanguage();
+    }
+
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        this.setSelectedLanguage(locale);
     }
 }
