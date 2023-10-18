@@ -18,7 +18,7 @@
  -->
 <metadataEditor> 
 	<div if="{this.metadataList}">
-	<h2>Marker content</h2>
+	<h2>Pin content</h2>
 	<div class="admin__language-tabs">
 		<ul class="nav nav-tabs">
 				<li each="{language, index in this.opts.languages}"
