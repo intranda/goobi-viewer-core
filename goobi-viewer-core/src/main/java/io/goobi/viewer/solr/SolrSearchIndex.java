@@ -41,6 +41,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
@@ -69,11 +71,6 @@ import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.SpellingParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import de.intranda.monitoring.timer.Time;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -1045,7 +1042,6 @@ public class SolrSearchIndex {
             }
             logger.error("{} (this usually means Solr is returning an error); Query: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()),
                     solrQuery.getQuery());
-            e.printStackTrace();
             throw new IndexUnreachableException(e.getMessage());
         } catch (IOException e) {
             throw new IndexUnreachableException(e.getMessage());
