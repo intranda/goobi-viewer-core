@@ -46,16 +46,8 @@
 												var="metadata">
 												<ui:repeat value="#{metadata.values}" var="val">
 													<span class="tpl-search-list-custom__list-text-person">
-														<h:outputFormat value="#{msg[val.masterValue]}"
+														<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}"
 															escape="false">
-															<f:param
-																value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
-															<f:param
-																value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />
-															<f:param
-																value="#{val.paramValues[2] != null ? val.paramValues[2] : ''}" />
-															<f:param
-																value="#{val.paramValues[3] != null ? val.paramValues[3] : ''}" />
 														</h:outputFormat>
 													</span>
 												</ui:repeat>

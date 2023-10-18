@@ -45,6 +45,7 @@ import io.goobi.viewer.model.citation.CitationDataProvider;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.IPolyglott;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -457,9 +458,28 @@ public class MetadataValue implements Serializable {
     public void setOwnerIddoc(String ownerIddoc) {
         this.ownerIddoc = ownerIddoc;
     }
-
+    
+    public String getDisplayValue() {
+        return getDisplayValue(IPolyglott.getCurrentLocale());
+    }
+    
+    public String getDisplayValue(boolean includeLabels) {
+        return getDisplayValue(IPolyglott.getCurrentLocale(), includeLabels);
+    }
+    
     public String getDisplayValue(Locale locale) {
-        String[] comboValues = IntStream.range(0, paramValues.size()).mapToObj(this::getComboValueShort).toArray(String[]::new);
+        return getDisplayValue(locale, false);
+    }
+
+    public String getDisplayValue(Locale locale, boolean includeLabels) {
+        String[] comboValues = IntStream.range(0, paramValues.size()).mapToObj(ind -> {
+            String l = includeLabels ? getParamLabelWithColon(ind) : "";
+            String v = getComboValueShort(ind);
+            return List.of(l, v);
+        })
+        .flatMap(List::stream)
+        .filter(StringUtils::isNotBlank)
+        .toArray(String[]::new);
         return ViewerResourceBundle.getTranslationWithParameters(getMasterValue(), locale, comboValues);
     }
     
