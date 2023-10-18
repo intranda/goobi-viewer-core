@@ -6,13 +6,24 @@
 /* TO DO GEO MAPS STRUCTURE XHTML, LESS */
 .admin {
 	&__geomap-edit-delete-wrapper {
-margin-top: 5px;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-	a {
-		cursor: pointer;
+	margin-top: 5px;
+	  width: 100%;
+	  display: flex;
+	  // justify-content: space-between;
+		.admin__content-component-delete {
+			margin-left: auto;
+		}
+		a {
+			cursor: pointer;
+		}
 	}
+	&__geomap-edit-active-marker {
+		display: none;
+		.-activeFont {
+			cursor: pointer;
+			color: #5CB85C;
+			font-weight: 400; 
+		}
 	}
 	&__geopmap-edit-metadata-editor-wrapper {
 		margin-top: 30px;
@@ -138,13 +149,20 @@ margin-top: 5px;
 				opacity: 1;
 			}
 		}
-			&.-active {
-				// border-color: #222;
-				background: #f2fff2;
+		&.-active {
+			// border-color: #222; 
+			// border-width: 2px;
+			border-top: 3px solid #5CB85C;
+			// padding-left: 1.8rem;
+			margin-top: 1px;
+			// background: #f2fff2;
+			.admin__geomap-edit-active-marker {
+				display: block;
 			}
-			select { 
-				z-index: 10;
-			}
+		}
+		select { 
+			z-index: 10;
+		}
 		}
 	}
   }
