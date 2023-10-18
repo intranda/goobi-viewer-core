@@ -24,10 +24,9 @@ package io.goobi.viewer.model.metadata;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -39,13 +38,13 @@ public class MetadataView {
     private static final Logger logger = LogManager.getLogger(MetadataView.class);
 
     /** Metadata view index. The first entry implies the value 0, all subsequent entries must provide an index value. */
-    public int index = 0;
+    private int index = 0;
     /** Optional label for the link and the metadata page title. */
-    public String label;
+    private String label;
     /** URL schema suffix for the metadata page (/metadata<url>/). */
-    public String url = "";
+    private String url = "";
     /** Optional condition for link display. May contain a Solr field name or name:value pair. */
-    public String condition;
+    private String condition;
 
     /**
      * Checks link visibility conditions.

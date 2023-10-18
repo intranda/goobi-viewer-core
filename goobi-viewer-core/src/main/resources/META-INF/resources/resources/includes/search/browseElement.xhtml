@@ -94,8 +94,7 @@
                                                         <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
                                                     </ui:fragment>
                                                     <span class="metadata__element-wrapper-single-custom">
-                                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-                                                        </h:outputFormat>
+                                                        #{val.getDisplayValue(navigationHelper.locale)}
                                                     </span>
                                                 </ui:fragment>
                                             </ui:repeat>

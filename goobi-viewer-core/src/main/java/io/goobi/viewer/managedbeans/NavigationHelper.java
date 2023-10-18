@@ -499,7 +499,7 @@ public class NavigationHelper implements Serializable {
                 List<String> labelArray = labelIterator.next();
                 String key = labelArray.get(0);
                 String[] params = labelArray.subList(1, labelArray.size()).toArray(new String[labelArray.size() - 1]);
-                label = ViewerResourceBundle.getTranslationWithParameters(key, locale, params);
+                label = ViewerResourceBundle.getTranslationWithParameters(key, locale, true, params);
             } else {
                 label = ViewerResourceBundle.getTranslation(breadcrumbType.getLabel(), locale);
             }
@@ -757,11 +757,11 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Get the date/time pattern for the current locale for use with jQuery date picker.
-     * Uses the value of {@link #getDatePattern()} and adapts the month and year patterns in the following way:
+     * Get the date/time pattern for the current locale for use with jQuery date picker. Uses the value of {@link #getDatePattern()} and adapts the
+     * month and year patterns in the following way:
      * <ul>
-     * <li> MM --> mm </li>
-     * <li> yyyy --> yy </li>
+     * <li>MM --> mm</li>
+     * <li>yyyy --> yy</li>
      * </ul>
      *
      * @return a date pattern suitable for jquery date picker
@@ -1581,7 +1581,7 @@ public class NavigationHelper implements Serializable {
      * @should escape quotation marks
      */
     public String getTranslationWithParams(String msgKey, String... params) {
-        String msg = ViewerResourceBundle.getTranslationWithParameters(msgKey, null, params);
+        String msg = ViewerResourceBundle.getTranslationWithParameters(msgKey, null, true, params);
 
         // If msg contains unescaped quotation marks, it may interfere with calls to this method from JavaScript
         return StringEscapeUtils.escapeJava(msg);
@@ -1597,8 +1597,7 @@ public class NavigationHelper implements Serializable {
      * @should escape quotation marks
      */
     public String getTranslationWithParamsUnescaped(String msgKey, String... params) {
-        String msg = ViewerResourceBundle.getTranslationWithParameters(msgKey, null, params);
-        return msg;
+        return ViewerResourceBundle.getTranslationWithParameters(msgKey, null, true, params);
     }
 
     /**
@@ -1979,10 +1978,8 @@ public class NavigationHelper implements Serializable {
                             sb.getSortString(),
                             sb.getFacets().getActiveFacetString());
                     try {
-                        ViewerPath newPath =
-                                ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString())
-                                        .orElse(path);
-                        return newPath;
+                        return ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString())
+                                .orElse(path);
                     } catch (DAOException e) {
                         logger.error("Error creating search url with current random sort string", e);
                     }
@@ -2033,8 +2030,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public List<Integer> getRange(long from, long to) {
-        List<Integer> range = IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
-        return range;
+        return IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
     }
 
 }

@@ -65,7 +65,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
      */
     @Test
     public void replaceParameters_shouldReturnNullIfMsgIsNull() throws Exception {
-        Assert.assertNull(ViewerResourceBundle.replaceParameters(null, "one", "two", "three"));
+        Assert.assertNull(ViewerResourceBundle.replaceParameters(null, false, "one", "two", "three"));
     }
 
     /**
@@ -74,7 +74,17 @@ public class ViewerResourceBundleTest extends AbstractTest {
      */
     @Test
     public void replaceParameters_shouldReplaceParametersCorrectly() throws Exception {
-        Assert.assertEquals("one two three", ViewerResourceBundle.replaceParameters("{0} {1} {2}", "one", "two", "three"));
+        Assert.assertEquals("one two three", ViewerResourceBundle.replaceParameters("{0} {1} {2}", false, "one", "two", "three"));
+    }
+
+    /**
+     * @see ViewerResourceBundle#replaceParameters(String,boolean,String[])
+     * @verifies remove remaining placeholders correctly
+     */
+    @Test
+    public void replaceParameters_shouldRemoveRemainingPlaceholdersCorrectly() throws Exception {
+        Assert.assertEquals("one two three {3}", ViewerResourceBundle.replaceParameters("{0} {1} {2} {3}", false, "one", "two", "three"));
+        Assert.assertEquals("one two three", ViewerResourceBundle.replaceParameters("{0} {1} {2} {3}", true, "one", "two", "three"));
     }
 
     /**
@@ -191,7 +201,6 @@ public class ViewerResourceBundleTest extends AbstractTest {
         Assert.assertTrue(file.isFile());
         String fileContents = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
         Assert.assertEquals("foo = foo, bar", fileContents);
-
 
     }
 }

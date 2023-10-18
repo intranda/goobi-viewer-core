@@ -309,13 +309,15 @@ public class ViewerResourceBundle extends ResourceBundle {
      *
      * @param key a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
+     * @param removeRemainingPlaceholders If true, any placeholders in the value not replaced by params are removed
      * @param params One or more parameter values to replace the placeholders
      * @return a {@link java.lang.String} object.
      */
-    public static String getTranslationWithParameters(final String key, final Locale locale, final String... params) {
+    public static String getTranslationWithParameters(final String key, final Locale locale, boolean removeRemainingPlaceholders,
+            final String... params) {
         String ret = getTranslation(key, locale);
         if (params != null) {
-            ret = replaceParameters(ret, params);
+            ret = replaceParameters(ret, removeRemainingPlaceholders, params);
         }
 
         return ret;
@@ -324,16 +326,21 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      *
      * @param msg
+     * @param removeRemainingPlaceholders If true, any placeholders in the value not replaced by params are removed
      * @param params
      * @return
      * @should return null if msg is null
      * @should replace parameters correctly
+     * @should remove remaining placeholders correctly
      */
-    static String replaceParameters(final String msg, String... params) {
+    static String replaceParameters(final String msg, boolean removeRemainingPlaceholders, String... params) {
         String ret = msg;
         if (ret != null && params != null) {
             for (int i = 0; i < params.length; ++i) {
                 ret = ret.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
+            }
+            if (removeRemainingPlaceholders) {
+                ret = ret.replaceAll("\\{\\d+\\}", "").trim();
             }
         }
 

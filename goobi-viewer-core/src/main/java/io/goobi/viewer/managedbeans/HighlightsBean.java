@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -292,10 +291,11 @@ public class HighlightsBean implements Serializable {
             redirect = true;
         }
         if (saved) {
-            Messages.info(ViewerResourceBundle.getTranslationWithParameters("button__save__success", null, object.toString()));
+            Messages.info(ViewerResourceBundle.getTranslationWithParameters("button__save__success", null, true, object.toString()));
         } else {
             Messages.error(
-                    ViewerResourceBundle.getTranslationWithParameters("button__save__error", null, object != null ? object.toString() : "null"));
+                    ViewerResourceBundle.getTranslationWithParameters("button__save__error", null, true,
+                            object != null ? object.toString() : "null"));
         }
         if (redirect) {
             PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightsEdit", object.getData().getId()));
