@@ -829,6 +829,7 @@
 			<!-- field: defines index fields that are available for browsing. 
 				Only untokenized fields should be used. -->
 			<field sortField="SORT_AUTHOR" filterQuery="+DOCTYPE:DOCSTRCT" alwaysApplyFilter="true">MD_AUTHOR_UNTOKENIZED</field>
+            <field sortField="SORT_TITLE">MD_ARTIST_LANG_{}</field>
 			<field sortField="SORT_TITLE">MD_TITLE_LANG_DE_UNTOKENIZED</field>
 			<field sortField="SORT_TITLE">MD_TITLE_LANG_EN_UNTOKENIZED</field>
 			<!-- TODO: describe in the manual -->
