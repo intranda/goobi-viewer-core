@@ -65,8 +65,7 @@ public class QuartzBean implements Serializable {
     private Scheduler scheduler = null;
 
     public QuartzBean() throws SchedulerException {
-        scheduler = new StdSchedulerFactory().getScheduler();
-        initializePausedState();
+        this.reset();
     }
 
     private void initializePausedState() throws SchedulerException {
@@ -80,6 +79,11 @@ public class QuartzBean implements Serializable {
                 }
             }
         }
+    }
+    
+    public void reset() throws SchedulerException {
+        scheduler = new StdSchedulerFactory().getScheduler();
+        initializePausedState();
     }
 
     public List<QuartzJobDetails> getActiveJobs() throws SchedulerException {

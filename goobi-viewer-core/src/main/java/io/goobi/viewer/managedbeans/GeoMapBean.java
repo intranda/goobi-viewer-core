@@ -30,10 +30,14 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Faces;
+import org.quartz.SchedulerException;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -46,6 +50,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.job.mq.GeoMapUpdateHandler;
+import io.goobi.viewer.model.job.quartz.QuartzListener;
 import io.goobi.viewer.model.maps.FeatureSet;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
@@ -66,6 +72,8 @@ public class GeoMapBean implements Serializable, IPolyglott {
 
     private static final long serialVersionUID = 2602901072184103402L;
 
+    private static final Logger logger = LogManager.getLogger(GeoMapBean.class);
+
     private GeoMap currentMap = null;
 
     private ManualFeatureSet activeFeatureSet = null;
@@ -73,6 +81,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     private Locale selectedLanguage;
 
     private List<GeoMap> loadedMaps = null;
+
+    @Inject
+    private QuartzBean quartzBean;
 
     /**
      *
@@ -151,14 +162,30 @@ public class GeoMapBean implements Serializable, IPolyglott {
         } else {
             Messages.error("notify__save_map__error");
         }
+        updateGeoMapUpdateTask();
         this.loadedMaps = null;
         if (redirect) {
             PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.currentMap.getId()));
         }
     }
 
+    private void updateGeoMapUpdateTask() throws DAOException {
+        Object o = BeanUtils.getServletContext().getAttribute(QuartzListener.QUARTZ_LISTENER_CONTEXT_ATTRIBUTE);
+        if (o instanceof QuartzListener) {
+            try {
+                ((QuartzListener) o).restartTimedJobs();
+                if(this.quartzBean != null) {                    
+                    this.quartzBean.reset();
+                }
+            } catch (SchedulerException e) {
+                logger.error("Error updating quartz listeners after geomap update", e);
+            }
+        }
+    }
+
     public void deleteMap(GeoMap map) throws DAOException {
         DataManager.getInstance().getDao().deleteGeoMap(map);
+        updateGeoMapUpdateTask();
         this.loadedMaps = null;
     }
 
@@ -351,40 +378,35 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     public GeoMap getFromCache(GeoMap geomap) {
-        if (geomap != null && geomap.getId() != null && DataManager.getInstance().getConfiguration().isGeomapCachingEnabled()) {
+        if (geomap != null && geomap.getId() != null) {
             return BeanUtils.getPersistentStorageBean()
-                    .getIfRecentOrPut("cms_geomap_" + geomap.getId(), geomap,
-                            DataManager.getInstance().getConfiguration().getCMSGeomapCachingTimeToLive());
+                    .getIfRecentOrPut("cms_geomap_" + geomap.getId(), geomap, GeoMapUpdateHandler.getGeoMapTimeToLive());
         } else {
             return geomap;
         }
     }
 
     /**
-     * Return true if the the current geomap is not null and its title in the given locale is not empty
-     * and the description is either not empty for the current locale of the description for the default
-     * locale is empty.
-     * Otherwise return false
+     * Return true if the the current geomap is not null and its title in the given locale is not empty and the description is either not empty for
+     * the current locale of the description for the default locale is empty. Otherwise return false
      */
     @Override
     public boolean isComplete(Locale locale) {
-        if(this.currentMap != null && locale != null) {
-            return
-                    !this.currentMap.getTitle(locale.getLanguage()).isEmpty() &&
-                    (this.currentMap.getDescription(IPolyglott.getDefaultLocale().getLanguage()).isEmpty() || 
-                    !this.currentMap.getDescription(locale.getLanguage()).isEmpty());
+        if (this.currentMap != null && locale != null) {
+            return !this.currentMap.getTitle(locale.getLanguage()).isEmpty() &&
+                    (this.currentMap.getDescription(IPolyglott.getDefaultLocale().getLanguage()).isEmpty() ||
+                            !this.currentMap.getDescription(locale.getLanguage()).isEmpty());
         } else {
             return false;
         }
     }
 
     /**
-     * Return true if the the current geomap is not null and its tile in the given locale is not empty
-     * Otherwise return false
+     * Return true if the the current geomap is not null and its tile in the given locale is not empty Otherwise return false
      */
     @Override
     public boolean isValid(Locale locale) {
-        if(this.currentMap != null && locale != null) {
+        if (this.currentMap != null && locale != null) {
             return !this.currentMap.getTitle(locale.getLanguage()).isEmpty();
         } else {
             return false;

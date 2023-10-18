@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -56,9 +57,12 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.mq.GeoMapUpdateHandler;
 
 @WebListener
 public class QuartzListener implements ServletContextListener {
+
+    public static final String QUARTZ_LISTENER_CONTEXT_ATTRIBUTE = "io.goobi.viewer.model.job.quartz.QuartzListener";
 
     private static final Logger log = LogManager.getLogger(QuartzListener.class);
 
@@ -168,7 +172,7 @@ public class QuartzListener implements ServletContextListener {
         addTrigger(storedTriggers, triggers, TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_SITEMAP);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_UPLOAD_JOBS);
-        if (config.isGeomapCachingEnabled()) {
+        if (GeoMapUpdateHandler.shouldUpdateGeomaps()) {
             addTrigger(storedTriggers, triggers, TaskType.CACHE_GEOMAPS);
         } else if (storedTriggers.containsKey(TaskType.CACHE_GEOMAPS.name())) {
             dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.CACHE_GEOMAPS.name()).getId());
@@ -289,6 +293,8 @@ public class QuartzListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent evt) {
         try {
             startTimedJobs(evt.getServletContext());
+            Optional.ofNullable(evt).map(ServletContextEvent::getServletContext)
+            .ifPresent(context -> context.setAttribute(QUARTZ_LISTENER_CONTEXT_ATTRIBUTE, this));
             log.info("Successfully started QuartzListener scheduler");
         } catch (SchedulerException e) {
             log.error("QuartzListener scheduler could not be started", e);

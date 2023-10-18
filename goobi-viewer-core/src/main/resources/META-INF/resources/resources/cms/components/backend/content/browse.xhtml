@@ -41,7 +41,7 @@
 						<h:selectOneMenu id="browseTermSelect" styleClass="form-control"
 							value="#{cc.attrs.contentItem.content.solrField}">
 							<f:selectItems
-								value="#{browseBean.getBrowsingMenuItems(navigationHelper.localeString)}"
+								value="#{browseBean.configuredBrowsingMenuFields}"
 								var="field" itemValue="#{field}" itemLabel="#{field}" />
 						</h:selectOneMenu>
 					</div>
