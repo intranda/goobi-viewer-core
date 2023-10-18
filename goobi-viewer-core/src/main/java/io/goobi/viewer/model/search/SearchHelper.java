@@ -1663,11 +1663,12 @@ public final class SearchHelper {
      * @param bmfc
      * @param startsWith
      * @param filterQuery
+     * @param language
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static int getFilteredTermsCount(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery)
+    public static int getFilteredTermsCount(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, String language)
             throws PresentationException, IndexUnreachableException {
         if (bmfc == null) {
             throw new IllegalArgumentException("bmfc may not be null");
@@ -1676,7 +1677,7 @@ public final class SearchHelper {
         logger.trace("getFilteredTermsCount: {}", bmfc.getField());
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
-        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0);
+        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0, language);
         logger.trace("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
 
         if (bmfc.getField() == null) {
@@ -1684,7 +1685,7 @@ public final class SearchHelper {
         }
 
         int ret = 0;
-        String facetField = SearchHelper.facetifyField(bmfc.getField());
+        String facetField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
         for (Count count : resp.getFacetField(facetField).getValues()) {
             if (count.getCount() == 0
                     || (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase()))) {
@@ -1704,20 +1705,22 @@ public final class SearchHelper {
      * @param bmfc a {@link io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig} object.
      * @param startsWith a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
+     * @param start
+     * @param rows
      * @param comparator a {@link java.util.Comparator} object.
-     * @param aggregateHits a boolean.
+     * @param language Language for language-specific fields
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should be thread safe when counting terms
      */
     public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, int start, int rows,
-            Comparator<BrowseTerm> comparator) throws PresentationException, IndexUnreachableException {
+            Comparator<BrowseTerm> comparator, String language) throws PresentationException, IndexUnreachableException {
         if (bmfc == null) {
             throw new IllegalArgumentException("bmfc may not be null");
         }
 
-        logger.trace("getFilteredTerms: {}", bmfc.getField());
+        logger.trace("getFilteredTerms: {}", bmfc.getFieldForLanguage(language));
         List<BrowseTerm> ret = new ArrayList<>();
         ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
 
@@ -1728,7 +1731,7 @@ public final class SearchHelper {
 
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
-        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows);
+        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows, language);
         // logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
         if ("0-9".equals(startsWith)) {
             // TODO Is this still necessary?
@@ -1736,7 +1739,7 @@ public final class SearchHelper {
             Pattern p = Pattern.compile("[\\d]");
             // Use hits (if sorting field is provided)
             for (SolrDocument doc : resp.getResults()) {
-                Collection<Object> termList = doc.getFieldValues(bmfc.getField());
+                Collection<Object> termList = doc.getFieldValues(bmfc.getFieldForLanguage(language));
                 String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
                 Set<String> usedTermsInCurrentDoc = new HashSet<>();
                 for (Object o : termList) {
@@ -1767,7 +1770,7 @@ public final class SearchHelper {
                 }
             }
         } else {
-            String facetField = SearchHelper.facetifyField(bmfc.getField());
+            String facetField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
             if (resp.getResults().isEmpty() && resp.getFacetField(facetField) != null) {
                 // If only browsing records and anchors, use faceting
                 logger.trace("using faceting: {}", facetField);
@@ -1781,11 +1784,11 @@ public final class SearchHelper {
                 // Without filtering or using alphabetical filtering
                 // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
                 //                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, aggregateHits));
+                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, true, language));
 
                 // Sequential processing (doesn't break the sorting done by Solr)
                 for (SolrDocument doc : resp.getResults()) {
-                    processSolrResult(doc, bmfc, startsWith, terms, true);
+                    processSolrResult(doc, bmfc, startsWith, terms, true, language);
                 }
             }
         }
@@ -1815,19 +1818,20 @@ public final class SearchHelper {
      * @should contain facets for the main field
      */
     static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
-            int start, int rows) throws PresentationException, IndexUnreachableException {
+            int start, int rows, String language) throws PresentationException, IndexUnreachableException {
         List<String> fields = new ArrayList<>(3);
         fields.add(SolrConstants.PI_TOPSTRUCT);
-        fields.add(bmfc.getField());
+        fields.add(bmfc.getFieldForLanguage(language));
 
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append('+');
         // Only search via the sorting field if not doing a wildcard search
+        // TODO language-specific sort field
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField());
             fields.add(bmfc.getSortField());
         } else {
-            sbQuery.append(bmfc.getField());
+            sbQuery.append(bmfc.getFieldForLanguage(language));
         }
         sbQuery.append(":[* TO *] ");
         if (bmfc.isRecordsAndAnchorsOnly()) {
@@ -1853,10 +1857,7 @@ public final class SearchHelper {
             }
         }
 
-        String facetField = SearchHelper.facetifyField(bmfc.getField());
-        List<String> facetFields = new ArrayList<>();
-        facetFields.add(facetField);
-
+        List<String> facetFields = Collections.singletonList(SearchHelper.facetifyField(bmfc.getFieldForLanguage(language)));
         Map<String, String> params = new HashMap<>();
         if (logger.isTraceEnabled()) {
             logger.trace("row count: {}", DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries));
@@ -1884,11 +1885,12 @@ public final class SearchHelper {
      * @param startsWith
      * @param terms Map of terms collected so far.
      * @param aggregateHits
+     * @param language
      */
     private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith,
-            ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits) {
+            ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits, String language) {
         // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
-        Collection<Object> termList = doc.getFieldValues(bmfc.getField());
+        Collection<Object> termList = doc.getFieldValues(bmfc.getFieldForLanguage(language));
         if (termList == null) {
             return;
         }

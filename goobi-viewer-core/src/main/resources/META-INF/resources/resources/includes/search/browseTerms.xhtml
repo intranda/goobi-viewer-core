@@ -23,7 +23,7 @@
 				varStatus="status">
 				<!-- newSearch5 pattern link -->
 				<li><h:outputLink
-						value="#{navigationHelper.searchUrl}/-/#{browseBean.browsingMenuField}%3A%22#{term}%22/1/-/#{browseBean.filterQuery}/"
+						value="#{navigationHelper.searchUrl}/-/#{browseBean.getBrowsingMenuFieldForLanguage(navigationHelper.localeString)}%3A%22#{term}%22/1/-/#{browseBean.filterQuery}/"
 						title="#{browseBean.browseTermList[status.count-1]}">
 						<h:outputText value="#{browseBean.browseTermList[status.count-1]}"
 							escape="true" />
