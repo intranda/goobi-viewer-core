@@ -98,7 +98,7 @@
 										<!-- TITLE -->
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
-												<label for="mapTitle">#{msg.name}<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}">*</ui:fragment>:</label>
+												<label for="mapTitle">#{msg.name}:<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}"><span class="admin__label-required-field">(#{msg.form__required_field})</span></ui:fragment></label>
 											</div>
 
 											<div class="col-9 admin__form-input cms-module__option-control">
@@ -122,7 +122,7 @@
 										<!-- DESCRIPTION -->
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
-												<label for="mapDes">#{msg.description}<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}">*</ui:fragment>:</label>
+												<label for="mapDes">#{msg.description}:</label>
 											</div>
 											<div class="col-9 admin__form-input cms-module__option-control">
 												<h:inputTextarea id="mapDesc" styleClass="form-control"
@@ -147,7 +147,7 @@
 							</div>
 						</h:panelGroup>
 						<div class="admin__content-inner-content__form_title">
-							<h2>#{msg.cms__geomaps__map__title}</h2>
+							<h2>#{msg.cms__geomaps__map__content}</h2>
 							<span class="ajax_loader"> <img
 								src="#{request.contextPath}/resources/images/infinity_loader.gif"
 								class="img-responsive" alt="Waiting..." />
@@ -178,7 +178,7 @@
 											<!-- FEATURESET NAME -->
 											<div class="form-group form-row">
 												<div class="col-2 control-label admin__form-label">
-													<label for="featureset_#{status.index}_name">#{msg.name}<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}">*</ui:fragment>:</label>
+													<label for="featureset_#{status.index}_name">#{msg.name}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 												</div>
 												<div class="col-9 admin__form-input cms-module__option-control">
 													
@@ -198,7 +198,7 @@
 											<div class="form-group form-row">
 												<!-- LABEL -->
 												<div class="col-2 control-label admin__form-label">
-													<label for="mapMarker">#{msg.cms__geomaps__marker__label}<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}">*</ui:fragment>:</label>
+													<label for="mapMarker">#{msg.cms__geomaps__marker__label}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 												</div>
 												<!-- INPUT -->
 												<div class="col-9 admin__form-input cms-module__option-control">
@@ -231,7 +231,7 @@
 										<ui:fragment rendered="#{featureSet.queryResultSet}">
 											<div class="form-group form-row">
 												<div class="col-2 control-label admin__form-label">
-													<label for="solrQueryInput">#{msg.cms__geomaps__solrquery__label}*:</label>
+													<label for="solrQueryInput">#{msg.cms__geomaps__solrquery__label}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 												</div>
 
 												<div class="col-9 admin__form-input cms-module__option-control">
@@ -268,7 +268,7 @@
 											<!-- POPUP CONTENT -->
 											<div class="form-group form-row">
 												<div class="col-2 control-label admin__form-label">
-													<label for="popupContent">#{msg.cms__geomaps__popup_content__label}*:</label>
+													<label for="popupContent">#{msg.cms__geomaps__popup_content__label}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 												</div>
 												<div class="col-9 admin__form-input cms-module__option-control">
 													<div class="custom-control custom-control--select">
@@ -372,6 +372,10 @@
 							action="#{geoMapBean.setActiveFeatureSet}"
 							execute="viewInput featuresInput"
 							render="featureSetsPanel mapPanel" />
+							
+							
+							
+							<h2>#{msg.cms__geomaps__map__title}</h2>
 						<h:panelGroup layout="block" id="mapPanel">
 
 							<div class="admin__default-block">
@@ -386,11 +390,13 @@
 									value="#{geoMapBean.activeFeatureSetAsString}"></h:inputHidden>
 								<h:inputHidden id="viewInput"
 									value="#{geoMapBean.currentMap.initialView}"></h:inputHidden>
+									
+								<metadataEditor class="admin__geopmap-edit-metadata-editor-wrapper" />
 							</div>
 							<br />
 							<div class="admin__content-inner-content__empty_form"
 								id="featureForm">
-								<metadataEditor />
+								
 								<script>
 				            	$(document).ready(() => {
 				            	    if($("#geomap").length > 0) {				            	        
