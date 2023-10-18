@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.job.mq;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,6 +42,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(GeoMapUpdateHandler.class);
+    private static final long GEOMAP_TIME_TO_LIVE = 90;
 
     public GeoMapUpdateHandler() {
         // Empty constructor
@@ -72,6 +75,18 @@ public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
     @Override
     public String getMessageHandlerName() {
         return TaskType.CACHE_GEOMAPS.name();
+    }
+    
+    public static boolean shouldUpdateGeomaps() throws DAOException {
+        IDAO dao = DataManager.getInstance().getDao();
+        boolean useHeatmap = DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps();
+        return !useHeatmap && dao.getAllGeoMaps().stream()
+        .map(GeoMap::getFeatureSets).flatMap(List::stream)
+        .anyMatch(FeatureSet::isQueryResultSet);
+    }
+
+    public static long getGeoMapTimeToLive() {
+        return GEOMAP_TIME_TO_LIVE;
     }
 
 }

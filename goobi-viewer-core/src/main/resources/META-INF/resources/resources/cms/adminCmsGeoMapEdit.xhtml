@@ -146,13 +146,11 @@
 								</div>
 							</div>
 						</h:panelGroup>
-						<div class="admin__content-inner-content__form_title">
 							<h2>#{msg.cms__geomaps__map__content}</h2>
-							<span class="ajax_loader"> <img
-								src="#{request.contextPath}/resources/images/infinity_loader.gif"
-								class="img-responsive" alt="Waiting..." />
-							</span>
-						</div>
+<!-- 							<span class="ajax_loader"> <img -->
+<!-- 								src="#{request.contextPath}/resources/images/infinity_loader.gif" -->
+<!-- 								class="img-responsive" alt="Waiting..." /> -->
+<!-- 							</span> -->
 
 						<h:panelGroup id="featureSetsPanel">
 							<div class="admin__default-block">
@@ -321,6 +319,7 @@
 										</ui:fragment>
 										
 										<div class="admin__geomap-edit-delete-wrapper">
+											<div class="admin__geomap-edit-active-marker"><span class="-activeFont">#{msg.cms__geomap__add_markers}</span></div>
 											<button class="admin__content-component-delete -redlink" data-require-confirmation="true"
 												data-confirmation-text="#{msg.cms__geomap__delete_featureset__confirm}"
 												data-confirmation-target="[data-delete-button-index='#{status.index}']">
@@ -398,6 +397,17 @@
 								id="featureForm">
 								
 								<script>
+								$( document ).ready(function() {
+									$('.-activeFont').click(function () {
+									    $('html, body').animate({
+									        scrollTop: $(document).height()
+									    }, 'slow');
+									    return false;
+									});
+								});
+								
+								
+								
 				            	$(document).ready(() => {
 				            	    if($("#geomap").length > 0) {				            	        
 					            	    mapEditor.init(window.storedView);
