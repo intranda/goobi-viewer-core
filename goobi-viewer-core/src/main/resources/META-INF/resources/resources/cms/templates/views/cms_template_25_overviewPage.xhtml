@@ -52,12 +52,8 @@
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
 														<span class="tpl-overviewpage__overview-metadata-value">
-															<h:outputFormat value="#{msg[val.masterValue]}"
+															<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}"
 																escape="false">
-                                                                <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-                                                                    <f:param value="#{val.getParamLabelWithColon(ind)}" />
-                                                                    <f:param value="#{val.getComboValueShort(ind)}" />
-                                                                </c:forEach>
 															</h:outputFormat>
 														</span>
 
@@ -69,11 +65,8 @@
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
 														<span class="tpl-overviewpage__overview-metadata-value">
-															<h:outputFormat value="#{msg[val.masterValue]}"
+															<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}"
 																escape="false">
-                                                                <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-                                                                    <f:param value="#{val.getComboValueShort(ind)}" />
-                                                                </c:forEach>
 															</h:outputFormat>
 														</span>
 

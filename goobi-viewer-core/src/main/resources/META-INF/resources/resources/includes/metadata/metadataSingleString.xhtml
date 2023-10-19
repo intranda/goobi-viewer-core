@@ -27,12 +27,7 @@
 						<dd>
 								<!-- Metadata value -->
 								<h:panelGroup rendered="#{metadata.singleString}">
-									<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-										<c:forEach begin="0" end="#{metadata.paramCount - 0}"
-											var="ind0">
-											<f:param value="#{val.getParamLabelWithColon(ind0)}" />
-											<f:param value="#{val.getComboValueShort(ind0)}" />
-										</c:forEach>
+									<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
 									</h:outputFormat>
 								</h:panelGroup>
 	
@@ -69,12 +64,7 @@
 	
 								<!-- Metadata value -->
 								<h:panelGroup rendered="#{metadata.singleString}">
-									<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-										<c:forEach begin="0" end="#{metadata.paramCount - 0}"
-											var="ind0">
-											<f:param value="#{val.getParamLabelWithColon(ind0)}" />
-											<f:param value="#{val.getComboValueShort(ind0)}" />
-										</c:forEach>
+									<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
 									</h:outputFormat>
 									<span class="metadata__element-wrapper-single-custom-separator">#{metadata.separator}</span>
 								</h:panelGroup>
