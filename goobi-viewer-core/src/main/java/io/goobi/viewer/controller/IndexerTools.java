@@ -352,6 +352,7 @@ public class IndexerTools {
         Path file = Paths.get(hotfolderPath.toAbsolutePath().toString(), fileName);
         try {
             Files.createFile(file);
+            logger.info("Deletion trigger file created: {}", file.getFileName());
         } catch (FileAlreadyExistsException e) {
             logger.warn(e.getMessage());
         }
