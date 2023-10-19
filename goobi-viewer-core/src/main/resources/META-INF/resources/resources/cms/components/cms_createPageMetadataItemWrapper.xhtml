@@ -320,7 +320,7 @@
 
             </div>
             
-            <div class="admin__default-block">
+            <div id="addPageToIndexWidget" class="admin__default-block">
                 <!-- TEMPLATE TOGGLE + SETTINGS -->
                  <h2>#{msg.cms__pageMetadata_searchable_title}</h2>
                  
@@ -331,9 +331,9 @@
                         <div class="admin__radio-switch">
                             <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
                                 Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-                            <input type="radio" jsf:id="searchableToggle_no" pt:name="#{searchableToggle.clientId}" pt:data-toggle-action="toggleTemplateFunctions" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.searchable ? null : 'false'}"/>
+                            <input type="radio" jsf:id="searchableToggle_no" pt:name="#{searchableToggle.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.searchable ? null : 'false'}"/>
                             <h:outputLabel for="searchableToggle_no" value="#{msg.no}" />
-                            <input type="radio" jsf:id="searchableToggle_yes" pt:name="#{searchableToggle.clientId}" pt:data-toggle-action="toggleTemplateFunctions" value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.searchable ? 'false' : null}"/>
+                            <input type="radio" jsf:id="searchableToggle_yes" pt:name="#{searchableToggle.clientId}" value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.searchable ? 'false' : null}"/>
                             <h:outputLabel for="searchableToggle_yes" value="#{msg.yes}" />
                             <h:inputHidden id="searchableToggle_input" binding="#{searchableToggle}" value="#{cmsPageEditBean.selectedPage.searchable}"
                                 rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
