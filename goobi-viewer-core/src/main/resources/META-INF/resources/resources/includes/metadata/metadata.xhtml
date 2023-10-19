@@ -90,13 +90,8 @@
 										<ui:fragment rendered="#{metadata.group}">
 											<c:forEach items="#{metadata.values}" var="val">
 												<dd>
-													<h:outputFormat value="#{msg[val.masterValue]}"
+													<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}"
 														escape="false">
-														<c:forEach begin="0" end="#{metadata.paramCount - 0}"
-															var="ind">
-															<f:param value="#{val.getParamLabelWithColon(ind)}" />
-															<f:param value="#{val.getComboValueShort(ind)}" />
-														</c:forEach>
 													</h:outputFormat>
 												</dd>
 											</c:forEach>
@@ -107,10 +102,7 @@
 	                                    <c:forEach items="#{metadata.values}" var="val">
 	                                    	<dd>
 	                                            <span class="metadata__element-value">
-	                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-	                                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-	                                                        <f:param value="#{val.getComboValueShort(ind)}" />
-	                                                    </c:forEach>
+	                                                <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
 	                                                </h:outputFormat>
 	                                            </span>
 	                                    	</dd>

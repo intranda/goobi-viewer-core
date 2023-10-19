@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -37,8 +36,8 @@ import javax.annotation.PreDestroy;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.LicenseDescription;
@@ -90,10 +89,9 @@ public class CreateRecordBean implements Serializable {
      * @return a folder within the viewer temp_media directory
      */
     private Path getTempImagesDirectory() {
-        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome())
+        return Paths.get(DataManager.getInstance().getConfiguration().getViewerHome())
                 .resolve(DataManager.getInstance().getConfiguration().getTempMediaFolder())
                 .resolve(uuid + "_tif");
-        return targetDir;
     }
 
     /**
@@ -239,11 +237,12 @@ public class CreateRecordBean implements Serializable {
             Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
             Files.move(tempImagesFolder, hotfolder.resolve(tempImagesFolder.getFileName()));
             writer.write(hotfolder);
-            Messages.info(ViewerResourceBundle.getTranslationWithParameters("admin__create_record__write_record__success", null,
+            Messages.info(ViewerResourceBundle.getTranslationWithParameters("admin__create_record__write_record__success", null, true,
                     writer.getMetadataValue("identifier")));
             return "pretty:adminCreateRecord";
         } catch (IOException e) {
-            Messages.error(ViewerResourceBundle.getTranslationWithParameters("admin__create_record__write_record__error", null, e.getMessage()));
+            Messages.error(
+                    ViewerResourceBundle.getTranslationWithParameters("admin__create_record__write_record__error", null, true, e.getMessage()));
             return "";
         }
 
@@ -256,7 +255,7 @@ public class CreateRecordBean implements Serializable {
      * @param mediaFolder
      * @throws IOException
      */
-    private void addFiles(DCRecordWriter writer, Path mediaFolder) throws IOException {
+    private static void addFiles(DCRecordWriter writer, Path mediaFolder) throws IOException {
         try (Stream<Path> stream = Files.list(mediaFolder)) {
             stream.sorted().forEach(path -> {
                 if (Files.isRegularFile(path)) {
@@ -297,7 +296,7 @@ public class CreateRecordBean implements Serializable {
         writer.addDCMetadata("creator", getCreator());
         writer.addDCMetadata("identifier", getUuid());
         writer.addDCMetadata("subject", getCollection());
-        writer.addDCMetadata("date", getDate().toString());
+        writer.addDCMetadata("date", getDate());
         writer.addDCMetadata("rights", getLicense());
         writer.addDCMetadata("rights", getAccessCondition());
 
@@ -307,7 +306,7 @@ public class CreateRecordBean implements Serializable {
     /**
      * @return a UUID created by {@link UUID#randomUUID()}
      */
-    private String createUUID() {
+    private static String createUUID() {
         return UUID.randomUUID().toString();
     }
 

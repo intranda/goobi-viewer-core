@@ -155,26 +155,26 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         nh.setSubThemeDiscriminatorValue("dValue");
         Assert.assertEquals("dValue", nh.getStatusMapValue(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
     }
-    
+
     @Test
     public void test_createAdminBreadcrumbs() {
         NavigationHelper nh = new NavigationHelper();
         PageType pageType = PageType.getByName("adminTranslationsEdit");
         List<List<String>> labels = List.of(List.of("adminTranslationsEdit", "Sammlungsnamen"), List.of("foobar"));
         List<LabeledLink> breadcrumbs = nh.createAdminBreadcrumbs(pageType, labels);
-        
+
         assertEquals(3, breadcrumbs.size());
-        
+
         LabeledLink first = breadcrumbs.get(0);
         assertEquals(ViewerResourceBundle.getTranslation(PageType.adminDashboard.getLabel(), nh.getLocale()), first.getName());
         assertEquals("/" + PageType.adminDashboard.getName(), first.getUrl());
-        
+
         LabeledLink second = breadcrumbs.get(1);
         assertEquals("/" + PageType.adminTranslations.getName(), second.getUrl());
         assertEquals("foobar", second.getName());
-        
+
         LabeledLink third = breadcrumbs.get(2);
-        String label = ViewerResourceBundle.getTranslationWithParameters("adminTranslationsEdit", nh.getLocale(), "Sammlungsnamen");
+        String label = ViewerResourceBundle.getTranslationWithParameters("adminTranslationsEdit", nh.getLocale(), true, "Sammlungsnamen");
         assertEquals(label, third.getName());
     }
 }
