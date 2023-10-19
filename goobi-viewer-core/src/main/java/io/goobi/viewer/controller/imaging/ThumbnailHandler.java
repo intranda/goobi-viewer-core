@@ -592,6 +592,16 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(StructElement doc, String pi, int width, int height) {
+             
+        ImageFileFormat format = ImageFileFormat.JPG;
+        String mimetype = doc.getMetadataValue(SolrConstants.MIMETYPE);
+        if(StringUtils.isNotBlank(mimetype)) {
+            format = ImageFileFormat.getImageFileFormatFromMimeType(mimetype);
+            if(format == null) {
+                format = ImageFileFormat.JPG;
+            }
+        }
+         
         String thumbnailUrl = getImagePath(doc);
         if (thumbnailUrl != null && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
@@ -604,7 +614,8 @@ public class ThumbnailHandler {
             if (doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
                 region = doc.getShapeMetadata().get(0).getCoords();
             }
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", StringConstants.DEFAULT, "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", StringConstants.DEFAULT, 
+                    ImageFileFormat.getMatchingTargetFormat(format).getFileExtension());
         } else {
             return null;
         }
