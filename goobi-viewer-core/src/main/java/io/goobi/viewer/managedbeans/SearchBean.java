@@ -1118,6 +1118,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should generate non-phrase search query without filter correctly
      * @should generate non-phrase search query with specific filter correctly
      * @should add proximity search token correctly
+     * @should reset exactSearchString if input empty
      */
     void generateSimpleSearchString(String inSearchString) {
         logger.trace("generateSimpleSearchString: {}", inSearchString);
@@ -1137,6 +1138,7 @@ public class SearchBean implements SearchInterface, Serializable {
         searchString = StringTools.stripJS(inSearchString).trim();
         if (StringUtils.isEmpty(inSearchString)) {
             searchString = "";
+            setExactSearchString("");
             return;
         }
 
@@ -1147,6 +1149,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if ("*".equals(inSearchString)) {
             searchStringInternal = SearchHelper.prepareQuery("");
+            setExactSearchString("");
             return;
         }
 
