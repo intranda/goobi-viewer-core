@@ -494,11 +494,10 @@ public class MetadataValue implements Serializable {
         String[] comboValues = IntStream.range(0, paramValues.size()).mapToObj(ind -> {
             String l = includeLabels ? getParamLabelWithColon(ind) : "";
             String v = getComboValueShort(ind);
-            return List.of(l, v);
+            return includeLabels ? List.of(l, v) : List.of(v);
         })
-                .flatMap(List::stream)
-                .filter(StringUtils::isNotBlank)
-                .toArray(String[]::new);
+            .flatMap(List::stream)
+            .toArray(String[]::new);
 
         return ViewerResourceBundle.getTranslationWithParameters(getMasterValue(), locale, true, comboValues);
     }
