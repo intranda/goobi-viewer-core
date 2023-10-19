@@ -50,7 +50,6 @@ import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import jnr.ffi.Struct.key_t;
 
 /**
  * Provides the metadata for the current structure and event elements.
@@ -212,7 +211,7 @@ public class MetadataBean {
         while (!metadataElementList.get(i).isHasSidebarMetadata() && i > 0) {
             i--;
         }
-        // logger.debug("i: " + i);
+        
         return metadataElementList.get(i);
     }
 
