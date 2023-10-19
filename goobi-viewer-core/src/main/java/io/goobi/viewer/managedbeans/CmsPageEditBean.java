@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +53,6 @@ import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -151,7 +151,7 @@ public class CmsPageEditBean implements Serializable {
         }
         try {
             setUserRestrictedValues(selectedPage, userBean.getUser());
-        } catch (PresentationException | IndexUnreachableException | DAOException e1) {
+        } catch (PresentationException | DAOException e1) {
             logger.error("Error setting user specific subtheme and categories", e1);
         }
         try {
@@ -213,9 +213,10 @@ public class CmsPageEditBean implements Serializable {
             logger.trace("update pages");
             cmsBean.getLazyModelPages().update();
 
-            if (selectedPage.isSearchable()) {
-                // Re-index related record text as part of the record
+            // Add CMS page metadata to search index
+            if (selectedPage.isSearchable() && selectedPage.isPublished()) {
                 if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
+                    // Re-index related record text as part of the record
                     try {
                         IndexerTools.reIndexRecord(selectedPage.getRelatedPI());
                         Messages.info("admin_recordReExported");
@@ -227,6 +228,25 @@ public class CmsPageEditBean implements Serializable {
                     IndexerTools.triggerReIndexCMSPage(selectedPage, null);
                 }
             }
+
+            // Delete CMS page metadata from index if page is not published
+            if (!selectedPage.isPublished()) {
+                if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
+                    try {
+                        IndexerTools.deleteRecord(selectedPage.getRelatedPI(), false,
+                                Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+                try {
+                    IndexerTools.deleteRecord("CMS" + selectedPage.getId(), false,
+                            Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
+            }
+
         } else {
             Messages.error("cms_pageSaveFailure");
         }
@@ -364,11 +384,8 @@ public class CmsPageEditBean implements Serializable {
      * @param title The title to be used for the current locale, optional
      * @param relatedPI The PI of a related work, optional
      * @return a {@link java.lang.String} object.
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
      */
-    public String createAndOpenNewPage(String title, String relatedPI) throws PresentationException, IndexUnreachableException, DAOException {
+    public String createAndOpenNewPage(String title, String relatedPI) {
 
         String createPageUrl = PrettyUrlTools.getAbsolutePageUrl("adminCmsNewPage");
         URI uri = UriBuilder.fromUri(createPageUrl).queryParam("title", title).queryParam("relatedPi", relatedPI).build();
@@ -564,11 +581,10 @@ public class CmsPageEditBean implements Serializable {
      *
      * @param page
      * @param user
-     * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
      */
-    private void setUserRestrictedValues(CMSPage page, User user) throws PresentationException, IndexUnreachableException, DAOException {
+    private void setUserRestrictedValues(CMSPage page, User user) throws PresentationException, DAOException {
         if (!user.hasPrivilegeForAllSubthemeDiscriminatorValues()) {
             List<String> allowedSubThemeDiscriminatorValues = user.getAllowedSubthemeDiscriminatorValues(cmsBean.getSubthemeDiscriminatorValues());
             if (StringUtils.isBlank(page.getSubThemeDiscriminatorValue()) && !allowedSubThemeDiscriminatorValues.isEmpty()) {

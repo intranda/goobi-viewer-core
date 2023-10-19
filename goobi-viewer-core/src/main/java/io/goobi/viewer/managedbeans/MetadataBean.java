@@ -112,12 +112,8 @@ public class MetadataBean {
         }
 
         logger.trace("loadMetadata for: {}", currentElement.getLabel());
-        List<MetadataElement> metadataElementList = metadataElementMap.get(index);
-        if (metadataElementList == null) {
-            metadataElementList = new ArrayList<>();
-            metadataElementMap.put(index, metadataElementList);
-        }
-
+        List<MetadataElement> metadataElementList = metadataElementMap.computeIfAbsent(index, k -> new ArrayList<>());
+        metadataElementList.clear(); // Clear hierarchy to avoid duplicates when switching language
         try {
             metadataElementList.add(new MetadataElement().init(currentElement, index, locale)
                     .setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage()));
@@ -163,8 +159,9 @@ public class MetadataBean {
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
-        //        logger.trace("getMetadataElementList({})", index);
+        // logger.trace("getMetadataElementList({})", index);
         Locale locale = BeanUtils.getLocale();
+
         if (metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
@@ -214,7 +211,7 @@ public class MetadataBean {
         while (!metadataElementList.get(i).isHasSidebarMetadata() && i > 0) {
             i--;
         }
-        // logger.debug("i: " + i);
+        
         return metadataElementList.get(i);
     }
 
