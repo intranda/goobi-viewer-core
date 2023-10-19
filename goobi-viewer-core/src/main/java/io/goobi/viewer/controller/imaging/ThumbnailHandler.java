@@ -401,7 +401,11 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(PhysicalElement page, Scale scale) {
-        return getImageUrl(page, scale, ImageFileFormat.JPG);
+        ImageFileFormat format = ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
+        if(format == null) {
+            format = ImageFileFormat.JPG;
+        }
+        return getImageUrl(page, scale, ImageFileFormat.getMatchingTargetFormat(format));
     }
 
     /**
@@ -415,7 +419,7 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl(PhysicalElement page, Scale scale, ImageFileFormat format) {
-
+        
         String path = getImagePath(page);
         if (path == null) {
             return "";
