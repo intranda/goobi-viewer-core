@@ -54,7 +54,8 @@
                                         </a>
                                    	</ui:fragment>
                                     <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">  
-                                        <h:outputText value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY'))]}" />
+                                        <h:outputText
+                                            value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
                                     </ui:fragment>
                                 </li>
                              </ui:repeat>
