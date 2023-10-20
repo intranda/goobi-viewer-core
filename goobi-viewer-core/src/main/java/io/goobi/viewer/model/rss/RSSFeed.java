@@ -774,7 +774,7 @@ public class RSSFeed {
                 query = bookshelf.generateSolrQueryForItems();
             } else {
                 // Main RSS feed
-                query = SolrConstants.ISWORK + ":true";
+                query = "+" + SolrConstants.ISWORK + ":true" + " -" + SolrConstants.SOURCEDOCFORMAT + ":CMS";
             }
         }
 
