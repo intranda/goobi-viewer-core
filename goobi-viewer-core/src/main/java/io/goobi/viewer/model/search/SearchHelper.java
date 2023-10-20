@@ -380,31 +380,40 @@ public final class SearchHelper {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
-                    String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
-                    if (DocType.METADATA.name().equals(docType)) {
-                        // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
-                        docType = DocType.DOCSTRCT.name();
-                    }
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
-                    HitType hitType = HitType.getByName(docType);
-                    if (DocType.UGC.name().equals(docType)) {
-                        // For user-generated content hits use the metadata type for the hit type
-                        String ugcType = (String) childDoc.getFieldValue(SolrConstants.UGCTYPE);
-                        logger.trace("ugcType: {}", ugcType);
-                        if (StringUtils.isNotEmpty(ugcType)) {
-                            hitType = HitType.getByName(ugcType);
-                            logger.trace("hit type found: {}", hitType);
-                        }
+                    HitType hitType = getHitType(childDoc);
+                    if(hitType != HitType.METADATA) {                        
+                        int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                        hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
                     }
-                    int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                    hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
                 }
             }
             hit.setHitNumber(++count);
         }
         logger.trace("Return {} search hits", ret.size());
         return ret;
+    }
+
+    /**
+     * Return the {@link HitType} matching the {@link SolrConstants#DocType} of the given document.
+     * In case the document is of type 'UGC', return the type matching {@link SolrConstants#UGCTYPE} instead
+     * @param childDoc
+     * @return
+     */
+    public static HitType getHitType(SolrDocument doc) {
+        String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
+        HitType hitType = HitType.getByName(docType);
+        if (DocType.UGC.name().equals(docType)) {
+            // For user-generated content hits use the metadata type for the hit type
+            String ugcType = (String) doc.getFieldValue(SolrConstants.UGCTYPE);
+            logger.trace("ugcType: {}", ugcType);
+            if (StringUtils.isNotEmpty(ugcType)) {
+                hitType = HitType.getByName(ugcType);
+                logger.trace("hit type found: {}", hitType);
+            }
+        }
+        return hitType;
     }
 
     /**

@@ -10,6 +10,9 @@ public enum HitType {
     PAGE,
     METADATA, // grouped metadata
     UGC, // user-generated content
+    LOCATION,   //metadata type location
+    SHAPE,      //metadata type shape
+    SUBJECT,    //metadata type subject
     PERSON, // UGC/metadata person
     CORPORATION, // UGC/meadata corporation
     ADDRESS, // UGC address

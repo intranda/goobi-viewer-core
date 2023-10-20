@@ -552,6 +552,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     return "fa fa-user";
                 case CORPORATION:
                     return "fa fa-university";
+                case LOCATION:
                 case ADDRESS:
                     return "fa fa-envelope";
                 case COMMENT:
@@ -733,6 +734,10 @@ public class SearchHit implements Comparable<SearchHit> {
 
         return 0;
     }
+    
+    public int getMetadataAndDocstructHitCount() {
+        return getDocstructHitCount() + getMetadataHitCount();
+    }
 
     /**
      * <p>
@@ -889,6 +894,32 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         } else {
             return "";
+        }
+    }
+    
+    public boolean includeMetadata() {
+        if (this.type != null) {
+            switch (this.type) {
+                case DOCSTRCT:
+                    if(  this.browseElement.isWork() || this.browseElement.isAnchor()) {
+                        return false;
+                    }
+                    // fall through
+                case METADATA:
+                case PERSON:
+                case LOCATION:
+                case SHAPE:
+                case SUBJECT:
+                case CORPORATION:
+                case EVENT:
+                    String label = this.getDisplayText();
+                    return !label.contains("search-list--highlight");
+                default:
+                    return false;
+
+            }
+        } else {
+            return false;
         }
     }
 

@@ -174,25 +174,7 @@ public class SearchHitFactory {
             docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         }
         // logger.trace("docType: {}", docType); //NOSONAR Sometimes used for debugging
-        HitType hitType = overrideType;
-        if (hitType == null) {
-            hitType = HitType.getByName(docType);
-            if (DocType.METADATA.name().equals(docType)) {
-                // For metadata hits use the metadata type for the hit type
-                String metadataType = se.getMetadataValue(SolrConstants.METADATATYPE);
-                if (StringUtils.isNotEmpty(metadataType)) {
-                    hitType = HitType.getByName(metadataType);
-                }
-            } else if (DocType.UGC.name().equals(docType)) {
-                // For user-generated content hits use the metadata type for the hit type
-                String ugcType = se.getMetadataValue(SolrConstants.UGCTYPE);
-                logger.trace("ugcType: {}", ugcType);
-                if (StringUtils.isNotEmpty(ugcType)) {
-                    hitType = HitType.getByName(ugcType);
-                    logger.trace("hit type found: {}", hitType);
-                }
-            }
-        }
+        HitType hitType = getHitType(overrideType, se, docType);
 
         SearchHit hit = new SearchHit(hitType, browseElement, doc, searchTerms, locale, this);
         Optional<String> labelValue = browseElement.getLabelAsMetadataValue().getValue();
@@ -219,6 +201,32 @@ public class SearchHitFactory {
             }
         }
         return hit;
+    }
+
+    public HitType getHitType(HitType overrideType, StructElement se, String docType) {
+        HitType hitType = overrideType;
+        if (hitType == null) {
+            hitType = HitType.getByName(docType);
+            if (DocType.METADATA.name().equals(docType)) {
+                // For metadata hits use the metadata type for the hit type
+                String metadataType = se.getMetadataValue(SolrConstants.METADATATYPE);
+                if (StringUtils.isNotEmpty(metadataType)) {
+                    hitType = HitType.getByName(metadataType);
+                    if(hitType == null) {
+                        hitType = HitType.METADATA;
+                    }
+                }
+            } else if (DocType.UGC.name().equals(docType)) {
+                // For user-generated content hits use the metadata type for the hit type
+                String ugcType = se.getMetadataValue(SolrConstants.UGCTYPE);
+                logger.trace("ugcType: {}", ugcType);
+                if (StringUtils.isNotEmpty(ugcType)) {
+                    hitType = HitType.getByName(ugcType);
+                    logger.trace("hit type found: {}", hitType);
+                }
+            }
+        }
+        return hitType;
     }
 
     /**

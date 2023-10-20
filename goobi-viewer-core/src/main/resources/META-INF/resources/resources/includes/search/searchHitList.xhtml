@@ -120,17 +120,13 @@
                                     <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
                                         <f:param value="#{hit.cmsPageHitCount}" />
                                     </h:outputFormat>
-                                    <h:outputFormat rendered="#{hit.docstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
+                                    <h:outputFormat rendered="#{hit.metadataAndDocstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
                                         <h:outputText rendered="#{hit.cmsPageHitCount > 0}" value=", " />
-                                        <f:param value="#{hit.docstructHitCount}" />
+                                        <f:param value="#{hit.metadataAndDocstructHitCount}" />
                                     </h:outputFormat>
                                     <h:outputFormat rendered="#{hit.pageHitCount > 0}" value="#{msg.searchChildFulltextHitCount}">
-                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
+                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.metadataAndDocstructHitCount > 0}" value=", " />
                                         <f:param value="#{hit.pageHitCount}" />
-                                    </h:outputFormat>
-                                    <h:outputFormat rendered="#{hit.metadataHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
-                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
-                                        <f:param value="#{hit.metadataHitCount}" />
                                     </h:outputFormat>
                                     <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
                                         <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
@@ -157,15 +153,29 @@
                             							<h:outputFormat escape="false" value="#{childHit.displayText}"/>
                             						</a>
                             					</h4>
+                            					<ui:fragment rendered="#{childHit.includeMetadata()}">
+                            						<div class="search-list__struct-title__metadata">
+		                            					<ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
+						                                    <ui:param name="browseElement" value="#{childHit.browseElement}"></ui:param>
+						                                </ui:include>
+                            						</div>
+                           						</ui:fragment>
                             				</div>
                             				<div class="search-list__struct-child-hits">
-                            					<ui:repeat var="grandChildHit" value="#{childHit.children}">
+                            					<ui:repeat var="grandChildHit" value="#{childHit.children}">                            						
                             						<dl class="dl-horizontal">
                             							<dt>
 	                            							<i class="#{grandChildHit.iconClassForType}" title="#{grandChildHit.translatedType}" aria-hidden="true"></i>
                             							</dt>
                             							<dd>
                             								<a href="#{request.contextPath}/#{grandChildHit.url}"><h:outputFormat escape="false" value="#{grandChildHit.displayText}"/></a>
+		                            						<ui:fragment rendered="#{grandChildHit.includeMetadata()}">
+			                            						<div class="search-list__struct-child-hits__metadata">
+					                            					<ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
+									                                    <ui:param name="browseElement" value="#{grandChildHit.browseElement}"></ui:param>
+									                                </ui:include>
+			                            						</div>
+		                            						</ui:fragment>
                             							</dd>
                             						</dl>
                             					</ui:repeat>
