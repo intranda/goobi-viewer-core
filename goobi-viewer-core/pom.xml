@@ -131,7 +131,7 @@
 		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
 		<javax.jstl.version>1.2</javax.jstl.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
-		<jaxb-runtime.version>2.3.8</jaxb-runtime.version>
+		<jaxb-runtime.version>2.3.9</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<jersey.version>2.41</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
