@@ -901,7 +901,7 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 
 			}
 			if(this.refs.chart) {
-				console.log("init chart with config ", this.chartConfig);
+
 				this.chart = new Chart(chartElement, this.chartConfig);
 				this.initDraw();
 

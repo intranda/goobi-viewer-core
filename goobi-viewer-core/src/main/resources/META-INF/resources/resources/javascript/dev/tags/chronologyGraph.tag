@@ -113,7 +113,7 @@
 					
 			}
 			if(this.refs.chart) {				
-				console.log("init chart with config ", this.chartConfig);
+				// console.log("init chart with config ", this.chartConfig);
 				this.chart = new Chart(chartElement, this.chartConfig);
 				this.initDraw();
 			
