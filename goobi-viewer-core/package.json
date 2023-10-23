@@ -39,7 +39,7 @@
     "jqplot": "~1.0.9",
     "jquery": "~3.6.0",
     "jquery-ui": "~1.13",
-    "leaflet": "~1.8.0",
+    "leaflet": "~1.9.4",
     "leaflet-draw": "~1.0.4",
     "leaflet-extra-markers": "~1.2.1",
     "leaflet.markercluster": "~1.5.3",
