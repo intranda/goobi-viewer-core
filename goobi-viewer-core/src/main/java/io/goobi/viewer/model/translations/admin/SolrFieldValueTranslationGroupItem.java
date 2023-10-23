@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
@@ -85,7 +86,9 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
                     }
                 } else {
                     // Regular values
-                    keys.add(count.getName());
+                    if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
+                        keys.add(count.getName());
+                    }
                 }
             }
         }
