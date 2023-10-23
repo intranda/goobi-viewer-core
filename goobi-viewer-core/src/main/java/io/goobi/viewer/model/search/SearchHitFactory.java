@@ -187,7 +187,7 @@ public class SearchHitFactory {
                         labelValue.isPresent() ? labelValue.get() : "");
         if (!additionalMetadata.isEmpty()) {
             for (MetadataWrapper mw : additionalMetadata) {
-                hit.getFoundMetadata().add(mw.getValuePair());
+                hit.addFoundMetadata(mw.getValuePair());
             }
         }
 

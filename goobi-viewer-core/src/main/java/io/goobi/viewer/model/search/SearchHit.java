@@ -383,9 +383,12 @@ public class SearchHit implements Comparable<SearchHit> {
         if (number + skip > childDocs.size()) {
             number = childDocs.size() - skip;
         }
-
-        for (int i = 0; i < number; ++i) {
-            SolrDocument childDoc = childDocs.get(i + skip);
+        List<String> childTypes = childDocs.stream().map(child -> (String) child.getFieldValue(SolrConstants.DOCTYPE)).collect(Collectors.toList());
+        int childDocIndex = skip;
+        int hitCount = getHitCount();
+        while (childDocIndex < childDocs.size() && hitsPopulated < Math.min(hitCount, number+skip)) {
+            SolrDocument childDoc = childDocs.get(childDocIndex);
+            childDocIndex++;
             String fulltext = null;
             DocType docType = DocType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
             if (docType == null) {
@@ -442,7 +445,6 @@ public class SearchHit implements Comparable<SearchHit> {
                     
                     // Skip grouped metadata child hits that have no additional (unique) metadata to display
                     if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty() && ownerHit.getFoundMetadata().isEmpty()) {
-                        // TODO This will result in an infinite loading animation if all child hits are skipped
                         continue;
                     }
                     if (!DocType.UGC.equals(docType)) {
@@ -450,7 +452,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         for (StringPair metadata : childHit.getFoundMetadata()) {
                             // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
                             if (!ownerHit.getFoundMetadata().contains(metadata)) {
-                                ownerHit.getFoundMetadata().add(metadata);
+                                ownerHit.addFoundMetadata(metadata);
                             }
                         }
                     }
@@ -464,6 +466,9 @@ public class SearchHit implements Comparable<SearchHit> {
                     String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                     if (!ownerHits.containsKey(iddoc)) {
                         SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
+//                        if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
+//                            continue;
+//                        }
                         children.add(childHit);
                         ownerHits.put(iddoc, childHit);
                         ownerDocs.put(iddoc, childDoc);
@@ -809,9 +814,15 @@ public class SearchHit implements Comparable<SearchHit> {
      * @return the foundMetadata
      */
     public List<StringPair> getFoundMetadata() {
-        return foundMetadata;
+        return Collections.unmodifiableList(foundMetadata);
     }
 
+
+    public void addFoundMetadata(StringPair valuePair) {
+        this.foundMetadata.add(valuePair);
+    }
+
+    
     /**
      * <p>
      * Getter for the field <code>url</code>.

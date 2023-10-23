@@ -188,7 +188,7 @@
                                     <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-fluid" alt="Search List Loader" />
                                 </span>
                             	<div class="search-list__hit-content-more">
-                            		<ui:fragment rendered="#{hit.hitsPopulated > 0 and hit.hitsPopulated lt hit.childDocs.size()}">
+                            		<ui:fragment rendered="#{hit.hitsPopulated > 0 and hit.hitsPopulated lt hit.hitCount}">
 	                            		<button type="button" class="btn btn--clean" onclick="loadChildHits_#{status.index}()">
 	                            		#{msg.searchList_getMoreHits}
 	                            		</button>

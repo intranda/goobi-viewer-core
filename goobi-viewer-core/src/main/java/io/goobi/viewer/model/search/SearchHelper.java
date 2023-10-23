@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -360,9 +361,9 @@ public final class SearchHelper {
         }
 
         int count = first;
+        Map<String, SolrDocumentList> childDocsMap = resp.getExpandedResults();
         for (SolrDocument doc : resp.getResults()) {
             // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
-            Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
@@ -376,10 +377,13 @@ public final class SearchHelper {
             // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
-            if (pi != null && childDocs != null && childDocs.containsKey(pi)) {
-                logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
-                hit.setChildDocs(childDocs.get(pi));
-                for (SolrDocument childDoc : childDocs.get(pi)) {
+            String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+            if(pi != null) {
+                SolrDocumentList childDocs = childDocsMap.getOrDefault(pi, new SolrDocumentList());
+                logger.trace("{} child hits found for {}", childDocs.size(), pi);
+                childDocs = filterChildDocs(childDocs, iddoc, searchTerms, factory);
+                hit.setChildDocs(childDocs);
+                for (SolrDocument childDoc : childDocs) {
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
                     HitType hitType = getHitType(childDoc);
@@ -393,6 +397,49 @@ public final class SearchHelper {
         }
         logger.trace("Return {} search hits", ret.size());
         return ret;
+    }
+
+    private static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms, SearchHitFactory factory) {
+        SolrDocumentList filteredList = new SolrDocumentList();
+        Map<String, SolrDocument> ownerDocs = new HashMap<>();
+        for (SolrDocument doc : docs) {
+            HitType hitType = getHitType(doc);
+            String ownerIDDoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_OWNER);
+            String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+            if(hitType == HitType.PAGE) {
+                filteredList.add(doc);
+            } else if(containsSearchTerms(doc, searchTerms, factory)) {
+                filteredList.add(doc);
+                if(hitType == HitType.DOCSTRCT) {
+                    ownerDocs.remove(iddoc);    //remove from owner map because it is already in result list
+                } else if(!Objects.equals(mainIdDoc, ownerIDDoc)) {
+                    if(ownerDocs.containsKey(ownerIDDoc)) {
+                        SolrDocument ownerDoc = ownerDocs.get(ownerIDDoc);
+                        if(ownerDoc != null) {
+                            ownerDocs.remove(ownerIDDoc);
+                            filteredList.add(ownerDoc); 
+                        }
+                    } else {
+                        ownerDocs.put(ownerIDDoc, null);    //put an empty entry to mark that the owner doc needs to be added to result list
+                    }
+                    
+                }
+            } else if(hitType == HitType.DOCSTRCT) {
+                if(ownerDocs.containsKey(iddoc)) {
+                    ownerDocs.remove(iddoc);
+                    filteredList.add(doc); 
+                } else {                    
+                    ownerDocs.put(iddoc, doc);
+                }
+            }
+            
+        }
+        filteredList.setNumFound(filteredList.size());
+        return filteredList;
+    }
+
+    private static boolean containsSearchTerms(SolrDocument doc, Map<String, Set<String>> searchTerms, SearchHitFactory factory) {
+        return !factory.findAdditionalMetadataFieldsContainingSearchTerms(SolrTools.getFieldValueMap(doc), searchTerms, Collections.emptySet(), "", "").isEmpty();
     }
 
     /**
