@@ -117,6 +117,7 @@ public class SearchHit implements Comparable<SearchHit> {
     private int proximitySearchDistance = 0;
     @JsonIgnore
     private SearchHitFactory factory;
+    private boolean containsSearchTerms = true;
 
     /**
      * Package-private constructor. Clients should use SearchHitFactory to create SearchHit instances.
@@ -415,6 +416,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                         if (ownerDoc != null) {
                             ownerHit = factory.createSearchHit(ownerDoc, null, fulltext, null);
+                            ownerHit.containsSearchTerms = false;
                             children.add(ownerHit);
                             ownerHits.put(ownerIddoc, ownerHit);
                             ownerDocs.put(ownerIddoc, ownerDoc);
@@ -898,7 +900,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
     
     public boolean includeMetadata() {
-        if (this.type != null) {
+        if (this.containsSearchTerms && this.type != null) {
             switch (this.type) {
                 case DOCSTRCT:
                     if(  this.browseElement.isWork() || this.browseElement.isAnchor()) {
