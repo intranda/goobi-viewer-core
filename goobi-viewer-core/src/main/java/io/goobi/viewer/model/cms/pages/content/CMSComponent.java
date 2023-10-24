@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -225,7 +226,9 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
         if (this.uiComponent == null && this.jsfComponent != null && StringUtils.isNotBlank(this.jsfComponent.getFilename())) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            this.uiComponent = new HtmlPanelGroup();
+            this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+            this.uiComponent.setId(this.templateFilename + "_" + Optional.ofNullable(this.order).orElse(0));
+//            this.uiComponent = new HtmlPanelGroup();
             UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
             component.getAttributes().put("component", this);
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {

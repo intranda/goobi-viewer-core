@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -164,9 +165,11 @@ public class CMSContentItem {
 
         if (this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            this.uiComponent = new HtmlPanelGroup();
+            this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+            this.uiComponent.setId(this.getOwningComponent().getTemplateFilename() + "_" + this.getOwningComponent().getOrder() + "_" + this.itemId);
             UIComponent wrapper = builder.createTag("div",
                     Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper"));
+            wrapper.setId(this.uiComponent.getId() + "_wrapper");
             this.uiComponent.getChildren().add(wrapper);
             if (StringUtils.isBlank(this.getJsfComponent().getFilename())) {
                 logger.warn("No backend component available for contentItem {}", this.getContent().getBackendComponentName());

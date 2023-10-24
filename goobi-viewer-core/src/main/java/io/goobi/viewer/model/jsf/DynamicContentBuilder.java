@@ -164,7 +164,7 @@ public class DynamicContentBuilder {
             return null;
         }
         UIComponent composite = application.createComponent(context, componentResource);
-
+        composite.setId(parent.getId() + "_" + name.substring(0, name.indexOf(".")));
         // This basically creates <composite:implementation>.
         UIComponent implementation = application.createComponent(UIPanel.COMPONENT_TYPE);
         implementation.setRendererType("javax.faces.Group");
