@@ -28,7 +28,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.compress.utils.FileNameUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -167,7 +167,7 @@ public class CMSContentItem {
         if (this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-            this.uiComponent.setId(FileNameUtils.getBaseName(this.getOwningComponent().getTemplateFilename()) + "_" + this.getOwningComponent().getOrder() + "_" + this.itemId);
+            this.uiComponent.setId(FilenameUtils.getBaseName(this.getOwningComponent().getTemplateFilename()) + "_" + this.getOwningComponent().getOrder() + "_" + this.itemId);
             UIComponent wrapper = builder.createTag("div",
                     Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper"));
             wrapper.setId(this.uiComponent.getId() + "_wrapper");
