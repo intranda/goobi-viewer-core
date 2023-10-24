@@ -227,8 +227,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         if (this.uiComponent == null && this.jsfComponent != null && StringUtils.isNotBlank(this.jsfComponent.getFilename())) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-            this.uiComponent.setId(this.templateFilename + "_" + Optional.ofNullable(this.order).orElse(0));
-//            this.uiComponent = new HtmlPanelGroup();
+            this.uiComponent.setId(FilenameUtils.getBaseName(this.templateFilename) + "_" + Optional.ofNullable(this.order).orElse(0));
             UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
             component.getAttributes().put("component", this);
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {

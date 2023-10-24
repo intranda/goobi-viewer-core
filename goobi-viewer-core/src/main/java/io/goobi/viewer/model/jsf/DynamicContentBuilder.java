@@ -40,6 +40,7 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -164,7 +165,7 @@ public class DynamicContentBuilder {
             return null;
         }
         UIComponent composite = application.createComponent(context, componentResource);
-        composite.setId(parent.getId() + "_" + name.substring(0, name.indexOf(".")));
+        composite.setId(parent.getId() + "_" + FilenameUtils.getBaseName(name));
         // This basically creates <composite:implementation>.
         UIComponent implementation = application.createComponent(UIPanel.COMPONENT_TYPE);
         implementation.setRendererType("javax.faces.Group");
