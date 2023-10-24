@@ -378,7 +378,7 @@ public final class SearchHelper {
             // Collect Solr docs of child hits
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
-            if(pi != null) {
+            if(pi != null && childDocsMap != null) {
                 SolrDocumentList childDocs = childDocsMap.getOrDefault(pi, new SolrDocumentList());
                 logger.trace("{} child hits found for {}", childDocs.size(), pi);
                 childDocs = filterChildDocs(childDocs, iddoc, searchTerms, factory);
