@@ -408,6 +408,9 @@ public final class SearchHelper {
             String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
             if(hitType == HitType.PAGE) {
                 filteredList.add(doc);
+            } else if(hitType == HitType.METADATA && !Objects.equals(mainIdDoc, ownerIDDoc)) {
+                //ignore metadata docs not in the main doc
+                continue;
             } else if(containsSearchTerms(doc, searchTerms, factory)) {
                 filteredList.add(doc);
                 if(hitType == HitType.DOCSTRCT) {
