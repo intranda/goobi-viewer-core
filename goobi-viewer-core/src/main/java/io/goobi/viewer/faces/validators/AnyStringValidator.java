@@ -39,5 +39,6 @@ public class AnyStringValidator implements Validator<String> {
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
+        //empty. always validate
     }
 }

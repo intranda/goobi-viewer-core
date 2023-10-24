@@ -159,7 +159,7 @@ public class CMSContentConverter {
         content.setSolrQuery(solrQuery);
         content.setSortField(solrSortFields);
         content.setGroupingField(groupField);
-        content.setIncludeStructureElements(noAggregation == null ? false : noAggregation);
+        content.setIncludeStructureElements(noAggregation != null && noAggregation);
         content.setElementsPerPage(itemsPerView);
 
         return content;

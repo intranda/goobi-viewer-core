@@ -58,14 +58,5 @@ public class PresentationException extends Exception implements Serializable {
         super(string, e);
     }
 
-    // /**
-    // * @param string
-    // * {@link String}
-    // * @param e
-    // * {@link Exception}
-    // */
-    // public PresentationException(String string, Exception e) {
-    // super(string, e);
-    // }
 
 }

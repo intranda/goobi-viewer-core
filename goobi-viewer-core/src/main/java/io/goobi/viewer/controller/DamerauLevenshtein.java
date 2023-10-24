@@ -7,7 +7,7 @@ public class DamerauLevenshtein {
     private String compOne;
     private String compTwo;
     private int[][] matrix;
-    private Boolean calculated = false;
+    private boolean calculated = false;
 
     public DamerauLevenshtein(String a, String b) {
         if ((a.length() > 0 || !a.isEmpty()) || (b.length() > 0 || !b.isEmpty())) {
@@ -27,8 +27,9 @@ public class DamerauLevenshtein {
      * @return
      */
     public int getSimilarity() {
-        if (!calculated)
+        if (!calculated) {            
             setupMatrix();
+        }
 
         return matrix[compOne.length()][compTwo.length()];
     }
@@ -39,24 +40,24 @@ public class DamerauLevenshtein {
      * @return
      */
     public int getDHSimilarity() {
-        int INF = compOne.length() + compTwo.length();
+        int inf = compOne.length() + compTwo.length();
 
         matrix = new int[compOne.length() + 1][compTwo.length() + 1];
 
         for (int i = 0; i < compOne.length(); i++) {
             matrix[i + 1][1] = i;
-            matrix[i + 1][0] = INF;
+            matrix[i + 1][0] = inf;
         }
 
         for (int i = 0; i < compTwo.length(); i++) {
             matrix[1][i + 1] = i;
-            matrix[0][i + 1] = INF;
+            matrix[0][i + 1] = inf;
         }
 
-        int[] DA = new int[24];
+        int[] da = new int[24];
 
         for (int i = 0; i < 24; i++) {
-            DA[i] = 0;
+            da[i] = 0;
         }
 
         for (int i = 1; i < compOne.length(); i++) {
@@ -64,7 +65,7 @@ public class DamerauLevenshtein {
 
             for (int j = 1; j < compTwo.length(); j++) {
 
-                int i1 = DA[compTwo.indexOf(compTwo.charAt(j - 1))];
+                int i1 = da[compTwo.indexOf(compTwo.charAt(j - 1))];
                 int j1 = db;
                 int d = ((compOne.charAt(i - 1) == compTwo.charAt(j - 1)) ? 0 : 1);
                 if (d == 0)
@@ -73,7 +74,7 @@ public class DamerauLevenshtein {
                 matrix[i + 1][j + 1] = Math.min(Math.min(matrix[i][j] + d, matrix[i + 1][j] + 1),
                         Math.min(matrix[i][j + 1] + 1, matrix[i1][j1] + (i - i1 - 1) + 1 + (j - j1 - 1)));
             }
-            DA[compOne.indexOf(compOne.charAt(i - 1))] = i;
+            da[compOne.indexOf(compOne.charAt(i - 1))] = i;
         }
 
         return matrix[compOne.length()][compTwo.length()];
@@ -81,7 +82,9 @@ public class DamerauLevenshtein {
 
     private void setupMatrix() {
         int cost = -1;
-        int del, sub, ins;
+        int del;
+        int sub;
+        int ins;
 
         matrix = new int[compOne.length() + 1][compTwo.length() + 1];
 
@@ -114,21 +117,27 @@ public class DamerauLevenshtein {
         }
 
         calculated = true;
-        //displayMatrix();
     }
 
-    private void displayMatrix() {
-        System.out.println("  " + compOne);
+    @Override
+    public String toString() {
+        return displayMatrix();
+    }
+    
+    private String displayMatrix() {
+        StringBuilder sb = new StringBuilder();
         for (int y = 0; y <= compTwo.length(); y++) {
-            if (y - 1 < 0)
-                System.out.print(" ");
-            else
-                System.out.print(compTwo.charAt(y - 1));
-            for (int x = 0; x <= compOne.length(); x++) {
-                System.out.print(matrix[x][y]);
+            if (y - 1 < 0) {    
+                sb.append(" ");
             }
-            System.out.println();
+            else
+                sb.append(compTwo.charAt(y - 1));
+            for (int x = 0; x <= compOne.length(); x++) {
+                sb.append(matrix[x][y]);
+            }
+            sb.append("\n");
         }
+        return sb.toString();
     }
 
     private int minimum(int d, int i, int s) {

@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -152,7 +153,6 @@ public class ALTOTools {
             logger.error("{}: {}", e.getMessage(), charset);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            // logger.trace("Error loading ALTO from XML:\n{}", alto);
         }
 
         return ret;
@@ -242,11 +242,7 @@ public class ALTOTools {
         StringBuilder strings = new StringBuilder(500);
         XMLStreamReader parser = null;
         try (InputStream is = new ByteArrayInputStream(useAlto.getBytes(useCharset))) {
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            // Disable access to external entities
-            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-            parser = factory.createXMLStreamReader(is);
+            parser = createXmlParser(is);
 
             String prevSubsContent = null;
             while (parser.hasNext()) {
@@ -401,6 +397,16 @@ public class ALTOTools {
         }
 
         return strings.toString();
+    }
+
+    public static XMLStreamReader createXmlParser(InputStream is) throws FactoryConfigurationError, XMLStreamException {
+        XMLStreamReader parser;
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        // Disable access to external entities
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        parser = factory.createXMLStreamReader(is);
+        return parser;
     }
 
     /**

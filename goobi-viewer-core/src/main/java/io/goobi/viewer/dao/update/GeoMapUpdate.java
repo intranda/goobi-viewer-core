@@ -108,7 +108,7 @@ public class GeoMapUpdate implements IModelUpdate {
             Map<String, Object> columns = IntStream.range(0, columnNames.size())
                     .boxed()
                     .filter(i -> geomap[i] != null)
-                    .collect(Collectors.toMap(i -> columnNames.get(i), i -> geomap[i]));
+                    .collect(Collectors.toMap(columnNames::get, i -> geomap[i]));
 
             Long geomapId = Optional.ofNullable(columns.get("geomap_id")).map(o -> (Long) o).orElse(null);
             Integer mapType = Optional.ofNullable(columns.get("map_type")).map(o -> (Integer) o).orElse(null);
