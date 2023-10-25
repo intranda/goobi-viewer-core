@@ -441,10 +441,10 @@
 					            	    		}
 					            	    	}
 					            	    	//change active featureSet
-					            	    	if(!#{featureSet.queryResultSet}) {					            	    		
-						            	    	let inputPanel = document.getElementById("panelFeatureSet_#{status.index}");
-						            	    	$(inputPanel).off("click");
-						            	    	$(inputPanel).on("click", e => {
+					            	    	//trigger on body because the panelFeatureSets can be swapped per ajax on langauge change
+					            	    	if(!#{featureSet.queryResultSet}) {			
+					            	    		$("body").off("click.setactive", "#panelFeatureSet_#{status.index}");
+					            	    		$("body").on("click.setactive", "#panelFeatureSet_#{status.index}", e => {
 						            	    		let inputElement = $(e.target).closest("button, input, select").length > 0;
 						            	    		if(!inputElement) {						            	    			
 						            	    			setActiveFeatureSet({index: #{status.index}});
