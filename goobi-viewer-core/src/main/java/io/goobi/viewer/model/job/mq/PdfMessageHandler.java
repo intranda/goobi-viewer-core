@@ -56,13 +56,12 @@ import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
 
 public class PdfMessageHandler implements MessageHandler<MessageStatus> {
-    
+
     private static final Logger logger = LogManager.getLogger(PdfMessageHandler.class);
-    
+
     @Override
     public MessageStatus call(ViewerMessage message) {
 
-        
         String pi = message.getProperties().get("pi");
 
         String logId = message.getProperties().get("logId");
@@ -83,7 +82,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
             Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension())
                     .toPath();
-            if(JobStatus.READY == downloadJob.getStatus() && !Files.exists(pdfFile)) {
+            if (JobStatus.READY == downloadJob.getStatus() && !Files.exists(pdfFile)) {
                 downloadJob.setStatus(JobStatus.WAITING);
                 DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
             }
@@ -93,8 +92,8 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
             downloadJob.setStatus(JobStatus.READY);
             try {
                 downloadJob.notifyObservers(JobStatus.READY, "");
-            } catch(MessagingException e) {
-                logger.error("Error notifying observers: {}", e.toString());                
+            } catch (MessagingException e) {
+                logger.error("Error notifying observers: {}", e.toString());
             }
             DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
         } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException e) {
@@ -104,13 +103,13 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
         return MessageStatus.FINISH;
     }
 
-    private void createPdf(Dataset work, Optional<String> divId,  Path pdfFile) throws IOException, ContentLibException {
+    private void createPdf(Dataset work, Optional<String> divId, Path pdfFile) throws IOException, ContentLibException {
         try (FileOutputStream fos = new FileOutputStream(pdfFile.toFile())) {
             Map<String, String> params = new HashMap<>();
             params.put("metsFile", work.getMetadataFilePath().toString());
             params.put("imageSource", work.getMediaFolderPath().getParent().toUri().toString());
             divId.ifPresent(id -> params.put("divID", id));
-            
+
             if (work.getPdfFolderPath() != null) {
                 params.put("pdfSource", work.getPdfFolderPath().getParent().toUri().toString());
             }

@@ -23,7 +23,10 @@ package io.goobi.viewer.model.metadata;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,6 +63,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -439,6 +443,26 @@ public class Metadata implements Serializable {
                     // convert line breaks back to HTML
                     value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                     break;
+                case DATEFIELD:
+                    String outputPattern =
+                            StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : BeanUtils.getNavigationHelper().getDatePattern();
+                    String altOutputPattern = outputPattern.replace("dd/", "");
+                    try {
+                        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
+                        LocalDate date = LocalDate.parse(value);
+                        value = date.format(dateTimeFormatter);
+                    } catch (DateTimeParseException e) {
+                        // No-day format hack
+                        try {
+                            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
+                            LocalDate date = LocalDate.parse(value + "-01");
+                            value = date.format(dateTimeFormatter);
+                        } catch (DateTimeParseException e1) {
+                            logger.warn("Error parsing {} as date", value);
+                        }
+                    }
+                    value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
+                    break;
                 case UNESCAPEDFIELD:
                     // convert line breaks back to HTML
                     value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
@@ -667,6 +691,17 @@ public class Metadata implements Serializable {
      */
     public int getParamCount() {
         return params.size();
+    }
+
+    public String getParamValue(String field) {
+        for (MetadataValue val : values) {
+            String ret = val.getParamValue(field);
+            if (StringUtils.isNotBlank(ret)) {
+                return ret;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -962,6 +997,10 @@ public class Metadata implements Serializable {
         }
         if (mdValues == null) {
             mdValues = metadataMap.get(key);
+        }
+        if (mdValues == null) {
+            String langKey = key + "_LANG_" + IPolyglott.getDefaultLocale().getLanguage().toUpperCase();
+            mdValues = metadataMap.get(langKey);
         }
         return mdValues;
     }

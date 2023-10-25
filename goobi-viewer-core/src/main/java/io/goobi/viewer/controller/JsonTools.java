@@ -41,6 +41,9 @@ import org.apache.logging.log4j.LogManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -144,6 +147,40 @@ public class JsonTools {
             object = translateJSONObject(locale, object);
         }
         return object;
+    }
+
+    public static String getAsJson(Object object) throws JsonProcessingException {
+        return mapper.writeValueAsString(object);
+    }
+
+    public static Object getAsObjectForJson(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof String) {
+            return value;
+        } else if (value instanceof IMetadataValue && ((IMetadataValue) value).getNumberOfUniqueTranslations() == 1) {
+            return ((IMetadataValue) value).getValue().orElse("");
+        } else {
+            try {
+                String s = getAsJson(value);
+                if (StringUtils.isBlank(s)) {
+                    return null;
+                } else if (s.startsWith("{")) {
+                    return new JSONObject(s);
+                } else if (s.matches("(?i)true|false")) {
+                    return Boolean.parseBoolean(s);
+                } else if (s.matches("\\d+")) {
+                    return Long.parseLong(s);
+                } else if (s.matches("[\\d.]+")) {
+                    return Double.parseDouble(s);
+                } else {
+                    return s;
+                }
+            } catch (JsonProcessingException e) {
+                return value.toString();
+            }
+        }
     }
 
     /**
@@ -371,7 +408,7 @@ public class JsonTools {
             return notAvailableKey;
         }
     }
-    
+
     /**
      * 
      * @param json
@@ -380,19 +417,18 @@ public class JsonTools {
     public static String getVersion(String json) {
         return getValue(json, "version");
     }
-    
+
     public static String getGitRevision(String json) {
         return getValue(json, "git-revision");
     }
-    
-    
+
     /**
      * 
      * @param json
      * @param field
      * @return
      */
-     static String getValue(String json, String field) {
+    static String getValue(String json, String field) {
         final String notAvailableKey = "admin__dashboard_versions_not_available";
 
         if (StringUtils.isEmpty(json)) {
@@ -401,7 +437,7 @@ public class JsonTools {
 
         try {
             JSONObject jsonObj = new JSONObject(json);
-            return jsonObj.getString(field) ;
+            return jsonObj.getString(field);
         } catch (JSONException e) {
             logger.warn(e.getMessage());
             return notAvailableKey;

@@ -202,6 +202,11 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
         this.templateFilename = templateFilename;
     }
 
+    public void addContent(CMSContent content) {
+        this.contentItems.add(content);
+        content.setOwningComponent(this);
+    }
+
     @Override
     public boolean isComplete(Locale locale) {
         for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {
@@ -301,16 +306,16 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     public boolean isPaged() {
         return getContentItems().stream().anyMatch(PagedCMSContent.class::isInstance);
     }
-    
+
     @Override
     public int hashCode() {
         return Optional.ofNullable(this.id).map(Long::intValue).orElse(-1);
     }
-    
+
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            PersistentCMSComponent other = (PersistentCMSComponent)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            PersistentCMSComponent other = (PersistentCMSComponent) obj;
             return this.hashCode() == other.hashCode() &&
                     Objects.equals(this.order, other.order);
         } else {

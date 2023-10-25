@@ -956,9 +956,9 @@ public class CollectionView implements Serializable {
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
-    public String getCollectionUrl(HierarchicalBrowseDcElement collection){
+    public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
         return getCollectionUrl(collection, field, getSearchUrl());
     }
 
@@ -970,7 +970,7 @@ public class CollectionView implements Serializable {
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      * @should return identifier resolver url if single record and pi known
      * @should escape critical url chars in collection name
      */

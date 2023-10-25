@@ -309,13 +309,13 @@ public class BreadcrumbBean implements Serializable {
     void resetBreadcrumbs() {
         resetBreadcrumbs(true);
     }
-    
+
     void resetBreadcrumbs(boolean addStartPage) {
         // logger.trace("reset breadcrumbs");
         //        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
             breadcrumbs.clear();
-            if(addStartPage) {                
+            if (addStartPage) {
                 breadcrumbs.add(new LabeledLink("home", BeanUtils.getServletPathWithHostAsUrlFromJsfContext(), 0));
             }
         }

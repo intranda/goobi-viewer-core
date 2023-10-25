@@ -100,7 +100,6 @@ public class ImageHandler {
         return getImageUrl(pageType, pi, filepath, path.getFileName().toString());
     }
 
-
     /**
      * @param pageType
      * @param pi
@@ -111,24 +110,28 @@ public class ImageHandler {
     public String getImageUrl(PageType pageType, String pi, String filepath, String filename) {
         String escPi = StringTools.encodeUrl(pi);
         String escFilename = StringTools.encodeUrl(filename);
-            if (isRestrictedUrl(filepath)) {
-                String escFilepath = StringTools.escapeCriticalUrlChracters(filepath, true);
-                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                sb.append("image").append("/-/").append(escFilepath).append("/info.json");
-                return sb.toString();
-            } else if (isExternalUrl(filepath)) {
-                return filepath;
-            } else if(urls != null) {
-                ApiPath path = this.urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(escPi, escFilename);
-                if(pageType != null) {
-                    path = path.query("pageType", pageType.name());
-                }
-                return path.build();
+        if (isRestrictedUrl(filepath)) {
+            String escFilepath = StringTools.escapeCriticalUrlChracters(filepath, true);
+            if (this.urls != null) {
+                return this.urls.path(ApiUrls.EXTERNAL_IMAGES).params(escFilepath).build();
             } else {
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                sb.append("image").append("/").append(escPi).append("/").append(escFilename).append("/info.json");
+                sb.append("image/-/").append(escFilepath).append("/info.json");
                 return sb.toString();
             }
+        } else if (isExternalUrl(filepath)) {
+            return filepath;
+        } else if (urls != null) {
+            ApiPath path = this.urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(escPi, escFilename);
+            if (pageType != null) {
+                path = path.query("pageType", pageType.name());
+            }
+            return path.build();
+        } else {
+            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+            sb.append("image").append("/").append(escPi).append("/").append(escFilename).append("/info.json");
+            return sb.toString();
+        }
     }
 
     /**
@@ -250,6 +253,5 @@ public class ImageHandler {
                 .stream()
                 .anyMatch(regex -> Pattern.compile(regex).matcher(path).matches());
     }
-
 
 }

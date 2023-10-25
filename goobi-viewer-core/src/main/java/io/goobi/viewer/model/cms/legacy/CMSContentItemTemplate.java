@@ -268,7 +268,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
         CMSContent content = createCMSContent(this.type, this.mediaFilter);
         if (content != null) {
             JsfComponent jsf = new JsfComponent("cms/components/backend/content", content.getBackendComponentName());
-            return new CMSContentItem(this.itemId, content, this.itemLabel, this.inlineHelp, jsf, component, this.isMandatory());
+            return new CMSContentItem(this.itemId, content, this.itemLabel, this.inlineHelp, null, jsf, component, this.isMandatory());
         }
         return null;
     }
@@ -299,9 +299,9 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
             case "GLOSSARY":
                 return new CMSGlossaryContent();
             case "MEDIA":
-                if(StringUtils.isNotBlank(mediaFilter) && mediaFilter.toLowerCase().contains(".pdf")) {
+                if (StringUtils.isNotBlank(mediaFilter) && mediaFilter.toLowerCase().contains(".pdf")) {
                     return new CMSDocumentContent();
-                } else {                    
+                } else {
                     return new CMSMediaContent();
                 }
             case "METADATA":

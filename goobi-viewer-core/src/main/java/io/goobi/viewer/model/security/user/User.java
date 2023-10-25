@@ -341,7 +341,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * @return HTML-escapted value of <code>getDisplayName()</code>
      */
     public String getDisplayNameEscaped() {
-       return StringEscapeUtils.escapeHtml4(getDisplayName());
+        return StringEscapeUtils.escapeHtml4(getDisplayName());
     }
 
     /**

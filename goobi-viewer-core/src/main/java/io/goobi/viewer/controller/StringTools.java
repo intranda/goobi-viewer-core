@@ -49,8 +49,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
@@ -787,6 +787,20 @@ public class StringTools {
         cleaned = stripPatternBreakingChars(cleaned);
         cleaned = Paths.get(cleaned).getFileName().toString();
         return cleaned;
+    }
+
+    public static int sortByList(String v1, String v2, List<String> sorting) {
+        int i1 = sorting.indexOf(v1);
+        int i2 = sorting.indexOf(v2);
+        if (i1 > -1 && i2 > -1) {
+            return i1 - i2;
+        } else if (i1 > -1) {
+            return -1;
+        } else if (i2 > -1) {
+            return 1;
+        } else {
+            return v1.compareTo(v2);
+        }
     }
 
 }

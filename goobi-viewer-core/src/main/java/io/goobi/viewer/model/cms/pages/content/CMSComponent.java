@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +60,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     private final String iconPath;
 
+    private Integer order = null;
+
     private final Map<String, CMSComponentAttribute> attributes;
 
     private final PersistentCMSComponent persistentComponent;
@@ -68,11 +71,19 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     private CMSComponentScope scope = CMSComponentScope.PAGEVIEW;
 
+    public CMSComponent(CMSComponent template, List<CMSContentItem> items) {
+        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
+                template.getScope(), template.getAttributes(), template.getOrder(), Optional.ofNullable(template.getPersistentComponent()));
+        List<CMSContentItem> newItems = items.stream().map(CMSContentItem::new).collect(Collectors.toList());
+        this.contentItems.addAll(newItems);
+    }
+
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
                 template.getScope(),
                 CMSComponent.initializeAttributes(template.getAttributes(),
                         jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())),
+                template.getOrder(),
                 jpa);
         List<CMSContent> contentData = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList());
         List<CMSContentItem> items =
@@ -81,12 +92,12 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
-            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes) {
-        this(jsfComponent, label, description, iconPath, templateFilename, scope, attributes, Optional.empty());
+            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Integer order) {
+        this(jsfComponent, label, description, iconPath, templateFilename, scope, attributes, order, Optional.empty());
     }
 
     private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
-            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Optional<PersistentCMSComponent> jpa) {
+            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Integer order, Optional<PersistentCMSComponent> jpa) {
         this.jsfComponent = jsfComponent;
         this.label = label;
         this.description = description;
@@ -95,6 +106,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         this.attributes = attributes == null ? Collections.emptyMap() : attributes;
         this.scope = scope;
         this.persistentComponent = jpa.orElse(null);
+        this.order = Optional.ofNullable(order).orElse(jpa.map(PersistentCMSComponent::getOrder).orElse(0));
     }
 
     public PersistentCMSComponent getPersistentComponent() {
@@ -113,10 +125,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public void setOrder(int order) {
         Optional.ofNullable(persistentComponent).ifPresent(p -> p.setOrder(order));
+        this.order = order;
     }
 
-    public int getOrder() {
-        return Optional.ofNullable(persistentComponent).map(PersistentCMSComponent::getOrder).orElse(0);
+    public Integer getOrder() {
+        return Optional.ofNullable(persistentComponent).map(PersistentCMSComponent::getOrder).orElse(this.order);
     }
 
     public boolean addContentItem(CMSContentItem item) {
@@ -197,23 +210,24 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public String getTemplateFilename() {
         return templateFilename;
     }
-    
+
     public boolean isPageScope() {
-    	return CMSComponentScope.PAGEVIEW == this.scope;
+        return CMSComponentScope.PAGEVIEW == this.scope;
     }
 
     @Override
     public int compareTo(CMSComponent o) {
-    	int scopeCompare = Integer.compare(this.getScope().ordinal(), o.getScope().ordinal());
-    	int orderCompare = Integer.compare(this.getOrder(), o.getOrder());
-    	return scopeCompare * 100_000 + orderCompare;
+        int scopeCompare = Integer.compare(this.getScope().ordinal(), o.getScope().ordinal());
+        int orderCompare = Integer.compare(this.getOrder(), o.getOrder());
+        return scopeCompare * 100_000 + orderCompare;
     }
 
     public UIComponent getUiComponent() throws PresentationException {
 
         if (this.uiComponent == null && this.jsfComponent != null && StringUtils.isNotBlank(this.jsfComponent.getFilename())) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            this.uiComponent = new HtmlPanelGroup();
+            this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+            this.uiComponent.setId(FilenameUtils.getBaseName(this.templateFilename) + "_" + Optional.ofNullable(this.order).orElse(0));
             UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
             component.getAttributes().put("component", this);
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {
@@ -246,6 +260,10 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public CMSComponentAttribute getAttribute(String key) {
         return this.attributes.get(key);
+    }
+
+    public boolean getBooleanAttributeValue(String key, boolean defaultValue) {
+        return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getBooleanValue).orElse(defaultValue);
     }
 
     public String getAttributeValue(String key) {
@@ -316,12 +334,13 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
                 .findAny()
                 .orElse(null);
         if (content != null) {
-            return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), this,
+            return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getHtmlGroup(), item.getJsfComponent(),
+                    this,
                     item.isRequired());
         }
-        
+
         CMSContentItem newContentItem = new CMSContentItem(item);
-        newContentItem.getContent().setOwningComponent(this.persistentComponent);
+        this.persistentComponent.addContent(newContentItem.getContent());
         return newContentItem;
 
     }
@@ -408,6 +427,18 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public boolean isPaged() {
         return this.contentItems.stream().map(CMSContentItem::getContent).anyMatch(PagedCMSContent.class::isInstance);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.label == null ? "" : this.label);
+        if (this.getPersistentComponent() != null) {
+            sb.append(" id: ").append(this.getPersistentComponent().getId());
+        }
+        if (this.getContentItems() != null) {
+            sb.append(" / ").append(this.getContentItems().size()).append(" content items");
+        }
+        return sb.toString();
     }
 
 }

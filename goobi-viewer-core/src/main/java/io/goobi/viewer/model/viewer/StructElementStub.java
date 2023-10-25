@@ -71,6 +71,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     protected boolean anchor = false;
     /** True if this element is a volume element. */
     protected boolean volume = false;
+    /** True if this element represents a CMS page. */
+    protected boolean cmsPage = false;
     /** Number of contained volumes (anchors only) */
     protected long numVolumes = 0;
     /** Volume label of this element (only for records that are part of a multi-volume record). */
@@ -212,6 +214,20 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public void setVolume(boolean volume) {
         this.volume = volume;
+    }
+
+    /**
+     * @return the cmsPage
+     */
+    public boolean isCmsPage() {
+        return cmsPage;
+    }
+
+    /**
+     * @param cmsPage the cmsPage to set
+     */
+    public void setCmsPage(boolean cmsPage) {
+        this.cmsPage = cmsPage;
     }
 
     /**
@@ -635,7 +651,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * Returns the first meetadata value for the language speciic version of the given field name. If no value is found, the value of the generic
+     * Returns the first metadata value for the language specific version of the given field name. If no value is found, the value of the generic
      * version is returned.
      *
      * @param fieldName Solr field name
@@ -654,7 +670,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * Returns the first meetadata value for the given field name.
+     * Returns the first metadata value for the given field name.
      *
      * @param fieldName Solr field name.
      * @return a {@link java.lang.String} object.
@@ -757,6 +773,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         }
 
         return sb.toString();
+    }
+
+    public boolean isHasMetadata(String fieldName) {
+        return this.getMetadataFields().containsKey(fieldName);
     }
 
     /**

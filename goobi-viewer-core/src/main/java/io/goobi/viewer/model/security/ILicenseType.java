@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.security;
 
-
 public interface ILicenseType {
 
     public String getName();

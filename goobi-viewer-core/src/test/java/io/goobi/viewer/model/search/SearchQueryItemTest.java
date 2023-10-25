@@ -79,6 +79,16 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
                     item.generateQuery(searchTerms, true, false));
             Assert.assertTrue(searchTerms.isEmpty());
         }
+        // Multiple values
+        {
+            SearchQueryItem item = new SearchQueryItem();
+            item.setField("DOCSTRCT"); // selected field must be configured in a way that will return SolrQueryItem.isDisplaySelectItems() == true
+            item.getValues().add("foo bar");
+            item.getValues().add("lorem ipsum");
+            Set<String> searchTerms = new HashSet<>(0);
+            Assert.assertEquals("+(DOCSTRCT:\"foo bar\" DOCSTRCT:\"lorem ipsum\")", item.generateQuery(searchTerms, true, false));
+            Assert.assertTrue(searchTerms.isEmpty());
+        }
     }
 
     /**
@@ -179,10 +189,10 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
     @Test
     public void generateQuery_shouldGenerateRangeQueryCorrectly() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
-        item.setField(SolrConstants.YEAR);
+        item.setField("MD_YEARPUBLISH");
         item.setValue(" 1900 ");
         item.setValue2(" 2020 ");
-        Assert.assertEquals("+(YEAR:([1900 TO 2020]))", item.generateQuery(new HashSet<>(), true, false));
+        Assert.assertEquals("+(MD_YEARPUBLISH:([1900 TO 2020]))", item.generateQuery(new HashSet<>(), true, false));
     }
 
     /**
@@ -232,7 +242,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
     @Test
     public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsTrueIfValueCountBelowThreshold() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
-        item.setField("MD_FOO");
+        item.setField(SolrConstants.EVENTTYPE);
         item.toggleDisplaySelectItems();
         Assert.assertTrue(item.isDisplaySelectItems());
     }
@@ -247,5 +257,28 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setField(SolrConstants.PI);
         item.toggleDisplaySelectItems();
         Assert.assertFalse(item.isDisplaySelectItems());
+    }
+
+    /**
+     * @see SearchQueryItem#toggleDisplaySelectItems()
+     * @verifies set displaySelectItems false if value count zero
+     */
+    @Test
+    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfValueCountZero() throws Exception {
+        SearchQueryItem item = new SearchQueryItem();
+        item.setField("MD_NO_SUCH_FIELD");
+        item.toggleDisplaySelectItems();
+        Assert.assertFalse(item.isDisplaySelectItems());
+    }
+
+    /**
+     * @see SearchQueryItem#getLabel()
+     * @verifies return field if label empty
+     */
+    @Test
+    public void getLabel_shouldReturnFieldIfLabelEmpty() throws Exception {
+        SearchQueryItem item = new SearchQueryItem();
+        item.setField("MD_FIELD");
+        Assert.assertEquals("MD_FIELD", item.getLabel());
     }
 }

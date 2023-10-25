@@ -93,7 +93,7 @@ public class CMSTemplateManager implements Serializable {
 
     @Inject
     private transient ServletContext servletContext;
-    
+
     private String filesystemPath;
     private String themeRootPath;
 
@@ -101,13 +101,13 @@ public class CMSTemplateManager implements Serializable {
         filesystemPath = null;
         themeRootPath = DataManager.getInstance().getConfiguration().getThemeRootPath();
     }
-    
+
     public CMSTemplateManager(String filesystemPath, String themeRootPath) throws PresentationException {
         this.filesystemPath = filesystemPath;
         this.themeRootPath = themeRootPath;
         this.init();
     }
-    
+
     /**
      *
      * @param filesystemPath
@@ -186,14 +186,14 @@ public class CMSTemplateManager implements Serializable {
         this.reloadContentManager();
         this.updateTemplates(coreFolderPath.map(p -> p.resolve("legacy")), themeFolderPath.map(p -> p.resolve("legacy")));
     }
-    
+
     public Optional<CMSPageTemplate> loadLegacyTemplate(String filename) {
         Optional<Path> corePath = coreFolderPath.map(p -> p.resolve("legacy")).map(p -> p.resolve(filename));
-        if(corePath.isPresent()) {
+        if (corePath.isPresent()) {
             return corePath.map(p -> CMSPageTemplate.loadFromXML(p));
         } else {
             Optional<Path> themePath = themeFolderPath.map(p -> p.resolve("legacy")).map(p -> p.resolve(filename));
-            if(themePath.isPresent()) {
+            if (themePath.isPresent()) {
                 return themePath.map(p -> CMSPageTemplate.loadFromXML(p));
             }
         }
@@ -318,7 +318,7 @@ public class CMSTemplateManager implements Serializable {
                         .collect(Collectors.toList());
             }
         } catch (IOException e) {
-            throw new IllegalArgumentException("Error reading files from " + path, e);
+            logger.warn("Failed to read template files from {}. Cause: {}", path, e.toString());
         }
 
         if (templateList == null) {
@@ -382,7 +382,7 @@ public class CMSTemplateManager implements Serializable {
     public Collection<CMSComponent> getLegacyComponents() {
         return legacyTemplateComponents.values();
     }
-    
+
     public Map<String, CMSComponent> getLegacyComponentMap() {
         return legacyTemplateComponents;
     }

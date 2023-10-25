@@ -24,12 +24,16 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
+import javax.faces.model.SelectItem;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,17 +44,22 @@ import org.json.JSONObject;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
@@ -96,18 +105,6 @@ public class ConfigurationBean implements Serializable {
      */
     public String getName() {
         return DataManager.getInstance().getConfiguration().getName();
-    }
-
-    /**
-     * <p>
-     * isBookshelvesEnabled.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isBookshelvesEnabled() {
-        return isBookmarksEnabled();
     }
 
     /**
@@ -789,17 +786,8 @@ public class ConfigurationBean implements Serializable {
                 .getConfiguration()
                 .getSortFields()
                 .stream()
-                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
+                .filter(field -> !Configuration.isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * @param field
-     * @param language
-     * @return
-     */
-    private static boolean isLanguageVersionOtherThan(String field, String language) {
-        return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
     }
 
     /**
@@ -1092,7 +1080,12 @@ public class ConfigurationBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIso639_1(String language) {
-        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCodeOld();
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        if (lang != null) {
+            return lang.getIsoCodeOld();
+        }
+
+        return language;
     }
 
     /**
@@ -1104,7 +1097,12 @@ public class ConfigurationBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIso639_2B(String language) {
-        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCode();
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        if (lang != null) {
+            return lang.getIsoCode();
+        }
+
+        return language;
     }
 
     /**
@@ -1118,6 +1116,9 @@ public class ConfigurationBean implements Serializable {
      */
     public String getTranslation(String language, String locale) {
         Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        if (lang == null) {
+            return language;
+        }
         switch (locale.toLowerCase()) {
             case "de":
             case "ger":
@@ -1301,6 +1302,14 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues();
     }
 
+    public int getSearchChildHitsInitialLoadLimit() {
+        return DataManager.getInstance().getConfiguration().getSearchChildHitsInitialLoadLimit();
+    }
+
+    public int getSearchChildHitsToLoadOnExpand() {
+        return DataManager.getInstance().getConfiguration().getSearchChildHitsToLoadOnExpand();
+    }
+
     /**
      *
      * @return
@@ -1314,7 +1323,7 @@ public class ConfigurationBean implements Serializable {
      * @return true if default sorting field is 'RANDOM'; false otherwise
      */
     public boolean isDefaultSortFieldRandom() {
-        return SolrConstants.SORT_RANDOM.equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
+        return SolrConstants.SORT_RANDOM.equals(DataManager.getInstance().getConfiguration().getDefaultSortField(null));
     }
 
     public boolean isDisplayUserGeneratedContentBelowImage() {
@@ -1349,6 +1358,21 @@ public class ConfigurationBean implements Serializable {
 
     public String getSearchSortingDescendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
+    }
+
+    /**
+     * 
+     * @return List of names of the configured search result groups
+     * @should return all values
+     */
+    public List<String> getSearchResultGroupNames() {
+        logger.trace("getSearchResultGroupNames");
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getSearchResultGroups()
+                .stream()
+                .map(SearchResultGroup::getName)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -1430,5 +1454,47 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isDisplaySearchHitNumbers() {
         return DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers();
+    }
+
+    public String getGeomapFiltersAsJson() {
+        Locale locale = BeanUtils.getLocale();
+        Map<String, List<LabeledValue>> map = DataManager.getInstance().getConfiguration().getGeomapFilters();
+        Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
+        for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
+            //            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
+            List<LabeledValue> translatedValues = entry.getValue()
+                    .stream()
+                    .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale), v.getStyleClass()))
+                    .collect(Collectors.toList());
+            translatedMap.put(entry.getKey(), translatedValues);
+
+        }
+        return new JSONObject(translatedMap).toString();
+    }
+
+    public List<SelectItem> getGeomapFeatureTitleOptions() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getGeomapFeatureTitleOptions()
+                .stream()
+                .map(item -> new SelectItem(item.getValue(), ViewerResourceBundle.getTranslation(item.getLabel(), BeanUtils.getLocale())))
+                .collect(Collectors.toList());
+    }
+
+    public List<Metadata> getMetadataConfiguration(String type) {
+        return getMetadataConfiguration(type, "_DEFAULT");
+    }
+
+    public List<Metadata> getMetadataConfiguration(String type, String template) {
+        return DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(type, template, true, true);
+    }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public String getPageType(String name) {
+        return DataManager.getInstance().getConfiguration().getPageType(PageType.getByName(name));
     }
 }

@@ -226,8 +226,11 @@ public class AdminBean implements Serializable {
     }
 
     public String saveUserAction(User user, String returnPage) throws DAOException {
-        this.saveUserAction(user);
-        return returnPage;
+        if (this.saveUserAction(user)) {
+            return returnPage;
+        } else {
+            return "";
+        }
     }
 
     public String resetUserAction(User user, String returnPage) {

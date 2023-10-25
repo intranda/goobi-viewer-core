@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -111,12 +112,8 @@ public class MetadataBean {
         }
 
         logger.trace("loadMetadata for: {}", currentElement.getLabel());
-        List<MetadataElement> metadataElementList = metadataElementMap.get(index);
-        if (metadataElementList == null) {
-            metadataElementList = new ArrayList<>();
-            metadataElementMap.put(index, metadataElementList);
-        }
-
+        List<MetadataElement> metadataElementList = metadataElementMap.computeIfAbsent(index, k -> new ArrayList<>());
+        metadataElementList.clear(); // Clear hierarchy to avoid duplicates when switching language
         try {
             metadataElementList.add(new MetadataElement().init(currentElement, index, locale)
                     .setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage()));
@@ -162,13 +159,14 @@ public class MetadataBean {
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
-        //        logger.trace("getMetadataElementList({})", index);
+        // logger.trace("getMetadataElementList({})", index);
         Locale locale = BeanUtils.getLocale();
+
         if (metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
                 loadMetadata(index, locale);
-                this.currentMetadataLocale = locale;    //store locale used for translations so it can be checked for changes later on
+                this.currentMetadataLocale = locale; //store locale used for translations so it can be checked for changes later on
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error("Error loading metadatalist ", e);
                 return Collections.emptyList();
@@ -213,7 +211,7 @@ public class MetadataBean {
         while (!metadataElementList.get(i).isHasSidebarMetadata() && i > 0) {
             i--;
         }
-        // logger.debug("i: " + i);
+        
         return metadataElementList.get(i);
     }
 
@@ -349,5 +347,18 @@ public class MetadataBean {
      */
     public void setActiveMetadataView(MetadataView activeMetadataView) {
         this.activeMetadataView = activeMetadataView;
+    }
+
+    /**
+     * 
+     * @param fields
+     * @return
+     */
+    public List<String> getComplexMetadataFieldsToList(String... fields) {
+        if (fields != null) {
+            return Arrays.asList(fields);
+        }
+
+        return List.of("MD_DATESTART", "MD_DATEEND", "MD_TYPE");
     }
 }

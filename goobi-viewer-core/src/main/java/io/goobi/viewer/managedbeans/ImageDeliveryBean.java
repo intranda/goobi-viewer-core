@@ -54,6 +54,7 @@ import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -608,4 +609,11 @@ public class ImageDeliveryBean implements Serializable {
         this.pdf = pdf;
     }
 
+    public String getCurrentImageDownloadUrl(int width, int height, String format) {
+        return getCurrentPageIfExists().map(page -> getThumbs().getImageUrl(page, width, height, format)).orElse("");
+    }
+
+    public String getCurrentImageDownloadUrl(DownloadOption option) {
+        return getCurrentImageDownloadUrl(option.getBoxSizeInPixel().width, option.getBoxSizeInPixel().height, option.getFormat());
+    }
 }

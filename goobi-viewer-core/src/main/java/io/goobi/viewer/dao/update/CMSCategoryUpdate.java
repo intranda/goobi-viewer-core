@@ -41,6 +41,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 
@@ -51,6 +52,14 @@ import io.goobi.viewer.model.cms.pages.content.CMSContent;
  * @author florian
  */
 public class CMSCategoryUpdate implements IModelUpdate {
+
+    private static final String MAP_KEY_CONTENT = "content";
+
+    private static final String TABLENAME_CMS_CONTENT_ITEMS = "cms_content_items";
+
+    private static final String MAP_KEY_CMS_PAGE = "page";
+
+    private static final String MAP_KEY_MEDIA_ITEMS = "media";
 
     /**
      * Separates the individual classifications in the classification string
@@ -67,7 +76,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
 
     /** {@inheritDoc} */
     @Override
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         loadData(dao);
         if (convertData()) {
             persistData(dao);
@@ -105,14 +114,14 @@ public class CMSCategoryUpdate implements IModelUpdate {
             dao.updateCMSPage(cmsPage);
         }
 
-        if (this.entityMap.containsKey("media")) {
+        if (this.entityMap.containsKey(MAP_KEY_MEDIA_ITEMS)) {
             dao.executeUpdate("DROP TABLE cms_media_item_tags");
         }
-        if (this.entityMap.containsKey("page")) {
+        if (this.entityMap.containsKey(MAP_KEY_CMS_PAGE)) {
             dao.executeUpdate("DROP TABLE cms_page_classifications");
         }
         try {
-            if (dao.tableExists("cms_content_items") && this.entityMap.containsKey("content")) {
+            if (dao.tableExists(TABLENAME_CMS_CONTENT_ITEMS) && this.entityMap.containsKey(MAP_KEY_CONTENT)) {
                 dao.executeUpdate("ALTER TABLE cms_content_items DROP COLUMN allowed_tags");
                 dao.executeUpdate("ALTER TABLE cms_content_items DROP COLUMN page_classification");
             }
@@ -156,17 +165,18 @@ public class CMSCategoryUpdate implements IModelUpdate {
             throw new IllegalStateException("Must successfully run loadData() before calling convertData()");
         }
 
-        if (!this.entityMap.containsKey("media") && !this.entityMap.containsKey("content") && !this.entityMap.containsKey("page")) {
+        if (!this.entityMap.containsKey(MAP_KEY_MEDIA_ITEMS) && !this.entityMap.containsKey(MAP_KEY_CONTENT)
+                && !this.entityMap.containsKey(MAP_KEY_CMS_PAGE)) {
             // no update required
             return false;
         }
 
         List<CMSCategory> cats = createCategories(entityMap);
-        this.categories = synchronize(cats, this.categories);
+        synchronize(cats, this.categories);
 
-        linkToPages(this.categories, entityMap.get("page"), this.pages);
-        linkToContentItems(cats, entityMap.get("content"), this.content);
-        linkToMedia(cats, entityMap.get("media"), this.media);
+        linkToPages(this.categories, entityMap.get(MAP_KEY_CMS_PAGE), this.pages);
+        linkToContentItems(cats, entityMap.get(MAP_KEY_CONTENT), this.content);
+        linkToMedia(cats, entityMap.get(MAP_KEY_MEDIA_ITEMS), this.media);
 
         return true;
     }
@@ -188,7 +198,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
                                 list1.addAll(list2);
                                 return list1;
                             }));
-            entityMap.put("page", classifications);
+            entityMap.put(MAP_KEY_CMS_PAGE, classifications);
         }
 
         if (dao.tableExists("cms_media_item_tags")) {
@@ -200,10 +210,10 @@ public class CMSCategoryUpdate implements IModelUpdate {
                                 list1.addAll(list2);
                                 return list1;
                             }));
-            entityMap.put("media", tags);
+            entityMap.put(MAP_KEY_MEDIA_ITEMS, tags);
         }
 
-        if (dao.columnsExists("cms_content_items", "allowed_tags") && dao.columnsExists("cms_content_items", "page_classification")) {
+        if (dao.columnsExists(TABLENAME_CMS_CONTENT_ITEMS, "allowed_tags") && dao.columnsExists(TABLENAME_CMS_CONTENT_ITEMS, "page_classification")) {
             String query = "SELECT cms_content_item_id, allowed_tags, page_classification FROM cms_content_items";
             List<Object[]> classificationsResults = dao.getNativeQueryResults(query);
             Map<String, List<Long>> classifications = classificationsResults.stream()
@@ -217,7 +227,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
                                 return list1;
                             }));
 
-            entityMap.put("content", classifications);
+            entityMap.put(MAP_KEY_CONTENT, classifications);
         }
         return entityMap;
     }
@@ -232,10 +242,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
         }
 
         for (Entry<String, List<Long>> entry : map.entrySet()) {
-            CMSCategory category = categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(entry.getKey())).findFirst().orElse(null);
-            if (category == null) {
-                logger.error("Error creating categories. No category by name {} found or created", entry.getKey());
-            } else {
+            categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(entry.getKey())).findFirst().ifPresent(category -> {
                 List<Long> pageIds = entry.getValue();
                 for (Long pageId : pageIds) {
                     if (pageId != null) {
@@ -251,7 +258,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
                         }
                     }
                 }
-            }
+            });
         }
     }
 
@@ -262,33 +269,20 @@ public class CMSCategoryUpdate implements IModelUpdate {
      * @param mediaItems
      */
     private static void linkToMedia(List<CMSCategory> categories, Map<String, List<Long>> map, List<CMSMediaItem> mediaItems) {
-        if (map == null) {
-            return;
-        }
-
-        for (Entry<String, List<Long>> entry : map.entrySet()) {
-            CMSCategory category = categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(entry.getKey())).findFirst().orElse(null);
-            if (category == null) {
-                logger.error("Error creating categories. No category by name {} found or created", entry.getKey());
-            } else {
-                List<Long> mediaIds = entry.getValue();
-                for (Long mediaId : mediaIds) {
-                    if (mediaId != null) {
-                        try {
-                            CMSMediaItem media = mediaItems.stream()
+        if (map != null) {
+            for (Entry<String, List<Long>> entry : map.entrySet()) {
+                categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(entry.getKey())).findFirst().ifPresent(category -> {
+                    List<Long> mediaIds = entry.getValue();
+                    for (Long mediaId : mediaIds) {
+                        if (mediaId != null) {
+                            mediaItems.stream()
                                     .filter(p -> p.getId() != null)
                                     .filter(p -> mediaId.equals(p.getId()))
                                     .findFirst()
-                                    .orElseThrow(() -> new DAOException("No mediaItem found by Id " + mediaId));
-                            if (media == null) {
-                                throw new DAOException("No page found by Id " + mediaId);
-                            }
-                            media.addCategory(category);
-                        } catch (DAOException e) {
-                            logger.error("Error getting mediaItems for category {}. Failed to load mediaItem for id {}", entry.getKey(), mediaId);
+                                    .ifPresent(media -> media.addCategory(category));
                         }
                     }
-                }
+                });
             }
         }
     }

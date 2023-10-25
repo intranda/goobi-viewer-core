@@ -6,9 +6,9 @@
 			<canvas class="chronology-slider__draw" ref="draw"></canvas>
 		</div>
 		<div class="chronology-slider__input-wrapper">
-			<input onchange="{setStartYear}" data-input='number' class="form-control chronology-slider__input-start" ref="input_start" value="{startYear}"></input>
+			<input onchange="{setStartYear}" data-input='number' aria-label="Start" class="form-control chronology-slider__input-start" ref="input_start" value="{startYear}"></input>
 			<div class="chronology-slider__between-year-symbol">-</div>
-			<input onchange="{setEndYear}" data-input='number' class="form-control chronology-slider__input-end" ref="input_end" value="{endYear}"></input>
+			<input onchange="{setEndYear}" data-input='number' aria-label="End" class="form-control chronology-slider__input-end" ref="input_end" value="{endYear}"></input>
 			<button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button>
 		</div>
 	</div>
@@ -29,9 +29,13 @@
 			this.rangeFillColor = window.getComputedStyle(this.refs?.range)?.backgroundColor;
 			this.rangeOpacity = window.getComputedStyle(this.refs?.range)?.opacity;
 			
+// 			console.log("chronology graph data ", this.opts.datamap, this.opts.startYear, this.opts.endYear);
+			let completeYearMap = this.generateCompleteYearMap(this.opts.datamap);
+// 			console.log("year map ", completeYearMap);
+			
 			let chartElement = this.refs.chart;
-			this.yearList = Array.from(this.opts.datamap.keys()).map(y => parseInt(y));
-			this.yearValues = Array.from(this.opts.datamap.values());
+			this.yearList = Array.from(completeYearMap.keys()).map(y => parseInt(y));
+			this.yearValues = Array.from(completeYearMap.values());
 			this.startYear = parseInt(opts.startYear);
 			this.endYear = parseInt(opts.endYear);
 			this.minYear = this.yearList[0];
@@ -109,7 +113,7 @@
 					
 			}
 			if(this.refs.chart) {				
-				console.log("init chart with config ", this.chartConfig);
+				// console.log("init chart with config ", this.chartConfig);
 				this.chart = new Chart(chartElement, this.chartConfig);
 				this.initDraw();
 			
@@ -119,6 +123,18 @@
 				this.update();
 			}
 		})
+		
+		generateCompleteYearMap(datamap) {
+			let keys = Array.from(datamap.keys());
+			let startYear = parseInt(keys[0]);
+			let endYear = parseInt(keys[keys.length-1]);
+			let yearMap = new Map();
+			for(let year = startYear; year <= endYear; year++) {
+				let value = datamap.get(year.toString());
+				yearMap.set(year, value !== undefined ? value : 0);
+			}
+			return yearMap;
+		}
 		
 		drawInitialRange() {
 			var points = this.chart.getDatasetMeta(0).data;

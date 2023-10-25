@@ -63,6 +63,7 @@ import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.SessionBean;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -356,6 +357,10 @@ public class BeanUtils {
         return (ActiveDocumentBean) getBeanByName("activeDocumentBean", ActiveDocumentBean.class);
     }
 
+    public static PersistentStorageBean getPersistentStorageBean() {
+        return (PersistentStorageBean) getBeanByName("applicationBean", PersistentStorageBean.class);
+    }
+
     /**
      * <p>
      * getSearchBean.
@@ -429,7 +434,7 @@ public class BeanUtils {
     public static CalendarBean getCalendarBean() {
         return (CalendarBean) getBeanByName("calendarBean", CalendarBean.class);
     }
-    
+
     /**
      * <p>
      * getCaptchaBean.
@@ -528,7 +533,7 @@ public class BeanUtils {
 
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> getBeanFromRequest(HttpServletRequest request, String beanName, Class<T> clazz) {
         if (request != null && request.getSession() != null) {

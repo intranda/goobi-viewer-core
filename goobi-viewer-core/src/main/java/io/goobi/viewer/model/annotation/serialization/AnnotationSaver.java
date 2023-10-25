@@ -36,8 +36,8 @@ public interface AnnotationSaver {
     /**
      * Save the annotation. Overwrites an existing annotation if it has the same id
      *
-     * @param annotation    The annotation to save
-     * @throws IOException  If saving the annotation fails
+     * @param annotation The annotation to save
+     * @throws IOException If saving the annotation fails
      */
     public void save(PersistentAnnotation... annotations) throws IOException;
 }

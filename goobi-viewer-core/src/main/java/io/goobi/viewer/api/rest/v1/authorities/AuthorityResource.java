@@ -53,6 +53,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -150,7 +151,7 @@ public class AuthorityResource {
         JSONArray jsonArray = new JSONArray();
 
         // Explorative mode to return all available fields
-        if (template == null || "_DEFAULT".equals(template) || "_ALL".equals(template)) {
+        if (template == null || StringConstants.DEFAULT_NAME.equals(template) || "_ALL".equals(template)) {
             for (NormData normData : normDataList) {
                 jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }

@@ -38,10 +38,12 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -121,7 +123,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         if (this.search == null) {
             this.search = initSearch();
             //store search in session bean so it will be available when reloading a page
@@ -131,6 +133,11 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {
+                if (!component.getBooleanAttributeValue("useSearchGroups", true)) {
+                    searchBean.setActiveResultGroup(SearchResultGroup.createDefaultGroup());
+                } else if (resetResults) {
+                    searchBean.setActiveResultGroup(null);
+                }
                 if (resetResults) {
                     searchBean.resetSearchAction();
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);

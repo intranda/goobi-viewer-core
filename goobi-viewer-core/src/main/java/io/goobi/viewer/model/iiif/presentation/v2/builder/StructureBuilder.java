@@ -174,8 +174,6 @@ public class StructureBuilder extends AbstractBuilder {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
 
-
-
         addRenderings(range, ele);
 
     }
@@ -190,7 +188,7 @@ public class StructureBuilder extends AbstractBuilder {
         this.getRenderings().forEach(link -> {
             try {
                 URI id = getLinkingPropertyUri(ele, link.target);
-                if(id != null) {
+                if (id != null) {
                     range.addRendering(link.getLinkingContent(id));
                 }
             } catch (URISyntaxException | PresentationException | IndexUnreachableException e) {
@@ -199,14 +197,15 @@ public class StructureBuilder extends AbstractBuilder {
         });
     }
 
-    private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target) throws URISyntaxException, PresentationException, IndexUnreachableException {
+    private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target)
+            throws URISyntaxException, PresentationException, IndexUnreachableException {
 
-        if(target.equals(LinkingTarget.PDF) && !ele.getTopStruct().isHasImages()) {
+        if (target.equals(LinkingTarget.PDF) && !ele.getTopStruct().isHasImages()) {
             return null;
         }
 
         URI uri = null;
-        switch(target) {
+        switch (target) {
             case VIEWER:
                 String applicationUrl = this.urls.getApplicationUrl();
                 String pageUrl = ele.getUrl();

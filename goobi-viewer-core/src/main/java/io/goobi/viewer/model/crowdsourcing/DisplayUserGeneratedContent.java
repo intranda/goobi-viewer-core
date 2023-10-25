@@ -577,7 +577,8 @@ public class DisplayUserGeneratedContent {
                 try {
                     resource = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
                 } catch (JsonProcessingException | ClassCastException e1) {
-                    resource = new TextualResource(json, HtmlParser.isHtml(json) ? "text/html" : StringConstants.MIMETYPE_TEXT_PLAIN);
+                    resource = new TextualResource(json,
+                            HtmlParser.isHtml(json) ? StringConstants.MIMETYPE_TEXT_HTML : StringConstants.MIMETYPE_TEXT_PLAIN);
                 }
             }
         }
@@ -657,7 +658,7 @@ public class DisplayUserGeneratedContent {
      * @return
      */
     private static String createLabelFromBody(ContentType type, ITypedResource body) {
-        if(type == null || body == null) {
+        if (type == null || body == null) {
             return "";
         }
         switch (type) {

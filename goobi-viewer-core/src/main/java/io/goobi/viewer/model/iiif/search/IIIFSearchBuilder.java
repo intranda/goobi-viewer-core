@@ -459,7 +459,7 @@ public class IIIFSearchBuilder {
         queryBuilder.append(" +DOCTYPE:DOCSTRCT");
         queryBuilder.append(" +( ");
         for (String field : searchFields) {
-            if(StringUtils.isNotBlank(field)) {
+            if (StringUtils.isNotBlank(field)) {
                 queryBuilder.append(field).append(":").append(query).append(" ");
             }
         }
@@ -524,7 +524,8 @@ public class IIIFSearchBuilder {
                     if (fieldNameMatches(fieldName, displayFields)) {
                         String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
                         if (fieldValue.matches(AbstractSearchParser.getContainedWordRegex(AbstractSearchParser.getAutoSuggestRegex(escapedQuery)))) {
-                            terms.addAll(converter.getSearchTerms(AbstractSearchParser.getAutoSuggestRegex(escapedQuery), fieldValue, getMotivation()));
+                            terms.addAll(
+                                    converter.getSearchTerms(AbstractSearchParser.getAutoSuggestRegex(escapedQuery), fieldValue, getMotivation()));
                         }
                     }
                 }

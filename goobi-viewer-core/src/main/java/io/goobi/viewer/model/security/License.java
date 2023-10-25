@@ -177,7 +177,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /** List of allowed CMS templates. */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"),
-    inverseJoinColumns = @JoinColumn(name = "template_id"))
+            inverseJoinColumns = @JoinColumn(name = "template_id"))
     private List<CMSPageTemplate> allowedCmsTemplates = new ArrayList<>();
 
     /** List of allowed crowdsourcing campaigns. */
@@ -634,7 +634,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      *
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<Selectable<CMSPageTemplate>> getSelectableTemplates() throws DAOException {
         if (selectableTemplates == null) {

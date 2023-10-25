@@ -21,11 +21,22 @@
  */
 package io.goobi.viewer.model.maps;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.model.metadata.MetadataContainer;
 
 /**
  * @author florian
@@ -33,13 +44,14 @@ import org.json.JSONObject;
  */
 public class GeoMapFeature {
 
-    private String title;
-    private String description;
+    private IMetadataValue title;
+    private IMetadataValue description;
     private String link;
     private String json;
     private int count = 1;
     //This is used to identify the feature with a certain document, specifically a LOGID of a TOC element
     private String documentId = null;
+    private List<MetadataContainer> entities = new ArrayList<>();
 
     public GeoMapFeature() {
     }
@@ -54,28 +66,28 @@ public class GeoMapFeature {
     /**
      * @return the title
      */
-    public String getTitle() {
+    public IMetadataValue getTitle() {
         return title;
     }
 
     /**
      * @param title the title to set
      */
-    public void setTitle(String title) {
+    public void setTitle(IMetadataValue title) {
         this.title = title;
     }
 
     /**
      * @return the description
      */
-    public String getDescription() {
+    public IMetadataValue getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(IMetadataValue description) {
         this.description = description;
     }
 
@@ -135,27 +147,59 @@ public class GeoMapFeature {
         this.count = count;
     }
 
+    public List<MetadataContainer> getEntities() {
+        return Collections.unmodifiableList(entities);
+    }
+
+    public void setEntities(List<MetadataContainer> entities) {
+        this.entities = entities;
+    }
+
+    public void addEntity(MetadataContainer entity) {
+        this.entities.add(entity);
+    }
+
     public JSONObject getJsonObject() {
 
         JSONObject object = new JSONObject(this.json);
         JSONObject properties;
         try {
             properties = object.getJSONObject("properties");
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             properties = new JSONObject();
             object.put("properties", properties);
         }
-        if (StringUtils.isNotBlank(this.title)) {
-            properties.put("title", this.title);
+        if (this.title != null && !this.title.isEmpty()) {
+            properties.put("title", JsonTools.getAsObjectForJson(this.title));
         }
-        if (StringUtils.isNotBlank(this.description)) {
-            properties.put("description", this.description);
+        if (this.description != null && !this.description.isEmpty()) {
+            properties.put("description", JsonTools.getAsObjectForJson(this.description));
         }
         if (StringUtils.isNotBlank(this.link)) {
             properties.put("link", this.link);
         }
         if (StringUtils.isNotBlank(this.documentId)) {
             properties.put("documentId", this.documentId);
+        }
+        if (!this.entities.isEmpty()) {
+            JSONArray ents = new JSONArray();
+            properties.put("entities", ents);
+            for (MetadataContainer entity : this.entities) {
+                JSONObject jsonMetadata = new JSONObject();
+                jsonMetadata.put("title", JsonTools.getAsObjectForJson(entity.getLabel()));
+                ents.put(jsonMetadata);
+                for (Entry<String, List<IMetadataValue>> entry : entity.getMetadata().entrySet()) {
+                    String name = entry.getKey();
+                    if (name != null) {
+                        List<IMetadataValue> values = entry.getValue();
+                        JSONArray array = new JSONArray();
+                        for (IMetadataValue value : values) {
+                            array.put(JsonTools.getAsObjectForJson(value));
+                        }
+                        jsonMetadata.put(name, array);
+                    }
+                }
+            }
         }
         properties.put("count", this.count);
         return object;
@@ -167,7 +211,7 @@ public class GeoMapFeature {
     @Override
     public int hashCode() {
         int jsonCode = this.json == null ? "".hashCode() : this.json.hashCode();
-        int titleCode = this.title == null ? "".hashCode() : this.title.hashCode();
+        int titleCode = this.title == null ? "".hashCode() : getIndentifyingString(this.title).hashCode();
         int linkCode = this.link == null ? "".hashCode() : this.link.hashCode();
         return jsonCode + 31 * (titleCode + 31 * linkCode);
     }
@@ -181,9 +225,9 @@ public class GeoMapFeature {
             return false;
         }
         if (obj.getClass().equals(this.getClass())) {
-            GeoMapFeature other = (GeoMapFeature)obj;
+            GeoMapFeature other = (GeoMapFeature) obj;
             return Objects.equals(this.json, other.json) &&
-                    Objects.equals(this.title, other.title) &&
+                    Objects.equals(getIndentifyingString(this.title), getIndentifyingString(other.title)) &&
                     Objects.equals(this.link, other.link);
         }
 
@@ -198,4 +242,7 @@ public class GeoMapFeature {
         return this.json;
     }
 
+    private String getIndentifyingString(IMetadataValue md) {
+        return md.getValues().stream().map(pair -> pair.getValue()).distinct().collect(Collectors.joining());
+    }
 }

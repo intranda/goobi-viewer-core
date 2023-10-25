@@ -24,8 +24,6 @@ package io.goobi.viewer.model.search;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.model.search.SearchHit.HitType;
-
 public class HitTypeTest {
 
     /**

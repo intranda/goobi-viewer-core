@@ -79,6 +79,9 @@
         <class>io.goobi.viewer.model.log.LogMessage</class>
         <class>io.goobi.viewer.model.maps.GeoMap</class>
         <class>io.goobi.viewer.model.maps.MapTranslation</class>
+        <class>io.goobi.viewer.model.maps.FeatureSet</class>
+        <class>io.goobi.viewer.model.maps.ManualFeatureSet</class>
+        <class>io.goobi.viewer.model.maps.SolrFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
         <class>io.goobi.viewer.model.security.DownloadTicket</class>
 		<class>io.goobi.viewer.model.security.License</class>
@@ -215,6 +218,9 @@
         <class>io.goobi.viewer.model.log.LogMessage</class>
         <class>io.goobi.viewer.model.maps.GeoMap</class>
         <class>io.goobi.viewer.model.maps.MapTranslation</class>
+        <class>io.goobi.viewer.model.maps.FeatureSet</class>
+        <class>io.goobi.viewer.model.maps.ManualFeatureSet</class>
+        <class>io.goobi.viewer.model.maps.SolrFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
         <class>io.goobi.viewer.model.security.DownloadTicket</class>
 		<class>io.goobi.viewer.model.security.License</class>

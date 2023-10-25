@@ -24,8 +24,10 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -56,16 +58,20 @@ import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.metadata.MetadataElement;
 
+/**
+ * Managed bean handling {@link Highlight} objects
+ */
 @Named
 @SessionScoped
 public class HighlightsBean implements Serializable {
 
+    private static final String DAO_FIELD_DATE_START = "dateStart";
     private static final long serialVersionUID = -6647395682752991930L;
     private static final Logger logger = LogManager.getLogger(HighlightsBean.class);
     private static final int NUM_ITEMS_PER_PAGE = 12;
-    private static final String ALL_OBJECTS_SORT_FIELD = "dateStart";
+    private static final String ALL_OBJECTS_SORT_FIELD = DAO_FIELD_DATE_START;
     private static final SortOrder ALL_OBJECTS_SORT_ORDER = SortOrder.DESCENDING;
-    private static final String CURRENT_OBJECTS_SORT_FIELD = "dateStart";
+    private static final String CURRENT_OBJECTS_SORT_FIELD = DAO_FIELD_DATE_START;
     private static final SortOrder CURRENT_OBJECTS_SORT_ORDER = SortOrder.ASCENDING;
 
     private TableDataProvider<Highlight> allObjectsProvider;
@@ -82,22 +88,46 @@ public class HighlightsBean implements Serializable {
     @Inject
     private ImageDeliveryBean imaging;
 
+    /**
+     * Status of editing the {@link HighlightsBean#getSelectedObject() selected highlight} in the administration backend
+     */
     public enum EditStatus {
+        /**
+         * User still needs to select whether the highlight should be based on a record or a url
+         */
         SELECT_TARGET,
+        /**
+         * A new hightlight is being created after {@link #SELECT_TARGET} is completed
+         */
         CREATE,
+        /**
+         * An existing hightlight is being edited
+         */
         EDIT;
     }
 
+    /**
+     * Empty defaul constructor. The required properties are being injected automatically
+     */
     public HighlightsBean() {
-
     }
 
+    /**
+     * Testing constructor explicitly initializing required properties
+     * 
+     * @param dao The {@link IDAO} in which to store the highlight data
+     * @param navigationHelper {@link NavigationHelper} to handle URL resolving
+     * @param imaging {@link ImageDeliveryBean} to handle image URL creation
+     */
     public HighlightsBean(IDAO dao, NavigationHelper navigationHelper, ImageDeliveryBean imaging) {
         this.dao = dao;
         this.navigationHelper = navigationHelper;
         this.imaging = imaging;
     }
 
+    /**
+     * called after initialization to load listing of existing highlights
+     */
     @PostConstruct
     public void init() {
         LocalDateTime now = LocalDateTime.now();
@@ -122,14 +152,31 @@ public class HighlightsBean implements Serializable {
                         .collect(Collectors.toList()));
     }
 
+    /**
+     * Get a {@link TableDataProvider} to all saved {@link Highlight highlights}
+     * 
+     * @return a {@link TableDataProvider}
+     */
     public TableDataProvider<Highlight> getAllObjectsProvider() {
         return allObjectsProvider;
     }
 
+    /**
+     * Get a {@link TableDataProvider} to all current {@link Highlight highlights}. That is all highlights which are valid for the current date and
+     * set to active
+     * 
+     * @return a {@link TableDataProvider}
+     */
     public TableDataProvider<Highlight> getCurrentObjectsProvider() {
         return currentObjectsProvider;
     }
 
+    /**
+     * Get the URL to the highlighted object. Either the record page URL of the URL given in highlight creation
+     * 
+     * @param the highlight object
+     * @return the URL
+     */
     public String getUrl(Highlight object) {
         if (object != null) {
             switch (object.getData().getTargetType()) {
@@ -150,6 +197,11 @@ public class HighlightsBean implements Serializable {
         return "";
     }
 
+    /**
+     * Delete a {@link Highlight}
+     * 
+     * @param object
+     */
     public void deleteObject(Highlight object) {
         try {
             dao.deleteHighlight(object.getData().getId());
@@ -160,10 +212,20 @@ public class HighlightsBean implements Serializable {
         }
     }
 
+    /**
+     * Get the currently selected {@link Highlight}
+     * 
+     * @return a {@link Highlight}
+     */
     public Highlight getSelectedObject() {
         return selectedObject;
     }
 
+    /**
+     * Set the {@link Highlight} selected for editing
+     * 
+     * @param selectedObject
+     */
     public void setSelectedObject(Highlight selectedObject) {
         this.selectedObject = selectedObject;
         if (this.selectedObject != null) {
@@ -176,6 +238,11 @@ public class HighlightsBean implements Serializable {
         }
     }
 
+    /**
+     * Set the {@link Highlight} selected for editing via its database id
+     * 
+     * @param id
+     */
     public void setSelectedObjectId(long id) {
 
         try {
@@ -191,15 +258,29 @@ public class HighlightsBean implements Serializable {
         }
     }
 
+    /**
+     * Create a new {@link Highlight} and set as the selected highlight
+     */
     public void setNewSelectedObject() {
         HighlightData data = new HighlightData();
         setSelectedObject(new Highlight(data));
     }
 
+    /**
+     * Check if the currently selected highlight has been persisted already
+     * 
+     * @return true if {@link #getSelectedObject()} has no database id and has thus not been persisted yet
+     */
     public boolean isNewObject() {
         return this.selectedObject != null && this.selectedObject.getData().getId() == null;
     }
 
+    /**
+     * Persist the given {@link Highlight} to the database
+     * 
+     * @param object
+     * @throws DAOException
+     */
     public void saveObject(Highlight object) throws DAOException {
         boolean saved = false;
         boolean redirect = false;
@@ -210,16 +291,22 @@ public class HighlightsBean implements Serializable {
             redirect = true;
         }
         if (saved) {
-            Messages.info(ViewerResourceBundle.getTranslationWithParameters("button__save__success", null, object.toString()));
+            Messages.info(ViewerResourceBundle.getTranslationWithParameters("button__save__success", null, true, object.toString()));
         } else {
             Messages.error(
-                    ViewerResourceBundle.getTranslationWithParameters("button__save__error", null, object != null ? object.toString() : "null"));
+                    ViewerResourceBundle.getTranslationWithParameters("button__save__error", null, true,
+                            object != null ? object.toString() : "null"));
         }
         if (redirect) {
             PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightsEdit", object.getData().getId()));
         }
     }
 
+    /**
+     * If a {@link Highlight} has been selected and it points to a record (rather than a URL), retrieve the metadata for this record
+     * 
+     * @return A {@link MetadataElement} with metadata for the related record if one exists. Otherwise null
+     */
     public MetadataElement getMetadataElement() {
         if (this.selectedObject != null) {
             try {
@@ -236,6 +323,12 @@ public class HighlightsBean implements Serializable {
         return null;
     }
 
+    /**
+     * Get the currently displayed highlight. This highlight is randomly chosen from all highlights valid for the current day which are set to enabled
+     * 
+     * @return a {@link Highlight}
+     * @throws DAOException
+     */
     public Highlight getCurrentHighlight() throws DAOException {
         List<Highlight> currentObjects = dao.getHighlightsForDate(LocalDateTime.now())
                 .stream()
@@ -249,11 +342,31 @@ public class HighlightsBean implements Serializable {
         return null;
     }
 
+    /**
+     * Get the URL of a representative image for the record related to the currently selected highlight if a highlight is selected and it refers to a
+     * record. Otherwise return null
+     * 
+     * @return A URL to the record for the selected highlight if one exists. Otherwise null
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws ViewerConfigurationException
+     */
     public URI getRecordRepresentativeURI() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getRecordRepresentativeURI(DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
                 DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
 
+    /**
+     * Get the URL of a representative image for the record related to the currently selected highlight if a highlight is selected and it refers to a
+     * record. Otherwise return null
+     * 
+     * @return A URL to the record for the selected highlight if one exists. Otherwise null
+     * @param width the desired width of the image. Chose '0' for original image width
+     * @param height the desired height of the image. Chose '0' for original image height
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws ViewerConfigurationException
+     */
     public URI getRecordRepresentativeURI(int width, int height)
             throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         if (getSelectedObject() != null && StringUtils.isNotBlank(getSelectedObject().getData().getRecordIdentifier())) {
@@ -264,16 +377,47 @@ public class HighlightsBean implements Serializable {
         return null;
     }
 
+    /**
+     * Get all objected contained in {@link #getCurrentObjectsProvider()}
+     * 
+     * @return A list of all currently active {@link Highlight}s
+     */
     public List<Highlight> getCurrentObjects() {
         return this.getCurrentObjectsProvider().getPaginatorList();
     }
 
+    /**
+     * Get the current {@link EditStatus}
+     * 
+     * @return a {@link EditStatus}
+     */
     public EditStatus getEditStatus() {
         return editStatus;
     }
 
+    /**
+     * Set the {@link #getEditStatus()}
+     * 
+     * @param editStatus
+     */
     public void setEditStatus(EditStatus editStatus) {
         this.editStatus = editStatus;
+    }
+
+    /**
+     * Get all {@link Highlight}s which are not valid for the given date but were before. Only hightlights with {@link Highlight#isEnabled()} true are
+     * included
+     * 
+     * @param date the date up to which to return the highlights (exclusively)
+     * @return A list of {@link Highlight}s
+     * @throws DAOException
+     */
+    public List<Highlight> getHighlightsBefore(LocalDate date) throws DAOException {
+        return dao.getPastHighlightsForDate(0, Integer.MAX_VALUE, DAO_FIELD_DATE_START, true, Map.of(), date.atStartOfDay())
+                .stream()
+                .filter(HighlightData::isEnabled)
+                .map(Highlight::new)
+                .collect(Collectors.toList());
     }
 
 }

@@ -70,6 +70,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
+import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
@@ -93,8 +94,8 @@ import io.goobi.viewer.model.export.ExcelExport;
 import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
-import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.Location;
+import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
@@ -109,6 +110,7 @@ import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
@@ -164,6 +166,9 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Individual terms extracted from the user query (used for highlighting). */
     private Map<String, Set<String>> searchTerms = new HashMap<>();
 
+    private SearchResultGroup activeResultGroup;
+    /** Selected advanced search field configuration template. */
+    private String advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
     private boolean phraseSearch = false;
     /** Current search result page. */
     private int currentPage = 1;
@@ -178,7 +183,11 @@ public class SearchBean implements SearchInterface, Serializable {
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
     /** Group of query item clusters for the advanced search. */
     private final SearchQueryGroup advancedSearchQueryGroup =
-            new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+            new SearchQueryGroup(
+                    DataManager.getInstance()
+                            .getConfiguration()
+                            .getAdvancedSearchFields(advancedSearchFieldTemplate, true, BeanUtils.getLocale().getLanguage()),
+                    advancedSearchFieldTemplate);
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
 
@@ -319,6 +328,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (resetParameters) {
             resetSearchParameters();
             facets.resetSliderRange();
+            setActiveResultGroupName("-");
         }
         if (resetFacets) {
             facets.resetActiveFacetString();
@@ -327,6 +337,11 @@ public class SearchBean implements SearchInterface, Serializable {
         return "pretty:newSearch5";
     }
 
+    /**
+     * 
+     * @param search
+     * @return
+     */
     public String simpleSearch(SearchInterface search) {
         return search.searchSimple();
     }
@@ -444,7 +459,7 @@ public class SearchBean implements SearchInterface, Serializable {
         setExactSearchString("");
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         resetSearchResults();
-        resetSearchParameters(true);
+        resetSearchParameters(true, true);
         searchInCurrentItemString = null;
         customFilterQuery = null;
         proximitySearchDistance = 0;
@@ -484,18 +499,27 @@ public class SearchBean implements SearchInterface, Serializable {
      * Resets general search options and type specific options for currently unused types.
      */
     public void resetSearchParameters() {
-        resetSearchParameters(false);
+        resetSearchParameters(false, true);
+    }
+
+    /**
+     * 
+     * @param resetAllSearchTypes
+     */
+    public void resetSearchParameters(boolean resetAllSearchTypes) {
+        resetSearchParameters(resetAllSearchTypes, true);
     }
 
     /**
      * Resets general search options and type specific options for currently unused types (all options if <resetAll> is true).
      *
-     * @param resetAll If true, parameters for the currently used search type are also reset.
+     * @param resetAllSearchTypes If true, parameters for the currently used search type are also reset.
+     * @param resetCurrentPage If true, currentPage will be reset to 1
      */
-    public void resetSearchParameters(boolean resetAll) {
-        logger.trace("resetSearchParameters");
+    public void resetSearchParameters(boolean resetAllSearchTypes, boolean resetCurrentPage) {
+        logger.trace("resetSearchParameters; resetAllSearchTypes: {}", resetAllSearchTypes);
         CalendarBean calendarBean = BeanUtils.getCalendarBean();
-        if (resetAll) {
+        if (resetAllSearchTypes) {
             resetSimpleSearchParameters();
             resetAdvancedSearchParameters();
             if (calendarBean != null) {
@@ -526,6 +550,9 @@ public class SearchBean implements SearchInterface, Serializable {
                 default: // nothing
             }
         }
+        if (resetCurrentPage) {
+            setCurrentPage(1);
+        }
     }
 
     /**
@@ -537,7 +564,6 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("resetSimpleSearchParameters");
         currentSearchFilter = DataManager.getInstance().getConfiguration().getDefaultSearchFilter();
         generateSimpleSearchString("");
-        setCurrentPage(1);
 
         searchString = "";
     }
@@ -551,7 +577,11 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     protected void resetAdvancedSearchParameters() {
         logger.trace("resetAdvancedSearchParameters");
-        advancedSearchQueryGroup.init(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        advancedSearchQueryGroup.init(
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getAdvancedSearchFields(advancedSearchFieldTemplate, true, BeanUtils.getLocale().getLanguage()),
+                advancedSearchFieldTemplate);
         // If currentCollection is set, pre-select it in the advanced search menu
         mirrorAdvancedSearchCurrentHierarchicalFacets();
     }
@@ -824,7 +854,8 @@ public class SearchBean implements SearchInterface, Serializable {
         // Create SearchQueryGroup from query
         if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED && advancedSearchQueryGroup.isBlank()) {
             SearchQueryGroup parsedGroup =
-                    SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getActiveFacetString());
+                    SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getActiveFacetString(),
+                            advancedSearchFieldTemplate, navigationHelper.getLocaleString());
             advancedSearchQueryGroup.injectItems(parsedGroup.getQueryItems());
         }
 
@@ -839,12 +870,12 @@ public class SearchBean implements SearchInterface, Serializable {
         setHitsPerPageSetterCalled(false);
 
         if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
-            setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
+            setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField(BeanUtils.getLocale().getLanguage()));
             logger.trace("Using default sorting: {}", searchSortingOption.getSortString());
         }
 
         // Init search object
-        currentSearch = new Search(activeSearchType, currentSearchFilter);
+        currentSearch = new Search(activeSearchType, currentSearchFilter, getResultGroupsForSearchExecution());
         currentSearch.setUserInput(searchString);
         currentSearch.setQuery(searchStringInternal);
         currentSearch.setPage(currentPage);
@@ -873,6 +904,11 @@ public class SearchBean implements SearchInterface, Serializable {
                                     additionalExpandQueryfields),
                             searchTerms, phraseSearch, proximitySearchDistance);
             currentSearch.setExpandQuery(expandQuery);
+        }
+
+        // Override default result groups config if active group selected
+        if (activeResultGroup != null) {
+            currentSearch.setResultGroups(Collections.singletonList(activeResultGroup));
         }
 
         currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
@@ -1082,6 +1118,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should generate non-phrase search query without filter correctly
      * @should generate non-phrase search query with specific filter correctly
      * @should add proximity search token correctly
+     * @should reset exactSearchString if input empty
      */
     void generateSimpleSearchString(String inSearchString) {
         logger.trace("generateSimpleSearchString: {}", inSearchString);
@@ -1098,19 +1135,21 @@ public class SearchBean implements SearchInterface, Serializable {
             inSearchString = "";
         }
 
-        searchString = StringTools.stripJS(inSearchString);
+        searchString = StringTools.stripJS(inSearchString).trim();
+        if (StringUtils.isEmpty(inSearchString)) {
+            searchString = "";
+            setExactSearchString("");
+            return;
+        }
+
+        // Reset internal query etc. only after confirming the given search string is not empty
         searchStringInternal = "";
         searchTerms.clear();
         phraseSearch = false;
 
-        inSearchString = inSearchString.trim();
-        if (StringUtils.isEmpty(inSearchString)) {
-            searchString = "";
-            return;
-        }
-
         if ("*".equals(inSearchString)) {
             searchStringInternal = SearchHelper.prepareQuery("");
+            setExactSearchString("");
             return;
         }
 
@@ -1298,10 +1337,11 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     @Override
     public String getExactSearchString() {
+        // logger.trace("getExactSearchString: {}", searchStringInternal);
         if (searchStringInternal.length() == 0) {
             return "-";
         }
-        // logger.trace("getExactSearchString: {}", searchStringInternal);
+
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
         try {
             // Escape the query here, otherwise Rewrite will spam warnings into catalina.out
@@ -1397,7 +1437,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public void setSortString(String sortString) {
         logger.trace("setSortString: {}", sortString);
         if ("-".equals(sortString)) {
-            String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
+            String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(BeanUtils.getLocale().getLanguage());
             if (StringUtils.isNotEmpty(defaultSortField)) {
                 sortString = defaultSortField;
             }
@@ -1446,6 +1486,89 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentSearch != null) {
             currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         }
+    }
+
+    /**
+     * Returns relevant search result groups for search execution. If an active group is set, return just that. Otherwise, return either all
+     * configured groups or default group (if groups disabled).
+     * 
+     * @return Relevant search result groups
+     */
+    public List<SearchResultGroup> getResultGroupsForSearchExecution() {
+        if (activeResultGroup != null) {
+            return Collections.singletonList(activeResultGroup);
+        }
+
+        return (!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
+                || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
+                        ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
+                        : DataManager.getInstance().getConfiguration().getSearchResultGroups();
+    }
+
+    /**
+     * 
+     * @return true if activeResultGroup null; false otherwise
+     */
+    public boolean isDisplayResultGroupNames() {
+        return activeResultGroup == null && DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled();
+    }
+
+    /**
+     * 
+     */
+    public String getActiveResultGroupName() {
+        if (activeResultGroup != null) {
+            return activeResultGroup.getName();
+        }
+
+        return "-";
+    }
+
+    public void setActiveResultGroup(SearchResultGroup activeResultGroup) {
+        this.activeResultGroup = activeResultGroup;
+    }
+
+    /**
+     * 
+     * @param activeResultGroupName
+     * @should select result group correctly
+     * @should reset result group if new name not configured
+     * @should reset result group if empty name given
+     * @should reset advanced search query items if new group used as field template
+     * @should reset advanced search query items if old group used as field template
+     */
+    public void setActiveResultGroupName(String activeResultGroupName) {
+        logger.trace("setActiveResultGroupName: {}", activeResultGroupName);
+        if (activeResultGroup != null && activeResultGroup.getName().equals(activeResultGroupName)) {
+            return;
+        }
+
+        if (activeResultGroupName != null && !"-".equals(activeResultGroupName)) {
+            for (SearchResultGroup resultGroup : DataManager.getInstance().getConfiguration().getSearchResultGroups()) {
+                if (resultGroup.getName().equals(activeResultGroupName)) {
+                    activeResultGroup = resultGroup;
+                    if (resultGroup.isUseAsAdvancedSearchTemplate()) {
+                        this.advancedSearchFieldTemplate = resultGroup.getName();
+                        // Reset query items
+                        resetAdvancedSearchParameters();
+                        // Reset slider ranges
+                        facets.resetSliderRange();
+                        // Reset avalable facets
+                        facets.resetAvailableFacets();
+                    }
+                    return;
+                }
+            }
+            logger.warn("Search result group name not found: {}", activeResultGroupName);
+        }
+
+        // Reset query items and slider ranges if active group is used as item field template
+        if (activeResultGroup != null && activeResultGroup.isUseAsAdvancedSearchTemplate()) {
+            resetAdvancedSearchParameters();
+            facets.resetSliderRange();
+        }
+        activeResultGroup = null;
+        this.advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
     }
 
     /**
@@ -1547,8 +1670,9 @@ public class SearchBean implements SearchInterface, Serializable {
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
             facets.removeFacetAction(facetQuery, "");
-            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:cmsOpenPage6", oPath.get().getCmsPage().getId(), this.getExactSearchString(),
-                    oPath.get().getCmsPage().getListPage(), this.getSortString(), this.getFacets().getActiveFacetString());
+            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:cmsOpenPage6", oPath.get().getCmsPage().getId(), getActiveResultGroupName(),
+                    this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(),
+                    this.getFacets().getActiveFacetString());
             logger.trace("redirecting to url: {}", url);
             PrettyUrlTools.redirectToUrl(url);
             return "";
@@ -1589,11 +1713,12 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public long getHitsCount() {
+        if (activeResultGroup != null) {
+            return activeResultGroup.getHitsCount();
+        }
         if (currentSearch != null) {
-            // logger.trace("Hits count = {}", currentSearch.getHitsCount());
             return currentSearch.getHitsCount();
         }
-        // logger.warn("No Search object available");
 
         return 0;
     }
@@ -1909,7 +2034,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Check for pre-generated items
-        String key = new StringBuilder(language).append('_').append(field).toString();
+        String key = new StringBuilder(getActiveResultGroupName()).append('_').append(language).append('_').append(field).toString();
         List<StringPair> ret = advancedSearchSelectItems.get(key);
         if (ret != null) {
             return ret;
@@ -1972,8 +2097,11 @@ public class SearchBean implements SearchInterface, Serializable {
             advancedSearchSelectItems.put(key, ret);
         } else {
             String suffix = SearchHelper.getAllSuffixes();
-
-            List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 1);
+            if (activeResultGroup != null) {
+                suffix = suffix + " +(" + activeResultGroup.getQuery() + ")";
+            }
+            String query = field + ":[* TO *]" + suffix;
+            List<String> values = SearchHelper.getFacetValues(query, field, 1);
             for (String value : values) {
                 ret.add(new StringPair(value, ViewerResourceBundle.getTranslation(value, null)));
             }
@@ -2032,7 +2160,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return List of allowed advanced search fields
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields() {
-        return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString());
+        return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString(), advancedSearchFieldTemplate);
     }
 
     /**
@@ -2040,11 +2168,13 @@ public class SearchBean implements SearchInterface, Serializable {
      * locale are omitted.
      *
      * @param language Optional language code for filtering language-specific fields
+     * @param template
      * @return List of allowed advanced search fields
      * @should omit languaged fields for other languages
      */
-    public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(String language) {
-        List<AdvancedSearchFieldConfiguration> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
+    public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(String language, String template) {
+        List<AdvancedSearchFieldConfiguration> fields =
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, false, language);
         if (fields == null) {
             return Collections.emptyList();
         }
@@ -2667,7 +2797,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private URI getParameterPath(URI basePath) {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
-        basePath = ViewerPathBuilder.resolve(basePath, "-");
+        basePath = ViewerPathBuilder.resolve(basePath, getActiveResultGroupName());
         // URL-encode query if not yet encoded
         String exactSearchString = getExactSearchString();
         //        try {
@@ -2912,7 +3042,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public GeoMap getHitsMap() {
         GeoMap map = new GeoMap();
-        map.setType(GeoMapType.MANUAL);
+        ManualFeatureSet featureSet = new ManualFeatureSet();
+        map.addFeatureSet(featureSet);
         map.setShowPopover(true);
         //set initial zoom to max zoom so map will be as zoomed in as possible
         map.setInitialView("{" +
@@ -2928,7 +3059,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     //            .distinct()
                     .collect(Collectors.toList());
 
-            map.setFeatures(features);
+            featureSet.setFeatures(features);
         }
         return map;
     }
@@ -2973,13 +3104,14 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     *
+     * 
+     * @param language
      * @return
      * @should return options correctly
      * @should use current random seed option instead of default
      */
-    public Collection<SearchSortingOption> getSearchSortingOptions() {
-        Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+    public Collection<SearchSortingOption> getSearchSortingOptions(String language) {
+        Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions(language);
         Collection<SearchSortingOption> ret = new ArrayList<>(options.size());
         for (SearchSortingOption option : options) {
             // If random sorting is currently in use, use that particular seed
@@ -3038,6 +3170,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (getActiveSearchType() == 1) {
             return PrettyUrlTools.getAbsolutePageUrl(
                     "pretty:searchAdvanced5",
+                    getActiveResultGroupName(),
                     getExactSearchString(),
                     getCurrentPage(),
                     getSortString(),
@@ -3046,6 +3179,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return PrettyUrlTools.getAbsolutePageUrl(
                 "pretty:newSearch5",
+                getActiveResultGroupName(),
                 getExactSearchString(),
                 getCurrentPage(),
                 getSortString(),
@@ -3054,47 +3188,15 @@ public class SearchBean implements SearchInterface, Serializable {
 
     @Override
     public String changeSorting() throws IOException {
-        return "pretty:newSearch5";
-    }
+        logger.trace("changeSorting");
+        switch (getActiveSearchType()) {
+            case 1:
+                return "pretty:searchAdvanced5";
+            case 0:
+            default:
+                return "pretty:newSearch5";
 
-    /**
-     * TODO Remove this test method after feature development is completed.
-     * 
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     */
-    public void searchMono() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.debug("searchMono");
-        searchStringInternal = "+PI:* +DOCSTRCT:monograph";
-
-        //remember the current page to return to hit list in widget_searchResultNavigation
-        setLastUsedSearchPage();
-
-        // If hitsPerPage is not one of the available values, reset to default
-        if (!hitsPerPageSetterCalled && !DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues().contains(hitsPerPage)) {
-            hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
-            logger.trace("hitsPerPage reset to {}", hitsPerPage);
         }
-        setHitsPerPageSetterCalled(false);
-
-        if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
-            setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
-            logger.trace("Using default sorting: {}", searchSortingOption.getSortString());
-        }
-
-        // Init search object
-        currentSearch = new Search(activeSearchType, currentSearchFilter);
-        currentSearch.setUserInput(searchString);
-        currentSearch.setQuery(searchStringInternal);
-        currentSearch.setPage(currentPage);
-        currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
-        currentSearch.setFacetString(facets.getActiveFacetString());
-        currentSearch.setCustomFilterQuery(customFilterQuery);
-        currentSearch.setProximitySearchDistance(proximitySearchDistance);
-        currentSearch.execute(facets, null, hitsPerPage, navigationHelper.getLocale(), false,
-                SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
 }

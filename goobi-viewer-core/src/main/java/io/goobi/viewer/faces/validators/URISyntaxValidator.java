@@ -64,8 +64,8 @@ public class URISyntaxValidator implements Validator<String> {
         }
     }
 
-    private boolean getAsBoolean(Object value) {
-        if(value instanceof Boolean) {
+    private static boolean getAsBoolean(Object value) {
+        if (value instanceof Boolean) {
             return ((Boolean) value).booleanValue();
         } else if (value instanceof String) {
             return Boolean.parseBoolean((String) value);

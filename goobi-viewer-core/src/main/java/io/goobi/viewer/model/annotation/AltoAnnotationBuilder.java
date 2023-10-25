@@ -74,7 +74,8 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<AbstractAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, IResource target, Granularity granularity, boolean urlOnlyTarget) {
+    public List<AbstractAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, IResource target, Granularity granularity,
+            boolean urlOnlyTarget) {
         List<GeometricData> elementsToInclude = new ArrayList<>();
         switch (granularity) {
             case PAGE:
@@ -110,7 +111,8 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<AbstractAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, IResource target, boolean urlOnlyTarget) {
+    public List<AbstractAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, IResource target,
+            boolean urlOnlyTarget) {
         List<AbstractAnnotation> annoList =
                 elements.stream().map(element -> createAnnotation(element, pi, pageNo, target, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
@@ -130,7 +132,7 @@ public class AltoAnnotationBuilder {
     public AbstractAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(element.getId()).orElse(buildId(element));
         AbstractAnnotation anno;
-        if("oa".equalsIgnoreCase(format)) {
+        if ("oa".equalsIgnoreCase(format)) {
             anno = new OpenAnnotation(createAnnotationId(pi, pageNo, id));
             anno.setBody(new TextualResource(element.getContent()));
         } else {
@@ -144,11 +146,12 @@ public class AltoAnnotationBuilder {
 
     /**
      * Method to construct alto element id if no id attribute is available
+     * 
      * @param e
      * @return
      */
     private String buildId(GeometricData e) {
-        return e.getClass().getSimpleName() + "_" +  e.getBounds().x + "_" + e.getBounds().y + "_" + e.getBounds().width + "_" + e.getBounds().height;
+        return e.getClass().getSimpleName() + "_" + e.getBounds().x + "_" + e.getBounds().y + "_" + e.getBounds().width + "_" + e.getBounds().height;
     }
 
     /**
@@ -163,7 +166,7 @@ public class AltoAnnotationBuilder {
         IResource part;
         if (urlOnly) {
             part = new SpecificResourceURI(canvas.getId(), new FragmentSelector(area));
-        } else if("oa".equalsIgnoreCase(format))  {
+        } else if ("oa".equalsIgnoreCase(format)) {
             part = new SpecificResource(canvas.getId(), new FragmentSelector(area));
         } else {
             part = new de.intranda.api.annotation.wa.SpecificResource(canvas.getId(), new de.intranda.api.annotation.wa.FragmentSelector(area));
@@ -179,7 +182,7 @@ public class AltoAnnotationBuilder {
      */
     private URI createAnnotationId(String pi, Integer pageNo, String id) {
         ApiPath path = urls.path(ApiUrls.ANNOTATIONS, ApiUrls.ANNOTATIONS_ALTO).params(pi, pageNo, id);
-        if(StringUtils.isNotBlank(format)) {
+        if (StringUtils.isNotBlank(format)) {
             path = path.query("format", format);
         }
         return URI.create(path.build());

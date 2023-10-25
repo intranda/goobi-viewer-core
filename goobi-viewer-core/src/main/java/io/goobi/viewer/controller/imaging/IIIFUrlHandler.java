@@ -68,7 +68,7 @@ public class IIIFUrlHandler {
     public IIIFUrlHandler(AbstractApiUrlManager urls) {
         this.urls = urls;
     }
-    
+
     public IIIFUrlHandler(URI apiUrl) {
         this.urls = new ApiUrls(apiUrl.toString());
     }

@@ -28,6 +28,7 @@ import java.util.Optional;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.viewer.PageType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -231,6 +232,10 @@ public class CMSStaticPage implements Serializable {
         }
 
         return false;
+    }
+
+    public PageType getPageType() {
+        return PageType.getByName(this.pageName);
     }
 
 }

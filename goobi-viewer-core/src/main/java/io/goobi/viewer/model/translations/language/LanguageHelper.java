@@ -119,6 +119,10 @@ public class LanguageHelper {
      * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
      */
     public Language getLanguage(String isoCode) {
+        if (isoCode == null) {
+            return null;
+        }
+        isoCode = isoCode.replaceAll("[\n\r]", "_");
         HierarchicalConfiguration<ImmutableNode> languageConfig = null;
         try {
             if (isoCode.length() == 3) {
@@ -134,16 +138,17 @@ public class LanguageHelper {
                 languageConfig = getConfig().configurationsAt("language[iso_639-1=\"" + isoCode + "\"]").get(0);
             }
         } catch (IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("No matching language found for " + isoCode);
+            logger.warn("No matching language found for {}", isoCode);
+            return null;
         } catch (Throwable e) {
             throw new IllegalArgumentException(e);
         }
         if (languageConfig == null) {
-            throw new IllegalArgumentException("No matching language found for " + isoCode);
+            logger.warn("No matching language found for {}", isoCode);
+            return null;
         }
-        Language language = createLanguage(languageConfig);
 
-        return language;
+        return createLanguage(languageConfig);
     }
 
     /**

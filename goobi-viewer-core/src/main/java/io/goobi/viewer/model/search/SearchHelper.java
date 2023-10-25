@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -68,6 +69,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
@@ -85,7 +87,6 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
-import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -132,7 +133,7 @@ public final class SearchHelper {
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL", false);
     public static final String TITLE_TERMS = "_TITLE_TERMS";
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
-    public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":{0})^20.0";
+    public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":({0}))^20.0";
     public static final String EMBEDDED_QUERY_TEMPLATE = "_query_:\"{0}\"";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
@@ -166,7 +167,7 @@ public final class SearchHelper {
     /** Constant <code>patternYearRange</code> */
     public static Pattern patternYearRange = Pattern.compile("\\[[0-9]+ TO [0-9]+\\]");
     /** Constant <code>patternHyperlink</code> */
-    public static Pattern patternHyperlink = Pattern.compile("(<a .*<\\/a>)");
+    public static Pattern patternHyperlink = Pattern.compile("(<a (?:(?!<\\/a>).)*<\\/a>)");
 
     public static final Pattern patternAllItems = Pattern.compile(
             "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");
@@ -344,6 +345,7 @@ public final class SearchHelper {
             String s = query.replaceAll("[\n\r]", "_");
             logger.trace("searchWithAggregation: {}", s);
         }
+        logger.trace("hitsPerPage: {}", rows);
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
         if (resp.getResults() == null) {
@@ -359,9 +361,9 @@ public final class SearchHelper {
         }
 
         int count = first;
+        Map<String, SolrDocumentList> childDocsMap = resp.getExpandedResults();
         for (SolrDocument doc : resp.getResults()) {
             // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
-            Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
@@ -375,35 +377,93 @@ public final class SearchHelper {
             // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
-            if (pi != null && childDocs != null && childDocs.containsKey(pi)) {
-                logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
-                hit.setChildDocs(childDocs.get(pi));
-                for (SolrDocument childDoc : childDocs.get(pi)) {
-                    String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
-                    if (DocType.METADATA.name().equals(docType)) {
-                        // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
-                        docType = DocType.DOCSTRCT.name();
-                    }
+            String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+            if(pi != null && childDocsMap != null) {
+                SolrDocumentList childDocs = childDocsMap.getOrDefault(pi, new SolrDocumentList());
+                logger.trace("{} child hits found for {}", childDocs.size(), pi);
+                childDocs = filterChildDocs(childDocs, iddoc, searchTerms, factory);
+                hit.setChildDocs(childDocs);
+                for (SolrDocument childDoc : childDocs) {
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
-                    HitType hitType = HitType.getByName(docType);
-                    if (DocType.UGC.name().equals(docType)) {
-                        // For user-generated content hits use the metadata type for the hit type
-                        String ugcType = (String) childDoc.getFieldValue(SolrConstants.UGCTYPE);
-                        logger.trace("ugcType: {}", ugcType);
-                        if (StringUtils.isNotEmpty(ugcType)) {
-                            hitType = HitType.getByName(ugcType);
-                            logger.trace("hit type found: {}", hitType);
-                        }
+                    HitType hitType = getHitType(childDoc);
+                    if(hitType != HitType.METADATA) {                        
+                        int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                        hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
                     }
-                    int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                    hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
                 }
             }
             hit.setHitNumber(++count);
         }
         logger.trace("Return {} search hits", ret.size());
         return ret;
+    }
+
+    private static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms, SearchHitFactory factory) {
+        SolrDocumentList filteredList = new SolrDocumentList();
+        Map<String, SolrDocument> ownerDocs = new HashMap<>();
+        for (SolrDocument doc : docs) {
+            HitType hitType = getHitType(doc);
+            String ownerIDDoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_OWNER);
+            String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+            if(hitType == HitType.PAGE) {
+                filteredList.add(doc);
+            } else if(hitType == HitType.METADATA && !Objects.equals(mainIdDoc, ownerIDDoc)) {
+                //ignore metadata docs not in the main doc
+                continue;
+            } else if(containsSearchTerms(doc, searchTerms, factory)) {
+                filteredList.add(doc);
+                if(hitType == HitType.DOCSTRCT) {
+                    ownerDocs.remove(iddoc);    //remove from owner map because it is already in result list
+                } else if(!Objects.equals(mainIdDoc, ownerIDDoc)) {
+                    if(ownerDocs.containsKey(ownerIDDoc)) {
+                        SolrDocument ownerDoc = ownerDocs.get(ownerIDDoc);
+                        if(ownerDoc != null) {
+                            ownerDocs.remove(ownerIDDoc);
+                            filteredList.add(ownerDoc); 
+                        }
+                    } else {
+                        ownerDocs.put(ownerIDDoc, null);    //put an empty entry to mark that the owner doc needs to be added to result list
+                    }
+                    
+                }
+            } else if(hitType == HitType.DOCSTRCT) {
+                if(ownerDocs.containsKey(iddoc)) {
+                    ownerDocs.remove(iddoc);
+                    filteredList.add(doc); 
+                } else {                    
+                    ownerDocs.put(iddoc, doc);
+                }
+            }
+            
+        }
+        filteredList.setNumFound(filteredList.size());
+        return filteredList;
+    }
+
+    private static boolean containsSearchTerms(SolrDocument doc, Map<String, Set<String>> searchTerms, SearchHitFactory factory) {
+        return !factory.findAdditionalMetadataFieldsContainingSearchTerms(SolrTools.getFieldValueMap(doc), searchTerms, Collections.emptySet(), "", "").isEmpty();
+    }
+
+    /**
+     * Return the {@link HitType} matching the {@link SolrConstants#DocType} of the given document.
+     * In case the document is of type 'UGC', return the type matching {@link SolrConstants#UGCTYPE} instead
+     * @param childDoc
+     * @return
+     */
+    public static HitType getHitType(SolrDocument doc) {
+        String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
+        HitType hitType = HitType.getByName(docType);
+        if (DocType.UGC.name().equals(docType)) {
+            // For user-generated content hits use the metadata type for the hit type
+            String ugcType = (String) doc.getFieldValue(SolrConstants.UGCTYPE);
+            logger.trace("ugcType: {}", ugcType);
+            if (StringUtils.isNotEmpty(ugcType)) {
+                hitType = HitType.getByName(ugcType);
+                logger.trace("hit type found: {}", hitType);
+            }
+        }
+        return hitType;
     }
 
     /**
@@ -1133,7 +1193,6 @@ public final class SearchHelper {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
-
         // Remove HTML breaks
         fulltext = Jsoup.parse(fulltext).text();
         List<String> ret = new ArrayList<>();
@@ -1463,7 +1522,6 @@ public final class SearchHelper {
         if (string == null) {
             return null;
         }
-        string = Normalizer.normalize(string, Normalizer.Form.NFD);
 
         // Replace entire hyperink elements with spaces
         Matcher m = patternHyperlink.matcher(string);
@@ -1477,7 +1535,9 @@ public final class SearchHelper {
             string = sb.toString();
         }
 
-        string = string.replaceAll(patternHyperlink.pattern(), " ");
+        string = Normalizer.normalize(string, Normalizer.Form.NFD);
+
+        // string = string.replaceAll(patternHyperlink.pattern(), " ");
         string = string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
         string = Normalizer.normalize(string, Normalizer.Form.NFC);
         return string;
@@ -1662,11 +1722,12 @@ public final class SearchHelper {
      * @param bmfc
      * @param startsWith
      * @param filterQuery
+     * @param language
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static int getFilteredTermsCount(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery)
+    public static int getFilteredTermsCount(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, String language)
             throws PresentationException, IndexUnreachableException {
         if (bmfc == null) {
             throw new IllegalArgumentException("bmfc may not be null");
@@ -1675,7 +1736,7 @@ public final class SearchHelper {
         logger.trace("getFilteredTermsCount: {}", bmfc.getField());
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
-        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0);
+        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0, language);
         logger.trace("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
 
         if (bmfc.getField() == null) {
@@ -1683,7 +1744,7 @@ public final class SearchHelper {
         }
 
         int ret = 0;
-        String facetField = SearchHelper.facetifyField(bmfc.getField());
+        String facetField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
         for (Count count : resp.getFacetField(facetField).getValues()) {
             if (count.getCount() == 0
                     || (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase()))) {
@@ -1703,20 +1764,22 @@ public final class SearchHelper {
      * @param bmfc a {@link io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig} object.
      * @param startsWith a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
+     * @param start
+     * @param rows
      * @param comparator a {@link java.util.Comparator} object.
-     * @param aggregateHits a boolean.
+     * @param language Language for language-specific fields
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should be thread safe when counting terms
      */
     public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, int start, int rows,
-            Comparator<BrowseTerm> comparator) throws PresentationException, IndexUnreachableException {
+            Comparator<BrowseTerm> comparator, String language) throws PresentationException, IndexUnreachableException {
         if (bmfc == null) {
             throw new IllegalArgumentException("bmfc may not be null");
         }
 
-        logger.trace("getFilteredTerms: {}", bmfc.getField());
+        logger.trace("getFilteredTerms: {}", bmfc.getFieldForLanguage(language));
         List<BrowseTerm> ret = new ArrayList<>();
         ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
 
@@ -1727,7 +1790,7 @@ public final class SearchHelper {
 
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
-        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows);
+        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows, language);
         // logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
         if ("0-9".equals(startsWith)) {
             // TODO Is this still necessary?
@@ -1735,7 +1798,7 @@ public final class SearchHelper {
             Pattern p = Pattern.compile("[\\d]");
             // Use hits (if sorting field is provided)
             for (SolrDocument doc : resp.getResults()) {
-                Collection<Object> termList = doc.getFieldValues(bmfc.getField());
+                Collection<Object> termList = doc.getFieldValues(bmfc.getFieldForLanguage(language));
                 String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
                 Set<String> usedTermsInCurrentDoc = new HashSet<>();
                 for (Object o : termList) {
@@ -1766,7 +1829,7 @@ public final class SearchHelper {
                 }
             }
         } else {
-            String facetField = SearchHelper.facetifyField(bmfc.getField());
+            String facetField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
             if (resp.getResults().isEmpty() && resp.getFacetField(facetField) != null) {
                 // If only browsing records and anchors, use faceting
                 logger.trace("using faceting: {}", facetField);
@@ -1780,11 +1843,11 @@ public final class SearchHelper {
                 // Without filtering or using alphabetical filtering
                 // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
                 //                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, aggregateHits));
+                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, true, language));
 
                 // Sequential processing (doesn't break the sorting done by Solr)
                 for (SolrDocument doc : resp.getResults()) {
-                    processSolrResult(doc, bmfc, startsWith, terms, true);
+                    processSolrResult(doc, bmfc, startsWith, terms, true, language);
                 }
             }
         }
@@ -1814,19 +1877,20 @@ public final class SearchHelper {
      * @should contain facets for the main field
      */
     static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
-            int start, int rows) throws PresentationException, IndexUnreachableException {
+            int start, int rows, String language) throws PresentationException, IndexUnreachableException {
         List<String> fields = new ArrayList<>(3);
         fields.add(SolrConstants.PI_TOPSTRUCT);
-        fields.add(bmfc.getField());
+        fields.add(bmfc.getFieldForLanguage(language));
 
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append('+');
         // Only search via the sorting field if not doing a wildcard search
+        // TODO language-specific sort field
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField());
             fields.add(bmfc.getSortField());
         } else {
-            sbQuery.append(bmfc.getField());
+            sbQuery.append(bmfc.getFieldForLanguage(language));
         }
         sbQuery.append(":[* TO *] ");
         if (bmfc.isRecordsAndAnchorsOnly()) {
@@ -1852,10 +1916,7 @@ public final class SearchHelper {
             }
         }
 
-        String facetField = SearchHelper.facetifyField(bmfc.getField());
-        List<String> facetFields = new ArrayList<>();
-        facetFields.add(facetField);
-
+        List<String> facetFields = Collections.singletonList(SearchHelper.facetifyField(bmfc.getFieldForLanguage(language)));
         Map<String, String> params = new HashMap<>();
         if (logger.isTraceEnabled()) {
             logger.trace("row count: {}", DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries));
@@ -1883,11 +1944,12 @@ public final class SearchHelper {
      * @param startsWith
      * @param terms Map of terms collected so far.
      * @param aggregateHits
+     * @param language
      */
     private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith,
-            ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits) {
+            ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits, String language) {
         // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
-        Collection<Object> termList = doc.getFieldValues(bmfc.getField());
+        Collection<Object> termList = doc.getFieldValues(bmfc.getFieldForLanguage(language));
         if (termList == null) {
             return;
         }
@@ -2108,6 +2170,8 @@ public final class SearchHelper {
      * 
      * @param query
      * @param facetString
+     * @param template Advanced search fields template
+     * @param language
      * @return
      * @should parse phrase search query correctly
      * @should parse regular search query correctly
@@ -2116,9 +2180,10 @@ public final class SearchHelper {
      * @should parse items from facet string correctly
      * @should parse mixed search query correctly
      */
-    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString) {
+    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString, String template, String language) {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
-        SearchQueryGroup ret = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        SearchQueryGroup ret =
+                new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, true, language), template);
 
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
@@ -2310,7 +2375,7 @@ public final class SearchHelper {
                         default:
                             item.setOperator(operator);
                             item.setField(pair.getOne());
-                            if (DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(pair.getOne())) {
+                            if (DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(pair.getOne(), template, true)) {
                                 String[] valueSplit = pair.getTwo().split(" TO ");
                                 item.setValue(valueSplit[0]);
                                 item.setValue2(valueSplit[1]);

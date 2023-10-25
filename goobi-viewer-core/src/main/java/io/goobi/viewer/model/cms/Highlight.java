@@ -23,20 +23,21 @@ package io.goobi.viewer.model.cms;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.monitoring.timer.Timer;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -55,8 +56,12 @@ import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 public class Highlight implements CMSMediaHolder, IPolyglott {
+    
+    private static final Logger logger = LogManager.getLogger(Highlight.class);
 
     private final HighlightData data;
     private final ThumbnailHandler thumbs;
@@ -139,7 +144,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     public HighlightData getData() {
         return data;
-    };
+    }
 
     /**
      * Check whether an image is set for this object
@@ -268,6 +273,13 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
         return getMetadataList(BeanUtils.getLocale());
     }
 
+    /**
+     * 
+     * @param locale
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public List<Metadata> getMetadataList(Locale locale) throws IndexUnreachableException, PresentationException {
         List<Metadata> md = this.metadata.get(locale);
         if (md == null) {
@@ -277,16 +289,50 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
         return md;
     }
 
+    /**
+     * 
+     * @param field
+     * @param locale
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public List<Metadata> getMetadataForField(String field, Locale locale) throws IndexUnreachableException, PresentationException {
+        List<Metadata> ret = new ArrayList<>();
+        String languageField = field + (locale != null ? SolrConstants.MIDFIX_LANG + locale.getLanguage().toUpperCase() : "");
+        logger.trace(languageField);
+        for (Metadata md : getMetadataList(locale)) {
+            if (md.getLabel().equals(languageField)) {
+                ret.add(md);
+                logger.trace("added " + md.getLabel());
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param locale
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     private List<Metadata> initMetadataList(Locale locale) throws IndexUnreachableException, PresentationException {
         if (TargetType.RECORD == this.data.getTargetType()) {
             SolrDocument doc = loadSolrDocument(this.data.getRecordIdentifier());
             if (doc != null) {
                 StructElement se = new StructElement(doc);
                 List<Metadata> metadataList = configuration.getHighlightMetadataForTemplate(se.getDocStructType());
+                List<Metadata> ret = new ArrayList<>(metadataList.size());
                 for (Metadata md : metadataList) {
-                    md.populate(se, Long.toString(se.getLuceneId()), null, locale);
+                    // Skip fields that have a different language code than the given locale
+                    if (locale == null || !SolrTools.isHasWrongLanguageCode(md.getLabel(), locale.getLanguage())) {
+                        md.populate(se, Long.toString(se.getLuceneId()), null, locale);
+                        ret.add(md);
+                    }
                 }
-                return metadataList;
+                return ret;
             }
         }
         return Collections.emptyList();
@@ -309,7 +355,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @param note2
      * @param metadataElement2
      */
-    private TranslatedText createRecordTitle(SolrDocument solrDoc) {
+    private static TranslatedText createRecordTitle(SolrDocument solrDoc) {
         IMetadataValue label = TocMaker.buildTocElementLabel(solrDoc);
         TranslatedText text = createRecordTitle(label);
         text.setSelectedLocale(IPolyglott.getDefaultLocale());
@@ -320,15 +366,14 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @param label
      * @return
      */
-    private TranslatedText createRecordTitle(IMetadataValue label) {
+    private static TranslatedText createRecordTitle(IMetadataValue label) {
         if (label instanceof MultiLanguageMetadataValue) {
             MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
             return new TranslatedText(mLabel);
-        } else {
-            TranslatedText title = new TranslatedText();
-            title.setValue(label.getValue().orElse(""), IPolyglott.getDefaultLocale());
-            return title;
         }
+        TranslatedText title = new TranslatedText();
+        title.setValue(label.getValue().orElse(""), IPolyglott.getDefaultLocale());
+        return title;
     }
 
     /**
@@ -346,7 +391,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     }
 
-    private SolrDocument loadSolrDocument(String recordPi) throws IndexUnreachableException, PresentationException {
+    private static SolrDocument loadSolrDocument(String recordPi) throws IndexUnreachableException, PresentationException {
         if (StringUtils.isBlank(recordPi)) {
             return null;
         }

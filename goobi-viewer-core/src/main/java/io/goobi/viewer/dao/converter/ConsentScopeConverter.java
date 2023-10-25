@@ -38,12 +38,11 @@ public class ConsentScopeConverter implements AttributeConverter<ConsentScope, S
 
     @Override
     public ConsentScope convertToEntityAttribute(String dbData) {
-        if(StringUtils.isNotBlank(dbData)) {
+        if (StringUtils.isNotBlank(dbData)) {
             return new ConsentScope(dbData);
         } else {
             return new ConsentScope();
         }
     }
-
 
 }

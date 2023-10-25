@@ -100,9 +100,9 @@ public class RecordsFilesImageResource extends ImageResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
-        if(ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
+        if (ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
             request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
-        } else {            
+        } else {
             request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
         }
         String requestUrl = request.getRequestURI();
@@ -140,7 +140,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
-    @Operation(tags = {"records"}, summary = "Returns the image for the given filename as PDF")
+    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
     @Override
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();

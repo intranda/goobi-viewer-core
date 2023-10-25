@@ -25,8 +25,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -37,13 +40,15 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
+import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.search.HitListView;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -55,14 +60,18 @@ import jakarta.persistence.Transient;
 @DiscriminatorValue("recordlist")
 public class CMSRecordListContent extends CMSContent implements PagedCMSContent {
 
+    private static final Logger logger = LogManager.getLogger(CMSRecordListContent.class); //NOSONAR Sometimes the logger is needed for debugging
+
     private static final String COMPONENT_NAME = "searchhitlist";
 
     @Column(name = "solr_query")
     private String solrQuery = "";
-    @Column(name = "sort_field")
+    @Column(name = "sort_field", length = 40)
     private String sortField = "";
-    @Column(name = "grouping_field")
+    @Column(name = "grouping_field", length = 40)
     private String groupingField = "";
+    @Column(name = "result_group", columnDefinition = "VARCHAR(40)")
+    private String resultGroupName;
     @Column(name = "include_structure_elements")
     private boolean includeStructureElements = false;
     @Column(name = "elements_per_page")
@@ -86,6 +95,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.groupingField = orig.groupingField;
         this.includeStructureElements = orig.includeStructureElements;
         this.elementsPerPage = orig.elementsPerPage;
+        this.resultGroupName = orig.resultGroupName;
         this.view = orig.view;
         this.metadataListType = orig.metadataListType;
     }
@@ -120,7 +130,35 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.groupingField = groupingField;
     }
 
+    /**
+     * @return the resultGroupName
+     */
+    public String getResultGroupName() {
+        return resultGroupName;
+    }
+
+    /**
+     * @param resultGroupName the resultGroupName to set
+     */
+    public void setResultGroupName(String resultGroupName) {
+        this.resultGroupName = resultGroupName;
+    }
+
     public String getSortField() {
+        return sortField;
+    }
+
+    /**
+     * If <code>sortField</code> contains a language code placeholder, this method replaces it with the give language code.
+     * 
+     * @param language ISO-2 language code
+     * @return
+     */
+    public String getSortFieldForLanguage(String language) {
+        if (sortField != null && language != null) {
+            return sortField.replace("{}", language.toUpperCase());
+        }
+
         return sortField;
     }
 
@@ -181,24 +219,52 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
+        logger.trace("handlePageLoad");
         if (this.search == null) {
             this.search = initSearch();
+            //store search in session bean so it will be available when reloading a page
+            //otherwise "submitSearch" button will not work properly because search isn't available anymore
+            BeanUtils.getSessionBean().put("cmsSearch", this.search);
         }
         try {
+            Locale locale = BeanUtils.getLocale();
+            if (locale == null) {
+                locale = Locale.ENGLISH;
+            }
             SearchBean searchBean = BeanUtils.getSearchBean();
-            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter());
+
+            List<SearchResultGroup> resultGroups;
+            if (StringUtils.isNotBlank(resultGroupName)) {
+                // Set configured result group on SearchBean, if available (before initializing Search)
+                searchBean.setActiveResultGroupName(resultGroupName);
+                resultGroups = searchBean.getResultGroupsForSearchExecution();
+            } else if (!"-".equals(searchBean.getActiveResultGroupName())) {
+                // If not overriden by the CMS page, use the selected result group in SeachBean
+                resultGroups = searchBean.getResultGroupsForSearchExecution();
+            } else {
+                // If none is set in the CMS page, created a default group (overriding config settings).
+                resultGroups = Collections.singletonList(SearchResultGroup.createDefaultGroup());
+            }
+
+            Search s =
+                    new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups);
             if (StringUtils.isNotBlank(this.getSortField())) {
-                s.setSortString(this.getSortField());
-                searchBean.setSortString(this.getSortField());
+                s.setSortString(getSortFieldForLanguage(locale.getLanguage()));
+                searchBean.setSortString(getSortFieldForLanguage(locale.getLanguage()));
             } else if (StringUtils.isNotBlank(this.search.getSortString()) && !this.search.getSortString().equals("-")) {
                 s.setSortString(this.search.getSortString());
                 searchBean.setSortString(this.search.getSortString());
+            } else if (StringUtils.isEmpty(s.getSortString()) && searchBean.getSortString().equals("-")) {
+                s.setSortString(searchBean.getSortString());
             }
             //NOTE: Cannot sort by multivalued fields like DC.
             if (StringUtils.isNotBlank(this.getGroupingField())) {
                 String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
                 sortString = this.getGroupingField() + ";" + sortString;
+                s.setSortString(sortString);
+            } else {
+                String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
                 s.setSortString(sortString);
             }
             // Pass secondary metadata list configuration, if set in CMS page 
@@ -214,7 +280,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 s.setQuery("*:*");
             }
             s.setCustomFilterQuery(this.solrQuery);
-            s.execute(facets, null, searchBean.getHitsPerPage(), BeanUtils.getLocale(), true,
+            s.execute(facets, null, searchBean.getHitsPerPage(), locale, true,
                     this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(s);
             searchBean.setHitsPerPageSetterCalled(false);

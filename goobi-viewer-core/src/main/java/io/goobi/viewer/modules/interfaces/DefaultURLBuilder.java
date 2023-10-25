@@ -25,14 +25,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.BrowseElement;
+import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
@@ -79,12 +81,28 @@ public class DefaultURLBuilder implements IURLBuilder {
                     url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
                     break;
             }
+        } else if (ele.isCmsPage() && ele.getPi().startsWith("CMS")) {
+            url = "cms/" + ele.getPi().substring(3) + "/";
         } else {
             PageType pageType = getPageType(ele);
-            url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
+            if (PageType.viewFulltext.equals(pageType) && ele.isHasTeiFiles()) {
+                // Add language to the URL if record has TEI full-text
+                Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage());
+                url = new StringBuilder().append(pageType.getName())
+                        .append('/')
+                        .append(ele.getPi())
+                        .append('/')
+                        .append(ele.getImageNo())
+                        .append('/')
+                        .append(lang != null ? lang.getIsoCode() : "eng")
+                        .append("/")
+                        .toString();
+            } else {
+                url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
+            }
         }
 
-        logger.trace("generateUrl: {}", url);
+        // logger.trace("generateUrl: {}", url);
         return url;
 
     }

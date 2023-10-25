@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
@@ -57,29 +58,34 @@ public class SearchQueryGroup implements Serializable {
      * </p>
      *
      * @param fieldConfigs
+     * @param template
      */
-    public SearchQueryGroup(List<AdvancedSearchFieldConfiguration> fieldConfigs) {
-        init(fieldConfigs);
+    public SearchQueryGroup(List<AdvancedSearchFieldConfiguration> fieldConfigs, String template) {
+        init(fieldConfigs, template);
     }
 
     /**
      * 
      * @param fieldConfigs
+     * @param template
      * @should create and preselect visible fields
      * @should only create allfields item if fieldConfigs null
      */
-    public void init(List<AdvancedSearchFieldConfiguration> fieldConfigs) {
+    public void init(List<AdvancedSearchFieldConfiguration> fieldConfigs, String template) {
         queryItems.clear();
         operator = SearchQueryGroupOperator.AND;
 
-        SearchQueryItem firstItem = new SearchQueryItem();
-        firstItem.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
-        queryItems.add(firstItem);
+        if (template == null || StringConstants.DEFAULT_NAME.equals(template)) {
+            SearchQueryItem firstItem = new SearchQueryItem(template);
+            firstItem.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+            queryItems.add(firstItem);
+        }
         if (fieldConfigs != null) {
             for (AdvancedSearchFieldConfiguration fieldConfig : fieldConfigs) {
                 if (fieldConfig.isVisible()) {
-                    SearchQueryItem item = new SearchQueryItem();
+                    SearchQueryItem item = new SearchQueryItem(template);
                     item.setField(fieldConfig.getField());
+                    item.setLabel(fieldConfig.getLabel());
                     queryItems.add(item);
                 }
             }
@@ -140,7 +146,7 @@ public class SearchQueryGroup implements Serializable {
      * addNewQueryItem.
      * </p>
      *
-     * @return true if operation successfuly; false otherwise
+     * @return true if operation successful; false otherwise
      * @should add item correctly
      */
     public boolean addNewQueryItem() {

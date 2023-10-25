@@ -22,6 +22,7 @@
 
 package io.goobi.viewer.controller.mq;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
@@ -95,6 +96,8 @@ import io.goobi.viewer.model.job.TaskType;
 @Startup
 public class MessageQueueManager {
 
+    static final String ACTIVE_MQ_CONFIG_FILENAME = "config_activemq.xml";
+
     private static final int SERVER_REGISTRY_PORT = 1095;
 
     public static final String QUEUE_NAME_VIEWER = "viewer";
@@ -113,7 +116,11 @@ public class MessageQueueManager {
     public MessageQueueManager() throws DAOException, IOException {
         this.instances = generateTicketHandlers();
         this.dao = DataManager.getInstance().getDao();
-        this.config = new ActiveMQConfig("config_activemq.xml");
+        try {
+            this.config = new ActiveMQConfig(ACTIVE_MQ_CONFIG_FILENAME);
+        } catch (FileNotFoundException e) {
+            this.config = null;
+        }
     }
 
     public MessageQueueManager(ActiveMQConfig config, IDAO dao) {
@@ -260,7 +267,7 @@ public class MessageQueueManager {
     public void closeMessageServer() {
         try {
             for (DefaultQueueListener l : listeners) {
-                l.close();  //includes a join for the listener thread
+                l.close(); //includes a join for the listener thread
             }
             if (broker != null) {
                 broker.stop();
@@ -272,7 +279,6 @@ public class MessageQueueManager {
             logger.error(e);
         }
     }
-
 
     private void updateMessageStatus(ViewerMessage message, MessageStatus rv) {
         message.setMessageStatus(rv);
@@ -400,7 +406,8 @@ public class MessageQueueManager {
     public ActiveMQConnection getConnection() throws JMSException {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(config.getConnectorURI());
         connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
-        ActiveMQConnection connection = (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(), this.config.getPasswordAdmin()); //NOSONAR: Connection is closed in calling methods
+        ActiveMQConnection connection =
+                (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(), this.config.getPasswordAdmin()); //NOSONAR: Connection is closed in calling methods
         return connection;
     }
 
@@ -459,8 +466,9 @@ public class MessageQueueManager {
     public List<ViewerMessage> getWaitingMessages(String messageType) {
         List<ViewerMessage> messages = new ArrayList<>();
         String queueName = MessageQueueManager.getQueueForMessageType(messageType);
-        
-        try (QueueConnection connection = startConnection();QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
+
+        try (QueueConnection connection = startConnection();
+                QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
                 QueueBrowser browser = queueSession.createBrowser(queueSession.createQueue(queueName), "JMSType = '" + messageType + "'");) {
 
             Enumeration<?> messagesInQueue = browser.getEnumeration();
@@ -508,6 +516,10 @@ public class MessageQueueManager {
     private ObjectName getQueueViewBeanName(String queueName) throws MalformedObjectNameException {
         String name = String.format("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=%s", queueName);
         return new ObjectName(name);
+    }
+
+    public boolean hasConfig() {
+        return this.config != null;
     }
 
 }

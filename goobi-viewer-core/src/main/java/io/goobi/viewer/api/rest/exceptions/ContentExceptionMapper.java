@@ -55,12 +55,14 @@ import io.goobi.viewer.solr.SolrTools;
  *
  */
 @Provider
-public class ContentExceptionMapper implements ExceptionMapper<ContentLibException>{
+public class ContentExceptionMapper implements ExceptionMapper<ContentLibException> {
 
     private static final Logger logger = LogManager.getLogger(ContentExceptionMapper.class);
 
-    @Context HttpServletResponse response;
-    @Context HttpServletRequest request;
+    @Context
+    HttpServletResponse response;
+    @Context
+    HttpServletRequest request;
 
     public ContentExceptionMapper() {
     }
@@ -75,26 +77,26 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         Response.Status status;
         boolean printStackTrace = false;
         //Get actual exception if e if of the wrapper class ImageManagerException
-        if(e.getClass().equals(ImageManagerException.class) && e.getCause() != null && e.getCause() instanceof ContentLibException) {
+        if (e.getClass().equals(ImageManagerException.class) && e.getCause() != null && e.getCause() instanceof ContentLibException) {
             e = (ContentLibException) e.getCause();
         }
-        if(e instanceof IllegalRequestException) {
+        if (e instanceof IllegalRequestException) {
             status = Status.BAD_REQUEST;
-        } else if(e instanceof ServiceUnavailableException){
+        } else if (e instanceof ServiceUnavailableException) {
             status = Status.SERVICE_UNAVAILABLE;
-        } else if(e instanceof ServiceNotImplementedException) {
+        } else if (e instanceof ServiceNotImplementedException) {
             status = Status.NOT_IMPLEMENTED;
-        } else if(e instanceof ContentNotFoundException) {
+        } else if (e instanceof ContentNotFoundException) {
             status = Status.NOT_FOUND;
-        } else if(e instanceof ServiceNotAllowedException) {
+        } else if (e instanceof ServiceNotAllowedException) {
             status = Status.FORBIDDEN;
-        } else if(e instanceof TimeoutException) {
-        	status = Status.REQUEST_TIMEOUT;
+        } else if (e instanceof TimeoutException) {
+            status = Status.REQUEST_TIMEOUT;
         } else {
             status = Status.INTERNAL_SERVER_ERROR;
             printStackTrace = true;
         }
-        if(printStackTrace) { 
+        if (printStackTrace) {
             logger.error("Error on request {}: {}", request.getRequestURI(), e.toString());
         } else {
             logger.debug("Faulty request {}: {}", request.getRequestURI(), SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
@@ -102,7 +104,7 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
 
         String mediaType = MediaType.APPLICATION_JSON;
 
-        return  Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, printStackTrace)).build();
+        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, printStackTrace)).build();
     }
 
     @JsonInclude(Include.NON_NULL)
@@ -117,13 +119,14 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         @JsonProperty("stacktrace")
         private String stacktrace;
 
-        public ErrorMessage() {}
+        public ErrorMessage() {
+        }
 
         public ErrorMessage(Status status, Throwable e, boolean printStackTrace) {
             this.status = status.getStatusCode();
-            if(e != null) {
+            if (e != null) {
                 this.message = e.getMessage();
-                if(printStackTrace) {
+                if (printStackTrace) {
                     this.stacktrace = ExceptionUtils.getStackTrace(e);
                 }
             } else {
@@ -134,17 +137,15 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         public ErrorMessage(Status status, Throwable e, String errorImage, boolean printStackTrace) {
             this.status = status.getStatusCode();
             this.errorImage = errorImage;
-            if(e != null) {
+            if (e != null) {
                 this.message = e.getMessage();
-                if(printStackTrace) {
+                if (printStackTrace) {
                     this.stacktrace = ExceptionUtils.getStackTrace(e);
                 }
             } else {
                 this.message = "unknown error";
             }
         }
-
-
 
     }
 

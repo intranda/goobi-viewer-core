@@ -69,24 +69,24 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext request) throws IOException {
         String uri = request.getUriInfo().getPath();
         String pi;
-        if(servletRequest.getAttribute("pi") != null){
+        if (servletRequest.getAttribute("pi") != null) {
             pi = servletRequest.getAttribute("pi").toString();
         } else {
             pi = "";
         }
-            try {
-                if (StringUtils.isNotBlank(pi) && !"-".equals(pi)) {
-                    addRepositoryPathIfRequired(request, pi);
-                }
-            } catch (PresentationException e) {
-                String mediaType = MediaType.APPLICATION_JSON;
-                Response errorResponse = Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .type(mediaType)
-                        .entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false))
-                        .build();
-                request.abortWith(errorResponse);
+        try {
+            if (StringUtils.isNotBlank(pi) && !"-".equals(pi)) {
+                addRepositoryPathIfRequired(request, pi);
             }
+        } catch (PresentationException e) {
+            String mediaType = MediaType.APPLICATION_JSON;
+            Response errorResponse = Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .type(mediaType)
+                    .entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false))
+                    .build();
+            request.abortWith(errorResponse);
         }
+    }
 
     /**
      * <p>

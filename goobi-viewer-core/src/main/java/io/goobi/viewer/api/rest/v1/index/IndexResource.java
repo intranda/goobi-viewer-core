@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -53,9 +54,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.io.Tuple;
 import org.apache.solr.client.solrj.io.stream.SolrStream;
 import org.apache.solr.client.solrj.io.stream.StreamContext;
@@ -66,8 +70,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -78,13 +80,13 @@ import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -174,6 +176,7 @@ public class IndexResource {
      * @throws IllegalRequestException
      */
     @POST
+    @CORSBinding
     @Path(INDEX_QUERY)
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -190,11 +193,6 @@ public class IndexResource {
             return ret.toString();
         }
 
-        //        String termQuery = null;
-        //        if (params.boostTopLevelDocstructs) {
-        //            Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
-        //            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
-        //        }
         String query = SearchHelper.buildFinalQuery(params.query, params.boostTopLevelDocstructs,
                 params.includeChildHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
 
@@ -302,20 +300,24 @@ public class IndexResource {
             @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
             throws IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
-        
+
         String finalQuery = filterQuery;
         if (!finalQuery.startsWith("{!join")) {
             finalQuery =
                     new StringBuilder().append("+(")
                             .append(filterQuery)
-                            .append(") ")
+                            .append(") +(-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:* *:*)")
                             .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
                             .toString();
         } else {
             //search query. Ignore all polygon results or the heatmap will have hits everywhere
-            finalQuery = finalQuery.substring(0, finalQuery.length() - 1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
-        }
+            if (finalQuery.endsWith(")")) {
+                finalQuery = finalQuery.substring(0, finalQuery.length() - 1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
+            } else {
+                finalQuery = finalQuery + " -MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
 
+            }
+        }
         return DataManager.getInstance()
                 .getSearchIndex()
                 .getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
@@ -355,11 +357,13 @@ public class IndexResource {
             facetQueries.add(coordQuery);
         }
 
-        String objects = GeoMap.getFeaturesFromSolrQuery(finalQuery, facetQueries, labelField)
-                .stream()
-                .map(GeoMapFeature::getJsonObject)
-                .map(Object::toString)
-                .collect(Collectors.joining(","));
+        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+        String objects =
+                new GeoCoordinateConverter(servletRequest).getFeaturesFromSolrQuery(finalQuery, facetQueries, coordinateFields, labelField, false)
+                        .stream()
+                        .map(GeoMapFeature::getJsonObject)
+                        .map(Object::toString)
+                        .collect(Collectors.joining(","));
         return "[" + objects + "]";
     }
 

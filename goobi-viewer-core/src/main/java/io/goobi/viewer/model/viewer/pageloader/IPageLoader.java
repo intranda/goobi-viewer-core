@@ -115,4 +115,6 @@ public interface IPageLoader {
      */
     public void generateSelectItems(List<SelectPageItem> dropdownPages, List<SelectPageItem> dropdownFulltext, String urlRoot,
             boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException;
+
+    public PhysicalElement findPageForFilename(String filename);
 }

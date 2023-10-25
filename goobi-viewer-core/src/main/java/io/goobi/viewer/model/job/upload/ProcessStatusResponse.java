@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.job.upload;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement
-@JsonPropertyOrder({ "result", "title", "id", "creationDate", "processCompleted", "step", "project"})
+@JsonPropertyOrder({ "result", "title", "id", "creationDate", "processCompleted", "step", "project" })
 public class ProcessStatusResponse {
 
     private String result; // success, error
@@ -45,6 +44,10 @@ public class ProcessStatusResponse {
     
     private String project;
     
+    private String ruleset;
+
+    private String project;
+
     private String ruleset;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "CET")
@@ -151,19 +154,19 @@ public class ProcessStatusResponse {
     public void setProperties(List<PropertyResponse> properties) {
         this.properties = properties;
     }
-    
+
     public String getProject() {
         return project;
     }
-    
+
     public void setProject(String project) {
         this.project = project;
     }
-    
+
     public String getRuleset() {
         return ruleset;
     }
-    
+
     public void setRuleset(String ruleset) {
         this.ruleset = ruleset;
     }

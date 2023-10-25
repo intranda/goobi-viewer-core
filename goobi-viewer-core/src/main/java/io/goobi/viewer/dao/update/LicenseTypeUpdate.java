@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.security.LicenseType;
 
 public class LicenseTypeUpdate implements IModelUpdate {
@@ -38,7 +39,7 @@ public class LicenseTypeUpdate implements IModelUpdate {
 
     /** {@inheritDoc} */
     @Override
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         performUpdates(dao);
         return true;
     }

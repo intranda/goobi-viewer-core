@@ -77,7 +77,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     @Path(ApiUrls.RECORDS_SECTIONS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = { "records"}, summary = "Get PDF for section of record")
+    @Operation(tags = { "records" }, summary = "Get PDF for section of record")
     public StreamingOutput getPdf() throws ContentLibException {
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return super.getPdf(divId);
@@ -88,7 +88,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerPdfInfoBinding
     @Override
-    @Operation(tags = { "records"}, summary = "Get information about PDF for section of record")
+    @Operation(tags = { "records" }, summary = "Get information about PDF for section of record")
 
     public PdfInformation getInfoAsJson() throws ContentLibException {
         return super.getInfoAsJson(divId);

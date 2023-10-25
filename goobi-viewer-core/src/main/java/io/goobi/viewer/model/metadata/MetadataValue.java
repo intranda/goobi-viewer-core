@@ -24,14 +24,17 @@ package io.goobi.viewer.model.metadata;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.undercouch.citeproc.CSL;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -41,6 +44,7 @@ import io.goobi.viewer.model.citation.CitationDataProvider;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.IPolyglott;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -379,11 +383,25 @@ public class MetadataValue implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getParamValue(String paramLabel) {
+        List<String> values = getParamValues(paramLabel);
+        if (!values.isEmpty()) {
+            return values.get(0);
+        }
+
+        return "";
+    }
+
+    /**
+     * 
+     * @param paramLabel
+     * @return
+     */
+    public List<String> getParamValues(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
         if (index > -1 && index < paramValues.size()) {
-            return paramValues.get(index).get(0);
+            return paramValues.get(index);
         }
-        return "";
+        return Collections.emptyList();
     }
 
     /**
@@ -438,6 +456,50 @@ public class MetadataValue implements Serializable {
      */
     public void setOwnerIddoc(String ownerIddoc) {
         this.ownerIddoc = ownerIddoc;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getDisplayValue() {
+        return getDisplayValue(IPolyglott.getCurrentLocale());
+    }
+
+    /**
+     * 
+     * @param includeLabels
+     * @return
+     */
+    public String getDisplayValue(boolean includeLabels) {
+        return getDisplayValue(IPolyglott.getCurrentLocale(), includeLabels);
+    }
+
+    /**
+     * 
+     * @param locale
+     * @return
+     */
+    public String getDisplayValue(Locale locale) {
+        return getDisplayValue(locale, false);
+    }
+
+    /**
+     * 
+     * @param locale
+     * @param includeLabels
+     * @return
+     */
+    public String getDisplayValue(Locale locale, boolean includeLabels) {
+        String[] comboValues = IntStream.range(0, paramValues.size()).mapToObj(ind -> {
+            String l = includeLabels ? getParamLabelWithColon(ind) : "";
+            String v = getComboValueShort(ind);
+            return includeLabels ? List.of(l, v) : List.of(v);
+        })
+            .flatMap(List::stream)
+            .toArray(String[]::new);
+
+        return ViewerResourceBundle.getTranslationWithParameters(getMasterValue(), locale, true, comboValues);
     }
 
     /**

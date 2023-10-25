@@ -24,6 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +55,7 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.TEITools;
+import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -77,54 +79,12 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 public class SearchHit implements Comparable<SearchHit> {
 
-    public enum HitType {
-        ACCESSDENIED,
-        DOCSTRCT,
-        PAGE,
-        METADATA, // grouped metadata
-        UGC, // user-generated content
-        PERSON, // UGC/metadata person
-        CORPORATION, // UGC/meadata corporation
-        ADDRESS, // UGC address
-        COMMENT, // UGC comment
-        EVENT, // LIDO event
-        GROUP, // convolute/series
-        CMS; // CMS page type for search hits
-
-        /**
-         * 
-         * @param name
-         * @return
-         * @should return all known types correctly
-         * @should return null if name unknown
-         */
-        public static HitType getByName(String name) {
-            if (name != null) {
-                if ("OVERVIEWPAGE".equals(name)) {
-                    return HitType.CMS;
-                }
-                for (HitType type : HitType.values()) {
-                    if (type.name().equals(name)) {
-                        return type;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        public String getLabel(Locale locale) {
-            return ViewerResourceBundle.getTranslation(new StringBuilder("doctype_").append(name()).toString(), locale);
-        }
-    }
-
     private static final Logger logger = LogManager.getLogger(SearchHit.class);
 
     private static final String SEARCH_HIT_TYPE_PREFIX = "searchHitType_";
 
     private final HitType type;
     /** Translated label for the search hit type. */
-    private final String translatedType;
     private final BrowseElement browseElement;
     /** Number of this hit in the current hit list. */
     private long hitNumber = 1;
@@ -156,6 +116,7 @@ public class SearchHit implements Comparable<SearchHit> {
     private int proximitySearchDistance = 0;
     @JsonIgnore
     private SearchHitFactory factory;
+    private boolean containsSearchTerms = true;
 
     /**
      * Package-private constructor. Clients should use SearchHitFactory to create SearchHit instances.
@@ -170,7 +131,6 @@ public class SearchHit implements Comparable<SearchHit> {
     SearchHit(HitType type, BrowseElement browseElement, SolrDocument doc, Map<String, Set<String>> searchTerms, Locale locale,
             SearchHitFactory factory) {
         this.type = type;
-        this.translatedType = type != null ? ViewerResourceBundle.getTranslation(SEARCH_HIT_TYPE_PREFIX + type.name(), locale) : null;
         this.browseElement = browseElement;
         this.searchTerms = searchTerms;
         this.locale = locale;
@@ -336,10 +296,7 @@ public class SearchHit implements Comparable<SearchHit> {
             throw new IllegalArgumentException("doc may not be null");
         }
 
-        if (searchTerms == null) {
-            return;
-        }
-        if (!searchTerms.containsKey(SolrConstants.FULLTEXT)) {
+        if (searchTerms == null || !searchTerms.containsKey(SolrConstants.FULLTEXT)) {
             return;
         }
 
@@ -422,116 +379,49 @@ public class SearchHit implements Comparable<SearchHit> {
         if (number + skip > childDocs.size()) {
             number = childDocs.size() - skip;
         }
-
-        for (int i = 0; i < number; ++i) {
-            SolrDocument childDoc = childDocs.get(i + skip);
+        int childDocIndex = skip;
+        int hitCount = getHitCount();
+        while (childDocIndex < childDocs.size() && hitsPopulated < Math.min(hitCount, number + skip)) {
+            SolrDocument childDoc = childDocs.get(childDocIndex);
+            childDocIndex++;
             String fulltext = null;
             DocType docType = DocType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
-            if (docType == null) {
-                logger.warn("Document {} has no DOCTYPE field, cannot add to child search hits.", childDoc.getFieldValue(SolrConstants.IDDOC));
-                continue;
-            }
-            // logger.trace("Found child doc: {}", docType); //NOSONAR Sometimes used for debugging
-            boolean acccessDeniedType = false;
-            switch (docType) {
-                case PAGE: //NOSONAR, no break on purpose to run through all cases
-                    String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
-                    String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
-                    try {
-                        if (StringUtils.isNotBlank(plaintextFilename)) {
-                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false).isGranted();
-                            if (access) {
-                                fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
-                            } else {
-                                acccessDeniedType = true;
-                            }
-                        } else if (StringUtils.isNotBlank(altoFilename)) {
-                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false).isGranted();
-                            if (access) {
-                                fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
-                            } else {
-                                acccessDeniedType = true;
-                            }
+            if (docType != null) {
+                boolean acccessDeniedType = false;
+                switch (docType) {
+                    case PAGE: //NOSONAR, no break on purpose to run through all cases
+                        try {
+                            fulltext = getFulltext(request, pi, childDoc);
+                        } catch (AccessDeniedException e) {
+                            acccessDeniedType = true;
+                        } catch (FileNotFoundException e) {
+                            fulltext = null;
                         }
-                    } catch (FileNotFoundException e) {
-                        logger.error("{}: {}", e.getMessage(), StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename);
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-
-                    // Skip page hits without a proper full-text
-                    if (StringUtils.isBlank(fulltext)) {
-                        continue;
-                    }
-                case METADATA:
-                case UGC:
-                case EVENT: {
-                    String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
-                    SearchHit ownerHit = ownerHits.get(ownerIddoc);
-                    boolean populateHit = false;
-                    if (ownerHit == null) {
-                        SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
-                        if (ownerDoc != null) {
-                            ownerHit = factory.createSearchHit(ownerDoc, null, fulltext, null);
-                            children.add(ownerHit);
-                            ownerHits.put(ownerIddoc, ownerHit);
-                            ownerDocs.put(ownerIddoc, ownerDoc);
-                            populateHit = true;
-                            logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID")); //NOSONAR Sometimes used for debugging
+                        // Skip page hits without a proper full-text
+                        if (StringUtils.isBlank(fulltext)) {
+                            continue;
                         }
+                    case METADATA:
+                    case UGC:
+                    case EVENT: {
+                        handleMetadataHit(childDoc, fulltext, docType, acccessDeniedType);
                     }
-                    if (ownerHit == null) {
-                        logger.error("No document found for IDDOC {}", ownerIddoc);
-                        continue;
-                    }
-                    // If the owner hit the is the main element, create an intermediary to avoid the child label being displayed twice
-                    if (ownerHit.equals(this)) {
-                        SearchHit newOwnerHit = factory.createSearchHit(ownerDocs.get(ownerIddoc), null, fulltext, null);
-                        ownerHit.getChildren().add(newOwnerHit);
-                        ownerHit = newOwnerHit;
-                        ownerHits.put(ownerIddoc, newOwnerHit);
-                    }
-                    // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
-
-                    SearchHit childHit =
-                            factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), fulltext,
-                                    acccessDeniedType ? HitType.ACCESSDENIED : null);
-                    // Skip grouped metadata child hits that have no additional (unique) metadata to display
-                    if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty() && ownerHit.getFoundMetadata().isEmpty()) {
-                        // TODO This will result in an infinite loading animation if all child hits are skipped
-                        continue;
-                    }
-                    if (!DocType.UGC.equals(docType)) {
-                        // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
-                        for (StringPair metadata : childHit.getFoundMetadata()) {
-                            // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
-                            if (!ownerHit.getFoundMetadata().contains(metadata)) {
-                                ownerHit.getFoundMetadata().add(metadata);
-                            }
+                        break;
+                    case DOCSTRCT:
+                        // Docstruct hits are immediate children of the main hit
+                        String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
+                        if (!ownerHits.containsKey(iddoc)) {
+                            SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
+                            children.add(childHit);
+                            ownerHits.put(iddoc, childHit);
+                            ownerDocs.put(iddoc, childDoc);
+                            hitsPopulated++;
                         }
-                    }
-                    ownerHit.getChildren().add(childHit);
-                    populateHit = true; //TODO why?
-                    if (populateHit) {
-                        hitsPopulated++;
-                    }
-
+                        break;
+                    case GROUP:
+                    default:
+                        break;
                 }
-                    break;
-                case DOCSTRCT:
-                    // Docstruct hits are immediate children of the main hit
-                    String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
-                    if (!ownerHits.containsKey(iddoc)) {
-                        SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
-                        children.add(childHit);
-                        ownerHits.put(iddoc, childHit);
-                        ownerDocs.put(iddoc, childDoc);
-                        hitsPopulated++;
-                    }
-                    break;
-                case GROUP:
-                default:
-                    break;
             }
         }
 
@@ -539,7 +429,93 @@ public class SearchHit implements Comparable<SearchHit> {
             ownerDocs.clear();
             ownerHits.clear();
         }
-        // logger.trace("Remaning child docs: {}", childDocs.size());
+    }
+
+    public void handleMetadataHit(SolrDocument childDoc, String fulltext, DocType docType, boolean acccessDeniedType)
+            throws IndexUnreachableException, PresentationException {
+        String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
+        SearchHit ownerHit = ownerHits.get(ownerIddoc);
+        if (ownerHit == null) {
+            SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
+            if (ownerDoc != null) {
+                ownerHit = factory.createSearchHit(ownerDoc, null, fulltext, null);
+                ownerHit.containsSearchTerms = false;
+                children.add(ownerHit);
+                ownerHits.put(ownerIddoc, ownerHit);
+                ownerDocs.put(ownerIddoc, ownerDoc);
+                logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID")); //NOSONAR Sometimes used for debugging
+            }
+        }
+        if (ownerHit != null) {
+            // If the owner hit the is the main element, create an intermediary to avoid the child label being displayed twice
+            if (ownerHit.equals(this)) {
+                SearchHit newOwnerHit = factory.createSearchHit(ownerDocs.get(ownerIddoc), null, fulltext, null);
+                ownerHit.getChildren().add(newOwnerHit);
+                ownerHit = newOwnerHit;
+                ownerHits.put(ownerIddoc, newOwnerHit);
+            }
+            // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
+
+            SearchHit childHit =
+                    factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), fulltext,
+                            acccessDeniedType ? HitType.ACCESSDENIED : null);
+
+            // Skip grouped metadata child hits that have no additional (unique) metadata to display
+            if (!(DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()
+                    && ownerHit.getFoundMetadata().isEmpty())) {
+                if (!DocType.UGC.equals(docType)) {
+                    // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
+                    for (StringPair metadata : childHit.getFoundMetadata()) {
+                        // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
+                        if (!ownerHit.getFoundMetadata().contains(metadata)) {
+                            ownerHit.addFoundMetadata(metadata);
+                        }
+                    }
+                }
+                ownerHit.getChildren().add(childHit);
+                hitsPopulated++;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param request
+     * @param pi
+     * @param childDoc
+     * @return
+     * @throws FileNotFoundException If the fulltext resource is not found or not accessible
+     * @throws AccessDeniedException If the request is missing access rights to the fulltext resource
+     * @throws PresentationException I an internal error occurs when trying to retrieve access rights or the fulltext resource
+     */
+    public String getFulltext(HttpServletRequest request, String pi, SolrDocument childDoc)
+            throws FileNotFoundException, PresentationException, AccessDeniedException {
+        String fulltext = null;
+        String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
+        String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
+        try {
+            if (StringUtils.isNotBlank(plaintextFilename)) {
+                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false).isGranted();
+                if (access) {
+                    fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
+                } else {
+                    throw new AccessDeniedException("Access denied to resource " + pi + " / " + plaintextFilename);
+                }
+            } else if (StringUtils.isNotBlank(altoFilename)) {
+                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false).isGranted();
+                if (access) {
+                    fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
+                } else {
+                    throw new AccessDeniedException("Access denied to resource " + pi + " / " + altoFilename);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw e;
+        } catch (IndexUnreachableException | DAOException | IOException e) {
+            throw new PresentationException("Error reading fulltext for " + pi + ", page " + childDoc.getFirstValue(SolrConstants.ORDER), e);
+        }
+
+        return fulltext;
     }
 
     /**
@@ -561,7 +537,35 @@ public class SearchHit implements Comparable<SearchHit> {
      * @return the translatedType
      */
     public String getTranslatedType() {
-        return translatedType;
+        return type != null ? SEARCH_HIT_TYPE_PREFIX + type.name() : "";
+    }
+
+    public String getIconClassForType() {
+        if (type != null) {
+            switch (type) {
+                case PAGE:
+                    return "fa fa-file-text";
+                case PERSON:
+                    return "fa fa-user";
+                case CORPORATION:
+                    return "fa fa-university";
+                case LOCATION:
+                case ADDRESS:
+                    return "fa fa-envelope";
+                case COMMENT:
+                    return "fa fa-comment-o";
+                case CMS:
+                    return "fa fa-file-text-o";
+                case EVENT:
+                    return "fa fa-calendar";
+                case ACCESSDENIED:
+                    return "fa fa-lock";
+                default:
+                    return "fa fa-file-text";
+            }
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -690,6 +694,14 @@ public class SearchHit implements Comparable<SearchHit> {
         return false;
     }
 
+    public int getHitCount() {
+        int total = 0;
+        for (Integer num : hitTypeCounts.values()) {
+            total += num;
+        }
+        return total;
+    }
+
     /**
      * <p>
      * getCmsPageHitCount.
@@ -718,6 +730,10 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         return 0;
+    }
+
+    public int getMetadataAndDocstructHitCount() {
+        return getDocstructHitCount() + getMetadataHitCount();
     }
 
     /**
@@ -788,7 +804,11 @@ public class SearchHit implements Comparable<SearchHit> {
      * @return the foundMetadata
      */
     public List<StringPair> getFoundMetadata() {
-        return foundMetadata;
+        return Collections.unmodifiableList(foundMetadata);
+    }
+
+    public void addFoundMetadata(StringPair valuePair) {
+        this.foundMetadata.add(valuePair);
     }
 
     /**
@@ -837,6 +857,15 @@ public class SearchHit implements Comparable<SearchHit> {
         return this.solrDoc;
     }
 
+    public String getCssClass() {
+        String docStructType = this.getBrowseElement().getDocStructType();
+        if (StringUtils.isNotBlank(docStructType)) {
+            return "docstructtype__" + docStructType;
+        } else {
+            return "";
+        }
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -844,4 +873,55 @@ public class SearchHit implements Comparable<SearchHit> {
     public String toString() {
         return getBrowseElement().getLabelShort();
     }
+
+    public void loadChildHits(int numChildren)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        HttpServletRequest servletRequest = BeanUtils.getRequest();
+        populateChildren(numChildren, getHitsPopulated(), locale, servletRequest);
+        Collections.sort(getChildren());
+
+    }
+
+    public String getDisplayText() {
+        if (this.type != null) {
+            switch (this.type) {
+                case CMS:
+                case ACCESSDENIED:
+                case PAGE:
+                    return this.getBrowseElement().getFulltextForHtml();
+                default:
+                    return this.getBrowseElement().getLabelShort();
+
+            }
+        } else {
+            return "";
+        }
+    }
+
+    public boolean includeMetadata() {
+        if (this.containsSearchTerms && this.type != null) {
+            switch (this.type) {
+                case DOCSTRCT:
+                    if (this.browseElement.isWork() || this.browseElement.isAnchor()) {
+                        return false;
+                    }
+                    // fall through
+                case METADATA:
+                case PERSON:
+                case LOCATION:
+                case SHAPE:
+                case SUBJECT:
+                case CORPORATION:
+                case EVENT:
+                    String label = this.getDisplayText();
+                    return !label.contains("search-list--highlight");
+                default:
+                    return false;
+
+            }
+        } else {
+            return false;
+        }
+    }
+
 }

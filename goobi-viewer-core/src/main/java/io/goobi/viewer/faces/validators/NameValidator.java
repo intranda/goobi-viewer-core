@@ -62,7 +62,7 @@ public class NameValidator implements Validator<String> {
      * validateEmailAddress.
      * </p>
      *
-     * @param email a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
      * @should match correct name
      * @should not match invalid name
      * @return a boolean.

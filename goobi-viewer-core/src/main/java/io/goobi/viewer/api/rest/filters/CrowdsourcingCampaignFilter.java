@@ -48,10 +48,8 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Allows access to crowdsourcing campaign resources for sessions owned by a goobi-viewer user
- * who has access to the campaign.
- * For access check to work, the {@link Campaign#getId() campaign id} must be set as the
- * request attribute "CampaignId"
+ * Allows access to crowdsourcing campaign resources for sessions owned by a goobi-viewer user who has access to the campaign. For access check to
+ * work, the {@link Campaign#getId() campaign id} must be set as the request attribute "CampaignId"
  *
  * @author florian
  *

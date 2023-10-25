@@ -26,7 +26,9 @@ import java.util.Optional;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.context.FacesContext;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,6 +66,8 @@ public class CMSContentItem {
 
     private final String description;
 
+    private final String htmlGroup;
+
     private final JsfComponent jsfComponent;
 
     private final boolean required;
@@ -80,6 +84,7 @@ public class CMSContentItem {
         this.jsfComponent = orig.jsfComponent;
         this.required = orig.required;
         this.owningComponent = orig.owningComponent;
+        this.htmlGroup = orig.htmlGroup;
     }
 
     /**
@@ -87,7 +92,7 @@ public class CMSContentItem {
      * @param itemId
      * @param content
      */
-    public CMSContentItem(String itemId, CMSContent content, String label, String description, JsfComponent jsfComponent,
+    public CMSContentItem(String itemId, CMSContent content, String label, String description, String htmlGroup, JsfComponent jsfComponent,
             CMSComponent owningComponent, boolean required) {
         if (StringUtils.isNotBlank(itemId)) {
             this.itemId = itemId;
@@ -106,6 +111,7 @@ public class CMSContentItem {
         this.jsfComponent = jsfComponent;
         this.required = required;
         this.owningComponent = owningComponent;
+        this.htmlGroup = htmlGroup;
     }
 
     public boolean isRequired() {
@@ -160,8 +166,11 @@ public class CMSContentItem {
 
         if (this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            this.uiComponent = new HtmlPanelGroup();
-            UIComponent wrapper = builder.createTag("div", Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper" ));
+            this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+            this.uiComponent.setId(FilenameUtils.getBaseName(this.getOwningComponent().getTemplateFilename()) + "_" + this.getOwningComponent().getOrder() + "_" + this.itemId);
+            UIComponent wrapper = builder.createTag("div",
+                    Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper"));
+            wrapper.setId(this.uiComponent.getId() + "_wrapper");
             this.uiComponent.getChildren().add(wrapper);
             if (StringUtils.isBlank(this.getJsfComponent().getFilename())) {
                 logger.warn("No backend component available for contentItem {}", this.getContent().getBackendComponentName());
@@ -203,8 +212,24 @@ public class CMSContentItem {
         return Optional.ofNullable(this.content).map(CMSMediaContent.class::isInstance).orElse(false);
     }
 
+    public String getHtmlGroup() {
+        return Optional.ofNullable(htmlGroup).orElse("");
+    }
+
     public CMSComponent getOwningComponent() {
         return owningComponent;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(itemId);
+        if (this.content != null) {
+            sb.append(" - ").append(this.content.getClass().getSimpleName());
+        }
+        if (StringUtils.isNotBlank(this.getHtmlGroup())) {
+            sb.append(" (").append(this.getHtmlGroup()).append(")");
+        }
+        return sb.toString();
     }
 
 }

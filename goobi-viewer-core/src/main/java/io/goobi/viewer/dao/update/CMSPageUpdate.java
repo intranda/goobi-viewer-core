@@ -42,7 +42,6 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.legacy.CMSContentItemTemplate;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -62,19 +61,20 @@ public class CMSPageUpdate implements IModelUpdate {
     CMSContentConverter contentConverter;
     CMSTemplateManager templateManager;
 
-    public CMSPageUpdate(CMSTemplateManager templateManager) {
-        this.templateManager = templateManager;
+    public CMSPageUpdate() {
+        //noop
     }
 
     @Override
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
 
         if (!dao.tableExists("cms_content_items")) {
             return false;
         }
-        
+
         dao.executeUpdate("ALTER TABLE cms_pages MODIFY template_id varchar(255)"); //allow NULL values in cms_pages.template_id
 
+        this.templateManager = templateManager;
         this.contentConverter = new CMSContentConverter(dao);
 
         List<Map<String, Object>> languageVersions = getTableData(dao, "cms_page_language_versions");
@@ -89,7 +89,7 @@ public class CMSPageUpdate implements IModelUpdate {
         /*Map page ids to a map of all owned languageVersions mapped to language*/
         Map<Long, Map<String, Map<String, Object>>> languageVersionMap = languageVersions.stream()
                 .collect(Collectors.toMap(map -> (Long) map.get("owner_page_id"), map -> Map.of((String) map.get("language"), map),
-                        (map1, map2) -> combineMaps(map1, map2)));
+                        CMSPageUpdate::combineMaps));
 
         /*Map language version ids to a list of all owned contentItems*/
         Map<Long, List<Map<String, Object>>> contentItemMap = contentItems.stream()
@@ -125,7 +125,7 @@ public class CMSPageUpdate implements IModelUpdate {
                 TranslatedText menuTitle = getTranslatedText(pageLanguageVersions, "menu_title");
                 Boolean published = (Boolean) pageValues.get("published");
                 String legacyPageTemplateId = (String) pageValues.get("template_id");
-                
+
                 createPreviewComponent(contentItemMap, pageLanguageVersions, title, dao)
                         .ifPresent(page::addPersistentComponent);
 
@@ -142,8 +142,7 @@ public class CMSPageUpdate implements IModelUpdate {
                 Map<String, CMSContent> contentMap = createContentObjects(pageContentItemsMap);
 
                 CMSComponent componentTemplate = templateManager.getLegacyComponent(legacyPageTemplateId);
-                
-                
+
                 if (componentTemplate != null) {
                     PersistentCMSComponent component = new PersistentCMSComponent(componentTemplate, contentMap.values());
                     page.addPersistentComponent(component);
@@ -163,12 +162,12 @@ public class CMSPageUpdate implements IModelUpdate {
             }
         }
 
-        /**
+        /*
          * sidebar elements may be owned by a template instead of a page now, so owner_page_id needs to be able to be null
          */
         dao.executeUpdate("ALTER TABLE cms_page_sidebar_elements MODIFY owner_page_id BIGINT NULL;");
 
-        /**
+        /*
          * Save page and template to database
          */
         for (Entry<String, List<CMSPage>> entry : pageTemplateIdMap.entrySet()) {
@@ -195,7 +194,7 @@ public class CMSPageUpdate implements IModelUpdate {
             }
         }
 
-        /**
+        /*
          * drop unused tables
          */
         dao.executeUpdate("DROP TABLE cms_content_item_cms_categories;");
@@ -229,16 +228,16 @@ public class CMSPageUpdate implements IModelUpdate {
      * @param pageLanguageVersions
      * @param title
      * @param dao
-     * @return
+     * @return An optional containing a {@link PersistentCMSComponent}. Empty if no preview items were found
      * @throws DAOException
      */
     private Optional<PersistentCMSComponent> createPreviewComponent(Map<Long, List<Map<String, Object>>> contentItemMap,
             Map<String, Map<String, Object>> pageLanguageVersions, TranslatedText title, IDAO dao) throws DAOException {
 
         TranslatedText dateText = getText(contentItemMap, pageLanguageVersions, "A0");
-        CMSMediaItem previewImage = getImage(contentItemMap, pageLanguageVersions, "image01", dao);        
+        CMSMediaItem previewImage = getImage(contentItemMap, pageLanguageVersions, "image01", dao);
         TranslatedText previewText = getPreviewText(contentItemMap, pageLanguageVersions, title, previewImage);
-        
+
         CMSComponent componentTemplate = templateManager.getComponent("preview").orElse(null);
         if (componentTemplate == null) {
             logger.error("Cannot create preview component: component template 'preview' not found");
@@ -259,7 +258,16 @@ public class CMSPageUpdate implements IModelUpdate {
         return Optional.empty();
     }
 
-    private TranslatedText getPreviewText(Map<Long, List<Map<String, Object>>> contentItemMap, Map<String, Map<String, Object>> pageLanguageVersions,
+    /**
+     * 
+     * @param contentItemMap
+     * @param pageLanguageVersions
+     * @param title
+     * @param previewImage
+     * @return A {@link TranslatedText} object containing all prreview text. Is empty if not preview text was found
+     */
+    private static TranslatedText getPreviewText(Map<Long, List<Map<String, Object>>> contentItemMap,
+            Map<String, Map<String, Object>> pageLanguageVersions,
             TranslatedText title, CMSMediaItem previewImage) {
         TranslatedText previewText = getText(contentItemMap, pageLanguageVersions, "preview01");
         if (previewImage != null && previewText.isEmpty()) {
@@ -274,7 +282,7 @@ public class CMSPageUpdate implements IModelUpdate {
      * @param pageLanguageVersions
      * @param itemId
      * @param dao
-     * @return
+     * @return The {@link CMSMediaItem} for the given itemId. May be null
      * @throws DAOException
      */
     private static CMSMediaItem getImage(Map<Long, List<Map<String, Object>>> contentItemMap, Map<String, Map<String, Object>> pageLanguageVersions,
@@ -295,7 +303,7 @@ public class CMSPageUpdate implements IModelUpdate {
      * @param contentItemMap
      * @param pageLanguageVersions
      * @param itemId
-     * @return
+     * @return A {@link TranslatedText} for the given itemId. May be empty, but not null
      */
     private static TranslatedText getText(Map<Long, List<Map<String, Object>>> contentItemMap,
             Map<String, Map<String, Object>> pageLanguageVersions, String itemId) {
@@ -307,11 +315,6 @@ public class CMSPageUpdate implements IModelUpdate {
         return new TranslatedText(new MultiLanguageMetadataValue(previewValues), IPolyglott.getDefaultLocale());
     }
 
-    /**
-     * 
-     * @param contentItemsMap
-     * @return
-     */
     private Map<String, CMSContent> createContentObjects(Map<String, List<Map<String, Object>>> contentItemsMap) {
         Map<String, CMSContent> contentMap = new HashMap<>();
         for (Entry<String, List<Map<String, Object>>> legacyItemEntry : contentItemsMap.entrySet()) {
@@ -333,15 +336,6 @@ public class CMSPageUpdate implements IModelUpdate {
         return contentMap;
     }
 
-    /**
-     * 
-     * @param legacyItem
-     * @param type
-     * @param existingContent
-     * @param language
-     * @return
-     * @throws DAOException
-     */
     private CMSContent createContent(Map<String, Object> legacyItem, String type, Optional<CMSContent> existingContent, String language)
             throws DAOException {
         switch (type) {
@@ -382,7 +376,7 @@ public class CMSPageUpdate implements IModelUpdate {
      * 
      * @param pageLanguageVersions language versions of a page mapped by language string
      * @param contentItemMap List of contentItems belonging to a single language version, mapped by language version id
-     * @return
+     * @return A Map containing all content item columns
      */
     private static Map<String, List<Map<String, Object>>> getContentItemsForPage(Map<String, Map<String, Object>> pageLanguageVersions,
             Map<Long, List<Map<String, Object>>> contentItemMap) {
@@ -402,12 +396,6 @@ public class CMSPageUpdate implements IModelUpdate {
         return map;
     }
 
-    /**
-     * 
-     * @param contentItemMap
-     * @param pageLanguageVersions
-     * @return
-     */
     private static Long getTopbarSliderId(Map<Long, List<Map<String, Object>>> contentItemMap,
             Map<String, Map<String, Object>> pageLanguageVersions) {
         Map<String, Map<String, Object>> topbarSliderItems = getContentItemsOfItemId(pageLanguageVersions, contentItemMap, "topbar_slider");
@@ -418,13 +406,6 @@ public class CMSPageUpdate implements IModelUpdate {
         return null;
     }
 
-    /**
-     * 
-     * @param pageLanguageVersions
-     * @param contentItemMap
-     * @param itemId
-     * @return
-     */
     private static Map<String, Map<String, Object>> getContentItemsOfItemId(
             Map<String, Map<String, Object>> pageLanguageVersions,
             Map<Long, List<Map<String, Object>>> contentItemMap,
@@ -447,12 +428,6 @@ public class CMSPageUpdate implements IModelUpdate {
         return pageContentItems;
     }
 
-    /**
-     * 
-     * @param pageLanguageVersions
-     * @param field
-     * @return
-     */
     private static TranslatedText getTranslatedText(Map<String, Map<String, Object>> pageLanguageVersions, String field) {
         Map<String, String> titleValues = pageLanguageVersions.entrySet()
                 .stream()
@@ -461,14 +436,6 @@ public class CMSPageUpdate implements IModelUpdate {
         return new TranslatedText(new MultiLanguageMetadataValue(titleValues), IPolyglott.getDefaultLocale());
     }
 
-    /**
-     * 
-     * @param <K>
-     * @param <V>
-     * @param map1
-     * @param map2
-     * @return
-     */
     private static <K, V> Map<K, V> combineMaps(Map<K, V> map1, Map<K, V> map2) {
         Map<K, V> union = new HashMap<>();
         union.putAll(map1);
@@ -476,13 +443,6 @@ public class CMSPageUpdate implements IModelUpdate {
         return union;
     }
 
-    /**
-     * 
-     * @param dao
-     * @param tableName
-     * @return
-     * @throws DAOException
-     */
     @SuppressWarnings("unchecked")
     private static List<Map<String, Object>> getTableData(IDAO dao, String tableName) throws DAOException {
         List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM " + tableName);

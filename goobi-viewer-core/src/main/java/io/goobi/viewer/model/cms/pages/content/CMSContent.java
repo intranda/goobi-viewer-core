@@ -62,7 +62,7 @@ public abstract class CMSContent {
      * Mirrors the {@link CMSContentItem#getItemId()} of the enclosing {@link CMSContentItem} Used to identify the persistent content with the
      * configuration from the xml component file
      */
-    @Column(name = "item_id")
+    @Column(name = "item_id", length = 20)
     private String itemId;
 
     /** Reference to the owning <code>PersistentCMSComponent</code>. */
@@ -132,7 +132,7 @@ public abstract class CMSContent {
      * @return a jsf action response
      * @throws PresentationException
      */
-    public abstract String handlePageLoad(boolean resetResults) throws PresentationException;
+    public abstract String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException;
 
     public abstract boolean isEmpty();
 

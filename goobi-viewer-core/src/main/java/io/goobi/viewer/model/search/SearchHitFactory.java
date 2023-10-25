@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.search;
 
 import java.util.ArrayList;
@@ -8,8 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -29,12 +51,11 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataWrapper;
-import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 public class SearchHitFactory {
 
@@ -52,6 +73,8 @@ public class SearchHitFactory {
             new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
     private Set<String> additionalMetadataSnippetFields =
             new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataSnippetFields());
+    private Set<String> additionalMetadataNoHighlightFields =
+            new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataNoHighlightFields());
     private int proximitySearchDistance;
 
     private ThumbnailHandler thumbnailHandler;
@@ -94,9 +117,11 @@ public class SearchHitFactory {
      */
     public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext,
             HitType overrideType) throws PresentationException, IndexUnreachableException {
+
         List<String> fulltextFragments =
-                (fulltext == null || searchTerms == null) ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
-                        DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true, proximitySearchDistance);
+                (fulltext == null || searchTerms == null) ? null
+                        : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
+                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true, proximitySearchDistance);
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
         String docstructType = se.getDocStructType();
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
@@ -124,7 +149,6 @@ public class SearchHitFactory {
         BrowseElement browseElement = new BrowseElement(se, metadataListMap, locale,
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, cleanedUpSearchTerms,
                 thumbnailHandler);
-
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         if (DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled()) {
             Optional<String> labelValue = browseElement.getLabelAsMetadataValue().getValue();
@@ -150,25 +174,7 @@ public class SearchHitFactory {
             docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         }
         // logger.trace("docType: {}", docType); //NOSONAR Sometimes used for debugging
-        HitType hitType = overrideType;
-        if (hitType == null) {
-            hitType = HitType.getByName(docType);
-            if (DocType.METADATA.name().equals(docType)) {
-                // For metadata hits use the metadata type for the hit type
-                String metadataType = se.getMetadataValue(SolrConstants.METADATATYPE);
-                if (StringUtils.isNotEmpty(metadataType)) {
-                    hitType = HitType.getByName(metadataType);
-                }
-            } else if (DocType.UGC.name().equals(docType)) {
-                // For user-generated content hits use the metadata type for the hit type
-                String ugcType = se.getMetadataValue(SolrConstants.UGCTYPE);
-                logger.trace("ugcType: {}", ugcType);
-                if (StringUtils.isNotEmpty(ugcType)) {
-                    hitType = HitType.getByName(ugcType);
-                    logger.trace("hit type found: {}", hitType);
-                }
-            }
-        }
+        HitType hitType = getHitType(overrideType, se, docType);
 
         SearchHit hit = new SearchHit(hitType, browseElement, doc, searchTerms, locale, this);
         Optional<String> labelValue = browseElement.getLabelAsMetadataValue().getValue();
@@ -181,7 +187,7 @@ public class SearchHitFactory {
                         labelValue.isPresent() ? labelValue.get() : "");
         if (!additionalMetadata.isEmpty()) {
             for (MetadataWrapper mw : additionalMetadata) {
-                hit.getFoundMetadata().add(mw.getValuePair());
+                hit.addFoundMetadata(mw.getValuePair());
             }
         }
 
@@ -195,6 +201,32 @@ public class SearchHitFactory {
             }
         }
         return hit;
+    }
+
+    public HitType getHitType(HitType overrideType, StructElement se, String docType) {
+        HitType hitType = overrideType;
+        if (hitType == null) {
+            hitType = HitType.getByName(docType);
+            if (DocType.METADATA.name().equals(docType)) {
+                // For metadata hits use the metadata type for the hit type
+                String metadataType = se.getMetadataValue(SolrConstants.METADATATYPE);
+                if (StringUtils.isNotEmpty(metadataType)) {
+                    hitType = HitType.getByName(metadataType);
+                    if(hitType == null) {
+                        hitType = HitType.METADATA;
+                    }
+                }
+            } else if (DocType.UGC.name().equals(docType)) {
+                // For user-generated content hits use the metadata type for the hit type
+                String ugcType = se.getMetadataValue(SolrConstants.UGCTYPE);
+                logger.trace("ugcType: {}", ugcType);
+                if (StringUtils.isNotEmpty(ugcType)) {
+                    hitType = HitType.getByName(ugcType);
+                    logger.trace("hit type found: {}", hitType);
+                }
+            }
+        }
+        return hitType;
     }
 
     /**
@@ -259,6 +291,7 @@ public class SearchHitFactory {
      * @should translate configured field values correctly
      * @should write one line fields into a single string
      * @should truncate snippet fields correctly
+     * @should not add highlighting to nohighlight fields
      */
     List<MetadataWrapper> findAdditionalMetadataFieldsContainingSearchTerms(
             Map<String, List<String>> availableMetadata, Map<String, Set<String>> searchTerms, Set<String> existingMetadataFields, String iddoc,
@@ -316,9 +349,10 @@ public class SearchHitFactory {
                                 String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
+                                    String translatedValue = fieldValue;
                                     if (additionalMetadataTranslateFields != null && (additionalMetadataTranslateFields.contains(docFieldName)
                                             || additionalMetadataTranslateFields.contains(SearchHelper.adaptField(docFieldName, null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
@@ -326,7 +360,13 @@ public class SearchHitFactory {
                                     if (sb.length() > 0) {
                                         sb.append(", ");
                                     }
-                                    sb.append(highlightedValue);
+                                    if (additionalMetadataNoHighlightFields != null
+                                            && additionalMetadataNoHighlightFields.contains(docFieldName)) {
+                                        // No highlighting
+                                        sb.append(translatedValue);
+                                    } else {
+                                        sb.append(highlightedValue);
+                                    }
                                 }
                             }
                             if (sb.length() > 0) {
@@ -362,18 +402,33 @@ public class SearchHitFactory {
                                 }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
+                                    String translatedValue = fieldValue;
                                     if (additionalMetadataTranslateFields != null && (additionalMetadataTranslateFields.contains(entry.getKey())
                                             || additionalMetadataTranslateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    if (!addedValues.contains(docFieldName + ":" + highlightedValue)) {
-                                        ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", highlightedValue))
-                                                .setValuePair(
-                                                        new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue)));
-                                        addedValues.add(docFieldName + ":" + highlightedValue);
+                                    if (additionalMetadataNoHighlightFields != null
+                                            && additionalMetadataNoHighlightFields.contains(docFieldName)) {
+                                        // No highlighting
+                                        if (!addedValues.contains(docFieldName + ":" + translatedValue)) {
+                                            ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "",
+                                                    translatedValue))
+                                                    .setValuePair(
+                                                            new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale),
+                                                                    translatedValue)));
+                                            addedValues.add(docFieldName + ":" + translatedValue);
+                                        }
+                                    } else {
+                                        if (!addedValues.contains(docFieldName + ":" + highlightedValue)) {
+                                            ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", highlightedValue))
+                                                    .setValuePair(
+                                                            new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale),
+                                                                    highlightedValue)));
+                                            addedValues.add(docFieldName + ":" + highlightedValue);
+                                        }
                                     }
                                 }
                             }
@@ -396,9 +451,10 @@ public class SearchHitFactory {
                                 String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
+                                    String translatedValue = fieldValue;
                                     if (additionalMetadataTranslateFields != null && (additionalMetadataTranslateFields.contains(entry.getKey())
                                             || additionalMetadataTranslateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
@@ -406,7 +462,13 @@ public class SearchHitFactory {
                                     if (sb.length() > 0) {
                                         sb.append(", ");
                                     }
-                                    sb.append(highlightedValue);
+                                    if (additionalMetadataNoHighlightFields != null
+                                            && additionalMetadataNoHighlightFields.contains(entry.getKey())) {
+                                        // No highlighting
+                                        sb.append(translatedValue);
+                                    } else {
+                                        sb.append(highlightedValue);
+                                    }
                                 }
                             }
                             if (sb.length() > 0) {
@@ -438,19 +500,32 @@ public class SearchHitFactory {
                                 }
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
+                                    String translatedValue = fieldValue;
                                     if (additionalMetadataTranslateFields != null && (additionalMetadataTranslateFields.contains(entry.getKey())
                                             || additionalMetadataTranslateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
-                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    if (!addedValues.contains(entry.getKey() + ":" + highlightedValue)) {
-                                        ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", highlightedValue))
-                                                .setValuePair(
-                                                        new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale),
-                                                                highlightedValue)));
-                                        addedValues.add(entry.getKey() + ":" + highlightedValue);
+                                    if (additionalMetadataNoHighlightFields != null
+                                            && additionalMetadataNoHighlightFields.contains(entry.getKey())) {
+                                        // No highlighting
+                                        if (!addedValues.contains(entry.getKey() + ":" + translatedValue)) {
+                                            ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", translatedValue))
+                                                    .setValuePair(
+                                                            new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale),
+                                                                    translatedValue)));
+                                            addedValues.add(entry.getKey() + ":" + translatedValue);
+                                        }
+                                    } else {
+                                        if (!addedValues.contains(entry.getKey() + ":" + highlightedValue)) {
+                                            ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, entry.getKey(), "", highlightedValue))
+                                                    .setValuePair(
+                                                            new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale),
+                                                                    highlightedValue)));
+                                            addedValues.add(entry.getKey() + ":" + highlightedValue);
+                                        }
                                     }
                                 }
                             }
@@ -494,9 +569,9 @@ public class SearchHitFactory {
     }
 
     /**
-     * @param additionalMetadataOneLineFields the additionalMetadataOneLineFields to set
+     * @return the additionalMetadataNoHighlightFields
      */
-    public void setAdditionalMetadataOneLineFields(Set<String> additionalMetadataOneLineFields) {
-        this.additionalMetadataOneLineFields = additionalMetadataOneLineFields;
+    public Set<String> getAdditionalMetadataNoHighlightFields() {
+        return additionalMetadataNoHighlightFields;
     }
 }

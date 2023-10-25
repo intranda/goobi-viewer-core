@@ -367,11 +367,11 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         DownloadOption maxSizeTiff = new DownloadOption("Master", "master", "max");
         String masterTiffUrl = baseUrl + "/full/max/0/default.tif";
-        assertEquals(masterTiffUrl, viewManager.getPageDownloadUrl(maxSizeTiff).replaceAll("\\?.*", "")); //ignore query params
+        assertEquals(masterTiffUrl, viewManager.getPageDownloadUrl(maxSizeTiff, viewManager.getCurrentPage()).replaceAll("\\?.*", "")); //ignore query params
 
         DownloadOption scaledJpeg = new DownloadOption("Thumbnail", "jpg", new Dimension(800, 1200));
         String thumbnailUrl = baseUrl + "/full/!800,1200/0/default.jpg";
-        assertEquals(thumbnailUrl, viewManager.getPageDownloadUrl(scaledJpeg).replaceAll("\\?.*", "")); //ignore query params
+        assertEquals(thumbnailUrl, viewManager.getPageDownloadUrl(scaledJpeg, viewManager.getCurrentPage()).replaceAll("\\?.*", "")); //ignore query params
 
     }
 

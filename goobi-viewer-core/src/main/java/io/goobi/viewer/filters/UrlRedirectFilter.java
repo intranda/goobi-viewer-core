@@ -80,6 +80,9 @@ public class UrlRedirectFilter implements Filter {
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             String url = httpRequest.getRequestURI();
+
+            // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
+            // will point to the prefetched page rather than the actual current page
             if (isPrefetchingRequest(httpRequest)) {
                 return;
             }
@@ -115,8 +118,6 @@ public class UrlRedirectFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-
-
     /**
      * Firefox browser tries to precache all urls in links with rel="next" or rel="prefetch". This changes the session state and thus shall not pass
      * Fortunately Firefox marks all precaching-request with a X-Moz : prefetch header
@@ -132,6 +133,13 @@ public class UrlRedirectFilter implements Filter {
             logger.trace("Refuse prefetch request");
             return true;
         }
+
+        String purpose = httpRequest.getHeader("sec-purpose");
+        if (purpose != null && "prefetch".equalsIgnoreCase(purpose)) {
+            logger.trace("Refuse prefetch request");
+            return true;
+        }
+
         return false;
     }
 

@@ -25,6 +25,7 @@ import java.sql.SQLException;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * Interface for classes which manipulate the database to conform to the setup required by the viewer
@@ -43,5 +44,5 @@ public interface IModelUpdate {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.sql.SQLException if any.
      */
-    public boolean update(IDAO dao) throws DAOException, SQLException;
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException;
 }

@@ -65,6 +65,7 @@ public class LinkingProperty {
     public final LinkingType type;
     public final LinkingTarget target;
     public final IMetadataValue label;
+
     /**
      * @param type
      * @param target
@@ -82,7 +83,7 @@ public class LinkingProperty {
         LinkingContent link = new LinkingContent(id);
         link.setFormat(target.mimeType);
         link.setType(target.type.getLabel());
-        if(label != null && !label.isEmpty()) {
+        if (label != null && !label.isEmpty()) {
             link.setLabel(label);
         }
         return link;

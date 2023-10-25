@@ -38,6 +38,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CollectionViewBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -59,17 +60,17 @@ public class CMSCollectionContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "collection";
 
-    @Column(name = "solr_field")
+    @Column(name = "solr_field", length = 40)
     private String solrField = SolrConstants.DC;
     @Column(name = "collection_name")
     private String collectionName = ""; //if black, all collections of the solrField are included
-    @Column(name = "sorting")
+    @Column(name = "sorting", length = 20)
     @Enumerated(EnumType.STRING)
     private Sorting sorting = Sorting.alphanumeric;
     @Column(name = "filter_query")
     private String filterQuery = "";
     /** Name of SOLR field by which to group results of the collection */
-    @Column(name = "grouping_field")
+    @Column(name = "grouping_field", length = 40)
     private String groupingField = "";
     /** Comma separated list of collection names to ignore for display */
     @Column(name = "ignore_collections", columnDefinition = "LONGTEXT")
@@ -218,7 +219,7 @@ public class CMSCollectionContent extends CMSContent {
      * call {@link CollectionView#reset(boolean) CollectionView#reset(true)} on the CollectionView stored in the cmsBean for this item, if any
      */
     @Override
-    public String handlePageLoad(boolean resetResults) {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) {
         BeanUtils.getCollectionViewBean().getCollectionIfStored(this).ifPresent(c -> c.reset(true));
         return "";
     }

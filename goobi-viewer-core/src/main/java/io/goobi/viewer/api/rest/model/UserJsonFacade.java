@@ -26,11 +26,7 @@ import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpRequest;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,7 +68,6 @@ public class UserJsonFacade {
         this(user, null);
     }
 
-
     public UserJsonFacade(UserJsonFacade orig) {
         this.avatar = orig.avatar;
         this.name = orig.name;
@@ -96,14 +91,14 @@ public class UserJsonFacade {
      */
     @JsonCreator
     public UserJsonFacade(
-            @JsonProperty("userId")Long userId,
-            @JsonProperty("name")String name,
-            @JsonProperty("avatar")String avatar,
-            @JsonProperty("score")long score,
-            @JsonProperty("active")boolean active,
-            @JsonProperty("suspended")boolean suspended,
-            @JsonProperty("anonymous")boolean anonymous,
-            @JsonProperty("superuser")boolean superuser) {
+            @JsonProperty("userId") Long userId,
+            @JsonProperty("name") String name,
+            @JsonProperty("avatar") String avatar,
+            @JsonProperty("score") long score,
+            @JsonProperty("active") boolean active,
+            @JsonProperty("suspended") boolean suspended,
+            @JsonProperty("anonymous") boolean anonymous,
+            @JsonProperty("superuser") boolean superuser) {
         this.avatar = avatar;
         this.name = name;
         this.userId = userId;
@@ -127,27 +122,29 @@ public class UserJsonFacade {
      *
      * @param applicationUrl
      */
-    private String absolutizeAvatarUrl(String avatarUrl, HttpServletRequest request) {
-      try {
-        URI uri = new URI(avatarUrl);
-        if(!uri.isAbsolute() && !avatarUrl.startsWith("//")); {
+    private static String absolutizeAvatarUrl(String avatarUrl, HttpServletRequest request) {
+        try {
+            URI uri = new URI(avatarUrl);
+            if (!uri.isAbsolute() && !avatarUrl.startsWith("//"))
+                ;
+            {
 
+            }
+        } catch (URISyntaxException e) {
+            //do nothing
         }
-    } catch (URISyntaxException e) {
-        //do nothing
-    }
 
-//        if (request != null && StringUtils.isNotBlank(avatarUrl)) {
-//            try {
-//                URI uri = new URI(avatarUrl);
-//                if (!uri.isAbsolute()) {
-//                    uri = new URI(request.getRequestURL().toString()).resolve(request.getContextPath() +  avatarUrl);
-//                    return uri.toString();
-//                }
-//            } catch (URISyntaxException e) {
-//                //do nothing
-//            }
-//        }
+        //        if (request != null && StringUtils.isNotBlank(avatarUrl)) {
+        //            try {
+        //                URI uri = new URI(avatarUrl);
+        //                if (!uri.isAbsolute()) {
+        //                    uri = new URI(request.getRequestURL().toString()).resolve(request.getContextPath() +  avatarUrl);
+        //                    return uri.toString();
+        //                }
+        //            } catch (URISyntaxException e) {
+        //                //do nothing
+        //            }
+        //        }
         return avatarUrl;
     }
 

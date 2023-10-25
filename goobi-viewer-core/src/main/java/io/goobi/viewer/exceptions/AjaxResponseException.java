@@ -32,7 +32,6 @@ public class AjaxResponseException extends PresentationException {
      */
     public AjaxResponseException(String string) {
         super(string);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -41,7 +40,6 @@ public class AjaxResponseException extends PresentationException {
      */
     public AjaxResponseException(String string, Throwable e) {
         super(string, e);
-        // TODO Auto-generated constructor stub
     }
 
 }

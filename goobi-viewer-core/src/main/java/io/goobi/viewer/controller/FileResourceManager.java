@@ -41,7 +41,8 @@ public class FileResourceManager {
     /**
      *
      * @param servletContex The servletContext of the application
-     * @param themeRootPath A file system path containing the root path of a theme repository. May be null to use the internal resource path for theme resources
+     * @param themeRootPath A file system path containing the root path of a theme repository. May be null to use the internal resource path for theme
+     *            resources
      */
     public FileResourceManager(ServletContext servletContex, String theme) {
         this.coreResourcesPath = Paths.get(servletContex.getRealPath("resources"));

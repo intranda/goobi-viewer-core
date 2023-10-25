@@ -40,13 +40,12 @@ public class WebResourceConfiguration {
     public final URI uri;
     public final String label;
 
-
     public WebResourceConfiguration(String uri, String label) throws PresentationException {
-        if(uri == null) {
+        if (uri == null) {
             throw new PresentationException("URI must be provided");
         }
         this.uri = URI.create(uri);
-        if(StringUtils.isBlank(label)) {
+        if (StringUtils.isBlank(label)) {
             throw new PresentationException("Label must be provided");
         }
         this.label = label;

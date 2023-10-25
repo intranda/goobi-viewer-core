@@ -30,6 +30,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 public class CommentGroupUpdate implements IModelUpdate {
 
@@ -37,7 +38,7 @@ public class CommentGroupUpdate implements IModelUpdate {
 
     /** {@inheritDoc} */
     @Override
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         performUpdates(dao);
         return true;
     }

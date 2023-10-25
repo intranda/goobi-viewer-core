@@ -36,12 +36,12 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
  * </p>
  */
 @FacesConverter("bookshelfConverter")
-public class BookshelfConverter implements Converter {
+public class BookshelfConverter implements Converter<BookmarkList> {
 
     /** {@inheritDoc} */
     @Override
-    public final Object getAsObject(final FacesContext context, final UIComponent component, final String value) {
-        int id = Integer.valueOf(value);
+    public final BookmarkList getAsObject(final FacesContext context, final UIComponent component, final String value) {
+        int id = Integer.parseInt(value);
         try {
             return DataManager.getInstance().getDao().getBookmarkList(id);
         } catch (DAOException e) {
@@ -51,19 +51,15 @@ public class BookshelfConverter implements Converter {
 
     /** {@inheritDoc} */
     @Override
-    public final String getAsString(final FacesContext context, final UIComponent component, final Object object) {
-        if (object == null) {
+    public final String getAsString(final FacesContext context, final UIComponent component, final BookmarkList user) {
+        if (user == null) {
             return null;
         }
 
-        if (object instanceof BookmarkList) {
-            BookmarkList user = (BookmarkList) object;
-            try {
-                return String.valueOf(user.getId());
-            } catch (NumberFormatException nfe) {
-                return null;
-            }
+        try {
+            return String.valueOf(user.getId());
+        } catch (NumberFormatException nfe) {
+            return null;
         }
-        throw new IllegalArgumentException("Object '" + object.getClass().getName() + "' is not a Bookshelf.");
     }
 }

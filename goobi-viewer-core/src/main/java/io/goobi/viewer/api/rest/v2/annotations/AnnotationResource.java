@@ -36,8 +36,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
@@ -52,6 +55,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.ErrorMessage;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -118,7 +122,8 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page) throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
+    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page)
+            throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         AnnotationPage annoPage = builder.getWebAnnotationPage(page);
         return annoPage;
@@ -140,9 +145,10 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
-            AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-            WebAnnotation annotation =  builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
-            return annotation;
+        AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
+        WebAnnotation annotation =
+                builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
+        return annotation;
     }
 
     /**
@@ -161,8 +167,8 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
-            AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-            return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
+        AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
+        return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
     }
 
     /**
@@ -226,9 +232,11 @@ public class AnnotationResource {
                     throw new DAOException(e.toString());
                 }
             }
+            return anno;
+        } else {
+            throw new ServiceNotAllowedException("Must be logged in to delete annotations");
         }
 
-        return anno;
     }
 
     /**

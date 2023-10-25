@@ -10,6 +10,7 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
+
 	<!-- USER COMMENTS -->
 	<ui:fragment
 		rendered="#{activeDocumentBean.allowUserComments}">
@@ -31,11 +32,11 @@
 				</div>
 			</ui:fragment>
 
+
 			<h:form id="userCommentsForm" prependId="false">
 				<ui:fragment rendered="#{userBean.loggedIn}">
 					<h2 >#{msg.userComments}</h2>
 				</ui:fragment>
-
 				<!-- EXISTING COMMENTS -->
 				<ui:repeat var="comment"  varStatus="status"
 					value="#{commentBean.commentsForCurrentPage}">
@@ -117,12 +118,6 @@
 							<button id="modalUserCommentEdit-#{comment.id}-ok" class="btn btn--success accept ml-3" data-dismiss="modal">#{msg.save}</button>
 						</yield>
 					</div>
-					<h:commandScript name="editComment" action="#{commentBean.editComment}" render="@form"
-						onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentEditSuccess}&quot;)"
-						onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
-					<h:commandScript name="deleteComment" action="#{commentBean.deleteComment}" render="@form"
-						onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentDeleteSuccess}&quot;)"
-						onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
 
 					<script>
 						riot.mount("#modalUserCommentEdit-#{comment.id}", "modal", {});
@@ -138,6 +133,13 @@
 					</script>
 
 				</ui:repeat>
+				
+				<h:commandScript name="editComment" action="#{commentBean.editComment}" render="@form"
+					onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentEditSuccess}&quot;)"
+					onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
+				<h:commandScript name="deleteComment" action="#{commentBean.deleteComment}" render="@form"
+					onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentDeleteSuccess}&quot;)"
+					onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
 
 				<!-- ADD COMMENT -->
 				<ui:fragment rendered="#{userBean.loggedIn}">

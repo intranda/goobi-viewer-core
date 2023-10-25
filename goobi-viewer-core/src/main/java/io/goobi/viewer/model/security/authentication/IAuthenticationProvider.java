@@ -111,7 +111,7 @@ public interface IAuthenticationProvider {
      * @param addUserToGroups a {@link java.util.List} object.
      */
     public void setAddUserToGroups(List<String> addUserToGroups);
-    
+
     /**
      * @return the redirectUrl
      */

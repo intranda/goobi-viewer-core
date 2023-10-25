@@ -77,7 +77,8 @@ public class TableDataProvider<T> implements Serializable {
         }
     }
 
-    public static <T> TableDataProvider<T> initDataProvider(int itemsPerPage, String defaultSortField, SortOrder defaultSortOrder, DAOSearchFunction<T> search) {
+    public static <T> TableDataProvider<T> initDataProvider(int itemsPerPage, String defaultSortField, SortOrder defaultSortOrder,
+            DAOSearchFunction<T> search) {
         return new TableDataProvider<>(itemsPerPage, defaultSortOrder, new TableDataSource<T>() {
 
             private Optional<Long> numItems = Optional.empty();
@@ -119,8 +120,7 @@ public class TableDataProvider<T> implements Serializable {
             }
         });
     }
-    
-    
+
     /**
      * <p>
      * Constructor for TableDataProvider.
@@ -131,14 +131,14 @@ public class TableDataProvider<T> implements Serializable {
     public TableDataProvider(TableDataSource<T> source) {
         this.source = source;
     }
-    
+
     /**
      * <p>
      * Constructor for TableDataProvider.
      * </p>
      *
      * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
-     * @param entriesPerPage    the number of entries per page
+     * @param entriesPerPage the number of entries per page
      */
     public TableDataProvider(int entriesPerPage, SortOrder sortOrder, TableDataSource<T> source) {
         this.source = source;

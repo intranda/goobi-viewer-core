@@ -90,6 +90,7 @@ import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
@@ -840,12 +841,12 @@ public class CmsBean implements Serializable {
         return currentPage.getComponents()
                 .stream()
                 .flatMap(comp -> comp.getContentItems().stream())
-                .map(CMSContentItem::getContent)
                 .map(content -> {
                     try {
-                        return content.handlePageLoad(resetSearch);
+                        return content.getContent().handlePageLoad(resetSearch, content.getOwningComponent());
                     } catch (PresentationException e) {
-                        logger.error("Error handling page load for page {} in content {}", content.getOwningPage().getId(), content.getItemId(), e);
+                        logger.error("Error handling page load for page {} in content {}", content.getContent().getOwningPage().getId(),
+                                content.getItemId(), e);
                         return "";
                     }
                 })
@@ -1513,7 +1514,24 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     */
+    public List<String> getPossibleResultGroupNames() {
+        List<SearchResultGroup> groups = DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
+                ? DataManager.getInstance().getConfiguration().getSearchResultGroups() : Collections.emptyList();
+
+        List<String> ret = new ArrayList<>(groups.size());
+        for (SearchResultGroup group : groups) {
+            ret.add(group.getName());
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns metadataList types from the configuration where the type value stars with "cms_".
+     * 
      * @return
      */
     public List<String> getCmsMetadataListTypes() {

@@ -309,13 +309,15 @@ public class ViewerResourceBundle extends ResourceBundle {
      *
      * @param key a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
+     * @param removeRemainingPlaceholders If true, any placeholders in the value not replaced by params are removed
      * @param params One or more parameter values to replace the placeholders
      * @return a {@link java.lang.String} object.
      */
-    public static String getTranslationWithParameters(final String key, final Locale locale, final String... params) {
+    public static String getTranslationWithParameters(final String key, final Locale locale, boolean removeRemainingPlaceholders,
+            final String... params) {
         String ret = getTranslation(key, locale);
         if (params != null) {
-            ret = replaceParameters(ret, params);
+            ret = replaceParameters(ret, removeRemainingPlaceholders, params);
         }
 
         return ret;
@@ -324,16 +326,21 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      *
      * @param msg
+     * @param removeRemainingPlaceholders If true, any placeholders in the value not replaced by params are removed
      * @param params
      * @return
      * @should return null if msg is null
      * @should replace parameters correctly
+     * @should remove remaining placeholders correctly
      */
-    static String replaceParameters(final String msg, String... params) {
+    static String replaceParameters(final String msg, boolean removeRemainingPlaceholders, String... params) {
         String ret = msg;
         if (ret != null && params != null) {
             for (int i = 0; i < params.length; ++i) {
                 ret = ret.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
+            }
+            if (removeRemainingPlaceholders) {
+                ret = ret.replaceAll("\\{\\d+\\}", "").trim();
             }
         }
 
@@ -482,7 +489,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return translation;
             }
             // Fall back to translations without the language part
-            key = key.replaceAll(SolrConstants.MIDFIX_LANG + "[A-Z][A-Z]", "");
+            key = key.replaceAll(SolrConstants.MIDFIX_LANG + "[A-Z{][A-Z}]", "");
         }
 
         return getTranslationFromBundleUsingCleanedUpKeys(key, bundle);
@@ -525,8 +532,8 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         }
         // Remove leading SORT_
-        if (key.startsWith("SORT_")) {
-            String newKey = key.replace("SORT_", "");
+        if (key.startsWith(SolrConstants.PREFIX_SORT)) {
+            String newKey = key.replace(SolrConstants.PREFIX_SORT, "");
             if (bundle.containsKey("MD_" + newKey)) {
                 return bundle.getString("MD_" + newKey);
             }
@@ -535,8 +542,8 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         }
         // Remove leading FACET_
-        if (key.startsWith("FACET_")) {
-            String newKey = key.replace("FACET_", "");
+        if (key.startsWith(SolrConstants.PREFIX_FACET)) {
+            String newKey = key.replace(SolrConstants.PREFIX_FACET, "");
             if (bundle.containsKey("MD_" + newKey)) {
                 return bundle.getString("MD_" + newKey);
             }
@@ -610,6 +617,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
                 return getAllLocales(servletContext);
             } catch (NullPointerException e) {
+                logger.trace("No faces context instance available");
                 return Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
             }
         }
@@ -764,26 +772,34 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      * @param facesConfigPath
      * @return
-     * @throws FileNotFoundException
      * @throws IOException
      * @throws JDOMException
      */
-    public static List<Locale> getLocalesFromFile(Path facesConfigPath) throws FileNotFoundException, IOException, JDOMException {
+    public static List<Locale> getLocalesFromFile(Path facesConfigPath) throws IOException, JDOMException {
         Document doc = XmlTools.readXmlFile(facesConfigPath);
         Namespace xsi = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         Namespace javaee = Namespace.getNamespace("ee", "http://java.sun.com/xml/ns/javaee");
-        List<Namespace> namespaces = Arrays.asList(xsi, javaee);//doc.getNamespacesInScope();
+        List<Namespace> namespaces = Arrays.asList(xsi, javaee);
+        //doc.getNamespacesInScope();
         List<Element> localeElements = XmlTools.evaluateToElements("//ee:locale-config/ee:supported-locale", doc.getRootElement(), namespaces);
-        return localeElements.stream().map(ele -> ele.getText()).map(Locale::forLanguageTag).collect(Collectors.toList());
+        return localeElements.stream().map(Element::getText).map(Locale::forLanguageTag).collect(Collectors.toList());
     }
 
-    public static Locale getDefaultLocaleFromFile(Path facesConfigPath) throws FileNotFoundException, IOException, JDOMException {
+    /**
+     * 
+     * @param facesConfigPath
+     * @return
+     * @throws IOException
+     * @throws JDOMException
+     */
+    public static Locale getDefaultLocaleFromFile(Path facesConfigPath) throws IOException, JDOMException {
         Document doc = XmlTools.readXmlFile(facesConfigPath);
         Namespace xsi = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         Namespace javaee = Namespace.getNamespace("ee", "http://java.sun.com/xml/ns/javaee");
-        List<Namespace> namespaces = Arrays.asList(xsi, javaee);//doc.getNamespacesInScope();
+        List<Namespace> namespaces = Arrays.asList(xsi, javaee);
+        //doc.getNamespacesInScope();
         List<Element> localeElements = XmlTools.evaluateToElements("//ee:locale-config/ee:default-locale", doc.getRootElement(), namespaces);
-        return localeElements.stream().map(ele -> ele.getText()).map(Locale::forLanguageTag).findFirst().orElse(getDefaultLocale());
+        return localeElements.stream().map(Element::getText).map(Locale::forLanguageTag).findFirst().orElse(getDefaultLocale());
     }
 
     /**

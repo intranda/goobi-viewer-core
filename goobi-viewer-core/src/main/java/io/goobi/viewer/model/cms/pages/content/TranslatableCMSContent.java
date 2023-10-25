@@ -27,7 +27,9 @@ import io.goobi.viewer.model.translations.TranslatedText;
 public interface TranslatableCMSContent extends IPolyglott {
 
     public TranslatedText getText();
+
     public void setText(TranslatedText text);
+
     public boolean isRequired();
 
 }

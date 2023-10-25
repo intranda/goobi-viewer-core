@@ -58,9 +58,6 @@ public class ArchiveMetadataField {
     //    @ToString.Exclude
     private ArchiveEntry eadEntry;
 
-
-
-
     public ArchiveMetadataField(String label, Integer type, String xpath, String xpathType) {
         this.label = label;
         this.type = type;

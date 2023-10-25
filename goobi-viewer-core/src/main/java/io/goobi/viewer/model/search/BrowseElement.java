@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -74,7 +75,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 /**
- * Representation of a search hit. TODO integrate into SearchHit
+ * Representation of a search hit.
  */
 public class BrowseElement implements Serializable {
 
@@ -115,9 +116,13 @@ public class BrowseElement implements Serializable {
     @JsonIgnore
     private boolean anchor = false;
     @JsonIgnore
+    private boolean cmsPage = false;
+    @JsonIgnore
     private boolean hasImages = false;
     @JsonIgnore
     private boolean hasMedia = false;
+    @JsonIgnore
+    private boolean hasTeiFiles = false;
     @JsonIgnore
     private boolean showThumbnail = false;
     @JsonIgnore
@@ -187,7 +192,8 @@ public class BrowseElement implements Serializable {
      * @param metadataListMap
      * @param locale
      * @param fulltext
-     * @param
+     * @param searchTerms
+     * @param thumbs
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -244,7 +250,7 @@ public class BrowseElement implements Serializable {
         int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
         for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
             if (!entry.getValue().isEmpty()) {
-                logger.trace("populating metadata list {}", entry.getKey());
+                // logger.trace("populating metadata list {}", entry.getKey());
                 populateMetadataList(entry.getValue(), structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
             }
         }
@@ -268,6 +274,7 @@ public class BrowseElement implements Serializable {
 
         work = structElement.isWork();
         anchor = structElement.isAnchor();
+        cmsPage = structElement.isCmsPage();
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
         dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
@@ -351,7 +358,10 @@ public class BrowseElement implements Serializable {
                 && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("application")
                         || this.mimeType.startsWith("text")/*sandboxed*/);
 
-        showThumbnail = hasImages || hasMedia || isAnchor();
+        showThumbnail = hasImages || hasMedia || isAnchor() || cmsPage;
+
+        // TEI files
+        hasTeiFiles = structElement.getMetadataFields().keySet().stream().filter(k -> k.startsWith(SolrConstants.FILENAME_TEI)).count() > 0;
 
         //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
@@ -957,6 +967,20 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @return the cmsPage
+     */
+    public boolean isCmsPage() {
+        return cmsPage;
+    }
+
+    /**
+     * @param cmsPage the cmsPage to set
+     */
+    public void setCmsPage(boolean cmsPage) {
+        this.cmsPage = cmsPage;
+    }
+
+    /**
      * @return the work
      */
     public boolean isWork() {
@@ -1012,6 +1036,20 @@ public class BrowseElement implements Serializable {
      */
     public void setHasImages(boolean hasImages) {
         this.hasImages = hasImages;
+    }
+
+    /**
+     * @return the hasTeiFiles
+     */
+    public boolean isHasTeiFiles() {
+        return hasTeiFiles;
+    }
+
+    /**
+     * @param hasTeiFiles the hasTeiFiles to set
+     */
+    public void setHasTeiFiles(boolean hasTeiFiles) {
+        this.hasTeiFiles = hasTeiFiles;
     }
 
     /**
@@ -1101,7 +1139,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * Important: hits have to have 3 Pretty parameters (e.g. /image/nextHit/PPN123/1/)
+     * Important: hits have to have 4 Pretty parameters (e.g. /image/nextHit/PPN123/1/LOG_0001/)
      *
      * @param type
      * @return
@@ -1234,6 +1272,21 @@ public class BrowseElement implements Serializable {
      */
     public List<Metadata> getMetadataList() {
         return metadataListMap.get(Configuration.METADATA_LIST_TYPE_SEARCH_HIT);
+    }
+
+    public List<String> getMetadataValues(String field) {
+        return getMetadataListForLocale(field, BeanUtils.getLocale()).stream()
+                .flatMap(md -> md.getValues().stream())
+                .map(value -> value.getCombinedValue())
+                .collect(Collectors.toList());
+    }
+
+    public String getFirstMetadataValue(String field) {
+        return getMetadataListForLocale(field, BeanUtils.getLocale()).stream()
+                .flatMap(md -> md.getValues().stream())
+                .findFirst()
+                .map(value -> value.getCombinedValue())
+                .orElse("");
     }
 
     /**

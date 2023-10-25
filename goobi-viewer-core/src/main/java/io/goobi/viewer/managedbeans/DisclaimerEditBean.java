@@ -38,6 +38,7 @@ import io.goobi.viewer.model.administration.legal.Disclaimer;
 
 /**
  * Bean for editing the disclaimer. ViewScoped, so all settings are discarded when loading a new view
+ * 
  * @author florian
  *
  */
@@ -68,7 +69,6 @@ public class DisclaimerEditBean implements Serializable {
         this.dao = dao;
         this.disclaimerForEdit = loadDisclaimerForEdit();
     }
-
 
     public void save() {
         if (this.disclaimerForEdit != null) {
@@ -125,7 +125,7 @@ public class DisclaimerEditBean implements Serializable {
         if (this.dao != null) {
             Disclaimer disclaimer = dao.getDisclaimer();
             disclaimer.setRequiresConsentAfter(LocalDateTime.now());
-            if(dao.saveDisclaimer(disclaimer)) {
+            if (dao.saveDisclaimer(disclaimer)) {
                 if (this.disclaimerForEdit != null) {
                     this.disclaimerForEdit.setRequiresConsentAfter(disclaimer.getRequiresConsentAfter());
                 }
@@ -150,7 +150,6 @@ public class DisclaimerEditBean implements Serializable {
         }
     }
 
-
     private IDAO retrieveDAO() {
         try {
             return DataManager.getInstance().getDao();
@@ -159,6 +158,5 @@ public class DisclaimerEditBean implements Serializable {
             return null;
         }
     }
-
 
 }

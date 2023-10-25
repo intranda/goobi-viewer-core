@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.Resource;
@@ -39,6 +40,7 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,8 +49,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.CMSSlider;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -59,24 +59,25 @@ public class DynamicContentBuilder {
 
     private static final Logger logger = LogManager.getLogger(DynamicContentBuilder.class);
 
-
     private FacesContext context = FacesContext.getCurrentInstance();
     private Application application = context.getApplication();
     private FaceletContext faceletContext = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
-    
+
     public UIComponent build(JsfComponent jsfComponent, UIComponent parent, Map<String, Object> attributes) throws PresentationException {
         try {
             UIComponent composite = loadCompositeComponent(parent, jsfComponent.getFilename(), jsfComponent.getLibrary());
-            if(composite != null && attributes != null) {
-                for(Entry<String, Object> entry : attributes.entrySet()) {
+            if (composite != null && attributes != null) {
+                for (Entry<String, Object> entry : attributes.entrySet()) {
                     composite.getAttributes().put(entry.getKey(), entry.getValue());
                 }
             }
             return composite;
-        } catch(FaceletException e) {
-            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+".\nCause: " + e.getMessage());
-        } catch(Throwable e) {
-            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+". Please check if the file exists and is a valid jsf composite component");
+        } catch (FaceletException e) {
+            throw new PresentationException(
+                    "error building jsf custom component from file " + jsfComponent.toString() + ".\nCause: " + e.getMessage());
+        } catch (Throwable e) {
+            throw new PresentationException("error building jsf custom component from file " + jsfComponent.toString()
+                    + ". Please check if the file exists and is a valid jsf composite component");
         }
     }
 
@@ -100,6 +101,7 @@ public class DynamicContentBuilder {
                                 } else {
                                     composite.getAttributes().put("linkTarget", "_blank");
                                 }
+                                composite.getAttributes().put("popoverOnHover", map.shouldOpenPopoversOnHover());
                             }
                         } else {
                             logger.error("Cannot build GeoMap content. No map found with id = " + id);
@@ -151,7 +153,7 @@ public class DynamicContentBuilder {
         }
         return composite;
     }
-    
+
     /**
      * @param string2
      * @param string
@@ -163,7 +165,7 @@ public class DynamicContentBuilder {
             return null;
         }
         UIComponent composite = application.createComponent(context, componentResource);
-
+        composite.setId(parent.getId() + "_" + FilenameUtils.getBaseName(name));
         // This basically creates <composite:implementation>.
         UIComponent implementation = application.createComponent(UIPanel.COMPONENT_TYPE);
         implementation.setRendererType("javax.faces.Group");
@@ -174,6 +176,9 @@ public class DynamicContentBuilder {
             faceletContext.includeFacelet(implementation, componentResource.getURL());
         } catch (IOException e) {
             throw new FacesException(e);
+        } catch (ELException e) {
+            logger.error("Error rendering composite", e);
+            return composite;
         } finally {
             parent.popComponentFromEL(context);
         }

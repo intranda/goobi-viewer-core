@@ -63,6 +63,12 @@ public class DataFileTools {
     private static final Logger logger = LogManager.getLogger(DataFileTools.class);
 
     /**
+     * Hidden constructor to avoid instantiating the class
+     */
+    private DataFileTools() {
+    }
+
+    /**
      * Retrieves the path to viewer home or repositories root, depending on the record. Used to generate a specific task client query parameter.
      *
      * @param pi Record identifier
@@ -176,9 +182,7 @@ public class DataFileTools {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryFolder);
         }
 
-        Path folder = repository.resolve(dataFolderName).resolve(pi);
-
-        return folder;
+        return repository.resolve(dataFolderName).resolve(pi);
     }
 
     /**
@@ -269,6 +273,7 @@ public class DataFileTools {
      * @param dataRepository a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
      * @should construct METS file path correctly
+     * @should construct METS_MARC file path correctly
      * @should construct LIDO file path correctly
      * @should construct DenkXweb file path correctly
      * @should throw IllegalArgumentException if fileName is null
@@ -284,6 +289,7 @@ public class DataFileTools {
         }
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
             case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
@@ -296,6 +302,7 @@ public class DataFileTools {
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
@@ -309,6 +316,8 @@ public class DataFileTools {
                 break;
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
+                break;
+            default:
                 break;
         }
         sb.append('/').append(fileName);
@@ -348,6 +357,8 @@ public class DataFileTools {
             case SolrConstants.FILENAME_TEI:
                 dataFolderName = DataManager.getInstance().getConfiguration().getTeiFolder();
                 break;
+            default:
+                break;
         }
 
         return getDataFilePath(pi, dataFolderName, null, fileName).toAbsolutePath().toString();
@@ -370,9 +381,7 @@ public class DataFileTools {
         }
 
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
-        Path filePath = Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
-
-        return filePath;
+        return Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
     }
 
     /**
@@ -393,8 +402,7 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords, HttpServletRequest request)
-            throws FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        // logger.trace("loadFulltext: {}/{}", altoFilePath, fulltextFilePath);
+            throws IOException, IndexUnreachableException {
         TextResourceBuilder builder = new TextResourceBuilder();
         if (fulltextFilePath != null) {
             // Plain full-text file
@@ -405,20 +413,7 @@ public class DataFileTools {
                     return fulltext;
                 }
             } catch (ContentNotFoundException e) {
-                //try loading from content api url (same source as image content)
-                try {
-                    String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
-                    String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
-                    return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> {
-                        return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
-                    })
-                            .map(url -> NetTools.callUrlGET(url))
-                            .filter(array -> NetTools.isStatusOk(array[0]))
-                            .map(array -> array[1])
-                            .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
-                } catch (ContentNotFoundException e1) {
-                    // fall through to loading alto
-                }
+                loadFromApiURl(fulltextFilePath);
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
@@ -441,6 +436,23 @@ public class DataFileTools {
         return null;
     }
 
+    public static String loadFromApiURl(String fulltextFilePath) throws FileNotFoundException {
+        //try loading from content api url (same source as image content)
+        try {
+            String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
+            String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
+            return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> {
+                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
+            })
+                    .map(NetTools::callUrlGET)
+                    .filter(array -> NetTools.isStatusOk(array[0]))
+                    .map(array -> array[1])
+                    .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
+        } catch (ContentNotFoundException e1) {
+            return "";
+        }
+    }
+
     /**
      *
      * @param altoFilePath
@@ -456,7 +468,6 @@ public class DataFileTools {
         if (altoFilePath == null) {
             return null;
         }
-        // logger.trace("loadAlto: {}", altoFilePath);
 
         String filename = FileTools.getFilenameFromPathString(altoFilePath);
         String pi = FileTools.getBottomFolderFromPathString(altoFilePath);
@@ -465,13 +476,9 @@ public class DataFileTools {
             TextResourceBuilder builder = new TextResourceBuilder();
             return builder.getAltoDocument(pi, filename);
         } catch (ContentNotFoundException e) {
-            return new StringPair(DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> {
-                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build();
-            }).map(url -> {
-                String[] u = NetTools.callUrlGET(url);
-                // logger.trace(u[1]);
-                return u;
-            })
+            return new StringPair(DataManager.getInstance().getRestApiManager().getContentApiManager()
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build())
+                    .map(NetTools::callUrlGET)
                     .filter(array -> NetTools.isStatusOk(array[0]))
                     .map(array -> array[1])
                     .orElseThrow(() -> new ContentNotFoundException("Resource not found")), null);
@@ -491,7 +498,7 @@ public class DataFileTools {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static String loadTei(String pi, String language) throws FileNotFoundException, IOException, ViewerConfigurationException {
+    public static String loadTei(String pi, String language) throws FileNotFoundException, IOException {
         logger.trace("loadTei: {}/{}", pi, language);
         if (pi == null) {
             return null;
@@ -555,19 +562,19 @@ public class DataFileTools {
         work.setPdfFolderPath(repository.resolve(DataManager.getInstance().getConfiguration().getPdfFolder()).resolve(pi));
 
         // collect files
-        if (work.getMediaFolderPath()!= null && Files.exists(work.getMediaFolderPath())) {
+        if (work.getMediaFolderPath() != null && Files.exists(work.getMediaFolderPath())) {
             try (Stream<Path> stream = Files.list(work.getMediaFolderPath())) {
                 List<Path> media = stream.sorted().collect(Collectors.toList());
                 work.setMediaFiles(media);
             }
         }
-        if (work.getPdfFolderPath()!= null && Files.exists(work.getPdfFolderPath())) {
+        if (work.getPdfFolderPath() != null && Files.exists(work.getPdfFolderPath())) {
             try (Stream<Path> stream = Files.list(work.getPdfFolderPath())) {
                 List<Path> pdfs = stream.sorted().collect(Collectors.toList());
                 work.setPdfFiles(pdfs);
             }
         }
-        if (work.getAltoFolderPath()!= null && Files.exists(work.getAltoFolderPath())) {
+        if (work.getAltoFolderPath() != null && Files.exists(work.getAltoFolderPath())) {
             try (Stream<Path> stream = Files.list(work.getAltoFolderPath())) {
                 List<Path> alto = stream.sorted().collect(Collectors.toList());
                 work.setAltoFiles(alto);
@@ -576,5 +583,5 @@ public class DataFileTools {
 
         return work;
     }
-    
+
 }

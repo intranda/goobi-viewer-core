@@ -519,7 +519,8 @@
 	    align-items: end;
 	    input {
 	      height: 2.4rem;
-	      margin-left: 0.8rem;
+	      margin-left: 0.2rem;
+		padding-left: 0.2rem;
 	    }
 	  }
 	}
@@ -1543,7 +1544,33 @@
 		border: 1px solid #ccc;
 		padding: 2rem;
 	}
-
+	
+	// ADMIN CROWD ANNOTATION STYLES
+	&__annotations-download-all-butto0n-wrapper {
+		margin-right: 10px;
+	}
+	&__annotations-download-all-button {
+		width: 45px;
+		min-width: 0;
+		height: 35px;
+		font-weight: 400;
+		color: #212529;
+		text-align: center;
+		vertical-align: middle;
+		user-select: none;
+		background-color: transparent;
+		border: 1px solid transparent;
+		padding: .6rem 1.2rem;
+		font-size: 1.6rem;
+		line-height: 1.5;
+		border-radius: 0rem;
+		transition: color 0.15s ease-in-out,background-color 0.15s ease-in-out,border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out;
+		border-color: #ccc;
+  		background-color: #f7f7f7;
+	}
+	&__annotations-filter-wrapper {
+		display: flex;
+	}
 
 	// ADMIN TOPBAR FRONTEND
 	&__topbar-frontend {
@@ -1765,7 +1792,7 @@
 		z-index: 100;
 		position: relative;
 		.nav-tabs {
-			background: #f2f3f4;
+			background: transparent;
 			border-bottom: none;
 			}
 	}

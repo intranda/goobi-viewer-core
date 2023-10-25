@@ -12,7 +12,8 @@
 
     <composite:implementation>
     	
-		<h:panelGroup rendered="#{configurationBean.copyrightIndicatorEnabled}" layout="block" id="copyrightIndicator" styleClass="copyright-indicator" pt:data-popover-element="#copyrightInformation" 
+		<h:panelGroup rendered="#{configurationBean.copyrightIndicatorEnabled}" layout="block" id="copyrightIndicator"
+		              styleClass="copyright-indicator" pt:data-popover-element="#copyrightInformation" 
 												pt:data-popover-dismiss="click-outside"
 												pt:data-trigger="focus"
 												pt:data-placement="top"
@@ -27,9 +28,14 @@
 						<div class="copyright-indicator__hidden-information">
 							<div id="copyrightInformation">
 								<h3>#{msg.copyright_indicator__access_restriction}</h3>
-								<div class="copyright-indicator__hidden-information-element mb-3"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorStatus.description]}" /></div>			   
+                                <c:forEach var="iStatus" items="#{activeDocumentBean.viewManager.copyrightIndicatorStatuses}">
+                                    <div class="copyright-indicator__hidden-information-element mb-3">
+                                        <h:outputText escape="false" value="#{msg[iStatus.description]}" /><br />
+                                    </div>
+                                </c:forEach>		   
 								<h3>#{msg.copyright_indicator__copyright_licence}</h3>
-								<div class="copyright-indicator__hidden-information-element"><h:outputText escape="false" value="#{msg.copyright__information_unclear}" /></div>
+								<div class="copyright-indicator__hidden-information-element"><h:outputText escape="false" value="#{msg.copyright__information_unclear}" />
+								</div>
 							</div>
 						</div>
 					</ui:fragment>
@@ -38,9 +44,16 @@
 						<div class="copyright-indicator__hidden-information">
 							<div id="copyrightInformation">
 								<h3>#{msg.copyright_indicator__access_restriction}</h3>
-								<div class="copyright-indicator__hidden-information-element mb-3"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorStatus.description]}" /></div>
+                                <c:forEach var="iStatus" items="#{activeDocumentBean.viewManager.copyrightIndicatorStatuses}">
+                                    <div class="copyright-indicator__hidden-information-element mb-3">
+                                        <h:outputText escape="false" value="#{msg[iStatus.description]}" /><br />
+                                    </div>
+                                </c:forEach>
+
 								<h3>#{msg.copyright_indicator__copyright_licence}</h3>
-								<div class="copyright-indicator__hidden-information-element"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorLicense.description]}" /></div>	
+								<div class="copyright-indicator__hidden-information-element">
+								    <h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorLicense.description]}" />
+								</div>	
 							</div>			   
 						</div>
 					</ui:fragment>							
@@ -48,9 +61,9 @@
 					<!-- TRAFFIC LIGHT STYLE -->
 						<div class="copyright-indicator__traffic-light-style">
 							<div class="copyright-indicator__traffic-light-style-circle-wrapper">
-							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'OPEN' ? '-green' : ''}"><i class="fa fa-check" aria-hidden="true"></i></div>
-							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'PARTIAL' ? '-yellow' : ''}"><i class="fa fa-info" aria-hidden="true"></i></div>
-							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'LOCKED' ? '-red' : ''}"><i class="fa fa-times" aria-hidden="true"></i></div>
+							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'OPEN' ? '-green' : ''}"><i class="fa fa-check" aria-hidden="true"></i></div>
+							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'PARTIAL' ? '-yellow' : ''}"><i class="fa fa-info" aria-hidden="true"></i></div>
+							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'LOCKED' ? '-red' : ''}"><i class="fa fa-times" aria-hidden="true"></i></div>
 							</div>
 							<div class="copyright-indicator__traffic-light-style-icon-wrapper">
 							

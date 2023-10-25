@@ -294,4 +294,14 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
 
         return loadPageFromDoc(result.get(0), pi, topElement, null);
     }
+
+    @Override
+    public PhysicalElement findPageForFilename(String filename) {
+        try {
+            return loadPage(-1, filename);
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Failed to load page with filename {}. Cause: {}", filename, e.toString());
+            return null;
+        }
+    }
 }

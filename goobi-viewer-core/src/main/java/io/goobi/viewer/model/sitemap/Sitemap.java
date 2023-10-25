@@ -31,16 +31,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -53,10 +51,9 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
-import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Sitemap generation.
@@ -97,6 +94,9 @@ public class Sitemap {
     public List<File> generate(String viewerRootUrl, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {
         this.viewerRootUrl = viewerRootUrl;
+        if (this.viewerRootUrl != null && !this.viewerRootUrl.endsWith("/")) {
+            this.viewerRootUrl += "/";
+        }
         // Sitemap index root
         docIndex.setRootElement(new Element("sitemapindex", nsSitemap));
 
@@ -134,7 +134,7 @@ public class Sitemap {
                 .append(SolrConstants.DATEDELETED)
                 .append(":*)")
                 .append(SearchHelper.getAllSuffixes(null, true, true));
-        logger.debug("Sitemap: sitemap query: {}", sbQuery.toString());
+        logger.debug("Sitemap: sitemap query: {}", sbQuery);
         String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
                 SolrConstants.DOCTYPE, SolrConstants.ISANCHOR, SolrConstants.THUMBPAGENO };
         String[] pageFields = { SolrConstants.ORDER };
@@ -172,27 +172,21 @@ public class Sitemap {
             }
             if (solrDoc.getFieldValue(SolrConstants.ISANCHOR) != null && (Boolean) solrDoc.getFieldValue(SolrConstants.ISANCHOR)) {
                 // Anchor
-                {
-                    // Anchor TOC URL
-                    currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
 
-                    increment(timestampModified);
-                }
-                {
-                    // Anchor metadata URL
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
+                // Anchor TOC URL
+                currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
+                increment(timestampModified);
 
-                    increment(timestampModified);
-                }
+                // Anchor metadata URL
+                currentDocSitemap.getRootElement()
+                        .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
+                increment(timestampModified);
             } else if (DocType.GROUP.toString().equals(solrDoc.getFieldValue(SolrConstants.DOCTYPE))) {
                 // Group
-                {
-                    // Group TOC URL
-                    currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
 
-                    increment(timestampModified);
-                }
+                // Group TOC URL
+                currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
+                increment(timestampModified);
             } else {
                 // Record
                 {
@@ -200,20 +194,15 @@ public class Sitemap {
                     int order = solrDoc.containsKey(SolrConstants.THUMBPAGENO) ? (int) solrDoc.getFieldValue(SolrConstants.THUMBPAGENO) : 1;
                     currentDocSitemap.getRootElement()
                             .addContent(createUrlElement(pi, order, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
-
                     increment(timestampModified);
-                }
-                {
+
                     // Record metadata URL
                     currentDocSitemap.getRootElement()
                             .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
-
                     increment(timestampModified);
-                }
-                {
+
                     // Record TOC URL
                     currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
-
                     increment(timestampModified);
                 }
 
@@ -249,9 +238,9 @@ public class Sitemap {
             }
             recordIndex++;
             if (recordIndex % 50 == 0) {
-                logger.debug("Sitemap: parsed record " + recordIndex);
+                logger.debug("Sitemap: parsed record {}", recordIndex);
                 long end = System.nanoTime();
-                logger.debug("Sitemap: parsing 50 records took " + ((end - start) / 1e9) + " seconds");
+                logger.debug("Sitemap: parsing 50 records took {}" + " seconds", ((end - start) / 1e9));
                 start = end;
             }
         }
@@ -282,7 +271,7 @@ public class Sitemap {
                 // loc
                 Element eleLoc = new Element("loc", nsSitemap);
                 eleCurrectIndexSitemap.addContent(eleLoc);
-                eleLoc.setText(viewerRootUrl + '/' + "sitemap" + docListSitemap.size() + ".xml.gz");
+                eleLoc.setText(viewerRootUrl + "sitemap" + docListSitemap.size() + ".xml.gz");
 
                 // lastmod
                 Element eleLastmod = new Element("lastmod", nsSitemap);

@@ -31,8 +31,8 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.search.HitListView;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -40,19 +40,23 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("searchfacets")
 public class CMSSearchFacetsContent extends CMSContent {
-    
+
     private static final Logger logger = LogManager.getLogger(CMSSearchFacetsContent.class);
 
     private static final String BACKEND_COMPONENT_NAME = "searchfacets";
 
-    @Column(name = "facet_field")
+    @Column(name = "facet_field", length = 40)
     private String facetField = "";
-    
 
     public CMSSearchFacetsContent() {
         super();
     }
 
+    /**
+     * Cloning constructor.
+     * 
+     * @param orig Object to clone
+     */
     public CMSSearchFacetsContent(CMSSearchFacetsContent orig) {
         super(orig);
         this.facetField = orig.facetField;
@@ -66,10 +70,23 @@ public class CMSSearchFacetsContent extends CMSContent {
     }
 
     /**
+     * If <code>facetField</code> contains a language code placeholder, this method replaces it with the give language code.
+     * 
+     * @param language ISO-2 language code
+     * @return
+     */
+    public String getFacetFieldForLanguage(String language) {
+        if (facetField != null && language != null) {
+            return facetField.replace("{}", language.toUpperCase());
+        }
+
+        return facetField;
+    }
+
+    /**
      * @param facetField the facetField to set
      */
     public void setFacetField(String facetField) {
-        logger.trace("setFacetField: {}", facetField);
         this.facetField = facetField;
     }
 
@@ -89,7 +106,7 @@ public class CMSSearchFacetsContent extends CMSContent {
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         return "";
     }
 
@@ -98,7 +115,6 @@ public class CMSSearchFacetsContent extends CMSContent {
         return "";
     }
 
-    
     @Override
     public boolean isEmpty() {
         return false;

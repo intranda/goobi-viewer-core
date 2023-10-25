@@ -154,7 +154,8 @@ public class CustomWidgetEditBean implements Serializable {
             }
         } catch (DAOException e) {
             Messages.error(
-                    ViewerResourceBundle.getTranslationWithParameters("cms__edit_widget__save_widget__error", BeanUtils.getLocale(), e.getMessage()));
+                    ViewerResourceBundle.getTranslationWithParameters("cms__edit_widget__save_widget__error", BeanUtils.getLocale(), true,
+                            e.getMessage()));
         }
     }
 

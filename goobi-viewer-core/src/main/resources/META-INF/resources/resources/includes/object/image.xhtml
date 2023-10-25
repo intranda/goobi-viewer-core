@@ -13,7 +13,7 @@
     <!-- IMAGE CONTAINER -->
     <div id="imageContainer" class="view-object__image">        
         <!-- MAP -->
-        <div id="imageMap" class="view-object__image-map"></div>
+        <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div>
 
         <!-- MOBILE IMAGE OVERLAY -->
         <div id="imageContainerMobileOverlay" class="view-object__image-mobile-overlay"></div>
@@ -270,18 +270,7 @@
 				
 				let activeAreas = config.areas.filter(a => a.logId === config.currentLogId);
 				if(activeAreas.length > 0) {
-				    let areasOnCanvas = [];
-					activeAreas.forEach((activeArea, index) => {				        
-					    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
-			            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-			            areasOnCanvas.push(rect);
-					    drawArea(activeArea, index, imageView);
-		        	    let scrollPosition = window.sessionStorage.getItem("scrollPosition");
-		        	    $(document).scrollTop(parseInt(scrollPosition));
-		        	    window.sessionStorage.removeItem("scrollPosition");
-				    })
-		            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, 0.5, areasOnCanvas, true);
-					shadow.start();
+					//drawActiveAreas(activeAreas, imageView);
 					initAreaClick(imageView, activeAreas);
 				} else {
 					let inactiveAreas = config.areas.filter(a => a.logId !== config.currentLogId);
@@ -293,6 +282,20 @@
 				    initAreaClick(imageView, inactiveAreas);				    
 				}
 
+		    }
+		    function drawActiveAreas(activeAreas, imageView) {
+		    	let areasOnCanvas = [];
+				activeAreas.forEach((activeArea, index) => {				        
+				    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
+		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
+		            areasOnCanvas.push(rect);
+				    drawArea(activeArea, index, imageView);
+	        	    let scrollPosition = window.sessionStorage.getItem("scrollPosition");
+	        	    $(document).scrollTop(parseInt(scrollPosition));
+	        	    window.sessionStorage.removeItem("scrollPosition");
+			    })
+	            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, 0.5, areasOnCanvas, true);
+				shadow.start();
 		    }
 		    function initAreaClick(imageView, areas) {
 	        	if(areas.length > 0) {

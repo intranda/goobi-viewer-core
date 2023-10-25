@@ -28,6 +28,7 @@ import java.util.List;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -88,7 +89,7 @@ public class CMSRSSContent extends CMSContent {
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         return "";
     }
 

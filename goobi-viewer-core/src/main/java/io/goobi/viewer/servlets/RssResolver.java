@@ -110,7 +110,7 @@ public class RssResolver extends HttpServlet {
             }
         }
         try {
-            response.setContentType("text/xml");
+            response.setContentType(StringConstants.MIMETYPE_TEXT_XML);
             // Build query
             if (StringUtils.isEmpty(query)) {
                 if (bookshelfId != null) {

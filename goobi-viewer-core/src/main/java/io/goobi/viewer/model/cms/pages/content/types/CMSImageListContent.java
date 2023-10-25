@@ -45,6 +45,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.media.CMSMediaLister;
 import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import jakarta.persistence.Column;
@@ -207,7 +208,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         return null;
     }
 

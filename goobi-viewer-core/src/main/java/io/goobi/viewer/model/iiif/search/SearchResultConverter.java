@@ -111,7 +111,8 @@ public class SearchResultConverter {
      * @param pageNo The page number of generated resources
      */
     public SearchResultConverter(AbstractApiUrlManager urls, String pi, Integer pageNo) {
-        this.presentationBuilder = new AbstractBuilder(urls) {};
+        this.presentationBuilder = new AbstractBuilder(urls) {
+        };
         this.altoBuilder = new AltoAnnotationBuilder(urls, "oa");
         this.urls = urls;
         this.pi = pi;
@@ -525,8 +526,6 @@ public class SearchResultConverter {
 
         return anno;
     }
-
-
 
     /**
      * Create an annotation from an ALTO element

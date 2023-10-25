@@ -45,6 +45,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
@@ -136,7 +137,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder,
     }
 
     @Override
-    public String handlePageLoad(boolean resetResults) throws PresentationException {
+    public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         return null;
     }
 
@@ -182,7 +183,8 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder,
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<CMSPage> getNestedPagesByCategory(boolean random, boolean paged, CMSCategory category, CMSTemplateManager templateManager) throws DAOException {
+    public List<CMSPage> getNestedPagesByCategory(boolean random, boolean paged, CMSCategory category, CMSTemplateManager templateManager)
+            throws DAOException {
         if (nestedPages == null) {
             nestedPages = loadNestedPages(random, paged, templateManager);
         }

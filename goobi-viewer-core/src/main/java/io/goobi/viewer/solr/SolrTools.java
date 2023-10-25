@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -46,7 +47,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
@@ -81,6 +81,7 @@ public class SolrTools {
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
 
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
+    private static final String SUFFIX_LANGUAGE_REGEX = SolrConstants.MIDFIX_LANG + "([A-Z]{2,3})$";
 
     /**
      * 
@@ -149,6 +150,11 @@ public class SolrTools {
         return getAsString(fieldValue, "\n");
     }
 
+    /**
+     * 
+     * @param fieldValue
+     * @return
+     */
     public static Boolean getAsBoolean(Object fieldValue) {
         if (fieldValue instanceof Boolean) {
             return (Boolean) fieldValue;
@@ -159,6 +165,12 @@ public class SolrTools {
         }
     }
 
+    /**
+     * 
+     * @param fieldValue
+     * @param separator
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue, String separator) {
         if (fieldValue == null) {
@@ -498,8 +510,28 @@ public class SolrTools {
      * @param fieldName
      * @return
      */
-    private static boolean isLanguageCodedField(String fieldName) {
+    public static boolean isLanguageCodedField(String fieldName) {
         return StringUtils.isNotBlank(fieldName) && fieldName.matches(MULTILANGUAGE_FIELD_REGEX);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param language
+     * @return true if language code different
+     * @should return true if language code different
+     * @should return false if language code same
+     * @should return false if no language code
+     */
+    public static boolean isHasWrongLanguageCode(String field, String language) {
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+        if (language == null) {
+            throw new IllegalArgumentException("language may not be null");
+        }
+
+        return field.contains(SolrConstants.MIDFIX_LANG) && !field.endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase());
     }
 
     /**
@@ -687,7 +719,9 @@ public class SolrTools {
         String facettifiedField = SearchHelper.facetifyField(field);
         filterQuery = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(facettifiedField), 1, false);
+                DataManager.getInstance()
+                        .getSearchIndex()
+                        .searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(facettifiedField), 1, false);
         if (qr != null) {
             FacetField facet = qr.getFacetField(facettifiedField);
             if (facet != null) {
@@ -774,6 +808,10 @@ public class SolrTools {
         return ret;
     }
 
+    /**
+     * 
+     * @return
+     */
     private static Document getSolrSchemaDocument() {
         try {
             NetTools.getWebContentGET(
@@ -824,14 +862,133 @@ public class SolrTools {
      * 
      * @param query
      * @return cleaned up query
-     * @should remove braces
+     * @should remove brace pairs
      * @should keep join parameter
+     * @should keep single braces
      */
     public static String cleanUpQuery(String query) {
         if (StringUtils.isBlank(query)) {
             return query;
         }
 
-        return query.replaceAll("[{}]", "").replace("!join from=PI_TOPSTRUCT to=PI", "{!join from=PI_TOPSTRUCT to=PI}");
+        return query.replaceAll("\\{(.+)\\}", "$1").replace("!join from=PI_TOPSTRUCT to=PI", "{!join from=PI_TOPSTRUCT to=PI}");
     }
+
+    /**
+     * 
+     * @param fieldName
+     * @return
+     */
+    public static String getBaseFieldName(String fieldName) {
+        if (StringUtils.isNotBlank(fieldName)) {
+            return fieldName.replaceAll(SUFFIX_LANGUAGE_REGEX, "");
+        }
+        return fieldName;
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @return
+     */
+    public static String getLanguage(String fieldName) {
+        if (StringUtils.isNotBlank(fieldName)) {
+            Matcher matcher = Pattern.compile(SUFFIX_LANGUAGE_REGEX).matcher(fieldName);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+            return null;
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @return
+     */
+    public static Locale getLocale(String fieldName) {
+        String language = getLanguage(fieldName);
+        if (StringUtils.isNotBlank(language)) {
+            return Locale.forLanguageTag(language.toLowerCase());
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param doc
+     * @param fieldNameFilter
+     * @return
+     */
+    public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Function<String, Boolean> fieldNameFilter) {
+        return getTranslatedMetadata(doc, new HashMap<>(), null, fieldNameFilter);
+    }
+
+    /**
+     * 
+     * @param doc
+     * @param metadata
+     * @param documentLocale
+     * @param fieldNameFilter
+     * @return
+     */
+    public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata,
+            Locale documentLocale, Function<String, Boolean> fieldNameFilter) {
+        List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).collect(Collectors.toList());
+        String docType = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
+
+        for (String fieldName : fieldNames) {
+            List<String> values = SolrTools.getMetadataValues(doc, fieldName);
+            String baseFieldName = fieldName;
+            Locale locale = documentLocale;
+            if (SolrTools.isLanguageCodedField(fieldName)) {
+                baseFieldName = SolrTools.getBaseFieldName(fieldName);
+                locale = SolrTools.getLocale(fieldName);
+            } else if ("MD_VALUE".equals(fieldName)) {
+                baseFieldName = docType;
+                metadata.put("METADATA_TYPE", Collections.singletonList(ViewerResourceBundle.getTranslations(baseFieldName, true)));
+            }
+            for (String strValue : values) {
+                int valueIndex = values.indexOf(strValue);
+                List<IMetadataValue> existingValues = metadata.get(baseFieldName);
+                IMetadataValue existingValue = existingValues == null || existingValues.size() <= valueIndex ? null : existingValues.get(valueIndex);
+                if (existingValue == null) {
+                    if (locale == null) {
+                        IMetadataValue value =
+                                new MultiLanguageMetadataValue(new HashMap<>(Map.of(MultiLanguageMetadataValue.DEFAULT_LANGUAGE, strValue)));
+                        metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
+                    } else {
+                        IMetadataValue value = new MultiLanguageMetadataValue(new HashMap<>(Map.of(locale.getLanguage(), strValue)));
+                        metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
+                    }
+                } else {
+                    if (locale == null) {
+                        existingValue.setValue(strValue);
+                    } else {
+                        existingValue.setValue(strValue, locale);
+                    }
+                }
+            }
+        }
+        if (StringUtils.isNotBlank(docType) && metadata.containsKey(docType)) {
+            metadata.put("MD_VALUE", metadata.get(docType));
+        }
+        return metadata;
+    }
+
+    /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static final String getReferenceId(SolrDocument doc) {
+        String refId = getSingleFieldStringValue(doc, "MD_REFID");
+        if (StringUtils.isBlank(refId)) {
+            return getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+        }
+
+        return refId;
+    }
+
 }

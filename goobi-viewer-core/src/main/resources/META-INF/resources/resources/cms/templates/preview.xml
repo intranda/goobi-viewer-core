@@ -24,7 +24,7 @@
 			</jsfComponent>
 		</item>
 		<item id="image">
-			<label>cms_component__image_label</label>
+			<label>cms_component__image__label</label>
 			<description>cms_component__image_desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</className>
 			<jsfComponent>

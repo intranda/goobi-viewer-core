@@ -64,40 +64,40 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.mirador.init: config - ', config );
             }
             
-            $.extend( true, _defaults, config );
-            if(!_defaults.manifestEndpoint) {
-            	_defaults.manifestEndpoint = _defaults.restEndpoint;
+            this.config = $.extend( true, {}, _defaults, config );
+            if(!this.config.manifestEndpoint) {
+            	this.config.manifestEndpoint = this.config.restEndpoint;
             }
             
-            var manifests = _getManifestsFromUrlQuery(_defaults);
+            var manifests = _getManifestsFromUrlQuery(this.config);
             
-            var translator = new viewerJS.Translator(_defaults.restEndpoint, "#{navigationHelper.localeString}");
+            var translator = new viewerJS.Translator(this.config.restEndpoint, "#{navigationHelper.localeString}");
             
             let miradorConfigPromise = null;
             if (manifests.length > 0) {
             	// URL identifiers
-                miradorConfigPromise = _getMiradorConfigForManifestUrls(manifests, _defaults);
+                miradorConfigPromise = _getMiradorConfigForManifestUrls(manifests, this.config);
             } else if ( _getBookmarkListId() != null ) {
             	// User bookmarks
-                miradorConfigPromise = _getUserMiradorObjects( _defaults.restEndpoint, _getBookmarkListId() )
+                miradorConfigPromise = _getUserMiradorObjects( this.config.restEndpoint, _getBookmarkListId() )
                 .then( response => response.json())
                 .then( json => json.members.filter(manifest => manifest["@type"] == "sc:Manifest" || manifest.type == "Manifest") )
                 //.then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
-                .then( members => _getMiradorConfigForManifestUrls(members, _defaults) );
+                .then( members => _getMiradorConfigForManifestUrls(members, this.config) );
             } else if ( _getBookmarkListKey() != null ) {
                 //public/shared bookmarks
-                miradorConfigPromise = _getSharedMiradorObjects( _defaults.restEndpoint, _getBookmarkListKey() )
+                miradorConfigPromise = _getSharedMiradorObjects( this.config.restEndpoint, _getBookmarkListKey() )
                 .then( response => response.json())
                 .then( json => json.members.filter(manifest => manifest["@type"] == "sc:Manifest" || manifest.type == "Manifest") )
 //                .then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
-                .then( ids => _getMiradorConfigForManifestUrls(ids, _defaults) );
+                .then( ids => _getMiradorConfigForManifestUrls(ids, this.config) );
             } else {
             	// Session mark list
-                miradorConfigPromise = _getMiradorSessionObjects( _defaults.restEndpoint )
+                miradorConfigPromise = _getMiradorSessionObjects( this.config.restEndpoint )
                 .then( response => response.json())
                 .then( json => json.members.filter(manifest => manifest["@type"] == "sc:Manifest" || manifest.type == "Manifest") )
                 //.then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
-                .then( ids => _getMiradorConfigForManifestUrls(ids, _defaults) );
+                .then( ids => _getMiradorConfigForManifestUrls(ids, this.config) );
             }
             
             if(miradorConfigPromise) {  
@@ -187,10 +187,10 @@ var viewerJS = ( function( viewer ) {
 	}
 
 	
-	function _getManifestsFromUrlQuery(_defaults) {
+	function _getManifestsFromUrlQuery(config) {
         var manifests = _getQueryVariable("manifest").split("$").filter(man => man.length > 0);
         var pis = _getQueryVariable("pi").split("$").filter(man => man.length > 0);
-        var piManifests = pis.map(pi => _defaults.manifestEndpoint + "records/" + pi + "/manifest/");
+        var piManifests = pis.map(pi => config.manifestEndpoint + "records/" + pi + "/manifest/");
         manifests = manifests.concat(piManifests);
         return manifests;
 	}
@@ -206,7 +206,7 @@ var viewerJS = ( function( viewer ) {
 	}
 	
 	   
-    function _getMiradorConfigForManifestUrls(manifests, _defaults) {
+    function _getMiradorConfigForManifestUrls(manifests, config) {
         var columns = Math.ceil(Math.sqrt(manifests.length));
         var rows = Math.ceil(manifests.length/columns);
         var miradorConfig = { 
@@ -218,7 +218,9 @@ var viewerJS = ( function( viewer ) {
                 }),
                 windows: manifests.map(man => {
                     var winObj = Object.assign({}, windowObject);
-                    if(man.sequences && man.sequences.length > 0 && man.sequences[0].startCanvas) {
+                    if(config.startPage) {
+						winObj.canvasIndex = config.startPage-1;
+					} else if(man.sequences && man.sequences.length > 0 && man.sequences[0].startCanvas) {
                     	let startId = man.sequences[0].startCanvas["@id"];
                     	let match = startId.match(/pages\/(\d+)\/canvas/);
                     	if(match && match.length > 1) {

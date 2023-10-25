@@ -29,12 +29,13 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
@@ -78,7 +79,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      */
     public EventElement(SolrDocument doc, Locale locale, boolean forSearchHit) throws IndexUnreachableException, PresentationException {
         type = (String) doc.getFieldValue(SolrConstants.EVENTTYPE);
-        logger.debug("new EventElement: {}", (type == null ? "(no type)" : type));
+        logger.trace("new EventElement: {}", (type == null ? "(no type)" : type));
 
         Collection<Object> eventDateValues = doc.getFieldValues(SolrConstants.EVENTDATE);
         if (eventDateValues != null && !eventDateValues.isEmpty()) {
@@ -127,7 +128,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
             if (sidebarMetadata.isEmpty()) {
                 // Use default if no elements are defined for the current event type
-                sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
+                sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(StringConstants.DEFAULT_NAME);
             }
             populateMetadata(sidebarMetadata, type, doc, locale);
         }
@@ -322,8 +323,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
-            List<Metadata> ret = Metadata.filterMetadata(metadata, adb.getSelectedRecordLanguage(), null);
-            return ret;
+            return Metadata.filterMetadata(metadata, adb.getSelectedRecordLanguage(), null);
         }
 
         return metadata;
@@ -377,4 +377,20 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         return searchHitMetadata;
     }
 
+    /**
+     * 
+     * @param locale
+     * @return searchHitMetadata minus any fields that don't match the given locale
+     */
+    public List<Metadata> getSearchHitListForLocale(Locale locale) {
+        return Metadata.filterMetadata(searchHitMetadata, locale != null ? locale.getLanguage() : null, null);
+    }
+
+    /**
+     * 
+     * @return searchHitMetadata minus any fields that don't match the current locale
+     */
+    public List<Metadata> getSearchHitMetadataForCurrentLocale() {
+        return getSearchHitListForLocale(BeanUtils.getLocale());
+    }
 }

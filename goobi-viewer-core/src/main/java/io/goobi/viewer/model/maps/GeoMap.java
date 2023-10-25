@@ -98,8 +98,6 @@ public class GeoMap implements Serializable {
 
     private static final String METADATA_TAG_TITLE = "Title";
     private static final String METADATA_TAG_DESCRIPTION = "Description";
-    private static final String DEFAULT_MARKER_NAME = "default";
-    private static final String POINT_LAT_LNG_PATTERN = "([\\d\\.]+)\\s*\\/\\s*([\\d\\.]+)";
 
     public enum GeoMapType {
         SOLR_QUERY,
@@ -126,6 +124,11 @@ public class GeoMap implements Serializable {
     @JsonSerialize(using = TranslationListSerializer.class)
     private Set<MapTranslation> translations = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @JoinColumn(name = "owner_geomap")
+    @PrivateOwned
+    private List<FeatureSet> featureSets = new ArrayList<>();
+
     @Column(name = "date_created", nullable = false)
     @JsonIgnore
     private LocalDateTime dateCreated;
@@ -134,34 +137,8 @@ public class GeoMap implements Serializable {
     @JsonIgnore
     private LocalDateTime dateUpdated;
 
-    @Column(name = "solr_query")
-    private String solrQuery = null;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "cms_geomap_features", joinColumns = @JoinColumn(name = "geomap_id"))
-    @Column(name = "features", columnDefinition = "LONGTEXT")
-    private List<String> features = new ArrayList<>();
-
-    @Column(name = "map_type")
-    private GeoMapType type = null;
-
     @Column(name = "initial_view")
-    private String initialView = "{" +
-            "\"zoom\": 5," +
-            "\"center\": [11.073397, -49.451993]" +
-            "}";
-
-    @Column(name = "marker")
-    private String marker = DEFAULT_MARKER_NAME;
-
-    /**
-     * SOLR-Field to create the marker title from if the features are generated from a SOLR query
-     */
-    @Column(name = "marker_title_field")
-    private String markerTitleField = "MD_VALUE";
-
-    @Transient
-    private String featuresAsString = null;
+    private String initialView = null;
 
     @Transient
     private boolean showPopover = true;
@@ -185,12 +162,8 @@ public class GeoMap implements Serializable {
         this.dateUpdated = blueprint.dateUpdated;
         this.id = blueprint.id;
         this.translations = blueprint.translations;//.stream().filter(t -> !t.isEmpty()).map(t -> new MapTranslation(t)).collect(Collectors.toSet());
-        this.type = blueprint.type;
-        this.features = blueprint.features;
+        this.featureSets = blueprint.featureSets.stream().map(FeatureSet::copy).collect(Collectors.toList());
         this.initialView = blueprint.initialView;
-        this.solrQuery = blueprint.solrQuery;
-        this.marker = blueprint.marker;
-        this.markerTitleField = blueprint.markerTitleField;
 
     }
 
@@ -319,189 +292,6 @@ public class GeoMap implements Serializable {
     }
 
     /**
-     * @return the type
-     */
-    public GeoMapType getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(GeoMapType type) {
-        this.type = type;
-        this.featuresAsString = null;
-    }
-
-    /**
-     * @return the features
-     */
-    public List<String> getFeatures() {
-        return features;
-    }
-
-    /**
-     * @param features the features to set
-     */
-    public void setFeatures(List<String> features) {
-        this.features = features;
-        this.featuresAsString = null;
-    }
-
-    public String getFeaturesAsString() throws PresentationException, IndexUnreachableException {
-        if (this.featuresAsString == null) {
-            this.featuresAsString = createFeaturesAsString();
-        }
-        return this.featuresAsString;
-    }
-
-    public void setFeaturesAsString(String features) {
-        if (GeoMapType.MANUAL.equals(getType())) {
-            JSONArray array = new JSONArray(features);
-            this.features = new ArrayList<>();
-            for (Object object : array) {
-                this.features.add(object.toString());
-            }
-        } else {
-            this.features = new ArrayList<>();
-        }
-        this.featuresAsString = null;
-    }
-
-    private String createFeaturesAsString() throws PresentationException, IndexUnreachableException {
-        if (getType() != null) {
-            switch (getType()) {
-                case MANUAL:
-                    String string = this.features.stream().collect(Collectors.joining(","));
-                    string = "[" + string + "]";
-                    return string;
-                case SOLR_QUERY:
-                    if (DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps()) {
-                        //No features required since they will be loaded dynamically with the heatmap
-                        return "[]";
-                    }
-                    Collection<GeoMapFeature> featuresFromSolr =
-                            getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), getMarkerTitleField());
-                    String ret = featuresFromSolr.stream()
-                            .distinct()
-                            .map(GeoMapFeature::getJsonObject)
-                            .map(Object::toString)
-                            .collect(Collectors.joining(","));
-
-                    return "[" + ret + "]";
-                default:
-                    return "[]";
-            }
-
-        }
-
-        return "[]";
-    }
-
-    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, String markerTitleField)
-            throws PresentationException, IndexUnreachableException {
-        List<SolrDocument> docs;
-        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
-        List<String> fieldList = new ArrayList<>(coordinateFields);
-        fieldList.add(markerTitleField);
-        String coordinateFieldsQuery = coordinateFields.stream().map(s -> s + ":*").collect(Collectors.joining(" "));
-        String filterQuery = SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true);
-
-        String finalQuery = String.format("+(%s) +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
-        docs = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null, fieldList, filterQueries, null).getResults();
-        List<GeoMapFeature> features = new ArrayList<>();
-        for (SolrDocument doc : docs) {
-            for (String field : coordinateFields) {
-                Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, field, markerTitleField, null);
-                features.addAll(tempFeatures);
-            }
-        }
-
-        Map<GeoMapFeature, List<GeoMapFeature>> featureMap = features
-                .stream()
-                .collect(Collectors.groupingBy(Function.identity()));
-
-        features = featureMap.entrySet()
-                .stream()
-                .map(e -> {
-                    GeoMapFeature f = e.getKey();
-                    f.setCount(e.getValue().size());
-                    return f;
-                })
-                .collect(Collectors.toList());
-
-        return features;
-    }
-
-    /**
-     * @param doc
-     * @param docFeatures
-     */
-    public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField, String titleField, String descriptionField) {
-        String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
-        String desc = StringUtils.isBlank(descriptionField) ? null : SolrTools.getSingleFieldStringValue(doc, descriptionField);
-        List<GeoMapFeature> docFeatures = new ArrayList<>();
-        List<String> points = SolrTools.getMetadataValues(doc, metadataField);
-        for (String point : points) {
-            try {
-                if (point.matches(POINT_LAT_LNG_PATTERN)) { //NOSONAR  no catastrophic backtracking detected
-                    GeoMapFeature feature = new GeoMapFeature();
-                    feature.setTitle(title);
-                    feature.setDescription(desc);
-
-                    Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
-                    matcher.find();
-                    Double lat = Double.valueOf(matcher.group(1));
-                    Double lng = Double.valueOf(matcher.group(2));
-
-                    JSONObject json = new JSONObject();
-                    json.put("type", "Feature");
-                    JSONObject geom = new JSONObject();
-                    geom.put("type", "Point");
-                    geom.put("coordinates", new double[] { lng, lat });
-                    json.put("geometry", geom);
-                    feature.setJson(json.toString());
-                    docFeatures.add(feature);
-                } else {
-                    docFeatures.addAll(createFeaturesFromJson(title, desc, point));
-                }
-            } catch (JSONException | NumberFormatException e) {
-                logger.error("Encountered non-json feature: {}", point);
-            }
-        }
-        return docFeatures;
-    }
-
-    private static List<GeoMapFeature> createFeaturesFromJson(String title, String desc, String point) {
-        List<GeoMapFeature> features = new ArrayList<>();
-        JSONObject json = new JSONObject(point);
-        String type = json.getString("type");
-        if ("FeatureCollection".equalsIgnoreCase(type)) {
-            JSONArray array = json.getJSONArray("features");
-            if (array != null) {
-                array.forEach(f -> {
-                    if (f instanceof JSONObject) {
-                        JSONObject jsonObj = (JSONObject) f;
-                        String jsonString = jsonObj.toString();
-                        GeoMapFeature feature = new GeoMapFeature(jsonString);
-                        feature.setTitle(title);
-                        feature.setDescription(desc);
-                        if (!features.contains(feature)) {
-                            features.add(feature);
-                        }
-                    }
-                });
-            }
-        } else if ("Feature".equalsIgnoreCase(type)) {
-            GeoMapFeature feature = new GeoMapFeature(json.toString());
-            feature.setTitle(title);
-            feature.setDescription(desc);
-            features.add(feature);
-        }
-        return features;
-    }
-
-    /**
      * @param initialView the initialView to set
      */
     public void setInitialView(String initialView) {
@@ -509,33 +299,14 @@ public class GeoMap implements Serializable {
     }
 
     /**
-     * @return the initialView
+     * @return the initialView or the default view from the config if no initial view has been set
      */
     public String getInitialView() {
-        return initialView;
-    }
-
-    /**
-     * @return the solrQuery
-     */
-    public String getSolrQuery() {
-        return solrQuery;
-    }
-
-    public String getSolrQueryEncoded() {
-        return StringTools.encodeUrl(getSolrQuery());
-    }
-
-    /**
-     * @param solrQuery the solrQuery to set
-     */
-    public void setSolrQuery(String solrQuery) {
-        this.solrQuery = solrQuery;
-        this.featuresAsString = null;
-    }
-
-    public boolean hasSolrQuery() {
-        return GeoMapType.SOLR_QUERY.equals(this.getType()) && StringUtils.isNotBlank(this.solrQuery);
+        if (StringUtils.isBlank(initialView)) {
+            return DataManager.getInstance().getConfiguration().getGeomapDefaultView().getGeoJson();
+        } else {
+            return initialView;
+        }
     }
 
     /**
@@ -567,44 +338,6 @@ public class GeoMap implements Serializable {
     }
 
     /**
-     * @return the marker
-     */
-    public String getMarker() {
-        return Optional.ofNullable(this.marker).orElse(DEFAULT_MARKER_NAME);
-    }
-
-    /**
-     * @param marker the marker to set
-     */
-    public void setMarker(String marker) {
-        this.marker = marker;
-    }
-
-    public String getMarkerAsJSON() throws JsonProcessingException {
-        if (StringUtils.isNotBlank(marker)) {
-            GeoMapMarker m = DataManager.getInstance().getConfiguration().getGeoMapMarker(this.marker);
-            if (m != null) {
-                return m.toJSONString();
-            }
-        }
-        return "{}";
-    }
-
-    /**
-     * @return the markerTitleField
-     */
-    public String getMarkerTitleField() {
-        return markerTitleField;
-    }
-
-    /**
-     * @param markerTitleField the markerTitleField to set
-     */
-    public void setMarkerTitleField(String markerTitleField) {
-        this.markerTitleField = markerTitleField;
-    }
-
-    /**
      * @param showPopover the showPopover to set
      */
     public void setShowPopover(boolean showPopover) {
@@ -621,9 +354,6 @@ public class GeoMap implements Serializable {
     /**
      * Resets the cached feature string.
      */
-    public void updateFeatures() {
-        this.featuresAsString = null;
-    }
 
     public IMetadataValue getTitles() {
         synchronized (lockTranslations) {
@@ -645,4 +375,27 @@ public class GeoMap implements Serializable {
         }
     }
 
+    public List<FeatureSet> getFeatureSets() {
+        return featureSets;
+    }
+
+    public void setFeatureSets(List<FeatureSet> featureSets) {
+        this.featureSets = new ArrayList<>(featureSets);
+    }
+
+    public void addFeatureSet(FeatureSet set) {
+        this.featureSets.add(set);
+    }
+
+    public void removeFeatureSet(FeatureSet set) {
+        this.featureSets.remove(set);
+    }
+
+    public boolean hasFeatures() {
+        return this.featureSets.stream().anyMatch(FeatureSet::hasFeatures);
+    }
+
+    public boolean shouldOpenPopoversOnHover() {
+        return this.featureSets.stream().allMatch(f -> f.isQueryResultSet());
+    }
 }
