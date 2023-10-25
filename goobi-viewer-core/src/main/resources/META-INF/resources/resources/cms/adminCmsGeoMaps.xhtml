@@ -81,6 +81,7 @@
                                             </ui:fragment>
                                         </div>
                                         <div class="entity_list__item__controls">
+                                        <div class="admin__boxed-entry-actions">
                                             <h:outputLink styleClass="admin__boxed-entry-actions-edit" value="#{geoMapBean.getEditMapUrl(map)}">#{msg.edit}</h:outputLink>
                                             <ui:fragment rendered="#{!geoMapBean.isInUse(map)}">
                                                 <button
@@ -92,6 +93,7 @@
                                                     #{msg.delete}
                                                 </button>
                                             </ui:fragment>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="entity_list__item__area area__right">

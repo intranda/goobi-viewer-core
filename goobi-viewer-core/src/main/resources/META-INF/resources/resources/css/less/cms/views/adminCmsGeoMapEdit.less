@@ -86,6 +86,7 @@
     &__entity_list {
       .entity_list {
         &__item {
+	     position: relative;
           border: 1px solid #ddd;
           background: white;
           display: flex;
@@ -100,9 +101,15 @@
             flex-grow: 1;
             width: 100%;
             padding: 2rem;
+			padding-bottom: 3rem;
             &.area__right {
               padding: 0px;
             }
+			&:hover {
+				.admin__boxed-entry-actions {
+					opacity: 1;
+				}
+			}
           }
           &__header {
             display: flex;
@@ -119,11 +126,11 @@
           }
           &__controls {
             display: flex;
-            justify-content: flex-end;
-            align-items: flex-end;
+            justify-content: flex-start;
+            align-items: center;
             visibility: hidden;
 		      a, button {
-		        margin-left: 10px;
+		        // margin-left: 10px;
 		      }
           }
           &:hover {
