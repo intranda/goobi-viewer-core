@@ -4,6 +4,7 @@
    ==============================================================*/
 /* SEARCH LIST GRID */
 /* BLOCK */
+
 .search-list {
     /* ELEMENT */
     /* HITS */
@@ -13,8 +14,11 @@
 				display: grid;
 			    grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
 			    grid-gap: 10px;
-			    grid-auto-rows: minmax(300px, auto);
-			    grid-auto-flow: dense;				
+			   // grid-auto-rows: minmax(300px, auto);
+			   // grid-auto-flow: dense;
+			 	h2:nth-child(n + 2 of .search-list__hit-result-group-heading) {
+					margin-top: 15px;
+				}
 			}
 			.search-list__hit {
 				margin: 0;
@@ -82,6 +86,12 @@
 			.search-list__hit-content {
 				.mx-hidden;
 			}
+			// RESULT GROUP STYLES
+			.search-list__hit-result-group-heading,
+			.search-list__expand-group-link {
+				grid-column: 1 / -1;
+			}
+
 			// EXTRA METADATA LIST FOR GRID STYLING
 			.search-list__hit-type.-extraMetadataForGrid {
 				display: block !important;
