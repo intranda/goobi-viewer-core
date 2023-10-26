@@ -81,6 +81,11 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
         return BACKEND_COMPONENT_NAME;
     }
 
+    @Override
+    public String getTranslation() {
+        return getText().getTextOrDefault();
+    }
+    
     public TranslatedText getText() {
         return text;
     }
@@ -164,4 +169,5 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
     public boolean isEmpty() {
         return Optional.ofNullable(text).map(TranslatedText::isEmpty).orElse(true);
     }
+
 }

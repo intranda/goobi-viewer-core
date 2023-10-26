@@ -1460,7 +1460,21 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
+    
+    public List<CMSContentItem> getPreviewItems(String itemId) {
+        return this.getComponents()
+                .stream()
+                .filter(CMSComponent::isPreview)
+                .map(CMSComponent::getContentItems)
+                .flatMap(List::stream)
+                .filter(item -> Objects.equals(item.getItemId(), itemId))
+                .collect(Collectors.toList());
+    }
 
+    public CMSContentItem getPreviewItem(String itemId) {
+        return getPreviewItems(itemId).stream().findFirst().orElse(null);
+    }
+    
     public List<CMSComponent> getPreviewComponents() {
         return this.getComponents()
                 .stream()
