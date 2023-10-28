@@ -81,6 +81,11 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
         return BACKEND_COMPONENT_NAME;
     }
 
+    @Override
+    public String getTranslation() {
+        return getText().getTextOrDefault();
+    }
+    
     public TranslatedText getText() {
         return text;
     }

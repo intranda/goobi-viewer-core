@@ -21,12 +21,20 @@
  */
 package io.goobi.viewer.model.cms.pages.content;
 
+import java.util.Locale;
+
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 public interface TranslatableCMSContent extends IPolyglott {
 
     public TranslatedText getText();
+    
+    public String getTranslation();
+    
+    public default String getTranslation(Locale locale) {
+        return getText().getTextOrDefault(locale, IPolyglott.getDefaultLocale());
+    }
 
     public void setText(TranslatedText text);
 

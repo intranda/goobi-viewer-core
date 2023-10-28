@@ -101,6 +101,8 @@ import io.goobi.viewer.solr.SolrConstants;
 @SessionScoped
 public class NavigationHelper implements Serializable {
 
+    private static final int MAX_HTML_ID_LENGTH = 100;
+
     private static final long serialVersionUID = 4171362984701032679L;
 
     private static final Logger logger = LogManager.getLogger(NavigationHelper.class);
@@ -2033,4 +2035,8 @@ public class NavigationHelper implements Serializable {
         return IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
     }
 
+    public String getAsId(String text) {
+        return StringTools.convertToSingleWord(text, MAX_HTML_ID_LENGTH, "_");
+    }
+    
 }

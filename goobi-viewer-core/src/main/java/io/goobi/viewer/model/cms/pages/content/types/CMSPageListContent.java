@@ -62,7 +62,7 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "cms_content_pagelist")
 @DiscriminatorValue("pagelist")
-public class CMSPageListContent extends CMSContent implements CMSCategoryHolder, PagedCMSContent {
+public class CMSPageListContent extends CMSContent implements CMSCategoryHolder {
 
     private static final String COMPONENT_NAME = "pagelist";
     private static final int DEFAULT_ITEMS_PER_VIEW = 10;
@@ -212,7 +212,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder,
      * @throws DAOException
      */
     private List<CMSPage> loadNestedPages(boolean random, boolean paged, CMSTemplateManager templateManager) throws DAOException {
-        int pageNo = getCurrentListPage();
+        int pageNo = 1;
         int size = getItemsPerView();
         int offset = (pageNo - 1) * size;
         AtomicInteger totalPages = new AtomicInteger(0);

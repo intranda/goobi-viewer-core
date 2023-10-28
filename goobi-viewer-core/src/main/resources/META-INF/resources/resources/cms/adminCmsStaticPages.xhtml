@@ -54,7 +54,7 @@
                                 <div class="col-6 d-flex align-items-center" role="gridcell">
                                     <div class="custom-control custom-control--select">
                                         <h:selectOneMenu converter="cmsPageConverter" value="#{page.cmsPage}">
-                                            <f:selectItem itemValue="" itemLabel="#{msg.none}" />
+                                            <f:selectItem itemValue="#{null}" itemLabel="#{msg.none}" />
                                             <f:selectItems
                                                 value="#{cmsBean.getAvailableCmsPages(page)}"
                                                 var="availablePage" itemValue="#{availablePage}"
