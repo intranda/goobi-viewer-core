@@ -155,7 +155,7 @@
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
-		<activemq.version>5.18.2</activemq.version>
+		<activemq.version>5.18.3</activemq.version>
 		<spring.version>5.3.30</spring.version>
 		<reflections.version>0.10.2</reflections.version>
 		<quartz.version>2.3.2</quartz.version>
