@@ -375,6 +375,12 @@ public class Search implements Serializable {
         String finalQuery =
                 SearchHelper.buildFinalQuery(currentQuery + subElementQueryFilterSuffix, true, aggregationType);
         logger.debug("Final main query: {}", finalQuery);
+
+        // Search without active facets to determine range facets min/max
+        populateRanges(finalQuery, facets, resultGroups.size() == 1 ? resultGroups.get(0) : null, params);
+        // Search without active facets to populate unfiltered facets
+        populateUnfilteredFacets(finalQuery, facets, resultGroups.size() == 1 ? resultGroups.get(0) : null, params, locale);
+
         logger.trace("result groups: {}", this.resultGroups.size());
         for (SearchResultGroup resultGroup : this.resultGroups) {
             searchResultGroup(resultGroup, currentQuery, finalQuery, subElementQueryFilterSuffix, activeFacetFilterQueries, params, searchTerms,
@@ -440,11 +446,6 @@ public class Search implements Serializable {
         if (StringUtils.isNotEmpty(resultGroup.getQuery())) {
             allFilterQueries.add(resultGroup.getQuery());
         }
-
-        // Search without active facets to determine range facets min/max
-        populateRanges(finalQuery, facets, resultGroup, params);
-        // Search without active facets to populate unfiltered facets
-        populateUnfilteredFacets(finalQuery, facets, resultGroup, params, locale);
 
         // Extra search for child element facet values
         if (!facets.getConfiguredSubelementFacetFields().isEmpty()) {

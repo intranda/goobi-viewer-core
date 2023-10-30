@@ -802,5 +802,16 @@ public class StringTools {
             return v1.compareTo(v2);
         }
     }
+    
+    public static String convertToSingleWord(String text, int maxLength, String whitespaceReplacement) {
+        String replaced = text
+                .replaceAll("\\s", whitespaceReplacement)
+                .replaceAll("[^a-zA-Z0-9" + whitespaceReplacement + "]", "");
+        if(replaced.length() > maxLength) {            
+            return replaced.substring(0, maxLength);
+        } else {
+            return replaced;
+        }
+    }
 
 }
