@@ -13,17 +13,18 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
-    <ui:param name="showSortingOptions" value="#{showSortingOptions != null ? showSortingOptions : true}"></ui:param>
+    <ui:param name="showOptions" value="#{showOptions != null ? showOptions : true}"></ui:param>
+    <ui:param name="showSorting" value="#{showSorting != null ? showSorting : true}"></ui:param>
     <ui:param name="displayHitsPerPage" value="#{displayHitsPerPage != null ? displayHitsPerPage : true}"></ui:param>
 	<ui:param name="listStyle" value="#{listStyle != null ? listStyle : ''}"></ui:param>
 	<ui:param name="groupPreviewMode" value="#{groupPreviewMode != null ? groupPreviewMode : searchBean.currentSearch.groupPreviewMode}"></ui:param>
     
     <!-- THIS INCLUDE MUST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
- 
+    
     <!-- SEARCH LIST HITS --> 
     <div class="search-list__hits #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : 'noClass'}">
         <!-- SEARCH LIST SORTING -->
-        <h:panelGroup rendered="#{!groupPreviewMode and showSortingOptions and search.hitsCount > 1}">
+        <h:panelGroup rendered="#{!groupPreviewMode and showOptions and search.hitsCount > 1}">
         	<h2 class="-sr-only">#{msg.searchHitNavigation}:</h2>
             <div class="search-list__nav-helper-wrapper">
             	<ui:fragment rendered="#{displayHitsPerPage}">
@@ -48,6 +49,7 @@
                     </div>
                  </ui:fragment>
 
+				<ui:fragment rendered="#{showSorting}">
                     <div class="search-list__nav-helper-item" >
                         <div class="search-list__nav-helper-label">
                             <label for="sortSelect">#{msg.sortBy}:</label>
@@ -56,6 +58,7 @@
                         	<!-- The onkeypress prevents the command button from being triggered accidentally by pressing enter. It should only 
                         	be executed when selecting a option within the dropdown menu -->
                             <h:form prependId="false" onkeypress="if( event.keyCode == 13){event.keyCode=0;}">
+                            
 	                            <h:selectOneMenu value="#{searchBean.searchSortingOption}" id="sortSelect"
 	                                converter="searchSortingOptionConverter" pt:onchange="$('[data-execute=\'search\']').click()">
 	                            	<f:selectItems value="#{searchBean.getSearchSortingOptions(navigationHelper.localeString)}"
@@ -65,10 +68,11 @@
 	                            </h:selectOneMenu>
 <!-- 	                            <h:commandButton styleClass="d-none" id="executeSort" action="pretty:newSearch5"></h:commandButton> -->
 	                            <h:commandButton styleClass="d-none" pt:data-execute="search" action="#{search.changeSorting()}"></h:commandButton>
-	                            
+	                            	                              
                             </h:form>
                         </div>
                     </div>
+				</ui:fragment>
                     
 			        <!-- PAGINATOR -->
 			        <viewerComponent:inputFieldPaginator 

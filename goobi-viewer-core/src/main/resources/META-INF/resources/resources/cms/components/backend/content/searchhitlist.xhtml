@@ -1,4 +1,4 @@
-<ui:composition xmlns:c="http://java.sun.com/jsp/jstl/core"
+  <ui:composition xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -43,7 +43,6 @@
 				</h:panelGroup>
 			</div>
 		</div>
-
 		<!-- SOLR SORT FIELDS -->
 			<div class="admin__content-component-input-group">
 				<div class="admin__content-component-input-label">
@@ -51,8 +50,9 @@
 				</div>
 				<div class="admin__content-component-input-field">
 					<div class="custom-control custom-control--select">
-						<h:selectOneMenu id="solrSortFields" styleClass="form-control"
+						<h:selectOneMenu id="solrSortFields" styleClass="form-control -hide-disabled-options"
 							value="#{cc.attrs.contentItem.content.sortField}">
+							<f:selectItem itemDisabled="#{!cc.attrs.contentItem.owningComponent.getBooleanAttributeValue('showOptions', false)}" itemValue="" itemLabel="#{msg.option__use_default_sorting_selection}" />
 							<c:forEach var="field" items="#{cmsBean.possibleSortFields}">
 							    <c:choose>
                                     <c:when test="#{field eq 'RELEVANCE'}">

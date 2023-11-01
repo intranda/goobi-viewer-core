@@ -249,6 +249,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
             Search s =
                     new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups);
+            
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(getSortFieldForLanguage(locale.getLanguage()));
                 searchBean.setSortString(getSortFieldForLanguage(locale.getLanguage()));
