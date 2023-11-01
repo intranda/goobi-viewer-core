@@ -115,8 +115,8 @@
                                                     <dt class="col-sm-4">#{msg.admin__license_overriding__licenses_overriding_this}:</dt>
                                                     <dd class="col-sm-8">
                                                         <ui:repeat var="oLicenseType" value="#{licenseType.licenseTypesOverridingThis}">
-                                                            <a class="admin__licenses-override-link" href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{oLicenseType.id}/"
-                                                                class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{oLicenseType.name}">
+                                                            <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{oLicenseType.id}/"
+                                                                class="admin__boxed-entry-actions-edit admin__licenses-override-link" aria-label="#{msg.edit}: #{oLicenseType.name}">
                                                                 #{oLicenseType.name}
                                                              </a> 
                                                         </ui:repeat>
