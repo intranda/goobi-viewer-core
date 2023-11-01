@@ -37,8 +37,9 @@
 
 					<div class="search-list">
                         <ui:include src="/resources/includes/search/searchHitList.xhtml">
-                        	<ui:param name="searchParam" value="#{cc.attrs.component.getContentItem('queryList').content.functionality}"/>
-                            <ui:param name="showSortingOptions" value="true"/>
+							<ui:param name="searchParam" value="#{sessionBean.get('cmsSearch')}"></ui:param>
+                            <ui:param name="showOptions" value="#{false}"></ui:param>
+							<ui:param name="groupPreviewMode" value="#{false}"/>
                         </ui:include>
                     </div>
                 </div>
