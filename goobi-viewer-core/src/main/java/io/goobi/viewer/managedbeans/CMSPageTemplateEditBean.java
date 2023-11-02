@@ -139,9 +139,7 @@ public class CMSPageTemplateEditBean implements Serializable {
 
     public List<SelectItem> getAvailableComponents(CMSPageTemplate template) {
         Stream<CMSComponent> stream = this.templateManager.getContentManager().getComponents().stream();
-        if (template != null && template.isContainsPagedComponents()) {
-            stream = stream.filter(c -> !c.isPaged());
-        }
+        boolean disablePagedComponents = template != null && template.isContainsPagedComponents();
         Locale locale = BeanUtils.getLocale();
         List<CMSComponent> components = stream
                 .sorted((c1, c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale),
@@ -151,7 +149,7 @@ public class CMSPageTemplateEditBean implements Serializable {
         Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components,
                 component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
         return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, CMSComponent::getTemplateFilename,
-                c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale));
+                c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale), c -> (disablePagedComponents && c.isPaged()));
 
     }
 
