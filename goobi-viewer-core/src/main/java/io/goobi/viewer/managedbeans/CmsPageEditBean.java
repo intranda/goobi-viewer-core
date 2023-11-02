@@ -437,9 +437,7 @@ public class CmsPageEditBean implements Serializable {
 
     public List<SelectItem> getAvailableComponents(CMSPage page) {
         Stream<CMSComponent> stream = templateManager.getContentManager().getComponents().stream();
-        if (page != null && page.isContainsPagedComponents()) {
-            stream = stream.filter(c -> !c.isPaged());
-        }
+        boolean hidePagedComponents = page != null && page.isContainsPagedComponents();
         Locale locale = BeanUtils.getLocale();
         List<CMSComponent> components = stream
                 .sorted((c1, c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale),
@@ -448,7 +446,7 @@ public class CmsPageEditBean implements Serializable {
         Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components,
                 component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
         return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, CMSComponent::getTemplateFilename,
-                c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale));
+                c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale), c -> (hidePagedComponents && c.isPaged()) );
     }
 
     /**

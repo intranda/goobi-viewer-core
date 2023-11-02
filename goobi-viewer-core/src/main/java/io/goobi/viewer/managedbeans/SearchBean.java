@@ -161,8 +161,6 @@ public class SearchBean implements SearchInterface, Serializable {
     String searchStringInternal = "";
     /** User-entered search query that is displayed in the search field after the search. */
     private String searchString = "";
-    /** Optional custom filter query. */
-    private String customFilterQuery = null;
     /** Individual terms extracted from the user query (used for highlighting). */
     private Map<String, Set<String>> searchTerms = new HashMap<>();
 
@@ -267,8 +265,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
-    public String search(String subtheme) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return search();
+    public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        return search("");
     }
 
     /**
@@ -280,13 +278,13 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public String search(String filterQuery) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("search");
         if (breadcrumbBean != null) {
             breadcrumbBean.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getActiveFacetString()));
         }
         resetSearchResults();
-        executeSearch();
+        executeSearch(filterQuery);
 
         return "";
     }
@@ -461,7 +459,6 @@ public class SearchBean implements SearchInterface, Serializable {
         resetSearchResults();
         resetSearchParameters(true, true);
         searchInCurrentItemString = null;
-        customFilterQuery = null;
         proximitySearchDistance = 0;
     }
 
@@ -836,7 +833,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("hitsPerPageListener");
         executeSearch();
     }
-
+    
     /**
      * <p>
      * executeSearch.
@@ -848,6 +845,20 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        executeSearch("");
+    }
+
+    /**
+     * <p>
+     * executeSearch.
+     * </p>
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public void executeSearch(String filterQuery) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
@@ -881,7 +892,7 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setPage(currentPage);
         currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         currentSearch.setFacetString(facets.getActiveFacetString());
-        currentSearch.setCustomFilterQuery(customFilterQuery);
+        currentSearch.setCustomFilterQuery(filterQuery);
         currentSearch.setProximitySearchDistance(proximitySearchDistance);
 
         // When searching in MONTHDAY, add a term so that an expand query is created
@@ -1418,20 +1429,6 @@ public class SearchBean implements SearchInterface, Serializable {
         searchString = "";
     }
 
-    /**
-     * @return the customFilterQuery
-     */
-    public String getCustomFilterQuery() {
-        return customFilterQuery;
-    }
-
-    /**
-     * @param customFilterQuery the customFilterQuery to set
-     */
-    public void setCustomFilterQuery(String customFilterQuery) {
-        this.customFilterQuery = customFilterQuery;
-    }
-
     /** {@inheritDoc} */
     @Override
     public void setSortString(String sortString) {
@@ -1879,8 +1876,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
         // Add customFilterQuery to filter queries so that CMS filter queries are also applied
-        if (StringUtils.isNotBlank(customFilterQuery)) {
-            filterQueries.add(customFilterQuery);
+        if (StringUtils.isNotBlank(currentSearch.getCustomFilterQuery())) {
+            filterQueries.add(currentSearch.getCustomFilterQuery());
         }
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(), filterQueries,
@@ -1912,8 +1909,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
         // Add customFilterQuery to filter queries so that CMS filter queries are also applied
-        if (StringUtils.isNotBlank(customFilterQuery)) {
-            filterQueries.add(customFilterQuery);
+        if (StringUtils.isNotBlank(currentSearch.getCustomFilterQuery())) {
+            filterQueries.add(currentSearch.getCustomFilterQuery());
         }
         if (currentHitIndex > 0) {
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(), filterQueries,

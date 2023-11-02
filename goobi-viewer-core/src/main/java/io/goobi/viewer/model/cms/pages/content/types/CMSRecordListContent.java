@@ -67,7 +67,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     @Column(name = "solr_query")
     private String solrQuery = "";
     @Column(name = "sort_field", length = 40)
-    private String sortField = "";
+    private String sortField = "RELEVANCE";
     @Column(name = "grouping_field", length = 40)
     private String groupingField = "";
     @Column(name = "result_group", columnDefinition = "VARCHAR(40)")

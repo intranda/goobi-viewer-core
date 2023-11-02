@@ -28,5 +28,10 @@
 		<value label="Hide on desktop">hideDesktop</value>
 		<value label="Hide on mobile">hideMobile</value>
 	</attribute>
+	<attribute name="listStyle" type="toggle">
+		<value label="Style: details">details</value>
+		<value label="Style: grid">grid</value>
+		<value label="Style: list">list-view</value>
+	</attribute>
 	
 </component>

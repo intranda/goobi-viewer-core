@@ -394,7 +394,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             fulltext = getFulltext(request, pi, childDoc);
                         } catch (AccessDeniedException e) {
                             acccessDeniedType = true;
-                        } catch (FileNotFoundException e) {
+                        } catch (PresentationException | FileNotFoundException e) {
                             fulltext = null;
                         }
                         // Skip page hits without a proper full-text

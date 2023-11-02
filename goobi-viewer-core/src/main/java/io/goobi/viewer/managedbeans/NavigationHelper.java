@@ -1332,7 +1332,7 @@ public class NavigationHelper implements Serializable {
     public String getPageUrl(PageType page) {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + page.getName();
     }
-
+    
     /**
      * <p>
      * getSearchUrl.
@@ -1342,13 +1342,23 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getSearchUrl(int activeSearchType) {
-        // logger.trace("getSearchUrl: {}", activeSearchType);
+        return getSearchUrl(activeSearchType, null);
+    }
+
+    /**
+     * <p>
+     * getSearchUrl.
+     * </p>
+     *
+     * @param activeSearchType a int.
+     * @return a {@link java.lang.String} object.
+     */
+    public String getSearchUrl(int activeSearchType, CMSPage cmsPage) {
 
         //If we are on a cms-page, return the cms page url
         try {
-            Optional<ViewerPath> oView = ViewHistory.getCurrentView(BeanUtils.getRequest());
-            if (oView.isPresent() && oView.get().isCmsPage() && oView.get().getCmsPage().hasSearchFunctionality()) {
-                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+", "/");
+            if (cmsPage != null && cmsPage.hasSearchFunctionality()) {
+                return StringTools.removeTrailingSlashes(cmsPage.getPageUrl());
             }
         } catch (Throwable e) {
             logger.error(e.toString(), e);

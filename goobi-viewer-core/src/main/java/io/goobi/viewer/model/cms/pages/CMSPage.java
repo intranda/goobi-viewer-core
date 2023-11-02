@@ -78,6 +78,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;

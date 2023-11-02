@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.cms.widgets.type;
 
+import io.goobi.viewer.model.cms.pages.CMSPage;
+
 /**
  * Types of sidebar widgets that contain individual configuration and must be created by a user
  *
@@ -84,5 +86,10 @@ public enum CustomWidgetType implements WidgetContentType {
     @Override
     public String getName() {
         return name();
+    }
+
+    @Override
+    public boolean isAllowedForPage(CMSPage page) {
+        return true;
     }
 }
