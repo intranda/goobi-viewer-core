@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.faces.model.SelectItem;
@@ -77,14 +78,14 @@ public class SelectItemBuilder {
      * @return
      */
     public static <T> List<SelectItem> getAsGroupedSelectItems(Map<String, List<T>> map, Function<T, Object> valueSupplier,
-            Function<T, String> labelSupplier, Function<T, String> descriptionSupplier) {
+            Function<T, String> labelSupplier, Function<T, String> descriptionSupplier, Predicate<T> disabledPredicate) {
         List<SelectItem> items = new ArrayList<>(map.size());
         for (Entry<String, List<T>> entry : map.entrySet()) {
             String groupName = entry.getKey();
             List<T> groupValues = entry.getValue();
             SelectItemGroup group = new SelectItemGroup(groupName);
             SelectItem[] groupItems = groupValues.stream()
-                    .map(value -> new SelectItem(valueSupplier.apply(value), labelSupplier.apply(value), descriptionSupplier.apply(value)))
+                    .map(value -> createSelectItem(valueSupplier, labelSupplier, descriptionSupplier, value, disabledPredicate))
                     .collect(Collectors.toList())
                     .toArray(new SelectItem[0]);
             group.setSelectItems(groupItems);
@@ -92,5 +93,12 @@ public class SelectItemBuilder {
         }
 
         return items;
+    }
+
+    public static <T> SelectItem createSelectItem(Function<T, Object> valueSupplier, Function<T, String> labelSupplier,
+            Function<T, String> descriptionSupplier, T value, Predicate<T> disabledPredicate) {
+        SelectItem item = new SelectItem(valueSupplier.apply(value), labelSupplier.apply(value), descriptionSupplier.apply(value));
+        item.setDisabled(disabledPredicate.test(value));
+        return item;
     }
 }
