@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.cms.widgets.type;
 
+import java.util.function.Predicate;
+
+import io.goobi.viewer.model.cms.pages.CMSPage;
+
 /**
  * Types of widgets that are always available for CMS pages and cannot be configured
  *
@@ -37,7 +41,7 @@ public enum DefaultWidgetType implements WidgetContentType {
      * Displays search facetting for a page with search functionality. Always displays the facet fields configured in viewer-config Also includes
      * chronology-facetting (by year) and geospatial facetting (on a map) which are displayed as independent widgets in the GUI
      */
-    WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "fa fa-list-ul", "widget_searchFacets.xhtml"),
+    WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "fa fa-list-ul", "widget_searchFacets.xhtml", CMSPage::hasSearchFunctionality),
     /**
      * Displays a search input field and link to advanced search
      */
@@ -53,12 +57,18 @@ public enum DefaultWidgetType implements WidgetContentType {
     private final String description;
     private final String filename;
     private final String iconClass;
+    private final Predicate<CMSPage> allowedForPage;
 
     private DefaultWidgetType(String label, String description, String iconClass, String filename) {
+        this(label, description, iconClass, filename, p -> true);
+    }
+    
+    private DefaultWidgetType(String label, String description, String iconClass, String filename, Predicate<CMSPage> allowedForPage) {
         this.label = label;
         this.description = description;
         this.filename = filename;
         this.iconClass = iconClass;
+        this.allowedForPage = allowedForPage;
     }
 
     @Override
@@ -86,5 +96,10 @@ public enum DefaultWidgetType implements WidgetContentType {
     @Override
     public String getName() {
         return name();
+    }
+
+    @Override
+    public boolean isAllowedForPage(CMSPage page) {
+        return this.allowedForPage.test(page);
     }
 }

@@ -266,6 +266,9 @@
 					opacity: 1;
 				}
 			}
+			&.-disabled {
+				opacity: 0.5;
+			}
 		}
 		&__widget-label {}
 		&__widget-item-delete-button {
@@ -336,6 +339,14 @@
 			}
 			&:hover {
 				background: #f1f2f3;
+			}
+			&.-disabled {
+				opacity: 0.5;
+				cursor: default;
+				label,
+				input {					
+					pointer-events: none;
+				}
 			}
 		}
 		&__add-widgets-button {

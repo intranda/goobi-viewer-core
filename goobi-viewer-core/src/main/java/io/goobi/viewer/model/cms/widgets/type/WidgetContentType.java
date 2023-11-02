@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.cms.widgets.type;
 
+import io.goobi.viewer.model.cms.pages.CMSPage;
+
 public interface WidgetContentType {
 
     public String getIconClass();
@@ -88,4 +90,6 @@ public interface WidgetContentType {
                 throw new IllegalArgumentException("Generation type for WidgetContentType " + type + " not known");
         }
     }
+    
+    public boolean isAllowedForPage(CMSPage page);
 }

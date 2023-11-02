@@ -11,6 +11,7 @@
 
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
+		<composite:attribute name="listStyle" required="false" default="default"/>
 	</composite:interface>
 
 	<composite:implementation>
@@ -34,18 +35,18 @@
 				<!-- SEARCH HEADER --> 
 				<ui:include src="/resources/includes/search/searchHeader.xhtml">
 					<ui:param name="search"
-						value="#{cc.attrs.component.getContentItem('search').content.search}" />
+						value="#{sessionBean.get('cmsSearch')}" />
 					<ui:param name="searchType" value="0"></ui:param>
 				</ui:include>
-<!--                	<h:commandButton id="submitSearch" type="submit" styleClass="btn btnfull" action="#{sessionBean.get('cmsSearch').searchSimple}" value="#{msg.search}"> -->
-<!--                    	<f:setPropertyActionListener target="#{sessionBean.get('cmsSearch').activeSearchType}" value="0" /> -->
-<!--                	</h:commandButton> -->
 
 				<!-- SEARCH LIST -->
+				<div>List style: #{cc.attrs.listStyle}</div>
 				<div class="search-list">
 					<ui:include src="/resources/includes/search/searchHitList.xhtml">
 						<ui:param name="searchParam"
 							value="#{cc.attrs.component.getContentItem('search').content.search}" />
+						<ui:param name="listStyle"
+							value="#{cc.attrs.listStyle}" />
 					</ui:include>
 				</div>
 
