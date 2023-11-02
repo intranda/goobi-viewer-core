@@ -30,7 +30,8 @@
 									<ui:repeat var="element" varStatus="status"
 										value="#{cc.attrs.page.sidebarElements}">
 
-										<div class="sidebar-editor__widget-item">
+										<div class="sidebar-editor__widget-item #{element.contentType.isAllowedForPage(page) ? '' : '-disabled'}" 
+										data-toggle="tooltip" title="#{element.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
 											<!-- MOVE ITEM UP OR DOWN -->
 											<div class="sidebar-editor__move-wrapper">
 
@@ -89,7 +90,9 @@
 
 									<ui:repeat var="widget" value="#{cmsPageEditBean.sidebarWidgets.keySet().stream().sorted().toList()}" varStatus="status">
 										<ui:fragment rendered="#{!cc.attrs.page.containsSidebarElement(widget)}">
-											<div class="sidebar-editor__choose-widget-item">
+
+											<div class="sidebar-editor__choose-widget-item #{widget.contentType.isAllowedForPage(page) ? '' : '-disabled'}"
+											data-toggle="tooltip" title="#{widget.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
 											  <input type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
 											  	<f:ajax event="change"></f:ajax>
 											  </input>

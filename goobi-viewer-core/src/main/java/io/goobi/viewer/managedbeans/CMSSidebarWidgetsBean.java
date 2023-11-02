@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,11 +60,22 @@ import io.goobi.viewer.model.maps.GeoMap;
 @RequestScoped
 public class CMSSidebarWidgetsBean implements Serializable {
 
+    private static final String SIDEBAR_ELEMENT_ID_PREFIX = "sidebar_widget_";
+
+    private static final String SIDEBAR_COMPONENT_ATTRIBUTE__GEOMAP = "geoMap";
+
+    private static final String SIDEBAR_COMPONENT_ATTRIBUTE__CMS_PAGE = "cmsPage";
+
+    private static final String SIDEBAR_COMPONENT_ATTRIBUTE__WIDGET = "widget";
+
+    private static final String SIDEBAR_COMPONENT_ATTRIBUTE__SIDEBAR_ELEMENT = "sidebarElement";
+    
     private transient HtmlPanelGroup sidebarGroup = null;
 
     private static final long serialVersionUID = -6039330925483238481L;
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarWidgetsBean.class);
+
 
     @Inject
     CmsBean cmsBean;
@@ -138,36 +150,42 @@ public class CMSSidebarWidgetsBean implements Serializable {
         DataManager.getInstance().getDao().deleteCustomWidget(id);
     }
 
-    public HtmlPanelGroup getSidebarGroup(List<CMSSidebarElement> elements) {
+    public HtmlPanelGroup getSidebarGroup(List<CMSSidebarElement> elements, CMSPage page) {
         if (elements != null && !elements.isEmpty()) {
             sidebarGroup = new HtmlPanelGroup();
             elements.sort((e1, e2) -> Integer.compare(e1.getOrder(), e2.getOrder()));
             for (CMSSidebarElement element : elements) {
-                loadWidgetComponent(element, sidebarGroup);
+                loadWidgetComponent(element, page, sidebarGroup);
             }
         }
         return sidebarGroup;
     }
 
     public HtmlPanelGroup getSidebarGroup() {
-        List<CMSSidebarElement> elements =
-                Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
-        return getSidebarGroup(new ArrayList<>(elements));
+        return Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(page -> {
+            List<CMSSidebarElement> elements = Optional.of(page).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
+            return getSidebarGroup(new ArrayList<>(elements), page);            
+        }).orElseGet(() -> getSidebarGroup(Collections.emptyList(), null));
     }
 
     public void setSidebarGroup(HtmlPanelGroup sidebarGroup) {
         this.sidebarGroup = sidebarGroup;
     }
 
-    private static void loadWidgetComponent(CMSSidebarElement component, HtmlPanelGroup parent) {
+    private static void loadWidgetComponent(CMSSidebarElement component, CMSPage page, HtmlPanelGroup parent) {
         DynamicContentBuilder builder = new DynamicContentBuilder();
         DynamicContent content = new DynamicContent(DynamicContentType.WIDGET, component.getContentType().getFilename());
-        content.setId("sidebar_widget_" + component.getId());
+        content.setId(SIDEBAR_ELEMENT_ID_PREFIX + component.getId());
+        
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE__CMS_PAGE, page);
+        attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE__SIDEBAR_ELEMENT, component);
         if (component instanceof CMSSidebarElementCustom) {
-            content.setAttributes(Map.of("widget", ((CMSSidebarElementCustom) component).getWidget()));
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE__WIDGET, ((CMSSidebarElementCustom) component).getWidget());
         } else if (component instanceof CMSSidebarElementAutomatic) {
-            content.setAttributes(Map.of("geoMap", ((CMSSidebarElementAutomatic) component).getMap()));
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE__GEOMAP, ((CMSSidebarElementAutomatic) component).getMap());
         }
+        content.setAttributes(attributes);
         UIComponent widgetComponent = builder.build(content, parent);
         if (widgetComponent == null) {
             logger.error("Error loading widget: {}", component);

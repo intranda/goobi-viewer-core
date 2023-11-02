@@ -12,13 +12,16 @@
     xmlns:searchFacetsComponent="http://xmlns.jcp.org/jsf/composite/components/widgets/searchFacets">
 
     <composite:interface>
+    	 <composite:attribute name="cmsPage" type="io.goobi.viewer.model.cms.pages.CMSPage" required="false" default="#{null}" />
+    	 <composite:attribute name="sidebarElement" type="io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement" required="false" default="#{null}" />
     </composite:interface>
 
     <composite:implementation>
-
-            <searchFacetsComponent:chronologyFacet/>
-            <searchFacetsComponent:geoFacetting/>
-            <searchFacetsComponent:searchFacets/>
+		<h:panelGroup rendered="#{cc.attrs.sidebarElement == null or cc.attrs.sidebarElement.contentType.isAllowedForPage(cmsPage)}">
+            <searchFacetsComponent:chronologyFacet cmsPage="#{cc.attrs.cmsPage}"/>
+            <searchFacetsComponent:geoFacetting cmsPage="#{cc.attrs.cmsPage}"/>
+            <searchFacetsComponent:searchFacets cmsPage="#{cc.attrs.cmsPage}"/>
+		</h:panelGroup>
 
     </composite:implementation>
 </ui:composition>

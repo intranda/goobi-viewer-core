@@ -12,6 +12,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
     <composite:interface>
+    	<composite:attribute name="cmsPage" type="io.goobi.viewer.model.cms.pages.CMSPage" required="false" default="#{null}" />
     </composite:interface>
 
     <composite:implementation>
@@ -70,7 +71,7 @@
                                         <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
                                             <li>
                                                 <h:outputLink
-                                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                     #{msg[facet.translatedLabel]} (#{facet.count})
                                                     <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
                                                 </h:outputLink>
