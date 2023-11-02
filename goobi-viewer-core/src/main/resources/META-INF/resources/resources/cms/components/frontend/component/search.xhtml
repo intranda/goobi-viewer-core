@@ -40,11 +40,10 @@
 				</ui:include>
 
 				<!-- SEARCH LIST -->
-				<div>List style: #{cc.attrs.listStyle}</div>
 				<div class="search-list">
 					<ui:include src="/resources/includes/search/searchHitList.xhtml">
 						<ui:param name="searchParam"
-							value="#{cc.attrs.component.getContentItem('search').content.search}" />
+							value="#{sessionBean.get('cmsSearch')}" />
 						<ui:param name="listStyle"
 							value="#{cc.attrs.listStyle}" />
 					</ui:include>

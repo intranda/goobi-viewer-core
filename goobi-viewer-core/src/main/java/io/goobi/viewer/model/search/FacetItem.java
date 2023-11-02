@@ -114,7 +114,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     public FacetItem(Count count) {
-        this(count.getFacetField().getName(), count.getName() + ":" + count.getName(), count.getName(), count.getCount(), false);
+        this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(), count.getCount(), false);
     }
 
     /**
