@@ -181,8 +181,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             logger.error("Cannot search: SearchBean is null");
             return;
         }
-        searchBean.setCustomFilterQuery(getCompleteFilterString(subtheme));
-        searchBean.search();
+        searchBean.search(getCompleteFilterString(subtheme));
     }
 
     /**
