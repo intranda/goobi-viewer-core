@@ -50,6 +50,8 @@ public class StringConstants {
     public static final String MSG_ERR_SEND_EMAIL = "errSendEmail";
 
     public static final String PREFIX_PRETTY = "pretty:";
+    public static final String PRETTY_NEWSEARCH5 = "pretty:newSearch5";
+    public static final String PRETTY_SEARCHADVANCED5 = "pretty:searchAdvanced5";
 
     private StringConstants() {
 
