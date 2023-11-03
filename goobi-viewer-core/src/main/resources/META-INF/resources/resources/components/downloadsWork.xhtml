@@ -19,7 +19,8 @@
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
                         
                             <!-- METS -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
+                            <ui:fragment
+                                rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC'}">
                                 <a 
                                     href="#{activeDocumentBean.viewManager.metsResolverUrl}"
                                     id="lidomets" 
@@ -98,7 +99,7 @@
 
                             <!-- MARCXML -->
                             <ui:fragment
-                                rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
+                                rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and (activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC')}">
                                 <a
                                     id="marc"
                                     href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
