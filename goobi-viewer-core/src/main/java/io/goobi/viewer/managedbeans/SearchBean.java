@@ -70,7 +70,6 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
-import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
@@ -138,6 +137,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /** Constant <code>URL_ENCODING="UTF8"</code> */
     public static final String URL_ENCODING = "UTF8";
+
+    private static final String PREFIX_KEY = "KEY::";
 
     @Inject
     private NavigationHelper navigationHelper;
@@ -332,7 +333,7 @@ public class SearchBean implements SearchInterface, Serializable {
             facets.resetActiveFacetString();
         }
         generateSimpleSearchString(searchString);
-        return "pretty:newSearch5";
+        return StringConstants.PRETTY_NEWSEARCH5;
     }
 
     /**
@@ -361,7 +362,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String searchSimpleSetFacets(String facetString) {
-        // logger.trace("searchSimpleSetFacets:{}", facetString);
+        // logger.trace("searchSimpleSetFacets:{}", facetString); //NOSONAR Logging sometimes needed for debugging
         facets.resetActiveFacetString();
         facets.setActiveFacetString(facetString);
         return searchSimple(true, false);
@@ -392,7 +393,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         searchStringInternal = generateAdvancedSearchString();
 
-        return "pretty:searchAdvanced5";
+        return StringConstants.PRETTY_SEARCHADVANCED5;
     }
 
     /**
@@ -405,7 +406,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("searchDirect");
         resetSearchResults();
         //facets.resetCurrentFacetString();
-        return "pretty:newSearch5";
+        return StringConstants.PRETTY_NEWSEARCH5;
     }
 
     /**
@@ -424,7 +425,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         searchStringInternal = SolrConstants.MONTHDAY + ":" + DateTools.formatterMonthDayOnly.format(LocalDateTime.now());
 
-        return "pretty:newSearch5";
+        return StringConstants.PRETTY_NEWSEARCH5;
     }
 
     /**
@@ -619,7 +620,7 @@ public class SearchBean implements SearchInterface, Serializable {
         Set<String> usedFieldValuePairs = new HashSet<>();
 
         for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
-            // logger.trace("Query item: {}", queryItem.toString());
+            // logger.trace("Query item: {}", queryItem.toString()); //NOSONAR Logging sometimes needed for debugging
             if (StringUtils.isEmpty(queryItem.getField()) || StringUtils.isBlank(queryItem.getValue())) {
                 continue;
             }
@@ -632,25 +633,25 @@ public class SearchBean implements SearchInterface, Serializable {
 
             // Generate the hierarchical facet parameter from query items
             if (queryItem.isHierarchical()) {
-                // logger.trace("{} is hierarchical", queryItem.getField());
+                // logger.trace("{} is hierarchical", queryItem.getField()); //NOSONAR Logging sometimes needed for debugging
                 // Skip identical hierarchical items
 
                 // Find existing facet items that can be re-purposed for the existing facets
                 boolean skipQueryItem = false;
                 for (IFacetItem facetItem : facets.getActiveFacets()) {
-                    // logger.trace("checking facet item: {}", facetItem.getLink());
+                    // logger.trace("checking facet item: {}", facetItem.getLink()); //NOSONAR Logging sometimes needed for debugging
                     if (!facetItem.getField().equals(queryItem.getField())) {
                         continue;
                     }
                     if (usedFieldValuePairs.contains(facetItem.getLink())) {
-                        // logger.trace("facet item already handled: {}", facetItem.getLink());
+                        // logger.trace("facet item already handled: {}", facetItem.getLink()); //NOSONAR Logging sometimes needed for debugging
                         continue;
                     }
                     if (!usedFieldValuePairs.contains(queryItem.getField() + ":" + queryItem.getValue())) {
                         facetItem.setLink(queryItem.getField() + ":" + queryItem.getValue());
                         usedFieldValuePairs.add(facetItem.getLink());
                         usedHierarchicalFields.add(queryItem.getField());
-                        // logger.trace("reuse facet item: {}", facetItem);
+                        // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Logging sometimes needed for debugging
                         skipQueryItem = true;
                         break;
                     }
@@ -659,11 +660,11 @@ public class SearchBean implements SearchInterface, Serializable {
                 if (!skipQueryItem) {
                     String itemQuery =
                             new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).toString();
-                    // logger.trace("item query: {}", itemQuery);
+                    // logger.trace("item query: {}", itemQuery); //NOSONAR Logging sometimes needed for debugging
 
                     // Check whether this combination already exists and skip, if that's the case
                     if (usedFieldValuePairs.contains(itemQuery)) {
-                        // logger.trace("facet item already exists: {}", itemQuery);
+                        // logger.trace("facet item already exists: {}", itemQuery); //NOSONAR Logging sometimes needed for debugging
                         continue;
                     }
                     usedFieldValuePairs.add(itemQuery);
@@ -833,7 +834,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("hitsPerPageListener");
         executeSearch();
     }
-    
+
     /**
      * <p>
      * executeSearch.
@@ -858,7 +859,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void executeSearch(String filterQuery) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public void executeSearch(String filterQuery)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
@@ -1201,15 +1203,8 @@ public class SearchBean implements SearchInterface, Serializable {
                         sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.CMS_TEXT_ALL).append(":(\"").append(phrase).append("\")");
-                        //                        for (String field : searchTerms.keySet()) {
-                        //                            searchTerms.get(field).add(phrase);
-                        //                        }
                     } else {
                         // Specific filter selected
-                        //                        if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
-                        //                            Set<String> terms = new HashSet<>();
-                        //                            searchTerms.put(SolrConstants.FULLTEXT, terms);
-                        //                        }
                         switch (currentSearchFilter.getField()) {
                             case SolrConstants.DEFAULT:
                                 sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
@@ -1239,8 +1234,6 @@ public class SearchBean implements SearchInterface, Serializable {
                                 sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
                                 break;
                         }
-
-                        //                        searchTerms.get(currentSearchFilter.getField()).add(phrase);
                     }
                     sb.append(SolrConstants.SOLR_QUERY_AND);
                 }
@@ -1337,7 +1330,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         logger.trace("search string: {}", searchStringInternal);
-        //        logger.trace("search terms: {}", searchTerms.toString());
+        // logger.trace("search terms: {}", searchTerms.toString()); //NOSONAR Logging sometimes needed for debugging
     }
 
     /**
@@ -1348,7 +1341,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     @Override
     public String getExactSearchString() {
-        // logger.trace("getExactSearchString: {}", searchStringInternal);
+        // logger.trace("getExactSearchString: {}", searchStringInternal); //NOSONAR Logging sometimes needed for debugging
         if (searchStringInternal.length() == 0) {
             return "-";
         }
@@ -1357,9 +1350,9 @@ public class SearchBean implements SearchInterface, Serializable {
         try {
             // Escape the query here, otherwise Rewrite will spam warnings into catalina.out
             if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
-                // logger.trace("url pre-encoding: {}", ret);
+                // logger.trace("url pre-encoding: {}", ret); //NOSONAR Logging sometimes needed for debugging
                 ret = StringTools.encodeUrl(ret);
-                // logger.trace("url encoded: {}", ret);
+                // logger.trace("url encoded: {}", ret); //NOSONAR Logging sometimes needed for debugging
             }
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage());
@@ -1433,12 +1426,12 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public void setSortString(String sortString) {
         logger.trace("setSortString: {}", sortString);
-        if ("-".equals(sortString)) {
+        if (StringUtils.isEmpty(sortString) || "-".equals(sortString)) {
             String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(BeanUtils.getLocale().getLanguage());
             if (StringUtils.isNotEmpty(defaultSortField)) {
                 sortString = defaultSortField;
+                logger.trace("Using default sort field: {}", defaultSortField);
             }
-
         }
 
         if (!"-".equals(sortString)) {
@@ -1454,7 +1447,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public String getSortString() {
-        // logger.trace("getSortString: {}", searchSortingOption);
+        // logger.trace("getSortString: {}", searchSortingOption); //NOSONAR Logging sometimes needed for debugging
         if (searchSortingOption == null) {
             setSortString("-");
         }
@@ -1594,17 +1587,17 @@ public class SearchBean implements SearchInterface, Serializable {
             if (!facetItem.isHierarchial()) {
                 continue;
             }
-            // logger.trace("facet item: {}", facetItem);
+            // logger.trace("facet item: {}", facetItem); //NOSONAR Logging sometimes needed for debugging
             // Look up and re-purpose existing query items with the same field first
             boolean matched = false;
             for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
                 // field:value pair already exists
                 if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
                     // Override existing items without a field or with the same field with current facet value
-                    // logger.trace("updating query item: {}", queryItem);
+                    // logger.trace("updating query item: {}", queryItem); //NOSONAR Logging sometimes needed for debugging
                     queryItem.setField(facetItem.getField());
                     queryItem.setValue(facetItem.getValue());
-                    // logger.trace("updated query item: {}", queryItem);
+                    // logger.trace("updated query item: {}", queryItem); //NOSONAR Logging sometimes needed for debugging
                     populatedQueryItems.add(queryItem);
                     matched = true;
                     break;
@@ -1618,7 +1611,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 // ...but only if there is no exact field:value pair already among the query items
                 if (!populatedQueryItems.contains(item)) {
                     advancedSearchQueryGroup.getQueryItems().add(item);
-                    // logger.trace("added new item: {}", item);
+                    // logger.trace("added new item: {}", item); //NOSONAR Logging sometimes needed for debugging
                     populatedQueryItems.add(item);
                 }
             }
@@ -1667,17 +1660,18 @@ public class SearchBean implements SearchInterface, Serializable {
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
             facets.removeFacetAction(facetQuery, "");
-            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:cmsOpenPage6", oPath.get().getCmsPage().getId(), getActiveResultGroupName(),
-                    this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(),
+            String url = PrettyUrlTools.getAbsolutePageUrl(StringConstants.PREFIX_PRETTY + "cmsOpenPage6", oPath.get().getCmsPage().getId(),
+                    getActiveResultGroupName(), this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(),
                     this.getFacets().getActiveFacetString());
             logger.trace("redirecting to url: {}", url);
             PrettyUrlTools.redirectToUrl(url);
             return "";
         } else if (PageType.browse.equals(oPath.map(ViewerPath::getPageType).orElse(PageType.other))) {
-            return facets.removeFacetAction(facetQuery, "pretty:browse4");
+            return facets.removeFacetAction(facetQuery, StringConstants.PREFIX_PRETTY + "browse4");
         } else {
             return facets.removeFacetAction(facetQuery,
-                    activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5" : "pretty:newSearch5");
+                    activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? StringConstants.PRETTY_SEARCHADVANCED5
+                            : StringConstants.PRETTY_NEWSEARCH5);
         }
     }
 
@@ -2022,7 +2016,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public List<StringPair> getAdvancedSearchSelectItems(String field, String language, boolean hierarchical)
             throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("getAdvancedSearchSelectItems: {}", field);
+        // logger.trace("getAdvancedSearchSelectItems: {}", field); //NOSONAR Logging sometimes needed for debugging
         if (field == null) {
             throw new IllegalArgumentException("field may not be null.");
         }
@@ -2789,7 +2783,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         //fallback
-        return "pretty:search5";
+        return StringConstants.PREFIX_PRETTY + "search5";
     }
 
     private URI getParameterPath(URI basePath) {
@@ -2944,7 +2938,7 @@ public class SearchBean implements SearchInterface, Serializable {
         return this.advancedSearchQueryGroup.getQueryItems()
                 .stream()
                 .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
-                .filter(item -> item.getValue() != null && !item.getValue().startsWith("KEY::"))
+                .filter(item -> item.getValue() != null && !item.getValue().startsWith(PREFIX_KEY))
                 .findFirst()
                 .map(SearchQueryItem::getValue)
                 .orElse("");
@@ -2959,7 +2953,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void setBookmarkListSharedKey(String key) {
         SearchQueryItem item = this.advancedSearchQueryGroup.getQueryItems().get(0);
-        item.setValue("KEY::" + key);
+        item.setValue(PREFIX_KEY + key);
         item.setField(SolrConstants.BOOKMARKS);
 
     }
@@ -2975,11 +2969,11 @@ public class SearchBean implements SearchInterface, Serializable {
         String value = this.advancedSearchQueryGroup.getQueryItems()
                 .stream()
                 .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
-                .filter(item -> item.getValue() != null && item.getValue().startsWith("KEY::"))
+                .filter(item -> item.getValue() != null && item.getValue().startsWith(PREFIX_KEY))
                 .findFirst()
                 .map(SearchQueryItem::getValue)
                 .orElse("");
-        return value.replace("KEY::", "");
+        return value.replace(PREFIX_KEY, "");
     }
 
     /**
@@ -3090,7 +3084,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     .getValues()
                     .stream()
                     .filter(count -> !StringTools.checkValueEmptyOrInverted(count.getName()))
-                    .map(count -> new FacetItem(count))
+                    .map(FacetItem::new)
                     .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
                     .limit(num)
                     .collect(Collectors.toList());
@@ -3166,7 +3160,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private String getLastUsedDefaultSearchUrl() {
         if (getActiveSearchType() == 1) {
             return PrettyUrlTools.getAbsolutePageUrl(
-                    "pretty:searchAdvanced5",
+                    StringConstants.PRETTY_SEARCHADVANCED5,
                     getActiveResultGroupName(),
                     getExactSearchString(),
                     getCurrentPage(),
@@ -3188,12 +3182,10 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("changeSorting");
         switch (getActiveSearchType()) {
             case 1:
-                return "pretty:searchAdvanced5";
+                return StringConstants.PRETTY_SEARCHADVANCED5;
             case 0:
             default:
-                return "pretty:newSearch5";
-
+                return StringConstants.PRETTY_NEWSEARCH5;
         }
     }
-
 }
