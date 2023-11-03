@@ -424,7 +424,9 @@ public class BrowseBean implements Serializable {
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
             String browsingMenuFieldForCurrentLanguage = getBrowsingMenuFieldForLanguage(locale.getLanguage());
             if (availableStringFilters.get(browsingMenuFieldForCurrentLanguage) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, 0, new BrowseTermComparator(locale), locale.getLanguage());
+                int numRows = StringUtils.isNotEmpty(currentBmfc.getSortField()) ? SolrSearchIndex.MAX_HITS : 0;
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, numRows, new BrowseTermComparator(locale),
+                        locale.getLanguage());
                 if (availableStringFilters.get(browsingMenuFieldForCurrentLanguage) == null || filterQuery != null) {
                     logger.trace("Populating search term filters for field '{}'...", browsingMenuFieldForCurrentLanguage);
                     availableStringFilters.put(browsingMenuFieldForCurrentLanguage, new ArrayList<>());
@@ -542,7 +544,7 @@ public class BrowseBean implements Serializable {
                     numericalFilter = filter;
                     break;
                 default:
-                    if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]{1}") && alphaFilter == null) {
+                    if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]") && alphaFilter == null) {
                         alphaFilter = filter;
                     }
                     break;
@@ -989,16 +991,6 @@ public class BrowseBean implements Serializable {
             collection = getCollection(field);
         }
         return collection;
-    }
-
-    private static String getFacetField(String field) {
-        if (field.startsWith("MD_")) {
-            return field.replace("MD_", "FACET_");
-        } else if (field.equals("YEAR") || field.equals("DC")) {
-            return "FACET_" + field;
-        } else {
-            return field;
-        }
     }
 
     /**
