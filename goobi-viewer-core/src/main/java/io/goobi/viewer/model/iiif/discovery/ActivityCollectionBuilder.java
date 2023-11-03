@@ -30,7 +30,6 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -243,8 +242,7 @@ public class ActivityCollectionBuilder {
     private IPresentationModelElement createObject(SolrDocument doc) {
         String pi = (String) doc.getFieldValue(SolrConstants.PI);
         URI uri = URI.create(this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build());
-        Manifest2 manifest = new Manifest2(uri);
-        return manifest;
+        return new Manifest2(uri);
     }
 
     private static int getNumberOfActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
@@ -285,7 +283,7 @@ public class ActivityCollectionBuilder {
         }
         QueryResponse qr = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Arrays.asList(FACET_FIELDS), 1, false);
         if (qr != null) {
-            List<Long> list = qr.getFacetFields()
+            return qr.getFacetFields()
                     .stream()
                     .flatMap(field -> field.getValues().stream())
                     .map(Count::getName)
@@ -293,20 +291,18 @@ public class ActivityCollectionBuilder {
                     .map(Long::parseLong)
                     .sorted()
                     .collect(Collectors.toList());
-            return list;
         }
 
         return new ArrayList<>();
     }
 
-    private SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
+    private static SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
         query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null && endDate != null) {
             query = "(" + query + ") AND (DATEUPDATED:[" + startDate + " TO " + endDate + "] OR DATECREATED:[" + startDate + " TO " + endDate + "])";
         }
-        SolrDocumentList list = DataManager.getInstance().getSearchIndex().search(query, Integer.MAX_VALUE, null, Arrays.asList(SOLR_FIELDS));
-        return list;
+        return DataManager.getInstance().getSearchIndex().search(query, Integer.MAX_VALUE, null, Arrays.asList(SOLR_FIELDS));
     }
 
 }

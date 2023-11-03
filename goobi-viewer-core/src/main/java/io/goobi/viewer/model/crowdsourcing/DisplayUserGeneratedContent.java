@@ -626,7 +626,7 @@ public class DisplayUserGeneratedContent {
             ret.setAnnotationBody(body);
         }
         Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
-        if (pageNo != null && pageNo instanceof Number) {
+        if (pageNo instanceof Number) {
             ret.setPage(((Number) pageNo).intValue());
         }
         if (StringUtils.isNotBlank(ret.getAnnotationBody().getType())) {
