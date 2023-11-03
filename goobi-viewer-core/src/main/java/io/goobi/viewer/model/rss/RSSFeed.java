@@ -89,6 +89,8 @@ public class RSSFeed {
             SolrConstants.THUMBPAGENO,
             SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
+    private static final String HTML_STRONG_PUBLISHED = "<strong>Published: </strong>";
+
     /**
      * 
      */
@@ -226,7 +228,7 @@ public class RSSFeed {
             String author = "";
             String authorRss = "";
             String publisher = "";
-            String placeAndTime = "<strong>Published: </strong>";
+            String placeAndTime = HTML_STRONG_PUBLISHED;
             String descValue = "";
             String thumbnail = "";
             String urn = "";
@@ -241,7 +243,8 @@ public class RSSFeed {
 
             for (String field : FIELDS) {
                 Object value = doc.getFirstValue(field);
-                Optional<Object> translatedValue = Optional.ofNullable(doc.getFirstValue(field + "_LANG_" + locale.getLanguage().toUpperCase()));
+                Optional<Object> translatedValue =
+                        Optional.ofNullable(doc.getFirstValue(field + SolrConstants.MIDFIX_LANG + locale.getLanguage().toUpperCase()));
                 value = translatedValue.orElse(value);
                 // If the doc has no field value, try the owner doc (in case of pages)
                 if (value == null && ownerDoc != null) {
@@ -272,24 +275,27 @@ public class RSSFeed {
                             if (fieldParentLabel != null) {
                                 label = new StringBuilder((String) fieldParentLabel).append("; ").append(label).toString();
                                 bookSeries = new StringBuilder("<strong>Book series: </strong>").append((String) fieldParentLabel)
-                                        .append("<br />")
+                                        .append(StringConstants.HTML_BR)
                                         .toString();
                             }
                         }
                         break;
                     case SolrConstants.PERSON_ONEFIELD:
                         authorRss = (String) value;
-                        author = new StringBuilder(author).append("<strong>Author: </strong>").append(value).append("<br />").toString();
+                        author = new StringBuilder(author).append("<strong>Author: </strong>")
+                                .append(value)
+                                .append(StringConstants.HTML_BR)
+                                .toString();
                         break;
                     case SolrConstants.PUBLISHER:
-                        publisher = new StringBuilder("<strong>Publisher: </strong>").append(value).append("<br />").toString();
+                        publisher = new StringBuilder("<strong>Publisher: </strong>").append(value).append(StringConstants.HTML_BR).toString();
                         break;
                     case SolrConstants.DATECREATED:
                         modified = (Long) value;
                         break;
                     case SolrConstants.YEARPUBLISH:
                     case SolrConstants.PLACEPUBLISH:
-                        if ("<strong>Published: </strong>".length() == placeAndTime.length()) {
+                        if (HTML_STRONG_PUBLISHED.length() == placeAndTime.length()) {
                             placeAndTime = new StringBuilder(placeAndTime).append(value).toString();
                         } else {
                             placeAndTime = new StringBuilder(placeAndTime).append(", ").append(value).toString();
@@ -301,7 +307,8 @@ public class RSSFeed {
                                 .append(value)
                                 .append("\">")
                                 .append(value)
-                                .append("</a><br />")
+                                .append("</a>")
+                                .append(StringConstants.HTML_BR)
                                 .toString();
                         break;
                     case SolrConstants.PI:
@@ -327,7 +334,7 @@ public class RSSFeed {
                     default: // nothing
                 }
             }
-            if ("<strong>Published: </strong>".length() == placeAndTime.length()) {
+            if (HTML_STRONG_PUBLISHED.length() == placeAndTime.length()) {
                 placeAndTime = "";
             } else {
                 placeAndTime = new StringBuilder(placeAndTime).append("<br />").toString();

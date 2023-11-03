@@ -377,7 +377,7 @@ public class SolrTools {
      */
     public static List<IMetadataValue> getMultiLanguageMetadata(Map<String, List<String>> mdValues) {
         List<IMetadataValue> values = new ArrayList<>();
-        int numValues = mdValues.values().stream().mapToInt(list -> list.size()).max().orElse(0);
+        int numValues = mdValues.values().stream().mapToInt(Collection::size).max().orElse(0);
         for (int i = 0; i < numValues; i++) {
             MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
             for (Entry<String, List<String>> entry : mdValues.entrySet()) {
@@ -424,7 +424,7 @@ public class SolrTools {
             }
             Collection<Object> languageValues = doc.getFieldValues(languageField);
             if (languageValues != null) {
-                List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
+                List<String> values = languageValues.stream().map(String::valueOf).collect(Collectors.toList());
                 map.put(locale, values);
             }
         }
@@ -459,7 +459,7 @@ public class SolrTools {
                 }
                 Collection<String> languageValues = doc.getMetadataValues(languageField);
                 if (languageValues != null) {
-                    List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
+                    List<String> values = languageValues.stream().map(String::valueOf).collect(Collectors.toList());
                     map.put(locale, values);
                 }
             }
@@ -644,7 +644,7 @@ public class SolrTools {
         if (translations.size() > 1) {
             return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
         } else if (!translations.isEmpty()) {
-            String value = translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("");
+            String value = translations.values().iterator().next().stream().reduce(combiner::apply).orElse("");
             return Optional.ofNullable(ViewerResourceBundle
                     .getTranslations(value, translationLocales, false));
         } else {
@@ -659,10 +659,11 @@ public class SolrTools {
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields {@link SolrConstants.FILENAME} and
      *            {@link SolrConstants.THUMBNAIL}
+     * @return true if record described by doc has images; false otherwise
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return correct value for page docs
      * @should return correct value for docsctrct docs
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return correct value for iiif manifests in file name
      */
     public static boolean isHasImages(SolrDocument doc) throws IndexUnreachableException {
         StructElement structElement = new StructElement(0, doc);
@@ -673,6 +674,9 @@ public class SolrTools {
             filename = structElement.getMetadataValue(SolrConstants.THUMBNAIL);
         }
         if (filename != null) {
+            if (filename.endsWith("/info.json")) {
+                return true;
+            }
             fileExtension = FilenameUtils.getExtension(filename).toLowerCase();
         }
 
@@ -730,7 +734,7 @@ public class SolrTools {
                     // Skip inverted values
                     if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
                         ret.add(count.getName());
-                        // logger.trace(count.getName());
+                        // logger.trace(count.getName()); //NOSONAR Logging sometimes needed for debugging
                     }
                 }
                 return ret;
@@ -840,7 +844,7 @@ public class SolrTools {
      */
     public static String escapeSpecialCharacters(String string) {
         if (StringUtils.isNotBlank(string)) {
-            return string.replaceAll("(?<!\\\\)([<>+\\-&||!(){}\\[\\]^\"~*?:/])", "\\\\$1");
+            return string.replaceAll("(?<!\\\\)([<>+\\-&|!(){}\\[\\]^\"~*?:/])", "\\\\$1");
         }
         return string;
     }
@@ -853,7 +857,7 @@ public class SolrTools {
      */
     public static String unescapeSpecialCharacters(String string) {
         if (StringUtils.isNotBlank(string)) {
-            return string.replaceAll("\\\\([<>+\\-&||!(){}\\[\\]^\\\"~*?:\\/])", "$1");
+            return string.replaceAll("\\\\([<>+\\-&|!(){}\\[\\]^\\\"~*?:\\/])", "$1");
         }
         return string;
     }
