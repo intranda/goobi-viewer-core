@@ -32,7 +32,7 @@
                                 </div>
 
                                     <!-- FILTER FACETS -->
-                                    <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field)}">
+                                    <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
                                     <div class="widget-search-facets__filter">
                                         <input
                                           type="text"
