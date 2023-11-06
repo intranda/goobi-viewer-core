@@ -424,6 +424,7 @@ public class BrowseBean implements Serializable {
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
             String browsingMenuFieldForCurrentLanguage = getBrowsingMenuFieldForLanguage(locale.getLanguage());
             if (availableStringFilters.get(browsingMenuFieldForCurrentLanguage) == null) {
+                logger.trace("Collecting available filters for {}", browsingMenuFieldForCurrentLanguage);
                 int numRows = StringUtils.isNotEmpty(currentBmfc.getSortField()) ? SolrSearchIndex.MAX_HITS : 0;
                 terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, numRows, new BrowseTermComparator(locale),
                         locale.getLanguage());

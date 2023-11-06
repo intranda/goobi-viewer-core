@@ -81,7 +81,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     public void getSingleFieldStringValue_shouldReturnValueAsStringCorrectly() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.addField("NUM", 1337);
-        Assert.assertEquals("1337", SolrTools.getSingleFieldStringValue(doc, "NUM"));
+        assertEquals("1337", SolrTools.getSingleFieldStringValue(doc, "NUM"));
     }
 
     /**
@@ -92,13 +92,13 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     public void getSolrSortFieldsAsList_shouldSplitFieldsCorrectly() throws Exception {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A; SORT_B, desc;SORT_C,asc", ";", ",");
         Assert.assertNotNull(result);
-        Assert.assertEquals(3, result.size());
-        Assert.assertEquals("SORT_A", result.get(0).getOne());
-        Assert.assertEquals("asc", result.get(0).getTwo());
-        Assert.assertEquals("SORT_B", result.get(1).getOne());
-        Assert.assertEquals("desc", result.get(1).getTwo());
-        Assert.assertEquals("SORT_C", result.get(2).getOne());
-        Assert.assertEquals("asc", result.get(2).getTwo());
+        assertEquals(3, result.size());
+        assertEquals("SORT_A", result.get(0).getOne());
+        assertEquals("asc", result.get(0).getTwo());
+        assertEquals("SORT_B", result.get(1).getOne());
+        assertEquals("desc", result.get(1).getTwo());
+        assertEquals("SORT_C", result.get(2).getOne());
+        assertEquals("asc", result.get(2).getTwo());
     }
 
     /**
@@ -109,9 +109,9 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     public void getSolrSortFieldsAsList_shouldSplitSingleFieldCorrectly() throws Exception {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A , desc ", ";", ",");
         Assert.assertNotNull(result);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals("SORT_A", result.get(0).getOne());
-        Assert.assertEquals("desc", result.get(0).getTwo());
+        assertEquals(1, result.size());
+        assertEquals("SORT_A", result.get(0).getOne());
+        assertEquals("desc", result.get(0).getTwo());
     }
 
     /**
@@ -164,7 +164,6 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
         doc.setField(SolrConstants.FILENAME, "foo.txt");
         Assert.assertFalse(SolrTools.isHasImages(doc));
     }
-    
 
     /**
      * @see SolrTools#isHasImages(SolrDocument)
@@ -186,17 +185,17 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
         doc.addField("field_B_LANG_EN", "field_B_en_2");
 
         Map<String, List<String>> mapA = SolrTools.getMetadataValuesForLanguage(doc, "field_A");
-        Assert.assertEquals(1, mapA.size());
-        Assert.assertEquals(1, mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).size());
-        Assert.assertEquals("value_A", mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).get(0));
+        assertEquals(1, mapA.size());
+        assertEquals(1, mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).size());
+        assertEquals("value_A", mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).get(0));
 
         Map<String, List<String>> mapB = SolrTools.getMetadataValuesForLanguage(doc, "field_B");
-        Assert.assertEquals(2, mapB.size());
-        Assert.assertEquals(mapB.get("en").size(), 2);
-        Assert.assertEquals(mapB.get("de").size(), 1);
-        Assert.assertEquals("field_B_de", mapB.get("de").get(0));
-        Assert.assertEquals("field_B_en", mapB.get("en").get(0));
-        Assert.assertEquals("field_B_en_2", mapB.get("en").get(1));
+        assertEquals(2, mapB.size());
+        assertEquals(2, mapB.get("en").size());
+        assertEquals(1, mapB.get("de").size());
+        assertEquals("field_B_de", mapB.get("de").get(0));
+        assertEquals("field_B_en", mapB.get("en").get(0));
+        assertEquals("field_B_en_2", mapB.get("en").get(1));
     }
 
     @Test
@@ -209,14 +208,14 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
         doc.addField("field_B_LANG_EN", "field_B_en_2");
 
         Map<String, List<IMetadataValue>> map = SolrTools.getMultiLanguageFieldValueMap(doc);
-        Assert.assertEquals(2, map.keySet().size());
-        Assert.assertEquals("value_A", map.get("field_A").get(0).getValue().get());
-        Assert.assertEquals("value_B", map.get("field_B").get(0).getValue().get());
-        Assert.assertEquals("field_B_de", map.get("field_B").get(0).getValue("de").get());
-        Assert.assertEquals("field_B_en", map.get("field_B").get(0).getValue("en").get());
-        Assert.assertEquals("field_B_en_2", map.get("field_B").get(1).getValue("en").get());
+        assertEquals(2, map.keySet().size());
+        assertEquals("value_A", map.get("field_A").get(0).getValue().get());
+        assertEquals("value_B", map.get("field_B").get(0).getValue().get());
+        assertEquals("field_B_de", map.get("field_B").get(0).getValue("de").get());
+        assertEquals("field_B_en", map.get("field_B").get(0).getValue("en").get());
+        assertEquals("field_B_en_2", map.get("field_B").get(1).getValue("en").get());
 
-        Assert.assertEquals("value_B", map.get("field_B").get(0).getValue("fr").orElse(map.get("field_B").get(0).getValue().orElse("")));
+        assertEquals("value_B", map.get("field_B").get(0).getValue("fr").orElse(map.get("field_B").get(0).getValue().orElse("")));
     }
 
     /**
@@ -244,7 +243,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     public void getExistingSubthemes_shouldReturnCorrectValues() throws Exception {
         List<String> result = SolrTools.getExistingSubthemes();
-        Assert.assertEquals(2, result.size());
+        assertEquals(2, result.size());
         Assert.assertTrue(result.contains("subtheme1"));
         Assert.assertTrue(result.contains("subtheme2"));
     }
@@ -255,7 +254,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void extractExceptionMessageHtmlTitle_shouldReturnEmptyStringIfExceptionMessageEmpty() throws Exception {
-        Assert.assertEquals("", SolrTools.extractExceptionMessageHtmlTitle(null));
+        assertEquals("", SolrTools.extractExceptionMessageHtmlTitle(null));
     }
 
     /**
@@ -265,7 +264,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     public void extractExceptionMessageHtmlTitle_shouldReturnExceptionMessageIfNoPatternMatchFound() throws Exception {
         String html = "<html><head></head><body><h1>foo</h1></body</html>";
-        Assert.assertEquals(html, SolrTools.extractExceptionMessageHtmlTitle(html));
+        assertEquals(html, SolrTools.extractExceptionMessageHtmlTitle(html));
     }
 
     /**
@@ -275,7 +274,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     public void extractExceptionMessageHtmlTitle_shouldReturnTitleContentCorrectly() throws Exception {
         String html = "<html><head><title>foo bar</title></head><body><h1>foo</h1></body</html>";
-        Assert.assertEquals("foo bar", SolrTools.extractExceptionMessageHtmlTitle(html));
+        assertEquals("foo bar", SolrTools.extractExceptionMessageHtmlTitle(html));
     }
 
     @Test
@@ -304,7 +303,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void cleanUpQuery_shouldRemoveBracePairs() throws Exception {
-        Assert.assertEquals("foo:bar", SolrTools.cleanUpQuery("{foo:bar}"));
+        assertEquals("foo:bar", SolrTools.cleanUpQuery("{foo:bar}"));
     }
 
     /**
@@ -313,9 +312,8 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void cleanUpQuery_shouldKeepJoinParameter() throws Exception {
-        Assert.assertEquals("{!join from=PI_TOPSTRUCT to=PI}foo:bar", SolrTools.cleanUpQuery("{!join from=PI_TOPSTRUCT to=PI}foo:bar"));
+        assertEquals("{!join from=PI_TOPSTRUCT to=PI}foo:bar", SolrTools.cleanUpQuery("{!join from=PI_TOPSTRUCT to=PI}foo:bar"));
     }
-
 
     /**
      * @see SolrTools#cleanUpQuery(String)
@@ -323,6 +321,6 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void cleanUpQuery_shouldKeepSingleBraces() throws Exception {
-        Assert.assertEquals("\\{u.a.", SolrTools.cleanUpQuery("\\{u.a."));
+        assertEquals("\\{u.a.", SolrTools.cleanUpQuery("\\{u.a."));
     }
 }
