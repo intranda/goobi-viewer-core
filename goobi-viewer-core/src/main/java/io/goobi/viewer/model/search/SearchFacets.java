@@ -518,7 +518,9 @@ public class SearchFacets implements Serializable {
      * @should not reset slider range if slider field among current facets
      */
     public void setActiveFacetString(String activeFacetString) {
-        parseFacetString(activeFacetString, activeFacets, labelMap);
+        synchronized (lock) {
+            parseFacetString(activeFacetString, activeFacets, labelMap);
+        }
     }
 
     /**
