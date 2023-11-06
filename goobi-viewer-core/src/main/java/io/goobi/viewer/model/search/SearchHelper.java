@@ -1839,14 +1839,33 @@ public final class SearchHelper {
                 }
             }
         } else {
-            String facetField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
-            if (resp.getResults().isEmpty() && resp.getFacetField(facetField) != null) {
+            String facetMainField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
+            String facetSortField = null;
+            if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+                facetSortField = SearchHelper.facetifyField(bmfc.getSortField());
+            }
+            if (resp.getResults().isEmpty()) {
                 // If only browsing records and anchors, use faceting
-                for (Count count : resp.getFacetField(facetField).getValues()) {
-                    terms.put(count.getName(),
-                            new BrowseTerm(count.getName(), null,
-                                    bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
-                                            .setHitCount(count.getCount()));
+                String useField = null;
+                if (resp.getFacetField(facetSortField) != null) {
+                    // Prefer facets from sort field
+                    useField = facetSortField;
+                } else if (resp.getFacetField(facetMainField) != null) {
+                    // main field fallback
+                    useField = facetMainField;
+                }
+                if (useField != null) {
+                    for (Count count : resp.getFacetField(useField).getValues()) {
+                        if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
+                                && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
+                            // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
+                            continue;
+                        }
+                        terms.put(count.getName(),
+                                new BrowseTerm(count.getName(), null,
+                                        bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
+                                                .setHitCount(count.getCount()));
+                    }
                 }
             } else {
                 // Without filtering or using alphabetical filtering
