@@ -32,6 +32,7 @@
                                 </div>
 
                                     <!-- FILTER FACETS -->
+                                    <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field)}">
                                     <div class="widget-search-facets__filter">
                                         <input
                                           type="text"
@@ -48,6 +49,7 @@
                                         	<i class="fa fa-search" aria-hidden="true"></i>
                                         </button>
                                     </div>
+                                    </ui:fragment>
 
                                     <ul>
                                         <!-- ACTIVE FACETS -->

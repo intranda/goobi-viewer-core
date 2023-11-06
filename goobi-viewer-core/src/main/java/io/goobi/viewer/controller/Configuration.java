@@ -3065,6 +3065,17 @@ public class Configuration extends AbstractConfiguration {
         String value = getPropertyForFacetField(facetField, "[@skipInWidget]", "false");
         return Boolean.valueOf(value);
     }
+    
+    /**
+     * 
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public boolean isFacetFieldDisplayValueFilter(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@displayValueFilter]", "true");
+        return Boolean.valueOf(value);
+    }
 
     /**
      * 

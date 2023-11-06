@@ -1497,4 +1497,13 @@ public class ConfigurationBean implements Serializable {
     public String getPageType(String name) {
         return DataManager.getInstance().getConfiguration().getPageType(PageType.getByName(name));
     }
+    
+    /**
+    *
+    * @param facetField
+    * @return
+    */
+   public boolean isFacetFieldDisplayValueFilter(String facetField) {
+       return DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter(facetField);
+   }
 }

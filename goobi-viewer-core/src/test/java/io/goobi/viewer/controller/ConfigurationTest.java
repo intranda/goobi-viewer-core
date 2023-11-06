@@ -22,6 +22,7 @@
 package io.goobi.viewer.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -269,7 +270,7 @@ public class ConfigurationTest extends AbstractTest {
             assertEquals("someone@example.com", recipient.getLabel()); // No label defined, using address
             assertEquals("someone@example.com", recipient.getEmailAddress());
             assertEquals("someid", recipient.getId());
-            Assert.assertFalse(recipient.isDefaultRecipient());
+            assertFalse(recipient.isDefaultRecipient());
         }
     }
 
@@ -483,7 +484,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isUserRegistrationEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isUserRegistrationEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isUserRegistrationEnabled());
     }
 
     /**
@@ -752,7 +753,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isSidebarTocTreeView_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSidebarTocTreeView());
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarTocTreeView());
     }
 
     /**
@@ -772,7 +773,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isTocTreeView_shouldReturnFalseForOtherDocstructs() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTocTreeView("Volume"));
+        assertFalse(DataManager.getInstance().getConfiguration().isTocTreeView("Volume"));
     }
 
     /**
@@ -897,7 +898,7 @@ public class ConfigurationTest extends AbstractTest {
     public void loadStopwords_shouldNotAddEmptyStopwords() throws Exception {
         Set<String> stopwords = Configuration.loadStopwords("src/test/resources/stopwords.txt");
         Assert.assertNotNull(stopwords);
-        Assert.assertFalse(stopwords.contains(""));
+        assertFalse(stopwords.contains(""));
     }
 
     /**
@@ -1073,7 +1074,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isWatermarkTextConfigurationEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isWatermarkTextConfigurationEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isWatermarkTextConfigurationEnabled());
     }
 
     /**
@@ -1249,7 +1250,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isTitleEpubEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTitleEpubEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isTitleEpubEnabled());
     }
 
     /**
@@ -1258,7 +1259,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isTocEpubEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTocEpubEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isTocEpubEnabled());
     }
 
     /**
@@ -1267,7 +1268,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isMetadataEpubEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isMetadataEpubEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isMetadataEpubEnabled());
     }
 
     /**
@@ -1312,7 +1313,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isSolrCompressionEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
     }
 
     /**
@@ -1658,7 +1659,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldRange_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(SolrConstants.DC, null, true));
+        assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(SolrConstants.DC, null, true));
         assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange("MD_YEARPUBLISH", null, true));
     }
 
@@ -1668,7 +1669,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldUntokenizeForPhraseSearch_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC, null, true));
+        assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC, null, true));
         assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch("MD_TITLE", null, true));
     }
 
@@ -1756,7 +1757,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplaySearchRssLinks_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks());
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks());
     }
 
     /**
@@ -1874,8 +1875,8 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isTranslateFacetFieldLabels_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("YEAR"));
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("MD_CREATOR"));
+        assertFalse(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("YEAR"));
+        assertFalse(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("MD_CREATOR"));
         assertTrue(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("MD_PLACEPUBLISH"));
     }
 
@@ -1907,6 +1908,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isFacetFieldDisplayValueFilter(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isFacetFieldDisplayValueFilter_shouldReturnCorrectValue() throws Exception {
+        assertFalse(DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget("MD_PLACEPUBLISH"));
+    }
+
+    /**
      * @see Configuration#getGeoFacetFieldPredicate()
      * @verifies return correct value
      */
@@ -1921,7 +1931,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isShowSearchHitsInGeoFacetMap_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap("WKT_COORDS"));
+        assertFalse(DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap("WKT_COORDS"));
     }
 
     @Test
@@ -1937,7 +1947,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchEnabled());
     }
 
     /**
@@ -1946,7 +1956,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isCalendarSearchEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isCalendarSearchEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isCalendarSearchEnabled());
     }
 
     /**
@@ -1955,7 +1965,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isTimelineSearchEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTimelineSearchEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isTimelineSearchEnabled());
     }
 
     /**
@@ -2226,7 +2236,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isSearchSavingEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSearchSavingEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isSearchSavingEnabled());
     }
 
     @Test
@@ -2404,7 +2414,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAddCollectionHierarchyToBreadcrumbs_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("DC"));
+        assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("DC"));
         assertTrue(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_KNOWLEDGEFIELD"));
     }
 
@@ -2414,7 +2424,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAddCollectionHierarchyToBreadcrumbs_shouldReturnFalseIfNoCollectionConfigWasFound() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_NOSUCHFIELD"));
+        assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_NOSUCHFIELD"));
     }
 
     @Test
@@ -2527,7 +2537,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplayAdditionalMetadataEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled());
     }
 
     /**
@@ -2605,7 +2615,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isSitelinksEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSitelinksEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isSitelinksEnabled());
     }
 
     /**
@@ -2805,7 +2815,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplayTitlePURL_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayTitlePURL());
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplayTitlePURL());
     }
 
     /**
@@ -2814,7 +2824,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isSearchInItemEnabled_shouldReturnTrueIfTheSearchFieldToSearchTheCurrentItemworkIsConfiguredToBeVisible() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSearchInItemEnabled());
+        assertFalse(DataManager.getInstance().getConfiguration().isSearchInItemEnabled());
     }
 
     /**
@@ -2823,7 +2833,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isUseReCaptcha_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isUseReCaptcha());
+        assertFalse(DataManager.getInstance().getConfiguration().isUseReCaptcha());
     }
 
     /**
@@ -2850,7 +2860,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAllowRedirectCollectionToWork_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
+        assertFalse(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
     }
 
     /**
@@ -2859,7 +2869,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isLimitImageHeight_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isLimitImageHeight());
+        assertFalse(DataManager.getInstance().getConfiguration().isLimitImageHeight());
     }
 
     /**
@@ -2925,7 +2935,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplaySidebarBrowsingTerms_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarBrowsingTerms());
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarBrowsingTerms());
     }
 
     /**
@@ -2934,7 +2944,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplaySidebarRssFeed_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed());
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed());
     }
 
     /**
@@ -2943,7 +2953,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplaySidebarWidgetUsage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsage());
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsage());
     }
 
     /**
@@ -2952,7 +2962,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplayWidgetUsageDownloadOptions_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions());
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions());
     }
 
     /**
@@ -2961,7 +2971,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplaySidebarWidgetUsageCitationRecommendation_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation());
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation());
     }
 
     /**
@@ -2970,7 +2980,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplaySidebarWidgetUsageCitationLinks_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks());
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks());
     }
 
     /**
@@ -3153,7 +3163,7 @@ public class ConfigurationTest extends AbstractTest {
         List<HierarchicalConfiguration<ImmutableNode>> metadataConfig =
                 DataManager.getInstance().getConfiguration().getLocalConfigurationsAt("metadata.metadataView(1).template(0).metadata(1)");
         Assert.assertNotNull(metadataConfig);
-        Assert.assertFalse(metadataConfig.isEmpty());
+        assertFalse(metadataConfig.isEmpty());
         Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig.get(0), false, 0);
         Assert.assertNotNull(md);
         assertEquals(0, md.getIndentation());
@@ -3164,7 +3174,7 @@ public class ConfigurationTest extends AbstractTest {
         assertEquals("MD_ARTIST", childMd.getLabel());
         assertEquals("SORT_NAME", childMd.getSortField());
         assertTrue(childMd.isGroup());
-        Assert.assertFalse(childMd.isSingleString());
+        assertFalse(childMd.isSingleString());
         assertEquals(7, childMd.getParams().size());
     }
 
@@ -3174,7 +3184,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isVisibleIIIFRenderingAlto_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto());
+        assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto());
     }
 
     /**
@@ -3183,7 +3193,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isVisibleIIIFRenderingPDF_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
+        assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
     }
 
     /**
@@ -3192,7 +3202,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isVisibleIIIFRenderingPlaintext_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext());
+        assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext());
     }
 
     /**
@@ -3201,7 +3211,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isVisibleIIIFRenderingViewer_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
+        assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
     }
 
     /**
