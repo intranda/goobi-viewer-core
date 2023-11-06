@@ -1736,7 +1736,9 @@ public final class SearchHelper {
             throw new IllegalArgumentException("bmfc may not be null");
         }
 
-        logger.trace("getFilteredTermsCount: {} ({})", bmfc.getFieldForLanguage(language), startsWith);
+        if (logger.isTraceEnabled()) {
+            logger.trace("getFilteredTermsCount: {} ({})", bmfc.getFieldForLanguage(language), startsWith);
+        }
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
         QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0, language);
@@ -1840,7 +1842,6 @@ public final class SearchHelper {
             String facetField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
             if (resp.getResults().isEmpty() && resp.getFacetField(facetField) != null) {
                 // If only browsing records and anchors, use faceting
-                logger.trace("using faceting: {}", facetField);
                 for (Count count : resp.getFacetField(facetField).getValues()) {
                     terms.put(count.getName(),
                             new BrowseTerm(count.getName(), null,
@@ -1898,6 +1899,8 @@ public final class SearchHelper {
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField());
             fields.add(bmfc.getSortField());
+            fields.add(SearchHelper.facetifyField(bmfc.getSortField()));
+            fields.add(SearchHelper.facetifyField(bmfc.getFieldForLanguage(language)));
         } else {
             sbQuery.append(bmfc.getFieldForLanguage(language));
         }
@@ -1936,7 +1939,8 @@ public final class SearchHelper {
         logger.trace("row count: {}", hitCount);
 
         // Faceting (no rows requested or expected row count too high)
-        if (rows == 0 || hitCount > DataManager.getInstance().getConfiguration().getBrowsingMenuIndexSizeThreshold()) {
+        if ((rows == 0 || hitCount > DataManager.getInstance().getConfiguration().getBrowsingMenuIndexSizeThreshold())
+                && StringUtils.isEmpty(bmfc.getSortField())) {
             return DataManager.getInstance()
                     .getSearchIndex()
                     .searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, null, false);
@@ -1960,18 +1964,16 @@ public final class SearchHelper {
     private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith,
             ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits, String language) {
         // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
-        Collection<Object> termList = doc.getFieldValues(bmfc.getFieldForLanguage(language));
-        if (termList == null) {
+        List<String> termList = SolrTools.getMetadataValues(doc, bmfc.getFieldForLanguage(language));
+        if (termList.isEmpty()) {
             return;
         }
 
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-        String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
         int count = -1;
-        for (Object o : termList) {
+        for (String term : termList) {
             count++;
-            String term = String.valueOf(o);
             if (StringUtils.isEmpty(term)) {
                 continue;
             }
@@ -1981,9 +1983,18 @@ public final class SearchHelper {
                 continue;
             }
 
+            String sortTerm = count == 0 ? SolrTools.getSingleFieldStringValue(doc, bmfc.getSortField()) : null; // Sort field value should only represent the first term instance
             String compareTerm = term;
-            if (StringUtils.isNotEmpty(sortTerm) && count == 0) {
+            if (StringUtils.isNotEmpty(sortTerm)) {
                 compareTerm = sortTerm;
+            } else if (bmfc.getSortField() != null) {
+                // Only the first term will have a matching sort field, so attempt a fallback to a facetified variant (make sure to match the order)
+                List<String> facetifiedSortTermValues = SolrTools.getMetadataValues(doc, SearchHelper.facetifyField(bmfc.getSortField()));
+                String facetifiedSortTerm = facetifiedSortTermValues.size() > count ? facetifiedSortTermValues.get(count) : null;
+                if (StringUtils.isNotEmpty(facetifiedSortTerm)) {
+                    compareTerm = facetifiedSortTerm;
+                    sortTerm = facetifiedSortTerm;
+                }
             }
             if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
                 // Exclude leading characters from filters explicitly configured to be ignored
@@ -1991,6 +2002,7 @@ public final class SearchHelper {
                         DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars()).trim();
             }
             if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
+                // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
                 continue;
             }
 
@@ -1999,14 +2011,13 @@ public final class SearchHelper {
                 synchronized (lock) {
                     // Another thread may have added this term by now
                     if (!terms.containsKey(term)) {
-                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
+                        //                        logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm,
+                        //                                bmfc.isTranslate());
                         terms.put(term, new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null));
                     }
                 }
                 browseTerm = terms.get(term);
             }
-
-            sortTerm = null; // only use the sort term for the first term
 
             // If using aggregated search, do not count instances of records that already have been counted
             if (aggregateHits && browseTerm.getPiList().contains(pi)) {
