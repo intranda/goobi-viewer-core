@@ -1748,16 +1748,16 @@ public final class SearchHelper {
 
         int ret = 0;
         String facetField =
-                StringUtils.isNotEmpty(bmfc.getSortField()) ? bmfc.getSortField() : SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
-        logger.trace("facet field: " + facetField);
-        for (Count count : resp.getFacetField(facetField).getValues()) {
-            logger.trace("count: " + count.getCount());
-            if (count.getCount() == 0
-                    || (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase()))) {
-                continue;
+                StringUtils.isNotEmpty(bmfc.getSortField()) ? SearchHelper.facetifyField(bmfc.getSortField())
+                        : SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
+        if (resp.getFacetField(facetField) != null) {
+            for (Count count : resp.getFacetField(facetField).getValues()) {
+                if (count.getCount() == 0
+                        || (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase()))) {
+                    continue;
+                }
+                ret++;
             }
-            ret++;
-
         }
         logger.debug("getFilteredTermsCount result: {}", ret);
         return ret;
@@ -1799,7 +1799,7 @@ public final class SearchHelper {
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
         QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows, language);
-        logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
+        // logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
         if ("0-9".equals(startsWith)) {
             // TODO Is this still necessary?
             // Numerical filtering
@@ -1883,6 +1883,7 @@ public final class SearchHelper {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should contain facets for the main field
+     * @should contain facets for the sort field
      */
     static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
             int start, int rows, String language) throws PresentationException, IndexUnreachableException {
@@ -1926,8 +1927,9 @@ public final class SearchHelper {
 
         List<String> facetFields = Collections.singletonList(SearchHelper.facetifyField(bmfc.getFieldForLanguage(language)));
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            // Add facetified sort field to facet fields (SORT_ fields don't work for faceting)
             facetFields = new ArrayList<>(facetFields);
-            facetFields.add(bmfc.getSortField());
+            facetFields.add(SearchHelper.facetifyField(bmfc.getSortField()));
         }
         Map<String, String> params = new HashMap<>();
         long hitCount = DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries);
@@ -1997,8 +1999,7 @@ public final class SearchHelper {
                 synchronized (lock) {
                     // Another thread may have added this term by now
                     if (!terms.containsKey(term)) {
-                        logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm,
-                                bmfc.isTranslate());
+                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
                         terms.put(term, new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null));
                     }
                 }
