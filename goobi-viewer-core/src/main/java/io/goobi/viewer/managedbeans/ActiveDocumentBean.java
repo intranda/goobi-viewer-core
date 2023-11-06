@@ -418,6 +418,8 @@ public class ActiveDocumentBean implements Serializable {
                     if (access.isRedirect() && StringUtils.isNotEmpty(access.getRedirectUrl())) {
                         logger.debug("Redirecting to {}", access.getRedirectUrl());
                         try {
+                            //reset the bean's state. Otherwise this code will be called again when the redirected page uses activeDocumentBean at all (may the the case in widgets)
+                            reset();
                             FacesContext.getCurrentInstance().getExternalContext().redirect(access.getRedirectUrl());
                             return;
                         } catch (IOException e) {
