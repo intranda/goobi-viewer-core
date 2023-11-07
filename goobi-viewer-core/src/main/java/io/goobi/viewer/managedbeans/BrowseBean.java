@@ -457,7 +457,6 @@ public class BrowseBean implements Serializable {
 
                 Collections.sort(availableStringFilters.get(browsingMenuFieldForCurrentLanguage),
                         new AlphanumCollatorComparator(Collator.getInstance(locale)));
-                // logger.debug(availableStringFilters.toString());
             }
 
             // If no filter is set, redirect to first available filter (if so configured)
@@ -725,7 +724,15 @@ public class BrowseBean implements Serializable {
      * @return the availableStringFilters
      */
     public List<String> getAvailableStringFilters() {
-        return availableStringFilters.get(getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null));
+        String field = getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null);
+        if (availableStringFilters.get(field) == null) {
+            try {
+                searchTerms();
+            } catch (PresentationException | IndexUnreachableException | RedirectException e) {
+                //
+            }
+        }
+        return availableStringFilters.get(field);
     }
 
     /**
