@@ -1005,7 +1005,9 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @deprecated URL is now build in HTML
      */
+    @Deprecated(since = "23.11")
     public String getLogPart() throws IndexUnreachableException {
         return new StringBuilder("/").append(getPersistentIdentifier())
                 .append('/')
