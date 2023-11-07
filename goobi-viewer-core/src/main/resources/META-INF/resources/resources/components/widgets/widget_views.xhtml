@@ -61,7 +61,7 @@
 						<li
 							class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
 							<h:outputLink
-								value="#{navigationHelper.thumbsActiveUrl}#{activeDocumentBean.thumbPart}">
+								value="#{navigationHelper.thumbsActiveUrl}/#{activeDocumentBean.persistentIdentifier}/1/">
 								<h:outputText value="#{msg.thumbGal}" />
 								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.thumbGal}"/>
 							</h:outputLink>
