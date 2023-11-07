@@ -16,7 +16,8 @@
 	</composite:interface>
 
 	<composite:implementation>
-	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and !activeDocumentBean.viewManager.metadataViewOnly and not activeDocumentBean.anchor and not activeDocumentBean.group}">
+	    <ui:fragment
+	        rendered="#{activeDocumentBean.recordLoaded and !activeDocumentBean.viewManager.metadataViewOnly and not activeDocumentBean.anchor and not activeDocumentBean.group}">
 		<div id="widgetViews" class="widget">
 			<h:form id="widgetViewsForm">
 				<h2 >#{msg.view}</h2>
@@ -26,7 +27,7 @@
 						<li
 							class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
 							<h:outputLink
-								value="#{navigationHelper.imageActiveUrl}#{activeDocumentBean.logPart}">
+								value="#{navigationHelper.imageActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
 								<h:outputText
 									value="#{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}" />
 								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}"/>
@@ -39,7 +40,7 @@
 						<li
 							class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
 							<h:outputLink
-								value="#{navigationHelper.calendarActiveUrl}#{activeDocumentBean.logPart}">
+								value="#{navigationHelper.calendarActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
 								<h:outputText value="#{msg.calendar}" />
 								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.calendar}"/>
 							</h:outputLink>
@@ -73,7 +74,8 @@
                         <ui:repeat var="metadataView" value="#{metadataBean.metadataViews}">
                             <ui:fragment rendered="#{metadataView.isVisible(activeDocumentBean.viewManager.topStructElement)}">
                                 <li class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
-                                    <h:outputLink value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}#{activeDocumentBean.logPart}">
+                                    <h:outputLink
+                                        value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
                                         <h:outputText rendered="#{metadataView.label != null}" value="#{msg[metadataView.label]}" />
                                         <h:outputText rendered="#{metadataView.label == null}" value="#{msg[metadataBean.defaultMetadataLabel]}" />
                                         <f:passThroughAttribute name="aria-label"
