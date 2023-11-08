@@ -74,6 +74,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * Creates and returns the appropriate loader instance for the given <code>StructElement</code>.
      *
      * @param topStructElement Top level <code>StructElement</code> of the record
+     * @param list 
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -83,8 +84,13 @@ public abstract class AbstractPageLoader implements IPageLoader {
      */
     public static AbstractPageLoader create(StructElement topStructElement)
             throws IndexUnreachableException, PresentationException, DAOException {
+        return create(topStructElement, Collections.emptyList());
+    }
+    
+    public static AbstractPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad)
+            throws IndexUnreachableException, PresentationException, DAOException {
         int numPages = topStructElement.getNumPages();
-        if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
+        if (pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
             return new EagerPageLoader(topStructElement);
         }
         logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);

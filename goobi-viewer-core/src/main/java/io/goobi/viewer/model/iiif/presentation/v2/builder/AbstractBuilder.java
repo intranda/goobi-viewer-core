@@ -405,13 +405,17 @@ public abstract class AbstractBuilder {
      * {@link io.goobi.viewer.model.iiif.presentation.v2.builder.StructElementComparator} If no hits are found, an empty list is returned
      *
      * @param pi a {@link java.lang.String} object.
+     * @param pagesToInclude 
      * @return A list of all docstructs with the given pi or children thereof. An empty list if no hits are found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public List<StructElement> getDocumentWithChildren(String pi) throws PresentationException, IndexUnreachableException {
+    public List<StructElement> getDocumentWithChildren(String pi, List<Integer> pagesToInclude) throws PresentationException, IndexUnreachableException {
         String anchorQuery = "(ISWORK:* AND PI_PARENT:" + pi + ") OR (ISANCHOR:* AND PI:" + pi + ")";
         String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
+        if(!pagesToInclude.isEmpty()) {
+            workQuery += " AND THUMBPAGENO:(" + pagesToInclude.stream().map(Object::toString).collect(Collectors.joining(" ")) + ")";
+        }
         String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
         List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
 

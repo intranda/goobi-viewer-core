@@ -104,11 +104,11 @@ public class IIIFPresentation2ResourceBuilder {
         this.request = request;
     }
 
-    public IPresentationModelElement getManifest(String pi, BuildMode mode) throws PresentationException, IndexUnreachableException,
+    public IPresentationModelElement getManifest(String pi, List<Integer> pagesToInclude, BuildMode mode) throws PresentationException, IndexUnreachableException,
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         getManifestBuilder().setBuildMode(mode);
         getSequenceBuilder().setBuildMode(mode);
-        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) ? getManifestBuilder().getDocumentWithChildren(pi)
+        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) ? getManifestBuilder().getDocumentWithChildren(pi, pagesToInclude)
                 : Arrays.asList(getManifestBuilder().getDocument(pi));
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + pi);
@@ -121,7 +121,7 @@ public class IIIFPresentation2ResourceBuilder {
         } else if (manifest instanceof Manifest2) {
             getManifestBuilder().addAnchor((Manifest2) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
 
-            getSequenceBuilder().addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), request);
+            getSequenceBuilder().addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), pagesToInclude, request);
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId) && BuildMode.IIIF.equals(mode)) {
@@ -161,7 +161,7 @@ public class IIIFPresentation2ResourceBuilder {
         } else if (manifest instanceof Manifest2) {
             new SequenceBuilder(urls).setBuildMode(buildMode)
                     .setPreferedView(preferedView)
-                    .addBaseSequence((Manifest2) manifest, doc, manifest.getId().toString(), request);
+                    .addBaseSequence((Manifest2) manifest, doc, manifest.getId().toString(), Collections.emptyList(), request);
             return ((Manifest2) manifest).getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
@@ -214,7 +214,7 @@ public class IIIFPresentation2ResourceBuilder {
                     (id, lang) -> urls.path(RECORDS_RECORD, RECORDS_CMDI_LANG).params(id, lang).buildURI());
 
         } else {
-            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", request);
+            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", Collections.emptyList(), request);
             return getLayerBuilder().generateLayer(pi, annoLists, type);
         }
     }
