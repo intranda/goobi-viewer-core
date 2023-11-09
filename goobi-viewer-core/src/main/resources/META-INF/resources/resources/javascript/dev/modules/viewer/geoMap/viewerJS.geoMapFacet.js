@@ -109,7 +109,8 @@ var viewerJS = ( function ( viewer ) {
 
 		// close map overlay with escape
 		$(document).on('keyup', e => {
-			if ( $( this.config.editMode.$editModeMap ).length ) {
+			var $overlayMap = $( this.config.editMode.$editModeMap );
+			if ( $overlayMap.length && $overlayMap.is(":visible")) {
 				if (e.key == "Escape") {
 					$(this.config.buttons.$cancelEditMode).click();
 				}
