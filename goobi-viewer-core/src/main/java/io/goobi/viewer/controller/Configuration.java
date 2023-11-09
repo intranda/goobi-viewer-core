@@ -2905,17 +2905,14 @@ public class Configuration extends AbstractConfiguration {
         return ret;
     }
 
-    public String getFacetFieldStyle(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.facets.field");
-        if (fieldList != null) {
-            for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
-                if (subElement.getString(".").equals(field)) {
-                    return subElement.getString("[@style]", "");
-                }
-            }
-        }
-
-        return "";
+    /**
+     * 
+     * @param field
+     * @return
+     * @should return correct value
+     */
+    public String getFacetFieldStyle(String facetField) {
+        return getPropertyForFacetField(facetField, "[@style]", "");
     }
 
     /**
@@ -3065,7 +3062,7 @@ public class Configuration extends AbstractConfiguration {
         String value = getPropertyForFacetField(facetField, "[@skipInWidget]", "false");
         return Boolean.valueOf(value);
     }
-    
+
     /**
      * 
      * @param facetField

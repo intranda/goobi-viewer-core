@@ -1824,6 +1824,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getFacetFieldStyle(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getFacetFieldStyle_shouldReturnCorrectValue() throws Exception {
+        assertEquals("graph", DataManager.getInstance().getConfiguration().getFacetFieldStyle(SolrConstants.YEAR));
+    }
+
+    /**
      * @see Configuration#getPriorityValuesForFacetField(String)
      * @verifies return return all configured elements for regular fields
      */
