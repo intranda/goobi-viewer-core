@@ -37,7 +37,9 @@ import org.apache.logging.log4j.LogManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.BaseXException;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.archives.ArchiveManager.DatabaseState;
@@ -83,16 +85,19 @@ public class ArchiveBean implements Serializable {
     public void initializeArchiveTree(String selectedEntryId) {
 
         if (getCurrentArchive() != null) {
-            this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
-            this.databaseLoaded = this.archiveTree != null;
-            this.searchString = "";
-            if (this.archiveTree != null) {
+            try {
+                this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
+                this.databaseLoaded = true;
+                this.searchString = "";
                 this.archiveTree.resetSearch();
+                if (StringUtils.isNotBlank(selectedEntryId)) {
+                    this.setSelectedEntryId(selectedEntryId);
+                }
+            } catch(ArchiveException e) {
+                logger.error("Error initializing archive tree: {}", e.getMessage());
+                Messages.error("Error initializing archive tree: " + e.getMessage());
+                this.databaseLoaded = false;
             }
-        }
-        //load selected entry
-        if (isDatabaseLoaded() && StringUtils.isNotBlank(selectedEntryId)) {
-            this.setSelectedEntryId(selectedEntryId);
         }
     }
 
@@ -324,7 +329,14 @@ public class ArchiveBean implements Serializable {
      * @return the databaseState
      */
     public DatabaseState getDatabaseState() {
-        return isDatabaseLoaded() ? DatabaseState.ARCHIVE_TREE_LOADED : archiveManager.getDatabaseState();
+        if(isDatabaseLoaded()) {
+            return DatabaseState.ARCHIVE_TREE_LOADED;
+        } else if(archiveManager.isInErrorState()) {
+            return archiveManager.getDatabaseState();
+        } else {
+            archiveManager.updateArchiveList();
+            return archiveManager.getDatabaseState();
+        }
     }
 
     public boolean isDatabaseLoaded() {

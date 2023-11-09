@@ -43,6 +43,7 @@ import org.mockito.Mockito;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -86,7 +87,7 @@ public class ArchiveManagerTest extends AbstractTest{
     }
 
     @Test
-    public void testGetDatabase() {
+    public void testGetDatabase() throws ArchiveException {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
             ArchiveTree tree = archiveManager.getArchiveTree("database 1", "resource 1");
@@ -105,7 +106,7 @@ public class ArchiveManagerTest extends AbstractTest{
     }
 
     @Test
-    public void testUpdateDatabase() throws IllegalStateException, ConfigurationException, IOException, HTTPException, JDOMException {
+    public void testUpdateDatabase() throws IllegalStateException, ConfigurationException, IOException, HTTPException, JDOMException, ArchiveException {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
             archiveManager.getArchiveTree("database 1", "resource 1");

@@ -42,16 +42,20 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.exceptions.ArchiveConfigurationException;
+import io.goobi.viewer.exceptions.ArchiveConnectionException;
+import io.goobi.viewer.exceptions.ArchiveException;
+import io.goobi.viewer.exceptions.ArchiveParseException;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -103,7 +107,11 @@ public class ArchiveManager {
         /**
          * State only applicable to a single database if loading the database failed because the basex server answer could not be interpreted
          */
-        ERROR_INVALID_FORMAT
+        ERROR_INVALID_FORMAT,
+        /**
+         * State indicating that a database could not be parsed due to errors in the configuration for building the tree entries
+         */
+        ERROR_INVALID_CONFIGURATION;
     }
 
     public ArchiveManager(String basexUrl, Map<String, String> archiveNodeTypes, SolrSearchIndex searchIndex) {
@@ -160,7 +168,7 @@ public class ArchiveManager {
                     cachedDatabases.keySet().stream().filter(res -> res.getCombinedId().equals(db.getCombinedId())).findAny().orElse(null);
             ArchiveTree cachedTree = cachedDatabases.get(cachedResource);
 
-            if (cachedResource == null || isOutdated(cachedResource, db)) {
+            if (cachedTree == null || cachedResource == null || isOutdated(cachedResource, db)) {
                 this.archives.put(db, null);
                 updated = true;
             } else {
@@ -183,7 +191,7 @@ public class ArchiveManager {
         }
     }
 
-    public ArchiveTree getArchiveTree(String archiveId, String resourceId) {
+    public ArchiveTree getArchiveTree(String archiveId, String resourceId) throws ArchiveException {
         ArchiveResource resource = getArchive(archiveId, resourceId);
         this.initializeArchiveTree(resource);
         return this.archives.get(resource);
@@ -208,7 +216,7 @@ public class ArchiveManager {
         return Optional.empty();
     }
 
-    public ArchiveResource loadArchiveForEntry(String identifier) {
+    public ArchiveResource loadArchiveForEntry(String identifier) throws ArchiveException {
         ArchiveResource resource = getArchiveForEntry(identifier);
         this.initializeArchiveTree(resource);
         return resource;
@@ -357,22 +365,23 @@ public class ArchiveManager {
         return tree.getRootElement();
     }
 
-    private void initializeArchiveTree(ArchiveResource resource) {
+    private void initializeArchiveTree(ArchiveResource resource) throws ArchiveException {
 
         if (resource != null) {
             try {
                 if (this.archives.get(resource) == null || isOutdated(resource)) {
                     ArchiveTree archiveTree = loadDatabase(eadParser, resource);
-                    if (archiveTree != null) {
-                        this.archives.put(resource, archiveTree);
-                    }
+                    this.archives.put(resource, archiveTree);
                 }
             } catch (IOException | HTTPException e) {
-                logger.error("Error retrieving database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl());
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
-            } catch (JDOMException | ConfigurationException | BaseXException e) {
-                logger.error("Error reading database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl());
+                throw new ArchiveConnectionException("Error retrieving database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl(), e);
+            } catch (JDOMException | BaseXException e) {
                 this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
+                throw new ArchiveParseException("Error reading database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl(), e);
+            } catch (ConfigurationException e) {
+                this.databaseState = DatabaseState.ERROR_INVALID_CONFIGURATION;
+                throw new ArchiveConfigurationException("Error loading database configuration for archive {}: {}", resource.getCombinedName(), e.getMessage());
             }
         }
 
@@ -409,7 +418,6 @@ public class ArchiveManager {
     }
 
     private static ArchiveTree loadTree(ArchiveEntry rootElement) {
-
         ArchiveTree ret = new ArchiveTree();
         ret.generate(rootElement);
         if (ret.getSelectedEntry() == null) {
@@ -436,8 +444,10 @@ public class ArchiveManager {
      */
     public void updateArchiveList() {
         try {
+
             if (this.initArchivesFromBaseXServer(eadParser)) {
                 this.eadParser.updateAssociatedRecordMap();
+                this.databaseState = DatabaseState.ARCHIVES_LOADED;
             }
         } catch (IOException | HTTPException e) {
             logger.error("Failed to retrieve database names from '{}': {}", eadParser.getBasexUrl(), e.toString());
@@ -446,5 +456,13 @@ public class ArchiveManager {
             logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());
             this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
         }
+    }
+
+    public boolean isInErrorState() {
+        return this.databaseState == DatabaseState.ERROR_INVALID_CONFIGURATION ||
+                this.databaseState == DatabaseState.ERROR_INVALID_FORMAT || 
+                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED || 
+                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED || 
+                this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
     }
 }
