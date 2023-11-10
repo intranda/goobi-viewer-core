@@ -40,13 +40,14 @@ var viewerJS = (function (viewer) {
         this.enable();
         
         // toggle filter input
-        $( 'body' ).on( 'click', '[data-toggle="filter-input"]', function( event ) {
+        
+        this.config.inputToggle.on("click", event => {
         	event.stopImmediatePropagation();
 
-        	var $input = $( this ).prev();
+        	var $input = this.config.input;
         	
         	if ( !$input.hasClass( 'in' ) ) {
-        		_resetFilters();        		
+        		this.resetFilters();        		
         	}
         	
         	$input.toggleClass( 'in' ).focus();        	
@@ -54,13 +55,14 @@ var viewerJS = (function (viewer) {
         	if ( $input.val() !== '' ) {
         		$input.val( '' ).trigger( 'input' );
         	}
-        } );
-        $( 'body' ).on( 'click', '.widget-search-facets__collection h2', function( event ) {
+		})
+		
+		this.config.header.on("click", event => {
         	event.stopImmediatePropagation();
         	
-        	var $input = $( this ).parent().find( '.widget-search-facets__filter-input' );
+        	var $input = this.config.input;
         	
-        	_resetFilters();
+        	this.resetFilters();
         	
         	$input.toggleClass( 'in' ).focus();
         	
@@ -69,50 +71,44 @@ var viewerJS = (function (viewer) {
         	}
         } );
 
-        // reset filter on esc
-        $( 'body' ).on( 'keyup', '.widget-search-facets__filter-input', function( event ) {
-        	switch ( event.keyCode ) {
-	        	case 27:
-	        		$( this ).removeClass( 'in' ).val( '' ).trigger( 'input' );
-	        		$( this ).parents( '.widget-search-facets__collection' ).find( 'li' ).show();
-	        		break;
-        	}
-        } );
+        this.config.input.on("keyup", event => {
+			if(event.keyCode == 27) {
+				this.resetFilters();
+			}
+		});
         
         // reset filter on body click
-        $( 'body' ).on( 'click', function( event ) {
+        $( 'body' ).on( 'click', event => {
         	if ( $( '.widget-search-facets__filter-input' ).hasClass( 'in' ) ) {
         		if ( event.target.id == 'searchListFacetsWrapper' || $( event.target ).closest( '#searchListFacetsWrapper' ).length ) {
                     return;
                 }
                 else {
-                	_resetFilters();
+                	this.resetFilters();
                 }
         	}
         } );
+        
     }
-    
+
     /**
      * @description Method to reset all other filter when clicking another one.
      * @method _resetFilters
      * */
-    function _resetFilters() {
+    viewer.listFilter.prototype.resetFilters = function() {
     	if ( _debug ) {
     		console.log( 'EXECUTE: _resetFilters' );
     	}
-    	
-    	$( '.widget-search-facets__filter-input' ).each( function() {
-    		if ( $( this ).hasClass( 'in' ) ) {
-    			$( this ).removeClass( 'in' ).val( '' ).trigger( 'input' );
-    			$( this ).parents( '.widget-search-facets__collection' ).find( 'li' ).show();
-    		}
-    	} );
+		if ( this.config.input.hasClass( 'in' ) ) {
+			this.config.input.removeClass( 'in' ).val( '' ).trigger( 'input' );
+			this.config.elements.show();
+		}
     }
 
     // set event for input
     viewer.listFilter.prototype.initListener = function () {
-        this.observer = rxjs.fromEvent( $( this.config.input ), 'input' )
-            .pipe(rxjs.operators.debounceTime( 100 ))
+        this.observer = rxjs.fromEvent( this.config.input, 'input' )
+            .pipe(rxjs.operators.debounceTime( 200 ))
             .subscribe( event => this.filter( event ) );
     }
 
@@ -134,12 +130,12 @@ var viewerJS = (function (viewer) {
             
             $( this.config.elements ).each( ( index, element ) => {
                 let $element = $( element );
-                let elementText = $element.text().trim().toLowerCase();
+                let elementText = $element.find("a").text().trim().toLowerCase();
                 
                 if ( elementText.includes( value ) ) {
-                    $element.parent().show();
+                    $element.show();
                 } else {
-                    $element.parent().hide();
+                    $element.hide();
                 }
             } );
         } 

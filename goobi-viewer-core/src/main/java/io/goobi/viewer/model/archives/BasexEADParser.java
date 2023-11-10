@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,6 +42,8 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -53,9 +55,8 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -190,7 +191,6 @@ public class BasexEADParser {
         if (document == null) {
             throw new IllegalArgumentException("document may not be null");
         }
-
         Element collection = document.getRootElement();
         Element eadElement = collection.getChild("ead", NAMESPACE_EAD);
         ArchiveEntry rootElement = parseElement(1, 0, eadElement, configuredFields, associatedRecordMap);
@@ -211,7 +211,8 @@ public class BasexEADParser {
     private Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
         if (archive != null) {
             String response;
-            String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
+            String url =
+                    UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
             logger.trace("URL: {}", url);
             response = NetTools.getWebContentGET(url);
 
@@ -452,7 +453,6 @@ public class BasexEADParser {
         if (metadataConfig == null) {
             throw new ConfigurationException("No basexMetadata configurations found");
         }
-
         // metadataConfig.setListDelimiter('&');
         metadataConfig.setExpressionEngine(new XPathExpressionEngine());
 
@@ -468,7 +468,7 @@ public class BasexEADParser {
                 configuredFields.add(field);
             }
         } catch (Exception e) {
-            throw new ConfigurationException("Error reading basexMetadata configuration", e);
+            throw new ConfigurationException("Error reading basexMetadata configuration: " + e.getMessage());
         }
 
         return this;

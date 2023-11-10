@@ -434,9 +434,11 @@ var viewerJS = (function () {
 
         $facets.each(function () {
             var filterConfig = {
+				inputToggle: $(this).find('[data-toggle="filter-input"]'),
                 wrapper: $(this).find('.widget-search-facets__filter'),
+                header: $(this).find('h2'),
                 input: $(this).find('.widget-search-facets__filter-input'),
-                elements: $(this).find('li a')
+                elements: $(this).find('li')
             }
 
             var filter = new viewerJS.listFilter(filterConfig);

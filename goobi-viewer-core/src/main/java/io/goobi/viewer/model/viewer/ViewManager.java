@@ -78,6 +78,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
@@ -233,13 +234,17 @@ public class ViewManager implements Serializable {
         this.mimeType = mimeType;
         logger.trace("mimeType: {}", mimeType);
 
-        if (DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
-            String archiveId = getArchiveEntryIdentifier();
-            if (StringUtils.isNotBlank(archiveId)) {
-                DataManager.getInstance().getArchiveManager().updateArchiveList();
-                this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
-                this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
+        try {            
+            if (DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
+                String archiveId = getArchiveEntryIdentifier();
+                if (StringUtils.isNotBlank(archiveId)) {
+                    DataManager.getInstance().getArchiveManager().updateArchiveList();
+                    this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
+                    this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
+                }
             }
+        } catch(ArchiveException e) {
+            logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());
         }
     }
 
