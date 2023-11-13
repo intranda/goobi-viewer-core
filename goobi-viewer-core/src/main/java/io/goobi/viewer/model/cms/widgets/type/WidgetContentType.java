@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.widgets.type;
 
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 
 public interface WidgetContentType {
 
@@ -92,4 +93,7 @@ public interface WidgetContentType {
     }
     
     public boolean isAllowedForPage(CMSPage page);
+
+
+    boolean isAllowedForPage(CMSPageTemplate template);
 }
