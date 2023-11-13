@@ -33,7 +33,9 @@
                         <ui:fragment rendered="#{!cc.attrs.customName}">
                             <button type="button" class="btn btn--clean" data-toggle="user-dropdown">
                                 <!-- USER NAME -->
-								<span class="login-navigation__user-name" data-toggle="tooltip" data-placement="bottom">#{userBean.user.displayNameEscaped}</span>
+								<span class="login-navigation__user-name" data-toggle="tooltip" data-placement="bottom">
+								    <h:outputText escape="true">#{userBean.user.displayName}</h:outputText>
+								</span>
                                 <!-- USER ICON -->
                                 <span class="login-navigation__user-icon">
 									<img class="login-navigation__mini-avatar" src="#{userBean.user.getAvatarUrl(50)}" alt="User Avatar" />
