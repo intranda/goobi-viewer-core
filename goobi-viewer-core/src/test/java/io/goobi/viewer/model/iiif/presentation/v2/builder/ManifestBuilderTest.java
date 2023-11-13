@@ -27,7 +27,9 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -85,9 +87,9 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
             throw new ContentNotFoundException("No document found for pi " + PI);
         }
         StructElement mainDoc = docs.get(0);
-        IPresentationModelElement manifest = builder.generateManifest(mainDoc);
+        IPresentationModelElement manifest = builder.generateManifest(mainDoc, Collections.emptyList());
         ((Manifest2) manifest).setContext(IIIFPresentationResponseFilter.CONTEXT_PRESENTATION_2);
-        sequenceBuilder.addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), null);
+        sequenceBuilder.addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), Collections.emptyList(), null);
 
         String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
         if (StringUtils.isNotBlank(topLogId)) {
@@ -133,7 +135,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         ele.setPi(PI);
         ele.setImageNumber(1);
         ele.setLogid("LOG_0003");
-        builder.addRenderings(manifest, ele);
+        builder.addRenderings(manifest, ele, Optional.empty());
         LinkingContent viewerRendering = manifest.getRendering()
                 .stream()
                 .filter(rend -> rend.getType().equals(DcType.INTERACTIVE_RESOURCE.getLabel()))

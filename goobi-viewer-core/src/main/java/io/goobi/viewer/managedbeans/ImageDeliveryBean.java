@@ -306,7 +306,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Return the URL to the IIIF manifest of the current work, of it exists. Otherwise return empty String
+     * Return the URL to the IIIF manifest of the current work, if it exists. Otherwise return empty String
      *
      * @return the manifest url
      */
@@ -321,6 +321,22 @@ public class ImageDeliveryBean implements Serializable {
         }).orElse("");
     }
 
+    /**
+     * Return the URL to the IIIF manifest of the current page, if it exists. Otherwise return empty String
+     *
+     * @return the manifest url
+     */
+    public String getIiifPageManifest() {
+        return getCurrentPageIfExists().map(page -> {
+            try {
+                return getPresentation().getPageManifestUrl(page.getPi(), page.getOrder());
+            } catch (URISyntaxException e) {
+                logger.error(e.toString(), e);
+                return null;
+            }
+        }).orElse("");
+    }
+    
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.IIIFUrlHandler}, creates it if it doesn't exist yet
      *

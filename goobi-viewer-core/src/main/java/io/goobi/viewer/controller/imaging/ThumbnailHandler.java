@@ -279,7 +279,7 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(int order, String pi, int width, int height)
             throws ViewerConfigurationException {
         try {
-            PhysicalElement page = getPage(pi, order);
+            PhysicalElement page = DataManager.getInstance().getSearchIndex().getPage(pi, order);
             if (page != null) {
                 return getThumbnailUrl(page, width, height);
             }
@@ -321,35 +321,13 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(int order, String pi, int size)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        PhysicalElement page = getPage(pi, order);
+        PhysicalElement page = DataManager.getInstance().getSearchIndex().getPage(pi, order);
         if (page != null) {
             return getSquareThumbnailUrl(page, size);
         }
         return null;
     }
 
-    /**
-     * <p>
-     * getPage.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param order a int.
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if (doc != null) {
-            StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
-            IPageLoader pageLoader = AbstractPageLoader.create(struct);
-            return pageLoader.getPage(order);
-        } else {
-            return null;
-        }
-    }
 
     /**
      * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given

@@ -85,6 +85,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -754,6 +755,23 @@ public abstract class AbstractBuilder {
                 return thumb;
             }
         } catch (URISyntaxException e) {
+            logger.warn("Unable to retrieve thumbnail url", e);
+        }
+        return null;
+    }
+    
+    protected ImageResource getThumbnail(StructElement ele, int pageNo) {
+        try {
+            String thumbUrl = this.thumbs.getThumbnailUrl(pageNo, ele.getPi());
+            if (StringUtils.isNotBlank(thumbUrl)) {
+                ImageResource thumb = new ImageResource(new URI(thumbUrl));
+                if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
+                    String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
+                    thumb.setService(new ImageInformation3(imageInfoURI));
+                }
+                return thumb;
+            }
+        } catch (URISyntaxException | IndexUnreachableException | PresentationException | DAOException | ViewerConfigurationException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
         return null;

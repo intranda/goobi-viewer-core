@@ -64,6 +64,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
@@ -97,6 +98,8 @@ public class ManifestBuilder extends AbstractBuilder {
 
     private static final Logger logger = LogManager.getLogger(ManifestBuilder.class);
 
+    private final CanvasBuilder canvasBuilder;
+    
     /**
      * <p>
      * Constructor for ManifestBuilder.
@@ -106,6 +109,7 @@ public class ManifestBuilder extends AbstractBuilder {
      */
     public ManifestBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
+        this.canvasBuilder =  new CanvasBuilder(urls);
 
     }
 
@@ -118,7 +122,7 @@ public class ManifestBuilder extends AbstractBuilder {
         StructElement mainDocument = documents.get(0);
         List<StructElement> childDocuments = documents.subList(1, documents.size());
 
-        AbstractPresentationModelElement3 manifest = generateManifest(mainDocument);
+        AbstractPresentationModelElement3 manifest = generateManifest(mainDocument, Optional.empty());
 
         if (manifest instanceof Manifest3) {
             addPages(mainDocument, (Manifest3) manifest);
@@ -126,6 +130,21 @@ public class ManifestBuilder extends AbstractBuilder {
             addAnnotations(mainDocument.getPi(), (Manifest3) manifest, request);
         } else if (manifest instanceof Collection3) {
             addVolumes(mainDocument, childDocuments, (Collection3) manifest);
+        }
+
+        return manifest;
+    }
+    
+    public IPresentationModelElement build(String pi, Integer pageNo, HttpServletRequest servletRequest) throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException, ViewerConfigurationException, ContentLibException, URISyntaxException, DAOException {
+        StructElement mainDocument = this.dataRetriever.getDocument(pi);
+
+        AbstractPresentationModelElement3 manifest = generateManifest(mainDocument, Optional.ofNullable(pageNo));
+
+        if (manifest instanceof Manifest3) {
+            addPage((Manifest3)manifest, mainDocument, pageNo);
+            addAnnotations(mainDocument.getPi(), pageNo, (Manifest3) manifest, servletRequest);
+        } else if (manifest instanceof Collection3) {
+            throw new IllegalRequestException("Cannot build a page manifest: PI refers to an anchor record without pages");
         }
 
         return manifest;
@@ -147,6 +166,23 @@ public class ManifestBuilder extends AbstractBuilder {
             logger.error("Error adding annotations to manifest: {}", e.toString(), e);
         }
     }
+    
+    private void addAnnotations(String pi, int pageNo, Manifest3 manifest, HttpServletRequest request) {
+        try {
+            ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
+            URI uri = URI.create(apiPath.build());
+            AnnotationPage crowdAnnos = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForPage(pi, pageNo, uri).getFirst();
+            if (crowdAnnos != null && !crowdAnnos.getItems().isEmpty()) {
+                manifest.addAnnotations(new InternalAnnotationPage(crowdAnnos));
+            }
+            AnnotationPage comments = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForPageComments(pi, pageNo, uri).getFirst();
+            if (comments != null && !comments.getItems().isEmpty()) {
+                manifest.addAnnotations(new InternalAnnotationPage(comments));
+            }
+        } catch (DAOException e) {
+            logger.error("Error adding annotations to manifest: {}", e.toString(), e);
+        }
+    }
 
     /**
      * @param mainDocument
@@ -156,9 +192,8 @@ public class ManifestBuilder extends AbstractBuilder {
     private void addVolumes(StructElement mainDocument, List<StructElement> childDocuments, Collection3 manifest) {
         for (StructElement volume : childDocuments) {
             try {
-                IPresentationModelElement child = generateManifest(volume);
+                IPresentationModelElement child = generateManifest(volume, Optional.empty());
                 if (child instanceof Manifest3) {
-                    //                    addBaseSequence((Manifest)child, volume, child.getId().toString());
                     manifest.addItem((Manifest3) child);
                 }
             } catch (ViewerConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | ContentLibException e) {
@@ -202,7 +237,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws IllegalPathSyntaxException
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    private AbstractPresentationModelElement3 generateManifest(StructElement ele)
+    private AbstractPresentationModelElement3 generateManifest(StructElement ele, Optional<Integer> pageNo)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalPathSyntaxException, ContentLibException,
             URISyntaxException {
 
@@ -220,7 +255,7 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest.addService(search);
         }
 
-        populateData(ele, manifest);
+        populateData(ele, manifest, pageNo);
 
         return manifest;
     }
@@ -229,16 +264,31 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws DAOException @throws URISyntaxException @throws ContentLibException @throws IllegalPathSyntaxException @param ele @param
      *             manifest @throws IndexUnreachableException @throws PresentationException @throws
      */
-    private void addPages(StructElement ele, Manifest3 manifest) throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException,
+    private void addPages(StructElement ele, Manifest3 manifest) throws PresentationException, IndexUnreachableException,
             ContentLibException, URISyntaxException, DAOException {
-        CanvasBuilder canvasBuilder = new CanvasBuilder(urls);
+        
         IPageLoader pageLoader = AbstractPageLoader.create(ele);
         for (int order = pageLoader.getFirstPageOrder(); order <= pageLoader.getLastPageOrder(); order++) {
             PhysicalElement page = pageLoader.getPage(order);
-            if (page != null) {
-                Canvas3 canvas = canvasBuilder.build(page);
-                manifest.addItem(canvas);
-            }
+            addPage(manifest, page);
+        }
+    }
+    
+    public void addPage(Manifest3 manifest, StructElement ele, int pageNo)
+            throws IndexUnreachableException, ContentLibException, URISyntaxException, PresentationException, DAOException {
+        IPageLoader pageLoader = AbstractPageLoader.create(ele, List.of(pageNo));
+        PhysicalElement page = pageLoader.getPage(pageNo);
+        if (page != null) {
+            Canvas3 canvas = canvasBuilder.build(page);
+            manifest.addItem(canvas);
+        }
+    }
+
+    public void addPage(Manifest3 manifest, PhysicalElement page)
+            throws IndexUnreachableException, ContentLibException, URISyntaxException, PresentationException {
+        if (page != null) {
+            Canvas3 canvas = canvasBuilder.build(page);
+            manifest.addItem(canvas);
         }
     }
 
@@ -254,14 +304,14 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    private AbstractPresentationModelElement3 populateData(StructElement ele, final AbstractPresentationModelElement3 manifest)
+    private AbstractPresentationModelElement3 populateData(StructElement ele, final AbstractPresentationModelElement3 manifest, Optional<Integer> pageNo)
             throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
 
         IMetadataValue label = getLabel(ele).orElse(ele.getMultiLanguageDisplayLabel());
         manifest.setLabel(label);
         getDescription(ele).ifPresent(desc -> manifest.setDescription(desc));
 
-        manifest.addThumbnail(getThumbnail(ele));
+        manifest.addThumbnail(pageNo.map(p -> getThumbnail(ele, p)).orElse(getThumbnail(ele)));
 
         manifest.setRequiredStatement(getRequiredStatement());
         manifest.setRights(getRightsStatement(ele).orElse(null));
@@ -272,7 +322,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
         addMetadata(manifest, ele);
 
-        addRelatedResources(manifest, ele);
+        addRelatedResources(manifest, ele, pageNo);
 
         return manifest;
     }
@@ -304,6 +354,77 @@ public class ManifestBuilder extends AbstractBuilder {
                 pageType = PageType.viewToc;
             }
             URI recordURI = UriBuilder.fromPath(urls.getApplicationUrl()).path("{pageType}").path("{pi}").build(pageType.getName(), ele.getPi());
+            LinkingProperty homepage = new LinkingProperty(LinkingTarget.VIEWER,
+                    createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingViewer()));
+            manifest.addHomepage(homepage.getResource(recordURI));
+
+            getCmsPageLinks(ele.getPi()).forEach(link -> manifest.addHomepage(link));
+        }
+
+        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
+            URI uri = urls.path(RECORDS_RECORD, RECORDS_PDF).params(ele.getPi()).buildURI();
+            LinkingProperty pdf =
+                    new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
+            manifest.addRendering(pdf.getResource(uri));
+        }
+
+        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
+            URI uri = urls.path(RECORDS_RECORD, RECORDS_ALTO).params(ele.getPi()).buildURI();
+            LinkingProperty alto =
+                    new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
+            manifest.addSeeAlso(alto.getResource(uri));
+        }
+
+        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext()) {
+            URI uri = urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT).params(ele.getPi()).buildURI();
+            LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
+                    createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
+            manifest.addRendering(text.getResource(uri));
+        }
+
+        List<ManifestLinkConfiguration> linkConfigurations = DataManager.getInstance().getConfiguration().getIIIFSeeAlsoMetadataConfigurations();
+        for (ManifestLinkConfiguration config : linkConfigurations) {
+            try {
+                Metadata md = config.getMetadata();
+                md.populate(ele, "", null, null);
+                String label = config.getLabel();
+                String format = config.getFormat();
+                String value = md.getCombinedValue(", ");
+                if (StringUtils.isNotBlank(value)) {
+                    IMetadataValue translations = ViewerResourceBundle.getTranslations(label, false);
+                    LabeledResource seeAlso = new LabeledResource(new URI(value), getType(format), format, translations);
+                    manifest.addSeeAlso(seeAlso);
+                }
+            } catch (IndexUnreachableException | PresentationException | URISyntaxException e) {
+                logger.error("Unable to create seeAlso link for " + config.getLabel(), e);
+            }
+        }
+
+    }
+    
+    private void addRelatedResources(AbstractPresentationModelElement3 manifest, StructElement ele, PhysicalElement page) {
+
+        // metadata document
+        if (ele.isLidoRecord() && DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoLido()) {
+            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoLido());
+            LabeledResource resolver =
+                    new LabeledResource(getLidoResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.lido-schema.org", label);
+            manifest.addSeeAlso(resolver);
+        } else if (DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoMets()) {
+            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoMets());
+            LabeledResource resolver =
+                    new LabeledResource(getMetsResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.loc.gov/METS/", label);
+            manifest.addSeeAlso(resolver);
+        }
+
+        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer()) {
+            PageType pageType = PageType.viewMetadata;
+            if (ele.isHasImages()) {
+                pageType = PageType.viewImage;
+            } else if (ele.isAnchor()) {
+                pageType = PageType.viewToc;
+            }
+            URI pageURI = UriBuilder.fromPath(urls.getApplicationUrl()).path("{pageType}").path("{pi}").build(pageType.getName(), ele.getPi());
             LinkingProperty homepage = new LinkingProperty(LinkingTarget.VIEWER,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingViewer()));
             manifest.addHomepage(homepage.getResource(recordURI));
@@ -426,5 +547,7 @@ public class ManifestBuilder extends AbstractBuilder {
             return Collections.emptyList();
         }
     }
+
+
 
 }

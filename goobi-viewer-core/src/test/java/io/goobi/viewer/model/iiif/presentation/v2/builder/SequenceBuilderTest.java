@@ -24,6 +24,7 @@ package io.goobi.viewer.model.iiif.presentation.v2.builder;
 import java.awt.Canvas;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,7 @@ public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
             throw new ContentNotFoundException("No document found for pi " + PI);
         }
         StructElement mainDoc = docs.get(0);
-        IPresentationModelElement manifest = manifestBuilder.generateManifest(mainDoc);
+        IPresentationModelElement manifest = manifestBuilder.generateManifest(mainDoc, Collections.emptyList());
 
         PhysicalElement page = sequenceBuilder.getPage(mainDoc, ORDER);
 

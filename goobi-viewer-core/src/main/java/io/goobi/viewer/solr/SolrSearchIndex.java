@@ -78,8 +78,12 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.Tag;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
@@ -1438,5 +1442,46 @@ public class SolrSearchIndex {
         json.put("counts_ints2D", rows);
 
         return json.toString();
+    }
+    
+
+    /**
+     * <p>
+     * getPage.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param order a int.
+     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
+        SolrDocument doc = getDocumentByPI(pi);
+        if (doc != null) {
+            StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+            IPageLoader pageLoader = AbstractPageLoader.create(struct, List.of(order));
+            return pageLoader.getPage(order);
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * <p>
+     * getPage.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param order a int.
+     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public PhysicalElement getPage(StructElement struct, int order) throws IndexUnreachableException, PresentationException, DAOException {
+            IPageLoader pageLoader = AbstractPageLoader.create(struct, List.of(order));
+            return pageLoader.getPage(order);
     }
 }

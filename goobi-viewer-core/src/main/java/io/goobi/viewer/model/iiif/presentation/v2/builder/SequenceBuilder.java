@@ -141,11 +141,11 @@ public class SequenceBuilder extends AbstractBuilder {
         }
 
         if (BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
-
             IPageLoader pageLoader = AbstractPageLoader.create(doc, pagesToInclude);
+            
             Map<Integer, Canvas2> canvasMap = new HashMap<>();
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
-                if (pagesToInclude.contains(i)) {
+                if (pagesToInclude.isEmpty() || pagesToInclude.contains(i)) {
                     PhysicalElement page = pageLoader.getPage(i);
 
                     Canvas2 canvas = generateCanvas(doc.getPi(), page);
@@ -471,8 +471,10 @@ public class SequenceBuilder extends AbstractBuilder {
                         TextualResource body = new TextualResource(fulltext);
                         anno.setBody(body);
                         annoList.addResource(anno);
-                    } catch (ContentNotFoundException | PresentationException e) {
-                        logger.error("Error loading fulltext from " + page.getFulltextFileName(), e);
+                    } catch (ContentNotFoundException e) {
+                        logger.error("Fulltext resource not found: {}", page.getFulltextFileName());
+                    } catch (PresentationException e) {
+                        logger.error("Error loading fulltext from {}", page.getFulltextFileName(), e);
 
                     }
                 }

@@ -108,13 +108,13 @@ public class IIIFPresentation2ResourceBuilder {
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         getManifestBuilder().setBuildMode(mode);
         getSequenceBuilder().setBuildMode(mode);
-        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) ? getManifestBuilder().getDocumentWithChildren(pi, pagesToInclude)
-                : Arrays.asList(getManifestBuilder().getDocument(pi));
+        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) || !pagesToInclude.isEmpty() ? 
+                getManifestBuilder().getDocumentWithChildren(pi) : Arrays.asList(getManifestBuilder().getDocument(pi));
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + pi);
         }
         StructElement mainDoc = docs.get(0);
-        IPresentationModelElement manifest = getManifestBuilder().generateManifest(mainDoc);
+        IPresentationModelElement manifest = getManifestBuilder().generateManifest(mainDoc, pagesToInclude);
 
         if (manifest instanceof Collection2 && docs.size() > 1) {
             getManifestBuilder().addVolumes((Collection2) manifest, docs.subList(1, docs.size()));
@@ -124,7 +124,7 @@ public class IIIFPresentation2ResourceBuilder {
             getSequenceBuilder().addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), pagesToInclude, request);
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
-            if (StringUtils.isNotBlank(topLogId) && BuildMode.IIIF.equals(mode)) {
+            if (StringUtils.isNotBlank(topLogId) && BuildMode.IIIF.equals(mode) && pagesToInclude.isEmpty()) {
                 List<Range2> ranges = getStructureBuilder().generateStructure(docs, pi, false);
                 ranges.forEach(range -> {
                     ((Manifest2) manifest).addStructure(range);
@@ -154,7 +154,7 @@ public class IIIFPresentation2ResourceBuilder {
         StructElement doc = getManifestBuilder().getDocument(pi);
         PageType preferedView = getPreferedPageTypeForCanvas(preferedViewName);
 
-        IPresentationModelElement manifest = new ManifestBuilder(urls).setBuildMode(buildMode).generateManifest(doc);
+        IPresentationModelElement manifest = new ManifestBuilder(urls).setBuildMode(buildMode).generateManifest(doc, Collections.emptyList());
 
         if (manifest instanceof Collection2) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
@@ -376,7 +376,7 @@ public class IIIFPresentation2ResourceBuilder {
         for (SolrDocument doc : queryResults) {
             long luceneId = Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString());
             StructElement ele = new StructElement(luceneId, doc);
-            AbstractPresentationModelElement2 manifest = builder.generateManifest(ele);
+            AbstractPresentationModelElement2 manifest = builder.generateManifest(ele, Collections.emptyList());
 
             if (this.urls != null && manifest.getThumbnails().isEmpty()) {
                 int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();

@@ -61,6 +61,17 @@ public class IIIFPresentationAPIHandler {
      * @return The IIIF manifest
      * @throws java.net.URISyntaxException if any.
      */
+    public String getPageManifestUrl(String pi, int pageNo) throws URISyntaxException {
+        return builder.getPageManifestURI(pi, pageNo).toString();
+    }
+    
+    /**
+     * Returns the url to the manifest for the given pi
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @return The IIIF manifest
+     * @throws java.net.URISyntaxException if any.
+     */
     public String getManifestUrl(String pi) throws URISyntaxException {
         return builder.getManifestURI(pi).toString();
     }
