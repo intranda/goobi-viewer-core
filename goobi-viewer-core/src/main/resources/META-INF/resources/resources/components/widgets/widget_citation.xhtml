@@ -12,7 +12,6 @@
 
     <composite:interface />
 
-    <!-- LEGACY CITATION/DOWNLOADS WIDGET -->
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
             <div id="widgetUsage" class="widget widget-usage">
@@ -40,18 +39,52 @@
                     <!-- WORK -->
                     <h3 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
 
-                    <viewerComponent:downloadsWork/>
 
-                    <viewerComponent:downloadsStruct/>
+                    <!-- WORK DOWNLOADS -->
+                    <div class="widget-usage__work-downloads">     
+                    
+                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
 
-                    <viewerComponent:downloadsPage/>
+                            <!-- RIS (topstruct) -->
+                            <ui:fragment>
+                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris/"
+                                    id="ris"
+                                    class="badge badge-dark widget-usage__work-download-ris" 
+                                    title="#{msg.risLinkTopstruct}"
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    data-trigger="hover"
+                                    rel="nofollow"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.risLinkTopstruct}"> 
+                                    #{msg.risLinkTopstruct} 
+                                </a>
+                            </ui:fragment>
+                        
+                        </ui:fragment>
+                   
+                    </div>
+                    
 
-                    <!-- Module contributions -->
-                    <c:forEach var="module" items="#{configurationBean.modules}">
-                        <c:forEach var="contribution" items="#{module.widgetUsageContributions}">
-                            <ui:include src="/#{contribution}" />
-                        </c:forEach>
-                    </c:forEach>
+                    <!-- PAGE -->
+                    <ui:fragment
+                        rendered="#{activeDocumentBean.viewManager.currentPage.displayImage 
+                        and (activeDocumentBean.viewManager.currentPage.accessPermissionPdf 
+                            or activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload 
+                            or activeDocumentBean.viewManager.currentPage.altoAvailable 
+                            or activeDocumentBean.viewManager.currentPage.teiAvailable 
+                            or activeDocumentBean.viewManager.currentPage.displayFulltext)
+                        and !activeDocumentBean.viewManager.doublePageMode}">
+                        <h3 id="titleImage" class="widget-usage__subtitle">#{msg.image}</h3>
+
+                        <!-- PAGE DOWNLOADS -->
+                        <div class="widget-usage__page-downloads">
+
+                            <!-- TODO: URN, DOI, Handle, PURL -->
+                            
+                        </div>
+                        
+                    </ui:fragment>
 
 					<!-- CITE -->
 					<viewerComponent:downloadsCitations/>

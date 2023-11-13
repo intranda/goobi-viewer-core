@@ -596,10 +596,9 @@ public class NavigationHelper implements Serializable {
      * Sets the currently selected content view name.
      *
      * @param currentView a {@link java.lang.String} object.
-     * @throws DAOException
      * @should set value correctly
      */
-    public void setCurrentView(String currentView) throws DAOException {
+    public void setCurrentView(String currentView) {
         logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
         statusMap.put(KEY_CURRENT_VIEW, currentView);
         setCurrentPage(currentView);
