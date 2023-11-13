@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.widgets.type;
 
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 
 /**
  * All types of sidebar widgets which are generated automatically if certain conditions are met, usually if certain CMS content exists Currently
@@ -68,6 +69,11 @@ public enum AutomaticWidgetType implements WidgetContentType {
 
     @Override
     public boolean isAllowedForPage(CMSPage page) {
+        return true;
+    }
+
+    @Override
+    public boolean isAllowedForPage(CMSPageTemplate template) {
         return true;
     }
 

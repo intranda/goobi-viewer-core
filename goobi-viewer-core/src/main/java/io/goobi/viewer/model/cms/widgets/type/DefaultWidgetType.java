@@ -24,6 +24,7 @@ package io.goobi.viewer.model.cms.widgets.type;
 import java.util.function.Predicate;
 
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 
 /**
  * Types of widgets that are always available for CMS pages and cannot be configured
@@ -100,6 +101,12 @@ public enum DefaultWidgetType implements WidgetContentType {
 
     @Override
     public boolean isAllowedForPage(CMSPage page) {
+        return this.allowedForPage.test(page);
+    }
+    
+    @Override
+    public boolean isAllowedForPage(CMSPageTemplate template) {
+        CMSPage page = new CMSPage(template);
         return this.allowedForPage.test(page);
     }
 }
