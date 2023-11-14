@@ -30,9 +30,9 @@
                 <!-- WIDGET BODY -->
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <!-- INTRODUCTION TEXT -->
-                    <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']) > 0}">
+                    <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']) > 0}">
                         <p id="introductionText" class="widget-usage__license-text">
-                            <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']}" escape="false" />
+                            <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']}" escape="false" />
                         </p>
                     </ui:fragment>
                     
