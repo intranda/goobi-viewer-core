@@ -35,6 +35,45 @@
                             <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']}" escape="false" />
                         </p>
                     </ui:fragment>
+                    
+
+                    <!-- PAGE -->
+                    <ui:fragment>
+                        <h3 id="titleImage" class="widget-usage__subtitle">#{msg.image}</h3>
+
+                        <!-- PAGE DOWNLOADS -->
+                        <div class="widget-usage__page-downloads">
+
+                            <ui:fragment
+                                rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and 
+                                            !activeDocumentBean.viewManager.doublePageMode and 
+                                            fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')) > 0}">
+                                <c:forEach var="link" varStatus="index" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
+                                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+                                        <a id="citeLinkUrn#{index.count}"
+                                            class="badge badge-dark"
+                                            data-copy="page-citelink"
+                                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+                                             #{link.label}</a>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+                                        <a id="citeLinkUrnPage"
+                                            class="badge badge-dark"
+                                            data-copy="page-citelink"
+                                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+                                             #{link.label}</a>
+                                    </ui:fragment>
+                                </c:forEach>
+                            </ui:fragment>
+                            
+                        </div>
+                        
+                    </ui:fragment>
+                    
 
                     <!-- WORK -->
                     <h3 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
@@ -44,47 +83,51 @@
                     <div class="widget-usage__work-downloads">     
                     
                         <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
-
-                            <!-- RIS (topstruct) -->
-                            <ui:fragment>
-                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris/"
-                                    id="ris"
-                                    class="badge badge-dark widget-usage__work-download-ris" 
-                                    title="#{msg.risLinkTopstruct}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                                    rel="nofollow"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.risLinkTopstruct}"> 
-                                    #{msg.risLinkTopstruct} 
-                                </a>
-                            </ui:fragment>
                         
+                        <ui:fragment 
+                            rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')) > 0}">
+                            <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
+                                    
+                                <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+                                    <a id="citeLinkUrl"
+                                        class="badge badge-dark"
+                                        data-copy="work-citelink"
+                                        data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                        data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                        aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+                                        #{link.label}</a>
+                                </ui:fragment>
+                                    
+                                <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+                                    <a id="citeLinkInternal"
+                                        class="badge badge-dark"
+                                        data-copy="work-citelink"
+                                        data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                        data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                        aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+                                        #{link.label}</a>
+                                </ui:fragment>
+                                    
+                            </c:forEach>
+                        </ui:fragment>      
+
+                        <!-- RIS (topstruct) -->
+                        <ui:fragment>
+                            <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris/"
+                                id="ris"
+                                class="badge badge-dark widget-usage__work-download-ris" 
+                                title="#{msg.risLinkTopstruct}"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                data-trigger="hover"
+                                rel="nofollow"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.risLinkTopstruct}"> 
+                                #{msg.risLinkTopstruct} 
+                            </a>
                         </ui:fragment>
                    
                     </div>
                     
-
-                    <!-- PAGE -->
-                    <ui:fragment
-                        rendered="#{activeDocumentBean.viewManager.currentPage.displayImage 
-                        and (activeDocumentBean.viewManager.currentPage.accessPermissionPdf 
-                            or activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload 
-                            or activeDocumentBean.viewManager.currentPage.altoAvailable 
-                            or activeDocumentBean.viewManager.currentPage.teiAvailable 
-                            or activeDocumentBean.viewManager.currentPage.displayFulltext)
-                        and !activeDocumentBean.viewManager.doublePageMode}">
-                        <h3 id="titleImage" class="widget-usage__subtitle">#{msg.image}</h3>
-
-                        <!-- PAGE DOWNLOADS -->
-                        <div class="widget-usage__page-downloads">
-
-                            <!-- TODO: URN, DOI, Handle, PURL -->
-                            
-                        </div>
-                        
-                    </ui:fragment>
 
 					<!-- CITE -->
 					<viewerComponent:downloadsCitations/>
