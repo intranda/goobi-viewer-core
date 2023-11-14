@@ -21,14 +21,11 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ALTO;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PDF;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PLAINTEXT;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -322,7 +319,19 @@ public class ManifestBuilder extends AbstractBuilder {
 
         addMetadata(manifest, ele);
 
-        addRelatedResources(manifest, ele, pageNo);
+        pageNo
+        .map(no -> {
+            try {
+                return DataManager.getInstance().getSearchIndex().getPage(ele.getPi(), no);
+            } catch (IndexUnreachableException | PresentationException | DAOException e) {
+                logger.error("Error retrieving page from solr: {}", e.toString());
+                return null;
+            }
+        })
+        .ifPresentOrElse(
+            (page) -> addRelatedResources(manifest, ele, page),
+            () -> addRelatedResources(manifest, ele)
+        );
 
         return manifest;
     }
@@ -424,30 +433,30 @@ public class ManifestBuilder extends AbstractBuilder {
             } else if (ele.isAnchor()) {
                 pageType = PageType.viewToc;
             }
-            URI pageURI = UriBuilder.fromPath(urls.getApplicationUrl()).path("{pageType}").path("{pi}").build(pageType.getName(), ele.getPi());
+            URI pageURI = UriBuilder.fromPath(urls.getApplicationUrl()).path("{pageType}").path("{pi}").path("{pageNo}").build(pageType.getName(), ele.getPi(), page.getOrder());
             LinkingProperty homepage = new LinkingProperty(LinkingTarget.VIEWER,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingViewer()));
-            manifest.addHomepage(homepage.getResource(recordURI));
+            manifest.addHomepage(homepage.getResource(pageURI));
 
-            getCmsPageLinks(ele.getPi()).forEach(link -> manifest.addHomepage(link));
+            getCmsPageLinks(ele.getPi()).forEach(manifest::addHomepage);
         }
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
-            URI uri = urls.path(RECORDS_RECORD, RECORDS_PDF).params(ele.getPi()).buildURI();
+            URI uri = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(ele.getPi(), page.getFileName()).buildURI();
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
             manifest.addRendering(pdf.getResource(uri));
         }
 
-        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
-            URI uri = urls.path(RECORDS_RECORD, RECORDS_ALTO).params(ele.getPi()).buildURI();
+        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto() && page.isAltoAvailable()) {
+            URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(ele.getPi(), Path.of(page.getAltoFileName()).getFileName()).buildURI();
             LinkingProperty alto =
                     new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
             manifest.addSeeAlso(alto.getResource(uri));
         }
 
-        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext()) {
-            URI uri = urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT).params(ele.getPi()).buildURI();
+        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext() && page.isFulltextAvailable()) {
+            URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(ele.getPi(), Path.of(Optional.ofNullable(page.getFulltextFileName()).orElse(page.getAltoFileName())).getFileName()).buildURI();
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
             manifest.addRendering(text.getResource(uri));

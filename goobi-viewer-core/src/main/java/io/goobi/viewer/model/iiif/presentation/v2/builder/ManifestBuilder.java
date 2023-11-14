@@ -25,6 +25,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -350,10 +351,10 @@ public class ManifestBuilder extends AbstractBuilder {
                 uri = URI.create(getViewUrl(page, PageType.viewObject));
                 break;
             case ALTO:
-                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), page.getFileName("xml")).buildURI();
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), Path.of(page.getAltoFileName()).getFileName()).buildURI();
                 break;
             case PLAINTEXT:
-                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), page.getFileName("txt")).buildURI();
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), Path.of(Optional.ofNullable(page.getFulltextFileName()).orElse(page.getAltoFileName())).getFileName()).buildURI();
                 break;
             case PDF:
                 uri = URI.create(imageDelivery.getPdf().getPdfUrl(null, page));
