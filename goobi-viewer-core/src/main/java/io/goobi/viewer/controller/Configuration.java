@@ -907,11 +907,24 @@ public class Configuration extends AbstractConfiguration {
      * isOriginalContentDownload.
      * </p>
      *
-     * @should return correct value
      * @return a boolean.
+     * @deprecated Use Configuration.isDisplaySidebarWidgetAdditionalFiles()
      */
+    @Deprecated(since = "2023.11")
     public boolean isDisplaySidebarWidgetDownloads() {
-        return getLocalBoolean("sidebar.sidebarWidgetDownloads[@enabled]", false);
+        return isDisplaySidebarWidgetAdditionalFiles();
+    }
+
+    /**
+     * <p>
+     * isOriginalContentDownload.
+     * </p>
+     *
+     * @return true if enabled; false otherwise
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarWidgetAdditionalFiles() {
+        return getLocalBoolean("sidebar.sidebarWidgetAdditionalFiles[@enabled]", false);
     }
 
     /**

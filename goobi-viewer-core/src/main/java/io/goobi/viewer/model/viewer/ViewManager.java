@@ -2926,7 +2926,8 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayContentDownloadMenu() {
-        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads()) {
+        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetAdditionalFiles()) {
+            logger.trace("additional files disabled");
             return false;
         }
         try {

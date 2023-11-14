@@ -1177,12 +1177,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isOriginalContentDownloads()
+     * @see Configuration#isDisplaySidebarWidgetAdditionalFiles()
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarWidgetDownloads_shouldReturnCorrectValue() throws Exception {
-        assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads());
+    public void isDisplaySidebarWidgetAdditionalFiles_shouldReturnCorrectValue() throws Exception {
+        assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetAdditionalFiles());
     }
 
     @Test
