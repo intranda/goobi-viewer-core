@@ -34,7 +34,7 @@
 								<ui:fragment rendered="#{!owned}">
 									<small>(#{bookmarkList.items.size()} #{bookmarkList.items.size() == 1 ? msg.bookmarkList_object : msg.bookmarkList_objects},
 										#{navigationHelper.getTranslationWithParams(msg.bookmarks__shared_by,
-										bookmarkList.owner.displayNameEscaped)})</small>
+										bookmarkList.owner.displayName)})</small>
 								</ui:fragment>
 								<ui:fragment rendered="#{owned}">
 									<small>(#{bookmarkList.items.size()} #{bookmarkList.items.size() == 1 ? msg.bookmarkList_object : msg.bookmarkList_objects})</small>

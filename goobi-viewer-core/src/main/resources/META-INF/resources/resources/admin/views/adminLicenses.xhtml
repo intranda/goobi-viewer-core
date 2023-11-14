@@ -127,7 +127,7 @@
                                                     <dt class="col-sm-4">#{msg.admin__license_licensee}:</dt>
                                                     <dd class="col-sm-8">
                                                         <ui:repeat var="license" value="#{adminLicenseBean.getLicenses(licenseType)}">
-                                                            <ui:fragment rendered="#{license.user != null}"><span class="admin__license-user">#{license.user.displayNameEscaped}</span></ui:fragment>
+                                                            <ui:fragment rendered="#{license.user != null}"><span class="admin__license-user"><h:outputText value="#{license.user.displayName}" /></span></ui:fragment>
                                                             <ui:fragment rendered="#{license.userGroup != null}"><span class="admin__license-user">#{license.userGroup.name}</span></ui:fragment>
                                                             <ui:fragment rendered="#{license.ipRange != null}"><span class="admin__license-user">#{license.ipRange.name} (#{license.ipRange.subnetMask})</span></ui:fragment>
                                                         	<ui:fragment rendered="#{license.client != null}"><span class="admin__license-user">#{license.client.isAllClients() ? msg.admin__right_all_clients : license.client.name}</span></ui:fragment>

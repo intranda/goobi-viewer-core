@@ -55,7 +55,7 @@
 	                                        <!-- NAME -->
 	                                        <div class="row">
 	                                            <ui:fragment rendered="#{license.user != null}">
-	                                                <h2 class="col-12"><i class="fa fa-user" aria-hidden="true"></i> #{license.user.displayNameEscaped}</h2>
+	                                                <h2 class="col-12"><i class="fa fa-user" aria-hidden="true"></i> <h:outputText value="#{license.user.displayName}" /></h2>
 	                                            </ui:fragment>
 	                                            <ui:fragment rendered="#{license.userGroup != null}">
 	                                                <h2 class="col-12"><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h2>
@@ -130,7 +130,7 @@
 	                                        <div class="row justify-content-end admin__boxed-entry-actions">
 	                                            <div class="col-3 d-flex justify-content-end">
 	                                                <!-- EDIT -->
-	                                                <a href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{msg[license.licenseType.name]} | #{license.user.displayNameEscaped} #{license.userGroup.name} #{license.ipRange.name}">#{msg.edit}</a>
+	                                                <a href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{msg[license.licenseType.name]} | #{license.user.display} #{license.userGroup.name} #{license.ipRange.name}">#{msg.edit}</a>
 	                                                
                                                     <!-- DELETE -->
 		                                            <button

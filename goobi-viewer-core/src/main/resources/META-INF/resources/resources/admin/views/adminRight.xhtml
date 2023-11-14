@@ -78,7 +78,7 @@
                                              disabled="#{adminLicenseBean.currentLicense.id != null}">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayNameEscaped}" />
+                                             <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
@@ -152,7 +152,7 @@
                                 <div class="admin__default-block">
                                     <dl class="row">
                                         <dt class="col-4">
-                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.user != null}">#{adminLicenseBean.currentLicense.user.displayNameEscaped}</h:outputText>
+                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.user != null}">#{adminLicenseBean.currentLicense.user.displayName}</h:outputText>
                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.userGroup != null}">#{adminLicenseBean.currentLicense.userGroup.name}</h:outputText>
                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.ipRange != null}">#{adminLicenseBean.currentLicense.ipRange.name}</h:outputText>
                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.clientId != null}">#{client.name}</h:outputText>
