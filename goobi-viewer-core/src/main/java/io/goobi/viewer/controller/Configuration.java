@@ -936,7 +936,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a regex or an empty string if no downloads should be hidden
      */
     public String getHideDownloadFileRegex() {
-        return getLocalString("sidebar.sidebarWidgetDownloads.hideFileRegex", "");
+        return getLocalString("sidebar.sidebarWidgetAdditionalFiles.hideFileRegex", "");
     }
 
     /**

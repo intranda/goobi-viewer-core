@@ -234,7 +234,7 @@ public class ViewManager implements Serializable {
         this.mimeType = mimeType;
         logger.trace("mimeType: {}", mimeType);
 
-        try {            
+        try {
             if (DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
                 String archiveId = getArchiveEntryIdentifier();
                 if (StringUtils.isNotBlank(archiveId)) {
@@ -243,7 +243,7 @@ public class ViewManager implements Serializable {
                     this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
                 }
             }
-        } catch(ArchiveException e) {
+        } catch (ArchiveException e) {
             logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());
         }
     }
@@ -2933,7 +2933,7 @@ public class ViewManager implements Serializable {
         try {
             return !listDownloadableContent().isEmpty();
         } catch (PresentationException | IndexUnreachableException | DAOException | IOException e) {
-            logger.warn("Error listing downloadable content: {}", e.toString());
+            logger.warn("Error listing downloadable content: {}", e.getMessage());
         }
 
         return false;
