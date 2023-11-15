@@ -1364,7 +1364,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermission3DObject() throws IndexUnreachableException, DAOException {
         logger.trace("AccessPermission3DObject");
         // Prevent access if mime type incompatible
-        if (!BaseMimeType.OBJECT.equals(BaseMimeType.getByName(mimeType))) {
+        if (!(BaseMimeType.OBJECT.equals(BaseMimeType.getByName(mimeType)) || BaseMimeType.MODEL.equals(BaseMimeType.getByName(mimeType)))) {
             return false;
         }
 

@@ -34,6 +34,8 @@ public enum BaseMimeType {
     AUDIO("audio"),
     APPLICATION("application"),
     SANDBOXED_HTML("text"),
+    MODEL("model"),
+    @Deprecated
     OBJECT("object");
 
     /** Constant <code>logger</code> */
@@ -100,6 +102,7 @@ public enum BaseMimeType {
             case AUDIO:
             case VIDEO:
             case OBJECT:
+            case MODEL:
                 return false;
             default:
                 return true;

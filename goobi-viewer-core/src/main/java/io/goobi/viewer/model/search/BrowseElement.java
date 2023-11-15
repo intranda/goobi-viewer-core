@@ -353,7 +353,7 @@ public class BrowseElement implements Serializable {
         //check if we have images
         hasImages = !isAnchor() && (this.mimeType.startsWith("image") || structElement.isHasImages());
 
-        //..or if we have video or audio
+        //..or if we have video or audio or a 3d-object
         hasMedia = !hasImages && !isAnchor()
                 && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("application")
                         || this.mimeType.startsWith("text")/*sandboxed*/);
