@@ -90,7 +90,7 @@
 							id="pauseMsgQueueButton" 
 							action="#{messageQueueBean.pauseQueue}"
 							pt:data-target="pauseMsgQueueButton">
-					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed" />
+					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
 						</h:commandButton>
 						
 						<h:commandButton 
@@ -98,7 +98,7 @@
 							id="resumeMsgQueueButton" 
 							action="#{messageQueueBean.resumeQueue}"
 							pt:data-target="resumeMsgQueueButton">
-					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed" />
+					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
 						</h:commandButton>						
 
 
@@ -261,14 +261,14 @@
 						<button data-target="pauseQuartzButton"
 							type="button"
 							jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
-							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed" />
+							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
 							<i class="fa fa-pause"></i>
 						</button>
 
 						<button data-target="resumeQuartzButton"
 							type="button"
 							jsf:action="#{quartzBean.resumeAllJobs}" class="btn">
-							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed" />
+							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
 							<i class="fa fa-play"></i>
 						</button>
 
@@ -277,7 +277,7 @@
 								class="admin__table-content" role="grid"
 								aria-label="#{msg.admin__queue_types}: #{msg.aria_label__table__actions}">
 								<!-- TITLE ROW -->
-								<div class="row no-gutters admin__table-title" role="row">
+								<div class="row  admin__table-title" role="row">
 									<!-- NAME COL -->
 									<div class="col-5 d-flex">#{msg.admin__tasks__quartz_single_name}</div>
 
@@ -289,7 +289,7 @@
 
 								<!-- INDIVIDUAL ROWS -->
 								<ui:repeat var="entry" value="#{quartzBean.activeJobs}">
-									<h:panelGroup id="quartzRowID" layout="block" styleClass="row no-gutters admin__table-entry admin__tasks-quartz-table-row #{entry.paused == true ? '-paused' : ''}" role="row">
+									<h:panelGroup id="quartzRowID" layout="block" styleClass="row admin__table-entry admin__tasks-quartz-table-row #{entry.paused == true ? '-paused' : ''}" role="row">
 										<div class="col-5 d-flex flex-column">
 											
 											<div class="admin__tasks-quartz-table-entry-name-wrapper" role="gridcell">
@@ -385,7 +385,7 @@
 								role="grid" aria-label="#{msg.messagesHistoryTable}">
 
 								<!-- TITLE ROW -->
-								<div class="row no-gutters admin__table-title" role="row">
+								<div class="row admin__table-title" role="row">
 
 
 									<div class="col-2 d-flex -sorting-arrow-trigger"
@@ -422,10 +422,10 @@
 									<ui:repeat var="message"
 										value="#{messageQueueBean.lazyModelViewerHistory.paginatorList}">
 										<div
-											class="row no-gutters admin__table-entry admin__tasks-table-row #{message.messageStatus != 'FINISH' ? '-error' : ''}"
+											class="row admin__table-entry admin__tasks-table-row #{message.messageStatus != 'FINISH' ? '-error' : ''}"
 											role="row">
 
-											<div class="col-2 d-flex">
+											<div class="col-2 text-break d-flex">
 												<h:outputText value="#{message.messageId}" />
 											</div>
 
