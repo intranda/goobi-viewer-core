@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Enum containing supported mime types.
@@ -35,7 +35,7 @@ public enum BaseMimeType {
     APPLICATION("application"),
     SANDBOXED_HTML("text"),
     MODEL("model"),
-    @Deprecated
+    @Deprecated(since = "23.11")
     OBJECT("object");
 
     /** Constant <code>logger</code> */
