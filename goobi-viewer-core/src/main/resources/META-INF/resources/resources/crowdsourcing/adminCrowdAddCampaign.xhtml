@@ -543,7 +543,7 @@
 		                                                            <label for="campaignOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
 		                                                            <h:outputLink id="campaignOwnerName"
 		                                                                value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.userGroup.owner.id}/">
-		                                                                <h:outputText value="#{crowdsourcingBean.selectedCampaign.userGroup.owner.displayNameEscaped}" />
+		                                                                <h:outputText value="#{crowdsourcingBean.selectedCampaign.userGroup.owner.displayName}" />
 		                                                            </h:outputLink>
 	                                                            </div>
                                                             </ui:fragment>
@@ -691,7 +691,7 @@
                                                       <label for="campaignReviewerOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
                                                       <h:outputLink id="campaignReviewerOwnerName"
                                                           value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.id}/">
-                                                          <h:outputText value="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.displayNameEscaped}" />
+                                                          <h:outputText value="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.displayName}" />
                                                       </h:outputLink>
                                                      </div>
                                                     </c:if>
