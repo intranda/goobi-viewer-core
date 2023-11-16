@@ -30,6 +30,7 @@
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="viewDownload" class="download">
+
             	<div class="download__status">
 	                <h1 >#{msg.downloadHeading}</h1>
 
@@ -43,6 +44,7 @@
 	                                <h2 class="card-title">#{msg.downloadQueueTitle}</h2>
 	                            </div>
 	                            <div class="card-body">
+	                            	<!-- TODO: Add error message to job once it fails -->
 	                            	#{downloadBean.downloadJob.message}
 	                            </div>
 	                    	</div>

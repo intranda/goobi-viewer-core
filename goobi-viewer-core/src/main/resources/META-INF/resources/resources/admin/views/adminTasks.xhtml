@@ -36,6 +36,19 @@
 						<div class="admin__info-text">#{msg.admin__tasks__info_text}</div>
 
 						<h:panelGroup layout="block" id="runningTasksQueueWrapper" class="admin__tasks-running-task-queue-wrapper #{messageQueueBean.paused ? '-paused' : ''} #{messageQueueBean.queueContent.size() == 0 ? '-emptyQueue' : ''}" >
+<!-- 	<div> -->
+<!-- 		<h2>LISTENERS</h2> -->
+<!-- 		<ui:repeat var="listener" value="#{messageQueueBean.listeners}"> -->
+<!-- 			<div style="border:1px solid black; padding:10px"> -->
+<!-- 				<div>TYPE: #{listener.queueType}</div> -->
+<!-- 				<div>shouldStop: #{listener.shouldStop}</div> -->
+<!-- 				<div>last update: #{listener.lastLoopCircle}</div> -->
+<!-- 				<h:commandButton value="Restart" action="#{listener.restartLoop()}"></h:commandButton> -->
+<!-- 			</div> -->
+<!-- 		</ui:repeat> -->
+		
+<!-- 	</div> -->
+
 
 						<div class="admin__tasks-title-wrapper">
 							<h2 class="admin__tasks-task-title">
@@ -82,6 +95,13 @@
 									<f:ajax execute="@form" render="@form" />
 								</a>
 							</ui:fragment>
+							
+							<a jsf:id="restartListenerButton" jsf:action="#{messageQueueBean.restartAllListeners()}"
+								class="admin__tasks-button-restart" title="#{msg.action__restart_all_task_listeners}">
+								<i class="fa fa-refresh"></i>
+								<i class="fa fa-refresh"></i>
+							</a>
+							
 						</div>
 
 
@@ -101,9 +121,9 @@
 					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
 						</h:commandButton>						
 
+						
 
 						<div class="admin__tasks-empty-queue-spacer"></div>
-
 						<ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
 						<!-- INDIVIDUAL ROWS -->
 						<ui:repeat var="task" value="#{messageQueueBean.queueContent}">
@@ -126,6 +146,7 @@
 									<div class="admin__tasks-task-details-column-heads">
 										<div>#{msg.admin__tasks__task_identifier}</div>
 										<div>#{msg.admin__tasks__task_properties}</div>
+										<div>#{msg.admin__tasks__task_last_updated}</div>
 									</div>
 
 									<ui:repeat var="msgqueueticket"
@@ -145,8 +166,14 @@
 												</ui:repeat>
 											</div>
 											<div class="admin__tasks-task-details-row-entry">
+												<h:outputText value="#{msgqueueticket.lastUpdateTime}">
+													<f:converter converterId="localDateTimeConverter" />
+													<f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+												</h:outputText>
+											</div>
+											
+											<div class="admin__tasks-task-details-row-entry">
 												<button
-													type="button"
 													jsf:action="#{messageQueueBean.deleteMessage(msgqueueticket)}"
 													class="btn admin__tasks-task-details-delete-button">
 													<i class="fa fa-times" />

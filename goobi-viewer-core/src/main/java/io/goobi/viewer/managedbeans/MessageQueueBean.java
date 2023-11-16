@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
@@ -68,6 +69,7 @@ import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.DefaultQueueListener;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
@@ -299,5 +301,20 @@ public class MessageQueueBean implements Serializable {
         }
 
     }
+    
+    public List<DefaultQueueListener> getListeners() {
+        return Optional.ofNullable(this.messageBroker).map(broker -> broker.getListeners()).orElse(Collections.emptyList());
+    }
 
+    
+    public void restartAllListeners() {
+        getListeners().forEach(l -> {
+            try {
+                l.restartLoop();
+            } catch (JMSException e) {
+                log.error("Error restarting message listener for queue {}: {}", l.getQueueType(), e.toString());
+            }
+        });
+    }
+    
 }

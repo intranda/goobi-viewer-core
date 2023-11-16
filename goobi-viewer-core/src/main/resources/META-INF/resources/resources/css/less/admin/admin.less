@@ -2098,10 +2098,14 @@
 	}
 	&__tasks-task-details-column-heads {
 		display: grid;
-		grid-template-columns: 2fr 3fr 50px;
 		font-weight: 600;
-		gap: 0 0px;
-		padding-top: 20px;
+		gap: 0 15px;
+		grid-template-columns: 2fr 3fr 1fr 50px;
+		transition: all 0.2s ease;
+		word-break: break-all;
+		margin: 0 -30px;
+		padding: 20px 30px 5px 30px;
+		margin-right: -20px;
 	}
 	&__tasks-task-title {
 	}
@@ -2112,7 +2116,7 @@
 	&__tasks-task-details-row {
 		display: grid;
 		gap: 0 15px;
-		grid-template-columns: 2fr 3fr 50px;
+		grid-template-columns: 2fr 3fr 1fr 50px;
 		transition: all 0.2s ease;
 		border-bottom: 1px solid #ededed;
 		word-break: break-all;
@@ -2153,6 +2157,11 @@
 		&.-hidden {
 			display: none;
 		}
+	}
+	&__tasks-button-restart {
+		display: flex;
+		margin-left: auto;
+		color: black;
 	}
 	&__tasks-title-number {
 		background: #e8e8e8;

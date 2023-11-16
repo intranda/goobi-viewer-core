@@ -57,6 +57,7 @@ import jakarta.mail.MessagingException;
 
 public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
+    private static final int MAX_RETRIES = 2;
     private static final Logger logger = LogManager.getLogger(PdfMessageHandler.class);
 
     @Override
@@ -66,23 +67,22 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
         String logId = message.getProperties().get("logId");
 
-        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
-        if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
-            return MessageStatus.ERROR;
-        }
-
-        String cleanedPi = StringTools.cleanUserGeneratedData(pi);
-
-        String id = DownloadJob.generateDownloadJobId("pdf", pi, logId);
-
+        DownloadJob downloadJob = null;
         try {
-            DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(id);
+            File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
+            if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
+                throw new IOException("Download folder " + targetFolder + " not found");
+            }
+            
+            String cleanedPi = StringTools.cleanUserGeneratedData(pi);
+            String id = DownloadJob.generateDownloadJobId("pdf", pi, logId);
+            downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(id);
             // save pdf file
             Dataset work = DataFileTools.getDataset(cleanedPi);
 
             Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension())
                     .toPath();
-            if (JobStatus.READY == downloadJob.getStatus() && !Files.exists(pdfFile)) {
+            if (JobStatus.ERROR == downloadJob.getStatus() || (JobStatus.READY == downloadJob.getStatus() && !Files.exists(pdfFile))) {
                 downloadJob.setStatus(JobStatus.WAITING);
                 DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
             }
@@ -97,6 +97,21 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
             }
             DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
         } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException e) {
+            try {
+                Thread.sleep(Integer.MAX_VALUE);
+            } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            if(downloadJob != null && message.getRetryCount() > MAX_RETRIES) {
+                downloadJob.setStatus(JobStatus.ERROR);
+                downloadJob.setMessage("Error creating PDF. Please contact support if the problem persists");
+                try {
+                    DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
+                } catch (DAOException e1) {
+                    logger.error("Error updating pdf download job in database after it reached an error status");
+                }
+            }
             return MessageStatus.ERROR;
         }
 
