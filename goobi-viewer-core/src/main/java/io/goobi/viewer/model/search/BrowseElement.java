@@ -65,6 +65,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -350,13 +351,11 @@ public class BrowseElement implements Serializable {
             }
         }
 
+        BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
         //check if we have images
-        hasImages = !isAnchor() && (this.mimeType.startsWith("image") || structElement.isHasImages());
-
+        hasImages = !isAnchor() && (BaseMimeType.IMAGE.equals(baseMimeType) || structElement.isHasImages());
         //..or if we have video or audio or a 3d-object
-        hasMedia = !hasImages && !isAnchor()
-                && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("application")
-                        || this.mimeType.startsWith("text")/*sandboxed*/);
+        hasMedia = !hasImages && !isAnchor() && baseMimeType.isMediaType();
 
         showThumbnail = hasImages || hasMedia || isAnchor() || cmsPage;
 

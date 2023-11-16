@@ -36,7 +36,8 @@ public enum BaseMimeType {
     SANDBOXED_HTML("text"),
     MODEL("model"),
     @Deprecated(since = "23.11")
-    OBJECT("object");
+    OBJECT("object"),
+    UNKNOWN("");
 
     /** Constant <code>logger</code> */
     private static final Logger logger = LogManager.getLogger(BaseMimeType.class);
@@ -64,7 +65,7 @@ public enum BaseMimeType {
      */
     public static BaseMimeType getByName(String name) {
         if (name == null) {
-            return null;
+            return UNKNOWN;
         }
 
         if (name.contains("/")) {
@@ -76,7 +77,7 @@ public enum BaseMimeType {
             }
         }
 
-        return null;
+        return UNKNOWN;
     }
 
     /**
@@ -106,6 +107,24 @@ public enum BaseMimeType {
                 return false;
             default:
                 return true;
+        }
+    }
+
+    /**
+     * 
+     * @return true for all types directly visible (or audible) in the viewer object view.
+     */
+    public boolean isMediaType() {
+        switch (this) {
+            case AUDIO:
+            case IMAGE:
+            case VIDEO:
+            case SANDBOXED_HTML:
+            case MODEL:
+            case OBJECT:
+                return true;
+            default:
+                return false;
         }
     }
 
