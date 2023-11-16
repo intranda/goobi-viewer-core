@@ -97,12 +97,6 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
             }
             DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
         } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException e) {
-            try {
-                Thread.sleep(Integer.MAX_VALUE);
-            } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
             if(downloadJob != null && message.getRetryCount() > MAX_RETRIES) {
                 downloadJob.setStatus(JobStatus.ERROR);
                 downloadJob.setMessage("Error creating PDF. Please contact support if the problem persists");
