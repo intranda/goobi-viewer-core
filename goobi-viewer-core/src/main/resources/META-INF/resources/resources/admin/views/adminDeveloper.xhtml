@@ -1,0 +1,171 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+	xmlns:formComponent="http://xmlns.jcp.org/jsf/composite/components/forms"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminDeveloper')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<!-- TITLE -->
+		<div class="admin__title-bar">
+			<h1 class="admin__title">#{msg.admin__developer__title}</h1>
+		</div>
+		
+		<viewerComponent:adminBreadcrumbs />
+
+		<!-- DOUBLE CHECK ADMIN ACCESS -->
+		<ui:fragment rendered="#{userBean.admin}">
+			<div id="adminDeveloper" class="admin__content-inner-content">
+			
+				<div class="admin__info-text">
+					Ist die Autopullfarbe grün, wird das Theme automatisch gepullt. Ist die Farbe rot, ist der Cronjob nicht aktiv. Bei einer orangenen Hintergrundfarbe ist bei der Überprüfung ein Fehler aufgetreten.
+					
+					Um ein Theme in seiner lokalen Entwicklungsumgebung so in Betrieb nehmen zu können wie es auch auf dem Kundensystem aussieht müssen verschiedene Bedingungen erfüllt sein. Auf dieser Seite sind alle notwendigen Informationen zusammengestellt. Es wird Schritt für Schritt erläutert welche Dateien lokal wie modifiziert werden müssen damit danach im Eclipse der Datenbestand identisch ist zu der Live-Instanz. Die Befehle beziehen sich auf ein Linux und sind bei Bedarf auf ein eigenes Betriebssystem anzupassen.
+				</div>
+			
+			<div class="admin__developer-autopull-wrapper">
+				<div class="admin__developer-autopull-status-wrapper">
+					<div class="admin__developer-autopull-status-text">Autopull Status: OFF</div><div class="admin__developer-autopull-status-icon -isOff"></div>
+
+				</div>
+				<div class="admin__developer-autopull-last-pull">17.11.2023 00:00</div>
+				<div class="admin__developer-autopull-branch-name">develop</div>
+			</div>
+
+			
+				<h2>Dateien herunterladen</h2>
+				<div class="admin__default-block">
+
+					 	<h:outputText layout="block" styleClass="admin__developer-download-info-text" escape="false" value="#{msg.admin__developer__files_info}" />
+						
+
+					<div class="admin__developer-download-wrapper">
+						<a class="btn btn--full admin__developer-download-button"><i class="fa fa-download" aria-hidden="true"></i><span>Herunterladen</span></a>
+					</div>
+					
+					<div class="admin__developer-sql-info-text">
+						
+Anschließend die Datei entpacken: 
+					</div>
+					<div class="admin__developer-code-block">
+						
+						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" data-copy="code"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<code data-target="sqlCode"><h:outputFormat value="#{msg.admin__developer__unzip_file_code}" escape="false">
+	                        	<f:param value="#{navigationHelper.theme}" />
+	                        </h:outputFormat></code>
+
+					</div>
+
+				</div>
+				
+<!-- 				<div class="admin__developer-arrow-line"> -->
+<!-- 					<i class="fa fa-caret-down" aria-hidden="true"></i> -->
+<!-- 				</div> -->
+
+				<h2>Datenbank und Adminnutzer erstellen</h2>
+				<div class="admin__default-block">
+					<div class="admin__developer-sql-info-text">
+						Den darin enthaltenen SQL Dump in die lokale Datenbank unter dem Namen reference einspielen und einen lokalen Nutzeraccount mit dem Benutzernamen goobi@intranda.com und dem Passwort viewer sowie Adminrechten anlegen: 
+					</div>
+					<div class="admin__developer-code-block">
+						
+						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" data-copy="code"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<code data-target="sqlCode"><h:outputFormat value="#{msg.admin__developer__sql_commands}" escape="false">
+	                        	<f:param value="#{navigationHelper.theme}" />
+	                        </h:outputFormat></code>
+
+					</div>
+				</div>
+
+				
+				<h2>Messages und Dateien lokal ablegen</h2>
+				<div class="admin__default-block">
+					<div class="admin__developer-sql-info-text">
+					 	Die messages Dateien und die config_viewer.xml in den lokalen config Ordner kopieren 					
+					 </div>
+					<p class="admin__developer-code-block">
+						Pfad 1<br />
+						Pfad 2
+					</p>
+				</div>
+				
+				<h2>Einstellungen  allg. Informationen</h2>
+				<div class="admin__default-block">
+					<div class="admin__developer-sql-info-text">
+					 	Die messages Dateien und die config_viewer.xml in den lokalen config Ordner kopieren 					
+					 </div>
+					<p class="admin__developer-code-block">
+						Pfad 1<br />
+						Pfad 2
+					</p>
+				</div>
+
+
+			</div>
+			
+			<script>
+			$( document ).ready(function() {
+				$('[data-copy="code"]').tooltip({trigger: "hover", placement: "top"});
+
+			    $('[data-copy="code"]').click(function () {
+			    	
+			    	var thisCopyButton = $(this);
+
+			    	// GET CODE VALUE WITH LINEBREAKS BUT WITHOUT HTML ELEMENTS		
+			    	  value = $(thisCopyButton).next('[data-target="sqlCode"]').clone().find('br').prepend('\r\n').end().text()
+			    	  var $temp = $("<textarea />");
+			    	  $("body").append($temp);
+			    	  $temp.val(value).select();
+			    	  document.execCommand("copy");
+			    	  $temp.remove();
+			    	
+			    	
+			    	// SHOW TOOLTIP
+			    	 $(thisCopyButton).tooltip('hide');
+			    	 $(thisCopyButton).tooltip('dispose');
+					 $(thisCopyButton).tooltip({trigger: "manual", placement: "top", title: "Copied!"}); 
+			    	 $(thisCopyButton).attr('data-original-title', 'Copied!');
+			    	 $(thisCopyButton).tooltip('show');
+			    	 
+			    	 
+					// HIDE TOOLTIP AFTER A SHORT TIME PERIOD
+			        setTimeout(function () {
+
+			            $(thisCopyButton).tooltip('hide');
+			            $(thisCopyButton).on('hidden.bs.tooltip', function () {
+			            	 $(thisCopyButton).tooltip('dispose');
+					         $(thisCopyButton).attr('data-original-title', 'Copy to clipboard');
+					         $(thisCopyButton).tooltip({trigger: "hover", placement: "top", title: "Copy to clipboard"}); 
+			            })
+
+			        }, 1700);
+			
+			    });
+			    
+			});
+// 			    $("a.my-tool-tip").tooltip();
+// 			    $("#copy-button").on('click', function() {
+// 			      var tooltip = $(this);
+// 			      tooltip.attr('data-original-title', 'Copied!');
+// 			      $("a.my-tool-tip").tooltip('show');
+// 			    });
+			    
+			    
+			    
+			</script>
+
+			
+		</ui:fragment>
+	</ui:define>
+</ui:composition>
