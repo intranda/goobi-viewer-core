@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -18,12 +21,13 @@ public class ExternalFilesDownloaderTest {
     private final Path downloadFolder = Path.of("src/test/resources/output/external-files");
 
     @Test
-    public void test() throws IOException {
+    public void test() throws IOException, InterruptedException, ExecutionException, TimeoutException {
         assertTrue(Files.isDirectory(downloadFolder) || Files.createDirectory(downloadFolder) != null);
-        URI uri = testZipFile.toAbsolutePath().toUri();
-//        URI uri = URI.create("https://d-nb.info/1287088031/34");
+//        URI uri = testZipFile.toAbsolutePath().toUri();
+        URI uri = URI.create("https://d-nb.info/1287088031/34");
         ExternalFilesDownloader download = new ExternalFilesDownloader(downloadFolder);
-        Path downloaded = download.downloadExternalFiles(uri);
+        DownloadResult result = download.downloadExternalFiles(uri);
+        Path downloaded = result.getPath().get(2000, TimeUnit.MILLISECONDS);        
         assertTrue(Files.isDirectory(downloaded));
     }
     
