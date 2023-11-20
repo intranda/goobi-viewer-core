@@ -7,6 +7,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -32,6 +33,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.unigoettingen.sub.commons.util.PathConverter;
+
 public class ExternalFilesDownloader {
 
     private static final Logger logger = LogManager.getLogger(ExternalFilesDownloader.class);
@@ -55,6 +58,31 @@ public class ExternalFilesDownloader {
 
     private Path downloadFromUrl(URI uri) throws IOException {
         logger.trace("download from url {}", uri);
+        switch(uri.getScheme()) {
+            case "http":
+            case "https":
+                return downloadHttpResource(uri);
+            case "file":
+                return downloadFileResource(uri);
+            default:
+                throw new IllegalArgumentException("Cannot download from " + uri + ": No download implementation for scheme " + uri.getScheme());
+        }
+
+    }
+
+    private Path downloadFileResource(URI uri) throws IOException {
+        Path sourcePath = PathConverter.getPath(uri);
+        if(Files.exists(sourcePath)) {
+            Path target = this.destinationFolder.resolve(sourcePath.getFileName());
+            try(InputStream in = Files.newInputStream(sourcePath)) {
+                return extractContentToPath(target, in, Files.probeContentType(sourcePath));
+            }
+        } else {
+            throw new IOException("No file resource found at " + uri);
+        }
+    }
+
+    public Path downloadHttpResource(URI uri) throws IOException, ClientProtocolException {
         try (final CloseableHttpClient client = createHttpClient()) {
             try (final CloseableHttpResponse response = createHttpResponse(client, uri)) {
                 final int statusCode = response.getStatusLine().getStatusCode();
