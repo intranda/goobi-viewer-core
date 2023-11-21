@@ -1,13 +1,15 @@
 package io.goobi.viewer.model.files.external;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -16,6 +18,7 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -106,94 +109,91 @@ public class ExternalFilesDownloader {
         Path sourcePath = PathConverter.getPath(uri);
         if (Files.exists(sourcePath)) {
             Path target = this.destinationFolder.resolve(sourcePath.getFileName());
-            try (InputStream in = Files.newInputStream(sourcePath)) {
-                return extractContentToPath(target, in, Files.probeContentType(sourcePath), Files.size(sourcePath));
-            }
+            InputStream in = Files.newInputStream(sourcePath);
+            return extractContentToPath(target, in, Files.probeContentType(sourcePath), Files.size(sourcePath), List.of(in));
         } else {
             throw new IOException("No file resource found at " + uri);
         }
     }
 
     public DownloadResult downloadHttpResource(URI uri) throws IOException, ClientProtocolException {
-        try (final CloseableHttpClient client = createHttpClient()) {
-            try (final CloseableHttpResponse response = createHttpGetResponse(client, uri)) {
-                final int statusCode = response.getStatusLine().getStatusCode();
-                switch (statusCode) {
-                    case HttpServletResponse.SC_OK:
-                        String filename = getFilename(uri, response);
-                        if (response.getEntity() != null) {
-                            DownloadResult result = extractContentToPath(this.destinationFolder.resolve(filename), response.getEntity().getContent(),
-                                    response.getEntity().getContentType().getValue(), response.getEntity().getContentLength());
-                            EntityUtils.consume(response.getEntity());
-                            return result;
-                        }
-                    case 401:
-                    default:
-                        logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
-                        throw new IOException(response.getStatusLine().getReasonPhrase());
+        final CloseableHttpClient client = createHttpClient();
+        final CloseableHttpResponse response = createHttpGetResponse(client, uri);
+        final int statusCode = response.getStatusLine().getStatusCode();
+        switch (statusCode) {
+            case HttpServletResponse.SC_OK:
+                String filename = getFilename(uri, response);
+                if (response.getEntity() != null) {
+                    DownloadResult result = extractContentToPath(this.destinationFolder.resolve(filename), response.getEntity().getContent(),
+                            response.getEntity().getContentType().getValue(), response.getEntity().getContentLength(), List.of(response, client));
+                    return result;
                 }
-            }
+            case 401:
+            default:
+                logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                throw new IOException(response.getStatusLine().getReasonPhrase());
         }
     }
 
-    private DownloadResult extractContentToPath(Path destination, InputStream input, String contentMimeType, long size) throws IOException {
+    private DownloadResult extractContentToPath(Path destination, InputStream input, String contentMimeType, long size, List<Closeable> toClose)
+            throws IOException {
         switch (contentMimeType) {
             case "application/zip":
                 Path targetFolder = prepareNewFolder(destination);
                 logger.trace("Writing to output folder {}", destination);
-                try (ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.empty()); ZipInputStream zis = new ZipInputStream(monitored)) {
-                    monitor(monitored.getMonitor());
-                    Future<Path> future = DataManager.getInstance().getThreadPoolManager().getExecutorService().submit(() -> extractZip(targetFolder, zis));
-                    return new DownloadResult(monitored.getMonitor(), future);
-                }
+                ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.empty());
+                ZipInputStream zis = new ZipInputStream(monitored);
+                Future<Path> future =
+                        DataManager.getInstance()
+                                .getThreadPoolManager()
+                                .getExecutorService()
+                                .submit(() -> extractZip(targetFolder, zis, ListUtils.union(List.of(zis, monitored), toClose)));
+                return new DownloadResult(monitored.getMonitor(), future, size);
             default://assume normal file
-                try (ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.empty())) {
-                    Future<Path> future = DataManager.getInstance().getThreadPoolManager().getExecutorService().submit(() -> writeFile(destination, monitored));
-                    return new DownloadResult(monitored.getMonitor(), future);
-                }
+                monitored = new ProgressInputStream(input, size, Optional.empty());
+                future = DataManager.getInstance()
+                                .getThreadPoolManager()
+                                .getExecutorService()
+                                .submit(() -> writeFile(destination, monitored, ListUtils.union(List.of(monitored), toClose)));
+                return new DownloadResult(monitored.getMonitor(), future, size);
         }
     }
 
-    public Path extractZip(Path destination, ZipInputStream zis) throws IOException {
+    public Path extractZip(Path destination, ZipInputStream zis, List<Closeable> toClose) throws IOException {
         ZipEntry entry = null;
-        while ((entry = zis.getNextEntry()) != null) {
-            String name = entry.getName();
-            Path entryFile = destination.resolve(entry.getName());
-            if (entry.isDirectory()) {
-                logger.trace("Creating directory {}", entryFile);
-                Files.createDirectory(entryFile);
-            } else {
-                logger.trace("Writing file {}", entryFile);
-                if (!Files.isDirectory(entryFile.getParent())) {
-                    Files.createDirectories(entryFile.getParent());
+        try {
+            while ((entry = zis.getNextEntry()) != null) {
+                String name = entry.getName();
+                Path entryFile = destination.resolve(entry.getName());
+                if (entry.isDirectory()) {
+                    logger.trace("Creating directory {}", entryFile);
+                    Files.createDirectory(entryFile);
+                } else {
+                    logger.trace("Writing file {}", entryFile);
+                    if (!Files.isDirectory(entryFile.getParent())) {
+                        Files.createDirectories(entryFile.getParent());
+                    }
+                    writeFile(entryFile, zis, Collections.emptyList());
                 }
-                writeFile(entryFile, zis);
+            }
+            return destination;
+        } finally {
+            for (Closeable closeable : toClose) {
+                closeable.close();
             }
         }
-        return destination;
     }
 
-    private void monitor(Supplier<Long> monitor) {
-       Thread thread = new Thread(() -> {
-           while(true) {
-               try {
-                Thread.sleep(100);
-                System.out.println("Progress: " + monitor.get());
-            } catch (InterruptedException e) {
-               System.out.println("Monitor interrupted");
-               Thread.currentThread().interrupt();
-               return;
+    private Path writeFile(Path entryFile, InputStream zis, List<Closeable> toClose) throws IOException {
+        try {
+            Files.deleteIfExists(entryFile);
+            Files.copy(zis, entryFile);
+            return entryFile;
+        } finally {
+            for (Closeable closeable : toClose) {
+                closeable.close();
             }
-           }
-       });
-       thread.setDaemon(true);
-       thread.start();
-    }
-
-    private Path writeFile(Path entryFile, InputStream zis) throws IOException {
-        Files.deleteIfExists(entryFile);
-        Files.copy(zis, entryFile);
-        return entryFile;
+            }
     }
 
     private String getFilename(URI uri, CloseableHttpResponse response) {
