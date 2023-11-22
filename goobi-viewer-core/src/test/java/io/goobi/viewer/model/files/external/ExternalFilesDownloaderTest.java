@@ -43,7 +43,7 @@ public class ExternalFilesDownloaderTest {
         List<DownloadResult> downloads = new ArrayList<>();
         for(int i = 0; i < 10; i++) {   
             URI uri = URI.create("http://127.0.0.1:9191/exteral/files/1287088031.zip");
-            ExternalFilesDownloader download = new ExternalFilesDownloader(downloadFolder);
+            ExternalFilesDownloader download = new ExternalFilesDownloader(downloadFolder, l -> handleProgress(l));
             DownloadResult result = download.downloadExternalFiles(uri);
             downloads.add(result);
         }
@@ -51,6 +51,10 @@ public class ExternalFilesDownloaderTest {
             Path downloaded = result.getPath().get(2000, TimeUnit.MILLISECONDS);
             assertTrue(Files.exists(downloaded));
         }
+    }
+    
+    private void handleProgress(long l) {
+        System.out.println("Progress " + l);
     }
 
     @After

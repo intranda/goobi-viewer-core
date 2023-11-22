@@ -92,30 +92,6 @@ public class DownloadBean implements Serializable {
 
     /**
      * <p>
-     * checkDownloadAction.
-     * </p>
-     *
-     * @param type a {@link java.lang.String} object.
-     * @param email a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    @Deprecated
-    public String checkDownloadAction(String type, String email, String pi, String logId)
-            throws DAOException, PresentationException, IndexUnreachableException {
-        if (DownloadJob.checkDownload(type, email, pi, logId, DownloadJob.generateDownloadJobId(type, pi, logId), ttl) != null) {
-            return "pretty:download1";
-        }
-
-        return "pretty:error";
-    }
-
-    /**
-     * <p>
      * openDownloadAction.
      * </p>
      *

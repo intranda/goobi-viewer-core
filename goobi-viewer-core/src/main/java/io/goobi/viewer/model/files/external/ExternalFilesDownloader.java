@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -30,12 +30,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
-import io.goobi.viewer.controller.DataManager;
 
 public class ExternalFilesDownloader {
 
@@ -44,14 +42,16 @@ public class ExternalFilesDownloader {
     private static final int REQUEST_TIMEOUT_MILLIS = 4000;
     private static final int SOCKET_TIMEOUT_MILLIS = 4000;
     private static final int CONNECTION_TIMEOUT_MILLIS = 4000;
-    private static final int HEAD_REQUEST_TIMEOUT_MILLIS = 200;
-    private static final int HEAD_SOCKET_TIMEOUT_MILLIS = 200;
-    private static final int HEAD_CONNECTION_TIMEOUT_MILLIS = 200;
+    private static final int HEAD_REQUEST_TIMEOUT_MILLIS = 2000;
+    private static final int HEAD_SOCKET_TIMEOUT_MILLIS = 2000;
+    private static final int HEAD_CONNECTION_TIMEOUT_MILLIS = 2000;
 
     private final Path destinationFolder;
+    private final Consumer<Long> progressMonitor;
 
-    public ExternalFilesDownloader(Path destinationdFolder) {
+    public ExternalFilesDownloader(Path destinationdFolder, Consumer<Long> progressMonitor) {
         this.destinationFolder = destinationdFolder;
+        this.progressMonitor = progressMonitor;
     }
 
     public DownloadResult downloadExternalFiles(URI downloadUri) throws IOException {
@@ -141,21 +141,14 @@ public class ExternalFilesDownloader {
             case "application/zip":
                 Path targetFolder = prepareNewFolder(destination);
                 logger.trace("Writing to output folder {}", destination);
-                ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.empty());
+                ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor));
                 ZipInputStream zis = new ZipInputStream(monitored);
-                Future<Path> future =
-                        DataManager.getInstance()
-                                .getThreadPoolManager()
-                                .getExecutorService()
-                                .submit(() -> extractZip(targetFolder, zis, ListUtils.union(List.of(zis, monitored), toClose)));
-                return new DownloadResult(monitored.getMonitor(), future, size);
+                extractZip(targetFolder, zis, ListUtils.union(List.of(zis, monitored), toClose));
+                return new DownloadResult(monitored.getMonitor(), null, size);
             default://assume normal file
-                monitored = new ProgressInputStream(input, size, Optional.empty());
-                future = DataManager.getInstance()
-                                .getThreadPoolManager()
-                                .getExecutorService()
-                                .submit(() -> writeFile(destination, monitored, ListUtils.union(List.of(monitored), toClose)));
-                return new DownloadResult(monitored.getMonitor(), future, size);
+                monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor));
+                writeFile(destination, monitored, ListUtils.union(List.of(monitored), toClose));
+                return new DownloadResult(monitored.getMonitor(), null, size);
         }
     }
 

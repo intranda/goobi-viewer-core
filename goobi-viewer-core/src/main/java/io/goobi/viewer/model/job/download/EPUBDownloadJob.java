@@ -129,21 +129,6 @@ public class EPUBDownloadJob extends DownloadJob {
         return "EPUB";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public int getQueuePosition() {
-        switch (status) {
-            case ERROR:
-                return -1;
-            case READY:
-                return 0;
-            default:
-                return getEPUBJobsInQueue(identifier);
-        }
-    }
 
     /**
      * <p>
@@ -197,68 +182,4 @@ public class EPUBDownloadJob extends DownloadJob {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#triggerCreation(java.lang.String, java.lang.String, java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    protected void triggerCreation() throws PresentationException, IndexUnreachableException {
-        triggerCreation(pi, identifier);
-    }
-
-    /**
-     * <p>
-     * triggerCreation.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param downloadIdentifier a {@link java.lang.String} object.
-     * @param targetFolderPath a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DownloadException if any.
-     */
-    public static void triggerCreation(String pi, String downloadIdentifier)
-            throws PresentationException, IndexUnreachableException {
-        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(EPUBDownloadJob.LOCAL_TYPE));
-        if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
-            throw new DownloadException("Cannot create download folder: " + targetFolder);
-        }
-
-        String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
-        String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
-        // Path altoFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getAltoFolder()).resolve(pi);
-        Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pi + ".xml");
-
-        TaskManagerEPUBRequest requestObject = new TaskManagerEPUBRequest();
-        requestObject.pi = pi;
-        requestObject.goobiId = downloadIdentifier;
-        requestObject.sourceDir = metsPath.toString();
-        requestObject.language = CmsBean.getCurrentLocale().getLanguage();
-
-        try {
-            Response response = postJobRequest(taskManagerUrl, requestObject);
-            String entity = response.readEntity(String.class);
-            JSONObject entityJson = new JSONObject(entity);
-            if (entityJson.has("STATUS") && entityJson.get("STATUS").equals("ERROR")) {
-                if (entityJson.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
-                    logger.debug("Job is already being processed");
-                } else {
-                    throw new DownloadException("Failed to start epub creation for PI=" + pi + ": TaskManager returned error "
-                            + entityJson.get("ERRORMESSAGE"));
-                }
-            }
-        } catch (Exception e) {
-            // Had to catch generic exception here because a ParseException triggered by Tomcat error HTML getting parsed as JSON cannot be caught
-            throw new DownloadException("Failed to start pdf creation for PI=" + pi + ": " + e.getMessage());
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getRestApiPath()
-     */
-    @Override
-    protected String getRestApiPath() {
-        return "/viewerepub";
-    }
 }
