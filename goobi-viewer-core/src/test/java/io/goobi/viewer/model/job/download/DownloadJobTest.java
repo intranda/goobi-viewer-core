@@ -76,39 +76,6 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(hash, DownloadJob.generateDownloadJobId(crit1, crit2));
     }
 
-    //    @Test
-    public void testSendJobToTaskManager() throws PresentationException, IndexUnreachableException {
-        boolean triggered = false;
-        try {
-            PDFDownloadJob.triggerCreation("18979459_1830", "LOG_0003", "6c685d274f44f6e3ab8ef3f1c640bd01");
-            triggered = true;
-        } catch (DownloadException e) {
-
-        }
-        Assert.assertTrue("TaskManager job not triggered", triggered);
-    }
-
-    //    @Test
-    public void testTaskManagerQueue() throws InterruptedException, PresentationException, IndexUnreachableException {
-        List<String> logs = new ArrayList<>();
-        logs.add("");
-        logs.add("LOG_0004");
-        logs.add("LOG_0005");
-        logs.add("LOG_0006");
-        logs.add("LOG_0007");
-        logs.add("LOG_0008");
-        String pi = "18979459_1830";
-        for (String logId : logs) {
-            PDFDownloadJob.triggerCreation(pi, logId, DownloadJob.generateDownloadJobId(pi, logId));
-        }
-        Thread.sleep(500);
-        for (String logId : logs) {
-            String id = DownloadJob.generateDownloadJobId(pi, logId);
-            int jobsUntil = PDFDownloadJob.getPDFJobsInQueue(id);
-            assertEquals(4, jobsUntil, 3);
-        }
-    }
-
     @Test 
     public void testPutDownloadJobAnswer() throws JsonProcessingException {
         String pi = "18979459_1830";
