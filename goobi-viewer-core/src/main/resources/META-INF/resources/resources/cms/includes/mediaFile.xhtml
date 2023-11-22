@@ -266,8 +266,8 @@
                         aria-label="#{msg.delete}" >
                         #{msg.delete}
                     	<f:ajax render="adminCmsMediaFilesForm :messages" onevent="reload"></f:ajax>
-                    </button>
-                    <button type="button" class="btn btn--clean" data-copy="img-url" data-clipboard-text="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}"
+                    </button> 
+                    <button type="button" class="btn btn--clean" data-copy-value="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}" 
                         title="#{msg.cms_media_copyUrlToClipboard}">#{msg.admin__cms_media_copy_image_url}</button>
                 </div>
 

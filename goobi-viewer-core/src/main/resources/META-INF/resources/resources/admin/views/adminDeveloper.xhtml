@@ -46,6 +46,13 @@
 			
 				<h2>Dateien herunterladen</h2>
 				<div class="admin__default-block">
+				<button type="button" 
+					title="hover test text" 
+					data-copy-done-msg="yeeeeeeeeaha" 
+					class="btn btn--full admin__developer-download-button">
+					tooltip test
+				</button>
+				
 
 					 	<h:outputText layout="block" styleClass="admin__developer-download-info-text" escape="false" value="#{msg.admin__developer__files_info}" />
 						
@@ -60,7 +67,7 @@ Anschließend die Datei entpacken:
 					</div>
 					<div class="admin__developer-code-block">
 						
-						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" data-copy="code"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" data-copy-value="#{msg.admin__developer__unzip_file_code}"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
 						<code data-target="sqlCode"><h:outputFormat value="#{msg.admin__developer__unzip_file_code}" escape="false">
 	                        	<f:param value="#{navigationHelper.theme}" />
 	                        </h:outputFormat></code>
@@ -80,8 +87,8 @@ Anschließend die Datei entpacken:
 					</div>
 					<div class="admin__developer-code-block">
 						
-						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" data-copy="code"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
-						<code data-target="sqlCode"><h:outputFormat value="#{msg.admin__developer__sql_commands}" escape="false">
+						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" data-copy-value="#{msg.admin__developer__sql_commands}"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<code data-target="code"><h:outputFormat value="#{msg.admin__developer__sql_commands}" escape="false">
 	                        	<f:param value="#{navigationHelper.theme}" />
 	                        </h:outputFormat></code>
 
@@ -98,7 +105,7 @@ Anschließend die Datei entpacken:
 						Pfad 1<br />
 						Pfad 2
 					</p>
-				</div>
+				</div> 
 				
 				<h2>Einstellungen  allg. Informationen</h2>
 				<div class="admin__default-block">
@@ -115,55 +122,29 @@ Anschließend die Datei entpacken:
 			</div>
 			
 			<script>
-			$( document ).ready(function() {
-				$('[data-copy="code"]').tooltip({trigger: "hover", placement: "top"});
 
-			    $('[data-copy="code"]').click(function () {
-			    	
-			    	var thisCopyButton = $(this);
 
-			    	// GET CODE VALUE WITH LINEBREAKS BUT WITHOUT HTML ELEMENTS		
-			    	  value = $(thisCopyButton).next('[data-target="sqlCode"]').clone().find('br').prepend('\r\n').end().text()
-			    	  var $temp = $("<textarea />");
-			    	  $("body").append($temp);
-			    	  $temp.val(value).select();
-			    	  document.execCommand("copy");
-			    	  $temp.remove();
-			    	
-			    	
-			    	// SHOW TOOLTIP
-			    	 $(thisCopyButton).tooltip('hide');
-			    	 $(thisCopyButton).tooltip('dispose');
-					 $(thisCopyButton).tooltip({trigger: "manual", placement: "top", title: "Copied!"}); 
-			    	 $(thisCopyButton).attr('data-original-title', 'Copied!');
-			    	 $(thisCopyButton).tooltip('show');
-			    	 
-			    	 
-					// HIDE TOOLTIP AFTER A SHORT TIME PERIOD
-			        setTimeout(function () {
+				//<![CDATA[
+					
+				// CLEAN CODE FOR COPY TO CLIPBOARD - REMOVE BR ELEMENTS
+				$('[data-target="code"]').each(function(i, obj) {
+					rawHtml = $(thisCopyButton).next('[data-target="sqlCode"]').clone().find('br').prepend('\r\n').end().text();
+					
+					$(this).prev('[data-copy-value]').data('copy-value', cleanCode);
+				});
+				
+				$('[data-copy-value]').each(function(i, obj) {
+					var originalCode = $(this).data('copy-value');
+					var cleanCode = originalCode.replace(/<br ?\/?>/g, "\n");
+					$(this).data('copy-value', cleanCode);
+					console.log(cleanCode);
+				});
 
-			            $(thisCopyButton).tooltip('hide');
-			            $(thisCopyButton).on('hidden.bs.tooltip', function () {
-			            	 $(thisCopyButton).tooltip('dispose');
-					         $(thisCopyButton).attr('data-original-title', 'Copy to clipboard');
-					         $(thisCopyButton).tooltip({trigger: "hover", placement: "top", title: "Copy to clipboard"}); 
-			            })
-
-			        }, 1700);
-			
-			    });
-			    
-			});
-// 			    $("a.my-tool-tip").tooltip();
-// 			    $("#copy-button").on('click', function() {
-// 			      var tooltip = $(this);
-// 			      tooltip.attr('data-original-title', 'Copied!');
-// 			      $("a.my-tool-tip").tooltip('show');
-// 			    });
-			    
-			    
-			    
+			    //]]>
+				
 			</script>
+			
+
 
 			
 		</ui:fragment>
