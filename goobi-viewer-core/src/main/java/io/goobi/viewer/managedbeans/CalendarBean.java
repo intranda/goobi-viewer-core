@@ -48,7 +48,6 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -1261,7 +1260,7 @@ public class CalendarBean implements Serializable {
      */
     public String getActualYear() {
         String year = "";
-        if (searchBean.getActiveSearchType() == 2) {
+        if (searchBean.getActiveSearchType() == SearchHelper.SEARCH_TYPE_TIMELINE) {
             if (currentYear == null) {
                 return null;
             }
@@ -1286,7 +1285,7 @@ public class CalendarBean implements Serializable {
      */
     public String searchForIncompleteData() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String year = "";
-        if (searchBean.getActiveSearchType() == 2) {
+        if (searchBean.getActiveSearchType() == SearchHelper.SEARCH_TYPE_TIMELINE) {
             if (currentYear == null) {
                 return "";
             }

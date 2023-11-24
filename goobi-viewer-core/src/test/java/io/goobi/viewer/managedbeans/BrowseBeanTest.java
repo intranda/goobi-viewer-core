@@ -24,11 +24,13 @@ package io.goobi.viewer.managedbeans;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.DataManager;
 
 public class BrowseBeanTest extends AbstractTest {
 
@@ -150,4 +152,31 @@ public class BrowseBeanTest extends AbstractTest {
         bb.setBrowsingMenuField("MD_FOO");
         assertEquals("MD_FOO", bb.getBrowsingMenuFieldForLanguage("en"));
     }
+
+    /**
+     * @see BrowseBean#generateFilterQuery()
+     * @verifies return empty string if no filterQuery or result groups available
+     */
+    @Test
+    public void generateFilterQuery_shouldReturnEmptyStringIfNoFilterQueryOrResultGroupsAvailable() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        assertEquals("", bb.generateFilterQuery(Collections.emptyList()));
+    }
+
+    /**
+     * @see BrowseBean#generateFilterQuery()
+     * @verifies generate filter query correctly
+     */
+    @Test
+    public void generateFilterQuery_shouldGenerateFilterQueryCorrectly() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        assertEquals("+(+( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))", bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
+        
+        bb.setFilterQuery("FOO:bar");
+        assertEquals("+(+(FOO:bar))", bb.generateFilterQuery(Collections.emptyList()));
+        
+        
+        assertEquals("+(+(FOO:bar) +( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))", bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
+    }
+
 }

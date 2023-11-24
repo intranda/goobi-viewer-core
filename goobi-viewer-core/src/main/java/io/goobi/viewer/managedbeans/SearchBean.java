@@ -444,6 +444,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 return StringConstants.PREFIX_PRETTY + PageType.advancedSearch.getName();
             case SearchHelper.SEARCH_TYPE_CALENDAR:
                 return StringConstants.PREFIX_PRETTY + PageType.searchCalendar.getName();
+            case SearchHelper.SEARCH_TYPE_TERMS:
+                return StringConstants.PREFIX_PRETTY + PageType.term.getName();
             default:
                 return StringConstants.PREFIX_PRETTY + PageType.search.getName();
         }
@@ -526,21 +528,22 @@ public class SearchBean implements SearchInterface, Serializable {
             setSortString("");
         } else {
             switch (activeSearchType) {
-                case 0:
+                case SearchHelper.SEARCH_TYPE_REGULAR:
+                case SearchHelper.SEARCH_TYPE_TERMS:
                     resetAdvancedSearchParameters();
                     if (calendarBean != null) {
                         calendarBean.resetCurrentSelection();
                     }
                     setSortString("");
                     break;
-                case 1:
+                case SearchHelper.SEARCH_TYPE_ADVANCED:
                     resetSimpleSearchParameters();
                     if (calendarBean != null) {
                         calendarBean.resetCurrentSelection();
                     }
                     break;
-                case 2:
-                case 3:
+                case SearchHelper.SEARCH_TYPE_TIMELINE:
+                case SearchHelper.SEARCH_TYPE_CALENDAR:
                     resetSimpleSearchParameters();
                     resetAdvancedSearchParameters();
                     setSortString("");
@@ -916,6 +919,9 @@ public class SearchBean implements SearchInterface, Serializable {
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedSearchQueryGroup,
                                     additionalExpandQueryfields),
                             searchTerms, phraseSearch, proximitySearchDistance);
+            if (StringUtils.isEmpty(expandQuery) && activeSearchType == SearchHelper.SEARCH_TYPE_TERMS) {
+                expandQuery = searchStringInternal;
+            }
             currentSearch.setExpandQuery(expandQuery);
         }
 
@@ -1669,9 +1675,14 @@ public class SearchBean implements SearchInterface, Serializable {
         } else if (PageType.browse.equals(oPath.map(ViewerPath::getPageType).orElse(PageType.other))) {
             return facets.removeFacetAction(facetQuery, StringConstants.PREFIX_PRETTY + "browse4");
         } else {
-            return facets.removeFacetAction(facetQuery,
-                    activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? StringConstants.PRETTY_SEARCHADVANCED5
-                            : StringConstants.PRETTY_NEWSEARCH5);
+            String ret = StringConstants.PRETTY_NEWSEARCH5;
+            switch (activeSearchType) {
+                case SearchHelper.SEARCH_TYPE_ADVANCED:
+                    ret = StringConstants.PRETTY_SEARCHADVANCED5;
+                case SearchHelper.SEARCH_TYPE_TERMS:
+                    ret = "pretty:searchTerm5";
+            }
+            return facets.removeFacetAction(facetQuery, ret);
         }
     }
 
@@ -2693,10 +2704,15 @@ public class SearchBean implements SearchInterface, Serializable {
             return null;
         }
 
-        if (SearchHelper.SEARCH_TYPE_ADVANCED == activeSearchType) {
-            return navigationHelper.getAdvancedSearchUrl();
+        switch (activeSearchType) {
+            case SearchHelper.SEARCH_TYPE_ADVANCED:
+                return navigationHelper.getAdvancedSearchUrl();
+            case SearchHelper.SEARCH_TYPE_TERMS:
+                return navigationHelper.getTermUrl();
+            default:
+                return navigationHelper.getSearchUrl();
         }
-        return navigationHelper.getSearchUrl();
+
     }
 
     /** {@inheritDoc} */
@@ -2727,11 +2743,14 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public String getCurrentSearchUrlRoot() {
-        if (SearchHelper.SEARCH_TYPE_ADVANCED == activeSearchType) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/searchadvanced";
+        switch (activeSearchType) {
+            case SearchHelper.SEARCH_TYPE_ADVANCED:
+                return navigationHelper.getAdvancedSearchUrl();
+            case SearchHelper.SEARCH_TYPE_TERMS:
+                return navigationHelper.getTermUrl();
+            default:
+                return navigationHelper.getSearchUrl();
         }
-
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/search";
     }
 
     /**
@@ -3158,32 +3177,42 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     private String getLastUsedDefaultSearchUrl() {
-        if (getActiveSearchType() == 1) {
-            return PrettyUrlTools.getAbsolutePageUrl(
-                    StringConstants.PRETTY_SEARCHADVANCED5,
-                    getActiveResultGroupName(),
-                    getExactSearchString(),
-                    getCurrentPage(),
-                    getSortString(),
-                    facets.getActiveFacetString());
+        switch (activeSearchType) {
+            case SearchHelper.SEARCH_TYPE_ADVANCED:
+                return PrettyUrlTools.getAbsolutePageUrl(
+                        StringConstants.PRETTY_SEARCHADVANCED5,
+                        getActiveResultGroupName(),
+                        getExactSearchString(),
+                        getCurrentPage(),
+                        getSortString(),
+                        facets.getActiveFacetString());
+            case SearchHelper.SEARCH_TYPE_TERMS:
+                return PrettyUrlTools.getAbsolutePageUrl(
+                        "pretty:searchTerms5",
+                        getActiveResultGroupName(),
+                        getExactSearchString(),
+                        getCurrentPage(),
+                        getSortString(),
+                        facets.getActiveFacetString());
+            default:
+                return PrettyUrlTools.getAbsolutePageUrl(
+                        StringConstants.PRETTY_NEWSEARCH5,
+                        getActiveResultGroupName(),
+                        getExactSearchString(),
+                        getCurrentPage(),
+                        getSortString(),
+                        facets.getActiveFacetString());
         }
-
-        return PrettyUrlTools.getAbsolutePageUrl(
-                "pretty:newSearch5",
-                getActiveResultGroupName(),
-                getExactSearchString(),
-                getCurrentPage(),
-                getSortString(),
-                facets.getActiveFacetString());
     }
 
     @Override
     public String changeSorting() throws IOException {
         logger.trace("changeSorting");
         switch (getActiveSearchType()) {
-            case 1:
+            case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return StringConstants.PRETTY_SEARCHADVANCED5;
-            case 0:
+            case SearchHelper.SEARCH_TYPE_TERMS:
+                return "pretty:searchTerm5";
             default:
                 return StringConstants.PRETTY_NEWSEARCH5;
         }

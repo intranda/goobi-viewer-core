@@ -1332,7 +1332,7 @@ public class NavigationHelper implements Serializable {
     public String getPageUrl(PageType page) {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + page.getName();
     }
-    
+
     /**
      * <p>
      * getSearchUrl.
@@ -1367,6 +1367,8 @@ public class NavigationHelper implements Serializable {
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
+            case SearchHelper.SEARCH_TYPE_TERMS:
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.term.getName();
             default:
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
         }
@@ -2048,5 +2050,5 @@ public class NavigationHelper implements Serializable {
     public String getAsId(String text) {
         return StringTools.convertToSingleWord(text, MAX_HTML_ID_LENGTH, "_");
     }
-    
+
 }
