@@ -80,7 +80,7 @@ pipeline {
         enabledForFailure: true, aggregatingResults: false,
         tools: [checkStyle(pattern: '**/target/checkstyle-result.xml', reportEncoding: 'UTF-8')]
       )
-      dependencyCheckPublisher pattern: '**/target/dependency-check-report.xml'
+      //dependencyCheckPublisher pattern: '**/target/dependency-check-report.xml'
     }
     success {
       archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
