@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Enum containing supported mime types.
@@ -34,7 +34,10 @@ public enum BaseMimeType {
     AUDIO("audio"),
     APPLICATION("application"),
     SANDBOXED_HTML("text"),
-    OBJECT("object");
+    MODEL("model"),
+    @Deprecated(since = "23.11")
+    OBJECT("object"),
+    UNKNOWN("");
 
     /** Constant <code>logger</code> */
     private static final Logger logger = LogManager.getLogger(BaseMimeType.class);
@@ -62,7 +65,7 @@ public enum BaseMimeType {
      */
     public static BaseMimeType getByName(String name) {
         if (name == null) {
-            return null;
+            return UNKNOWN;
         }
 
         if (name.contains("/")) {
@@ -74,7 +77,7 @@ public enum BaseMimeType {
             }
         }
 
-        return null;
+        return UNKNOWN;
     }
 
     /**
@@ -100,9 +103,28 @@ public enum BaseMimeType {
             case AUDIO:
             case VIDEO:
             case OBJECT:
+            case MODEL:
                 return false;
             default:
                 return true;
+        }
+    }
+
+    /**
+     * 
+     * @return true for all types directly visible (or audible) in the viewer object view.
+     */
+    public boolean isMediaType() {
+        switch (this) {
+            case AUDIO:
+            case IMAGE:
+            case VIDEO:
+            case SANDBOXED_HTML:
+            case MODEL:
+            case OBJECT:
+                return true;
+            default:
+                return false;
         }
     }
 

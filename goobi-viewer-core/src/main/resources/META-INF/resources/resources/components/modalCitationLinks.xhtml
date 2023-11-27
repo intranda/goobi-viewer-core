@@ -50,9 +50,8 @@
 				                        <h:inputText styleClass="widget-usage__citelinks-input" value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
 				                        <a id="citeLinkUrl"
 				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
-				                            data-copy="work-citelink"
-				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
 				                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
 				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
 				                        </div>
@@ -64,9 +63,8 @@
 					                       <div class="widget-usage__citelinks-internal">#{msg.label__citation_link_internal}:</div>
 									        <a id="citeLinkInternal"
 					                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
-					                            data-copy="work-citelink"
-					                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-					                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+					                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+					                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
 					                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
 					                           <i class="fa fa-clipboard" aria-hidden="true"></i></a>
 					                        </div>
@@ -94,9 +92,8 @@
 				                            value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
 				                        <a id="citeLinkWork"
 				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
-				                            data-copy="work-citelink"
-				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
 				                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
 				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
 				                        </div>
@@ -107,9 +104,8 @@
 				                       <div class="widget-usage__citelinks-internal">#{msg.label__citation_link_internal}:</div>
 				                        <a id="citeLinkModalCitationInternal"
 				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
-				                            data-copy="work-citelink"
-				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
 				                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
 				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
 				                       </div>
@@ -135,9 +131,9 @@
 				                            value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
 				                        <a id="citeLinkUrn#{index.count}"
 				                            class="widget-usage__citelink-page widget-usage__citelinks-copy-to-clipboard"
-				                            data-copy="page-citelink"
+				                            data-copy-value="page-citelink"
 				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
 				                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
 				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
 				                        </div>
@@ -148,9 +144,8 @@
 				                      <div class="widget-usage__citelinks-internal">#{msg.label__citation_link_internal}:</div>
 				                        <a id="citeLinkUrnPage"
 				                            class="widget-usage__citelink-page widget-usage__citelinks-copy-to-clipboard"
-				                            data-copy="page-citelink"
-				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
 				                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
 				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
 				                        </div>

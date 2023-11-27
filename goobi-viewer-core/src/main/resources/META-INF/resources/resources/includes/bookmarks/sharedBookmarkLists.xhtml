@@ -184,16 +184,14 @@
 											<ui:fragment rendered="#{bookmarkList.hasShareKey()}">
 												<a
 													title="#{msgcopyUrl}"
-													data-copy="bookmarklist-share-collection"
-													data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
-													data-copy-done="#{msg.copyUrlDone}">
+													data-copy-value="#{bookmarkList.getIIIFCollectionURI()}"
+													data-copy-done-msg="#{msg.copyUrlDone}">
 													<i class="fa fa-share" aria-hidden="true"></i>
 													<span>#{msg.bookmarkList_shareCollection}</span>
 												</a>
 												<a title="#{msg.copyUrl}"
-													data-copy="bookmarklist-share-link"
-													data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
-													data-copy-done="#{msg.copyUrlDone}">
+													data-copy-value="#{bookmarkBean.getShareLink(bookmarkList)}"
+													data-copy-done-msg="#{msg.copyUrlDone}">
 													<i class="fa fa-share-alt" aria-hidden="true"></i>
 													<span>#{msg.action__copy_bookmarklist_sharelink}</span>
 												</a>
@@ -238,9 +236,8 @@
 										type="button"
 										class="btn btn--link"
 										title="#{msg.copyUrl}"
-										data-copy="bookmarklist-share-collection"
-										data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
-										data-copy-done="#{msg.copyUrlDone}"
+										data-copy-value="#{bookmarkList.getIIIFCollectionURI()}"
+										data-copy-done-msg="#{msg.copyUrlDone}"
 										aria-label="#{bookmarkList.name}: #{msg.bookmarkList_shareCollection}">
 										<i class="fa fa-share" aria-hidden="true"></i>
 										<span>#{msg.bookmarkList_shareCollection}</span>
@@ -249,9 +246,8 @@
 										type="button"
 										class="btn btn--link"
 										title="#{msg.copyUrl}"
-										data-copy="bookmarklist-share-link"
-										data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
-										data-copy-done="#{msg.copyUrlDone}"
+										data-copy-value="#{bookmarkBean.getShareLink(bookmarkList)}"
+										data-copy-done-msg="#{msg.copyUrlDone}"
 										aria-label="#{bookmarkList.name}: #{msg.action__copy_bookmarklist_sharelink}">
 										<i class="fa fa-share-alt" aria-hidden="true"></i>
 										<span>#{msg.action__copy_bookmarklist_sharelink}</span>

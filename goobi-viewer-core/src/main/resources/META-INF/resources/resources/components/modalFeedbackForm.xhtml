@@ -83,7 +83,7 @@
 
 
 								<!-- E-MAIL FOR NOT LOGGED IN USERS -->
-								<h:panelGroup rendered="#{!feedbackBean.loggedIn}" layout="block"
+								<h:panelGroup rendered="#{!feedbackBean.loggedIn}" layout="block" 
 									styleClass="form-group form-row" id="emailGroup">
 									<label id="feedbackModal__labelFeedbackEmail" for="feedback-modal__feedbackEmail"
 										class="col-lg-3 control-label">
@@ -102,13 +102,13 @@
 													class="fa fa-exclamation" aria-hidden="true"></i>
 											</div>
 										</div>
-										<h:inputText id="feedbackModal__feedbackEmail" label="feedbackEmail"
+										<h:inputText id="feedbackModal__feedbackEmail" label="feedbackEmail" pt:type="email"
 											immediate="true" required="true" pt:data-require-input-text="feedbackInput"
 											value="#{feedbackBean.feedback.senderAddress}" styleClass="form-control">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="feedbackModal__labelFeedbackEmail" />
-											<f:validator validatorId="emailValidator" for="feedbackEmail" />
-											<f:ajax render="emailGroup" />
+<!-- 											<f:validator validatorId="emailValidator" for="feedbackModal:feedbackEmail" /> -->
+<!-- 											<f:ajax event="change" render="feedbackModal:feedbackModal__feedbackEmail" /> -->
 										</h:inputText>
 									</div>
 								</h:panelGroup>
@@ -137,7 +137,7 @@
 												value="labelFeedbackEmail2" />
 											<f:validator validatorId="emailValidator"
 												for="feedbackEmail2" />
-											<f:ajax render="emailGroup2" />
+											<f:ajax render="feedbackModal:emailGroup2" />
 										</h:inputText>
 									</div>
 								</h:panelGroup>

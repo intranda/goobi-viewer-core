@@ -127,7 +127,8 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(BaseMimeType.APPLICATION.getName(),
                 new PhysicalElementBuilder().setMimeType("application/pdf").build().getBaseMimeType());
         Assert.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(), new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
-        Assert.assertEquals(BaseMimeType.OBJECT.getName(), new PhysicalElementBuilder().setMimeType("object").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/gltf+json").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/object").build().getBaseMimeType());
     }
 
     /**

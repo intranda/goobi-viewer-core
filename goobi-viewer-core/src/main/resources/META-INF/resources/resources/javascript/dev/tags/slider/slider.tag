@@ -123,9 +123,9 @@
     }
     
     translate(text) {
-    	let translation =  viewerJS.iiif.getValue(text, this.opts.language);
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
     	if(!translation) {
-    			translation = viewerJS.getMetadataValue(text, this.opts.language);
+    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
     	}
     	return translation;
     }

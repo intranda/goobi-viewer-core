@@ -3954,9 +3954,9 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     }.bind(this)
 
     this.translate = function(text) {
-    	let translation =  viewerJS.iiif.getValue(text, this.opts.language);
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
     	if(!translation) {
-    			translation = viewerJS.getMetadataValue(text, this.opts.language);
+    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
     	}
     	return translation;
     }.bind(this)

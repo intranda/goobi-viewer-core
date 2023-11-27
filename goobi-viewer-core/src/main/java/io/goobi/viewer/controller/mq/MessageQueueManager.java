@@ -33,6 +33,7 @@ import java.rmi.server.RMIServerSocketFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -246,13 +247,13 @@ public class MessageQueueManager {
 
         try {
             for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
-                DefaultQueueListener listener = new DefaultQueueListener(this);
-                listener.register(QUEUE_NAME_VIEWER);
+                DefaultQueueListener listener = new DefaultQueueListener(this, QUEUE_NAME_VIEWER);
+                listener.register();
                 listeners.add(listener);
             }
             for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
-                DefaultQueueListener listener = new DefaultQueueListener(this);
-                listener.register(QUEUE_NAME_PDF);
+                DefaultQueueListener listener = new DefaultQueueListener(this, QUEUE_NAME_PDF);
+                listener.register();
                 listeners.add(listener);
             }
 
@@ -520,6 +521,10 @@ public class MessageQueueManager {
 
     public boolean hasConfig() {
         return this.config != null;
+    }
+
+    public List<DefaultQueueListener> getListeners() {
+        return Collections.unmodifiableList(this.listeners);
     }
 
 }

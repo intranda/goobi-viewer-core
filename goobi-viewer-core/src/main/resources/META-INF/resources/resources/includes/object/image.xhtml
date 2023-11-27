@@ -28,14 +28,13 @@
 		<div>#{msg.help__share_image_area__share}</div> 
 			<ul>
 				<li>
-					<a data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}"
-						data-clipboard-text="image-region-page"
+					<a data-copy-done-msg="#{msg.copyUrlDone}"
+						data-copy-share-image="image-region-page"
 						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
 				</li> 
 				<li>
-					<a data-copy="image-region-image"
-						data-copy-done="#{msg.copyUrlDone}"
-						data-clipboard-text="image-region-image"
+					<a data-copy-share-image="image-region-image"
+						data-copy-done-msg="#{msg.copyUrlDone}"
 						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_image}</a>
 				</li>
 			</ul>
@@ -187,7 +186,6 @@
         	    }
         	}
         }
-        
 
        	// desktop object view
        	if ( access && configViewer) {
@@ -373,6 +371,10 @@
 			    }
 			}
 		}
+		
+        
+
+        
 		       	
       	//]]>
     </script>

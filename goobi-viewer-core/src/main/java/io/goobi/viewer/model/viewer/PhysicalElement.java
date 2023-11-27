@@ -565,11 +565,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public String getBaseMimeType() {
         BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
-        if (baseMimeType != null) {
-            return baseMimeType.getName();
+        if(BaseMimeType.UNKNOWN.equals(baseMimeType)) {
+            return BaseMimeType.IMAGE.getName();
+        } else {
+            return baseMimeType.getName();            
         }
-
-        return BaseMimeType.IMAGE.getName();
     }
 
     /**
@@ -1364,7 +1364,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermission3DObject() throws IndexUnreachableException, DAOException {
         logger.trace("AccessPermission3DObject");
         // Prevent access if mime type incompatible
-        if (!BaseMimeType.OBJECT.equals(BaseMimeType.getByName(mimeType))) {
+        if (!(BaseMimeType.OBJECT.equals(BaseMimeType.getByName(mimeType)) || BaseMimeType.MODEL.equals(BaseMimeType.getByName(mimeType)))) {
             return false;
         }
 
