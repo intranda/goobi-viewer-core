@@ -42,7 +42,11 @@ public enum TaskType {
     /** Write single page pdfs to storage to be used when creating a full record pdf **/
     PRERENDER_PDF("0 35 0 * * ?"),
     /** Fill all CMS-Geomaps with features from SOLR to avoid loading that data during page load */
-    CACHE_GEOMAPS("0 0 * * * ?");
+    CACHE_GEOMAPS("0 0 * * * ?"), 
+    /** Download a zip archive from a url and extract it so its content may be offered for download */
+    DOWNLOAD_EXTERNAL_RESOURCE(""),
+    /** Delete a resouce previously downloaded by {@link #DOWNLOAD_EXTERNAL_RESOURCE} */
+    DELETE_RESOURCE("");
 
     private final String defaultCronExpression;
 

@@ -1,13 +1,10 @@
 package io.goobi.viewer.model.files.external;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -18,9 +15,8 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.client.ClientProtocolException;
@@ -47,14 +43,14 @@ public class ExternalFilesDownloader {
     private static final int HEAD_CONNECTION_TIMEOUT_MILLIS = 2000;
 
     private final Path destinationFolder;
-    private final Consumer<Long> progressMonitor;
+    private final Consumer<Progress> progressMonitor;
 
-    public ExternalFilesDownloader(Path destinationdFolder, Consumer<Long> progressMonitor) {
+    public ExternalFilesDownloader(Path destinationdFolder, Consumer<Progress> progressMonitor) {
         this.destinationFolder = destinationdFolder;
         this.progressMonitor = progressMonitor;
     }
 
-    public DownloadResult downloadExternalFiles(URI downloadUri) throws IOException {
+    public Path downloadExternalFiles(URI downloadUri) throws IOException {
 
         return downloadFromUrl(downloadUri);
 
@@ -91,7 +87,7 @@ public class ExternalFilesDownloader {
         return Files.exists(sourcePath);
     }
 
-    private DownloadResult downloadFromUrl(URI uri) throws IOException {
+    private Path downloadFromUrl(URI uri) throws IOException {
         logger.trace("download from url {}", uri);
         switch (uri.getScheme()) {
             case "http":
@@ -105,18 +101,19 @@ public class ExternalFilesDownloader {
 
     }
 
-    private DownloadResult downloadFileResource(URI uri) throws IOException {
+    private Path downloadFileResource(URI uri) throws IOException {
         Path sourcePath = PathConverter.getPath(uri);
         if (Files.exists(sourcePath)) {
             Path target = this.destinationFolder.resolve(sourcePath.getFileName());
-            InputStream in = Files.newInputStream(sourcePath);
-            return extractContentToPath(target, in, Files.probeContentType(sourcePath), Files.size(sourcePath), List.of(in));
+            try (InputStream in = Files.newInputStream(sourcePath)) {
+                return extractContentToPath(target, in, Files.probeContentType(sourcePath), Files.size(sourcePath));
+            }
         } else {
             throw new IOException("No file resource found at " + uri);
         }
     }
 
-    public DownloadResult downloadHttpResource(URI uri) throws IOException, ClientProtocolException {
+    public Path downloadHttpResource(URI uri) throws IOException, ClientProtocolException {
         final CloseableHttpClient client = createHttpClient();
         final CloseableHttpResponse response = createHttpGetResponse(client, uri);
         final int statusCode = response.getStatusLine().getStatusCode();
@@ -124,9 +121,8 @@ public class ExternalFilesDownloader {
             case HttpServletResponse.SC_OK:
                 String filename = getFilename(uri, response);
                 if (response.getEntity() != null) {
-                    DownloadResult result = extractContentToPath(this.destinationFolder.resolve(filename), response.getEntity().getContent(),
-                            response.getEntity().getContentType().getValue(), response.getEntity().getContentLength(), List.of(response, client));
-                    return result;
+                    return extractContentToPath(this.destinationFolder.resolve(filename), response.getEntity().getContent(),
+                            response.getEntity().getContentType().getValue(), response.getEntity().getContentLength());
                 }
             case 401:
             default:
@@ -135,26 +131,25 @@ public class ExternalFilesDownloader {
         }
     }
 
-    private DownloadResult extractContentToPath(Path destination, InputStream input, String contentMimeType, long size, List<Closeable> toClose)
+    private Path extractContentToPath(Path destination, InputStream input, String contentMimeType, long size)
             throws IOException {
         switch (contentMimeType) {
             case "application/zip":
                 Path targetFolder = prepareNewFolder(destination);
                 logger.trace("Writing to output folder {}", destination);
-                ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor));
-                ZipInputStream zis = new ZipInputStream(monitored);
-                extractZip(targetFolder, zis, ListUtils.union(List.of(zis, monitored), toClose));
-                return new DownloadResult(monitored.getMonitor(), null, size);
+                try(ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor));
+                    ZipInputStream zis = new ZipInputStream(monitored)) {
+                    return extractZip(targetFolder, zis);
+                }
             default://assume normal file
-                monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor));
-                writeFile(destination, monitored, ListUtils.union(List.of(monitored), toClose));
-                return new DownloadResult(monitored.getMonitor(), null, size);
+                try(ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor))) {
+                    return writeFile(destination, monitored);
+                }
         }
     }
 
-    public Path extractZip(Path destination, ZipInputStream zis, List<Closeable> toClose) throws IOException {
+    public Path extractZip(Path destination, ZipInputStream zis) throws IOException {
         ZipEntry entry = null;
-        try {
             while ((entry = zis.getNextEntry()) != null) {
                 String name = entry.getName();
                 Path entryFile = destination.resolve(entry.getName());
@@ -166,27 +161,16 @@ public class ExternalFilesDownloader {
                     if (!Files.isDirectory(entryFile.getParent())) {
                         Files.createDirectories(entryFile.getParent());
                     }
-                    writeFile(entryFile, zis, Collections.emptyList());
+                    writeFile(entryFile, zis);
                 }
             }
             return destination;
-        } finally {
-            for (Closeable closeable : toClose) {
-                closeable.close();
-            }
-        }
     }
 
-    private Path writeFile(Path entryFile, InputStream zis, List<Closeable> toClose) throws IOException {
-        try {
+    private Path writeFile(Path entryFile, InputStream zis) throws IOException {
             Files.deleteIfExists(entryFile);
             Files.copy(zis, entryFile);
             return entryFile;
-        } finally {
-            for (Closeable closeable : toClose) {
-                closeable.close();
-            }
-            }
     }
 
     private String getFilename(URI uri, CloseableHttpResponse response) {
@@ -202,7 +186,7 @@ public class ExternalFilesDownloader {
     }
 
     private Path prepareNewFolder(Path destination) throws IOException {
-        Path path = destination.getParent().resolve(FileNameUtils.getBaseName(destination.getFileName()));
+        Path path = destination.getParent().resolve(FilenameUtils.getBaseName(destination.getFileName().toString()));
         if (Files.exists(path)) {
             FileUtils.deleteDirectory(path.toFile());
         }

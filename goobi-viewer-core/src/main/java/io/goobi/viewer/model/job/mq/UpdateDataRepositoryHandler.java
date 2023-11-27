@@ -24,6 +24,7 @@ package io.goobi.viewer.model.job.mq;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.model.job.TaskType;
@@ -31,7 +32,7 @@ import io.goobi.viewer.model.job.TaskType;
 public class UpdateDataRepositoryHandler implements MessageHandler<MessageStatus> {
 
     @Override
-    public MessageStatus call(ViewerMessage message) {
+    public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
         DataManager.getInstance()
                 .getSearchIndex()

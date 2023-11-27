@@ -42,6 +42,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -60,10 +66,12 @@ import javax.management.remote.rmi.RMIConnectorServer;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ScheduledMessage;
 import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.jmx.QueueViewMBean;
 import org.apache.activemq.command.ActiveMQTextMessage;
+import org.apache.activemq.memory.buffer.MessageQueue;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,8 +120,11 @@ public class MessageQueueManager {
     private RMIConnectorServer rmiServer = null;
     private BrokerService broker = null;
     private List<DefaultQueueListener> listeners = new ArrayList<>();
-
-    public MessageQueueManager() throws DAOException, IOException {
+    @Inject
+    private BeanManager beanManager;
+    private CreationalContext creationalContext;
+    
+     public MessageQueueManager() throws DAOException, IOException {
         this.instances = generateTicketHandlers();
         this.dao = DataManager.getInstance().getDao();
         try {
@@ -133,6 +144,20 @@ public class MessageQueueManager {
         this.instances = instances;
         this.dao = dao;
         this.config = config;
+    }
+    
+    @PostConstruct
+    public void init() {
+        if(beanManager != null) {            
+            creationalContext = this.injectMessageHandlerDependencies(beanManager);
+        }
+    }
+    
+    @PreDestroy
+    public void shutdown() {
+        if(creationalContext != null) {
+            creationalContext.release();
+        }
     }
 
     /**
@@ -194,7 +219,7 @@ public class MessageQueueManager {
         if (handler == null) {
             return MessageStatus.ERROR;
         }
-        MessageStatus rv = handler.call(message);
+        MessageStatus rv = handler.call(message, this);
         updateMessageStatus(message, rv);
 
         return rv;
@@ -303,12 +328,23 @@ public class MessageQueueManager {
             try {
                 MessageHandler<MessageStatus> handler = clazz.getDeclaredConstructor().newInstance();
                 handlers.put(handler.getMessageHandlerName(), handler);
+                
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException
                     | SecurityException e) {
                 logger.error(e);
             }
         }
         return handlers;
+    }
+    
+    private CreationalContext injectMessageHandlerDependencies(BeanManager beanManager) {
+        CreationalContext<MessageHandler> ctx = beanManager.createCreationalContext(null);
+        for (MessageHandler<MessageStatus> handler : instances.values()) {
+            InjectionTarget<MessageHandler> injectionTarget = (InjectionTarget<MessageHandler>) beanManager
+                    .getInjectionTargetFactory(beanManager.createAnnotatedType(handler.getClass())).createInjectionTarget(null);
+                injectionTarget.inject(handler, ctx);
+        }
+        return ctx;
     }
 
     private static String submitTicket(ViewerMessage ticket, String queueName, Connection conn, String ticketType)
@@ -323,7 +359,9 @@ public class MessageQueueManager {
         // we still need a fifo queue for message deduplication, though.
         // See: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-additional-fifo-queue-recommendations.html
         message.setStringProperty("JMSXGroupID", UUID.randomUUID().toString());
-
+        if(ticket.getDelay() > 0) {
+            message.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, ticket.getDelay());
+        }
         message.setText(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(ticket));
         message.setStringProperty("JMSType", ticketType);
         for (Map.Entry<String, String> entry : ticket.getProperties().entrySet()) {

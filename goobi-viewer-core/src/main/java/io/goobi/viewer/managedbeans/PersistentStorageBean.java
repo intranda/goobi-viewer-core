@@ -37,6 +37,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.omnifaces.cdi.Eager;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DataStorage;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
@@ -52,7 +53,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 @Named("applicationBean")
 @Eager
 @ApplicationScoped
-public class PersistentStorageBean implements Serializable {
+public class PersistentStorageBean implements DataStorage,Serializable {
 
     private static final long serialVersionUID = -5127431137772735598L;
 
@@ -83,8 +84,8 @@ public class PersistentStorageBean implements Serializable {
         return map.get(key).getRight().isBefore(time);
     }
 
-    public synchronized Object put(String key, Object object) {
-        return map.put(key, Pair.of(object, Instant.now()));
+    public synchronized void put(String key, Object object) {
+        map.put(key, Pair.of(object, Instant.now()));
     }
 
     /**

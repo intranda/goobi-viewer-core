@@ -51,6 +51,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "mq_messages")
@@ -90,6 +91,9 @@ public class ViewerMessage {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime lastUpdateTime = LocalDateTime.now();
+    
+    @Column(name = "delay_millis")
+    private long delay = 0l;
 
     public ViewerMessage() {
 
@@ -161,6 +165,14 @@ public class ViewerMessage {
 
     public void setQueue(String queue) {
         this.queue = queue;
+    }
+    
+    public long getDelay() {
+        return delay;
+    }
+    
+    public void setDelay(long delay) {
+        this.delay = delay;
     }
 
     public boolean isProcessing() {

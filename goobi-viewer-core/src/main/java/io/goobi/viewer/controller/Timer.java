@@ -32,8 +32,10 @@ import org.apache.logging.log4j.LogManager;
 /**
  * <p>
  * Timer class.
+ * @deprecated use {@link de.intranda.monitoring.timer.Timer} instead
  * </p>
  */
+@Deprecated(since="23.11")
 public class Timer {
 
     private static final Logger logger = LogManager.getLogger(Timer.class);

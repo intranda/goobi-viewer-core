@@ -41,6 +41,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
@@ -60,7 +61,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
     private static final Logger logger = LogManager.getLogger(PdfMessageHandler.class);
 
     @Override
-    public MessageStatus call(ViewerMessage message) {
+    public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
         String pi = message.getProperties().get("pi");
 

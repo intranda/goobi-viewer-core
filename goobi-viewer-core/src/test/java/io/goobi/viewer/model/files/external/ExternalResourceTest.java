@@ -22,7 +22,7 @@ public class ExternalResourceTest {
     public void testCheckExistance() {
         Consumer consumer = Mockito.spy(Consumer.class);
         ExternalResource resource = new ExternalResource(externalResourceUri, new ExternalFilesDownloader(downloadFolder, consumer));
-        Mockito.verify(consumer, Mockito.never()).accept(Mockito.anyLong());
+        Mockito.verify(consumer, Mockito.never()).accept(Mockito.any(Progress.class));
         assertTrue(resource.exists());
     }
     
@@ -31,7 +31,7 @@ public class ExternalResourceTest {
         Consumer consumer = Mockito.spy(Consumer.class);
         ExternalResource resource = new ExternalResource(externalResourceUri, new ExternalFilesDownloader(downloadFolder, consumer));
         resource.downloadResource();
-        Mockito.verify(consumer, Mockito.atLeast(2)).accept(Mockito.anyLong());
+        Mockito.verify(consumer, Mockito.atLeast(2)).accept(Mockito.any(Progress.class));
     }
 
 }

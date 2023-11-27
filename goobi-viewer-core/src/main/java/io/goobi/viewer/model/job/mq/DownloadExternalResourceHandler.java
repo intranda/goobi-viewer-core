@@ -22,110 +22,105 @@
 
 package io.goobi.viewer.model.job.mq;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.nio.file.Paths;
 
-import org.apache.commons.lang3.StringUtils;
+import javax.inject.Inject;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
-import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.managedbeans.PersistentStorageBean;
+import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
+import io.goobi.viewer.model.files.external.Progress;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
-import io.goobi.viewer.model.job.download.DownloadJobTools;
-import io.goobi.viewer.model.job.download.PDFDownloadJob;
-import io.goobi.viewer.model.viewer.Dataset;
-import jakarta.mail.MessagingException;
+import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 
 public class DownloadExternalResourceHandler implements MessageHandler<MessageStatus> {
 
+    private static final int DAYS_BEFORE_DELETION = 1;
+
+    private static final long MILLISPERDAY = 1000*60*60*24l;
+
     private static final Logger logger = LogManager.getLogger(DownloadExternalResourceHandler.class);
 
+    @Inject
+    PersistentStorageBean storageBean;
+    
     @Override
-    public MessageStatus call(ViewerMessage message) {
+    public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
         String pi = message.getProperties().get("pi");
 
-        String logId = message.getProperties().get("logId");
+        String url = message.getProperties().get("url");
 
-        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
-        if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
-            return MessageStatus.ERROR;
-        }
-
-        String cleanedPi = StringTools.cleanUserGeneratedData(pi);
-
-        String id = DownloadJob.generateDownloadJobId("pdf", pi, logId);
-
+        Path extractedFolder = Paths.get("");
+        
         try {
-            DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(id);
-            // save pdf file
-            Dataset work = DataFileTools.getDataset(cleanedPi);
-
-            Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension())
-                    .toPath();
-            if (JobStatus.READY == downloadJob.getStatus() && !Files.exists(pdfFile)) {
-                downloadJob.setStatus(JobStatus.WAITING);
-                DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
+            Path targetFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+            if (!Files.isDirectory(targetFolder) && targetFolder.toFile().mkdir()) {
+                logger.error("Error downloading resouce: Cannot create folder {}", targetFolder);
+                return MessageStatus.ERROR;
             }
-            createPdf(work, Optional.ofNullable(logId).filter(StringUtils::isNotBlank).filter(div -> !"-".equals(div)), pdfFile);
-            // inform user and update DownloadJob
 
-            downloadJob.setStatus(JobStatus.READY);
-            try {
-                downloadJob.notifyObservers(JobStatus.READY, "");
-            } catch (MessagingException e) {
-                logger.error("Error notifying observers: {}", e.toString());
-            }
-            DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
-        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException e) {
+            String cleanedPi = StringTools.cleanUserGeneratedData(pi);
+    
+            URI uri = new URI(url);
+            
+            extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(cleanedPi));
+            
+            storeProgress(new Progress(1,1), url, extractedFolder);
+            
+            triggerDeletion(queueManager, extractedFolder, MILLISPERDAY*DAYS_BEFORE_DELETION);
+            
+        } catch (PresentationException | IndexUnreachableException | IOException | URISyntaxException  e) {
+            logger.error("Error downloading external resource: {}", e.toString());
             return MessageStatus.ERROR;
+        } catch (MessageQueueException e) {
+            //error in #triggerDeletion
+            logger.error("Error sending message to trigger deletion of {}. Files will remain in the file system. Reason: {}", extractedFolder, e.toString());
         }
 
         return MessageStatus.FINISH;
     }
 
-    private void createPdf(Dataset work, Optional<String> divId, Path pdfFile) throws IOException, ContentLibException {
-        try (FileOutputStream fos = new FileOutputStream(pdfFile.toFile())) {
-            Map<String, String> params = new HashMap<>();
-            params.put("metsFile", work.getMetadataFilePath().toString());
-            params.put("imageSource", work.getMediaFolderPath().getParent().toUri().toString());
-            divId.ifPresent(id -> params.put("divID", id));
+    private void triggerDeletion(MessageQueueManager queueManager, Path extractedFolder, long delay) throws MessageQueueException {
+        ViewerMessage message = new ViewerMessage(TaskType.DELETE_RESOURCE.name());
+        message.setDelay(delay);
+        message.getProperties().put(DeleteResourceHandler.PARAMETER_RESOURCE_PATH, extractedFolder.toAbsolutePath().toString());
+        queueManager.addToQueue(message);
+    }
 
-            if (work.getPdfFolderPath() != null) {
-                params.put("pdfSource", work.getPdfFolderPath().getParent().toUri().toString());
-            }
-            if (work.getAltoFolderPath() != null) {
-                params.put("altoSource", work.getAltoFolderPath().getParent().toUri().toString());
-            }
-            params.put("metsFileGroup", "PRESENTATION");
-            params.put("goobiMetsFile", "false");
-            GetMetsPdfAction action = new GetMetsPdfAction();
-            action.writePdf(params, fos);
-        }
+    private Path downloadAndExtractFiles(URI url, Path targetFolder) throws IOException {
+        ExternalFilesDownloader downloader = new ExternalFilesDownloader(targetFolder, 
+                p -> storeProgress(p, url.toString(), Paths.get("")));
+        return downloader.downloadExternalFiles(url);
+    }
+    
+    private void storeProgress(Progress progress, String identifier, Path path) {
+        ExternalFilesDownloadJob job = new ExternalFilesDownloadJob(progress, identifier, path);
+        storageBean.put(identifier, job);
     }
 
     @Override
     public String getMessageHandlerName() {
-        return TaskType.DOWNLOAD_PDF.name();
+        return TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name();
     }
 
 }

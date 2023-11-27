@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
@@ -41,7 +42,7 @@ public class UpdateUploadJobsHandler implements MessageHandler<MessageStatus> {
     private static final Logger logger = LogManager.getLogger(UpdateUploadJobsHandler.class);
 
     @Override
-    public MessageStatus call(ViewerMessage ticket) {
+    public MessageStatus call(ViewerMessage ticket, MessageQueueManager queueManager) {
         int countChecked = 0;
         int countUpdated = 0;
         try {

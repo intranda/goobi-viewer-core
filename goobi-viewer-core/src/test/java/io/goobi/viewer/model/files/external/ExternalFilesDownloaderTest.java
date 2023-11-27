@@ -11,10 +11,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
@@ -39,22 +41,12 @@ public class ExternalFilesDownloaderTest {
         //        URI uri = testZipFile.toAbsolutePath().toUri();
         //        URI uri = URI.create("https://d-nb.info/1287088031/34");
 //                URI uri = URI.create("https://www.splittermond.de/wp-content/uploads/2016/01/Splittermond_GRW_erratiert.pdf");
-        
-        List<DownloadResult> downloads = new ArrayList<>();
-        for(int i = 0; i < 10; i++) {   
+            Consumer consumer = Mockito.spy(Consumer.class);
             URI uri = URI.create("http://127.0.0.1:9191/exteral/files/1287088031.zip");
-            ExternalFilesDownloader download = new ExternalFilesDownloader(downloadFolder, l -> handleProgress(l));
-            DownloadResult result = download.downloadExternalFiles(uri);
-            downloads.add(result);
-        }
-        for (DownloadResult result : downloads) {
-            Path downloaded = result.getPath().get(2000, TimeUnit.MILLISECONDS);
-            assertTrue(Files.exists(downloaded));
-        }
-    }
-    
-    private void handleProgress(long l) {
-        System.out.println("Progress " + l);
+            ExternalFilesDownloader download = new ExternalFilesDownloader(downloadFolder, consumer);
+            Path downloadPath = download.downloadExternalFiles(uri);
+            Mockito.verify(consumer, Mockito.atLeast(2)).accept(Mockito.any(Progress.class));
+            assertTrue(Files.exists(downloadPath));
     }
 
     @After
