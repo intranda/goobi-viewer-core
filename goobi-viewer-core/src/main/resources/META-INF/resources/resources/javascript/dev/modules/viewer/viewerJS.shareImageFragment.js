@@ -39,8 +39,8 @@ var viewerJS = ( function( viewer ) {
                 var areaString = viewImage.getAreaString(area);
                 var pageUrl = window.location.origin + window.location.pathname +  window.location.search + "#xywh=" + areaString;
                 var imageUrl = viewImage.getRegionUrl(area);
-                $("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl).tooltip();
-                $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl).tooltip();
+                $("[data-copy-share-image='image-region-page']").attr("data-copy-share-image", pageUrl);
+                $("[data-copy-share-image='image-region-image']").attr("data-copy-share-image", imageUrl);
                 this.$links.show();
                 this.$instructions.hide();
                 this.initImageFragmentLinks(areaString);
@@ -107,8 +107,10 @@ var viewerJS = ( function( viewer ) {
         if(fragment) {
             var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + fragment;
             var imageUrl = viewImage.getRegionUrl(fragment);
-            $wrapper.find(".widget-usage__image-fragment-page").attr("data-clipboard-text", pageUrl)
-            $wrapper.find(".widget-usage__image-fragment-image").attr("data-clipboard-text", imageUrl)
+            $wrapper.find(".widget-usage__image-fragment-page").attr("data-copy-share-image", pageUrl);
+            $wrapper.find(".widget-usage__image-fragment-image").attr("data-copy-share-image", imageUrl);
+			// ACTIVATE COPY TO CLIPBOARD
+			viewerJS.clipboard.init('[data-copy-share-image]', 'data-copy-share-image'); 
             $wrapper.show();
         }
     }
@@ -126,6 +128,10 @@ var viewerJS = ( function( viewer ) {
 //            this.endFragmentSelect();
         }
     }
+
+	
+
+
 
     return viewer;
 } )( viewerJS || {}, jQuery );
