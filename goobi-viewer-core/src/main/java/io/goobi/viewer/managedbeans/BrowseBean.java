@@ -420,6 +420,7 @@ public class BrowseBean implements Serializable {
             if (StringUtils.isNotEmpty(filterQuery)) {
                 useFilterQuery += " +(" + filterQuery + ")";
             }
+            // logger.trace("useFilterQuery: {}", useFilterQuery); //NOSONAR Sometimes needed for debugging
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
             String browsingMenuFieldForCurrentLanguage = getBrowsingMenuFieldForLanguage(locale.getLanguage());
@@ -436,6 +437,9 @@ public class BrowseBean implements Serializable {
                             rawTerm = term.getSortTerm();
                         } else {
                             rawTerm = term.getTerm();
+                        }
+                        if (StringUtils.isEmpty(rawTerm)) {
+                            continue;
                         }
                         String firstChar;
                         if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
