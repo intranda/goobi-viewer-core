@@ -54,6 +54,9 @@ import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 
 public class DownloadExternalResourceHandler implements MessageHandler<MessageStatus> {
 
+    private static final String PARAMETER_PI = "pi";
+    private static final String PARAMETER_URL = "url";
+
     private static final int DAYS_BEFORE_DELETION = 1;
 
     private static final long MILLISPERDAY = 1000*60*60*24l;
@@ -66,9 +69,9 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
-        String pi = message.getProperties().get("pi");
+        String pi = message.getProperties().get(PARAMETER_PI);
 
-        String url = message.getProperties().get("url");
+        String url = message.getProperties().get(PARAMETER_URL);
 
         Path extractedFolder = Paths.get("");
         
