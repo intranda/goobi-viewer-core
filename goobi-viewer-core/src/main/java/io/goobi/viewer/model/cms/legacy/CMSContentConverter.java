@@ -95,6 +95,7 @@ public class CMSContentConverter {
         String collectionField = (String) legacyItem.get("collection_field");
         String baseCollection = (String) legacyItem.get("base_collection");
         String ignoreCollections = (String) legacyItem.get("ignore_collections");
+        Boolean openExpanded = (Boolean) legacyItem.get("collection_open_expanded");
         String groupByField = (String) legacyItem.get("group_by");
         String sorting = (String) legacyItem.get("sorting");
         String filterQuery = (String) legacyItem.get("search_prefix");
@@ -104,6 +105,7 @@ public class CMSContentConverter {
         content.setFilterQuery(filterQuery);
         content.setGroupingField(groupByField);
         content.setIgnoreCollections(ignoreCollections);
+        content.setOpenExpanded(openExpanded);
         content.setSorting(Sorting.valueOf(sorting));
 
         return content;

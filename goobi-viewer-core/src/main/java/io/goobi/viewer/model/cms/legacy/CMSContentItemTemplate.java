@@ -21,13 +21,9 @@
  */
 package io.goobi.viewer.model.cms.legacy;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
-import io.goobi.viewer.model.cms.pages.content.CMSComponentAttribute;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.ContentItemMode;
@@ -276,6 +272,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
         }
         return null;
     }
+
     /**
      * 
      * @param type
