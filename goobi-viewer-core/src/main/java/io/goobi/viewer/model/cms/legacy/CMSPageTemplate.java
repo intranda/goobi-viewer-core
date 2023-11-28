@@ -28,11 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -44,11 +40,9 @@ import org.jdom2.JDOMException;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
-import io.goobi.viewer.model.cms.pages.content.CMSComponentAttribute;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.ContentItemMode;
-import io.goobi.viewer.model.cms.pages.content.Option;
 import io.goobi.viewer.model.jsf.JsfComponent;
 
 /**
@@ -86,9 +80,7 @@ public class CMSPageTemplate implements Serializable {
     private boolean mayHaveTopBarSlider = false;
 
     private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
-    
-    private final Map<String, CMSComponentAttribute> attributes = new HashMap<String, CMSComponentAttribute>();
-    
+
     private boolean themeTemplate = false;
 
     /**
@@ -163,14 +155,6 @@ public class CMSPageTemplate implements Serializable {
                 template.setAppliesToExpandedUrl(parseBoolean(options.getChildText("appliesToExpandedUrl"), true));
                 template.setMayHaveTopBarSlider(parseBoolean(options.getChildText("topBarSlider"), false));
             }
-            Element attributes = root.getChild("attributes");
-            if(attributes != null) {
-                List<Element> attributeElements = attributes.getChildren("attribute");
-                for (Element element : attributeElements) {
-                    CMSComponentAttribute attr = CMSComponentAttribute.loadFromXML(element);
-                    template.getAttributes().put(attr.getName(), attr);
-                }
-            }
             template.validate();
             return template;
         } catch (NullPointerException e) {
@@ -229,7 +213,8 @@ public class CMSPageTemplate implements Serializable {
         }
         JsfComponent jsfComponent = new JsfComponent(jsfLibraryPath, componentPath.getFileName().toString());
         CMSComponent component = new CMSComponent(jsfComponent, this.name, this.description, ICONS_PATH + this.iconFileName,
-                this.templateFileName, scope, this.attributes, null);
+                this.templateFileName, scope, Collections.emptyMap(), null);
+
         for (CMSContentItemTemplate itemTemplate : contentItems) {
             CMSContentItem item = itemTemplate.createCMSContentItem(component);
             if (item != null) {
@@ -548,10 +533,6 @@ public class CMSPageTemplate implements Serializable {
      */
     public static boolean parseBoolean(String text) {
         return parseBoolean(text, false);
-    }
-    
-    public Map<String, CMSComponentAttribute> getAttributes() {
-        return attributes;
     }
 
 }

@@ -75,6 +75,8 @@ public class CMSCollectionContent extends CMSContent {
     /** Comma separated list of collection names to ignore for display */
     @Column(name = "ignore_collections", columnDefinition = "LONGTEXT")
     private String ignoreCollections = null;
+    @Column(name = "open_expanded")
+    private boolean openExpanded = false;
 
     @Transient
     private Map<String, CollectionResult> dcStrings = null;
@@ -139,6 +141,14 @@ public class CMSCollectionContent extends CMSContent {
 
     public void setIgnoreCollections(String ignoreCollections) {
         this.ignoreCollections = ignoreCollections;
+    }
+
+    public boolean isOpenExpanded() {
+        return openExpanded;
+    }
+
+    public void setOpenExpanded(boolean openExpanded) {
+        this.openExpanded = openExpanded;
     }
 
     /**
