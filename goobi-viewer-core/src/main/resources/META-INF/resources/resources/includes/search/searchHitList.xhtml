@@ -144,7 +144,7 @@
                                     </h:outputFormat>
                                 </button>
                                 <o:commandScript name="loadChildHits_#{status.index}" action="#{hit.loadChildHits(configurationBean.searchChildHitsToLoadOnExpand)}" render="childHitGroup" 
-                                onbegin="viewerJS.searchList.showAjaxLoader('search_subhits_ajaxloader_#{status.index}')" oncomplete="viewerJS.searchList.hideAjaxLoader('search_subhits_ajaxloader_#{status.index}')">
+                                onbegin="viewerJS.searchList.showAjaxLoader('search_subhits_ajaxloader_#{status.index}')" oncomplete="viewerJS.searchList.hideAjaxLoader('search_subhits_ajaxloader_#{status.index}');viewerJS.searchList.initChildHitThumbs('childHits_#{status.index}')">
                                 </o:commandScript>
                             <div class="search-list__hit-content"  data-toggle-id="childHits_#{status.index}" style="display: none">
                             <h:panelGroup id="childHitGroup">
@@ -185,6 +185,11 @@
                             					</ui:repeat>
                             				</div>
                             			</div>
+                        				<div class="search-list__subhit-thumbnail" >
+                        					<ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
+							               		<ui:param name="browseElement" value="#{childHit.browseElement}"></ui:param>
+							           		</ui:include>
+                        				</div>
                             		</div>
                             	</ui:repeat>
                                 <!-- LOADER -->

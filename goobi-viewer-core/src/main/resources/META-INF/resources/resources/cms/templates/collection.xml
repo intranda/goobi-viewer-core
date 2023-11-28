@@ -31,4 +31,7 @@
 	<attribute name="allowGrouping" display="false" boolean="true">
 		<value>false</value>
 	</attribute>
+	<attribute name="allowOpenExpanded" display="false" boolean="true">
+		<value>true</value>
+	</attribute>
 </component>
