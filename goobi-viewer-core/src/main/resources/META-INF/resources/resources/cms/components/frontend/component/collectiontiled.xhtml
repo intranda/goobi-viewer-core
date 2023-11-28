@@ -13,8 +13,6 @@
 		<composite:attribute name="component" required="true" />
 		<composite:attribute name="collectionBaseLevels" required="false"
 			default="0" type="java.lang.Integer" />
-		<composite:attribute name="openExpanded" required="false"
-			default="false" type="java.lang.Boolean" />
 		<composite:attribute name="displayParents" required="false"
 			default="false" type="java.lang.Boolean" />
 		<composite:attribute name="ignoreHierarchy" required="false"
@@ -33,7 +31,7 @@
 
 				<div class="tpl-collection-tiled__wrapper">
 					<viewerComponent:collectionViewTiled id="collection"
-						collection="#{collectionViewBean.getCollection(cc.attrs.component.firstContentItem.content, cc.attrs.collectionBaseLevels, cc.attrs.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy, request.getParameter('collection'))}" />
+						collection="#{collectionViewBean.getCollection(cc.attrs.component.firstContentItem.content, cc.attrs.collectionBaseLevels, cc.attrs.component.firstContentItem.content.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy, request.getParameter('collection'))}" />
 				</div>
 
 			</div>

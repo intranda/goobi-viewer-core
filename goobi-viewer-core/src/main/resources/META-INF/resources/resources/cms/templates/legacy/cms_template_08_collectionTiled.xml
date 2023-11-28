@@ -6,10 +6,13 @@
     <html>cms_template_08_collectionTiled.xhtml</html>
     <options>    
         <topBarSlider>true</topBarSlider>
-    </options>
-     <options>    
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
     </options>
+    <attributes>
+	    <attribute name="allowOpenExpanded" display="false" boolean="true">
+			<value>true</value>
+		</attribute>
+    </attributes>
     <content>
         <item order="1" id="text01" label="cms__template_08__content__label" type="HTML"/>
         <item order="2" id="collection01" label="cms_itemCollectionField" type="COLLECTION" mandatory="true" ignoreHierarchy="false"/>

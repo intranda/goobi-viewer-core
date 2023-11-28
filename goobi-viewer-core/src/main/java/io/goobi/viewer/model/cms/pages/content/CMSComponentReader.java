@@ -71,17 +71,7 @@ public class CMSComponentReader {
         List<Element> attributeElements = XmlTools.evaluateToElements("attribute", templateDoc.getRootElement(), null);
         Map<String, CMSComponentAttribute> attributes = new HashMap<>(attributeElements.size());
         for (Element element : attributeElements) {
-            String attrName = element.getAttributeValue("name");
-            String attrLabel = element.getAttributeValue("label");
-            String attrType = element.getAttributeValue("type");
-            boolean bool = Optional.ofNullable(element.getAttributeValue("boolean")).map(Boolean::parseBoolean).orElse(false);
-            boolean display = Optional.ofNullable(element.getAttributeValue("display")).map(Boolean::parseBoolean).orElse(true);
-            List<Option> options = XmlTools.evaluateToElements("value", element, null).stream().map(this::createOption).collect(Collectors.toList());
-            String value = XmlTools.evaluateToFirstElement("value[@default='true']", element, null).map(Element::getText).orElse("");
-            if (!display && StringUtils.isBlank(value)) {
-                value = options.iterator().next().getValue();
-            }
-            CMSComponentAttribute attr = new CMSComponentAttribute(attrName, attrLabel, attrType, display, bool, options, value);
+            CMSComponentAttribute attr = CMSComponentAttribute.loadFromXML(element);
             attributes.put(attr.getName(), attr);
         }
 
