@@ -19,8 +19,8 @@
 	<attribute name="collectionBaseLevels" display="false" boolean="false">
 		<value>0</value>
 	</attribute>
-	<attribute name="openExpanded" display="false" boolean="true">
-		<value>true</value>
+	<attribute name="openExpanded" type="toggle">
+		<value label="cms_collectionOpenExpanded">true</value>
 	</attribute>
 	<attribute name="displayParents" display="false" boolean="true">
 		<value>false</value>

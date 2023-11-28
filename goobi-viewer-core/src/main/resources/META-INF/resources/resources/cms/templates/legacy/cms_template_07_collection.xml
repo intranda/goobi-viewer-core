@@ -7,8 +7,14 @@
      <options>    
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
     </options>
+    <attributes>
+    	<attribute name="openExpanded" type="toggle">
+			<value label="cms_collectionOpenExpanded">true</value>
+		</attribute>
+    </attributes>
     <content>
         <item order="1" id="text01" label="cms__template_07__content__label" type="HTML"/>
-        <item order="2" id="collection01" label="cms_itemCollectionField" type="COLLECTION" mandatory="true" mode="expanded"/>
+        <item order="2" id="collection01" label="cms_itemCollectionField" type="COLLECTION" mandatory="true" mode="expanded">
+        </item>
     </content>
 </cms_page_template>
