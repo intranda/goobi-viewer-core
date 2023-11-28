@@ -462,7 +462,6 @@ public class ArchiveManager {
         return this.databaseState == DatabaseState.ERROR_INVALID_CONFIGURATION ||
                 this.databaseState == DatabaseState.ERROR_INVALID_FORMAT || 
                 this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED || 
-                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED || 
                 this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
     }
 }
