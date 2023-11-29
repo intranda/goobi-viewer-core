@@ -663,7 +663,7 @@ public class DisplayUserGeneratedContent {
         }
         switch (type) {
             case GEOLOCATION:
-                return "admin__crowdsourcing_question_type_GEOLOCATION_POINT";
+                return "";
             case NORMDATA:
                 return Paths.get(body.getId().getPath()).getFileName().toString();
             case DATASET:

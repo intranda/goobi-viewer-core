@@ -16,6 +16,7 @@
     	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="false"/>
     	<composite:attribute name="popoverClass" required="false" default="geomap_popover"/>
     	<composite:attribute name="highlightDocumentId" required="false" default=""/>
+    	<composite:attribute name="currentPageNo" type="java.lang.Integer" required="false" default="#{null}"/>
     </composite:interface>
 
     <composite:implementation>
@@ -33,9 +34,10 @@
                     </h2>
 
                     <!-- MAP -->
-                    <viewerComponent:geoMap highlightDocumentId="#{cc.attrs.highlightDocumentId}"
+                    <viewerComponent:geoMap highlightDocumentId="#{cc.attrs.highlightDocumentId}" currentPageNo="#{cc.attrs.currentPageNo}"
                     showPopover="true" popoverOnHover="#{cc.attrs.popoverOnHover}" popoverClass="#{cc.attrs.popoverClass}"
-                    showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.geoMap}" featureClickHandling="#{cc.attrs.linkToSearch ? 'openSearch':'none'}" mapId="widget_geoMap_#{cc.attrs.geoMap.id}"></viewerComponent:geoMap>
+                    showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.geoMap}" featureClickHandling="#{cc.attrs.linkToSearch ? 'openSearch':'none'}" 
+                    mapId="widget_geoMap_#{cc.attrs.geoMap.id}"></viewerComponent:geoMap>
                 </div>
             <script type="text/javascript">	  
           //<![CDATA[
