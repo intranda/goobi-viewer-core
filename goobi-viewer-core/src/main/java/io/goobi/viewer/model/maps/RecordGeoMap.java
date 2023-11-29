@@ -229,7 +229,6 @@ public class RecordGeoMap {
         }
         Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
         for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
-            //            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
             List<LabeledValue> translatedValues = entry.getValue()
                     .stream()
                     .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale), v.getStyleClass()))
