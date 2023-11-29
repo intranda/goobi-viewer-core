@@ -51,6 +51,7 @@ public class GeoMapFeature {
     private int count = 1;
     //This is used to identify the feature with a certain document, specifically a LOGID of a TOC element
     private String documentId = null;
+    private Integer pageNo = null;
     private List<MetadataContainer> entities = new ArrayList<>();
 
     public GeoMapFeature() {
@@ -118,6 +119,14 @@ public class GeoMapFeature {
     public String getDocumentId() {
         return documentId;
     }
+    
+    public Integer getPageNo() {
+        return pageNo;
+    }
+    
+    public void setPageNo(Integer pageNo) {
+        this.pageNo = pageNo;
+    }
 
     /**
      * @return the json
@@ -180,6 +189,9 @@ public class GeoMapFeature {
         }
         if (StringUtils.isNotBlank(this.documentId)) {
             properties.put("documentId", this.documentId);
+        }
+        if (this.pageNo != null) {
+            properties.put("page", this.pageNo);
         }
         if (!this.entities.isEmpty()) {
             JSONArray ents = new JSONArray();

@@ -32,6 +32,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import de.intranda.api.annotation.wa.TypedResource;
@@ -60,6 +62,8 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class RecordGeoMap {
 
+    private static final Logger logger = LogManager.getLogger(RecordGeoMap.class);
+    
     private final StructElement mainStruct;
     private final List<MetadataContainer> relatedDocuments;
     private final GeoMap geoMap;
@@ -97,17 +101,20 @@ public class RecordGeoMap {
     }
 
     private GeoMap createMap() {
-        GeoMap geoMap = new GeoMap();
+        GeoMap map = new GeoMap();
 
-        RecordGeoMap.createDocStructFeatureSet(geoMap, mainStruct);
+        RecordGeoMap.createDocStructFeatureSet(map, mainStruct);
         this.featureSetConfigs.stream()
                 .filter(config -> "relation".equals(config.getType()))
-                .forEach(config -> createRelatedDocumentFeatureSet(geoMap, relatedDocuments, config));
+                .forEach(config -> createRelatedDocumentFeatureSet(map, relatedDocuments, config));
         this.featureSetConfigs.stream()
                 .filter(config -> "metadata".equals(config.getType()))
-                .forEach(config -> createMetadataFeatureSet(geoMap, mainStruct, config));
+                .forEach(config -> createMetadataFeatureSet(map, mainStruct, config));
+        this.featureSetConfigs.stream()
+            .filter(config -> "annotations".equals(config.getType()))
+            .forEach(config -> createAnnotationFeatureSet(map, mainStruct.getPi(), config));
 
-        return geoMap;
+        return map;
     }
 
     private static void createRelatedDocumentFeatureSet(GeoMap geoMap, List<MetadataContainer> docs, FeatureSetConfiguration config) {
@@ -176,15 +183,14 @@ public class RecordGeoMap {
         geoMap.addFeatureSet(featureSet);
     }
 
-    private void createAnnotationFeatureSet(GeoMap geoMap, String pi, FeatureSetConfiguration config, GeoCoordinateConverter converter)
-            throws DAOException {
+    private void createAnnotationFeatureSet(GeoMap geoMap, String pi, FeatureSetConfiguration config) {
         ManualFeatureSet featureSet = new ManualFeatureSet();
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations("annotations", true)));
         featureSet.setMarker(config.getMarker());
         geoMap.addFeatureSet(featureSet);
-
+        try {
         List<String> features = new ArrayList<>();
-        List<DisplayUserGeneratedContent> annos = this.dao
+        List<DisplayUserGeneratedContent> annos = dao
                 .getAnnotationsForWork(pi)
                 .stream()
                 .filter(a -> PublicationStatus.PUBLISHED.equals(a.getPublicationStatus()))
@@ -196,10 +202,15 @@ public class RecordGeoMap {
         for (DisplayUserGeneratedContent anno : annos) {
             if (anno.getAnnotationBody() instanceof TypedResource) {
                 GeoMapFeature feature = new GeoMapFeature(((TypedResource) anno.getAnnotationBody()).asJson());
+                feature.setPageNo(anno.getPage());
+                feature.setDocumentId(anno.getId().toString());
                 features.add(feature.getJsonObject().toString());
             }
         }
         featureSet.setFeatures(features);
+        } catch(DAOException e) {
+            logger.error("Error loading anntations for geomap of record {}: {}", pi, e.toString() );
+        }
     }
 
     private static TranslatedText createLabel(StructElement docStruct) {
