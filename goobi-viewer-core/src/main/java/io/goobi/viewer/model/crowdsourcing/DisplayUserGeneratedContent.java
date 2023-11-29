@@ -489,7 +489,7 @@ public class DisplayUserGeneratedContent {
      * @see io.goobi.viewer.model.crowdsourcing.AbstractCrowdsourcingUpdate#getDisplayPage()
      */
     /**
-     * Alias for {@link  #getPage()}
+     * Alias for {@link #getPage()}
      *
      * @return a {@link java.lang.Integer} object.
      */
@@ -762,7 +762,7 @@ public class DisplayUserGeneratedContent {
         StringBuilder sb = new StringBuilder();
 
         appendIfNotEmpty(sb, se.getMetadataValue("MD_STREET"));
-        if(sb.length() > 0) {            
+        if (sb.length() > 0) {
             appendIfNotEmpty(sb, se.getMetadataValue("MD_HOUSENUMBER"));
         }
         appendIfNotEmpty(sb, se.getMetadataValue("MD_DISTRICT"));
@@ -776,7 +776,7 @@ public class DisplayUserGeneratedContent {
 
         return sb.toString();
     }
-    
+
     private static void appendIfNotEmpty(StringBuilder sb, String value) {
         if (StringUtils.isNotEmpty(value)) {
             if (sb.length() > 0) {
