@@ -185,4 +185,14 @@ public class ViewerMessage {
                 .registerModule(new JavaTimeModule())
                 .readValue(json, ViewerMessage.class);
     }
+    
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append("Viewer Message of type ").append(this.taskName).append("\t")
+                .append("Message id: ").append(getMessageId()).append("\t")
+                .append("Message status: ").append(getMessageStatus())
+                .toString();
+                
+    }
 }

@@ -2780,6 +2780,90 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 });
 
 
+
+riot.tag2('external-resource-download', '<ul><li each="{url in urls}"><label>{url}</label><button onclick="{order}" show="{!isDownloading(url)}">Bestellen</button><div if="{isDownloading(url)}"><progress riot-value="{getProgress(url)}" max="100" if="{progress < 100}"></progress><ul if="{getProgress(url) === 100}"><li each="{object in getDownloadObjects(url)}"><a href="{object.url}">{object.label}</button></li></ul></div></li></ul>', 'external-resource-download li,[data-is="external-resource-download"] li{ margin-bottom: 10px; }', '', function(opts) {
+      this.urls = [];
+      this.downloading = new Map();
+      this.progress = new Map();
+      this.downloadObjects = new Map();
+      this.ws = null;
+
+      this.on("mount", () => {
+      	this.urls = this.opts.urls;
+      	this.pi = this.opts.pi;
+      	this.ws = this.initWebSocket(this.opts.webSocketUrl);
+      });
+
+      this.on("unmount", () => {
+    	  if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+              this.ws.close();
+          }
+      });
+
+      this.order = function(e) {
+    	console.log("order ", e);
+    	urlToDownload = undefined;
+        this.downloading = true;
+        this.progress = 0;
+        this.sendMessage({pi: this.pi, url: urlToDownload, action: 'start-download'})
+      }.bind(this)
+
+      this.initWebSocket = function(socketUrl) {
+
+        this.ws = new WebSocket(socketUrl);
+        this.ws.addEventListener('message', (event) => {
+          const data = JSON.parse(event.data);
+          if(data.progress !== undefined) {
+	          this.progress = parseInt(data.progress);
+	          if (this.progress === 100) {
+	            this.ws.close();
+	            hanldeOrderFinished(data.downloadUrl);
+	          }
+          }
+        });
+      }.bind(this)
+
+      this.sendMessage = function(message) {
+    	  if(typeof message != "string") {
+    		message = JSON.stringify(message);
+    	  }
+    	  this.ws.send(message);
+      }.bind(this)
+
+      this.download = function() {
+
+        console.log('Download completed!');
+
+        this.progress = 0;
+        this.downloading = false;
+      }.bind(this)
+
+      this.isDownloading = function(url) {
+    	  if(this.progress.has(url)) {
+    	  	return this.downloading.get(url);
+    	  } else{
+    		return false;
+    	  }
+      }.bind(this)
+
+      this.getProgress = function(url) {
+    	  if(this.progress.has(url)) {
+	    	  return this.progress.get(url);
+    	  } else {
+    		  return 0;
+    	  }
+      }.bind(this)
+
+      this.getDownloadObjects = function(url) {
+    	  if(this.downloadObjects.has(url)) {
+	    	  return this.progress.get(url);
+    	  } else {
+    		  return [];
+    	  }
+      }.bind(this)
+
+});
+
 riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
     	this.preloader = false;
 

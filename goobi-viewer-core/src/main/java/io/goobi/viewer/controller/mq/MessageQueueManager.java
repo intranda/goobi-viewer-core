@@ -522,14 +522,18 @@ public class MessageQueueManager {
         }
         return messages;
     }
-
+    
     public boolean deleteMessage(ViewerMessage ticket) {
+        return deleteMessage(ticket.getTaskName(), ticket.getMessageId());
+    }
+
+    public boolean deleteMessage(String taskName, String messageId) {
         try {
-            String queueName = getQueueForMessageType(ticket.getTaskName());
+            String queueName = getQueueForMessageType(taskName);
             ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
             QueueViewMBean mbean = (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-            int removed = mbean.removeMatchingMessages("JMSMessageID='" + ticket.getMessageId() + "'");
-            logger.debug("Removed {} messages with id {} from queue", removed, ticket.getMessageId());
+            int removed = mbean.removeMatchingMessages("JMSMessageID='" + messageId + "'");
+            logger.debug("Removed {} messages with id {} from queue", removed, messageId);
             return removed > 0;
         } catch (Exception e) {
             logger.error(e);

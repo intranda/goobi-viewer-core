@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -41,7 +42,6 @@ import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
-import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -49,7 +49,6 @@ import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.files.external.Progress;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 
 public class DownloadExternalResourceHandler implements MessageHandler<MessageStatus> {
@@ -73,6 +72,8 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
 
         String url = message.getProperties().get(PARAMETER_URL);
 
+        String messageId = message.getMessageId();
+        
         Path extractedFolder = Paths.get("");
         
         try {
@@ -86,9 +87,9 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
     
             URI uri = new URI(url);
             
-            extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(cleanedPi));
+            extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(cleanedPi), messageId);
             
-            storeProgress(new Progress(1,1), url, extractedFolder);
+            storeProgress(new Progress(1,1), url, extractedFolder, messageId);
             
             triggerDeletion(queueManager, extractedFolder, MILLISPERDAY*DAYS_BEFORE_DELETION);
             
@@ -110,20 +111,26 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         queueManager.addToQueue(message);
     }
 
-    private Path downloadAndExtractFiles(URI url, Path targetFolder) throws IOException {
+    private Path downloadAndExtractFiles(URI url, Path targetFolder, String messageId) throws IOException {
         ExternalFilesDownloader downloader = new ExternalFilesDownloader(targetFolder, 
-                p -> storeProgress(p, url.toString(), Paths.get("")));
+                p -> storeProgress(p, url.toString(), Paths.get(""), messageId));
         return downloader.downloadExternalFiles(url);
     }
     
-    private void storeProgress(Progress progress, String identifier, Path path) {
-        ExternalFilesDownloadJob job = new ExternalFilesDownloadJob(progress, identifier, path);
+    private void storeProgress(Progress progress, String identifier, Path path, String messageId) {
+        ExternalFilesDownloadJob job = new ExternalFilesDownloadJob(progress, identifier, path, messageId);
         storageBean.put(identifier, job);
     }
 
     @Override
     public String getMessageHandlerName() {
         return TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name();
+    }
+    
+    public static ViewerMessage createMessage(String pi, String url) {
+        ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name());
+        message.setProperties(Map.of(PARAMETER_PI, pi, PARAMETER_URL, url));
+        return message;
     }
 
 }
