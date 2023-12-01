@@ -9,15 +9,15 @@
 
     <composite:implementation>
     	<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
-			<div id="widgetDownload" class="widget widget-download ">
-	    	    <h:form id="widgetDownloadForm">
+			<div id="widgetAdditionalFiles" class="widget widget-additional-files">
+	    	    <h:form id="widgetAdditionalFilesForm">
 					<h2 >#{msg.widget_additionalFiles}</h2>
 					
 					<div class="widget__body">
 					
 					<!-- INTRODUCTION TEXT -->
 					<ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0}">
-                        <p id="introductionText" class="widget-download__license-text">
+                        <p id="introductionText" class="widget-additional-files__license-text">
                             <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']}" escape="false" />
                         </p>
                     </ui:fragment>

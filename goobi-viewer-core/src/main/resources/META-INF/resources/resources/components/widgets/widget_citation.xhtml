@@ -14,9 +14,9 @@
 
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
-            <div id="widgetUsage" class="widget widget-usage">
+            <div id="widgetCitation" class="widget widget-citation">
 
-	            <div class="widget-usage__topbar">
+	            <div class="widget-citation__topbar">
 	                <!-- WIDGET TITLE -->
 					<h2
 						tabindex="0"
@@ -31,7 +31,7 @@
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <!-- INTRODUCTION TEXT -->
                     <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']) > 0}">
-                        <p id="introductionText" class="widget-usage__license-text">
+                        <p id="introductionText" class="widget-citation__license-text">
                             <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']}" escape="false" />
                         </p>
                     </ui:fragment>
@@ -39,10 +39,11 @@
 
                     <!-- PAGE -->
                     <ui:fragment>
-                        <h3 id="titleImage" class="widget-usage__subtitle">#{msg.image}</h3>
 
                         <!-- PAGE DOWNLOADS -->
-                        <div class="widget-usage__page-downloads">
+                        <div class="widget-citation__page-downloads widget__badge-container">
+                        
+                            <h3 id="titleImage" class="widget-citation__subtitle widget__badge-container-heading">#{msg.image}</h3>
 
                             <ui:fragment
                                 rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and 
@@ -50,22 +51,22 @@
                                             fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')) > 0}">
                                 <c:forEach var="link" varStatus="index" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
                                     <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
-                                        <a id="citeLinkUrn#{index.count}"
+                                        <button type="button" 
+                                        	id="citeLinkUrn#{index.count}"
                                             class="badge badge-dark"
-                                            data-copy="page-citelink"
-                                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-                                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
                                             aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
-                                             #{link.label}</a>
+                                             #{msg[link.label]}</button>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
-                                        <a id="citeLinkUrnPage"
+                                        <button type="button" 
+                                        	id="citeLinkUrnPage"
                                             class="badge badge-dark"
-                                            data-copy="page-citelink"
-                                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-                                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
                                             aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
-                                             #{link.label}</a>
+                                             #{msg[link.label]}</button>
                                     </ui:fragment>
                                 </c:forEach>
                             </ui:fragment>
@@ -73,39 +74,35 @@
                         </div>
                         
                     </ui:fragment>
-                    
-
-                    <!-- WORK -->
-                    <h3 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
-
 
                     <!-- WORK DOWNLOADS -->
-                    <div class="widget-usage__work-downloads">     
+                    <div class="widget-citation__work-downloads widget__badge-container">  
                     
+                    	<h3 id="titleWork" class="widget-citation__subtitle widget__badge-container-heading">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
+
                         <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
-                        
                         <ui:fragment 
                             rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')) > 0}">
                             <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
                                     
                                 <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
-                                    <a id="citeLinkUrl"
+                                    <button type="button" 
+                                    	id="citeLinkUrl"
                                         class="badge badge-dark"
-                                        data-copy="work-citelink"
-                                        data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-                                        data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                        data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                        data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
                                         aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
-                                        #{link.label}</a>
+                                        #{link.label}</button>
                                 </ui:fragment>
                                     
                                 <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
-                                    <a id="citeLinkInternal"
+                                    <button type="button"
+                                    	id="citeLinkInternal"
                                         class="badge badge-dark"
-                                        data-copy="work-citelink"
-                                        data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
-                                        data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                        data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                        data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
                                         aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
-                                        #{link.label}</a>
+                                        #{link.label}</button>
                                 </ui:fragment>
                                     
                             </c:forEach>
@@ -115,7 +112,7 @@
                         <ui:fragment>
                             <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris/"
                                 id="ris"
-                                class="badge badge-dark widget-usage__work-download-ris" 
+                                class="badge badge-dark widget-citation__work-download-ris" 
                                 title="#{msg.risLinkTopstruct}"
                                 data-toggle="tooltip"
                                 data-placement="top"

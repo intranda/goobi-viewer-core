@@ -22,10 +22,11 @@
 							or activeDocumentBean.viewManager.currentPage.teiAvailable 
 							or activeDocumentBean.viewManager.currentPage.displayFulltext)
 					    and !activeDocumentBean.viewManager.doublePageMode}">
-						<h3 id="titleImage" class="widget-usage__subtitle">#{msg.image}</h3>
+
 
 						<!-- PAGE DOWNLOADS -->
-						<div class="widget-usage__page-downloads">
+						<div class="widget-usage__page-downloads widget__badge-container">
+							<h3 id="titleImage" class="widget-usage__subtitle widget__badge-container-heading">#{msg.image}</h3>
 						
 							<!-- PDF (PAGE) -->
 							<ui:fragment rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
@@ -205,7 +206,7 @@
 					
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-						<div class="widget-usage__image-fragment__wrapper">
+						<div class="widget-usage__image-fragment-wrapper">
 							<h3 id="imgFragment" class="widget-usage__subtitle">#{msg.image_fragment}</h3>
 	
 							<div class="widget-usage__image-fragment">

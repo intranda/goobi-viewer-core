@@ -100,7 +100,7 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.ShareImageFragment.prototype.initImageFragmentLinks = function(fragment) {
-        let $wrapper = $(".widget-usage__image-fragment__wrapper");
+        let $wrapper = $(".widget-usage__image-fragment-wrapper");
         if(!fragment) {                 
             fragment = viewerJS.helper.getFragmentHash();
         }
@@ -116,7 +116,7 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.ShareImageFragment.prototype.hideImageFragmentLinks = function() {
-        let $wrapper = $(".widget-usage__image-fragment__wrapper");
+        let $wrapper = $(".widget-usage__image-fragment-wrapper");
         $wrapper.hide();
     }
     

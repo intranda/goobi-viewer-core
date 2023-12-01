@@ -1,6 +1,8 @@
 /* ==============================================================
    Widget Usage
    style declarations for widget_usage.xhtml
+   Widget was split up in widget citation, widget download and widget format links
+   Is now used primarily in fullscreen mode
    ==============================================================*/
 /* WIDGET USAGE */
 .widget-usage {
@@ -8,7 +10,7 @@
 	h3 {}
 	&__topbar {}
 	&__subtitle {
-		margin-bottom: 10px;
+		margin-bottom: 6px;
 	}
 	/* LICENSE TEXT */
 	&__license-text {
@@ -35,7 +37,9 @@
 		.badge {
 			padding: 0.5rem;
 			// line-height: 1.2rem; 
-			display: inline-block;
+			display: inline-flex;
+			gap: 4px;
+			align-items: center;
 			font-size: 12px;
 			&:hover,  
 			&:active,
@@ -93,7 +97,7 @@
 		border: none;
 	}
 	/*IMAGE FRAGMENT */
-	&__image-fragment__wrapper {
+	&__image-fragment-wrapper {
 		display: none;
 	}
 	&__image-fragment {
@@ -187,6 +191,8 @@
 		color: @black;
 		text-decoration: none;
 		user-select: none;
+		background: none;
+		border: none;
 		&:hover,
 		&:active,
 		&:focus {

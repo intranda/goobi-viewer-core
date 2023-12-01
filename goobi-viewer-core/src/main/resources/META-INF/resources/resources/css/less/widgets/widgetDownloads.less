@@ -1,0 +1,64 @@
+/* ==============================================================
+   Widget Downloads
+   style declarations for widget_downloads.xhtml
+   ==============================================================*/
+#widgetDownloads {}
+.widget-downloads {
+	&__topbar {}
+	&__title {}
+	&__body {}
+	&__license-text {
+		margin-bottom: 15px;
+	}
+	&__subtitle {}
+	// BADGE CONTAINER STYLING
+	&__page-download,
+	&__image-fragment-wrapper,
+	&__work-downloads {
+	}
+ 
+	&__page-downloads {
+	}
+	&__page-download-pdf {}
+	&__page-download-jpeg {}
+	&__page-download-alto {}
+	&__page-download-tei {}
+	&__page-download-fulltext {}
+	&__download-image-size-form {}
+	&__download-image-size-option-wrapper {}
+	&__download-image-size-radio-label {}
+	&__download-image-size-radio-size {}
+	&__download-image-size-radio-format {}
+	&__download-image-size-button-wrapper {}
+	&__work-downloads {}
+	&__work-download-ris {}
+	&__work-download-alto {}
+	&__work-download-tei {}
+	&__work-download-fulltext {}
+	&__work-download-pdf {}
+	&__work-download-epub {}
+	&__work-download-toc {}
+
+	&__image-fragment-wrapper {
+		display: none;
+	}
+
+	&__image-fragment {}
+	&__image-fragment-page {}
+	&__image-fragment-image {}
+	&__download-image-size-form {}
+	&__download-image-size-button {}
+
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

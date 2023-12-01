@@ -14,9 +14,9 @@
 
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
-            <div id="widgetUsage" class="widget widget-usage">
+            <div id="widgetFormatLinks" class="widget widget-format-links">
 
-	            <div class="widget-usage__topbar">
+	            <div class="widget-format-links__topbar">
 	                <!-- WIDGET TITLE -->
 					<h2
 						tabindex="0"
@@ -31,14 +31,16 @@
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <!-- INTRODUCTION TEXT -->
                     <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']) > 0}">
-                        <p id="introductionText" class="widget-usage__license-text">
+                        <p id="introductionText" class="widget-format-links__license-text">
                             <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']}" escape="false" />
                         </p>
                     </ui:fragment>
 
                     <!-- FORMATS -->
-                    <h3 id="titleFormats" class="widget-usage__subtitle">#{msg.formats}</h3>
-                    <div class="widget-usage__work-downloads">     
+
+                    <div class="widget-format-links__work-downloads widget__badge-container">
+                    	<h3 id="titleFormats" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.widget__formatlinks_formats}</h3>
+                         
                     
                         <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
@@ -49,7 +51,7 @@
                                 <a 
                                     href="#{activeDocumentBean.viewManager.metsResolverUrl}"
                                     id="lidomets" 
-                                    class="badge badge-dark widget-usage__work-download-lido-mets" 
+                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_mets}"
                                     data-toggle="tooltip"
                                     data-placement="top"
@@ -62,7 +64,7 @@
                                 <a 
                                     href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
                                     id="metsanchor" 
-                                    class="badge badge-dark widget-usage__work-download-mets-anchor" 
+                                    class="badge badge-dark widget-format-links__work-download-mets-anchor" 
                                     title="#{msg.metadata_dl_metsAnchor}"
                                     data-toggle="tooltip"
                                     data-placement="top"
@@ -79,7 +81,7 @@
                                 <a 
                                     href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
                                     id="lidomets" 
-                                    class="badge badge-dark widget-usage__work-download-lido-mets" 
+                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_lido}"
                                     data-toggle="tooltip"
                                     data-placement="top"
@@ -95,7 +97,7 @@
                                 <a 
                                     href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
                                     id="denkxweb"
-                                    class="badge badge-dark widget-usage__work-download-lido-mets" 
+                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_denkxweb}"
                                     data-toggle="tooltip"
                                     data-placement="top"
@@ -111,7 +113,7 @@
                                 <a 
                                     href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
                                     id="dublincorexml"
-                                    class="badge badge-dark widget-usage__work-download-lido-mets" 
+                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_dublincore}"
                                     data-toggle="tooltip"
                                     data-placement="top"
@@ -128,7 +130,7 @@
                                 <a
                                     id="marc"
                                     href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
-                                    class="badge badge-dark widget-usage__work-download-oai-marc"
+                                    class="badge badge-dark widget-format-links__work-download-oai-marc"
                                     title="#{msg.metadata_dl_marc}"
                                     data-toggle="tooltip"
                                     data-placement="top"
@@ -144,7 +146,7 @@
                                 <a
                                     id="dc"
                                     href="#{activeDocumentBean.viewManager.oaiDcUrl}"
-                                    class="badge badge-dark widget-usage__work-download-oai-dc"
+                                    class="badge badge-dark widget-format-links__work-download-oai-dc"
                                     title="#{msg.metadata_dl_dublinCore}"
                                     data-toggle="tooltip"
                                     data-placement="top"
@@ -162,10 +164,9 @@
                             rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest and !activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
                             <button 
                                 id="iiifManifest"
-                                class="badge badge-dark widget-usage__work-download-iiif" 
-                                data-copy="iiif-manifest" 
-                                data-clipboard-text="#{imageDelivery.iiifManifest}" 
-                                data-copy-done="#{msg.copyUrlDone}"
+                                class="badge badge-dark widget-format-links__work-download-iiif" 
+                                data-copy-value="#{imageDelivery.iiifManifest}" 
+                                data-copy-done-msg="#{msg.copyUrlDone}"
                                 title="#{msg.copyUrl}"
                                 aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
                                 tabindex="0"> 
@@ -178,7 +179,7 @@
                             <a 
                                 href="#{activeDocumentBean.viewManager.externalDownloadUrl}"
                                 id="externalDownloadWork" 
-                                class="badge badge-dark widget-usage__work-download-external" 
+                                class="badge badge-dark widget-format-links__work-download-external" 
                                 title="#{msg.downloadWorkExternal}"
                                 data-toggle="tooltip"
                                 data-placement="top"
@@ -194,14 +195,14 @@
                     </div>
                     
                     <!-- LINKS -->
-                    <h3 id="titleFormats" class="widget-usage__subtitle">#{msg.links}</h3>
-                    <div class="widget-usage__work-downloads"> 
+                    <div class="widget-format-links__work-downloads widget__badge-container"> 
+                    	<h3 id="titleFormats" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.links}</h3>
                     
                         <!-- OPAC -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
                             <a href="#{activeDocumentBean.viewManager.opacUrl}"
                                 id="opac"
-                                class="badge badge-dark widget-usage__work-link-opac" 
+                                class="badge badge-dark widget-format-links__work-link-opac" 
                                 title="#{msg.opacLink}"
                                 data-toggle="tooltip"
                                 data-placement="top"
@@ -218,7 +219,7 @@
                            <a 
                                 href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
                                 id="dfgViewer" 
-                                class="badge badge-dark widget-usage__work-link-dfg-viewer" 
+                                class="badge badge-dark widget-format-links__work-link-dfg-viewer" 
                                 title="#{msg.dfgViewerLink}"
                                 data-toggle="tooltip"
                                 data-placement="top"
@@ -235,7 +236,7 @@
                                 <a
                                     href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
                                     id="mirador" 
-                                    class="badge badge-dark widget-usage__work-link-mirador-viewer" 
+                                    class="badge badge-dark widget-format-links__work-link-mirador-viewer" 
                                     title="#{msg.action__view_in_mirador__tooltip}"
                                     data-toggle="tooltip"
                                     data-placement="top"
