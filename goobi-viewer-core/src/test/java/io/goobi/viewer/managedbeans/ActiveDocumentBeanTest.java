@@ -72,7 +72,6 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(navigationHelper.getPreferredView()).thenReturn("viewImage_value");
         
         adb = new ActiveDocumentBean();
-        adb.setNavigationHelper(navigationHelper);
     }
 
     /**
@@ -404,6 +403,8 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setImageToShow("3");
         adb.update();
         assertTrue(adb.isRecordLoaded());
+        
+        adb.setNavigationHelper(new NavigationHelper());
         
         String linkCanonical = "\n<link rel=\"canonical\" href=\"";
         String linkAlternate = "\n<link rel=\"alternate\" href=\"";
