@@ -2219,7 +2219,7 @@ public class ActiveDocumentBean implements Serializable {
             // PI resolver URL (alternate)
             if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
                 String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
-                sb.append("\n<link rel=\"alternate\" href=\"").append(piResolverUrl).append("\" />");
+                sb.append(linkAlternate).append(piResolverUrl).append("\" />");
             }
         }
         PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());

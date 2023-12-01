@@ -72,6 +72,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(navigationHelper.getPreferredView()).thenReturn("viewImage_value");
         
         adb = new ActiveDocumentBean();
+        adb.setNavigationHelper(navigationHelper);
     }
 
     /**
