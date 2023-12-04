@@ -128,6 +128,8 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_TIMELINE = 2;
     /** Constant <code>SEARCH_TYPE_CALENDAR=3</code> */
     public static final int SEARCH_TYPE_CALENDAR = 3;
+    /** Constant <code>SEARCH_TYPE_TERMS=4</code> */
+    public static final int SEARCH_TYPE_TERMS = 4;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL", false);
     public static final String TITLE_TERMS = "_TITLE_TERMS";

@@ -60,6 +60,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
@@ -416,10 +417,10 @@ public class BrowseBean implements Serializable {
                 throw new RedirectException(MSG_ERR_FIELDS_NOT_CONFIGURED);
             }
 
-            String useFilterQuery = "";
-            if (StringUtils.isNotEmpty(filterQuery)) {
-                useFilterQuery += " +(" + filterQuery + ")";
-            }
+            String useFilterQuery = generateFilterQuery((!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
+                    || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
+                            ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
+                            : DataManager.getInstance().getConfiguration().getSearchResultGroups());
             // logger.trace("useFilterQuery: {}", useFilterQuery); //NOSONAR Sometimes needed for debugging
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
@@ -523,6 +524,34 @@ public class BrowseBean implements Serializable {
 
             return "searchTermList";
         }
+    }
+
+    /**
+     * @param resultGroups
+     * @return Generated filter query or empty string
+     * @should return empty string if no filterQuery or result groups available
+     * @should generate filter query correctly
+     */
+    String generateFilterQuery(List<SearchResultGroup> resultGroups) {
+        if (StringUtils.isEmpty(filterQuery) && (resultGroups == null || resultGroups.size() < 2)) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isNotEmpty(filterQuery)) {
+            sb.append("+(").append(filterQuery).append(")");
+        }
+        if (resultGroups.size() > 1) {
+            sb.append(" +(");
+            for (SearchResultGroup resultGroup : resultGroups) {
+                if (StringUtils.isNotEmpty(resultGroup.getQuery())) {
+                    sb.append(" (").append(resultGroup.getQuery()).append(")");
+                }
+            }
+            sb.append(")");
+        }
+
+        return "+(" + sb.toString().trim() + ")";
     }
 
     /**

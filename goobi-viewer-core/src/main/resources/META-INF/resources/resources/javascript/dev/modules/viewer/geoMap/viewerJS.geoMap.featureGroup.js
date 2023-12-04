@@ -188,8 +188,10 @@ var viewerJS = ( function( viewer ) {
         
         if(features && features.length > 0) {
             features
+            .filter(f => f.properties.visible !== false)
             .sort( (f1,f2) => this.compareFeatures(f1,f2) )
             .forEach(feature => {
+				feature.layer = this;
             	let type = feature.geometry.type;
             	if(_debug)console.log("add feature for " + type, feature);
             	this.addMarker(feature);
@@ -296,15 +298,30 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
         if(feature) {            
             let marker = this.getMarker(feature.id);
             let icon  = marker.getIcon();
-            icon.options.defaultColor = icon.options.markerColor;
-            icon.options.markerColor = icon.options.highlightColor;
+            
+            if(this.config.markerIcon.useDefault && this.config.markerIcon.highlightIcon) { 
+        		icon = new L.Icon.Default({
+        			imagePath : this.geoMap.config.iconPath + "/"
+        		});
+        		icon.options.iconUrl = this.config.markerIcon.highlightIcon;
+				icon.options.iconRetinaUrl = this.config.markerIcon.highlightIcon;
+            } else {
+	            icon.options.defaultColor = icon.options.markerColor;
+	            icon.options.markerColor = icon.options.highlightColor;				
+			}
             marker.setIcon(icon);
             this.highlighted.push(marker);
         } else {
             this.highlighted.forEach(marker => {
                 let icon  = marker.getIcon();
-                icon.options.markerColor = icon.options.defaultColor;
-                icon.options.defaultColor = undefined;
+                if(this.config.markerIcon.useDefault) {
+					icon = new L.Icon.Default({
+        				imagePath : this.geoMap.config.iconPath + "/"
+        			});
+				}else{					
+	                icon.options.markerColor = icon.options.defaultColor;
+	                icon.options.defaultColor = undefined;
+				}
                 marker.setIcon(icon);
                 let index = this.highlighted.indexOf(marker);
                 this.highlighted.splice(index, 1);

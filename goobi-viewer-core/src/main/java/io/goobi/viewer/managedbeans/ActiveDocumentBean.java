@@ -2192,6 +2192,9 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should return empty string if no record loaded
+     * @should return empty string if navigationHelper null
+     * @should generate tags correctly
      */
     public String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
         if (!isRecordLoaded() || navigationHelper == null) {
@@ -2201,17 +2204,22 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("current view: {}", navigationHelper.getCurrentView());
         }
 
+        String linkCanonical = "\n<link rel=\"canonical\" href=\"";
+        String linkAlternate = "\n<link rel=\"alternate\" href=\"";
+
         StringBuilder sb = new StringBuilder();
 
         // Add canonical links
         if (viewManager.getCurrentPage() != null) {
+            // URN resolver URL (alternate)
             if (StringUtils.isNotEmpty(viewManager.getCurrentPage().getUrn())) {
                 String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
-                sb.append("\n<link rel=\"canonical\" href=\"").append(urnResolverUrl).append("\" />");
+                sb.append(linkAlternate).append(urnResolverUrl).append("\" />");
             }
+            // PI resolver URL (alternate)
             if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
                 String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
-                sb.append("\n<link rel=\"canonical\" href=\"").append(piResolverUrl).append("\" />");
+                sb.append(linkAlternate).append(piResolverUrl).append("\" />");
             }
         }
         PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
@@ -2224,17 +2232,21 @@ public class ActiveDocumentBean implements Serializable {
                 currentUrl = currentUrl.replace(SolrTools.unescapeSpecialCharacters(getLogid()), getLogid());
             }
 
+            String regularUrl;
+            String explicitUrl;
             if (currentUrl.contains("!" + currentPageType.getName())) {
-                // Preferred view - add regular view URL
-                sb.append("\n<link rel=\"canonical\" href=\"")
-                        .append(currentUrl.replace("!" + currentPageType.getName(), currentPageType.getName()))
-                        .append("\" />");
-            } else if (currentUrl.contains(currentPageType.getName())) {
-                // Regular view - add preferred view URL
-                sb.append("\n<link rel=\"canonical\" href=\"")
-                        .append(currentUrl.replace(currentPageType.getName(), "!" + currentPageType.getName()))
-                        .append("\" />");
+                regularUrl = currentUrl.replace("!" + currentPageType.getName(), currentPageType.getName());
+                explicitUrl = currentUrl;
+            } else {
+                regularUrl = currentUrl;
+                explicitUrl = currentUrl.replace(currentPageType.getName(), "!" + currentPageType.getName());
             }
+
+            // Regular URL (canonical)
+            sb.append(linkCanonical).append(regularUrl).append("\" />");
+            // Explicitly selected view (alternate)
+            sb.append(linkAlternate).append(explicitUrl).append("\" />");
+
         }
 
         // Skip prev/next links for non-paginated views
@@ -2309,11 +2321,10 @@ public class ActiveDocumentBean implements Serializable {
      * PI changes
      *
      * @return
-     * @throws PresentationException
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
+    public synchronized GeoMap getGeoMap() throws DAOException, IndexUnreachableException {
         return getRecordGeoMap().getGeoMap();
     }
 
