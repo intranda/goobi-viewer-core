@@ -138,7 +138,7 @@ public enum BaseMimeType {
      */
     public static boolean isImageOrPdfDownloadAllowed(String mimeTypeName) {
         BaseMimeType mimeType = BaseMimeType.getByName(mimeTypeName);
-        if (mimeType == null) {
+        if (BaseMimeType.UNKNOWN.equals(mimeType)) {
             return false;
         }
 
