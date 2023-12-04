@@ -24,6 +24,13 @@ package io.goobi.viewer.model.cms.pages.content;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.jdom2.Element;
+
+import io.goobi.viewer.controller.XmlTools;
 
 public class CMSComponentAttribute implements Serializable {
 
@@ -108,5 +115,29 @@ public class CMSComponentAttribute implements Serializable {
     public boolean isBooleanValue() {
         return booleanValue;
     }
+    
+    public static CMSComponentAttribute loadFromXML(Element element) {
+        String attrName = element.getAttributeValue("name");
+        String attrLabel = element.getAttributeValue("label");
+        String attrType = element.getAttributeValue("type");
+        boolean bool = Optional.ofNullable(element.getAttributeValue("boolean")).map(Boolean::parseBoolean).orElse(false);
+        boolean display = Optional.ofNullable(element.getAttributeValue("display")).map(Boolean::parseBoolean).orElse(true);
+        List<Option> attrOptions = XmlTools.evaluateToElements("value", element, null).stream().map(CMSComponentAttribute::createOption).collect(Collectors.toList());
+        String value = XmlTools.evaluateToFirstElement("value[@default='true']", element, null).map(Element::getText).orElse("");
+        if (!display && StringUtils.isBlank(value)) {
+            value = attrOptions.iterator().next().getValue();
+        }
+        return new CMSComponentAttribute(attrName, attrLabel, attrType, display, bool, attrOptions, value);
+    }
+    
+    private static Option createOption(Element element) {
+        String label = element.getAttributeValue("label");
+        String value = element.getText();
+        if (StringUtils.isBlank(label)) {
+            label = value;
+        }
+        return new Option(value, label);
+    }
+
 
 }

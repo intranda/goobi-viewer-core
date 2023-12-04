@@ -31,10 +31,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -415,7 +415,7 @@ public class DisplayUserGeneratedContent {
      * @return a boolean.
      */
     public boolean hasArea() {
-        return (!(getAreaString() == null) && !getAreaString().isEmpty());
+        return getAreaString() != null && !getAreaString().isEmpty();
     }
 
     /**
@@ -489,14 +489,12 @@ public class DisplayUserGeneratedContent {
      * @see io.goobi.viewer.model.crowdsourcing.AbstractCrowdsourcingUpdate#getDisplayPage()
      */
     /**
-     * <p>
-     * getDisplayPage.
-     * </p>
+     * Alias for {@link #getPage()}
      *
      * @return a {@link java.lang.Integer} object.
      */
     public Integer getDisplayPage() {
-        return page;
+        return getPage();
     }
 
     public static class DateComparator implements Comparator<DisplayUserGeneratedContent> {
@@ -552,18 +550,7 @@ public class DisplayUserGeneratedContent {
 
     private static ITypedResource getAsResource(Object value) {
 
-        String json = null;
-        if (value instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<Object> features = (List<Object>) value;
-            if (features.size() == 1) {
-                json = SolrTools.getAsString(features.get(0));
-            } else {
-                json = "[" + features.stream().map(SolrTools::getAsString).collect(Collectors.joining(",")) + "]";
-            }
-        } else {
-            json = SolrTools.getAsString(value);
-        }
+        String json = createJsonFromFeatures(value);
 
         ObjectMapper mapper = new ObjectMapper();
         ITypedResource resource = null;
@@ -583,6 +570,22 @@ public class DisplayUserGeneratedContent {
             }
         }
         return resource;
+    }
+
+    public static String createJsonFromFeatures(Object value) {
+        String json;
+        if (value instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> features = (List<Object>) value;
+            if (features.size() == 1) {
+                json = SolrTools.getAsString(features.get(0));
+            } else {
+                json = "[" + features.stream().map(SolrTools::getAsString).collect(Collectors.joining(",")) + "]";
+            }
+        } else {
+            json = SolrTools.getAsString(value);
+        }
+        return json;
     }
 
     /**
@@ -615,7 +618,7 @@ public class DisplayUserGeneratedContent {
         }
 
         DisplayUserGeneratedContent ret = new DisplayUserGeneratedContent();
-        long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
+        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
         ret.setId(iddoc);
         ret.setType(type);
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
@@ -663,7 +666,7 @@ public class DisplayUserGeneratedContent {
         }
         switch (type) {
             case GEOLOCATION:
-                return "admin__crowdsourcing_question_type_GEOLOCATION_POINT";
+                return "";
             case NORMDATA:
                 return Paths.get(body.getId().getPath()).getFileName().toString();
             case DATASET:
@@ -709,6 +712,8 @@ public class DisplayUserGeneratedContent {
                     return ContentType.COMMENT;
                 case "Dataset":
                     return ContentType.DATASET;
+                default:
+                    return null;
             }
         }
         return null;
@@ -735,72 +740,13 @@ public class DisplayUserGeneratedContent {
         if (se.getMetadataValue(SolrConstants.UGCTYPE) != null) {
             switch (se.getMetadataValue(SolrConstants.UGCTYPE)) {
                 case "PERSON": {
-                    StringBuilder sb = new StringBuilder();
-                    String first = se.getMetadataValue("MD_FIRSTNAME");
-                    String last = se.getMetadataValue("MD_LASTNAME");
-                    if (StringUtils.isNotEmpty(last)) {
-                        sb.append(last);
-                    }
-                    if (StringUtils.isNotEmpty(first)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(first);
-                    }
-                    return sb.toString();
+                    return generatePersonLabel(se);
                 }
                 case "CORPORATION": {
-                    StringBuilder sb = new StringBuilder();
-                    String address = se.getMetadataValue("MD_ADDRESS");
-                    String corp = se.getMetadataValue("MD_CORPORATION");
-                    if (StringUtils.isNotEmpty(corp)) {
-                        sb.append(corp);
-                    }
-                    if (StringUtils.isNotEmpty(address)) {
-                        sb.append(" (").append(corp).append(')');
-                    }
-                    return sb.toString();
+                    return generateCorporationLabel(se);
                 }
                 case "ADDRESS": {
-                    StringBuilder sb = new StringBuilder();
-                    String street = se.getMetadataValue("MD_STREET");
-                    String houseNumber = se.getMetadataValue("MD_HOUSENUMBER");
-                    String district = se.getMetadataValue("MD_DISTRICT");
-                    String city = se.getMetadataValue("MD_CITY");
-                    String country = se.getMetadataValue("MD_COUNTRY");
-                    if (StringUtils.isNotEmpty(street)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(street);
-                        if (StringUtils.isNotEmpty(houseNumber)) {
-                            sb.append(", ").append(houseNumber);
-                        }
-                    }
-                    if (StringUtils.isNotEmpty(district)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(district);
-                    }
-                    if (StringUtils.isNotEmpty(city)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(city);
-                    }
-                    if (StringUtils.isNotEmpty(country)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(country);
-                    }
-
-                    // Text fallback
-                    if (sb.length() == 0 && StringUtils.isNotEmpty(text)) {
-                        sb.append(text);
-                    }
-                    return sb.toString();
+                    return generateAddressLabel(se, text);
                 }
                 case "COMMENT":
                     return text;
@@ -810,6 +756,63 @@ public class DisplayUserGeneratedContent {
         }
 
         return se.getMetadataValue(SolrConstants.LABEL);
+    }
+
+    public static String generateAddressLabel(StructElement se, String text) {
+        StringBuilder sb = new StringBuilder();
+
+        appendIfNotEmpty(sb, se.getMetadataValue("MD_STREET"));
+        if (sb.length() > 0) {
+            appendIfNotEmpty(sb, se.getMetadataValue("MD_HOUSENUMBER"));
+        }
+        appendIfNotEmpty(sb, se.getMetadataValue("MD_DISTRICT"));
+        appendIfNotEmpty(sb, se.getMetadataValue("MD_CITY"));
+        appendIfNotEmpty(sb, se.getMetadataValue("MD_COUNTRY"));
+
+        // Text fallback
+        if (sb.length() == 0 && StringUtils.isNotEmpty(text)) {
+            sb.append(text);
+        }
+
+        return sb.toString();
+    }
+
+    private static void appendIfNotEmpty(StringBuilder sb, String value) {
+        if (StringUtils.isNotEmpty(value)) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(value);
+        }
+    }
+
+    public static String generateCorporationLabel(StructElement se) {
+        StringBuilder sb = new StringBuilder();
+        String address = se.getMetadataValue("MD_ADDRESS");
+        String corp = se.getMetadataValue("MD_CORPORATION");
+        if (StringUtils.isNotEmpty(corp)) {
+            sb.append(corp);
+        }
+        if (StringUtils.isNotEmpty(address)) {
+            sb.append(" (").append(corp).append(')');
+        }
+        return sb.toString();
+    }
+
+    public static String generatePersonLabel(StructElement se) {
+        StringBuilder sb = new StringBuilder();
+        String first = se.getMetadataValue("MD_FIRSTNAME");
+        String last = se.getMetadataValue("MD_LASTNAME");
+        if (StringUtils.isNotEmpty(last)) {
+            sb.append(last);
+        }
+        if (StringUtils.isNotEmpty(first)) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(first);
+        }
+        return sb.toString();
     }
 
     public boolean isOnThisPage(PhysicalElement page) {
