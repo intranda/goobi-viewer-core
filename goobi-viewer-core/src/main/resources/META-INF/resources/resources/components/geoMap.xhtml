@@ -11,13 +11,13 @@
     	<composite:attribute name="linkTarget" required="false" default="_self" />
     	<composite:attribute name="linkToSearch" required="false" default="true" />
     	<composite:attribute name="linkTarget" required="false" default="_self" />
-    	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
     	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="#{true}"/>
     	<composite:attribute name="clusterMarkers" type="java.lang.Boolean" required="false" default="#{true}"/>
     	<composite:attribute name="popoverClass" required="false" default="geomap_popover"/>
     	<composite:attribute name="highlightDocumentId" required="false" default=""/>
     	<composite:attribute name="featureSetSwitch" type="java.lang.Boolean" required="false" default="true"/>
     	<composite:attribute name="featureFilters" required="false" default="#{configurationBean.geomapFiltersAsJson}"/>
+    	<composite:attribute name="showFeatureList" type="java.lang.Boolean" required="false" default="#{false}"/>
     </composite:interface>
     
 	<composite:implementation>
@@ -97,15 +97,17 @@
 		    let view = #{cc.attrs.geoMap.initialView};
 	    	geomap.init(view)
 	    	.then((map) => {
-	    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
-	    			featureGroups: map.layers,
-	    			geomap: map,
-	    			entityLabelFormat: ["\${MD_CREATOR}", "\${MD_TITLE}"],
-	    			listLabelFormat: ["\${MD_BIOGRAPHY_EDUCATION}"],
-	    			entityLinkFormat: ["#{request.contextPath}/object/\${PI}/"],
-	    			locale: "#{navigationHelper.locale}",	    			  
-	    			defaultLocale: "#{navigationHelper.defaultLocale}"
-	    		})
+	    		if(#{cc.attrs.showFeatureList}) {	 
+		    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
+		    			featureGroups: map.layers,
+		    			geomap: map,
+		    			entityLabelFormat: ["\${MD_CREATOR}", "\${MD_TITLE}"],
+		    			listLabelFormat: ["\${MD_BIOGRAPHY_EDUCATION}"],
+		    			entityLinkFormat: ["#{request.contextPath}/object/\${PI}/"],
+		    			locale: "#{navigationHelper.locale}",	    			  
+		    			defaultLocale: "#{navigationHelper.defaultLocale}"
+		    		})
+	    		}
 	    		if(#{cc.attrs.featureSetSwitch}) {	 
 		    		map.setActiveLayers(map.layers.slice(0, 1));
 		    		riot.mount(document.getElementById("featureSetSelector_#{cc.attrs.mapId}"), "featuresetselector", {
