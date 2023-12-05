@@ -68,6 +68,7 @@ import de.undercouch.citeproc.CSL;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.Configuration;
@@ -2957,17 +2958,18 @@ public class ViewManager implements Serializable {
 
     }
 
-    private LabeledLink getLinkToDownloadFile(String filename) {
+    protected LabeledLink getLinkToDownloadFile(String filename) {
         try {
             String localPi = getPi();
-            String filenameEncoded = URLEncoder.encode(filename, StringTools.DEFAULT_ENCODING);
+            String filenameEncoded = PathConverter.toURI(filename).toString();
+
             return DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
                     .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(localPi, filenameEncoded).build())
                     .map(url -> new LabeledLink(filename, url, 0))
                     .orElse(LabeledLink.EMPTY);
-        } catch (UnsupportedEncodingException | IndexUnreachableException e) {
+        } catch (IndexUnreachableException | URISyntaxException  e) {
             logger.error("Failed to create download link to {}", filename, e);
             return LabeledLink.EMPTY;
         }
