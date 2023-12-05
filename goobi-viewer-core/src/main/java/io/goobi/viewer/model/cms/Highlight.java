@@ -38,6 +38,7 @@ import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -179,6 +180,16 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
                         .map(URI::create)
                         .orElse(null);
             case RECORD_REPRESENTATIVE:
+                SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:"+this.data.getRecordIdentifier(), List.of(SolrConstants.MIMETYPE));
+                if(solrDoc != null) {
+                    String mimeType = SolrTools.getSingleFieldStringValue(solrDoc, SolrConstants.MIMETYPE);
+                    if(StringUtils.isNotBlank(mimeType)) {
+                        ImageFileFormat format = ImageFileFormat.getImageFileFormatFromMimeType(mimeType);
+                        if(format != null) {                            
+                            return Optional.ofNullable(this.thumbs.getImageUrl(this.data.getRecordIdentifier(), width, height, ImageFileFormat.getMatchingTargetFormat(format).getFileExtension())).map(URI::create).orElse(null);
+                        }
+                    }
+                }                   
                 return Optional.ofNullable(this.thumbs.getThumbnailUrl(this.data.getRecordIdentifier(), width, height)).map(URI::create).orElse(null);
             default:
                 return null;
