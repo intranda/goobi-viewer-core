@@ -17,6 +17,20 @@
                 <div class="born-digital__no-access-box"><p><h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" /></p></div>
             </ui:fragment>
             
+            DOWNLOAD: http://d-nb.info/1303371537/34
+            
+            <div id="externalResourceDownload" >
+            </div>
+            
+            <script>
+            	riot.mount("#externalResourceDownload", "external-resource-download", 
+            			{urls: ["http://d-nb.info/1303371537/34"],
+            			 contextPath: "#{request.contextPath}",
+            			 pi: "#{activeDocumentBean.viewManager.pi}"
+            			});
+            
+            </script>
+            
             <!-- ACCESS GRANTED -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
                 <div class="born-digital__box">

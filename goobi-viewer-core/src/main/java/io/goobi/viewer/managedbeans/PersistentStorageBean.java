@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -77,11 +78,11 @@ public class PersistentStorageBean implements DataStorage,Serializable {
     }
 
     public synchronized Object get(String key) {
-        return map.get(key).getLeft();
+        return Optional.ofNullable(map.get(key)).map(Pair::getLeft).orElse(null);
     }
 
     public synchronized boolean olderThan(String key, Instant time) {
-        return map.get(key).getRight().isBefore(time);
+        return Optional.ofNullable(map.get(key)).map(Pair::getRight).map(i -> i.isBefore(time)).orElse(true);
     }
 
     public synchronized void put(String key, Object object) {

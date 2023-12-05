@@ -49,6 +49,7 @@ import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.files.external.Progress;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 
 public class DownloadExternalResourceHandler implements MessageHandler<MessageStatus> {
@@ -77,17 +78,17 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         Path extractedFolder = Paths.get("");
         
         try {
-            Path targetFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+            Path targetFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
             if (!Files.isDirectory(targetFolder) && targetFolder.toFile().mkdir()) {
                 logger.error("Error downloading resouce: Cannot create folder {}", targetFolder);
                 return MessageStatus.ERROR;
             }
-
-            String cleanedPi = StringTools.cleanUserGeneratedData(pi);
     
+            String downloadId = DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), StringTools.cleanUserGeneratedData(pi), StringTools.cleanUserGeneratedData(url));
+            
             URI uri = new URI(url);
             
-            extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(cleanedPi), messageId);
+            extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(downloadId), messageId);
             
             storeProgress(new Progress(1,1), url, extractedFolder, messageId);
             

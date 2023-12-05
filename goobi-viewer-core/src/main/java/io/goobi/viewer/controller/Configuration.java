@@ -3456,6 +3456,8 @@ public class Configuration extends AbstractConfiguration {
                 return getLocalString("pdf.downloadFolder", "/opt/digiverso/viewer/pdf_download");
             case "epub":
                 return getLocalString("epub.downloadFolder", "/opt/digiverso/viewer/epub_download");
+            case "resource":
+                return getLocalString("resource.downloadFolder", "/opt/digiverso/viewer/resource_download");
             default:
                 return "";
 
