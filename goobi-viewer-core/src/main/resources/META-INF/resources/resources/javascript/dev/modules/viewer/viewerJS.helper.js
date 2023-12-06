@@ -568,7 +568,7 @@ var viewerJS = ( function( viewer ) {
 	 */
 	viewer.helper.repeatPromise = (promise, delay) => {
 		const cancelSubject = new rxjs.Subject();
-		const observable = rxjs.of(null).pipe(rxjs.operators.flatMap(() => promise), rxjs.operators.delay(delay), rxjs.operators.repeat(), rxjs.operators.takeUntil(cancelSubject));
+		const observable = rxjs.of(null).pipe(rxjs.operators.flatMap(promise), rxjs.operators.delay(delay), rxjs.operators.repeat(), rxjs.operators.takeUntil(cancelSubject));
 		return {
 			/**
 		     * Cancels the repeating promise, preventing further repetitions.

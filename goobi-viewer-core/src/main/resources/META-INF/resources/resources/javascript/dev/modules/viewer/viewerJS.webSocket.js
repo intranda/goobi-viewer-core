@@ -39,14 +39,14 @@
 
     //prototype methods
     viewer.WebSocket.prototype.sendMessage = function(message) {
-        if(_debug)console.log("send ", message);
+        if(_debug)console.log("send ", message, " open: ", this.isOpen());
         this.socket.send(message);
     };
     viewer.WebSocket.prototype.close = function(reason, statusCode) {
         this.socket.close(statusCode, reason);
     };     
     viewer.WebSocket.prototype.isOpen = function() {
-        this.socket && this.socket.readyState === WebSocket.OPEN;
+        return this.socket && this.socket.readyState === WebSocket.OPEN;
     };     
      
     return viewer;

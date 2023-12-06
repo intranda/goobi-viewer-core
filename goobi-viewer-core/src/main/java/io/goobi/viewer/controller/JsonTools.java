@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -151,6 +152,10 @@ public class JsonTools {
 
     public static String getAsJson(Object object) throws JsonProcessingException {
         return mapper.writeValueAsString(object);
+    }
+    
+    public static <T> T getAsObject(String json, Class<T> clazz) throws IOException {
+        return mapper.createParser(json).readValueAs(clazz);
     }
 
     public static Object getAsObjectForJson(Object value) {

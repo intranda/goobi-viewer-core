@@ -221,10 +221,10 @@ public class RecordFileResource {
     @javax.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response getDownloadedResource(
+    public StreamingOutput getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
             @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException {
         
         //TODO: check access conditions for some download action
         
@@ -232,12 +232,26 @@ public class RecordFileResource {
         Path taskFolder = downloadFolder.resolve(taskId);
         Path resourceFile = taskFolder.resolve(Path.of(path));
         if(Files.isRegularFile(resourceFile)) {
-            return Response.ok(resourceFile, MediaType.APPLICATION_OCTET_STREAM)
-                    .header("Content-Disposition", "attachment; filname=\"" + resourceFile.getFileName() + "\"")
-                    .build();
+            try {
+                servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(resourceFile.getFileName()).toString());
+                servletResponse.setHeader("Content-Length", String.valueOf(Files.size(resourceFile)));
+                String contentType = Files.probeContentType(resourceFile);
+                logger.trace("content type: {}", contentType);
+                if (StringUtils.isNotBlank(contentType)) {
+                    servletResponse.setContentType(contentType);
+                }
+            } catch (IOException e) {
+                logger.error("Failed to probe file content type");
+            }
+            return out -> {
+                try (InputStream in = Files.newInputStream(resourceFile)) {
+                    IOUtils.copy(in, out);
+                }
+            };
         } else {
-            return Response.status(Status.NOT_FOUND).entity("No resource with this path found").build();
+            throw new ContentNotFoundException("No resource found at " + resourceFile);
         }
+
         
     }
 

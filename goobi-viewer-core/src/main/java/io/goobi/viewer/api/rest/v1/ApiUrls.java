@@ -113,6 +113,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_CMDI = "/cmdi/{filename}";
     public static final String RECORDS_FILES_TEI = "/tei/{filename}";
     public static final String RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD = "/resources/{taskId}/{path: .+}";
+    public static final String RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH = "/resources/{taskId}/{path}";
+
 
     public static final String RECORDS_FILES_SOURCE = "/source/{filename}";
     public static final String RECORDS_FILES_AUDIO = "/audio/{mimetype}/{filename}";

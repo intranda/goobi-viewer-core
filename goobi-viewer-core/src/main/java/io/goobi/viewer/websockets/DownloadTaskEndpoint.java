@@ -21,12 +21,12 @@
  */
 package io.goobi.viewer.websockets;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD;
-
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,19 +40,18 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import javax.ws.rs.core.Context;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.persistence.exceptions.JSONException;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.JsonObjectSignatureBuilder;
+import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
@@ -66,35 +65,20 @@ import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 import io.goobi.viewer.model.job.mq.DownloadExternalResourceHandler;
 
-
 /**
  * Endpoint that maps HTTP session IDs to connected web sockets.
  */
 @ServerEndpoint(value = "/tasks/download/monitor.socket", configurator = GetHttpSessionConfigurator.class)
 public class DownloadTaskEndpoint {
 
-    private static final String[] ALLOWED_FILE_EXTENSIONS = new String[] {"xml", "html", "pdf", "epub", "jpg", "jpeg", "png", "mp3", "mp4", "zip", "xlsx", "doc", "docx", "gs"};
+    private static final String[] ALLOWED_FILE_EXTENSIONS =
+            new String[] { "xml", "html", "pdf", "epub", "jpg", "jpeg", "png", "mp3", "mp4", "zip", "xlsx", "doc", "docx", "gs" };
 
-    private static final String JSON_MESSAGE_ACTION = "action";
-
-    private static final String JSON_MESSAGE_JOB_STATUS = "status";
-
-    private static final String JSON_MESSAGE_DOWNLOAD_SIZE = "size";
-
-    private static final String JSON_MESSAGE_PROGRESS = "progress";
-
-    private static final String JSON_MESSAGE_URL = "url";
-
-    private static final String JSON_MESSAGE_PI = "pi";
-    
-    private static final String JSON_MESSAGE_QUEUE_ID = "message-queue-id";
-    
-    
     private static final Logger logger = LogManager.getLogger(DownloadTaskEndpoint.class);
 
     MessageQueueManager queueManager;
     PersistentStorageBean storageBean;
-    
+
     private HttpSession httpSession;
     private Session session;
 
@@ -107,132 +91,159 @@ public class DownloadTaskEndpoint {
     }
 
     @OnMessage
-    public void onMessage(String message) {
-        try {            
-            JSONObject json = new JSONObject(message);
-            String action = json.getString(JSON_MESSAGE_ACTION);
-            String pi = json.getString(JSON_MESSAGE_PI);
-            String downloadUrl = json.getString(JSON_MESSAGE_URL);
-            if(StringUtils.isNotBlank(action)) {
-                switch(action) {
-                    case "start-download":
-                        startDownload(pi, downloadUrl);
-                        break;
-                    case "cancel-download":
-                        String messageQueueId = json.getString(JSON_MESSAGE_QUEUE_ID);
-                        cancelDownload(pi, downloadUrl, messageQueueId);
-                        break;
-                    case "update":
-                        sendUpdate(pi, downloadUrl);
-                        break;
-                    case "list-files":
-                        listDownloadedFiles(pi, downloadUrl);
-                        break;
-                }
+    public void onMessage(String messageString) {
+        try {
+            SocketMessage message = JsonTools.getAsObject(messageString, SocketMessage.class);
+            switch (message.action) {
+                case STARTDOWNLOAD:
+                    handleDownloadRequest(message);
+                    break;
+                case CANCELDOWNLOAD:
+                    cancelDownload(message);
+                    break;
+                case UPDATE:
+                    sendUpdate(message);
+                    break;
+                case LISTFILES:
+                    try { //NOSONAR
+                        listDownloadedFiles(message, getDownloadedFiles(message.pi, message.url));
+                    } catch (PresentationException | IndexUnreachableException e) {
+                        String errorMessage = "Error listing files for download url " + message.url + ": " + e.toString();
+                        logger.error(errorMessage);
+                        sendError(message, errorMessage);
+                    }
+                    break;
             }
-        } catch(JSONException e) {
-            logger.error("Error interpreting download task message {}", message);
+        } catch (IOException e) {
+            logger.error("Error interpreting download task message {}", messageString);
         }
     }
 
-    private void listDownloadedFiles(String pi, String downloadUrl) {
+    public void handleDownloadRequest(SocketMessage message) throws JsonProcessingException {
         try {
-            String taskId = getDownloadId(pi, downloadUrl);
-            Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
-            Path resourceFolder = downloadFolder.resolve(taskId);
-            List<Path> filePaths = FileUtils.listFiles(resourceFolder.toFile(), ALLOWED_FILE_EXTENSIONS, true).stream()
-                    .map(File::toPath)
-                    .map(p -> resourceFolder.relativize(p))
-                    .collect(Collectors.toList());
-            JSONObject object = new JSONObject();
-            object.put(JSON_MESSAGE_PI, pi);
-            object.put(JSON_MESSAGE_URL, downloadUrl);
-            JSONArray filesJson = new JSONArray();
-            filePaths.forEach(p -> {
-                JSONObject fileJson = new JSONObject();
-                fileJson.put("path", p);
-                fileJson.put("url", getDownloadUrl(pi, taskId, p));
-                filesJson.put(fileJson);
-            });
-            object.put("files", filesJson);
+            List<Path> filePaths = getDownloadedFiles(message.pi, message.url);
+            if (!filePaths.isEmpty()) {
+                listDownloadedFiles(message, filePaths);
+            } else {
+                startDownload(message);
+            }
         } catch (PresentationException | IndexUnreachableException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            sendError(message, "Error starting download task: " + e.toString());
+        }
+    }
+
+    public void startDownload(SocketMessage message) throws JsonProcessingException {
+        ViewerMessage mqMessage = DownloadExternalResourceHandler.createMessage(message.pi, message.url);
+        try {
+            String messageId = queueManager.addToQueue(mqMessage);
+            SocketMessage answer = SocketMessage.buildAnswer(message, Status.WAITING);
+            answer.progress = 0;
+            answer.resourceSize = 1;
+            answer.messageQueueId = messageId;
+            sendMessage(answer);
+        } catch (MessageQueueException e) {
+            logger.error("Error adding message '{}' to queue: {}", mqMessage, e);
+            sendError(message, "Failed to add message to queue: " + e.toString());
+        }
+    }
+
+    private void listDownloadedFiles(SocketMessage message, List<Path> filePaths) throws JsonProcessingException {
+        String taskId = getDownloadId(message.pi, message.url);
+        SocketMessage answer = SocketMessage.buildAnswer(message, Status.COMPLETE);
+        answer.files = filePaths.stream()
+                .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString()))
+                .collect(Collectors.toList());
+        sendMessage(answer);
+    }
+
+    private void sendUpdate(SocketMessage message) throws JsonProcessingException {
+        ExternalFilesDownloadJob job = Optional.ofNullable(storageBean)
+                .map(bean -> bean.get(message.url))
+                .map(ExternalFilesDownloadJob.class::cast)
+                .orElse(null);
+        SocketMessage answer = SocketMessage.buildAnswer(message, Status.WAITING);
+        if (job != null) {
+
+            if (job.getProgress().complete() && !isFilesExist(message.pi, message.url)) {
+                //download task has completed but files are no longer available. remove job from storage bean and return waiting status
+                storageBean.remove(message.url);
+            } else {
+                answer.messageQueueId = job.getMessageId();
+                if (job.getProgress() != null) {
+                    if (job.getProgress().getProgressRelative() == 1) {
+                        answer.status = Status.COMPLETE;
+                    } else if (job.getProgress().getProgressRelative() > 0) {
+                        answer.status = Status.PROCESSING;
+                    }
+                    answer.progress = job.getProgress().getProgressAbsolute();
+                    answer.resourceSize = job.getProgress().getTotalSize();
+                }
+            }
+        }
+        sendMessage(answer);
+    }
+
+    private boolean isFilesExist(String pi, String url) {
+
+        try {
+            List<Path> files = getDownloadedFiles(pi, url);
+            if (files.isEmpty()) {
+                return false;
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private void cancelDownload(SocketMessage message) throws JsonProcessingException {
+        boolean deleted = this.queueManager.deleteMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), message.messageQueueId);
+        if (deleted) {
+            sendMessage(SocketMessage.buildAnswer(message, Status.CANCELED));
+        } else {
+            SocketMessage answer = SocketMessage.buildAnswer(message, Status.ERROR);
+            answer.errorMessage = "Error canceling external resource download of url " + message.url;
+            logger.error(answer.errorMessage);
+            sendMessage(answer);
+        }
+    }
+
+    private void sendError(SocketMessage message, String errorMessage) throws JsonProcessingException {
+        SocketMessage answer = SocketMessage.buildAnswer(message, Status.ERROR);
+        answer.errorMessage = errorMessage;
+        sendMessage(answer);
+    }
+
+    public List<Path> getDownloadedFiles(String pi, String downloadUrl) throws PresentationException, IndexUnreachableException {
+        Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
+        Path resourceFolder = downloadFolder.resolve(getDownloadId(pi, downloadUrl));
+        if (Files.exists(resourceFolder)) {
+            return FileUtils.listFiles(resourceFolder.toFile(), ALLOWED_FILE_EXTENSIONS, true)
+                    .stream()
+                    .map(File::toPath)
+                    .map(resourceFolder::relativize)
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
         }
     }
 
     private URI getDownloadUrl(String pi, String taskId, Path p) {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager().map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD).params(pi, taskId, p).buildURI()).orElse(null);
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH).params(pi, taskId, p).buildURI())
+                .orElse(null);
     }
 
-    private void cancelDownload(String pi, String downloadUrl, String messageId) {
-        boolean deleted = this.queueManager.deleteMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), messageId);
-        if(deleted) {
-            sendMessage(pi, downloadUrl, 
-                    JSON_MESSAGE_JOB_STATUS, "canceled");
-        } else {
-            sendMessage(pi, downloadUrl, 
-                    JSON_MESSAGE_JOB_STATUS, "error");
-        }
-    }
-
-    private void sendUpdate(String pi, String downloadUrl) {
-        ExternalFilesDownloadJob job = Optional.ofNullable(storageBean)
-                .map(bean -> bean.get(getDownloadId(pi, downloadUrl)))
-                .map(ExternalFilesDownloadJob.class::cast).orElse(null);
-        if(job != null) {
-            sendMessage(pi, downloadUrl, 
-                    JSON_MESSAGE_PROGRESS, Long.toString(job.getProgress().getProgressAbsolute()),
-                    JSON_MESSAGE_DOWNLOAD_SIZE, Long.toString(job.getProgress().getTotalSize()),
-                    JSON_MESSAGE_QUEUE_ID, job.getMessageId(),
-                    JSON_MESSAGE_JOB_STATUS, job.getProgress().complete() ? "p" : "processing"
-                    );
-        } else {
-            sendMessage(pi, downloadUrl,
-                    JSON_MESSAGE_JOB_STATUS, "waiting");
-        }
-                
-        
-        
-    }
-
-    public void startDownload(String pi, String downloadUrl) {
-        ViewerMessage mqMessage = DownloadExternalResourceHandler.createMessage(pi, downloadUrl);
-        try {
-            String messageId = queueManager.addToQueue(mqMessage);
-            sendMessage(pi, downloadUrl, Map.of(
-                    JSON_MESSAGE_PROGRESS, "0", 
-                    JSON_MESSAGE_JOB_STATUS, "waiting", 
-                    JSON_MESSAGE_QUEUE_ID, messageId));
-        } catch (MessageQueueException e) {
-            logger.error("Error adding message '{}' to queue: {}", mqMessage, e);
-            sendMessage(pi, downloadUrl, JSON_MESSAGE_JOB_STATUS, "error", "message", "Failed to add message to queue: " + e.getMessage());
-        }
-    }
-    
     private String getDownloadId(String pi, String downloadUrl) {
-        return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), StringTools.cleanUserGeneratedData(pi), StringTools.cleanUserGeneratedData(downloadUrl));
+        return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), StringTools.cleanUserGeneratedData(pi),
+                StringTools.cleanUserGeneratedData(downloadUrl));
     }
 
-    private void sendMessage(String pi, String url, String...properties) {
-        Map<String, String> propertyMap = new HashMap<>();
-        for (int i = 0; i < properties.length; i+=2) {
-            if(properties.length > i+1) {
-                propertyMap.put(properties[i], properties[i+1]);
-            }
-        }
-        sendMessage(pi, url, propertyMap);
+    private void sendMessage(SocketMessage message) throws JsonProcessingException {
+        session.getAsyncRemote().sendText(JsonTools.getAsJson(message));
     }
-
-    
-    private void sendMessage(String pi, String url, Map<String, String> properties) {
-        JSONObject object = new JSONObject();
-        object.put(JSON_MESSAGE_PI, pi);
-        object.put(JSON_MESSAGE_URL, url);
-        properties.entrySet().forEach(entry -> object.put(entry.getKey(), entry.getValue()));
-        session.getAsyncRemote().sendText(object.toString());
-    }
-    
 
     @OnClose
     public void onClose(Session session) {
@@ -241,7 +252,71 @@ public class DownloadTaskEndpoint {
 
     @OnError
     public void onError(Session session, Throwable t) {
-        logger.warn(t.toString(), t);
+        logger.warn(t, t);
+    }
+
+    public enum Action {
+        STARTDOWNLOAD,
+        CANCELDOWNLOAD,
+        UPDATE,
+        LISTFILES;
+    }
+
+    public enum Status {
+        WAITING,
+        PROCESSING,
+        COMPLETE,
+        ERROR,
+        CANCELED;
+    }
+
+    public static class ResourceFile {
+
+        public ResourceFile() {
+        }
+
+        public ResourceFile(String path, String url) {
+            this.url = url;
+            this.path = path;
+        }
+
+        public String url; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public String path; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+
+        public Map<String, String> getJsonSignature() {
+            return JsonObjectSignatureBuilder.listProperties(getClass());
+        }
+    }
+
+    public static class SocketMessage {
+
+        public SocketMessage() {
+        }
+
+        public SocketMessage(Action action, Status status, String pi, String url) {
+            this.action = action;
+            this.status = status;
+            this.pi = pi;
+            this.url = url;
+        }
+
+        public static SocketMessage buildAnswer(SocketMessage message, Status status) {
+            return new SocketMessage(message.action, status, message.pi, message.url);
+        }
+
+        public Action action; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public Status status; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public String pi; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public String url; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public long progress; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public long resourceSize; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public String messageQueueId; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public String errorMessage; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public List<ResourceFile> files; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+
+        public Map<String, String> getJsonSignature() {
+            return JsonObjectSignatureBuilder.listProperties(getClass());
+        }
     }
 
 }

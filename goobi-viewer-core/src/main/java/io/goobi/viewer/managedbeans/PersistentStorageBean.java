@@ -54,7 +54,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 @Named("applicationBean")
 @Eager
 @ApplicationScoped
-public class PersistentStorageBean implements DataStorage,Serializable {
+public class PersistentStorageBean implements DataStorage, Serializable {
 
     private static final long serialVersionUID = -5127431137772735598L;
 
@@ -77,16 +77,22 @@ public class PersistentStorageBean implements DataStorage,Serializable {
 
     }
 
-    public synchronized Object get(String key) {
-        return Optional.ofNullable(map.get(key)).map(Pair::getLeft).orElse(null);
+    public Object get(String key) {
+        synchronized (map) {
+            return Optional.ofNullable(map.get(key)).map(Pair::getLeft).orElse(null);
+        }
     }
 
-    public synchronized boolean olderThan(String key, Instant time) {
-        return Optional.ofNullable(map.get(key)).map(Pair::getRight).map(i -> i.isBefore(time)).orElse(true);
+    public boolean olderThan(String key, Instant time) {
+        synchronized (map) {
+            return Optional.ofNullable(map.get(key)).map(Pair::getRight).map(i -> i.isBefore(time)).orElse(true);
+        }
     }
 
-    public synchronized void put(String key, Object object) {
-        map.put(key, Pair.of(object, Instant.now()));
+    public void put(String key, Object object) {
+        synchronized (map) {
+            map.put(key, Pair.of(object, Instant.now()));
+        }
     }
 
     /**
@@ -128,5 +134,11 @@ public class PersistentStorageBean implements DataStorage,Serializable {
 
     public void setMessageBroker(MessageQueueManager messageBroker) {
         this.messageBroker = messageBroker;
+    }
+
+    public void remove(String key) {
+        synchronized (map) {
+            this.map.remove(key);
+        }
     }
 }
