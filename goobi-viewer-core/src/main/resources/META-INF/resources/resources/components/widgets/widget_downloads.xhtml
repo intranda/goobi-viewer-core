@@ -38,6 +38,189 @@
 						</p>
 					</ui:fragment>
 
+					<!-- WORK -->
+					<ui:fragment rendered="#{navigationHelper.currentView == 'object' or navigationHelper.currentView == 'fulltext'}">
+
+						<!-- WORK DOWNLOADS -->
+						<div
+							class="widget-downloads__work-downloads widget__badge-container">
+<!-- 							<h3 id="titleWork" -->
+<!-- 								class="widget-downloads__subtitle widget__badge-container-heading">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3> -->
+								
+							<h3 id="titleWork"
+								class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__complete_record}</h3>
+								
+
+							<!-- WORK FULLTEXT FORMATS (VIEW_FULLTEXT not checked here because each method already has access permission checks) -->
+							<ui:fragment
+								rendered="#{navigationHelper.currentView == 'fulltext'}">
+
+								<!-- ALTO (WORK) -->
+								<ui:fragment
+									rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
+									<a href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
+										id="alto"
+										class="badge badge-dark widget-downloads__work-download-alto"
+										title="#{msg.metadata_dl_alto_work}" data-toggle="tooltip"
+										data-placement="top" data-trigger="hover"
+										rel="nofollow noopener"
+										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAltoWorkButtonLabel}">
+										#{msg.downloadAltoWorkButtonLabel} </a>
+								</ui:fragment>
+
+								<!-- TEI (WORK) -->
+								<ui:fragment
+									rendered="#{activeDocumentBean.viewManager.teiAvailableForWork}">
+									<!-- MULTILANGUAGE -->
+									<ui:fragment
+										rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}">
+										<ui:repeat var="lang"
+											value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
+											<a
+												href="#{activeDocumentBean.viewManager.getTeiUrlForAllPages(lang)}"
+												id="teiWork"
+												class="badge badge-dark widget-downloads__work-download-tei"
+												title="#{msg.downloadWorkTei}" data-toggle="tooltip"
+												data-placement="top" data-trigger="hover" target="_blank"
+												rel="nofollow noopener"
+												aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
+												#{msg.TEI} (#{lang}) </a>
+										</ui:repeat>
+									</ui:fragment>
+									<!-- SINGLE LANGUAGE -->
+									<ui:fragment
+										rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}">
+										<a href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
+											id="teiWork"
+											class="badge badge-dark widget-downloads__work-download-tei"
+											title="#{msg.downloadWorkTei}" data-toggle="tooltip"
+											data-placement="top" data-trigger="hover" target="_blank"
+											rel="nofollow noopener"
+											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
+											#{msg.TEI} </a>
+									</ui:fragment>
+								</ui:fragment>
+
+								<!-- FULLTEXT (WORK) -->
+								<ui:fragment
+									rendered="#{activeDocumentBean.viewManager.fulltextAvailableForWork}">
+									<a
+										href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
+										id="textWork"
+										class="badge badge-dark widget-downloads__work-download-fulltext"
+										title="#{msg.downloadWorkFulltext}" data-toggle="tooltip"
+										data-placement="top" data-trigger="hover" target="_blank"
+										rel="nofollow noopener"
+										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.fulltext}">
+										#{msg.fulltext} </a>
+								</ui:fragment>
+							</ui:fragment>
+
+							<!-- PDF (WORK) -->
+							<ui:fragment
+								rendered="#{navigationHelper.currentView == 'object' and 
+                                                 activeDocumentBean.viewManager.externalDownloadUrl == null and 
+                                                 !activeDocumentBean.viewManager.filesOnly and 
+                                                 activeDocumentBean.viewManager.hasPages and 
+                                                 activeDocumentBean.accessPermissionPdf}">
+								<ui:fragment
+									rendered="#{!configurationBean.generatePdfInTaskManager}">
+									<c:set scope="request" var="hasPrerenderedPagePdfs"
+										value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
+									<ui:fragment rendered="#{hasPrerenderedPagePdfs}">
+										<a
+											href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'true']])}"
+											id="pdfWork-small"
+											class="badge badge-dark widget-downloads__work-download-pdf"
+											title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
+											data-toggle="tooltip" data-placement="top"
+											data-trigger="hover" target="_blank" rel="nofollow noopener"
+											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
+											<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+											#{msg.label__pdf_download} (#{msg.label__pdf_download_small})
+										</a>
+										<a
+											href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'false']])}"
+											id="pdfWork-full"
+											class="badge badge-dark widget-downloads__work-download-pdf"
+											title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
+											data-toggle="tooltip" data-placement="top"
+											data-trigger="hover" target="_blank" rel="nofollow noopener"
+											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
+											<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+											#{msg.label__pdf_download} (#{msg.label__pdf_download_full})
+										</a>
+									</ui:fragment>
+									<ui:fragment rendered="#{!hasPrerenderedPagePdfs}">
+										<a href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
+											id="pdfWork"
+											class="badge badge-dark widget-downloads__work-download-pdf"
+											title="#{msg.label__pdf_download_record}"
+											data-toggle="tooltip" data-placement="top"
+											data-trigger="hover" target="_blank" rel="nofollow noopener"
+											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
+											<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+											#{msg.label__pdf_download}
+										</a>
+									</ui:fragment>
+								</ui:fragment>
+								<ui:fragment
+									rendered="#{configurationBean.generatePdfInTaskManager}">
+									<a href="#" id="pdfWork"
+										class="badge badge-dark widget-downloads__work-download-pdf download-modal-widget"
+										data-type="pdf"
+										data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
+										data-pi="#{activeDocumentBean.viewManager.pi}"
+										title="#{msg.label__pdf_download_record}"
+										data-toggle="tooltip" data-placement="top"
+										data-trigger="hover"
+										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
+										<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+										#{msg.label__pdf_download}
+									</a>
+								</ui:fragment>
+							</ui:fragment>
+
+							<!-- EPUB -->
+							<ui:fragment
+								rendered="#{activeDocumentBean.accessPermissionEpub}">
+								<a href="#"
+									class="badge badge-dark widget-downloads__work-download-epub download-modal-widget"
+									data-type="epub"
+									data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
+									data-pi="#{activeDocumentBean.viewManager.pi}"
+									title="#{msg.epubDownload}" data-toggle="tooltip"
+									data-placement="top" data-trigger="hover"
+									aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.epub}">
+									#{msg.epub} </a>
+							</ui:fragment>
+
+							<!-- TOC -->
+							<ui:fragment
+								rendered="#{activeDocumentBean.accessPermissionPdf or activeDocumentBean.accessPermissionEpub or configurationBean.docHierarchyPdfEnabled}">
+								<ui:fragment
+									rendered="#{configurationBean.docHierarchyPdfEnabled}">
+									<h:form class="d-inline-flex" id="titleBodyForm"
+										prependId="false">
+										<h:commandLink id="tocDownload"
+											action="#{activeDocumentBean.downloadTOCAction()}"
+											title="#{msg.tocDownload}"
+											styleClass="badge badge-dark widget-downloads__work-download-toc"
+											value="#{msg.tocDownloadBadge}">
+											<f:passThroughAttribute name="data-toggle" value="tooltip" />
+											<f:passThroughAttribute name="data-placement" value="top" />
+											<f:passThroughAttribute name="aria-label"
+												value="#{msg.tocDownload}" />
+										</h:commandLink>
+									</h:form>
+								</ui:fragment>
+							</ui:fragment>
+
+						</div>
+
+					</ui:fragment>
+
+
 					<!-- PAGE -->
 					<ui:fragment
 						rendered="#{!activeDocumentBean.viewManager.bornDigital 
@@ -54,7 +237,7 @@
 						<div
 							class="widget-downloads__page-downloads widget__badge-container">
 							<h3 id="titleImage"
-								class="widget-downloads__subtitle widget__badge-container-heading">#{msg.image}</h3>
+								class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__this_page}</h3>
 
 							<!-- PDF (PAGE) -->
 							<ui:fragment
@@ -238,7 +421,7 @@
 
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment
-						rendered="#{navigationHelper.currentView = 'object' and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+						rendered="#{navigationHelper.currentView == 'object' and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
 						<div
 							class="widget-downloads__image-fragment-wrapper widget__badge-container">
 
@@ -263,183 +446,7 @@
 						</div>
 					</ui:fragment>
 
-					<!-- WORK -->
-					<ui:fragment rendered="#{navigationHelper.currentView != 'object'}">
 
-						<!-- WORK DOWNLOADS -->
-						<div
-							class="widget-downloads__work-downloads widget__badge-container">
-							<h3 id="titleWork"
-								class="widget-downloads__subtitle widget__badge-container-heading">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
-
-							<!-- WORK FULLTEXT FORMATS (VIEW_FULLTEXT not checked here because each method already has access permission checks) -->
-							<ui:fragment
-								rendered="#{navigationHelper.currentView = 'fulltext'}">
-
-								<!-- ALTO (WORK) -->
-								<ui:fragment
-									rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
-									<a href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
-										id="alto"
-										class="badge badge-dark widget-downloads__work-download-alto"
-										title="#{msg.metadata_dl_alto_work}" data-toggle="tooltip"
-										data-placement="top" data-trigger="hover"
-										rel="nofollow noopener"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAltoWorkButtonLabel}">
-										#{msg.downloadAltoWorkButtonLabel} </a>
-								</ui:fragment>
-
-								<!-- TEI (WORK) -->
-								<ui:fragment
-									rendered="#{activeDocumentBean.viewManager.teiAvailableForWork}">
-									<!-- MULTILANGUAGE -->
-									<ui:fragment
-										rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}">
-										<ui:repeat var="lang"
-											value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
-											<a
-												href="#{activeDocumentBean.viewManager.getTeiUrlForAllPages(lang)}"
-												id="teiWork"
-												class="badge badge-dark widget-downloads__work-download-tei"
-												title="#{msg.downloadWorkTei}" data-toggle="tooltip"
-												data-placement="top" data-trigger="hover" target="_blank"
-												rel="nofollow noopener"
-												aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
-												#{msg.TEI} (#{lang}) </a>
-										</ui:repeat>
-									</ui:fragment>
-									<!-- SINGLE LANGUAGE -->
-									<ui:fragment
-										rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}">
-										<a href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
-											id="teiWork"
-											class="badge badge-dark widget-downloads__work-download-tei"
-											title="#{msg.downloadWorkTei}" data-toggle="tooltip"
-											data-placement="top" data-trigger="hover" target="_blank"
-											rel="nofollow noopener"
-											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
-											#{msg.TEI} </a>
-									</ui:fragment>
-								</ui:fragment>
-
-								<!-- FULLTEXT (WORK) -->
-								<ui:fragment
-									rendered="#{activeDocumentBean.viewManager.fulltextAvailableForWork}">
-									<a
-										href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
-										id="textWork"
-										class="badge badge-dark widget-downloads__work-download-fulltext"
-										title="#{msg.downloadWorkFulltext}" data-toggle="tooltip"
-										data-placement="top" data-trigger="hover" target="_blank"
-										rel="nofollow noopener"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.fulltext}">
-										#{msg.fulltext} </a>
-								</ui:fragment>
-							</ui:fragment>
-
-							<!-- PDF (WORK) -->
-							<ui:fragment
-								rendered="#{navigationHelper.currentView = 'object' and 
-                                                 activeDocumentBean.viewManager.externalDownloadUrl == null and 
-                                                 !activeDocumentBean.viewManager.filesOnly and 
-                                                 activeDocumentBean.viewManager.hasPages and 
-                                                 activeDocumentBean.accessPermissionPdf}">
-								<ui:fragment
-									rendered="#{!configurationBean.generatePdfInTaskManager}">
-									<c:set scope="request" var="hasPrerenderedPagePdfs"
-										value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
-									<ui:fragment rendered="#{hasPrerenderedPagePdfs}">
-										<a
-											href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'true']])}"
-											id="pdfWork-small"
-											class="badge badge-dark widget-downloads__work-download-pdf"
-											title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
-											data-toggle="tooltip" data-placement="top"
-											data-trigger="hover" target="_blank" rel="nofollow noopener"
-											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-											<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-											#{msg.label__pdf_download} (#{msg.label__pdf_download_small})
-										</a>
-										<a
-											href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'false']])}"
-											id="pdfWork-full"
-											class="badge badge-dark widget-downloads__work-download-pdf"
-											title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
-											data-toggle="tooltip" data-placement="top"
-											data-trigger="hover" target="_blank" rel="nofollow noopener"
-											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-											<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-											#{msg.label__pdf_download} (#{msg.label__pdf_download_full})
-										</a>
-									</ui:fragment>
-									<ui:fragment rendered="#{!hasPrerenderedPagePdfs}">
-										<a href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
-											id="pdfWork"
-											class="badge badge-dark widget-downloads__work-download-pdf"
-											title="#{msg.label__pdf_download_record}"
-											data-toggle="tooltip" data-placement="top"
-											data-trigger="hover" target="_blank" rel="nofollow noopener"
-											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-											<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-											#{msg.label__pdf_download}
-										</a>
-									</ui:fragment>
-								</ui:fragment>
-								<ui:fragment
-									rendered="#{configurationBean.generatePdfInTaskManager}">
-									<a href="#" id="pdfWork"
-										class="badge badge-dark widget-downloads__work-download-pdf download-modal-widget"
-										data-type="pdf"
-										data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-										data-pi="#{activeDocumentBean.viewManager.pi}"
-										title="#{msg.label__pdf_download_record}"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-										<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-										#{msg.label__pdf_download}
-									</a>
-								</ui:fragment>
-							</ui:fragment>
-
-							<!-- EPUB -->
-							<ui:fragment
-								rendered="#{activeDocumentBean.accessPermissionEpub}">
-								<a href="#"
-									class="badge badge-dark widget-downloads__work-download-epub download-modal-widget"
-									data-type="epub"
-									data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-									data-pi="#{activeDocumentBean.viewManager.pi}"
-									title="#{msg.epubDownload}" data-toggle="tooltip"
-									data-placement="top" data-trigger="hover"
-									aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.epub}">
-									#{msg.epub} </a>
-							</ui:fragment>
-
-							<!-- TOC -->
-							<ui:fragment
-								rendered="#{activeDocumentBean.accessPermissionPdf or activeDocumentBean.accessPermissionEpub or configurationBean.docHierarchyPdfEnabled}">
-								<ui:fragment
-									rendered="#{configurationBean.docHierarchyPdfEnabled}">
-									<h:form class="d-inline-flex" id="titleBodyForm"
-										prependId="false">
-										<h:commandLink id="tocDownload"
-											action="#{activeDocumentBean.downloadTOCAction()}"
-											title="#{msg.tocDownload}"
-											styleClass="badge badge-dark widget-downloads__work-download-toc"
-											value="#{msg.tocDownloadBadge}">
-											<f:passThroughAttribute name="data-toggle" value="tooltip" />
-											<f:passThroughAttribute name="data-placement" value="top" />
-											<f:passThroughAttribute name="aria-label"
-												value="#{msg.tocDownload}" />
-										</h:commandLink>
-									</h:form>
-								</ui:fragment>
-							</ui:fragment>
-
-						</div>
-
-					</ui:fragment>
 
 				</div>
 			</div>
