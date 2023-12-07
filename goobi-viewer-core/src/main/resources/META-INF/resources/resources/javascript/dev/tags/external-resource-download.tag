@@ -10,8 +10,8 @@
 				title="{msg.action__external_files__download_in_queue}" />
 		</div>
 		<div if="{isDownloading(url)}">
-			<progress value="{getProgress(url).absolute}"
-				max="{getProgress(url).total}">{getProgress(url).fraction*100}%</progress>
+			<progress value="{getDownloadProgress(url)}"
+				max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress>
 		</div>
 		<div if="{isFinished(url)}">
 			<ul>
@@ -47,6 +47,11 @@
       	this.preloader = this.contextPath + this.preloader;
       	this.msg = $.extend(true, {}, this.msg, this.opts.msg ? this.opts.msg : {});
       	this.ws = this.initWebSocket();
+      	this.ws.onOpen.subscribe(() => {
+      		rxjs.from(this.urls).pipe(
+      			rxjs.operators.flatMap(url => this.sendMessage(this.createSocketMessage(this.pi, url, "update")))		
+      		).subscribe(() => {});
+      	})
       	console.log("mount download external resources for urls ", this.urls);
       	this.update();
       });
@@ -64,7 +69,6 @@
         const socket = new viewerJS.WebSocket(window.location.host, this.contextPath, viewerJS.WebSocket.PATH_DOWNLOAD_TASK);
         console.log("created web socket ", socket.socket.url);
         socket.onMessage.subscribe( (event) => {
-          console.log("received message from socket: ", event);
           this.handleUpdateMessage(event);
           this.update();
         });
@@ -89,8 +93,8 @@
     		if(this.updateListeners.has(urlToDownload)) {
     			this.updateListeners.get(urlToDownload).cancel();
     		}
-	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'start-download'});
-	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage({"action": "update", "pi": this.pi, "url": urlToDownload}), this.updateDelay);
+	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'});
+	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, urlToDownload, "update")), this.updateDelay);
 	        this.updateListeners.set(urlToDownload, listener);
 	        listener.then(() => {});
     	} else {
@@ -103,20 +107,18 @@
           if(data == null) {
         	  this.handleError("Not a valid message object: " + event.data);
           } else if(data.pi == this.pi && data.url && data.status) {
-        	  
+        	  console.log("received message ", data);
         	  switch(data.status) {
-        	  case "WAITING":
-        		  data.progressInfo = {absolute: 0, total: "unknown", fraction: 0};
+        	  case "waiting":
+        	  case "processing":
 	        	  this.downloads.set(data.url, data);
-	        	  break;
-        	  case "PROCESSING":
-        		  data.progressInfo = {absolute: parseInt(data.progress), total: parseInt(data.size), fraction: parseInt(data.progress)/parseInt(data.size)}
-	        	  this.downloads.set(data.url, data);
+	        	  if(!this.updateListeners.has(data.url)) {
+	        		  this.startDownloadTask({item:data})
+	        	  }
         		  break;
-        	  case "COMPLETE":
+        	  case "complete":
         		  if(data.files && data.files.length > 0) {
-        			  data = $.extend(true, {}, data, this.downloads.get(data.url));
-    	        	  data.progressInfo = {absolute: 1, total: 1, fraction: 1};
+        			  data = $.extend(true, {}, this.downloads.get(data.url), data);
     	        	  console.log("download completed", data);
     	        	  this.downloads.set(data.url, data);
     	        	  if(this.updateListeners.has(data.url)) {	        		  
@@ -124,46 +126,71 @@
     		  		  	this.updateListeners.delete(data.url);
     	        	  }
         		  } else {
-        			  data.progressInfo = {absolute: parseInt(data.progress), total: parseInt(data.size), fraction: 1}
     	        	  this.downloads.set(data.url, data);
-    		          this.sendMessage({pi: this.pi, url: data.url, action: 'list-files'})
+    		          this.sendMessage(this.createSocketMessage(this.pi, data.url, 'listfiles'));
         		  }
-        	  case "ERROR":
+        		  break;
+        	  case "error":
         		  this.handleError(data.errorMessage);
         		  //fall through
-        	  case "CANCELED":
-        		  this.downloads.delete(data.url);
+        	  case "canceled":
+        		  if(this.downloads.has(data.url)) {
+	        		  this.downloads.delete(data.url);        			  
+        		  }
         		  if(this.updateListeners.has(data.url)) {	        		  
   	        	  	this.updateListeners.get(data.url).cancel();
   		  		  	this.updateListeners.delete(data.url);
   	        	  }
         		  break;
+        	  case "dormant": //do nothing
         	  }
         	  
           } else {
         	  this.handleError("Wrong or insufficient data in message object: " + event.data);
+        	  this.updateListeners.forEach(value => value.cancel());
+        	  this.updateListeners = new Map();
           }
       }
       
+      handleError(message) {
+    	  alert(message);
+      }
+       
       isRequested(url) {
-    	  return this.downloads.has(url);
+    	  return this.downloads.has(url) && this.downloads.get(url).status !== 'dormant';
       }
       
       isDownloading(url) {
-    	return this.downloads.get(url)?.progressInfo?.fraction > 0 && this.downloads.get(url)?.progressInfo?.fraction < 1;
+    	return this.downloads.get(url)?.status == 'processing';
       }
       
       isWaiting(url) {
-    	  return this.downloads.get(url)?.progressInfo?.fraction == 0;
+    	  return this.downloads.get(url)?.status == 'waiting';
       }
       
       isFinished(url) {
-    	  return this.isRequested(url) && this.downloads.get(url)?.files;
+    	  return this.downloads.get(url)?.status == 'complete';
       }
       
 
-      getProgress(url) {
-    	  return this.downloads.get(url)?.progressInfo;
+      getDownloadProgress(url) {
+   	  	if(this.getDownloadSize(url) <= 0 || isNaN(this.getDownloadSize(url))) {
+   	  		return undefined;
+   	  	}
+    	return this.downloads.get(url)?.progress;
+      }
+      
+      getDownloadProgressLabel(url) {
+    	  let fraction = this.getDownloadProgress(url)/this.getDownloadSize(url);
+    	  if(isNaN(fraction) || fraction < 0) {
+    		  return "unknown";
+    	  } else {
+    		  return (fraction * 100) + "%";
+    	  }
+      }
+      
+      getDownloadSize(url) {
+    	  return this.downloads.get(url)?.resourceSize;
       }
       
       getFiles(url) {
@@ -173,7 +200,7 @@
       cancelDownload(e) {
     	  const url = e.item.url;
     	  if(url && this.downloads.has(url)) {
-	    	  this.sendMessage({pi: this.pi, url: url, messageQueueId: this.downloads.get(url).messageQueueId, action: 'cancel-download'});
+	    	  this.sendMessage({pi: this.pi, url: url, messageQueueId: this.downloads.get(url).messageQueueId, action: 'canceldownload'});
 	    	  this.downloads.delete(url);
 	    	  if(this.updateListeners.has(url)) {
 	  			this.updateListeners.get(url).cancel();
@@ -199,15 +226,21 @@
       }
       
       createSocketMessage(pi, url, action) {
-    	  return {
-    		  pi: pi,
-    		  url: url,
-    		  action: action,
-    		  messageQueueId: undefined,
-    		  progress: 0,
-    		  resourceSize: 1,
-    		  status: undefined,
-    		  files: []
+    	  if(this.downloads.has(url)) {
+    		  let oldMessage = this.downloads.get(url);
+    		  let newMessage = $.extend(true, {}, oldMessage, {pi: pi, url: url, action: action});
+    	  	  return newMessage;
+    	  } else {
+	    	  return {
+	    		  pi: pi,
+	    		  url: url,
+	    		  action: action,
+	    		  messageQueueId: undefined,
+	    		  progress: 0,
+	    		  resourceSize: 1,
+	    		  status: undefined,
+	    		  files: []
+	    	  }    		  
     	  }
       }
 

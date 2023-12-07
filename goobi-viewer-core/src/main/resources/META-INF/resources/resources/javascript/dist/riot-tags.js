@@ -2781,7 +2781,7 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 
 
 
-riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES</label><li each="{url in urls}"><label>{url}</label><button onclick="{startDownloadTask}" show="{!isRequested(url)}">{msg.action__external_files__order_download}</button><div if="{isWaiting(url)}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div if="{isDownloading(url)}"><progress riot-value="{getProgress(url).absolute}" max="{getProgress(url).total}">{getProgress(url).fraction*100}%</progress></div><div if="{isFinished(url)}"><ul><li each="{object in getFiles(url)}"><a href="{object.url}">{object.path}</a></li></ul></div><div if="{isRequested(url) && !isFinished(url)}"><button onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button></div></li></ul>', 'external-resource-download li,[data-is="external-resource-download"] li{ margin-bottom: 10px; }', '', function(opts) {
+riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES</label><li each="{url in urls}"><label>{url}</label><button onclick="{startDownloadTask}" show="{!isRequested(url)}">{msg.action__external_files__order_download}</button><div if="{isWaiting(url)}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div if="{isDownloading(url)}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div><div if="{isFinished(url)}"><ul><li each="{object in getFiles(url)}"><a href="{object.url}">{object.path}</a></li></ul></div><div if="{isRequested(url) && !isFinished(url)}"><button onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button></div></li></ul>', 'external-resource-download li,[data-is="external-resource-download"] li{ margin-bottom: 10px; }', '', function(opts) {
       this.urls = [];
       this.downloads = new Map();
       this.updateListeners = new Map();
@@ -2802,6 +2802,11 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
       	this.preloader = this.contextPath + this.preloader;
       	this.msg = $.extend(true, {}, this.msg, this.opts.msg ? this.opts.msg : {});
       	this.ws = this.initWebSocket();
+      	this.ws.onOpen.subscribe(() => {
+      		rxjs.from(this.urls).pipe(
+      			rxjs.operators.flatMap(url => this.sendMessage(this.createSocketMessage(this.pi, url, "update")))
+      		).subscribe(() => {});
+      	})
       	console.log("mount download external resources for urls ", this.urls);
       	this.update();
       });
@@ -2818,7 +2823,6 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
         const socket = new viewerJS.WebSocket(window.location.host, this.contextPath, viewerJS.WebSocket.PATH_DOWNLOAD_TASK);
         console.log("created web socket ", socket.socket.url);
         socket.onMessage.subscribe( (event) => {
-          console.log("received message from socket: ", event);
           this.handleUpdateMessage(event);
           this.update();
         });
@@ -2843,8 +2847,8 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
     		if(this.updateListeners.has(urlToDownload)) {
     			this.updateListeners.get(urlToDownload).cancel();
     		}
-	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'start-download'});
-	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage({"action": "update", "pi": this.pi, "url": urlToDownload}), this.updateDelay);
+	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'});
+	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, urlToDownload, "update")), this.updateDelay);
 	        this.updateListeners.set(urlToDownload, listener);
 	        listener.then(() => {});
     	} else {
@@ -2857,20 +2861,18 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
           if(data == null) {
         	  this.handleError("Not a valid message object: " + event.data);
           } else if(data.pi == this.pi && data.url && data.status) {
-
+        	  console.log("received message ", data);
         	  switch(data.status) {
-        	  case "WAITING":
-        		  data.progressInfo = {absolute: 0, total: "unknown", fraction: 0};
+        	  case "waiting":
+        	  case "processing":
 	        	  this.downloads.set(data.url, data);
-	        	  break;
-        	  case "PROCESSING":
-        		  data.progressInfo = {absolute: parseInt(data.progress), total: parseInt(data.size), fraction: parseInt(data.progress)/parseInt(data.size)}
-	        	  this.downloads.set(data.url, data);
+	        	  if(!this.updateListeners.has(data.url)) {
+	        		  this.startDownloadTask({item:data})
+	        	  }
         		  break;
-        	  case "COMPLETE":
+        	  case "complete":
         		  if(data.files && data.files.length > 0) {
-        			  data = $.extend(true, {}, data, this.downloads.get(data.url));
-    	        	  data.progressInfo = {absolute: 1, total: 1, fraction: 1};
+        			  data = $.extend(true, {}, this.downloads.get(data.url), data);
     	        	  console.log("download completed", data);
     	        	  this.downloads.set(data.url, data);
     	        	  if(this.updateListeners.has(data.url)) {
@@ -2878,45 +2880,70 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
     		  		  	this.updateListeners.delete(data.url);
     	        	  }
         		  } else {
-        			  data.progressInfo = {absolute: parseInt(data.progress), total: parseInt(data.size), fraction: 1}
     	        	  this.downloads.set(data.url, data);
-    		          this.sendMessage({pi: this.pi, url: data.url, action: 'list-files'})
+    		          this.sendMessage(this.createSocketMessage(this.pi, data.url, 'listfiles'));
         		  }
-        	  case "ERROR":
+        		  break;
+        	  case "error":
         		  this.handleError(data.errorMessage);
 
-        	  case "CANCELED":
-        		  this.downloads.delete(data.url);
+        	  case "canceled":
+        		  if(this.downloads.has(data.url)) {
+	        		  this.downloads.delete(data.url);
+        		  }
         		  if(this.updateListeners.has(data.url)) {
   	        	  	this.updateListeners.get(data.url).cancel();
   		  		  	this.updateListeners.delete(data.url);
   	        	  }
         		  break;
+        	  case "dormant":
         	  }
 
           } else {
         	  this.handleError("Wrong or insufficient data in message object: " + event.data);
+        	  this.updateListeners.forEach(value => value.cancel());
+        	  this.updateListeners = new Map();
           }
       }.bind(this)
 
+      this.handleError = function(message) {
+    	  alert(message);
+      }.bind(this)
+
       this.isRequested = function(url) {
-    	  return this.downloads.has(url);
+    	  return this.downloads.has(url) && this.downloads.get(url).status !== 'dormant';
       }.bind(this)
 
       this.isDownloading = function(url) {
-    	return this.downloads.get(url)?.progressInfo?.fraction > 0 && this.downloads.get(url)?.progressInfo?.fraction < 1;
+    	return this.downloads.get(url)?.status == 'processing';
       }.bind(this)
 
       this.isWaiting = function(url) {
-    	  return this.downloads.get(url)?.progressInfo?.fraction == 0;
+    	  return this.downloads.get(url)?.status == 'waiting';
       }.bind(this)
 
       this.isFinished = function(url) {
-    	  return this.isRequested(url) && this.downloads.get(url)?.files;
+    	  return this.downloads.get(url)?.status == 'complete';
       }.bind(this)
 
-      this.getProgress = function(url) {
-    	  return this.downloads.get(url)?.progressInfo;
+      this.getDownloadProgress = function(url) {
+   	  	if(this.getDownloadSize(url) <= 0 || isNaN(this.getDownloadSize(url))) {
+   	  		return undefined;
+   	  	}
+    	return this.downloads.get(url)?.progress;
+      }.bind(this)
+
+      this.getDownloadProgressLabel = function(url) {
+    	  let fraction = this.getDownloadProgress(url)/this.getDownloadSize(url);
+    	  if(isNaN(fraction) || fraction < 0) {
+    		  return "unknown";
+    	  } else {
+    		  return (fraction * 100) + "%";
+    	  }
+      }.bind(this)
+
+      this.getDownloadSize = function(url) {
+    	  return this.downloads.get(url)?.resourceSize;
       }.bind(this)
 
       this.getFiles = function(url) {
@@ -2926,7 +2953,7 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
       this.cancelDownload = function(e) {
     	  const url = e.item.url;
     	  if(url && this.downloads.has(url)) {
-	    	  this.sendMessage({pi: this.pi, url: url, messageQueueId: this.downloads.get(url).messageQueueId, action: 'cancel-download'});
+	    	  this.sendMessage({pi: this.pi, url: url, messageQueueId: this.downloads.get(url).messageQueueId, action: 'canceldownload'});
 	    	  this.downloads.delete(url);
 	    	  if(this.updateListeners.has(url)) {
 	  			this.updateListeners.get(url).cancel();
@@ -2952,15 +2979,21 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
       }.bind(this)
 
       this.createSocketMessage = function(pi, url, action) {
-    	  return {
-    		  pi: pi,
-    		  url: url,
-    		  action: action,
-    		  messageQueueId: undefined,
-    		  progress: 0,
-    		  resourceSize: 1,
-    		  status: undefined,
-    		  files: []
+    	  if(this.downloads.has(url)) {
+    		  let oldMessage = this.downloads.get(url);
+    		  let newMessage = $.extend(true, {}, oldMessage, {pi: pi, url: url, action: action});
+    	  	  return newMessage;
+    	  } else {
+	    	  return {
+	    		  pi: pi,
+	    		  url: url,
+	    		  action: action,
+	    		  messageQueueId: undefined,
+	    		  progress: 0,
+	    		  resourceSize: 1,
+	    		  status: undefined,
+	    		  files: []
+	    	  }
     	  }
       }.bind(this)
 

@@ -121,8 +121,9 @@ public class ExternalFilesDownloader {
             case HttpServletResponse.SC_OK:
                 String filename = getFilename(uri, response);
                 if (response.getEntity() != null) {
+                    long length = response.getEntity().getContentLength();
                     return extractContentToPath(this.destinationFolder.resolve(filename), response.getEntity().getContent(),
-                            response.getEntity().getContentType().getValue(), response.getEntity().getContentLength());
+                            response.getEntity().getContentType().getValue(), length);
                 }
             case 401:
             default:

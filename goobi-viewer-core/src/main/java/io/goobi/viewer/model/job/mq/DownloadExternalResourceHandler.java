@@ -22,16 +22,21 @@
 
 package io.goobi.viewer.model.job.mq;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,6 +62,9 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
     private static final String PARAMETER_PI = "pi";
     private static final String PARAMETER_URL = "url";
 
+    public static final String[] ALLOWED_FILE_EXTENSIONS =
+            new String[] { "xml", "html", "pdf", "epub", "jpg", "jpeg", "png", "mp3", "mp4", "zip", "xlsx", "doc", "docx", "gs" };
+    
     private static final int DAYS_BEFORE_DELETION = 1;
 
     private static final long MILLISPERDAY = 1000*60*60*24l;
@@ -84,15 +92,20 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
                 return MessageStatus.ERROR;
             }
     
-            String downloadId = DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), StringTools.cleanUserGeneratedData(pi), StringTools.cleanUserGeneratedData(url));
+            String downloadId = getDownloadId(pi, url);
             
             URI uri = new URI(url);
             
-            extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(downloadId), messageId);
+            if(!isFilesExist(pi, url, downloadId)) {
+                
+                extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(downloadId), messageId);
+                
+                removeProgress(url);
+                
+                triggerDeletion(queueManager, extractedFolder, MILLISPERDAY*DAYS_BEFORE_DELETION);
             
-            storeProgress(new Progress(1,1), url, extractedFolder, messageId);
+            }
             
-            triggerDeletion(queueManager, extractedFolder, MILLISPERDAY*DAYS_BEFORE_DELETION);
             
         } catch (PresentationException | IndexUnreachableException | IOException | URISyntaxException  e) {
             logger.error("Error downloading external resource: {}", e.toString());
@@ -122,7 +135,43 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         ExternalFilesDownloadJob job = new ExternalFilesDownloadJob(progress, identifier, path, messageId);
         storageBean.put(identifier, job);
     }
+    
+    private void removeProgress(String identifier) {
+        storageBean.remove(identifier);
+    }
 
+    private boolean isFilesExist(String pi, String url, String downloadId) {
+
+        try {
+            List<Path> files = getDownloadedFiles(pi, url, downloadId);
+            if (files.isEmpty()) {
+                return false;
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    public List<Path> getDownloadedFiles(String pi, String downloadUrl, String downloadId) throws PresentationException, IndexUnreachableException {
+        Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
+        Path resourceFolder = downloadFolder.resolve(downloadId);
+        if (Files.exists(resourceFolder)) {
+            return FileUtils.listFiles(resourceFolder.toFile(), ALLOWED_FILE_EXTENSIONS, true)
+                    .stream()
+                    .map(File::toPath)
+                    .map(resourceFolder::relativize)
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+    
+    private String getDownloadId(String pi, String downloadUrl) {
+        return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), pi,
+                downloadUrl);
+    }
+    
     @Override
     public String getMessageHandlerName() {
         return TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name();

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,7 @@ import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.files.external.Progress;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
@@ -70,9 +72,6 @@ import io.goobi.viewer.model.job.mq.DownloadExternalResourceHandler;
  */
 @ServerEndpoint(value = "/tasks/download/monitor.socket", configurator = GetHttpSessionConfigurator.class)
 public class DownloadTaskEndpoint {
-
-    private static final String[] ALLOWED_FILE_EXTENSIONS =
-            new String[] { "xml", "html", "pdf", "epub", "jpg", "jpeg", "png", "mp3", "mp4", "zip", "xlsx", "doc", "docx", "gs" };
 
     private static final Logger logger = LogManager.getLogger(DownloadTaskEndpoint.class);
 
@@ -116,6 +115,12 @@ public class DownloadTaskEndpoint {
             }
         } catch (IOException e) {
             logger.error("Error interpreting download task message {}", messageString);
+            try {
+                sendError(new SocketMessage(Action.UPDATE, Status.ERROR, "", ""), "Error interpreting download task message "+ messageString);
+            } catch (JsonProcessingException e1) {
+                logger.error("Error generating socket message message: {}", e1.toString());
+
+            }
         }
     }
 
@@ -157,44 +162,40 @@ public class DownloadTaskEndpoint {
     }
 
     private void sendUpdate(SocketMessage message) throws JsonProcessingException {
+        SocketMessage answer = SocketMessage.buildAnswer(message, Status.DORMANT);
         ExternalFilesDownloadJob job = Optional.ofNullable(storageBean)
-                .map(bean -> bean.get(message.url))
+                .flatMap(bean -> bean.getIfRecentOrRemove(message.url, 1, ChronoUnit.DAYS))
                 .map(ExternalFilesDownloadJob.class::cast)
                 .orElse(null);
-        SocketMessage answer = SocketMessage.buildAnswer(message, Status.WAITING);
-        if (job != null) {
-
+        ViewerMessage queueMessage = queueManager.getMessageById(message.messageQueueId).orElse(null);
+        if(queueMessage != null) {
+            answer.status = Status.WAITING;
+        } else if (job != null) {
             if (job.getProgress().complete() && !isFilesExist(message.pi, message.url)) {
                 //download task has completed but files are no longer available. remove job from storage bean and return waiting status
                 storageBean.remove(message.url);
+                answer.status = Status.WAITING;
             } else {
                 answer.messageQueueId = job.getMessageId();
                 if (job.getProgress() != null) {
                     if (job.getProgress().getProgressRelative() == 1) {
                         answer.status = Status.COMPLETE;
-                    } else if (job.getProgress().getProgressRelative() > 0) {
+                    } else if (job.getProgress().getProgressAbsolute() > 0) {
                         answer.status = Status.PROCESSING;
+                    } else {
+                        answer.status = Status.WAITING;
                     }
                     answer.progress = job.getProgress().getProgressAbsolute();
                     answer.resourceSize = job.getProgress().getTotalSize();
                 }
             }
+        } else if(isFilesExist(message.pi, message.url)) {
+            answer.status = Status.COMPLETE;
         }
         sendMessage(answer);
     }
 
-    private boolean isFilesExist(String pi, String url) {
 
-        try {
-            List<Path> files = getDownloadedFiles(pi, url);
-            if (files.isEmpty()) {
-                return false;
-            }
-        } catch (PresentationException | IndexUnreachableException e) {
-            return false;
-        }
-        return true;
-    }
 
     private void cancelDownload(SocketMessage message) throws JsonProcessingException {
         boolean deleted = this.queueManager.deleteMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), message.messageQueueId);
@@ -214,11 +215,24 @@ public class DownloadTaskEndpoint {
         sendMessage(answer);
     }
 
+    private boolean isFilesExist(String pi, String url) {
+
+        try {
+            List<Path> files = getDownloadedFiles(pi, url);
+            if (files.isEmpty()) {
+                return false;
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            return false;
+        }
+        return true;
+    }
+    
     public List<Path> getDownloadedFiles(String pi, String downloadUrl) throws PresentationException, IndexUnreachableException {
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
         Path resourceFolder = downloadFolder.resolve(getDownloadId(pi, downloadUrl));
         if (Files.exists(resourceFolder)) {
-            return FileUtils.listFiles(resourceFolder.toFile(), ALLOWED_FILE_EXTENSIONS, true)
+            return FileUtils.listFiles(resourceFolder.toFile(), DownloadExternalResourceHandler.ALLOWED_FILE_EXTENSIONS, true)
                     .stream()
                     .map(File::toPath)
                     .map(resourceFolder::relativize)
@@ -237,11 +251,11 @@ public class DownloadTaskEndpoint {
     }
 
     private String getDownloadId(String pi, String downloadUrl) {
-        return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), StringTools.cleanUserGeneratedData(pi),
-                StringTools.cleanUserGeneratedData(downloadUrl));
+        return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), pi,
+                downloadUrl);
     }
 
-    private void sendMessage(SocketMessage message) throws JsonProcessingException {
+    private synchronized void sendMessage(SocketMessage message) throws JsonProcessingException {
         session.getAsyncRemote().sendText(JsonTools.getAsJson(message));
     }
 
@@ -260,14 +274,26 @@ public class DownloadTaskEndpoint {
         CANCELDOWNLOAD,
         UPDATE,
         LISTFILES;
+        
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
     }
 
     public enum Status {
+        DORMANT,
         WAITING,
         PROCESSING,
         COMPLETE,
         ERROR,
         CANCELED;
+        
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
+
     }
 
     public static class ResourceFile {

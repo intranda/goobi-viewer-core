@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.json.JSONObject;
 
 import io.goobi.viewer.websockets.DownloadTaskEndpoint;
+import io.goobi.viewer.websockets.DownloadTaskEndpoint.SocketMessage;
 
 public class JsonObjectSignatureBuilder {
     
@@ -39,13 +40,9 @@ public class JsonObjectSignatureBuilder {
         }
 
         public static void main(String[] args) throws IOException {
-            Map<String, String> messageProperties =listProperties(DownloadTaskEndpoint.SocketMessage.class);
-//            System.out.println(messageProperties);
-//            System.out.println(getPropertiesAsJSON(DownloadTaskEndpoint.SocketMessage.class));
-            String json = "{\"messageQueueId\":\"string\",\"action\":\"string\",\"pi\":\"string\",\"progress\":12345,\"resourceSize\":4565675,\"files\":[{\"url\":\"https://example.com/viewer\", \"path\":\"/path/to/viewer/files\"}],\"url\":\"string\",\"status\":\"string\"}";
-            DownloadTaskEndpoint.SocketMessage message = JsonTools.getAsObject(json, DownloadTaskEndpoint.SocketMessage.class);
-            String jsonOut = JsonTools.getAsJson(message);
-            System.out.println(jsonOut);
+            String json = "{\"action\":\"update\",\"pi\":\"34192383\",\"url\":\"http://d-nb.info/1303371537/34\"}";
+            SocketMessage message = JsonTools.getAsObject(json, SocketMessage.class);
+            System.out.println(message);
         }
 
 }
