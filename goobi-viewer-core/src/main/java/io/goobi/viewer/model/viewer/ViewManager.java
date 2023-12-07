@@ -1153,7 +1153,7 @@ public class ViewManager implements Serializable {
 
     /**
      *
-     * @return
+     * @return true if the loaded record is an anchor or a group and the first volume is files only; false otherwise
      * @throws IndexUnreachableException
      */
     private boolean isChildFilesOnly() throws IndexUnreachableException {

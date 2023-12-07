@@ -29,15 +29,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.faces.model.SelectItem;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -47,8 +45,8 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Old style page loading strategy (load all pages and keep them in memory).
@@ -116,8 +114,8 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /** {@inheritDoc} */
     @Override
     public PhysicalElement getPageForFileName(String fileName) {
-        for (int key : pages.keySet()) {
-            PhysicalElement page = pages.get(key);
+        for (Entry<Integer, PhysicalElement> entry : pages.entrySet()) {
+            PhysicalElement page = entry.getValue();
             if (fileName.equals(page.getFileName())) {
                 return page;
             }
