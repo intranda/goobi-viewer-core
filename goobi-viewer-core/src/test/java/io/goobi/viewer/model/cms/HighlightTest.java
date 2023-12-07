@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -40,7 +41,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.HighlightData.ImageMode;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
-public class HighlightTest {
+public class HighlightTest extends AbstractSolrEnabledTest {
 
     Configuration config = DataManager.getInstance().getConfiguration();
 
