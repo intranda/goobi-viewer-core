@@ -269,7 +269,9 @@
 										rel="nofollow noopener" aria-label="#{msg.downloadButton}"
 										value="#{activeDocumentBean.viewManager.getPageDownloadUrl(option, activeDocumentBean.viewManager.currentPage)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
 <!-- 		                                <span class="widget-downloads__download-image-size-radio-label">#{msg[option.label]}</span> -->
-		                            	<span class="widget-downloads__download-image-size-radio-label">#{msg.image}</span> 
+											<span class="widget-downloads__download-image-size-radio-icon"><i class="fa fa-file-image-o" aria-hidden="true"></i></span>
+											<span class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
+		                            	
 								        <span class="widget-downloads__download-image-size-radio-size">#{option.boxSizeLabel} px</span>
 								        <span class="widget-downloads__download-image-size-radio-format">(#{option.format})</span> 
 <!-- 								        <span class="widget-downloads__download-image-size-radio-icon"></span> -->
