@@ -40,7 +40,7 @@ public class OEmbedRecord {
     private URI uri = null;
 
     /**
-     * @param origUrl
+     * @param uri
      * @throws URISyntaxException
      */
     public OEmbedRecord(String uri) throws URISyntaxException {
