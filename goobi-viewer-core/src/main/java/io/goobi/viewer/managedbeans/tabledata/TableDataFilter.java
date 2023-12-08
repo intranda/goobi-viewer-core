@@ -47,7 +47,7 @@ public class TableDataFilter implements Serializable {
      * </p>
      *
      * @param owner a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
-     * @param column a {@link java.lang.String} object.
+     * @param columns a {@link java.lang.String} object.
      */
     public TableDataFilter(TableDataProvider<?> owner, String... columns) {
         this.columns = Arrays.asList(columns);

@@ -66,11 +66,11 @@ public class DisclaimerBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(DisclaimerBean.class);
 
     @Inject
-    ActiveDocumentBean activeDocumentBean;
+    private ActiveDocumentBean activeDocumentBean;
     @Inject
-    NavigationHelper navigationHelper;
+    private NavigationHelper navigationHelper;
     @Inject
-    UserBean userBean;
+    private UserBean userBean;
 
     /**
      * the {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} core license type derived from the dao
@@ -104,6 +104,7 @@ public class DisclaimerBean implements Serializable {
      * Constructor for testing purposes
      *
      * @param dao the IDAO implementation to use
+     * @param searchIndex
      */
     public DisclaimerBean(IDAO dao, SolrSearchIndex searchIndex) {
         this.dao = dao;
@@ -227,5 +228,32 @@ public class DisclaimerBean implements Serializable {
             logger.error("Error initializing DisclaimerBean ", e);
             return null;
         }
+    }
+
+    /**
+     * Setter for unit tests.
+     * 
+     * @param activeDocumentBean the activeDocumentBean to set
+     */
+    void setActiveDocumentBean(ActiveDocumentBean activeDocumentBean) {
+        this.activeDocumentBean = activeDocumentBean;
+    }
+
+    /**
+     * Setter for unit tests.
+     * 
+     * @param navigationHelper the navigationHelper to set
+     */
+    void setNavigationHelper(NavigationHelper navigationHelper) {
+        this.navigationHelper = navigationHelper;
+    }
+
+    /**
+     * Setter for unit tests.
+     * 
+     * @param userBean the userBean to set
+     */
+    void setUserBean(UserBean userBean) {
+        this.userBean = userBean;
     }
 }

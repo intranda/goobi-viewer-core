@@ -50,6 +50,8 @@ public class ViewWatcher implements Serializable {
 
     /**
      * Pass a {@link Procedure} which is to be invoced when leaving the page, more specificall on @PreDestroy of this bean
+     * 
+     * @param onLeavePage
      */
     public void onLeavePage(Procedure onLeavePage) {
         this.onLeavePage = Optional.ofNullable(onLeavePage);

@@ -158,7 +158,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         bean.addUserRoleAction();
         Assert.assertTrue(group.getMembers().contains(user));
 
-        Assert.assertTrue(bean.dirtyUserRoles.containsKey(userRole));
+        Assert.assertTrue(bean.getDirtyUserRoles().containsKey(userRole));
         bean.updateUserRoles();
         Assert.assertFalse(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
     }
@@ -186,9 +186,9 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         bean.setCurrentUserRole(ur2);
         bean.addUserRoleAction();
 
-        assertEquals(2, bean.dirtyUserRoles.size());
-        assertEquals("save", bean.dirtyUserRoles.get(ur1));
-        assertEquals("save", bean.dirtyUserRoles.get(ur2));
+        assertEquals(2, bean.getDirtyUserRoles().size());
+        assertEquals("save", bean.getDirtyUserRoles().get(ur1));
+        assertEquals("save", bean.getDirtyUserRoles().get(ur2));
 
         bean.saveUserGroupAction();
 

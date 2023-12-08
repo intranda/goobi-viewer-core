@@ -68,15 +68,15 @@ public class CmsSliderBean implements Serializable {
     public List<CMSSlider> getSliders() throws DAOException {
         return getSliders(filter.getValue());
     }
-    
+
     public List<CMSSlider> getSliders(String filter) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
                 .getAllSliders()
                 .stream()
-                .filter(slider -> StringUtils.isBlank(filter) ||
-                        slider.getName().toLowerCase().contains(filter.toLowerCase()) ||
-                        slider.getDescription() != null && slider.getDescription().toLowerCase().contains(filter.toLowerCase()))
+                .filter(slider -> StringUtils.isBlank(filter)
+                        || slider.getName().toLowerCase().contains(filter.toLowerCase())
+                        || slider.getDescription() != null && slider.getDescription().toLowerCase().contains(filter.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -99,5 +99,4 @@ public class CmsSliderBean implements Serializable {
         return DataManager.getInstance().getDao().getPagesUsingSlider(slider);
 
     }
-
 }

@@ -107,7 +107,7 @@ public class BrowseBean implements Serializable {
     /** Escaped term list for the current result page (browsing menu). Used for URL construction. */
     private List<String> browseTermListEscaped;
     private List<Long> browseTermHitCountList;
-    Map<String, List<String>> availableStringFilters = new HashMap<>();
+    private Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
     /** Optional filter query */
@@ -355,7 +355,7 @@ public class BrowseBean implements Serializable {
     /**
      * Action method for JSF.
      *
-     * @return
+     * @return Navigation outcome
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -596,15 +596,16 @@ public class BrowseBean implements Serializable {
     /**
      * 
      * @param language Requested language
-     * @return browsingMenuField (modifiled for given language if placeholder found)
+     * @return browsingMenuField (modified for given language if placeholder found)
      * @should return field for given language if placeholder found
      * @should return browsingMenuField if no language placeholder
      */
-    public String getBrowsingMenuFieldForLanguage(String language) {
-        if (language == null) {
-            language = "";
+    public String getBrowsingMenuFieldForLanguage(final String language) {
+        String useLanguage = language;
+        if (useLanguage == null) {
+            useLanguage = "";
         }
-        language = language.toUpperCase();
+        useLanguage = useLanguage.toUpperCase();
 
         synchronized (this) {
             if (StringUtils.isEmpty(browsingMenuField)) {
@@ -612,7 +613,7 @@ public class BrowseBean implements Serializable {
             }
 
             if (browsingMenuField.endsWith(SolrConstants.MIDFIX_LANG + "{}")) {
-                return browsingMenuField.replace("{}", language);
+                return browsingMenuField.replace("{}", useLanguage);
             }
             return browsingMenuField;
         }
@@ -642,15 +643,16 @@ public class BrowseBean implements Serializable {
      *
      * @param browsingMenuField the browsingMenuField to set
      */
-    public void setBrowsingMenuField(String browsingMenuField) {
+    public void setBrowsingMenuField(final String browsingMenuField) {
         synchronized (this) {
-            if (browsingMenuField == null || "-".equals(browsingMenuField)) {
-                browsingMenuField = "";
+            String useBrowsingMenuField = browsingMenuField;
+            if (useBrowsingMenuField == null || "-".equals(useBrowsingMenuField)) {
+                useBrowsingMenuField = "";
             }
             try {
-                this.browsingMenuField = URLDecoder.decode(browsingMenuField, SearchBean.URL_ENCODING);
+                this.browsingMenuField = URLDecoder.decode(useBrowsingMenuField, SearchBean.URL_ENCODING);
             } catch (UnsupportedEncodingException e) {
-                this.browsingMenuField = browsingMenuField;
+                this.browsingMenuField = useBrowsingMenuField;
             }
         }
     }
@@ -769,6 +771,14 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * Getter for unit tests.
+     * @return the availableStringFilters
+     */
+    Map<String, List<String>> getAvailableStringFiltersMap() {
+        return availableStringFilters;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>currentStringFilter</code>.
      * </p>
@@ -791,15 +801,16 @@ public class BrowseBean implements Serializable {
      *
      * @param currentStringFilter the currentStringFilter to set
      */
-    public void setCurrentStringFilter(String currentStringFilter) {
+    public void setCurrentStringFilter(final String currentStringFilter) {
         synchronized (this) {
-            if (StringUtils.equals(currentStringFilter, "-")) {
-                currentStringFilter = "";
+            String useCurrentStringFilter = currentStringFilter;
+            if (StringUtils.equals(useCurrentStringFilter, "-")) {
+                useCurrentStringFilter = "";
             }
             try {
-                this.currentStringFilter = URLDecoder.decode(currentStringFilter, SearchBean.URL_ENCODING);
+                this.currentStringFilter = URLDecoder.decode(useCurrentStringFilter, SearchBean.URL_ENCODING);
             } catch (UnsupportedEncodingException e) {
-                this.currentStringFilter = currentStringFilter;
+                this.currentStringFilter = useCurrentStringFilter;
             }
         }
     }
@@ -895,26 +906,28 @@ public class BrowseBean implements Serializable {
      * @should skip items for language-specific fields if they don't match given language
      * @should return language-specific fields with placeholder
      */
-    public List<String> getBrowsingMenuItems(String language) {
-        if (language != null) {
-            language = language.toUpperCase();
+    public List<String> getBrowsingMenuItems(final String language) {
+        String useLanguage = language;
+        if (useLanguage != null) {
+            useLanguage = useLanguage.toUpperCase();
         }
         List<String> ret = new ArrayList<>();
         for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
             if (bmfc.getField().contains(SolrConstants.MIDFIX_LANG)
-                    && (language == null || !(bmfc.getField().contains(SolrConstants.MIDFIX_LANG + language)
+                    && (useLanguage == null || !(bmfc.getField().contains(SolrConstants.MIDFIX_LANG + useLanguage)
                             || bmfc.getField().contains(SolrConstants.MIDFIX_LANG + "{}")))) {
                 logger.trace("Skipped term browsing field {} due to language mismatch.", bmfc.getField());
                 continue;
             }
             ret.add(bmfc.getField());
         }
+
         return ret;
     }
 
     /**
      * 
-     * @return
+     * @return List of configured browsing menu fields
      */
     public List<String> getConfiguredBrowsingMenuFields() {
         List<String> ret = new ArrayList<>();
@@ -1023,7 +1036,7 @@ public class BrowseBean implements Serializable {
     /**
      * 
      * @param field
-     * @return
+     * @return {@link CollectionView}
      */
     public CollectionView getOrCreateCollection(String field) {
         CollectionView collection = getCollection(field);
@@ -1090,9 +1103,9 @@ public class BrowseBean implements Serializable {
     /**
      * TODO translation from DB
      *
-     * @param colletionField
+     * @param collectionField
      * @param collectionValue
-     * @return
+     * @return {@link String}
      * @should return hierarchy correctly
      */
     public String getCollectionHierarchy(String collectionField, String collectionValue) {
@@ -1146,6 +1159,6 @@ public class BrowseBean implements Serializable {
         CollectionView view = this.getOrCreateCollection(collectionField);
         return Optional.ofNullable(view.getCollectionElement(collectionName))
                 .map(BrowseDcElement::getNumberOfVolumes)
-                .orElse(0l);
+                .orElse(0L);
     }
 }
