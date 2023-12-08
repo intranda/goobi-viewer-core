@@ -99,7 +99,7 @@ public class MessageQueueBean implements Serializable {
 
     @Inject
     @Push
-    PushContext messageQueueState;
+    private PushContext messageQueueState;
 
     private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
 
@@ -176,19 +176,25 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * Delete a single message from the goobi_slow queue
+     * Delete a single message from the goobi_slow queue.
      * 
      * @param ticket to delete
      */
 
     /**
-     * Get a list of all active messages in the goobi_slow queue
+     * Get a list of all active messages in the goobi_slow queue.
+     * 
+     * @return List<ViewerMessage>
      */
-
     public List<ViewerMessage> getActiveQueryMesssages() {
         return getQueryMessages(this.messageType);
     }
 
+    /**
+     * 
+     * @param messageType
+     * @return List<ViewerMessage>
+     */
     public List<ViewerMessage> getQueryMessages(String messageType) {
 
         if (this.messageBroker != null && DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
@@ -199,8 +205,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * Remove all active messages of a given type from the queue
+     * Remove all active messages of a given type from the queue.
      * 
+     * @param type
      */
     public void removeMessagesFromQueue(String type) {
 
@@ -215,7 +222,6 @@ public class MessageQueueBean implements Serializable {
      * 
      * @param ticket
      */
-
     public void deleteMessage(ViewerMessage ticket) {
 
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
@@ -240,19 +246,21 @@ public class MessageQueueBean implements Serializable {
         return paused;
     }
 
-    private TableDataProvider<ViewerMessage> initLazyModel() {
+    private static TableDataProvider<ViewerMessage> initLazyModel() {
         TableDataProvider<ViewerMessage> model = new TableDataProvider<>(new TableDataSource<ViewerMessage>() {
 
             @Override
-            public List<ViewerMessage> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+            public List<ViewerMessage> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
                     Map<String, String> filters) {
-                if (StringUtils.isBlank(sortField)) {
-                    sortField = "id";
-                    sortOrder = SortOrder.DESCENDING;
+                String useSortField = sortField;
+                SortOrder useSortOrder = sortOrder;
+                if (StringUtils.isBlank(useSortField)) {
+                    useSortField = "id";
+                    useSortOrder = SortOrder.DESCENDING;
                 }
                 List<ViewerMessage> ret;
                 try {
-                    ret = DataManager.getInstance().getDao().getViewerMessages(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    ret = DataManager.getInstance().getDao().getViewerMessages(first, pageSize, useSortField, useSortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     log.error(e);
                     return Collections.emptyList();
@@ -289,7 +297,7 @@ public class MessageQueueBean implements Serializable {
         cleanOldMessages();
     }
 
-    private void cleanOldMessages() {
+    private static void cleanOldMessages() {
         try {
             int deleteAfterDays = DataManager.getInstance().getConfiguration().getActiveMQMessagePurgeInterval();
             if (deleteAfterDays > 0) {
@@ -301,12 +309,11 @@ public class MessageQueueBean implements Serializable {
         }
 
     }
-    
+
     public List<DefaultQueueListener> getListeners() {
         return Optional.ofNullable(this.messageBroker).map(broker -> broker.getListeners()).orElse(Collections.emptyList());
     }
 
-    
     public void restartAllListeners() {
         getListeners().forEach(l -> {
             try {
@@ -316,5 +323,4 @@ public class MessageQueueBean implements Serializable {
             }
         });
     }
-    
 }

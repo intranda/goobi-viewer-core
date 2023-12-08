@@ -234,7 +234,6 @@ public class BreadcrumbBean implements Serializable {
                         new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(),
                                 currentPage.getPageUrl(), weight);
                 tempBreadcrumbs.add(0, pageLink);
-                // logger.trace("added cms page breadcrumb: (page id {}) - {}", currentPage.getId(), pageLink.toString()); //NOSONAR Sometimes needed for debugging
                 if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                     try {
                         Long cmsPageId = Long.parseLong(currentPage.getParentPageId());

@@ -109,6 +109,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
                                 widgetType, geoMap.getId(), null);
                         widgets.add(widget);
                     }
+                    break;
                 default:
                     break;
             }

@@ -152,13 +152,15 @@ public class AdminBean implements Serializable {
         lazyModelUsers = new TableDataProvider<>(new TableDataSource<User>() {
 
             @Override
-            public List<User> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+            public List<User> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder, Map<String, String> filters) {
                 logger.trace("getEntries<User>, {}-{}", first, first + pageSize);
                 try {
-                    if (StringUtils.isEmpty(sortField)) {
-                        sortField = "id";
+                    String useSortField = sortField;
+                    SortOrder useSortOrder = sortOrder;
+                    if (StringUtils.isBlank(useSortField)) {
+                        useSortField = "id";
                     }
-                    return DataManager.getInstance().getDao().getUsers(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    return DataManager.getInstance().getDao().getUsers(first, pageSize, useSortField, useSortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }
@@ -228,9 +230,8 @@ public class AdminBean implements Serializable {
     public String saveUserAction(User user, String returnPage) throws DAOException {
         if (this.saveUserAction(user)) {
             return returnPage;
-        } else {
-            return "";
         }
+        return "";
     }
 
     public String resetUserAction(User user, String returnPage) {

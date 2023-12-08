@@ -2486,7 +2486,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     *
+     * @return Selected {@link DownloadOption}
      */
     public DownloadOption getSelectedDownloadOption() {
         if (selectedDownloadOptionLabel == null) {

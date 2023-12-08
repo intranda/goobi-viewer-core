@@ -201,7 +201,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * 
      * @param map
-     * @return
+     * @return Map edit URL
      */
     public String getEditMapUrl(GeoMap map) {
         URL mappedUrl =
@@ -366,6 +366,8 @@ public class GeoMapBean implements Serializable, IPolyglott {
                     break;
                 case SOLR_QUERY:
                     featureSet = new SolrFeatureSet();
+                default:
+                    break;
             }
             currentMap.setFeatureSets(Collections.singletonList(featureSet));
         }
@@ -440,7 +442,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
         if (this.currentMap != null && locale != null) {
             return !this.currentMap.getTitle(locale.getLanguage()).isEmpty();
         }
-        
+
         return false;
     }
 

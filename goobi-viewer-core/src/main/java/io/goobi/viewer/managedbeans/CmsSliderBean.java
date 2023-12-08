@@ -33,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
-import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
@@ -69,7 +68,7 @@ public class CmsSliderBean implements Serializable {
     public List<CMSSlider> getSliders() throws DAOException {
         return getSliders(filter.getValue());
     }
-
+    
     public List<CMSSlider> getSliders(String filter) throws DAOException {
         return DataManager.getInstance()
                 .getDao()

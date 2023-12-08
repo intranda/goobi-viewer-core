@@ -169,6 +169,7 @@ public class ArchiveBean implements Serializable {
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
      *
      * @param identifier Entry identifier
+     * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {
         return archiveManager.getArchiveHierarchyForIdentifier(getCurrentArchive(), identifier);

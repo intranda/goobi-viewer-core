@@ -74,7 +74,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 /**
  * Utility class for methods that use the FacesContext.
  */
-public class BeanUtils {
+public final class BeanUtils {
 
     private static final Logger logger = LogManager.getLogger(BeanUtils.class);
 

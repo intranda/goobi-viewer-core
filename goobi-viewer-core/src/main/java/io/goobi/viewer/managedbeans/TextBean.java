@@ -82,6 +82,7 @@ public class TextBean implements Serializable {
      * 
      * @param topDocument
      * @param language ISO 639-1 language code
+     * @return ProfileDescAbstractSchoolbook
      */
     public String getAbstractSchoolbook(StructElement topDocument, String language) {
         return getAbstract(topDocument, "ProfileDescAbstractSchoolbook", language);
