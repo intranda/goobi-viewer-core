@@ -189,11 +189,6 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     }
 
     /**
-     * @param i
-     * @param fc
-     * @param requestMap
-     * @param nav
-     * @param flash
      * @param errorDetails
      * @param errorType
      */
@@ -237,7 +232,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     /**
      * @param t
-     * @return
+     * @return String
      */
     public String createRecodLimitExceededMessage(Throwable t) {
         String data = t.getMessage()
@@ -273,7 +268,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     /**
      * @param fc
-     * @return
+     * @return String
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String getSessionDetails(FacesContext fc) {
