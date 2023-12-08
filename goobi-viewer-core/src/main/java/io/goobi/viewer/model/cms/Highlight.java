@@ -61,7 +61,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 public class Highlight implements CMSMediaHolder, IPolyglott {
-    
+
     private static final Logger logger = LogManager.getLogger(Highlight.class);
 
     private final HighlightData data;
@@ -166,6 +166,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     /**
      * Get the URI to the image representing the object
      * 
+     * @param width
+     * @param height
      * @return true if {@link #hasImageURI()} returns true and, if the image is taken from the record identifier, the record identifier points to a
      *         records which has a representative image
      * @throws IndexUnreachableException
@@ -180,16 +182,19 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
                         .map(URI::create)
                         .orElse(null);
             case RECORD_REPRESENTATIVE:
-                SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:"+this.data.getRecordIdentifier(), List.of(SolrConstants.MIMETYPE));
-                if(solrDoc != null) {
+                SolrDocument solrDoc = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getFirstDoc("PI:" + this.data.getRecordIdentifier(), List.of(SolrConstants.MIMETYPE));
+                if (solrDoc != null) {
                     String mimeType = SolrTools.getSingleFieldStringValue(solrDoc, SolrConstants.MIMETYPE);
-                    if(StringUtils.isNotBlank(mimeType)) {
+                    if (StringUtils.isNotBlank(mimeType)) {
                         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromMimeType(mimeType);
-                        if(format != null) {                            
-                            return Optional.ofNullable(this.thumbs.getImageUrl(this.data.getRecordIdentifier(), width, height, ImageFileFormat.getMatchingTargetFormat(format).getFileExtension())).map(URI::create).orElse(null);
+                        if (format != null) {
+                            return Optional.ofNullable(this.thumbs.getImageUrl(this.data.getRecordIdentifier(), width, height,
+                                    ImageFileFormat.getMatchingTargetFormat(format).getFileExtension())).map(URI::create).orElse(null);
                         }
                     }
-                }                   
+                }
                 return Optional.ofNullable(this.thumbs.getThumbnailUrl(this.data.getRecordIdentifier(), width, height)).map(URI::create).orElse(null);
             default:
                 return null;
@@ -223,6 +228,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     /**
      * Check if the object is active at the given date
      * 
+     * @param date
      * @return true if startTime is before now (or null) and endTime is after now (or null)
      */
     public boolean isCurrent(LocalDateTime date) {
@@ -241,6 +247,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     /**
      * Check if this object was only active before the given date.
      * 
+     * @param date
      * @return true if timeEnd is not null and before now
      */
     public boolean isPast(LocalDateTime date) {
@@ -260,6 +267,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     /**
      * Check if this object is not currently active but will be active in the future of the given date.
      * 
+     * @param date
      * @return true if startTime is not null and after now and timeEnd is either null or after now
      */
     public boolean isFuture(LocalDateTime date) {
@@ -269,7 +277,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     /**
      * Check if this object may be active at all
      * 
-     * @return
+     * @return true if data enabled; false otherwise
      */
     public boolean isEnabled() {
         return this.data.isEnabled();
@@ -287,7 +295,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     /**
      * 
      * @param locale
-     * @return
+     * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -304,7 +312,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * 
      * @param field
      * @param locale
-     * @return
+     * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -315,7 +323,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
         for (Metadata md : getMetadataList(locale)) {
             if (md.getLabel().equals(languageField)) {
                 ret.add(md);
-                logger.trace("added " + md.getLabel());
+                logger.trace("added {}", md.getLabel());
             }
         }
 
@@ -325,7 +333,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     /**
      * 
      * @param locale
-     * @return
+     * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -363,8 +371,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * @param note2
-     * @param metadataElement2
+     * @param solrDoc
+     * @return TranslatedText
      */
     private static TranslatedText createRecordTitle(SolrDocument solrDoc) {
         IMetadataValue label = TocMaker.buildTocElementLabel(solrDoc);
@@ -375,7 +383,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     /**
      * @param label
-     * @return
+     * @return TranslatedText
      */
     private static TranslatedText createRecordTitle(IMetadataValue label) {
         if (label instanceof MultiLanguageMetadataValue) {
@@ -388,9 +396,9 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * @param recordPi
+     * @param solrDoc
      * @param index Metadata view index
-     * @return
+     * @return MetadataElement
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -402,6 +410,13 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     }
 
+    /**
+     * 
+     * @param recordPi
+     * @return Loaded SolrDocument
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     private static SolrDocument loadSolrDocument(String recordPi) throws IndexUnreachableException, PresentationException {
         if (StringUtils.isBlank(recordPi)) {
             return null;
@@ -413,5 +428,4 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
         }
         return solrDoc;
     }
-
 }
