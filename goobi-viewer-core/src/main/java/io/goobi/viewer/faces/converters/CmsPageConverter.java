@@ -58,12 +58,10 @@ public class CmsPageConverter implements Converter<CMSPage> {
     /** {@inheritDoc} */
     @Override
     public String getAsString(FacesContext context, UIComponent component, CMSPage object) {
-        if(object != null) {
+        if (object != null) {
             Long id = object.getId();
-            return id.toString();            
-        } else {
-            return "";
+            return id.toString();
         }
+        return "";
     }
-
 }
