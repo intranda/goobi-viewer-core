@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
@@ -109,6 +110,9 @@ public class BreadcrumbBean implements Serializable {
 
     private List<LabeledLink> breadcrumbs = new LinkedList<>();
 
+    @Inject
+    private NavigationHelper navigationHelper;
+
     /**
      * Attaches a new link to the breadcrumb list at the appropriate position (depending on the link's weight).
      *
@@ -116,7 +120,7 @@ public class BreadcrumbBean implements Serializable {
      * @should always remove breadcrumbs coming after the proposed breadcrumb
      */
     public void updateBreadcrumbs(LabeledLink newLink) {
-        logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink.toString());
+        logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink);
         //        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
 
@@ -124,19 +128,20 @@ public class BreadcrumbBean implements Serializable {
             if (breadcrumbs.isEmpty()) {
                 resetBreadcrumbs();
             }
-            // logger.trace("Adding breadcrumb: {} ({})", newLink.getUrl(), newLink.getWeight());
+            // logger.trace("Adding breadcrumb: {} ({})", newLink.getUrl(), newLink.getWeight()); //NOSONAR Sometimes needed for debugging
             // Determine the position at which to add the new link
             int position = breadcrumbs.size();
             for (int i = 0; i < breadcrumbs.size(); ++i) {
                 LabeledLink link = breadcrumbs.get(i);
-                // logger.trace("existing breadcrumb: {}", link.toString());
+                // logger.trace("existing breadcrumb: {}", link.toString()); //NOSONAR Sometimes needed for debugging
                 if (link.getWeight() >= newLink.getWeight()) {
                     position = i;
                     break;
                 }
             }
             try {
-                // To avoid duplicate breadcrumbs while flipping pages, the LabeledLink.equals() method will prevent multiple breadcrumbs with the same name
+                // To avoid duplicate breadcrumbs while flipping pages, the LabeledLink.equals() method
+                // will prevent multiple breadcrumbs with the same name
                 if (breadcrumbs.contains(newLink)) {
                     logger.trace("Breadcrumb is already in the list: '{}'", newLink);
                 }
@@ -150,8 +155,6 @@ public class BreadcrumbBean implements Serializable {
                         // This throws a NPE sometimes
                     }
                 }
-                // logger.trace("breadcrumbs: " + breadcrumbs.size() + " " +
-                // breadcrumbs.toString());
             }
         }
 
@@ -199,7 +202,8 @@ public class BreadcrumbBean implements Serializable {
             Set<CMSPage> linkedPages = new HashSet<>();
             CMSPage currentPage = cmsPage;
 
-            // If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
+            // If the current cms page contains a collection and we are in a subcollection of it,
+            // attempt to add a breadcrumb link for the subcollection
             List<CollectionView> pageCollections = BeanUtils.getCollectionViewBean().getLoadedCollectionsForPage(cmsPage);
             if (!pageCollections.isEmpty()) {
                 CollectionView firstCollection = pageCollections.get(0);
@@ -230,7 +234,7 @@ public class BreadcrumbBean implements Serializable {
                         new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(),
                                 currentPage.getPageUrl(), weight);
                 tempBreadcrumbs.add(0, pageLink);
-                // logger.trace("added cms page breadcrumb: (page id {}) - {}", currentPage.getId(), pageLink.toString());
+                // logger.trace("added cms page breadcrumb: (page id {}) - {}", currentPage.getId(), pageLink.toString()); //NOSONAR Sometimes needed for debugging
                 if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                     try {
                         Long cmsPageId = Long.parseLong(currentPage.getParentPageId());
@@ -261,11 +265,11 @@ public class BreadcrumbBean implements Serializable {
      *
      * @param facetString a {@link java.lang.String} object.
      */
-    public void updateBreadcrumbsForSearchHits(String facetString) {
+    public void updateBreadcrumbsForSearchHits(final String facetString) {
         logger.trace("updateBreadcrumbsForSearchHits: {}", facetString);
-        facetString = StringTools.decodeUrl(facetString);
         List<String> facets =
-                SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalFacetFields());
+                SearchFacets.getHierarchicalFacets(StringTools.decodeUrl(facetString),
+                        DataManager.getInstance().getConfiguration().getHierarchicalFacetFields());
         if (!facets.isEmpty()) {
             String facet = facets.get(0);
             facets = SearchFacets.splitHierarchicalFacet(facet);
@@ -311,7 +315,7 @@ public class BreadcrumbBean implements Serializable {
     }
 
     void resetBreadcrumbs(boolean addStartPage) {
-        // logger.trace("reset breadcrumbs");
+        // logger.trace("reset breadcrumbs"); //NOSONAR Sometimes needed for debugging
         //        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
             breadcrumbs.clear();
@@ -328,8 +332,7 @@ public class BreadcrumbBean implements Serializable {
      * @param linkWeight a int.
      */
     public void addStaticLinkToBreadcrumb(String linkName, int linkWeight) {
-        NavigationHelper nh = BeanUtils.getNavigationHelper(); // TODO
-        addStaticLinkToBreadcrumb(linkName, nh.getCurrentPrettyUrl(), linkWeight);
+        addStaticLinkToBreadcrumb(linkName, navigationHelper.getCurrentPrettyUrl(), linkWeight);
     }
 
     /**
@@ -339,16 +342,17 @@ public class BreadcrumbBean implements Serializable {
      * @param linkWeight a int.
      * @param url a {@link java.lang.String} object.
      */
-    public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
+    public void addStaticLinkToBreadcrumb(String linkName, final String url, int linkWeight) {
         // logger.trace("addStaticLinkToBreadcrumb: {} - {} ({})", linkName, url, linkWeight);
         if (linkWeight < 0) {
             return;
         }
         PageType page = PageType.getByName(url);
+        String localUrl = url;
         if (page != null && !page.equals(PageType.other)) {
-            url = getUrl(page);
+            localUrl = getUrl(page);
         }
-        LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
+        LabeledLink newLink = new LabeledLink(linkName, localUrl, linkWeight);
         updateBreadcrumbs(newLink);
     }
 
@@ -459,9 +463,9 @@ public class BreadcrumbBean implements Serializable {
                 } else {
                     flattenedLinks.add(labeledLink);
                 }
-                // logger.trace("breadcrumb: {}", labeledLink);
+                // logger.trace("breadcrumb: {}", labeledLink); //NOSONAR Sometimes needed for debugging
             }
-            // logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
+            // logger.trace("getBreadcrumbs: {}", flattenedLinks.toString()); //NOSONAR Sometimes needed for debugging
             return flattenedLinks;
         }
     }
@@ -495,7 +499,7 @@ public class BreadcrumbBean implements Serializable {
 
     /**
      * @param page
-     * @return
+     * @return Absolute URL to the given page type
      */
     private static String getUrl(PageType page) {
         return getApplicationUrl() + page.getName();

@@ -65,21 +65,15 @@ public class CMSPageTemplateEditBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(CMSPageTemplateEditBean.class);
 
     @Inject
-    transient IDAO dao;
+    private transient IDAO dao;
     @Inject
-    transient CMSTemplateManager templateManager;
+    private transient CMSTemplateManager templateManager;
     @Inject
-    transient UserBean userBean;
+    private transient UserBean userBean;
     @Inject
-    transient CmsBean cmsBean;
+    private transient CMSSidebarWidgetsBean widgetsBean;
     @Inject
-    transient CmsNavigationBean navigationBean;
-    @Inject
-    transient CMSSidebarWidgetsBean widgetsBean;
-    @Inject
-    transient CollectionViewBean collectionViewBean;
-    @Inject
-    transient FacesContext facesContext;
+    private transient FacesContext facesContext;
 
     private CMSPageTemplate selectedTemplate = null;
     private transient Map<WidgetDisplayElement, Boolean> sidebarWidgets;
@@ -149,7 +143,8 @@ public class CMSPageTemplateEditBean implements Serializable {
         Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components,
                 component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
         return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, CMSComponent::getTemplateFilename,
-                c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale), c -> (disablePagedComponents && c.isPaged()));
+                c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale),
+                c -> (disablePagedComponents && c.isPaged()));
 
     }
 
@@ -284,7 +279,8 @@ public class CMSPageTemplateEditBean implements Serializable {
     /**
      * Deletes given CMS page from the database.
      *
-     * @param page Page to delete
+     * @param template
+     * @retur true if template deleted successfully; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteTemplate(CMSPageTemplate template) throws DAOException {
@@ -298,7 +294,50 @@ public class CMSPageTemplateEditBean implements Serializable {
             Messages.error("cms_deletePageTemplate_failure");
             return false;
         }
+
         return false;
+    }
+
+    /**
+     * @return the dao
+     */
+    public IDAO getDao() {
+        return dao;
+    }
+
+    /**
+     * @param dao the dao to set
+     */
+    public void setDao(IDAO dao) {
+        this.dao = dao;
+    }
+
+    /**
+     * @param templateManager the templateManager to set
+     */
+    public void setTemplateManager(CMSTemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
+
+    /**
+     * @param userBean the userBean to set
+     */
+    public void setUserBean(UserBean userBean) {
+        this.userBean = userBean;
+    }
+
+    /**
+     * @param widgetsBean the widgetsBean to set
+     */
+    public void setWidgetsBean(CMSSidebarWidgetsBean widgetsBean) {
+        this.widgetsBean = widgetsBean;
+    }
+
+    /**
+     * @param facesContext the facesContext to set
+     */
+    public void setFacesContext(FacesContext facesContext) {
+        this.facesContext = facesContext;
     }
 
 }

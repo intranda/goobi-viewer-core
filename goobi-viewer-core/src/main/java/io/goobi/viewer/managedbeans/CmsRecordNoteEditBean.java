@@ -207,7 +207,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     /**
      * @param recordPi
      * @param index Metadata view index
-     * @return
+     * @return Loaded {@link MetadataElement}
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -230,8 +230,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * @param note2
-     * @param metadataElement2
+     * @param solrDoc
+     * @return {@link TranslatedText}
      */
     private TranslatedText createRecordTitle(SolrDocument solrDoc) {
         IMetadataValue label = TocMaker.buildTocElementLabel(solrDoc);
@@ -240,7 +240,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
     /**
      * @param label
-     * @return
+     * @return {@link TranslatedText}
      */
     public TranslatedText createRecordTitle(IMetadataValue label) {
         if (label instanceof MultiLanguageMetadataValue) {
@@ -253,7 +253,9 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
     /**
      * Return true if text and title are both complete (not empty) for both title and text. If locale is not the default locale, text/title counts as
-     * complete if they are empty as long as the corresponding field in the default language is also empty
+     * complete if they are empty as long as the corresponding field in the default language is also empty.
+     * 
+     * @return true if title and text of the note are complete; false otherwise;
      */
     @Override
     public boolean isComplete(Locale locale) {
@@ -262,8 +264,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
             if (IPolyglott.getDefaultLocale().equals(locale)) {
                 return this.note.getNoteTitle().isComplete(locale) && this.note.getNoteText().isComplete(locale);
             }
-            return (this.note.getNoteTitle().isComplete(locale) || !this.note.getNoteTitle().isComplete(IPolyglott.getDefaultLocale())) &&
-                    (this.note.getNoteText().isComplete(locale) || !this.note.getNoteText().isComplete(IPolyglott.getDefaultLocale()));
+            return (this.note.getNoteTitle().isComplete(locale) || !this.note.getNoteTitle().isComplete(IPolyglott.getDefaultLocale()))
+                    && (this.note.getNoteText().isComplete(locale) || !this.note.getNoteText().isComplete(IPolyglott.getDefaultLocale()));
         }
 
         return false;
@@ -304,9 +306,11 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
     /**
      * Set all note texts to the given locale unless the note texts are not filled ("valid") for the defaultLocale. In this case set them to the
-     * defaultLocale
+     * defaultLocale.
      *
-     * @param note2
+     * @param note
+     * @param locale
+     * @param defaultLocale
      * @return the given locale if texts are valid for the default locale, otherwise the default locale
      */
     private static Locale setSelectedLocale(CMSRecordNote note, Locale locale, Locale defaultLocale) {
@@ -345,5 +349,4 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public boolean isSingleRecordNote() {
         return this.note instanceof CMSSingleRecordNote;
     }
-
 }

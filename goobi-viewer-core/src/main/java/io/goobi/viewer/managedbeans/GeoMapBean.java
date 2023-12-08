@@ -129,6 +129,10 @@ public class GeoMapBean implements Serializable, IPolyglott {
         }
     }
 
+    /**
+     * 
+     * @return ID of the currently loaded map
+     */
     public Long getCurrentMapId() {
         if (this.currentMap != null) {
             return this.currentMap.getId();
@@ -169,12 +173,12 @@ public class GeoMapBean implements Serializable, IPolyglott {
         }
     }
 
-    private void updateGeoMapUpdateTask() throws DAOException {
+    private void updateGeoMapUpdateTask() {
         Object o = BeanUtils.getServletContext().getAttribute(QuartzListener.QUARTZ_LISTENER_CONTEXT_ATTRIBUTE);
         if (o instanceof QuartzListener) {
             try {
                 ((QuartzListener) o).restartTimedJobs();
-                if(this.quartzBean != null) {                    
+                if (this.quartzBean != null) {
                     this.quartzBean.reset();
                 }
             } catch (SchedulerException e) {
@@ -183,12 +187,22 @@ public class GeoMapBean implements Serializable, IPolyglott {
         }
     }
 
+    /**
+     * 
+     * @param map
+     * @throws DAOException
+     */
     public void deleteMap(GeoMap map) throws DAOException {
         DataManager.getInstance().getDao().deleteGeoMap(map);
         updateGeoMapUpdateTask();
         this.loadedMaps = null;
     }
 
+    /**
+     * 
+     * @param map
+     * @return
+     */
     public String getEditMapUrl(GeoMap map) {
         URL mappedUrl =
                 PrettyContext.getCurrentInstance().getConfig().getMappingById("adminCmsGeoMapEdit").getPatternParser().getMappedURL(map.getId());
@@ -200,7 +214,6 @@ public class GeoMapBean implements Serializable, IPolyglott {
      * current map to a new empty map
      *
      * @throws DAOException
-     *
      */
     public void resetCurrentMap() throws DAOException {
         if (getCurrentMap() != null) {
@@ -214,8 +227,6 @@ public class GeoMapBean implements Serializable, IPolyglott {
 
     /**
      * Sets the currentMap to a new empty {@link GeoMap}
-     *
-     * @return the pretty url to creating a new GeoMap
      */
     public void createEmptyCurrentMap() {
         this.currentMap = new GeoMap();
@@ -272,6 +283,11 @@ public class GeoMapBean implements Serializable, IPolyglott {
         return !getAllMaps().isEmpty();
     }
 
+    /**
+     * 
+     * @param featureSet
+     * @return String
+     */
     public String getCoordinateSearchQueryTemplate(SolrFeatureSet featureSet) {
         String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
         String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "";
@@ -303,6 +319,11 @@ public class GeoMapBean implements Serializable, IPolyglott {
                 .orElse("");
     }
 
+    /**
+     * 
+     * @param map
+     * @param type
+     */
     public void addFeatureSet(GeoMap map, String type) {
         if (map != null && type != null) {
             switch (type) {
@@ -314,16 +335,27 @@ public class GeoMapBean implements Serializable, IPolyglott {
                 case "SOLR_QUERY":
                     map.addFeatureSet(new SolrFeatureSet());
                     break;
+                default:
+                    break;
             }
         }
     }
 
+    /**
+     * 
+     * @param map
+     * @param set
+     */
     public void removeFeatureSet(GeoMap map, FeatureSet set) {
         if (map != null && map.getFeatureSets().contains(set)) {
             map.removeFeatureSet(set);
         }
     }
 
+    /**
+     * 
+     * @param type
+     */
     public void setCurrentGeoMapType(GeoMapType type) {
 
         if (currentMap != null) {
@@ -350,9 +382,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     public String getActiveFeatureSetAsString() throws PresentationException {
         if (this.activeFeatureSet != null) {
             return this.activeFeatureSet.getFeaturesAsString();
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     public void setActiveFeatureSetAsString(String features) {
@@ -381,9 +413,8 @@ public class GeoMapBean implements Serializable, IPolyglott {
         if (geomap != null && geomap.getId() != null) {
             return BeanUtils.getPersistentStorageBean()
                     .getIfRecentOrPut("cms_geomap_" + geomap.getId(), geomap, GeoMapUpdateHandler.getGeoMapTimeToLive());
-        } else {
-            return geomap;
         }
+        return geomap;
     }
 
     /**
@@ -393,12 +424,12 @@ public class GeoMapBean implements Serializable, IPolyglott {
     @Override
     public boolean isComplete(Locale locale) {
         if (this.currentMap != null && locale != null) {
-            return !this.currentMap.getTitle(locale.getLanguage()).isEmpty() &&
-                    (this.currentMap.getDescription(IPolyglott.getDefaultLocale().getLanguage()).isEmpty() ||
-                            !this.currentMap.getDescription(locale.getLanguage()).isEmpty());
-        } else {
-            return false;
+            return !this.currentMap.getTitle(locale.getLanguage()).isEmpty()
+                    && (this.currentMap.getDescription(IPolyglott.getDefaultLocale().getLanguage()).isEmpty()
+                            || !this.currentMap.getDescription(locale.getLanguage()).isEmpty());
         }
+
+        return false;
     }
 
     /**
@@ -408,9 +439,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     public boolean isValid(Locale locale) {
         if (this.currentMap != null && locale != null) {
             return !this.currentMap.getTitle(locale.getLanguage()).isEmpty();
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
     /**

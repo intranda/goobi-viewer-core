@@ -97,7 +97,7 @@ public class StatisticsBean implements Serializable {
      * @param dataPoints a int.
      * @return a {@link java.util.List} object.
      */
-    public List<String> getImportedRecordsTrend(int days, int dataPoints) {
+    public List<String> getImportedRecordsTrend(final int days, final int dataPoints) {
         logger.debug("getImportedRecordsTrend start");
 
         List<Integer> countList = new ArrayList<>();
@@ -131,16 +131,17 @@ public class StatisticsBean implements Serializable {
 
         logger.debug("getImportedRecordsTrend mid");
 
-        if (dataPoints > days) {
-            dataPoints = days;
+        int localDataPoints = dataPoints;
+        if (localDataPoints > days) {
+            localDataPoints = days;
         }
         List<Long> dataPointList = new ArrayList<>();
-        int dataPointDiv = days / dataPoints;
-        days = dataPoints * dataPointDiv;
+        int dataPointDiv = days / localDataPoints;
+        // days = localDataPoints * dataPointDiv;
         dataPointList.add(DateTools.getMillisFromLocalDateTime(LocalDateTime.now(), false));
         countList.add(0);
         GregorianCalendar cal = new GregorianCalendar();
-        for (int i = 1; i < dataPoints; i++) {
+        for (int i = 1; i < localDataPoints; i++) {
             cal.add(Calendar.DAY_OF_MONTH, -dataPointDiv);
             dataPointList.add(cal.getTime().getTime());
             countList.add(0);
@@ -149,12 +150,11 @@ public class StatisticsBean implements Serializable {
         Collections.reverse(dataPointList);
 
         for (String string : dateList) {
-            long creationTime = Long.valueOf(string);
+            long creationTime = Long.parseLong(string);
             int count = 0;
             for (Long time : dataPointList) {
                 if (creationTime < time) {
                     countList.set(count, countList.get(count) + 1);
-                    //                    break;
                 }
                 count++;
             }
@@ -336,7 +336,7 @@ public class StatisticsBean implements Serializable {
     /**
      * 
      * @param pi
-     * @return
+     * @return {@link StatisticsSummary}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException

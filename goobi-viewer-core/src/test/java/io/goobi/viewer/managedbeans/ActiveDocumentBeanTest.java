@@ -70,7 +70,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(navigationHelper.getCurrentPage()).thenReturn("viewImage_value");
         Mockito.when(navigationHelper.getCurrentView()).thenReturn("viewImage_value");
         Mockito.when(navigationHelper.getPreferredView()).thenReturn("viewImage_value");
-        
+
         adb = new ActiveDocumentBean();
     }
 
@@ -107,7 +107,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.update();
         Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
         ViewManager oldViewManager = adb.getViewManager();
-        assertTrue(oldViewManager == adb.getViewManager());
+        Assert.assertSame(oldViewManager, adb.getViewManager());
 
         adb.setLogid("LOG_0003");
         adb.update();
@@ -115,7 +115,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
         Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
         // assertEquals("LOG_0003", adb.getViewManager().getLogId());
-        Assert.assertFalse(oldViewManager == adb.getViewManager());
+        Assert.assertNotSame(oldViewManager, adb.getViewManager());
     }
 
     /**
@@ -252,7 +252,6 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
 
         adb.update();
-        Assert.fail();
     }
 
     /**
@@ -364,10 +363,10 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void reset_shouldResetLastReceivedIdentifier() throws Exception {
-        adb.lastReceivedIdentifier = "PPN123";
-        assertEquals("PPN123", adb.lastReceivedIdentifier);
+        adb.setLastReceivedIdentifier("PPN123");
+        assertEquals("PPN123", adb.getLastReceivedIdentifier());
         adb.reset();
-        Assert.assertNull(adb.lastReceivedIdentifier);
+        Assert.assertNull(adb.getLastReceivedIdentifier());
     }
 
     /**
@@ -403,12 +402,12 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setImageToShow("3");
         adb.update();
         assertTrue(adb.isRecordLoaded());
-        
+
         adb.setNavigationHelper(new NavigationHelper());
-        
+
         String linkCanonical = "\n<link rel=\"canonical\" href=\"";
         String linkAlternate = "\n<link rel=\"alternate\" href=\"";
-        
+
         String result = adb.getRelativeUrlTags();
         assertTrue(StringUtils.isNotBlank(result));
     }

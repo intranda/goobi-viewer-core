@@ -81,6 +81,13 @@ public class BeanUtils {
     private static Locale defaultLocale = null;
 
     /**
+     * Private constructor.
+     */
+    private BeanUtils() {
+
+    }
+
+    /**
      * Gets the current Request from the faces context
      *
      * @return a {@link javax.servlet.http.HttpServletRequest} object.
@@ -115,7 +122,7 @@ public class BeanUtils {
 
     /**
      *
-     * @return
+     * @return HttpSession from current request
      */
     public static HttpSession getSession() {
         HttpServletRequest request = getRequest();
@@ -191,12 +198,13 @@ public class BeanUtils {
         if (context != null && context.getExternalContext() != null) {
             return (ServletContext) context.getExternalContext().getContext();
         }
+        
         return null;
     }
 
     /**
      *
-     * @return
+     * @return Currently selected or default {@link Locale}
      */
     public static Locale getInitialLocale() {
         Locale ret = null;
@@ -212,7 +220,7 @@ public class BeanUtils {
 
         if (ret == null) {
             // Manually read Faces config file and return the first available locale
-            // TODO This probably won't return anything of no FacesContext is available
+            // TODO This probably won't return anything if no FacesContext is available
             List<Locale> locales = ViewerResourceBundle.getLocalesFromFacesConfig(getServletContext());
             if (locales != null && !locales.isEmpty()) {
                 ret = locales.get(0);

@@ -123,7 +123,7 @@ public class Language implements Comparable<Language>, Serializable {
      * @return the language code according to iso 639-2/B
      */
     public String getIsoCode() {
-        return isoCode_639_2_B;
+        return getIsoCode639_2B();
     }
 
     /**
@@ -145,7 +145,7 @@ public class Language implements Comparable<Language>, Serializable {
      * @return the language code according to iso 639-1
      */
     public String getIsoCodeOld() {
-        return isoCode_639_1;
+        return getIsoCode639_1();
     }
 
     /**

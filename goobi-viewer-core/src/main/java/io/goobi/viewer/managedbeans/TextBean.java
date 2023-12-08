@@ -92,7 +92,7 @@ public class TextBean implements Serializable {
      * 
      * @param topDocument
      * @param language ISO 639-1 language code
-     * @return
+     * @return ProfileDescAbstractLong
      */
     public String getAbstract(StructElement topDocument, String language) {
         return getAbstract(topDocument, "ProfileDescAbstractLong", language);
@@ -104,7 +104,7 @@ public class TextBean implements Serializable {
      * @param topDocument
      * @param abstractType
      * @param language
-     * @return
+     * @return Abstract of the given abstractType
      * @should return abstract correctly
      * @should throw IllegalArgumentException if language null
      * @should return null if topDocument null
@@ -218,7 +218,7 @@ public class TextBean implements Serializable {
     /**
      * 
      * @param topDocument
-     * @return
+     * @return List of ISO 639-2B language codes of languages available for the record
      * @should return return all tei languages
      */
     public List<String> getRecordLanguages(StructElement topDocument) {
@@ -242,7 +242,7 @@ public class TextBean implements Serializable {
      * tags that contain no text.
      * 
      * @param text
-     * @return
+     * @return text without empty paragraphs
      * @should remove empty paragraph tags correctly
      */
     static String removeEmptyParagraphs(String text) {
@@ -253,7 +253,7 @@ public class TextBean implements Serializable {
      * Loads TEI full-text from the given file path. The text portion is cut out of the main document and its markup is converted to HTML.
      * 
      * @param filePath
-     * @return
+     * @return TEI from the given filePath as HTML text
      * @should load text correctly
      * @should return null if file not found
      */

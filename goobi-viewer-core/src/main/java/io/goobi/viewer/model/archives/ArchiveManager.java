@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -71,7 +72,9 @@ import io.goobi.viewer.solr.SolrTools;
  * @author florian
  *
  */
-public class ArchiveManager {
+public class ArchiveManager implements Serializable {
+
+    private static final long serialVersionUID = -2417652614144759711L;
 
     private static final Logger logger = LogManager.getLogger(ArchiveManager.class);
 
@@ -381,7 +384,8 @@ public class ArchiveManager {
                 throw new ArchiveParseException("Error reading database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl(), e);
             } catch (ConfigurationException e) {
                 this.databaseState = DatabaseState.ERROR_INVALID_CONFIGURATION;
-                throw new ArchiveConfigurationException("Error loading database configuration for archive {}: {}", resource.getCombinedName(), e.getMessage());
+                throw new ArchiveConfigurationException("Error loading database configuration for archive {}: {}", resource.getCombinedName(),
+                        e.getMessage());
             }
         }
 
@@ -460,9 +464,9 @@ public class ArchiveManager {
 
     public boolean isInErrorState() {
         return this.databaseState == DatabaseState.ERROR_INVALID_CONFIGURATION ||
-                this.databaseState == DatabaseState.ERROR_INVALID_FORMAT || 
-                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED || 
-                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED || 
+                this.databaseState == DatabaseState.ERROR_INVALID_FORMAT ||
+                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED ||
+                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED ||
                 this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
     }
 }
