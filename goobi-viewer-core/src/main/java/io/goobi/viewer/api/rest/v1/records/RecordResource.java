@@ -341,6 +341,7 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
     public StreamingOutput getPlaintextAsZip()
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
+        logger.debug("getPlaintextAsZip: {}", pi);
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);

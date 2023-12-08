@@ -475,6 +475,8 @@ public class TextResourceBuilder {
                     DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
             if (!altoFiles.isEmpty()) {
                 logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
+            } else {
+                logger.debug("No ALTO files found");
             }
             fileMap = altoFiles.stream()
                     .collect(Collectors.toMap(
