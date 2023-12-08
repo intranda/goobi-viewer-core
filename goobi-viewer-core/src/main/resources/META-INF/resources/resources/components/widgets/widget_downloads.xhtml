@@ -221,6 +221,8 @@
 					</ui:fragment>
 
 
+
+
 					<!-- PAGE -->
 					<ui:fragment
 						rendered="#{!activeDocumentBean.viewManager.bornDigital 
@@ -233,11 +235,22 @@
                         and !activeDocumentBean.viewManager.doublePageMode}">
 
 
+						<ui:fragment rendered="#{navigationHelper.currentView == 'fulltext'
+												and (activeDocumentBean.viewManager.currentPage.altoAvailable
+												or activeDocumentBean.viewManager.currentPage.teiAvailable
+												or activeDocumentBean.viewManager.currentPage.displayFulltext)
+												or navigationHelper.currentView == 'object'
+												and (!activeDocumentBean.viewManager.bornDigital)}">
+
 						<!-- PAGE DOWNLOADS -->
 						<div
 							class="widget-downloads__page-downloads widget__badge-container">
-							<h3 id="titleImage"
+							
+							<h3 id="titleImage" 
 								class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__this_page}</h3>
+									
+
+								
 
 							<!-- PDF (PAGE) -->
 							<ui:fragment
@@ -265,15 +278,17 @@
 									
 									<h:outputLink id="downloadImageSizeLink"
 										styleClass="badge badge-dark widget-downloads__page-download-image-size-link"
-										title="#{msg.downloadButton}" pt:data-toggle="tooltip" target="_blank"
+										title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.widget__downloads__download_image_size, option.format,option.boxSizeLabel)}" 
+										pt:data-toggle="tooltip" target="_blank"
 										rel="nofollow noopener" aria-label="#{msg.downloadButton}"
 										value="#{activeDocumentBean.viewManager.getPageDownloadUrl(option, activeDocumentBean.viewManager.currentPage)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
-<!-- 		                                <span class="widget-downloads__download-image-size-radio-label">#{msg[option.label]}</span> -->
-											<span class="widget-downloads__download-image-size-radio-icon"><i class="fa fa-file-image-o" aria-hidden="true"></i></span>
-											<span class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
+		                                <span class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
+		                                <span class="widget-downloads__download-image-size-radio-label">#{msg[option.label]}</span>
+<!-- 											<span class="widget-downloads__download-image-size-radio-icon"><i class="fa fa-file-image-o" aria-hidden="true"></i></span> -->
+
 		                            	
-								        <span class="widget-downloads__download-image-size-radio-size">#{option.boxSizeLabel} px</span>
-								        <span class="widget-downloads__download-image-size-radio-format">(#{option.format})</span> 
+<!-- 								        <span class="widget-downloads__download-image-size-radio-size">#{option.boxSizeLabel} px</span> -->
+<!-- 								        <span class="widget-downloads__download-image-size-radio-format">(#{option.format})</span>  -->
 <!-- 								        <span class="widget-downloads__download-image-size-radio-icon"></span> -->
 		                            </h:outputLink>
 
@@ -366,92 +381,15 @@
 
 							</ui:fragment>
 						</div>
-						
-						
+						</ui:fragment>
 
-						<!-- POPOVER FOR IMAGE DOWNLOAD -->
-						<popover id="downloadImagePopover"> <h:panelGroup
-							id="downloadImageSizes">
-							<ui:fragment>
-								<h:form styleClass="widget-downloads__download-image-size-form">
-									<fieldset>
-										<ui:repeat varStatus="status" var="option"
-											value="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage)}">
-											<div
-												class="widget-downloads__download-image-size-option-wrapper">
-												<input class="widget-downloads__download-image-size-input"
-													onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
-													value="#{option.label}" name="downloadSelectSizes"
-													type="radio" id="downloadSelectSizes_#{status.index}"
-													data-checked="#{status.first}" /> <label
-													for="downloadSelectSizes_#{status.index}"> <span
-													class="widget-downloads__download-image-size-radio-label">#{msg[option.label]}</span>
-													<span
-													class="widget-downloads__download-image-size-radio-size">#{option.boxSizeLabel}</span>
-													<span
-													class="widget-downloads__download-image-size-radio-format">#{option.format}</span>
-												</label>
-											</div>
-										</ui:repeat>
-									</fieldset>
-
-									<script>
-                                    // SHOW LOADER AFTER SELECTING DIFFERENT IMAGE DOWNLOAD SIZE
-                                    viewerJS.jsfAjax.begin.subscribe(() => {
-                                        
-                                        // console.log('begin');
-                                        $('[data-triggerjs="downloadImageButtonTrigger"]').click(function(event) {
-                                            event.preventDefault();
-                                        });
-                                        
-                                        $('[data-target="buttonLoader"]').fadeIn('fast');
-                                        $('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
-                                        $('[data-triggerjs="downloadImageButtonTrigger"]').addClass('-inactive');
-                                        
-                                    });
-                                    viewerJS.jsfAjax.success.subscribe(() => {
-                                        
-                                        // console.log('success');
-                                        $('[data-triggerjs="downloadImageButtonTrigger"]').unbind('click').click();
-                                        $('[data-target="buttonLoader"]').fadeOut('fast');
-                                        $('[data-target="buttonLoaderClickEvent').css('opacity', '1');
-                                        $('[data-triggerjs="downloadImageButtonTrigger"]').removeClass('-inactive');
-
-                                    });
-                                    </script>
-
-									<!-- SCRIPT TO CHANGE HREF ON BUTTON -->
-									<h:commandScript name="setDownloadOptionLabel"
-										action="#{activeDocumentBean.setDownloadOptionLabelFromRequestParameter()}"
-										render="downloadPageLink">
-									</h:commandScript>
-
-									<!-- maybe TODO This takes a few seconds to update the link after selection -->
-									<div
-										class="widget-downloads__download-image-size-button-wrapper small-button-loader__wrapper">
-										<h:outputLink id="downloadPageLink"
-											styleClass="btn btn--full widget-downloads__download-image-size-button"
-											pt:data-triggerjs="downloadImageButtonTrigger"
-											title="#{msg.downloadButton}" target="_blank"
-											rel="nofollow noopener" aria-label="#{msg.downloadButton}"
-											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption, activeDocumentBean.viewManager.currentPage)}"
-											pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
-                                                             #{msg.downloadButton}
-                                            </h:outputLink>
-										<div class="small-button-loader__icon -top-right"
-											data-target="buttonLoader"></div>
-									</div>
-
-								</h:form>
-							</ui:fragment>
-						</h:panelGroup> </popover>
 					</ui:fragment>
 
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment
 						rendered="#{navigationHelper.currentView == 'object' and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
 						<div
-							class="widget-downloads__image-fragment-wrapper widget__badge-container">
+							class="widget-downloads__image-fragment-wrapper widget__badge-container" data-fragment-link="wrapper">
 
 
 							<div
@@ -460,16 +398,17 @@
 									class="widget-downloads__subtitle widget__badge-container-heading">#{msg.image_fragment}</h3>
 
 								<a
-									class="badge badge-dark widget-downloads__image-fragment-page"
+									class="badge badge-dark widget-downloads__image-fragment-page" data-fragment-link="page"
 									id="imageFragmentPage" data-copy="image-region-page"
 									data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
 									aria-label="#{msg.image}: #{msg.label__share_image_region_page}">
-									#{msg.label__share_image_region_page} </a> <a
-									class="badge badge-dark widget-downloads__image-fragment-image"
+									#{msg.label__share_image_region_page}</a> 
+								<a
+									class="badge badge-dark widget-downloads__image-fragment-image" data-fragment-link="iiif"
 									id="imageFragmentImage" data-copy="image-region-image"
 									data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
 									aria-label="#{msg.image}: #{msg.label__share_image_region_image}">
-									#{msg.label__share_image_region_image} </a>
+									#{msg.label__share_image_region_image}</a>
 							</div>
 						</div>
 					</ui:fragment>

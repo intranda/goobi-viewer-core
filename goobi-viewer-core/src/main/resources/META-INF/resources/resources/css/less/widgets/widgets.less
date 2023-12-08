@@ -82,7 +82,8 @@
 	flex-wrap: wrap;
 	gap: 6px;
 	align-items: flex-start;
-	&:last-child {
+	&:last-child,
+	&:nth-last-child(2) + .widget__badge-container {
 		margin-bottom: 5px;
 	}
 	a, form, button {

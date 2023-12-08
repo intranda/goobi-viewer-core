@@ -206,19 +206,19 @@
 					
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-						<div class="widget-usage__image-fragment-wrapper">
+						<div class="widget-usage__image-fragment-wrapper" data-fragment-link="wrapper">
 							<h3 id="imgFragment" class="widget-usage__subtitle">#{msg.image_fragment}</h3>
 	
 							<div class="widget-usage__image-fragment">
 							
-								<a class="badge badge-dark widget-usage__image-fragment-page"  id="imageFragmentPage" 
+								<a class="badge badge-dark widget-usage__image-fragment-page"  id="imageFragmentPage" data-fragment-link="page"
 									data-copy-share-image="image-region-page"
 									data-copy-done-msg="#{msg.copyUrlDone}"
                                     title="#{msg.copyUrl}" 
                                     aria-label="#{msg.image}: #{msg.label__share_image_region_page}">
                                     #{msg.label__share_image_region_page}
                                 </a>
-								<a class="badge badge-dark widget-usage__image-fragment-image"  id="imageFragmentImage" 
+								<a class="badge badge-dark widget-usage__image-fragment-image"  id="imageFragmentImage"  data-fragment-link="iiif"
 									data-copy-share-image="image-region-image"
 									data-copy-done-msg="#{msg.copyUrlDone}"
                                     title="#{msg.copyUrl}" 

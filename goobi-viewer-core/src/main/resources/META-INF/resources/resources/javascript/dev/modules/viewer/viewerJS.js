@@ -486,7 +486,7 @@ var viewerJS = (function () {
     			if($options.length == 0) {
     				$title.hide();
     			} else {
-					console.log('not empty!');
+					// console.log('not empty!');
 				}
     		});
     	}
