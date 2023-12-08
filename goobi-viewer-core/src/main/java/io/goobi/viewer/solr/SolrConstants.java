@@ -28,7 +28,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 /**
  * This class provides constants for Lucene in alphabetical order.
  */
-public class SolrConstants {
+public final class SolrConstants {
 
     public enum DocType {
         ACCESSDENIED,

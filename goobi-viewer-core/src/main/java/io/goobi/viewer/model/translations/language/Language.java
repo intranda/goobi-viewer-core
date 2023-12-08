@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.translations.language;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 /**
@@ -28,7 +29,9 @@ import java.util.Locale;
  * Language class.
  * </p>
  */
-public class Language implements Comparable<Language> {
+public class Language implements Comparable<Language>, Serializable {
+
+    private static final long serialVersionUID = 688690972248321229L;
 
     /**
      * language code according to iso 639-2/B (based on English names)

@@ -689,17 +689,18 @@ public final class SolrTools {
      * @param conditions
      * @return conditions with NOW/YEAR replaced by current year
      */
-    public static String getProcessedConditions(String conditions) {
+    public static String getProcessedConditions(final String conditions) {
         if (conditions == null) {
             return null;
         }
 
-        if (conditions.contains("NOW/YEAR") && !conditions.contains("DATE_")) {
+        String c = conditions;
+        if (c.contains("NOW/YEAR") && !c.contains("DATE_")) {
             // Hack for getting the current year as a number for non-date Solr fields
-            conditions = conditions.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+            c = c.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
         }
 
-        return conditions.trim();
+        return c.trim();
     }
 
     /**
@@ -714,7 +715,8 @@ public final class SolrTools {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return all existing values for the given field
      */
-    public static List<String> getAvailableValuesForField(String field, String filterQuery) throws PresentationException, IndexUnreachableException {
+    public static List<String> getAvailableValuesForField(final String field, final String filterQuery)
+            throws PresentationException, IndexUnreachableException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
@@ -722,11 +724,11 @@ public final class SolrTools {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
         String facettifiedField = SearchHelper.facetifyField(field);
-        filterQuery = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
+        String fq = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
                 DataManager.getInstance()
                         .getSearchIndex()
-                        .searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(facettifiedField), 1, false);
+                        .searchFacetsAndStatistics(fq, null, Collections.singletonList(facettifiedField), 1, false);
         if (qr != null) {
             FacetField facet = qr.getFacetField(facettifiedField);
             if (facet != null) {
