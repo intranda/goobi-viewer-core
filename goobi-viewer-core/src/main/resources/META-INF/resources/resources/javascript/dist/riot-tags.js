@@ -2781,7 +2781,7 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 
 
 
-riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES</label><li each="{url in urls}"><label>{url}</label><button onclick="{startDownloadTask}" show="{!isRequested(url)}">{msg.action__external_files__order_download}</button><div if="{isWaiting(url)}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div if="{isDownloading(url)}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div><div if="{isFinished(url)}"><ul><li each="{object in getFiles(url)}"><a href="{object.url}">{object.path}</a></li></ul></div><div if="{isRequested(url) && !isFinished(url)}"><button onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button></div></li></ul>', 'external-resource-download li,[data-is="external-resource-download"] li{ margin-bottom: 10px; }', '', function(opts) {
+riot.tag2('external-resource-download', '<ul><li each="{url in urls}"><div class="download_external_resource__error_wrapper"><label if="{isError(url)}" class="download_external_resource__error">{getErrorMessage(url)}</label></div><div class="download_external_resource__progress_wrapper"><label>{url}</label><button onclick="{startDownloadTask}" show="{!isRequested(url)}">{msg.action__external_files__order_download}</button><div if="{isWaiting(url)}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div if="{isDownloading(url)}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div><div if="{isRequested(url) && !isError(url) && !isFinished(url)}"><button onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button></div></div><div class="download_external_resource__results_wrapper"><ul if="{isFinished(url)}"><li each="{object in getFiles(url)}"><a href="{object.url}">{object.path}</a></li></ul></div></li></ul>', 'external-resource-download li,[data-is="external-resource-download"] li{ margin-bottom: 10px; }', '', function(opts) {
       this.urls = [];
       this.downloads = new Map();
       this.updateListeners = new Map();
@@ -2875,26 +2875,22 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
         			  data = $.extend(true, {}, this.downloads.get(data.url), data);
     	        	  console.log("download completed", data);
     	        	  this.downloads.set(data.url, data);
-    	        	  if(this.updateListeners.has(data.url)) {
-    	        	  	this.updateListeners.get(data.url).cancel();
-    		  		  	this.updateListeners.delete(data.url);
-    	        	  }
+    	        	  this.cancelListener(data.url);
         		  } else {
     	        	  this.downloads.set(data.url, data);
     		          this.sendMessage(this.createSocketMessage(this.pi, data.url, 'listfiles'));
         		  }
         		  break;
         	  case "error":
-        		  this.handleError(data.errorMessage);
-
+        		  console.log("error in ", data);
+        		  this.downloads.set(data.url, data);
+        		  this.cancelListener(data.url);
+          		  break;
         	  case "canceled":
         		  if(this.downloads.has(data.url)) {
 	        		  this.downloads.delete(data.url);
         		  }
-        		  if(this.updateListeners.has(data.url)) {
-  	        	  	this.updateListeners.get(data.url).cancel();
-  		  		  	this.updateListeners.delete(data.url);
-  	        	  }
+        		  this.cancelListener(data.url);
         		  break;
         	  case "dormant":
         	  }
@@ -2904,6 +2900,13 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
         	  this.updateListeners.forEach(value => value.cancel());
         	  this.updateListeners = new Map();
           }
+      }.bind(this)
+
+      this.cancelListener = function(url) {
+    	  if(this.updateListeners.has(url)) {
+      	  	this.updateListeners.get(url).cancel();
+	  		this.updateListeners.delete(url);
+      	  }
       }.bind(this)
 
       this.handleError = function(message) {
@@ -2948,6 +2951,14 @@ riot.tag2('external-resource-download', '<ul><label>DOWNLOAD EXTERNAL RESOURCES<
 
       this.getFiles = function(url) {
     	  return this.downloads.get(url)?.files;
+      }.bind(this)
+
+      this.isError = function(url) {
+    	  return this.downloads.get(url)?.status == "error";
+      }.bind(this)
+
+      this.getErrorMessage = function(url) {
+    	  return this.downloads.get(url)?.errorMessage;
       }.bind(this)
 
       this.cancelDownload = function(e) {

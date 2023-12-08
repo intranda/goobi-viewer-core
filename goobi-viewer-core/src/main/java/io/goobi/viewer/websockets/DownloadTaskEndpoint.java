@@ -171,7 +171,11 @@ public class DownloadTaskEndpoint {
         if(queueMessage != null) {
             answer.status = Status.WAITING;
         } else if (job != null) {
-            if (job.getProgress().complete() && !isFilesExist(message.pi, message.url)) {
+            if(job.isError()) {
+                answer.errorMessage = job.getErrorMessage();
+                answer.status = Status.ERROR;
+                storageBean.remove(message.url);    //reset the status so a new download attempt is possible
+            } else if (job.getProgress().complete() && !isFilesExist(message.pi, message.url)) {
                 //download task has completed but files are no longer available. remove job from storage bean and return waiting status
                 storageBean.remove(message.url);
                 answer.status = Status.WAITING;

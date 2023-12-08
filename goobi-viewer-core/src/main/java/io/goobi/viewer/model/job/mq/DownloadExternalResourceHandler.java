@@ -89,12 +89,18 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
             Path targetFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
             if (!Files.isDirectory(targetFolder) && targetFolder.toFile().mkdir()) {
                 logger.error("Error downloading resouce: Cannot create folder {}", targetFolder);
+                storeError("Error downloading resouce: Cannot create folder " + targetFolder, url, messageId);
                 return MessageStatus.ERROR;
             }
     
             String downloadId = getDownloadId(pi, url);
             
             URI uri = new URI(url);
+            if(!uri.isAbsolute()) {
+                logger.error("Error downloading resouce: Cannot locate url {}", url);
+                storeError("Error downloading resouce: Cannot locate url " + url, url, messageId);
+                return MessageStatus.ERROR;
+            }
             
             if(!isFilesExist(pi, url, downloadId)) {
                 
@@ -108,7 +114,8 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
             
             
         } catch (PresentationException | IndexUnreachableException | IOException | URISyntaxException  e) {
-            logger.error("Error downloading external resource: {}", e.toString());
+            logger.error("Error downloading resouce: Cannot locate url {}", url);
+            storeError("Error downloading resouce: Cannot locate url " + url, url, messageId);
             return MessageStatus.ERROR;
         } catch (MessageQueueException e) {
             //error in #triggerDeletion
@@ -117,6 +124,8 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
 
         return MessageStatus.FINISH;
     }
+
+
 
     private void triggerDeletion(MessageQueueManager queueManager, Path extractedFolder, long delay) throws MessageQueueException {
         ViewerMessage message = new ViewerMessage(TaskType.DELETE_RESOURCE.name());
@@ -133,6 +142,11 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
     
     private void storeProgress(Progress progress, String identifier, Path path, String messageId) {
         ExternalFilesDownloadJob job = new ExternalFilesDownloadJob(progress, identifier, path, messageId);
+        storageBean.put(identifier, job);
+    }
+    
+    private void storeError(String errorMessage, String identifier, String messageId) {
+        ExternalFilesDownloadJob job = new ExternalFilesDownloadJob(identifier, messageId, errorMessage);
         storageBean.put(identifier, job);
     }
     

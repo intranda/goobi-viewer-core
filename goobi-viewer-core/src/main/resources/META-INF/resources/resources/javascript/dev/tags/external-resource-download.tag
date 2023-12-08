@@ -1,27 +1,32 @@
 <!-- progress-bar.tag -->
 <external-resource-download>
 <ul>
-	<label>DOWNLOAD EXTERNAL RESOURCES</label>
-	<li each="{url in urls}"><label>{url}</label>
-		<button onclick="{startDownloadTask}" show="{!isRequested(url)}">{msg.action__external_files__order_download}</button>
-		<div if="{isWaiting(url)}">
-			<img src="{preloader}" class="img-responsive"
-				alt="{msg.action__external_files__download_in_queue}"
-				title="{msg.action__external_files__download_in_queue}" />
+	<li each="{url in urls}">
+		<div class="download_external_resource__error_wrapper">
+			<label if="{isError(url)}" class="download_external_resource__error">{getErrorMessage(url)}</label>
 		</div>
-		<div if="{isDownloading(url)}">
-			<progress value="{getDownloadProgress(url)}"
-				max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress>
+		<div class="download_external_resource__progress_wrapper">
+			<label>{url}</label>
+			<button onclick="{startDownloadTask}" show="{!isRequested(url)}">{msg.action__external_files__order_download}</button>
+			<div if="{isWaiting(url)}">
+				<img src="{preloader}" class="img-responsive"
+					alt="{msg.action__external_files__download_in_queue}"
+					title="{msg.action__external_files__download_in_queue}" />
+			</div>
+			<div if="{isDownloading(url)}">
+				<progress value="{getDownloadProgress(url)}"
+					max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress>
+			</div>
+			<div if="{isRequested(url) && !isError(url) && !isFinished(url)}">
+				<button onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button>
+			</div>
 		</div>
-		<div if="{isFinished(url)}">
-			<ul>
+		<div class="download_external_resource__results_wrapper">
+			<ul if="{isFinished(url)}">
 				<li each="{object in getFiles(url)}">
 					<a href="{object.url}">{object.path}</a>
 				</li>
 			</ul>
-		</div>
-		<div if="{isRequested(url) && !isFinished(url)}">
-			<button onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button>
 		</div>
 	</li>
 </ul>
@@ -121,26 +126,22 @@
         			  data = $.extend(true, {}, this.downloads.get(data.url), data);
     	        	  console.log("download completed", data);
     	        	  this.downloads.set(data.url, data);
-    	        	  if(this.updateListeners.has(data.url)) {	        		  
-    	        	  	this.updateListeners.get(data.url).cancel();
-    		  		  	this.updateListeners.delete(data.url);
-    	        	  }
+    	        	  this.cancelListener(data.url);
         		  } else {
     	        	  this.downloads.set(data.url, data);
     		          this.sendMessage(this.createSocketMessage(this.pi, data.url, 'listfiles'));
         		  }
         		  break;
         	  case "error":
-        		  this.handleError(data.errorMessage);
-        		  //fall through
+        		  console.log("error in ", data);
+        		  this.downloads.set(data.url, data);
+        		  this.cancelListener(data.url);
+          		  break;
         	  case "canceled":
         		  if(this.downloads.has(data.url)) {
 	        		  this.downloads.delete(data.url);        			  
         		  }
-        		  if(this.updateListeners.has(data.url)) {	        		  
-  	        	  	this.updateListeners.get(data.url).cancel();
-  		  		  	this.updateListeners.delete(data.url);
-  	        	  }
+        		  this.cancelListener(data.url);
         		  break;
         	  case "dormant": //do nothing
         	  }
@@ -150,6 +151,13 @@
         	  this.updateListeners.forEach(value => value.cancel());
         	  this.updateListeners = new Map();
           }
+      }
+      
+      cancelListener(url) {
+    	  if(this.updateListeners.has(url)) {	        		  
+      	  	this.updateListeners.get(url).cancel();
+	  		this.updateListeners.delete(url);
+      	  }
       }
       
       handleError(message) {
@@ -195,6 +203,14 @@
       
       getFiles(url) {
     	  return this.downloads.get(url)?.files;
+      }
+      
+      isError(url) {
+    	  return this.downloads.get(url)?.status == "error";
+      }
+      
+      getErrorMessage(url) {
+    	  return this.downloads.get(url)?.errorMessage;
       }
       
       cancelDownload(e) {

@@ -2598,5 +2598,10 @@ public class ActiveDocumentBean implements Serializable {
     public List<String> getGeomapFilters() {
         return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }
+    
+    public List<String> getExternalResourceUrls() {
+        return this.getTopDocument().getMetadataValues(DataManager.getInstance().getConfiguration().getExternalResourceUrlSolrField())
+                .stream().map(url -> "\"" + url + "\"").collect(Collectors.toList());
+    }
 
 }

@@ -3457,11 +3457,16 @@ public class Configuration extends AbstractConfiguration {
             case "epub":
                 return getLocalString("epub.downloadFolder", "/opt/digiverso/viewer/epub_download");
             case "resource":
-                return getLocalString("resource.downloadFolder", "/opt/digiverso/viewer/resource_download");
+                return getLocalString("externalResource.downloadFolder", "/opt/digiverso/viewer/resource_download");
             default:
                 return "";
 
         }
+    }
+    
+
+    public String getExternalResourceUrlSolrField() {
+        return getLocalString("externalResource.urlSolrField", "MD_EXTERNAL_RESOURCE_URL");
     }
 
     /**
@@ -5921,5 +5926,6 @@ public class Configuration extends AbstractConfiguration {
         String path = String.format("viewer.formats.%s.%s", type, locale.getLanguage());
         return Optional.ofNullable(getLocalString(path, null));
     }
+
 
 }
