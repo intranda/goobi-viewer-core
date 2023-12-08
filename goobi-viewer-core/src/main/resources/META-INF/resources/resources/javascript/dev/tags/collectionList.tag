@@ -7,7 +7,7 @@
 		<div class="card-header">
 
 			<div class="card-thumbnail">
-				<img if="{collection.thumbnail}" class="img-fluid" src="{collection.thumbnail['@id']}"/>
+				<img if="{collection.thumbnail}" alt="{getValue(collection.label)}" class="img-fluid" src="{collection.thumbnail['@id']}"/>
 			</div>
 			
 			<h3 class="card-title">
