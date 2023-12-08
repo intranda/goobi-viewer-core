@@ -82,8 +82,7 @@ public class BornDigitalBean implements Serializable {
     /**
      * Checks the given download ticket password for validity for the current record and persists valid permission in the agent session.
      * 
-     * @param password Ticket password to check
-     * @return
+     * @return empty string
      * @throws DAOException
      * @throws IndexUnreachableException
      */
@@ -133,7 +132,7 @@ public class BornDigitalBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return empty string
      * @throws DAOException
      * @throws IndexUnreachableException
      */

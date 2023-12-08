@@ -175,7 +175,9 @@ public class UserBean implements Serializable {
             // Do not allow the same email address being used for multiple users
             Messages.error("newUserExist");
             logFailedUserRegistration();
-            logger.debug("User account already exists for e-mail address '{}'.", NetTools.scrambleEmailAddress(email));
+            if (logger.isDebugEnabled()) {
+                logger.debug("User account already exists for e-mail address '{}'.", NetTools.scrambleEmailAddress(email));
+            }
             return "";
         }
 
@@ -216,8 +218,10 @@ public class UserBean implements Serializable {
         if (request != null) {
             ipAddress = NetTools.getIpAddress(request);
         }
-        logger.debug("Failed user registration attempt from {}, e-mail '{}'", NetTools.scrambleIpAddress(ipAddress),
-                NetTools.scrambleEmailAddress(email));
+        if (logger.isDebugEnabled()) {
+            logger.debug("Failed user registration attempt from {}, e-mail '{}'", NetTools.scrambleIpAddress(ipAddress),
+                    NetTools.scrambleEmailAddress(email));
+        }
     }
 
     /**
@@ -311,7 +315,6 @@ public class UserBean implements Serializable {
      *
      * @param provider
      * @param result
-     * @param loginRequest
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
@@ -451,7 +454,7 @@ public class UserBean implements Serializable {
 
     /**
      * @param request
-     * @param response
+     * @return Redirect outcome
      */
     private String redirect(HttpServletRequest request) {
         Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(request);
@@ -562,7 +565,7 @@ public class UserBean implements Serializable {
     /**
      *
      * @param user
-     * @return
+     * @return true if activation email sent successfully; false otherwise
      */
     private boolean sendActivationEmail(User user) {
         if (StringUtils.isNotEmpty(user.getEmail())) {

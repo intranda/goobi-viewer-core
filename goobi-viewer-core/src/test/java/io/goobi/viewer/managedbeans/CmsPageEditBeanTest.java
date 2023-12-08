@@ -59,15 +59,15 @@ public class CmsPageEditBeanTest {
     private static final String RELATED_PI = "AC01";
 
     CmsPageEditBean bean;
-    
+
     @Before
     public void setup() throws DAOException {
-        
+
         CMSSidebarWidgetsBean widgetsBean = Mockito.mock(CMSSidebarWidgetsBean.class);
         Mockito.when(widgetsBean.getAllWidgets()).thenReturn(Collections.emptyList());
-        
+
         CollectionViewBean collectionViewBean = Mockito.mock(CollectionViewBean.class);
-        
+
         CMSPage selectedPage = new CMSPage();
         selectedPage.setId(SELECTED_PAGE_ID);
         CMSPageTemplate selectedTemplate = new CMSPageTemplate();
@@ -75,23 +75,23 @@ public class CmsPageEditBeanTest {
         IDAO dao = Mockito.mock(IDAO.class);
         Mockito.when(dao.getCMSPage(SELECTED_PAGE_ID)).thenReturn(selectedPage);
         Mockito.when(dao.getCMSPageTemplate(PAGE_TEMPLATE_ID)).thenReturn(selectedTemplate);
-        
+
         bean = new CmsPageEditBean();
-        bean.widgetsBean = widgetsBean;
-        bean.collectionViewBean = collectionViewBean;
-        bean.userBean = mockUserBean(true);
-        bean.dao = dao;
+        bean.setWidgetsBean(widgetsBean);
+        bean.setCollectionViewBean(collectionViewBean);
+        bean.setUserBean(mockUserBean(true));
+        bean.setDao(dao);
     }
 
-    private FacesContext mockFacesContext(Map<String, String> requestParameters) {
+    private static FacesContext mockFacesContext(Map<String, String> requestParameters) {
         FacesContext facesContext = Mockito.mock(FacesContext.class);
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
         Mockito.when(externalContext.getRequestParameterMap()).thenReturn(requestParameters);
         return facesContext;
     }
-    
-    private UserBean mockUserBean(boolean asCmsAdmin) {
+
+    private static UserBean mockUserBean(boolean asCmsAdmin) {
         UserBean userBean = Mockito.mock(UserBean.class);
         User user = Mockito.mock(User.class);
         Mockito.when(user.isCmsAdmin()).thenReturn(asCmsAdmin);
@@ -101,53 +101,56 @@ public class CmsPageEditBeanTest {
 
         return userBean;
     }
-    
 
-    private CMSTemplateManager createTemplateManager() {
+    private static CMSTemplateManager createTemplateManager() {
         CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);
-        CMSComponent component = new CMSComponent(null, NAME_COMPONENT, DESCRIPTION_COMPONENT, null, FILENAME_COMPONENT, CMSComponentScope.PAGEVIEW, Collections.emptyMap(), null);
+        CMSComponent component = new CMSComponent(null, NAME_COMPONENT, DESCRIPTION_COMPONENT, null, FILENAME_COMPONENT, CMSComponentScope.PAGEVIEW,
+                Collections.emptyMap(), null);
         Mockito.when(templateManager.getComponent(FILENAME_COMPONENT)).thenReturn(Optional.of(component));
         return templateManager;
     }
-    
+
     /**
      * When calling bean without context-parameters, create an empty new page
+     * 
      * @throws DAOException
      */
     @Test
     public void testNewPage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of());
-        bean.facesContext = facesContext;
+        bean.setFacesContext(facesContext);
         bean.setup();
         assertNotNull(bean.getSelectedPage());
         assertNull(bean.getSelectedPage().getId());
         assertNull(bean.getSelectedPage().getTemplateId());
         assertFalse(bean.isEditMode());
     }
-    
+
     /**
      * When bean is called with context-parameter 'templateId', a new page based on the correspending template should be loaded
+     * 
      * @throws DAOException
      */
     @Test
     public void testNewPageFromTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
-        bean.facesContext = facesContext;
+        bean.setFacesContext(facesContext);
         bean.setup();
         assertNotNull(bean.getSelectedPage());
         assertNull(bean.getSelectedPage().getId());
         assertEquals(PAGE_TEMPLATE_ID, bean.getSelectedPage().getTemplateId());
         assertFalse(bean.isEditMode());
     }
-    
+
     /**
      * When bean is called with context-parameter 'templateId', a new page based on the correspending template should be loaded
+     * 
      * @throws DAOException
      */
     @Test
     public void testNewPageFromTemplateWithTitleAndPi() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString(), "title", PAGE_NAME, "relatedPi", RELATED_PI));
-        bean.facesContext = facesContext;
+        bean.setFacesContext(facesContext);
         bean.setup();
         assertNotNull(bean.getSelectedPage());
         assertNull(bean.getSelectedPage().getId());
@@ -156,88 +159,93 @@ public class CmsPageEditBeanTest {
         assertEquals(RELATED_PI, bean.getSelectedPage().getRelatedPI());
         assertFalse(bean.isEditMode());
     }
-    
+
     /**
      * When Bean is called with context-parameter 'selectedPageId', load the corresponding page
+     * 
      * @throws DAOException
      */
     @Test
     public void testEditPage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
-        bean.facesContext = facesContext;
+        bean.setFacesContext(facesContext);
         bean.setup();
         assertNotNull(bean.getSelectedPage());
         assertEquals(SELECTED_PAGE_ID, bean.getSelectedPage().getId());
         assertTrue(bean.isEditMode());
     }
-    
+
     /**
-     * When calling save as admin, {@link IDAO#updateCMSPage(CMSPage)} should be called.
-     * Also {@link CollectionViewBean#removeCollectionsForPage(CMSPage)} should be called to reset collections loaded by this page
+     * When calling save as admin, {@link IDAO#updateCMSPage(CMSPage)} should be called. Also
+     * {@link CollectionViewBean#removeCollectionsForPage(CMSPage)} should be called to reset collections loaded by this page
+     * 
      * @throws DAOException
      */
     @Test
     public void testSavePage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
-        bean.facesContext = facesContext;
+        bean.setFacesContext(facesContext);
         bean.setup();
         bean.saveSelectedPage();
-        Mockito.verify(bean.dao, Mockito.times(1)).updateCMSPage(bean.getSelectedPage());
-        Mockito.verify(bean.collectionViewBean, Mockito.times(1)).removeCollectionsForPage(bean.getSelectedPage());
+        Mockito.verify(bean.getDao(), Mockito.times(1)).updateCMSPage(bean.getSelectedPage());
+        Mockito.verify(bean.getCollectionViewBean(), Mockito.times(1)).removeCollectionsForPage(bean.getSelectedPage());
     }
-    
+
     /**
      * When saving page with setSaveAsTemplate == true, make sure a template with the set name ans lockComponents property is created
+     * 
      * @throws DAOException
      */
     @Test
     public void testSaveAsTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
-        bean.facesContext = facesContext;
+        bean.setFacesContext(facesContext);
         bean.setup();
         bean.setSaveAsTemplate(true);
         bean.setTemplateLockComponents(true);
         bean.setTemplateName(TEMPLATE_NAME);
         bean.saveSelectedPage();
-        Mockito.verify(bean.dao, Mockito.times(1)).addCMSPageTemplate(Mockito.argThat(template -> template.getName() == TEMPLATE_NAME));
-        Mockito.verify(bean.dao, Mockito.times(1)).addCMSPageTemplate(Mockito.argThat(template -> template.isLockComponents()));
+        Mockito.verify(bean.getDao(), Mockito.times(1)).addCMSPageTemplate(Mockito.argThat(template -> template.getName() == TEMPLATE_NAME));
+        Mockito.verify(bean.getDao(), Mockito.times(1)).addCMSPageTemplate(Mockito.argThat(template -> template.isLockComponents()));
 
     }
-    
+
     /**
      * If the user is no cmsAdmin, calling save should not update page
+     * 
      * @throws DAOException
      */
     @Test
     public void testSavePageNoAdmin() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
-        bean.userBean = mockUserBean(false);
-        bean.facesContext = facesContext;
+        bean.setUserBean(mockUserBean(false));
+        bean.setFacesContext(facesContext);
         bean.setup();
         bean.saveSelectedPage();
-        Mockito.verify(bean.dao, Mockito.times(0)).updateCMSPage(Mockito.any());
+        Mockito.verify(bean.getDao(), Mockito.times(0)).updateCMSPage(Mockito.any());
     }
-    
+
     /**
      * When calling delete in bean, call {@link IDAO#deleteCMSPage(CMSPage)}
+     * 
      * @throws DAOException
      */
     @Test
     public void testDeletePage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
-        bean.facesContext = facesContext;
+        bean.setFacesContext(facesContext);
         bean.setup();
         CMSPage page = bean.getSelectedPage();
         bean.deleteSelectedPage();
-        Mockito.verify(bean.dao, Mockito.times(1)).deleteCMSPage(page);
+        Mockito.verify(bean.getDao(), Mockito.times(1)).deleteCMSPage(page);
         assertNull(bean.getSelectedPage());
     }
-    
+
     @Test
     public void testAddComponent() {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
-        bean.facesContext = facesContext;
-        bean.templateManager = createTemplateManager();
+        bean.setFacesContext(facesContext);
+        bean.setTemplateManager(createTemplateManager());
         bean.setup();
         bean.setSelectedComponent(FILENAME_COMPONENT);
         assertTrue(bean.getSelectedPage().getComponents().isEmpty());
@@ -245,12 +253,12 @@ public class CmsPageEditBeanTest {
         assertFalse(bean.getSelectedPage().getComponents().isEmpty());
         assertEquals(NAME_COMPONENT, bean.getSelectedPage().getComponents().get(0).getLabel());
     }
-    
+
     @Test
     public void testDeleteComponent() {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
-        bean.facesContext = facesContext;
-        bean.templateManager = createTemplateManager();
+        bean.setFacesContext(facesContext);
+        bean.setTemplateManager(createTemplateManager());
         bean.setup();
         bean.setSelectedComponent(FILENAME_COMPONENT);
         assertTrue(bean.getSelectedPage().getComponents().isEmpty());
@@ -259,7 +267,4 @@ public class CmsPageEditBeanTest {
         bean.deleteComponent(bean.getSelectedPage().getComponents().get(0));
         assertTrue(bean.getSelectedPage().getComponents().isEmpty());
     }
-
-    
-
 }

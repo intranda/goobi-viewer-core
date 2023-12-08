@@ -220,17 +220,17 @@ public class HighlightData implements Serializable {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             HighlightData other = (HighlightData) obj;
-            return Objects.equals(this.id, other.id) &&
-                    Objects.equals(this.recordIdentifier, other.recordIdentifier) &&
-                    Objects.equals(this.dateStart, other.dateStart) &&
-                    Objects.equals(this.dateEnd, other.dateEnd) &&
-                    Objects.equals(this.enabled, other.enabled) &&
-                    Objects.equals(this.imageMode, other.imageMode) &&
-                    Objects.equals(this.mediaItem, other.mediaItem) &&
-                    Objects.equals(this.name, other.name);
-        } else {
-            return false;
+            return Objects.equals(this.id, other.id)
+                    && Objects.equals(this.recordIdentifier, other.recordIdentifier)
+                    && Objects.equals(this.dateStart, other.dateStart)
+                    && Objects.equals(this.dateEnd, other.dateEnd)
+                    && Objects.equals(this.enabled, other.enabled)
+                    && Objects.equals(this.imageMode, other.imageMode)
+                    && Objects.equals(this.mediaItem, other.mediaItem)
+                    && Objects.equals(this.name, other.name);
         }
+
+        return false;
     }
 
     @Override

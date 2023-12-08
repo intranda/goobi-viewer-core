@@ -2,22 +2,42 @@ package io.goobi.viewer.exceptions;
 
 public abstract class ArchiveException extends PresentationException {
 
-    public ArchiveException(String message, String resourceName, String resourceLocation, Throwable e) {
+    private static final long serialVersionUID = -6999584810651228875L;
+
+    /**
+     * 
+     * @param message
+     * @param resourceName
+     * @param resourceLocation
+     * @param e
+     */
+    protected ArchiveException(String message, String resourceName, String resourceLocation, Throwable e) {
         super(createMessage(message, resourceName, resourceLocation), e);
     }
 
-    public ArchiveException(String message, String resourceName, String resourceLocation) {
+    /**
+     * 
+     * @param message
+     * @param resourceName
+     * @param resourceLocation
+     */
+    protected ArchiveException(String message, String resourceName, String resourceLocation) {
         super(createMessage(message, resourceName, resourceLocation));
     }
-    
-    protected static String createMessage(String message, String...replacements) {
+
+    /**
+     * 
+     * @param message
+     * @param replacements
+     * @return Updated message
+     */
+    protected static String createMessage(String message, String... replacements) {
         int i = 0;
-        while(message.contains("{}") && i < replacements.length) {
-            message = message.replaceFirst("\\{\\}", replacements[i]);
+        String msg = message;
+        while (msg.contains("{}") && i < replacements.length) {
+            msg = msg.replaceFirst("\\{\\}", replacements[i]);
             i++;
         }
-        return message;
+        return msg;
     }
-    
-
 }

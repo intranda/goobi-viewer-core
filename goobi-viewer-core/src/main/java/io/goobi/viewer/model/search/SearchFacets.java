@@ -1032,6 +1032,11 @@ public class SearchFacets implements Serializable {
         return DataManager.getInstance().getConfiguration().getRangeFacetFields();
     }
 
+    /**
+     * 
+     * @param field
+     * @return
+     */
     public String getRangeFacetStyle(String field) {
         return DataManager.getInstance().getConfiguration().getFacetFieldStyle(field);
     }

@@ -36,23 +36,23 @@ public class RichOEmbedResponse extends OEmbedResponse {
     /**
      * Constructor.
      *
-     * @param record a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
+     * @param rec a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public RichOEmbedResponse(OEmbedRecord record) throws ViewerConfigurationException {
+    public RichOEmbedResponse(OEmbedRecord rec) throws ViewerConfigurationException {
         this.type = "rich";
         this.width = 620;
         this.height = 350;
-        generateHtml(record, width, height);
+        generateHtml(rec, width, height);
     }
 
     /**
      * Constructor.
      *
-     * @param record a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
+     * @param rec a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public RichOEmbedResponse(OEmbedRecord record, Integer maxWidth, Integer maxHeight) throws ViewerConfigurationException {
+    public RichOEmbedResponse(OEmbedRecord rec, Integer maxWidth, Integer maxHeight) throws ViewerConfigurationException {
         this.type = "rich";
         this.width = 620;
         this.height = 350;
@@ -62,23 +62,24 @@ public class RichOEmbedResponse extends OEmbedResponse {
         if (maxHeight != null) {
             this.height = Math.min(this.height, maxHeight);
         }
-        generateHtml(record, width, height);
+        generateHtml(rec, width, height);
     }
 
     /**
      *
-     * @param se
-     * @throws ViewerConfigurationException
+     * @param rec
+     * @param width
+     * @param height
      */
-    private void generateHtml(OEmbedRecord record, int width, int height) throws ViewerConfigurationException {
-        if (record == null) {
+    private void generateHtml(OEmbedRecord rec, int width, int height)  {
+        if (rec == null) {
             throw new IllegalArgumentException("record may not be null");
         }
-        if (record.isRichResponse()) {
+        if (rec.isRichResponse()) {
             StringBuilder sb = new StringBuilder();
             sb.append("<iframe");
             sb.append(" src='");
-            sb.append(record.getUri());
+            sb.append(rec.getUri());
             sb.append("'");
             sb.append(" title='Map'");
             sb.append(" width='");
@@ -93,19 +94,19 @@ public class RichOEmbedResponse extends OEmbedResponse {
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append("<div>");
-            BaseMimeType mimeType = BaseMimeType.getByName(record.getPhysicalElement().getMimeType());
+            BaseMimeType mimeType = BaseMimeType.getByName(rec.getPhysicalElement().getMimeType());
             if (mimeType != null) {
                 switch (mimeType) {
                     case IMAGE:
-                        sb.append("<img src=\"").append(record.getPhysicalElement().getImageUrl(width)).append("\"><br />");
+                        sb.append("<img src=\"").append(rec.getPhysicalElement().getImageUrl(width)).append("\"><br />");
                         break;
                     default:
                         break;
                 }
             }
-            sb.append("<h3>").append(record.getStructElement().getLabel()).append("</h3>");
+            sb.append("<h3>").append(rec.getStructElement().getLabel()).append("</h3>");
 
-            record.getStructElement().getPi();
+            rec.getStructElement().getPi();
 
             sb.append("</div>");
             html = sb.toString();

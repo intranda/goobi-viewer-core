@@ -96,6 +96,7 @@ public class MetadataBean {
      * </p>
      *
      * @param index
+     * @param locale
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -159,7 +160,7 @@ public class MetadataBean {
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
-        // logger.trace("getMetadataElementList({})", index);
+        // logger.trace("getMetadataElementList({})", index); //NOSONAR Sometimes needed for debugging
         Locale locale = BeanUtils.getLocale();
 
         if (metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {
@@ -352,7 +353,7 @@ public class MetadataBean {
     /**
      * 
      * @param fields
-     * @return
+     * @return Given strings as List<String>
      */
     public List<String> getComplexMetadataFieldsToList(String... fields) {
         if (fields != null) {

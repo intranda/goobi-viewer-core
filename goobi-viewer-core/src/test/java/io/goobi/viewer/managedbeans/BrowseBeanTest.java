@@ -95,7 +95,7 @@ public class BrowseBeanTest extends AbstractTest {
     public void selectRedirectFilter_shouldReturnFirstAvailableAlphabeticalFilterIfAvailable() throws Exception {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.availableStringFilters.put("foo", new ArrayList<>(4));
+        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(4));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("0-9");
         bb.getAvailableStringFilters().add("A");
@@ -111,7 +111,7 @@ public class BrowseBeanTest extends AbstractTest {
     public void selectRedirectFilter_shouldReturnNumericalFilterIfAvailable() throws Exception {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.availableStringFilters.put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("0-9");
         assertEquals("0-9", bb.selectRedirectFilter());
@@ -125,7 +125,7 @@ public class BrowseBeanTest extends AbstractTest {
     public void selectRedirectFilter_shouldReturnFirstFilterIfNoOtherAvailable() throws Exception {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.availableStringFilters.put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("?");
         assertEquals("!", bb.selectRedirectFilter());
@@ -170,13 +170,14 @@ public class BrowseBeanTest extends AbstractTest {
     @Test
     public void generateFilterQuery_shouldGenerateFilterQueryCorrectly() throws Exception {
         BrowseBean bb = new BrowseBean();
-        assertEquals("+(+( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))", bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
-        
+        assertEquals("+(+( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))",
+                bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
+
         bb.setFilterQuery("FOO:bar");
         assertEquals("+(+(FOO:bar))", bb.generateFilterQuery(Collections.emptyList()));
-        
-        
-        assertEquals("+(+(FOO:bar) +( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))", bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
+
+        assertEquals("+(+(FOO:bar) +( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))",
+                bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
     }
 
 }
