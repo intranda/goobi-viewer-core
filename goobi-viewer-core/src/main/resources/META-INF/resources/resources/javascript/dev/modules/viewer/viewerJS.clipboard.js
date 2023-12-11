@@ -30,7 +30,7 @@ var viewerJS = ( function( viewer ) {
 
 
     viewer.clipboard = {
-            init : function(selector, dataTarget) {
+            init : function(selector, dataSelectorName) {
 
                 if(!selector) {
                 	var tooltipValueSelector = _defaultSelector;
@@ -38,11 +38,6 @@ var viewerJS = ( function( viewer ) {
 				else {
 					var tooltipValueSelector = selector;
 				}
-	
-				// console.log('clipboard js on');
-                // DEFINE TOOLTIP STANDARD AND COPY DONE TEXT SELECTORS
-                // var tooltipValueSelector = '[data-copy-value]'
-                // var tooltipTextCopiedSelector = '[data-copy-done-msg]'
                 
                 // ACTIVATE TOOLTIP ONLY IF DATA COPY VALUE SELECTORS AVAILABLE
                 $(tooltipValueSelector).tooltip();
@@ -55,13 +50,13 @@ var viewerJS = ( function( viewer ) {
                 	var thisCopyButton = $(this);
                 	
 					// GET VALUE OF DATA ATTRIBUTE COPY VALUE
-					// define dataTarget to get other data attribute value than data-copy-value
-	                if(!dataTarget) {
+					// define dataSelectorName to get other data attribute value than data-copy-value of THIS Element
+	                if(!dataSelectorName) {
 	                	var copyValue = $(this).data('copy-value');
 	                }
 					else {
-						var copyValue = $(this).attr(dataTarget);
-						console.log('datatarget is on ' + dataTarget);
+						var copyValue = $(this).attr(dataSelectorName);
+						console.log('dataSelectorName is on ' + dataSelectorName);
 						console.log('value of special: ' + copyValue);
 					}
 					

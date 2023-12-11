@@ -29,13 +29,12 @@
 			<div id="adminDeveloper" class="admin__content-inner-content">
 			
 				<div class="admin__info-text">
-					Ist die Autopullfarbe grün, wird das Theme automatisch gepullt. Ist die Farbe rot, ist der Cronjob nicht aktiv. Bei einer orangenen Hintergrundfarbe ist bei der Überprüfung ein Fehler aufgetreten.
-					
-					Um ein Theme in seiner lokalen Entwicklungsumgebung so in Betrieb nehmen zu können wie es auch auf dem Kundensystem aussieht müssen verschiedene Bedingungen erfüllt sein. Auf dieser Seite sind alle notwendigen Informationen zusammengestellt. Es wird Schritt für Schritt erläutert welche Dateien lokal wie modifiziert werden müssen damit danach im Eclipse der Datenbestand identisch ist zu der Live-Instanz. Die Befehle beziehen sich auf ein Linux und sind bei Bedarf auf ein eigenes Betriebssystem anzupassen.
+					#{msg.admin__developer__general_info_text}
 				</div>
 			
 			<div class="admin__developer-autopull-wrapper">
 				<div class="admin__developer-autopull-status-wrapper">
+					<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
 					<div class="admin__developer-autopull-status-text">Autopull Status: OFF</div><div class="admin__developer-autopull-status-icon -isOff"></div>
 
 				</div>
@@ -43,27 +42,16 @@
 				<div class="admin__developer-autopull-branch-name">develop</div>
 			</div>
 
-			
-				<h2>Dateien herunterladen</h2>
+				<!-- DOWNLOAD FILES -->
+				<h2>#{msg.admin__developer__download_files}</h2>
 				<div class="admin__default-block">
-				<button type="button" 
-					title="hover test text" 
-					data-copy-done-msg="yeeeeeeeeaha" 
-					class="btn btn--full admin__developer-download-button">
-					tooltip test
-				</button>
-				
-
 					 	<h:outputText layout="block" styleClass="admin__developer-download-info-text" escape="false" value="#{msg.admin__developer__files_info}" />
-						
-
 					<div class="admin__developer-download-wrapper">
 						<a class="btn btn--full admin__developer-download-button"><i class="fa fa-download" aria-hidden="true"></i><span>Herunterladen</span></a>
 					</div>
 					
 					<div class="admin__developer-sql-info-text">
-						
-Anschließend die Datei entpacken: 
+						#{msg.admin__developer__unzip_file}:
 					</div>
 					<div class="admin__developer-code-block">
 						
@@ -75,64 +63,62 @@ Anschließend die Datei entpacken:
 					</div>
 
 				</div>
-				
-<!-- 				<div class="admin__developer-arrow-line"> -->
-<!-- 					<i class="fa fa-caret-down" aria-hidden="true"></i> -->
-<!-- 				</div> -->
 
-				<h2>Datenbank und Adminnutzer erstellen</h2>
+				<!-- CREATE DATABASE -->
+				<h2>#{msg.admin__developer__create_database_heading}</h2>
 				<div class="admin__default-block">
 					<div class="admin__developer-sql-info-text">
-						Den darin enthaltenen SQL Dump in die lokale Datenbank unter dem Namen reference einspielen und einen lokalen Nutzeraccount mit dem Benutzernamen goobi@intranda.com und dem Passwort viewer sowie Adminrechten anlegen: 
+						<h:outputFormat value="#{msg.admin__developer__create_database_text}:" escape="false">
+	                    	<f:param value="#{navigationHelper.theme}" />
+	                    </h:outputFormat>
 					</div>
 					<div class="admin__developer-code-block">
 						
-						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" data-copy-value="#{msg.admin__developer__sql_commands}"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" 
+						
+						
+						data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__sql_commands, navigationHelper.theme)}"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
 						<code data-target="code"><h:outputFormat value="#{msg.admin__developer__sql_commands}" escape="false">
 	                        	<f:param value="#{navigationHelper.theme}" />
 	                        </h:outputFormat></code>
 
 					</div>
 				</div>
-
 				
-				<h2>Messages und Dateien lokal ablegen</h2>
+				<!-- PLACE MSG AND CONFIG FILES LOCALLY -->
+				<h2>#{msg.admin__developer__local_messages_config_heading}</h2>
 				<div class="admin__default-block">
 					<div class="admin__developer-sql-info-text">
-					 	Die messages Dateien und die config_viewer.xml in den lokalen config Ordner kopieren 					
+						#{msg.admin__developer__local_messages_config_text}:		
 					 </div>
-					<p class="admin__developer-code-block">
-						Pfad 1<br />
-						Pfad 2
-					</p>
+
+					<div class="admin__developer-code-block">
+						
+						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" 
+						data-copy-value="#{msg.admin__developer__local_messages_config_code}"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<code data-target="code"><h:outputFormat value="#{msg.admin__developer__local_messages_config_code}" escape="false">
+	                        	<f:param value="#{navigationHelper.theme}" />
+	                    </h:outputFormat></code>
+
+					</div>
+
 				</div> 
 				
-				<h2>Einstellungen  allg. Informationen</h2>
+				<!-- SETTINGS AND GENERAL INFO -->
+				<h2>#{msg.admin__developer__settings_info_heading}</h2>
 				<div class="admin__default-block">
 					<div class="admin__developer-sql-info-text">
-					 	Die messages Dateien und die config_viewer.xml in den lokalen config Ordner kopieren 					
+						<h:outputFormat value="#{msg.admin__developer__settings_info_text}" escape="false" />
+									
 					 </div>
-					<p class="admin__developer-code-block">
-						Pfad 1<br />
-						Pfad 2
-					</p>
 				</div>
-
 
 			</div>
 			
 			<script>
-
-
-				//<![CDATA[
-					
 				// CLEAN CODE FOR COPY TO CLIPBOARD - REMOVE BR ELEMENTS
-				$('[data-target="code"]').each(function(i, obj) {
-					rawHtml = $(thisCopyButton).next('[data-target="sqlCode"]').clone().find('br').prepend('\r\n').end().text();
-					
-					$(this).prev('[data-copy-value]').data('copy-value', cleanCode);
-				});
-				
+				//<![CDATA[
+
 				$('[data-copy-value]').each(function(i, obj) {
 					var originalCode = $(this).data('copy-value');
 					var cleanCode = originalCode.replace(/<br ?\/?>/g, "\n");
@@ -141,11 +127,7 @@ Anschließend die Datei entpacken:
 				});
 
 			    //]]>
-				
 			</script>
-			
-
-
 			
 		</ui:fragment>
 	</ui:define>
