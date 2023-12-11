@@ -34,6 +34,7 @@
 			
 			<div class="admin__developer-autopull-wrapper">
 				<div class="admin__developer-autopull-status-wrapper">
+					<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
 					<div class="admin__developer-autopull-status-text">Autopull Status: OFF</div><div class="admin__developer-autopull-status-icon -isOff"></div>
 
 				</div>
@@ -41,6 +42,7 @@
 				<div class="admin__developer-autopull-branch-name">develop</div>
 			</div>
 
+				<!-- DOWNLOAD FILES -->
 				<h2>#{msg.admin__developer__download_files}</h2>
 				<div class="admin__default-block">
 					 	<h:outputText layout="block" styleClass="admin__developer-download-info-text" escape="false" value="#{msg.admin__developer__files_info}" />
@@ -62,6 +64,7 @@
 
 				</div>
 
+				<!-- CREATE DATABASE -->
 				<h2>#{msg.admin__developer__create_database_heading}</h2>
 				<div class="admin__default-block">
 					<div class="admin__developer-sql-info-text">
@@ -82,25 +85,26 @@
 					</div>
 				</div>
 				
+				<!-- PLACE FILES LOCALLY -->
 				<h2>#{msg.admin__developer__local_messages_config_heading}</h2>
 				<div class="admin__default-block">
 					<div class="admin__developer-sql-info-text">
 						#{msg.admin__developer__local_messages_config_text}			
 					 </div>
-					 
-					 
+
 					<div class="admin__developer-code-block">
 						
 						<div class="admin__developer-copy-to-clipboard" title="copy to clipboard" 
 						data-copy-value="#{msg.admin__developer__local_messages_config_code}"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
 						<code data-target="code"><h:outputFormat value="#{msg.admin__developer__local_messages_config_code}" escape="false">
 	                        	<f:param value="#{navigationHelper.theme}" />
-	                        </h:outputFormat></code>
+	                    </h:outputFormat></code>
 
 					</div>
 
 				</div> 
 				
+				<!-- SETTINGS AND GENERAL INFO -->
 				<h2>#{msg.admin__developer__settings_info_heading}</h2>
 				<div class="admin__default-block">
 					<div class="admin__developer-sql-info-text">
