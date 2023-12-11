@@ -17,7 +17,9 @@
                 <div class="born-digital__no-access-box"><p><h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" /></p></div>
             </ui:fragment>
 
-            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml"></ui:include>
+			<div class="born-digital__box">
+	            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml"></ui:include>
+			</div>
             
             <!-- ACCESS GRANTED -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">

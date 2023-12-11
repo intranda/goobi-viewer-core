@@ -1,35 +1,36 @@
 <!-- progress-bar.tag -->
 <external-resource-download>
-<ul>
-	<li each="{url in urls}">
-		<div class="download_external_resource__error_wrapper">
-			<label if="{isError(url)}" class="download_external_resource__error">{getErrorMessage(url)}</label>
+<div class="download_external_resource__resource_list">
+	<div class="download_external_resource__resource" each="{url in urls}">
+		<div class="download_external_resource__error_wrapper {isError(url) ? '-active' : ''}">
+			<i class="fa fa-exclamation-triangle"/>
+			<label class="download_external_resource__error">{getErrorMessage(url)}</label>
 		</div>
 		<div class="download_external_resource__progress_wrapper">
 			<label>{url}</label>
-			<button onclick="{startDownloadTask}" show="{!isRequested(url)}">{msg.action__external_files__order_download}</button>
-			<div if="{isWaiting(url)}">
+			<button onclick="{startDownloadTask}" class="download_external_resource__order btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? '' : '-active'}">{msg.action__external_files__order_download}</button>
+			<div class="download_external_resource__waiting_animation {isWaiting(url) ? '-active' : ''}">
 				<img src="{preloader}" class="img-responsive"
 					alt="{msg.action__external_files__download_in_queue}"
 					title="{msg.action__external_files__download_in_queue}" />
 			</div>
-			<div if="{isDownloading(url)}">
+			<div class="download_external_resource__loading_animation {isDownloading(url) ? '-active' : ''}">
 				<progress value="{getDownloadProgress(url)}"
 					max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress>
 			</div>
-			<div if="{isRequested(url) && !isError(url) && !isFinished(url)}">
-				<button onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button>
+			<div class="download_external_resource__cancel_download {isRequested(url) && !isError(url) && !isFinished(url) ? '-active' : ''}">
+				<button class="btn admin__cancel-button" onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button>
 			</div>
 		</div>
-		<div class="download_external_resource__results_wrapper">
-			<ul if="{isFinished(url)}">
+		<div class="download_external_resource__results_wrapper {isFinished(url) ? '-active' : ''}">
+			<ul>
 				<li each="{object in getFiles(url)}">
 					<a href="{object.url}">{object.path}</a>
 				</li>
 			</ul>
 		</div>
-	</li>
-</ul>
+	</div>
+</div>
 
 <script>
       this.urls = [];
@@ -81,7 +82,7 @@
       }
       
       sendMessage(message) {
-    	  console.log("sending message ", message);
+//     	  console.log("sending message ", message);
     	  if(typeof message != "string") {
     		message = JSON.stringify(message);
     	  }
@@ -92,7 +93,7 @@
       }
       
       startDownloadTask(e) {
-    	  console.log("Start download ", e);
+//     	  console.log("Start download ", e);
     	const urlToDownload = e.item.url;
     	if(urlToDownload) { 
     		if(this.updateListeners.has(urlToDownload)) {
@@ -112,7 +113,7 @@
           if(data == null) {
         	  this.handleError("Not a valid message object: " + event.data);
           } else if(data.pi == this.pi && data.url && data.status) {
-        	  console.log("received message ", data);
+//         	  console.log("received message ", data);
         	  switch(data.status) {
         	  case "waiting":
         	  case "processing":
@@ -216,7 +217,7 @@
       cancelDownload(e) {
     	  const url = e.item.url;
     	  if(url && this.downloads.has(url)) {
-	    	  this.sendMessage({pi: this.pi, url: url, messageQueueId: this.downloads.get(url).messageQueueId, action: 'canceldownload'});
+	    	  this.sendMessage(this.createSocketMessage(this.pi, url, 'canceldownload'));
 	    	  this.downloads.delete(url);
 	    	  if(this.updateListeners.has(url)) {
 	  			this.updateListeners.get(url).cancel();
@@ -245,10 +246,12 @@
     	  if(this.downloads.has(url)) {
     		  let oldMessage = this.downloads.get(url);
     		  let newMessage = $.extend(true, {}, oldMessage, {pi: pi, url: url, action: action});
-    	  	  return newMessage;
+//     	  	  console.log("sending return message", newMessage, "to", oldMessage, "with", pi, url, action)
+    		  return newMessage;
     	  } else {
-	    	  return {
-	    		  pi: pi,
+//     		  console.log("sending new message with",pi, url, action);	
+    		  return {
+    		  	  pi: pi,
 	    		  url: url,
 	    		  action: action,
 	    		  messageQueueId: undefined,
@@ -263,9 +266,6 @@
   </script>
 
 <style>
-/* Hier können Sie das Styling nach Bedarf anpassen */
-li {
-	margin-bottom: 10px;
-}
+
 </style>
 </external-resource-download>

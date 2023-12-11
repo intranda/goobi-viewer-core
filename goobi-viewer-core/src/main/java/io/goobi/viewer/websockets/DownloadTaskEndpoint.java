@@ -331,7 +331,9 @@ public class DownloadTaskEndpoint {
         }
 
         public static SocketMessage buildAnswer(SocketMessage message, Status status) {
-            return new SocketMessage(message.action, status, message.pi, message.url);
+            SocketMessage answer = new SocketMessage(message.action, status, message.pi, message.url);
+            answer.messageQueueId = message.messageQueueId;
+            return answer;
         }
 
         public Action action; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters

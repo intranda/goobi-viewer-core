@@ -73,6 +73,59 @@
 	}
 }
 
+.download_external_resource {
+	
+	&__resource_list {
+		padding: .5rem 1.5rem
+	}
+	&__error_wrapper {
+		display: none;
+		color: red;
+		&.-active {
+			display:block;
+		}
+	}
+	&__progress_wrapper {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		label {
+			margin-bottom: 0;
+		}
+	}
+	&__order {
+		display: none;
+		&.-active {
+			display:block;
+		}
+	}
+	&__waiting_animation {
+		display: none;
+		&.-active {
+			display:block;
+		}
+	}
+	&__loading_animation {
+		display: none;
+		&.-active {
+			display:block;
+		}
+	}
+	&__cancel_download {
+		display: none;
+		&.-active {
+			display:block;
+		}
+	}
+	&__results_wrapper {
+		ul {
+			list-style-type: none;
+			padding: 1rem 2rem;
+		}
+	}
+
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
