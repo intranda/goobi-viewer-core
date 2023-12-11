@@ -132,7 +132,7 @@ public class JPAClassLoader extends ClassLoader {
      *
      * @param masterFileUrl
      * @param moduleUrls
-     * @param outputPath
+     * @return {@link Document containing merged and module persistence.xml
      * @throws IOException
      * @throws JDOMException
      * @should merge persistence xml files correctly
@@ -216,7 +216,7 @@ public class JPAClassLoader extends ClassLoader {
             }
 
             return new Enumeration<URL>() {
-                URL url = newUrl;
+                private URL url = newUrl;
 
                 @Override
                 public boolean hasMoreElements() {
