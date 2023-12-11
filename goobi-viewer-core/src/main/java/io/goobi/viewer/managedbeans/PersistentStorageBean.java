@@ -62,9 +62,9 @@ public class PersistentStorageBean implements DataStorage, Serializable {
     private Map<String, Pair<Object, Instant>> map = new HashMap<>();
 
     @Inject
-    transient private CMSTemplateManager templateManager;
+    private transient CMSTemplateManager templateManager;
     @Inject
-    transient private MessageQueueManager messageBroker;
+    private transient MessageQueueManager messageBroker;
     private IDAO dao;
 
     @PostConstruct
@@ -75,7 +75,7 @@ public class PersistentStorageBean implements DataStorage, Serializable {
 
     @PreDestroy
     public void shutdown() {
-
+        //
     }
 
     public Object get(String key) {
@@ -100,6 +100,7 @@ public class PersistentStorageBean implements DataStorage, Serializable {
      * If the given key exists and the entry is no older than the given timeToLiveMinutes, return the object stored under the key, otherwise store the
      * given object under the given key and return it
      * 
+     * @param <T>
      * @param key the identifier under which to store the object
      * @param object the object to store under the given key if the key doesn't exist yet or is older than timeToLiveMinutes
      * @param timeToLive the maximum age in the given time unit the stored object may have to be returned. If it's older, it will be replaced with the

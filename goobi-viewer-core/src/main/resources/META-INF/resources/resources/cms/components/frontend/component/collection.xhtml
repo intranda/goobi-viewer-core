@@ -12,7 +12,6 @@
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
 		<composite:attribute name="collectionBaseLevels" required="false" default="0" type="java.lang.Integer"/>
-		<composite:attribute name="openExpanded" required="false" default="false" type="java.lang.Boolean"/>
 		<composite:attribute name="displayParents" required="false" default="false" type="java.lang.Boolean"/>
 		<composite:attribute name="ignoreHierarchy" required="false" default="false" type="java.lang.Boolean"/>
 	</composite:interface>
@@ -31,7 +30,7 @@
 				</ui:fragment>
 
 				<div id="collectionList" class="content-component__collection-list-wrapper">
-						<viewerComponent:collectionView id="collection" collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection').content, cc.attrs.collectionBaseLevels, cc.attrs.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy, request.getParameter('collection'))}" />
+						<viewerComponent:collectionView id="collection" collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection').content, cc.attrs.collectionBaseLevels, cc.attrs.component.getContentItem('collection').content.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy, request.getParameter('collection'))}" />
 				</div>
 
 			</div>

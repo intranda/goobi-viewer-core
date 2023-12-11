@@ -7,6 +7,11 @@
     <options>    
         <appliesToExpandedUrl>false</appliesToExpandedUrl>
     </options>
+    <attributes>
+	    <attribute name="allowOpenExpanded" display="false" boolean="true">
+			<value>false</value>
+		</attribute>
+    </attributes>
     <content>
  	    <item id="text" label="cms__template_15__text__label" type="HTML" order="1"/>
  	    <item id="collection" label="cms_itemCollectionField" type="COLLECTION" order="2"/>

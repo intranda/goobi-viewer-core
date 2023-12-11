@@ -275,6 +275,13 @@
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
     </url-mapping>
+    <url-mapping id="searchTerm5">
+        <pattern value="/term/-/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(4)}</action>
+        <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
 
 	<!-- SIMPLE SEARCH -->
     <url-mapping id="newSearch1">
@@ -927,6 +934,10 @@
      <url-mapping id="adminDisclaimer">
         <pattern value="/admin/legal/disclaimer/" />
         <view-id value="/resources/admin/views/adminDisclaimer.xhtml" />
+    </url-mapping>
+     <url-mapping id="adminDeveloper">
+        <pattern value="/admin/developer/" />
+        <view-id value="/resources/admin/views/adminDeveloper.xhtml" />
     </url-mapping>
     
 

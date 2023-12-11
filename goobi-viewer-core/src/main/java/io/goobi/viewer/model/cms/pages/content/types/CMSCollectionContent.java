@@ -93,6 +93,7 @@ public class CMSCollectionContent extends CMSContent {
         this.filterQuery = orig.filterQuery;
         this.groupingField = orig.groupingField;
         this.ignoreCollections = orig.ignoreCollections;
+        this.openExpanded = orig.openExpanded;
     }
 
     public String getSolrField() {

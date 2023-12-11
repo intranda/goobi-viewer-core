@@ -118,6 +118,7 @@ public class TextResourceBuilder {
      */
     public StreamingOutput getFulltextAsZip(String pi)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException {
+        logger.trace("getFulltextAsZip: {}", pi);
         String filename = pi + "_plaintext.zip";
         String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder();
@@ -460,17 +461,23 @@ public class TextResourceBuilder {
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt");
 
         if (!fulltextFiles.isEmpty()) {
+            logger.debug("Collecting plaintext files from {}", fulltextFiles.get(0).getParent().toAbsolutePath());
             fileMap = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
                 try {
                     return FileTools.getStringFromFile(p.toFile(), StringTools.DEFAULT_ENCODING);
                 } catch (IOException e) {
-                    logger.error("Error reading file " + p, e);
+                    logger.error("Error reading file {}", p, e);
                     return "";
                 }
             }));
         } else {
             List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
                     DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
+            if (!altoFiles.isEmpty()) {
+                logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
+            } else {
+                logger.debug("No ALTO files found");
+            }
             fileMap = altoFiles.stream()
                     .collect(Collectors.toMap(
                             p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")),
@@ -478,7 +485,7 @@ public class TextResourceBuilder {
                                 try {
                                     return ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
                                 } catch (IOException e) {
-                                    logger.error("Error reading file " + p, e);
+                                    logger.error("Error reading file {}", p, e);
                                     return "";
                                 }
                             }));

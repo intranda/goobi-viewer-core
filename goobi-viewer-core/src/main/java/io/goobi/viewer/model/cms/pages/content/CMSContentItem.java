@@ -91,6 +91,12 @@ public class CMSContentItem {
      * 
      * @param itemId
      * @param content
+     * @param label
+     * @param description
+     * @param htmlGroup
+     * @param jsfComponent
+     * @param owningComponent
+     * @param required
      */
     public CMSContentItem(String itemId, CMSContent content, String label, String description, String htmlGroup, JsfComponent jsfComponent,
             CMSComponent owningComponent, boolean required) {
@@ -167,7 +173,8 @@ public class CMSContentItem {
         if (this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-            this.uiComponent.setId(FilenameUtils.getBaseName(this.getOwningComponent().getTemplateFilename()) + "_" + this.getOwningComponent().getOrder() + "_" + this.itemId);
+            this.uiComponent.setId(FilenameUtils.getBaseName("cms_" + this.getOwningComponent().getTemplateFilename()) + "_"
+                    + this.getOwningComponent().getOrder() + "_" + this.itemId);
             UIComponent wrapper = builder.createTag("div",
                     Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper"));
             wrapper.setId(this.uiComponent.getId() + "_wrapper");

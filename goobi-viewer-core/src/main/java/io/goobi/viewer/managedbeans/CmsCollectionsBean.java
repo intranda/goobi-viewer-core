@@ -61,7 +61,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * Bean handling cms settings for collections
+ * Bean handling CMS settings for collections.
  *
  * @author Florian Alpers
  */
@@ -80,13 +80,11 @@ public class CmsCollectionsBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(CmsCollectionsBean.class);
 
     @Inject
-    CmsMediaBean cmsMediaBean;
-    @Inject
-    BrowseBean browseBean;
+    private BrowseBean browseBean;
 
     private CMSCollection currentCollection;
     private CMSCollection originalCollection; //collection from database, without any edits after last save
-    String solrField = SolrConstants.DC;
+    private String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
     private boolean piValid = true;
@@ -225,8 +223,7 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      *
-     * @param solrField
-     * @return
+     * @return true keys with description suffix found; false otherwise
      */
     public boolean isDisplayImportDescriptionsWidget() {
         for (String key : ViewerResourceBundle.getAllLocalKeys()) {
@@ -238,6 +235,12 @@ public class CmsCollectionsBean implements Serializable {
         return false;
     }
 
+    /**
+     * 
+     * @param solrField
+     * @return empty string
+     * @throws DAOException
+     */
     public String importDescriptionsAction(String solrField) throws DAOException {
         logger.trace("importDescriptionsAction: {}", solrField);
         if (StringUtils.isEmpty(solrField)) {
@@ -341,6 +344,15 @@ public class CmsCollectionsBean implements Serializable {
             logger.error(e.getMessage());
             collections = Collections.emptyList();
         }
+    }
+
+    /**
+     * For unit tests.
+     * 
+     * @param solrField the solrField to set
+     */
+    void setSolrFieldNoUpdates(String solrField) {
+        this.solrField = solrField;
     }
 
     /**
@@ -536,6 +548,8 @@ public class CmsCollectionsBean implements Serializable {
                     break;
                 case PI:
                     getCurrentCollection().setMediaItem(null);
+                    break;
+                default:
                     break;
             }
             if (getCurrentCollection().getId() != null) {

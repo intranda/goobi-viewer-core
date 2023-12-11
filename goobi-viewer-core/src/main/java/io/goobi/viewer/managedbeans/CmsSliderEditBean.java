@@ -118,6 +118,7 @@ public class CmsSliderEditBean implements Serializable {
     /**
      * Set the selected slider via id string
      * 
+     * @param idString
      * @throws DAOException
      */
     public void setSliderId(String idString) throws DAOException {
@@ -128,6 +129,7 @@ public class CmsSliderEditBean implements Serializable {
     /**
      * Set the selected slider via id
      * 
+     * @param id
      * @throws DAOException
      */
     public void setSliderId(long id) throws DAOException {
@@ -150,7 +152,9 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * Persist the {@link #selectedSlider} to the database and return to slider overview page, ending the current jsf conversation
+     * Persist the {@link #selectedSlider} to the database and return to slider overview page, ending the current JSF conversation.
+     * 
+     * @return Navigation outcome
      */
     public String save() {
         if (this.selectedSlider != null) {
@@ -218,8 +222,7 @@ public class CmsSliderEditBean implements Serializable {
                     .filter(Selectable::isSelected)
                     .map(Selectable::getValue)
                     .map(CMSCategory::getId)
-                    .map(l -> l
-                            .toString())
+                    .map(Object::toString)
                     .collect(Collectors.toList()));
         }
     }

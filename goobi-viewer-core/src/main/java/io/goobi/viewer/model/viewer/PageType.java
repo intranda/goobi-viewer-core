@@ -94,6 +94,7 @@ public enum PageType {
     adminClientsEdit("admin/clients/edit", "admin__clients__edit__title", adminClients),
     adminConfigEditor("admin/config", "admin__config_editor__title", adminDashboard),
     adminMessageQueue("admin/tasks", "admin__tasks__title", adminDashboard),
+    adminDeveloper("admin/developer", "admin__developer__title", adminDashboard),
 
     // admin/translations
     adminTranslations("admin/translations", "admin__translations", adminDashboard),

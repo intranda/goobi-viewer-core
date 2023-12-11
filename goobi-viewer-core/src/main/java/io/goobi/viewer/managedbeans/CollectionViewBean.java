@@ -140,6 +140,12 @@ public class CollectionViewBean implements Serializable {
     /**
      * Creates a collection view object from the item's collection related properties
      *
+     * @param content
+     * @param numBaseLevels
+     * @param openExpanded
+     * @param displayParents
+     * @param ignoreHierarchy
+     * @param topVisibleElement
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -165,10 +171,8 @@ public class CollectionViewBean implements Serializable {
     /**
      * Adds a CollecitonView object for the given field to the map and populates its values.
      *
-     * @param collectionField
-     * @param facetField
-     * @param sortField
-     * @param filterQuery
+     * @param content
+     * @return {@link CollectionView}
      */
     private static CollectionView initializeCollection(final CMSCollectionContent content) {
         // Use FACET_* instead of MD_*, otherwise the hierarchy may be broken
@@ -221,8 +225,8 @@ public class CollectionViewBean implements Serializable {
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(content.getCollectionName()) || c.startsWith(content.getCollectionName() + "."))
-                .filter(c -> !(ignoreHierarchy) ||
-                        (StringUtils.isBlank(content.getCollectionName()) ? !c.contains(".")
+                .filter(c -> !(ignoreHierarchy)
+                        || (StringUtils.isBlank(content.getCollectionName()) ? !c.contains(".")
                                 : !c.replace(content.getCollectionName() + ".", "").contains(".")))
                 .collect(Collectors.toList());
         Collections.sort(list);
@@ -230,7 +234,8 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * @return
+     * @param content
+     * @return Map<String, CollectionResult>
      * @throws IndexUnreachableException
      */
     public Map<String, CollectionResult> getColletionMap(CMSCollectionContent content) throws IndexUnreachableException {

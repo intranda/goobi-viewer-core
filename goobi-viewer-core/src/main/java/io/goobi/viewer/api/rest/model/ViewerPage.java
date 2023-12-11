@@ -40,6 +40,7 @@ public class ViewerPage {
     public final URI link;
     public final IContent image;
     public final IMetadataValue label;
+    public final long order;
 
     /**
      * @param link
@@ -47,11 +48,12 @@ public class ViewerPage {
      * @param header
      * @param description
      */
-    public ViewerPage(URI link, IContent image, IMetadataValue label, IMetadataValue description) {
+    public ViewerPage(URI link, IContent image, IMetadataValue label, IMetadataValue description, long order) {
         super();
         this.link = link;
         this.image = image;
         this.label = label;
+        this.order = order;
     }
 
     /**
@@ -61,6 +63,7 @@ public class ViewerPage {
     public ViewerPage(CMSPage page) {
         this.label = page.getTitleTranslations();
         this.link = URI.create(page.getUrl());
+        this.order = page.getPageSortingOrElse(0);
         this.image = page.getPersistentComponents()
                 .stream()
                 .flatMap(c -> c.getContentItems().stream())

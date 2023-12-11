@@ -194,7 +194,7 @@ public class CommentBean implements Serializable {
      * @param user
      * @param sortField
      * @param descending
-     * @return
+     * @return List of comments that match the search criteria
      */
     public List<Comment> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
         return this.commentManager.getAnnotations(startIndex, numItems, filter, null, null, Collections.singletonList(user.getId()), null, null,
@@ -203,7 +203,7 @@ public class CommentBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return List of comments for the current page of the loaded record
      * @throws IndexUnreachableException
      */
     public List<Comment> getCommentsForCurrentPage() throws IndexUnreachableException {
@@ -218,13 +218,14 @@ public class CommentBean implements Serializable {
                 .filter(c -> PublicationStatus.PUBLISHED.equals(c.getPublicationStatus())
                         || Optional.ofNullable(c.getCreatorId()).map(id -> id.equals(getCurrentUserId())).orElse(false))
                 //TODO: Check privilege for viewing comment
-                //.filter(c -> Optional.ofNullable(userBean).map(UserBean::getUser).map(u -> u.isHasAnnotationPrivilege(REQUIRES_COMMENT_RIGHTS)).orElse(false))
+                //.filter(c -> Optional.ofNullable(userBean).map(UserBean::getUser)
+                //.map(u -> u.isHasAnnotationPrivilege(REQUIRES_COMMENT_RIGHTS)).orElse(false))
                 .collect(Collectors.toList());
     }
 
     /**
      *
-     * @return
+     * @return ID of logged in user
      */
     private Long getCurrentUserId() {
         return Optional.ofNullable(userBean).map(UserBean::getUser).map(User::getId).orElse(null);
@@ -233,7 +234,7 @@ public class CommentBean implements Serializable {
     /**
      *
      * @param anno
-     * @return
+     * @return true if given annotation requires special privileges for commenting; false otherwise
      */
     public boolean isRestricted(CrowdsourcingAnnotation anno) {
         return REQUIRES_COMMENT_RIGHTS.equals(anno.getAccessCondition());
@@ -242,16 +243,16 @@ public class CommentBean implements Serializable {
     /**
      *
      * @param restricted
-     * @return
+     * @return {@link String}
      */
     private String getLicense(boolean restricted) {
         return restricted ? getRestrictedLicense() : getPublicLicense();
     }
 
     /**
-     * @return
+     * @return {@link PublicationStatus}
      */
-    private PublicationStatus getInitialPublicationStatus() {
+    private static PublicationStatus getInitialPublicationStatus() {
         if (DataManager.getInstance().getConfiguration().reviewEnabledForComments()) {
             return PublicationStatus.REVIEW;
         }
@@ -260,16 +261,16 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * @return
+     * @return String value for open access
      */
-    private String getPublicLicense() {
+    private static String getPublicLicense() {
         return SolrConstants.OPEN_ACCESS_VALUE;
     }
 
     /**
-     * @return
+     * @return String value for restricted license
      */
-    private String getRestrictedLicense() {
+    private static String getRestrictedLicense() {
         return REQUIRES_COMMENT_RIGHTS;
     }
 
@@ -299,7 +300,7 @@ public class CommentBean implements Serializable {
      * that has such permission via comment groups.
      *
      * @param pi Record identifier
-     * @return
+     * @return true if logged in user may edit comments for record with given PI; false otherwise
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -322,7 +323,7 @@ public class CommentBean implements Serializable {
      * group that has such permission via comment groups.
      *
      * @param pi Record identifier
-     * @return
+     * @return true if logged in user may delete comments for record with given PI; false otherwise
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException

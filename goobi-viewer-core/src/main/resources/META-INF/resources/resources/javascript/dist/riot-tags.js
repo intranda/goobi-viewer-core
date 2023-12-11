@@ -2176,7 +2176,7 @@ this.removeFeature = function(feature) {
 });
 
 
-riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.imagecount < 2 ? \'d-none\' : \'\'} {this.opts.showthumbs ? \'in\' : \'\'}"><a></a></div><div if="{this.opts.image}" class="image-controls__action back {this.opts.imageindex === 0 ? \'-inactive\' : \'\'}"><a onclick="{previousItem}"><i class="image-back"></i></a></div><div if="{this.opts.image}" class="image-controls__action forward {this.opts.imageindex === this.opts.imagecount -1 ? \'-inactive\' : \'\'}"><a onclick="{nextItem}"><i class="image-forward"></i></a></div><div if="{this.opts.image}" class="image-controls__action rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div if="{this.opts.image}" class="image-controls__action rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
+riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.imagecount < 2 ? \'d-none\' : \'\'} {this.opts.showthumbs ? \'in\' : \'\'}"><a></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont back {this.opts.imageindex === 0 ? \'-inactive\' : \'\'}"><a onclick="{previousItem}"><i class="image-back"></i></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont forward {this.opts.imageindex === this.opts.imagecount -1 ? \'-inactive\' : \'\'}"><a onclick="{nextItem}"><i class="image-forward"></i></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
 
     this.rotateRight = function()
     {
@@ -4186,9 +4186,9 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     }.bind(this)
 
     this.translate = function(text) {
-    	let translation =  viewerJS.iiif.getValue(text, this.opts.language);
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
     	if(!translation) {
-    			translation = viewerJS.getMetadataValue(text, this.opts.language);
+    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
     	}
     	return translation;
     }.bind(this)

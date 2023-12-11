@@ -23,9 +23,11 @@ package io.goobi.viewer.model.viewer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -700,6 +702,19 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         CopyrightIndicatorLicense license = viewManager.getCopyrightIndicatorLicense();
         assertNotNull(license);
         assertEquals("", license.getDescription());
+    }
+
+    @Test
+    public void test_getLinkToDownloadFile() throws UnsupportedEncodingException, URISyntaxException, IndexUnreachableException, PresentationException, DAOException {
+        String filename = "INN 2_Gutenzell.pdf";
+        String filenameEncoded = "INN%202_Gutenzell.pdf";
+       
+        StructElement se = new StructElement(iddocKleiuniv);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        
+        LabeledLink link = viewManager.getLinkToDownloadFile(filename);
+        assertTrue(link.getUrl().endsWith(filenameEncoded));
+        
     }
 
 }

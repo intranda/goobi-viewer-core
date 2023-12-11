@@ -772,6 +772,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public Long getPageSorting() {
         return pageSorting;
     }
+    
+    public Long getPageSortingOrElse(long defaultOrder) {
+        return Optional.ofNullable(this.getPageSorting()).orElse(defaultOrder);
+    }
 
     /**
      * <p>

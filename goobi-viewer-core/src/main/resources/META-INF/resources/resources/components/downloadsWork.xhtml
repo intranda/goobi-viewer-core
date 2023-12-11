@@ -155,14 +155,13 @@
 	                           <button 
                                    id="iiifManifest"
                                    class="badge badge-dark widget-usage__work-download-iiif" 
-	                               data-copy="iiif-manifest" 
-	                               data-clipboard-text="#{imageDelivery.iiifManifest}" 
-	                               data-copy-done="#{msg.copyUrlDone}"
+	                               data-copy-value="#{imageDelivery.iiifManifest}" 
+	                               data-copy-done-msg="#{msg.copyUrlDone}"
                                    title="#{msg.copyUrl}"
                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
                                    tabindex="0"> 
 	                               #{msg.iiif}
-	                           </button> 
+	                           </button>
 	                       </ui:fragment>      
 	                    
                             <!-- MIRADOR -->

@@ -80,11 +80,10 @@ public class DisclaimerBeanTest extends AbstractTest {
 
         userBean = Mockito.mock(UserBean.class);
 
-
         bean = new DisclaimerBean(dao, searchIndex);
-        bean.navigationHelper = navigationHelper;
-        bean.activeDocumentBean = activeDocumentBean;
-        bean.userBean = userBean;
+        bean.setNavigationHelper(navigationHelper);
+        bean.setActiveDocumentBean(activeDocumentBean);
+        bean.setUserBean(userBean);
     }
 
     @Test
@@ -92,11 +91,9 @@ public class DisclaimerBeanTest extends AbstractTest {
 
         String string = bean.getDisclaimerConfig();
         assertTrue(StringUtils.isNotBlank(string));
-        JSONObject json  = new JSONObject(string);
+        JSONObject json = new JSONObject(string);
         assertEquals(storedDisclaimer.getText().getText(Locale.GERMAN), json.get("disclaimerText"));
         assertTrue(json.getBoolean("active"));
     }
-
-
 
 }

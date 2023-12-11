@@ -84,7 +84,7 @@ public class CmsRecordNotesBean implements Serializable {
     }
 
     /**
-     * @param images2
+     * @param images
      */
     public CmsRecordNotesBean(ImageDeliveryBean images) {
         this.images = images;
@@ -108,7 +108,7 @@ public class CmsRecordNotesBean implements Serializable {
      * get the thumbnail url for the record related to the note
      *
      * @param note
-     * @return
+     * @return Thumbnail URL
      * @throws ViewerConfigurationException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -124,7 +124,9 @@ public class CmsRecordNotesBean implements Serializable {
      * get the thumbnail url for the record related to the note for given width and height
      *
      * @param note
-     * @return
+     * @param width
+     * @param height
+     * @return Thumbnail URL
      * @throws ViewerConfigurationException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -157,15 +159,17 @@ public class CmsRecordNotesBean implements Serializable {
             private Optional<Long> numCreatedPages = Optional.empty();
 
             @Override
-            public List<CMSRecordNote> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+            public List<CMSRecordNote> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
+                    Map<String, String> filters) {
                 try {
-                    if (StringUtils.isBlank(sortField)) {
-                        sortField = "id";
+                    String useSortField = sortField;
+                    if (StringUtils.isBlank(useSortField)) {
+                        useSortField = "id";
                     }
 
                     return DataManager.getInstance()
                             .getDao()
-                            .getRecordNotes(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                            .getRecordNotes(first, pageSize, useSortField, sortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error("Could not initialize lazy model: {}", e.getMessage());
                 }

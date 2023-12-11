@@ -36,6 +36,19 @@
 						<div class="admin__info-text">#{msg.admin__tasks__info_text}</div>
 
 						<h:panelGroup layout="block" id="runningTasksQueueWrapper" class="admin__tasks-running-task-queue-wrapper #{messageQueueBean.paused ? '-paused' : ''} #{messageQueueBean.queueContent.size() == 0 ? '-emptyQueue' : ''}" >
+<!-- 	<div> -->
+<!-- 		<h2>LISTENERS</h2> -->
+<!-- 		<ui:repeat var="listener" value="#{messageQueueBean.listeners}"> -->
+<!-- 			<div style="border:1px solid black; padding:10px"> -->
+<!-- 				<div>TYPE: #{listener.queueType}</div> -->
+<!-- 				<div>shouldStop: #{listener.shouldStop}</div> -->
+<!-- 				<div>last update: #{listener.lastLoopCircle}</div> -->
+<!-- 				<h:commandButton value="Restart" action="#{listener.restartLoop()}"></h:commandButton> -->
+<!-- 			</div> -->
+<!-- 		</ui:repeat> -->
+		
+<!-- 	</div> -->
+
 
 						<div class="admin__tasks-title-wrapper">
 							<h2 class="admin__tasks-task-title">
@@ -82,6 +95,13 @@
 									<f:ajax execute="@form" render="@form" />
 								</a>
 							</ui:fragment>
+							
+							<a jsf:id="restartListenerButton" jsf:action="#{messageQueueBean.restartAllListeners()}"
+								class="admin__tasks-button-restart" title="#{msg.action__restart_all_task_listeners}">
+								<i class="fa fa-refresh"></i>
+								<i class="fa fa-refresh"></i>
+							</a>
+							
 						</div>
 
 
@@ -90,7 +110,7 @@
 							id="pauseMsgQueueButton" 
 							action="#{messageQueueBean.pauseQueue}"
 							pt:data-target="pauseMsgQueueButton">
-					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed" />
+					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
 						</h:commandButton>
 						
 						<h:commandButton 
@@ -98,12 +118,12 @@
 							id="resumeMsgQueueButton" 
 							action="#{messageQueueBean.resumeQueue}"
 							pt:data-target="resumeMsgQueueButton">
-					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed" />
+					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
 						</h:commandButton>						
 
+						
 
 						<div class="admin__tasks-empty-queue-spacer"></div>
-
 						<ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
 						<!-- INDIVIDUAL ROWS -->
 						<ui:repeat var="task" value="#{messageQueueBean.queueContent}">
@@ -126,6 +146,7 @@
 									<div class="admin__tasks-task-details-column-heads">
 										<div>#{msg.admin__tasks__task_identifier}</div>
 										<div>#{msg.admin__tasks__task_properties}</div>
+										<div>#{msg.admin__tasks__task_last_updated}</div>
 									</div>
 
 									<ui:repeat var="msgqueueticket"
@@ -145,8 +166,14 @@
 												</ui:repeat>
 											</div>
 											<div class="admin__tasks-task-details-row-entry">
+												<h:outputText value="#{msgqueueticket.lastUpdateTime}">
+													<f:converter converterId="localDateTimeConverter" />
+													<f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+												</h:outputText>
+											</div>
+											
+											<div class="admin__tasks-task-details-row-entry">
 												<button
-													type="button"
 													jsf:action="#{messageQueueBean.deleteMessage(msgqueueticket)}"
 													class="btn admin__tasks-task-details-delete-button">
 													<i class="fa fa-times" />
@@ -261,14 +288,14 @@
 						<button data-target="pauseQuartzButton"
 							type="button"
 							jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
-							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed" />
+							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
 							<i class="fa fa-pause"></i>
 						</button>
 
 						<button data-target="resumeQuartzButton"
 							type="button"
 							jsf:action="#{quartzBean.resumeAllJobs}" class="btn">
-							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed" />
+							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
 							<i class="fa fa-play"></i>
 						</button>
 
@@ -277,7 +304,7 @@
 								class="admin__table-content" role="grid"
 								aria-label="#{msg.admin__queue_types}: #{msg.aria_label__table__actions}">
 								<!-- TITLE ROW -->
-								<div class="row no-gutters admin__table-title" role="row">
+								<div class="row  admin__table-title" role="row">
 									<!-- NAME COL -->
 									<div class="col-5 d-flex">#{msg.admin__tasks__quartz_single_name}</div>
 
@@ -289,7 +316,7 @@
 
 								<!-- INDIVIDUAL ROWS -->
 								<ui:repeat var="entry" value="#{quartzBean.activeJobs}">
-									<h:panelGroup id="quartzRowID" layout="block" styleClass="row no-gutters admin__table-entry admin__tasks-quartz-table-row #{entry.paused == true ? '-paused' : ''}" role="row">
+									<h:panelGroup id="quartzRowID" layout="block" styleClass="row admin__table-entry admin__tasks-quartz-table-row #{entry.paused == true ? '-paused' : ''}" role="row">
 										<div class="col-5 d-flex flex-column">
 											
 											<div class="admin__tasks-quartz-table-entry-name-wrapper" role="gridcell">
@@ -385,7 +412,7 @@
 								role="grid" aria-label="#{msg.messagesHistoryTable}">
 
 								<!-- TITLE ROW -->
-								<div class="row no-gutters admin__table-title" role="row">
+								<div class="row admin__table-title" role="row">
 
 
 									<div class="col-2 d-flex -sorting-arrow-trigger"
@@ -422,10 +449,10 @@
 									<ui:repeat var="message"
 										value="#{messageQueueBean.lazyModelViewerHistory.paginatorList}">
 										<div
-											class="row no-gutters admin__table-entry admin__tasks-table-row #{message.messageStatus != 'FINISH' ? '-error' : ''}"
+											class="row admin__table-entry admin__tasks-table-row #{message.messageStatus != 'FINISH' ? '-error' : ''}"
 											role="row">
 
-											<div class="col-2 d-flex">
+											<div class="col-2 text-break d-flex">
 												<h:outputText value="#{message.messageId}" />
 											</div>
 

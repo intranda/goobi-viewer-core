@@ -15,7 +15,8 @@
     	<composite:attribute name="clusterMarkers" type="java.lang.Boolean" required="false" default="#{true}"/>
     	<composite:attribute name="popoverClass" required="false" default="geomap_popover"/>
     	<composite:attribute name="highlightDocumentId" required="false" default=""/>
-    	<composite:attribute name="featureSetSwitch" type="java.lang.Boolean" required="false" default="true"/>
+    	<composite:attribute name="currentPageNo" type="java.lang.Integer" required="false" default="#{null}"/>
+    	<composite:attribute name="featureSetSwitch" type="java.lang.Boolean" required="false" default="false"/>
     	<composite:attribute name="featureFilters" required="false" default="#{configurationBean.geomapFiltersAsJson}"/>
     	<composite:attribute name="showFeatureList" type="java.lang.Boolean" required="false" default="#{false}"/>
     </composite:interface>
@@ -41,6 +42,7 @@
 		$(document).ready(() => { 
 		    let config = {
 		    		documentIdToHighlight: "#{cc.attrs.highlightDocumentId}",
+		    		pagesToShow:  "[#{cc.attrs.currentPageNo}]",
 		            map: {
 			            mapId : "#{cc.attrs.mapId}",
 			            language: "#{navigationHelper.localeString}",

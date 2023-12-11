@@ -1,0 +1,162 @@
+/* ==============================================================
+   Admin Licence Single
+   style declarations for adminDeveloper.xhtml
+   ==============================================================*/
+
+#adminClients {}
+.admin {
+	&__developer-autopull-wrapper {
+		padding: 10px 20px;
+		background-color: #fff;
+ 		border: 1px solid #ccc;
+		margin-bottom: 30px;
+		display: inline-flex;
+		flex-direction: column;
+	}
+	&__developer-autopull-status-wrapper {
+		position: relative;
+		line-height: 1.2;
+		display: inline-flex;
+		gap: 15px;
+		align-items: center;
+	}
+	&__developer-autopull-status-icon {
+		position: relative;
+ 		 width: 16px;
+  		height: 16px;
+  		border-radius: 50%;
+		margin-right: 3px;
+		&:before,
+		&:after {
+			position: absolute;
+		  width: 18px;
+		  height: 18px;
+		  border-radius: 50%;
+		  left: 0;
+		  top: 0;
+			margin-left: -1px;
+  			margin-top: -1px;
+		}
+		&:before {
+			  content: "";
+  				animation: bounce 1.5s infinite;
+		}
+		&:after {
+  			content: "";
+  			animation: bounce 1.5s -0.4s infinite;
+		}
+		&.-isActive {
+ 			background: #2ECC71;
+			&:before,
+			&:after {
+				background: #2ECC71;
+			}
+		}
+		&.-isError {
+			background: #ff6f00;
+			&:before,
+			&:after {
+				background: #ff6f00;
+			}
+		}
+		&.-isOff {
+			background: #f44336;
+			&:before,
+			&:after {
+				background: #f44336;
+				animation: none;
+			}
+		}
+		
+		@keyframes bounce {
+		  0% {
+		    transform: scale(1);
+		    -webkit-transform: scale(1);
+		    opacity: 1;
+		  }
+		  100% {
+		    transform: scale(2);
+		    -webkit-transform: scale(2);
+		    opacity: 0;
+		  }
+		}
+	}
+	&__developer-autopull-status-text {
+		// margin-left: 30px;
+		font-size: 20px;
+		font-weight: 600;
+	}
+	&__developer-autopull-last-pull {
+		
+	}
+	&__developer-autopull-branch-name {
+		
+	}
+	&__developer-download-wrapper {
+		 margin-bottom: 30px;
+	}
+	&__developer-download-button {
+		display: inline-flex;
+		gap: 10px;
+		align-items: center;
+		color: white;
+	}
+	&__developer-download-info-text {
+		ul {
+			padding-left: 12px;
+			li {
+				font-weight: 600;
+			}
+		}
+	}
+	&__developer-arrow-line {
+		
+	}
+	&__developer-code-block{
+	  background: #f7f7f7;
+	  padding: 10px 20px;
+	  font-size: 16px;
+	  line-height: 1.2;
+	  margin-top: 20px;
+	position: relative;
+		code {
+			white-space: pre;
+		}
+	}
+	&__developer-copy-to-clipboard {
+		position: absolute;
+		right: 14px;
+		top: 14px;
+		color: #222;
+		cursor: pointer;
+		font-size: 24px;
+	}
+}
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.admin {
+		&__clients-edit-info-text {
+			font-weight: 400;
+			margin-bottom: 2rem;
+		}
+		&__clients-edit-label {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+		&__clients-edit-data {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

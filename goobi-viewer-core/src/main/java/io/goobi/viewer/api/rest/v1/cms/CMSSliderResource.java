@@ -115,6 +115,9 @@ public class CMSSliderResource {
                 .map(this::getCategoryById)
                 .filter(Objects::nonNull)
                 .flatMap(category -> getPagesForCategory(category).stream())
+                .filter(CMSPage::isPublished)
+                //not needed. Slides are sorted in javascript
+//                .sorted((page1, page2) -> Long.compare(page1.getPageSortingOrElse(0), page2.getPageSortingOrElse(0)))
                 .map(this::getApiUrl)
                 .collect(Collectors.toList());
     }

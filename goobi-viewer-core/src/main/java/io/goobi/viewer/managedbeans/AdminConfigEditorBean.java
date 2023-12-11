@@ -80,7 +80,7 @@ public class AdminConfigEditorBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(AdminConfigEditorBean.class);
 
     /** Manual edit locks for files. */
-    private static final FileLocks fileLocks = new FileLocks();
+    private static FileLocks fileLocks = new FileLocks();
 
     /** Object that handles the reading of listed files. */
     private final FilesListing filesListing = new FilesListing();
@@ -272,7 +272,7 @@ public class AdminConfigEditorBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return Navigation outcome
      */
     public String closeCurrentFileAction() {
         if (currentFileRecord == null) {
@@ -425,7 +425,7 @@ public class AdminConfigEditorBean implements Serializable {
      * Creates a timestamped backup of the given file name and content.
      * 
      * @param backupFolderPath Backup folder path
-     * @param backup File name root
+     * @param fileName File name
      * @param content File content
      * @throws IOException
      */
@@ -519,7 +519,7 @@ public class AdminConfigEditorBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return true if currently editing config_viewer.xml; false otherwise
      */
     public boolean isConfigViewer() {
         return currentFileRecord != null && currentFileRecord.getFileName().equals(Configuration.CONFIG_FILE_NAME);
@@ -647,7 +647,6 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     public Path getCurrentFilePath() {
-        Path file = Optional.ofNullable(currentFileRecord).map(FileRecord::getFile).orElse(null);
-        return file;
+        return Optional.ofNullable(currentFileRecord).map(FileRecord::getFile).orElse(null);
     }
 }

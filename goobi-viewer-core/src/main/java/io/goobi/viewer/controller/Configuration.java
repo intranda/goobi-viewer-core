@@ -2819,7 +2819,7 @@ public class Configuration extends AbstractConfiguration {
         String docStructTypes = hc.getString("[@showDocStructs]");
         boolean allowed = hc.getBoolean(".");
         if (!allowed) {
-            logger.trace("Tree view disabled");
+            // logger.trace("Tree view disabled");
             return false;
         }
 
