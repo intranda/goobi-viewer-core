@@ -32,11 +32,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,13 +48,13 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.ocr.tei.TEIBuilder;
 import de.intranda.digiverso.ocr.tei.convert.AbstractTEIConvert;
@@ -120,24 +123,25 @@ public class TextResourceBuilder {
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException {
         logger.trace("getFulltextAsZip: {}", pi);
         String filename = pi + "_plaintext.zip";
-        String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
-        String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder();
-        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
-        if (files.isEmpty()) {
-            File tempFolder = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_fulltext_" + System.currentTimeMillis());
-            tempFolder.mkdir();
-            Map<Path, String> map = this.getFulltextMap(pi);
-            List<Path> tempFiles = new ArrayList<>();
-            for (Entry<Path, String> entry : map.entrySet()) {
-                String text = entry.getValue();
-                File tempFile = new File(tempFolder, FilenameUtils.getBaseName(entry.getKey().getFileName().toString()) + ".txt");
-                FileUtils.write(tempFile, text, StandardCharsets.UTF_8.name());
-                tempFiles.add(tempFile.toPath());
-            }
-            tempFiles.sort((f1, f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
-            return writeZipFile(tempFiles, filename);
+        //        String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
+        //        String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder();
+        //        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
+        //        if (files.isEmpty()) {
+        // Fallback if no plaintext files found
+        File tempFolder = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_fulltext_" + System.currentTimeMillis());
+        tempFolder.mkdir();
+        Map<Path, String> map = this.getFulltextMap(pi);
+        List<Path> tempFiles = new ArrayList<>();
+        for (Entry<Path, String> entry : map.entrySet()) {
+            String text = entry.getValue();
+            File tempFile = new File(tempFolder, FilenameUtils.getBaseName(entry.getKey().getFileName().toString()) + ".txt");
+            FileUtils.write(tempFile, text, StandardCharsets.UTF_8.name());
+            tempFiles.add(tempFile.toPath());
         }
-        return writeZipFile(files, filename);
+        tempFiles.sort((f1, f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
+        return writeZipFile(tempFiles, filename);
+        //        }
+        //        return writeZipFile(files, filename);
 
     }
 
@@ -445,24 +449,25 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
-     * getFulltext.
-     * </p>
+     * Collects full-text file paths and content in a map. Priority is given to files from plaintext resources, with missing files being stuffed with
+     * converted ALTO.
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should prioritize plaintext files over alto
      */
     public Map<java.nio.file.Path, String> getFulltextMap(String pi) throws IOException, PresentationException, IndexUnreachableException {
-        Map<java.nio.file.Path, String> fileMap;
+        Map<java.nio.file.Path, String> ret = new HashMap<>();
         List<java.nio.file.Path> fulltextFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt");
 
+        Map<java.nio.file.Path, String> fileMapFromPlaintext = null;
         if (!fulltextFiles.isEmpty()) {
             logger.debug("Collecting plaintext files from {}", fulltextFiles.get(0).getParent().toAbsolutePath());
-            fileMap = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
+            fileMapFromPlaintext = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
                 try {
                     return FileTools.getStringFromFile(p.toFile(), StringTools.DEFAULT_ENCODING);
                 } catch (IOException e) {
@@ -470,15 +475,14 @@ public class TextResourceBuilder {
                     return "";
                 }
             }));
-        } else {
-            List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
-                    DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
-            if (!altoFiles.isEmpty()) {
-                logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
-            } else {
-                logger.debug("No ALTO files found");
-            }
-            fileMap = altoFiles.stream()
+        }
+
+        Map<java.nio.file.Path, String> fileMapFromAlto = null;
+        List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
+                DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
+        if (!altoFiles.isEmpty()) {
+            logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
+            fileMapFromAlto = altoFiles.stream()
                     .collect(Collectors.toMap(
                             p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")),
                             p -> {
@@ -490,7 +494,27 @@ public class TextResourceBuilder {
                                 }
                             }));
         }
-        return fileMap;
+
+        // Add collected plaintext files
+        final Set<String> fileNames = new HashSet<>();
+        if (fileMapFromPlaintext != null && !fileMapFromPlaintext.isEmpty()) {
+            for (Entry<Path, String> entry : fileMapFromPlaintext.entrySet()) {
+                ret.put(entry.getKey(), entry.getValue());
+                fileNames.add(entry.getKey().getFileName().toString());
+                logger.trace("Added {} from plain text", entry.getKey());
+            }
+        }
+
+        // Add text files converted from ALTO. Only add files whose name wasn't already collected from plain text resources.
+        if (fileMapFromAlto != null && !fileMapFromAlto.isEmpty()) {
+            for (Entry<Path, String> entry : fileMapFromAlto.entrySet()) {
+                if (!fileNames.contains(entry.getKey().getFileName().toString())) {
+                    ret.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
+        return ret;
     }
 
     /**
