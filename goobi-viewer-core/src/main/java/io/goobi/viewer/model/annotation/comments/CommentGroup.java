@@ -21,9 +21,14 @@
  */
 package io.goobi.viewer.model.annotation.comments;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.model.security.user.UserGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,17 +39,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.model.security.user.UserGroup;
-
 /**
  * Filtered view on collections.
  */
 @Entity
 @Table(name = "comment_groups")
-public class CommentGroup {
+public class CommentGroup implements Serializable {
+
+    private static final long serialVersionUID = -6284942965581963665L;
 
     private static final Logger logger = LogManager.getLogger(CommentGroup.class);
 

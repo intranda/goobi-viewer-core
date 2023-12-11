@@ -181,7 +181,7 @@ public class CmsSliderEditBean implements Serializable {
             }
 
         }
-        return "";//"pretty:adminCmsSliders";
+        return "";
 
     }
 
