@@ -15,7 +15,7 @@
 	<div id="externalResourceDownload"></div>
 	<script>
 		riot.mount("#externalResourceDownload", "external-resource-download", {
-			urls : ["http://d-nb.info/1303371537/34"], // #{activeDocumentBean.externalResourceUrls},
+			urls : #{activeDocumentBean.externalResourceUrls}, //["http://d-nb.info/1303371537/34"]
 			contextPath : "#{request.contextPath}",
 			pi : "#{activeDocumentBean.viewManager.pi}"
 		});
