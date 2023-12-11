@@ -167,7 +167,8 @@ public class CmsBean implements Serializable {
                 private boolean initialized = false;
 
                 @Override
-                public List<CMSPage> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder, Map<String, String> filters) {
+                public List<CMSPage> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
+                        Map<String, String> filters) {
                     try {
                         initialize();
                         String useSortField = sortField;
@@ -1716,7 +1717,7 @@ public class CmsBean implements Serializable {
     /**
      * @param user
      * @param page
-     * @return 
+     * @return true if given use may edit given page; false otherwise
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException

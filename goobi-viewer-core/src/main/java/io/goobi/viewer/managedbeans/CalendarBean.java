@@ -1211,9 +1211,8 @@ public class CalendarBean implements Serializable {
      * This method generates a search string to search for data with a value in YEAR but without a value in YEARMONTHDAY.
      *
      * @param date
-     * @return
+     * @return Generated query
      */
-
     private String getQueryForIncompleteData(String date) {
         StringBuilder searchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {

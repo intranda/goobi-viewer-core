@@ -113,7 +113,8 @@ public class AdminLicenseBean implements Serializable {
         lazyModelDownloadTickets = new TableDataProvider<>(new TableDataSource<DownloadTicket>() {
 
             @Override
-            public List<DownloadTicket> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder, Map<String, String> filters) {
+            public List<DownloadTicket> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
+                    Map<String, String> filters) {
                 logger.trace("getEntries<DownloadTicket>, {}-{}", first, first + pageSize);
                 try {
                     String useSortField = sortField;
@@ -121,7 +122,9 @@ public class AdminLicenseBean implements Serializable {
                     if (StringUtils.isBlank(useSortField)) {
                         useSortField = "id";
                     }
-                    return DataManager.getInstance().getDao().getActiveDownloadTickets(first, pageSize, useSortField, useSortOrder.asBoolean(), filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getActiveDownloadTickets(first, pageSize, useSortField, useSortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }
@@ -627,7 +630,7 @@ public class AdminLicenseBean implements Serializable {
      * @param emailSubjectKey
      * @param emailBodyKey
      * @param emailBodyParams
-     * @return Navigation outcome 
+     * @return Navigation outcome
      */
     private static String notifyOwner(DownloadTicket ticket, String emailSubjectKey, String emailBodyKey, List<String> emailBodyParams) {
         if (ticket == null) {

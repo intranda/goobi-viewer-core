@@ -192,6 +192,7 @@ public class HighlightsBean implements Serializable {
                     } catch (URISyntaxException e) {
                         logger.error("Highlight target url {} is not a valid url", object.getData().getTargetUrl());
                     }
+                    break;
                 default:
                     break;
             }
