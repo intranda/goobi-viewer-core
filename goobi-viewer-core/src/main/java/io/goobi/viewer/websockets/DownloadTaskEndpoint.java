@@ -168,7 +168,7 @@ public class DownloadTaskEndpoint {
                 .map(ExternalFilesDownloadJob.class::cast)
                 .orElse(null);
         ViewerMessage queueMessage = queueManager.getMessageById(message.messageQueueId).orElse(null);
-        if(queueMessage != null) {
+        if(queueMessage != null && job == null) {
             answer.status = Status.WAITING;
         } else if (job != null) {
             if(job.isError()) {
