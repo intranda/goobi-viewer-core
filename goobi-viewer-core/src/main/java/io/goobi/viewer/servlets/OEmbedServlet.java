@@ -209,7 +209,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
     /**
      * 
      * @param origUrl
-     * @return
+     * @return {@link OEmbedRecord}
      * @throws URISyntaxException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -227,7 +227,9 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
         url = url.replace("viewer/", "");
 
         String[] urlSplit = url.split("/");
-        logger.trace(Arrays.toString(urlSplit));
+        if (logger.isTraceEnabled()) {
+            logger.trace(Arrays.toString(urlSplit));
+        }
 
         if (urlSplit.length > 0 && "embed".equals(urlSplit[0])) {
             return new OEmbedRecord(origUrl);
