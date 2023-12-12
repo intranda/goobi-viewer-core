@@ -66,7 +66,7 @@ public class GeoMapUpdate implements IModelUpdate {
      * 
      * @param featureSets
      * @param dao
-     * @return
+     * @return List<GeoMap>
      * @throws DAOException
      */
     @SuppressWarnings("unchecked")
@@ -91,7 +91,7 @@ public class GeoMapUpdate implements IModelUpdate {
     /**
      * 
      * @param dao
-     * @return
+     * @return Map<Long, FeatureSet>
      * @throws DAOException
      */
     @SuppressWarnings("unchecked")
@@ -134,5 +134,4 @@ public class GeoMapUpdate implements IModelUpdate {
 
         return featureSets;
     }
-
 }

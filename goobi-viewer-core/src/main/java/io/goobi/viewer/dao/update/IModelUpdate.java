@@ -40,7 +40,8 @@ public interface IModelUpdate {
      * </p>
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
-     * @return a boolean.
+     * @param templateManager
+     * @return true if rows were updated; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.sql.SQLException if any.
      */

@@ -183,6 +183,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
 
     /**
      * @param dao
+     * @return Map<String, Map<String, List<Long>>>
      * @throws SQLException
      * @throws DAOException
      */
@@ -235,6 +236,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     /**
      * @param categories
      * @param map
+     * @param pages
      */
     private static void linkToPages(List<CMSCategory> categories, Map<String, List<Long>> map, List<CMSPage> pages) {
         if (map == null) {
@@ -323,6 +325,8 @@ public class CMSCategoryUpdate implements IModelUpdate {
 
     /**
      * @param categories
+     * @param existingCategories
+     * @return List<CMSCategory>
      * @throws DAOException
      */
     private static List<CMSCategory> synchronize(List<CMSCategory> categories, List<CMSCategory> existingCategories) {

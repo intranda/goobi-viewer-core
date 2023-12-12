@@ -1791,7 +1791,7 @@ public interface IDAO {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
-     * @return  true if page deleted successfully; false otherwise
+     * @return true if page deleted successfully; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteStaticPage(CMSStaticPage page) throws DAOException;
@@ -1872,7 +1872,7 @@ public interface IDAO {
      * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
-     * @return  true if category deleted successfully; false otherwise
+     * @return true if category deleted successfully; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteCategory(CMSCategory category) throws DAOException;
@@ -2527,7 +2527,9 @@ public interface IDAO {
     public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String commenting) throws DAOException;
 
     /**
-     * @return List of all existing {@link CrowdsourcingAnnotation}s, optionaly sorted by given sortField
+     * @param sortField
+     * @param sortDescending
+     * @return List of all existing {@link CrowdsourcingAnnotation}s, optionally sorted by given sortField
      * @throws DAOException
      */
     public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean sortDescending) throws DAOException;
@@ -2702,6 +2704,7 @@ public interface IDAO {
     /**
      * Call {@link EntityManager#getTransaction() getTransaction()} on the given EntityManager and then {@link EntityTransaction#begin() begin()} on
      * the transaction
+     * 
      * @param em EntityManager
      * @return the transaction gotten from the entity manager
      */
