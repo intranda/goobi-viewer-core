@@ -7,12 +7,13 @@ import java.io.Serializable;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,6 +32,7 @@ import org.quartz.CronExpression;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.controller.shell.ShellCommand;
 
@@ -68,75 +70,48 @@ public class AdminDeveloperBean implements Serializable {
     private static final String SQL_STATEMENT_ADD_SUPERUSER = "INSERT INTO users (active,email,password_hash,score,superuser) VALUES (1,\"goobi@intranda.com\",\"$2a$10$Z5GTNKND9ZbuHt0ayDh0Remblc7pKUNlqbcoCxaNgKza05fLtkuYO\",0,1);";
     
     private static final String BASH_STATEMENT_CREATE_SQL_DUMP = "mysqldump $VIEWERDBNAME --ignore-table=viewer.crowdsourcing_fulltexts --ignore-table=viewer.users";
-
-    private static final String BASH_STATEMENT_PULL_THEME_REPOSITORY = "cd $VIEWERTHEMEPATH; git pull | grep -v -e \"Already up-to-date.\" -e \"Bereits aktuell.\"";
     
-    private final String[] FILES_TO_INCLUDE = new String[] {"config_viewer.xml", "messages_*.properties"};
+    private static final String[] FILES_TO_INCLUDE = new String[] {"config_viewer-module-crowdsourcing.xml", "messages_*.properties"};
     
-    private final String viewerDatabaseName = "viewer";
+    private final String viewerDatabaseName = DataManager.getInstance().getConfiguration().getTheme();
     private final String viewerConfigDirectory = DataManager.getInstance().getConfiguration().getConfigLocalPath();
     
-    public boolean isAutopullActive() {
-        //TODO: implement
-        return true;
-    }
+
     
-    public Instant getNextRunAutopull() throws ParseException {
-        return getNextRunAutopull(Instant.now(), getAutpullCronExpression());
-    }
-    
-    private String getAutpullCronExpression() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-  
-    public Instant getNextRunAutopull(Instant time, String expression) throws ParseException {
-        CronExpression expr = new CronExpression(expression);
-        Date lastDate = expr.getNextValidTimeAfter(Date.from(time));
-        return lastDate.toInstant();
-    }
-    
-    public static String convertCronExpression(String expr) {
-        if(expr.endsWith("*")) {
-            expr = expr.substring(0, expr.length()-1) + "?";
-        }
-        if(expr.split("\\s+").length < 6) {
-            expr = "* " + expr; 
-        }
-        return expr;
-    }
-    
-    public Path createDeveloperArchive() throws IOException, InterruptedException  {
+    public Path createDeveloperArchive() throws IOException, InterruptedException, JDOMException  {
         return createDeveloperArchive(Files.createTempDirectory("viewer_developer_"));
     }
     
-    public Path createDeveloperArchive(Path tempDir) throws IOException, InterruptedException  {
+    protected Path createDeveloperArchive(Path tempDir) throws IOException, InterruptedException, JDOMException  {
+        
+        Map<Path, String> zipEntryMap = new HashMap<>();
         FilenameFilter filter = WildcardFileFilter.builder().setWildcards(FILES_TO_INCLUDE).get();
-        File[] files = Path.of(this.viewerConfigDirectory).toFile().listFiles(filter);
-        List<File> filesToZip = Stream.concat(Stream.of(files), Stream.of(createSqlDump(tempDir))).collect(Collectors.toList());
+        
+        zipEntryMap.put(Path.of("viewer/config/config_viewer.xml"), XmlTools.getStringFromElement(createDeveloperViewerConfig(Path.of(viewerConfigDirectory, "config_viewer.xml")).getRootElement(), StringTools.DEFAULT_ENCODING));
+        zipEntryMap.put(Path.of("viewer/config/viewer.sql"), createSqlDump());
+        for(File file : Path.of(viewerConfigDirectory).toFile().listFiles(filter)) {
+            Path zipEntryPath = Path.of("viewer/config", file.getName().toString());
+            zipEntryMap.put(zipEntryPath, FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING));
+        }
+        
         File zipFile = tempDir.resolve("developer.zip").toFile();
-        FileTools.compressZipFile(filesToZip, zipFile, 9);
+        FileTools.compressZipFile(zipEntryMap, zipFile, 9);
         return zipFile.toPath();
     }
-    
-    public File createSqlDump(Path tempDir) throws IOException, InterruptedException {
+
+
+    protected String createSqlDump() throws IOException, InterruptedException {
         String createSqlDumpStatement = BASH_STATEMENT_CREATE_SQL_DUMP.replace("$VIEWERDBNAME", this.viewerDatabaseName);
         ShellCommand command = new ShellCommand(createSqlDumpStatement.split("\\s+"));
         int ret = command.exec();
         if(ret < 1) {
-            Path dumpFile = tempDir.resolve("viewer.sql").toAbsolutePath();
-            if(Files.exists(dumpFile)) {
-                Files.delete(dumpFile);
-            }
-            Files.writeString(dumpFile, command.getOutput(), StandardOpenOption.CREATE);
-            return dumpFile.toFile();
+            return new StringBuilder(command.getOutput()).append(SQL_STATEMENT_CREATE_USERS).append(SQL_STATEMENT_ADD_SUPERUSER).toString();
         } else {
-            System.out.println("Output: " + command.getOutput());
             throw new IOException("Error executing command '" + createSqlDumpStatement + "':\t" + command.getErrorOutput());
         }
     }
     
-    public Document createDeveloperViewerConfig(Path viewerConfigPath) throws IOException, JDOMException {
+    protected Document createDeveloperViewerConfig(Path viewerConfigPath) throws IOException, JDOMException {
         Document configDoc = XmlTools.readXmlFile(viewerConfigPath);
         replaceSolrUrl(configDoc);
         renameElement(configDoc, "//config/urls/rest", "iiif");
@@ -167,6 +142,36 @@ public class AdminDeveloperBean implements Serializable {
             ele.setText(value);
             urls.addContent(ele); 
         });
+    }
+    
+    public boolean isAutopullActive() {
+        //TODO: implement
+        return true;
+    }
+    
+    public Instant getNextRunAutopull() throws ParseException {
+        return getNextRunAutopull(Instant.now(), getAutpullCronExpression());
+    }
+    
+    private String getAutpullCronExpression() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+  
+    public Instant getNextRunAutopull(Instant time, String expression) throws ParseException {
+        CronExpression expr = new CronExpression(expression);
+        Date lastDate = expr.getNextValidTimeAfter(Date.from(time));
+        return lastDate.toInstant();
+    }
+    
+    public static String convertCronExpression(String expr) {
+        if(expr.endsWith("*")) {
+            expr = expr.substring(0, expr.length()-1) + "?";
+        }
+        if(expr.split("\\s+").length < 6) {
+            expr = "* " + expr; 
+        }
+        return expr;
     }
     
 }

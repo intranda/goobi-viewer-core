@@ -13,11 +13,12 @@ public class ShellCommand {
 
     private static final Logger logger = LogManager.getLogger(ShellCommand.class);
 
+    private final static long DEFAULT_TIMEOUT_MILLIS = 8000;
+    
     private String command[];
     private ProcessOutputReader outputReader;
     private ProcessOutputReader errorReader;
     private boolean keepOutput = true;
-    private long timeout = 8000;// ms
 
     public ShellCommand(String... command) {
         if (command == null || command.length == 0) {
@@ -25,8 +26,11 @@ public class ShellCommand {
         }
         this.command = command;
     }
-
     public int exec() throws IOException, InterruptedException {
+        return exec(DEFAULT_TIMEOUT_MILLIS);
+    }
+
+    public int exec(long timeoutInMillis) throws IOException, InterruptedException {
 
         logger.trace("execute shell command: " + StringUtils.join(command, " ")); //$NON-NLS-2$
         InputStream is = null;
@@ -49,10 +53,10 @@ public class ShellCommand {
             Thread errorBufferThread = new Thread(errorReader);
             errorBufferThread.start();
 
-            int result = process.waitFor(timeout, TimeUnit.MILLISECONDS) ? 0 : -1;
+            int result = process.waitFor(timeoutInMillis, TimeUnit.MILLISECONDS) ? 0 : -1;
             logger.debug("Done with shell command");
-            bufferThread.join(timeout);
-            errorBufferThread.join(timeout);
+            bufferThread.join(timeoutInMillis);
+            errorBufferThread.join(timeoutInMillis);
             logger.trace("All output read");
             return result;
         } finally {

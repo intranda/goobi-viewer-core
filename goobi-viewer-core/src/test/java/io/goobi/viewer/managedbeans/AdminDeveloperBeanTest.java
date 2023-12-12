@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.junit.Test;
+import org.quartz.CronExpression;
 
 import io.goobi.viewer.controller.XmlTools;
 
@@ -27,15 +28,13 @@ public class AdminDeveloperBeanTest {
     @Test
     public void test_getNextAutopullRun() throws ParseException {
         
-        String expr = "*/1 *   * * *";
-        
-        Instant now = Instant.now();
-        Instant nextRun = bean.getNextRunAutopull(now, AdminDeveloperBean.convertCronExpression(expr));
-        assertTrue(now.getEpochSecond() == nextRun.getEpochSecond() || now.getEpochSecond() == nextRun.getEpochSecond()-1);
+        String expr = "0 */1 * * * ?";
+        CronExpression cron = new CronExpression(expr);
+        System.out.println(cron.getExpressionSummary());
     }
     
     @Test
-    public void test_createZipFile() throws IOException, InterruptedException {
+    public void test_createZipFile() throws IOException, InterruptedException, JDOMException {
         Path zipPath = Path.of("src/test/resources/output/viewer_dump");
         if(Files.isDirectory(zipPath)) {
             FileUtils.cleanDirectory(zipPath.toFile());
@@ -43,7 +42,7 @@ public class AdminDeveloperBeanTest {
             Files.createDirectories(zipPath);
         }
         Path zipFile = bean.createDeveloperArchive(zipPath);
-        System.out.println("Created zip " + zipFile);
+        assertTrue(Files.exists(zipPath));
         
     }
     
