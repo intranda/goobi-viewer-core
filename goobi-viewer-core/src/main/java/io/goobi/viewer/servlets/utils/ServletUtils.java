@@ -21,9 +21,6 @@
  */
 package io.goobi.viewer.servlets.utils;
 
-import java.util.Collection;
-import java.util.Enumeration;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +31,12 @@ import org.apache.commons.lang3.StringUtils;
  * </p>
  */
 public class ServletUtils {
+
+    /**
+     * Private constructor.
+     */
+    private ServletUtils() {
+    }
 
     /**
      * retrieve complete Servlet url from servlet context, including Url, Port, Servletname etc. callable without jsf context

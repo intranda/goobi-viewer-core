@@ -27,16 +27,17 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
@@ -75,7 +76,7 @@ public class GlossaryManager {
                 Optional<String> title = readFromFile(vocabPath, VOCABULARY_TITLE_REGEX, 1);
                 Optional<String> description = readFromFile(vocabPath, VOCABULARY_DESCRIPTION_REGEX, 1);
 
-                title.map(t -> new Glossary(t, vocabPath.getFileName().toString(), description.orElse(""))).ifPresent(g -> glossaries.add(g));
+                title.map(t -> new Glossary(t, vocabPath.getFileName().toString(), description.orElse(""))).ifPresent(glossaries::add);
             }
             return glossaries;
         }
@@ -133,9 +134,9 @@ public class GlossaryManager {
             JSONArray records = json.getJSONArray("records");
 
             for (int i = 0; i < records.length(); i++) {
-                JSONObject record = records.getJSONObject(i);
+                JSONObject rec = records.getJSONObject(i);
                 GlossaryRecord glossaryRecord = new GlossaryRecord();
-                JSONArray fields = record.getJSONArray("fields");
+                JSONArray fields = rec.getJSONArray("fields");
                 for (int j = 0; j < fields.length(); j++) {
                     JSONObject field = fields.getJSONObject(j);
                     String label = field.getString("label");
@@ -153,6 +154,8 @@ public class GlossaryManager {
                         case "Source":
                             glossaryRecord.setSource(value);
                             break;
+                        default:
+                            break;
                     }
                 }
                 glossaryRecords.add(glossaryRecord);
@@ -166,22 +169,23 @@ public class GlossaryManager {
 
     /**
      * @param vocabPath
-     * @return
+     * @param regex
+     * @param group
+     * @return Optional<String>
      */
-    private Optional<String> readFromFile(java.nio.file.Path vocabPath, String regex, int group) {
-        Optional<String> title = Optional.of(vocabPath).map(path -> {
+    private static Optional<String> readFromFile(java.nio.file.Path vocabPath, String regex, int group) {
+        return Optional.of(vocabPath).map(path -> {
             try {
                 return Files.readAllLines(path);
             } catch (IOException e) {
-                logger.error("Unable to read file " + path, e);
+                logger.error("Unable to read file {}", path, e);
                 return new ArrayList<String>();
             }
         })
-                .map(lines -> lines.size() > 0 ? lines.get(0) : "")
+                .map(lines -> !lines.isEmpty() ? lines.get(0) : "")
                 .map(line -> Pattern.compile(regex).matcher(line))
-                .filter(matcher -> matcher.find())
+                .filter(Matcher::find)
                 .map(matcher -> matcher.group(group));
-        return title;
     }
 
 }

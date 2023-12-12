@@ -49,7 +49,7 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     /**
      *
      * @param rec
-     * @param record
+     * @param size
      * @throws ViewerConfigurationException
      */
     private void generateUrl(OEmbedRecord rec, int size) {

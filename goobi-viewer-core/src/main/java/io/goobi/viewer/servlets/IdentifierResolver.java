@@ -82,7 +82,8 @@ public class IdentifierResolver extends HttpServlet {
     private static final String ERRTXT_TARGET_FIELD_NOT_FOUND =
             "A document was found but it did not contain the specified target field name required for the mapping. Target field name is: ";
     private static final String ERRTXT_NO_ARGUMENT =
-            "You didnt not specify a source field value for the mapping. Append the value to the URL as a request parameter; expected param name is :";
+            "You didnt not specify a source field value for the mapping."
+                    + " Append the value to the URL as a request parameter; expected param name is :";
     private static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
     //    private static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
     //    private static final String ERRTXT_NOCFG = "The configuration file lucene_url_mapper_config.xml could not be loaded. ";
@@ -465,7 +466,7 @@ public class IdentifierResolver extends HttpServlet {
      * @param moreFields
      * @param moreValues
      * @param request
-     * @return
+     * @return {@link SolrDocumentList}
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -494,7 +495,7 @@ public class IdentifierResolver extends HttpServlet {
 
         sbQuery.append(SearchHelper.getAllSuffixes(request, false, false));
         String query = StringTools.stripPatternBreakingChars(sbQuery.toString());
-        // logger.trace("query: {}", query);
+        // logger.trace("query: {}", query); //NOSONAR Sometimes needed for debugging
 
         // 3. evaluate the search
         return DataManager.getInstance().getSearchIndex().search(query);
@@ -539,7 +540,7 @@ public class IdentifierResolver extends HttpServlet {
      * 
      * @param targetDoc
      * @param pageResolverUrl
-     * @return
+     * @return Generated URL
      */
     public static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
         int order = 1;
@@ -555,7 +556,8 @@ public class IdentifierResolver extends HttpServlet {
      *
      * @param targetDoc
      * @param pageResolverUrl
-     * @return
+     * @param order
+     * @return Generated URL
      * @should construct url correctly
      * @should construct anchor url correctly
      * @should construct group url correctly

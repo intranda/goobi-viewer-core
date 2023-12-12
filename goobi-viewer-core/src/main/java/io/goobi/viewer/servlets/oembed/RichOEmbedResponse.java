@@ -50,6 +50,8 @@ public class RichOEmbedResponse extends OEmbedResponse {
      * Constructor.
      *
      * @param rec a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
+     * @param maxWidth
+     * @param maxHeight
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public RichOEmbedResponse(OEmbedRecord rec, Integer maxWidth, Integer maxHeight) throws ViewerConfigurationException {
@@ -71,7 +73,7 @@ public class RichOEmbedResponse extends OEmbedResponse {
      * @param width
      * @param height
      */
-    private void generateHtml(OEmbedRecord rec, int width, int height)  {
+    private void generateHtml(OEmbedRecord rec, int width, int height) {
         if (rec == null) {
             throw new IllegalArgumentException("record may not be null");
         }
