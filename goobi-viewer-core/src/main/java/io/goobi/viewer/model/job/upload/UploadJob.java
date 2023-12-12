@@ -237,9 +237,6 @@ public class UploadJob implements Serializable {
         } catch (IOException e) {
             logger.error(e.getMessage());
             throw new UploadException(e.getMessage());
-        } catch (HTTPException e) {
-            logger.error(e.getMessage());
-            throw new UploadException(e.getMessage());
         }
     }
 

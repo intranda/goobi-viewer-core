@@ -88,7 +88,7 @@ import jakarta.mail.internet.MimeMultipart;
  * Utility methods for HTTP operations, mail, etc.
  *
  */
-public class NetTools {
+public final class NetTools {
 
     private static final Logger logger = LogManager.getLogger(NetTools.class);
 
@@ -123,7 +123,7 @@ public class NetTools {
      *         or the error message.
      */
     public static String[] callUrlGET(String url) {
-        // logger.trace("callUrlGET: {}", url);
+        // logger.trace("callUrlGET: {}", url); //NOSONAR Sometimes needed for debugging
         String[] ret = new String[2];
         try (CloseableHttpClient httpClient = HttpClients.custom().build()) {
             HttpGet httpGet = new HttpGet(url);
@@ -141,7 +141,7 @@ public class NetTools {
                         ret[1] = response.getStatusLine().getReasonPhrase();
                         break;
                     default:
-                        // logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                        // logger.warn("Error code: {}", response.getStatusLine().getStatusCode()); //NOSONAR Sometimes needed for debugging
                         ret[1] = response.getStatusLine().getReasonPhrase();
                         break;
                 }
@@ -156,8 +156,7 @@ public class NetTools {
     /**
      *
      * @param url URL to call
-     * @return
-     * @throws ClientProtocolException
+     * @return {@link String} content fetched from the given url
      * @throws IOException
      * @throws HTTPException
      */
@@ -207,15 +206,15 @@ public class NetTools {
      * @param headers
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
+     * @param contentType
      * @param stringBody Optional entity content.
      * @param file
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
     public static String getWebContentPOST(String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
-            String contentType, String stringBody, File file) throws IOException, HTTPException {
+            String contentType, String stringBody, File file) throws IOException {
         return getWebContent("POST", url, headers, params, cookies, contentType, stringBody, file);
     }
 
@@ -347,7 +346,6 @@ public class NetTools {
                 if (code == HttpStatus.SC_OK) {
                     return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
                 }
-                //                throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
                 return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
             }
         }
@@ -361,7 +359,7 @@ public class NetTools {
      * @param bcc
      * @param subject a {@link java.lang.String} object.
      * @param body a {@link java.lang.String} object.
-     * @return a boolean.
+     * @return true if mail sent successfully; false otherwise
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws javax.mail.MessagingException if any.
      */
@@ -387,13 +385,14 @@ public class NetTools {
      * @param smtpSenderAddress
      * @param smtpSenderName
      * @param smtpSecurity
-     * @param smtpPort
+     * @param inSmtpPort
+     * @return true if mail sent successfully; false otherwise
      * @throws MessagingException
      * @throws UnsupportedEncodingException
      */
     private static boolean postMail(List<String> recipients, List<String> cc, List<String> bcc, String subject, String body, String smtpServer,
-            final String smtpUser, final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity, Integer smtpPort)
-            throws MessagingException, UnsupportedEncodingException {
+            final String smtpUser, final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity,
+            final Integer inSmtpPort) throws MessagingException, UnsupportedEncodingException {
         if (recipients == null) {
             throw new IllegalArgumentException("recipients may not be null");
         }
@@ -426,6 +425,7 @@ public class NetTools {
             auth = false;
         }
         Properties props = new Properties();
+        int smtpPort = inSmtpPort;
         switch (smtpSecurity.toUpperCase()) {
             case "STARTTLS":
                 logger.debug("Using STARTTLS");
@@ -504,15 +504,15 @@ public class NetTools {
         // Optional : You can also set your custom headers in the Email if you want
         // msg.addHeader("MyHeaderName", "myHeaderValue");
         msg.setSubject(subject);
-        {
-            // Message body
-            MimeBodyPart messagePart = new MimeBodyPart();
-            messagePart.setText(body, "utf-8");
-            messagePart.setHeader(HTTP_HEADER_CONTENT_TYPE, "text/html; charset=\"utf-8\"");
-            MimeMultipart multipart = new MimeMultipart();
-            multipart.addBodyPart(messagePart);
-            msg.setContent(multipart);
-        }
+
+        // Message body
+        MimeBodyPart messagePart = new MimeBodyPart();
+        messagePart.setText(body, "utf-8");
+        messagePart.setHeader(HTTP_HEADER_CONTENT_TYPE, "text/html; charset=\"utf-8\"");
+        MimeMultipart multipart = new MimeMultipart();
+        multipart.addBodyPart(messagePart);
+        msg.setContent(multipart);
+
         msg.setSentDate(new Date());
         Transport.send(msg);
 
@@ -522,7 +522,7 @@ public class NetTools {
     /**
      *
      * @param recipients
-     * @return
+     * @return Given recipients as a InternetAddress[]
      * @throws AddressException
      */
     static InternetAddress[] prepareRecipients(List<String> recipients) throws AddressException {
@@ -573,7 +573,7 @@ public class NetTools {
             logger.warn("Could not extract remote IP address, using localhost.");
         }
 
-        // logger.trace("Pre-parsed IP address(es): {}", address);
+        // logger.trace("Pre-parsed IP address(es): {}", address); //NOSONAR Sometimes needed for debugging
         return parseMultipleIpAddresses(address);
     }
 
@@ -582,24 +582,25 @@ public class NetTools {
      * parseMultipleIpAddresses.
      * </p>
      *
-     * @param address a {@link java.lang.String} object.
-     * @should filter multiple addresses correctly
+     * @param address IP address
      * @return a {@link java.lang.String} object.
+     * @should filter multiple addresses correctly
      */
-    protected static String parseMultipleIpAddresses(String address) {
+    protected static String parseMultipleIpAddresses(final String address) {
         if (address == null) {
             throw new IllegalArgumentException("address may not be null");
         }
 
-        if (address.contains(",")) {
-            String[] addressSplit = address.split(",");
+        String ret = address;
+        if (ret.contains(",")) {
+            String[] addressSplit = ret.split(",");
             if (addressSplit.length > 0) {
-                address = addressSplit[addressSplit.length - 1].trim();
+                ret = addressSplit[addressSplit.length - 1].trim();
             }
         }
 
-        // logger.trace("Parsed IP address: {}", address);
-        return address;
+        // logger.trace("Parsed IP address: {}", ret); //NOSONAR Sometimes needed for debugging
+        return ret;
     }
 
     /**
@@ -631,7 +632,7 @@ public class NetTools {
     /**
      * Replaces most the last two segments of the given IPv4 address with placeholders.
      *
-     * @param address
+     * @param address IP address
      * @return Scrambled IP address
      * @should modify string correctly
      */
@@ -650,11 +651,11 @@ public class NetTools {
 
     /**
      *
-     * @param address
-     * @return
+     * @param address IP address
+     * @return true if given address is a localhost address; false otherwise
      */
     public static boolean isIpAddressLocalhost(String address) {
-        // logger.trace("isIpAddressLocalhost: {}", address);
+        // logger.trace("isIpAddressLocalhost: {}", address); //NOSONAR Sometimes needed for debugging
         if (address == null) {
             return false;
         }
@@ -668,7 +669,7 @@ public class NetTools {
      * @param pi
      * @param rootUrl
      * @param webApiToken
-     * @return
+     * @return Generated URL
      * @should build url correctly
      */
     public static String buildClearCacheUrl(String mode, String pi, String rootUrl, String webApiToken) {
@@ -702,8 +703,8 @@ public class NetTools {
     /**
      * return true if the given string is a whole number between 200 and 399 (inclusive)
      *
-     * @param string
-     * @return
+     * @param string HTTP status as {@link String}
+     * @return true if HTTP code is in the 200-399 range; false otherwise
      */
     public static boolean isStatusOk(String string) {
         try {
@@ -714,6 +715,11 @@ public class NetTools {
         }
     }
 
+    /**
+     * 
+     * @param subnetMask
+     * @return true if subnetMask valid; false otherwise
+     */
     public static boolean isValidSubnetMask(String subnetMask) {
         try {
             new SubnetUtils(subnetMask);
@@ -734,8 +740,8 @@ public class NetTools {
      */
     public static boolean isCrawlerBotRequest(HttpServletRequest request) {
         String userAgent = request != null ? request.getHeader("User-Agent") : "";
-        return StringUtils.isNotBlank(userAgent) &&
-                userAgent.matches(DataManager.getInstance().getConfiguration().getCrawlerDetectionRegex());
+        return StringUtils.isNotBlank(userAgent)
+                && userAgent.matches(DataManager.getInstance().getConfiguration().getCrawlerDetectionRegex());
 
     }
 
@@ -756,22 +762,24 @@ public class NetTools {
     /**
      * Append one or more query parameters to an existing URI
      * 
-     * @param uriString the URI
+     * @param uri the URI
      * @param queryParams A list of parameters. Each element of the list is assumed to be a list of size 2, whith the first element being the
      *            parameter name and the second the parameter value. If the list has only one item, it is assumed to be a parameter name without
      *            value, any elements after the second will be ignored
      * @return The URI with query params appended
      * @throws URISyntaxException
      */
-    public static URI addQueryParameters(URI uri, List<List<String>> queryParams) {
+    public static URI addQueryParameters(final URI uri, List<List<String>> queryParams) {
+        URI ret = uri;
         if (queryParams != null) {
             UriBuilder builder = UriBuilder.fromUri(uri);
             for (List<String> param : queryParams) {
                 builder.queryParam(param.stream().findFirst().orElse(""), param.stream().skip(1).findFirst().orElse(""));
             }
-            uri = builder.build();
+            ret = builder.build();
         }
-        return uri;
+
+        return ret;
     }
 
 }

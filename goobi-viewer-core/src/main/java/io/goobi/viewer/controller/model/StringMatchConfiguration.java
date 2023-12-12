@@ -41,20 +41,39 @@ public class StringMatchConfiguration implements Predicate<String> {
     private final String excludeRegex;
     private final List<String> allowedValues;
 
+    /**
+     * 
+     * @param includeRegex
+     * @param excludeRegex
+     * @param allowedValues
+     */
     public StringMatchConfiguration(String includeRegex, String excludeRegex, List<String> allowedValues) {
         this.includeRegex = includeRegex;
         this.excludeRegex = excludeRegex;
         this.allowedValues = allowedValues;
     }
 
+    /**
+     * 
+     * @param allowedValues
+     */
     public StringMatchConfiguration(List<String> allowedValues) {
         this("", "", allowedValues);
     }
 
+    /**
+     * 
+     * @param includeRegex
+     * @param excludeRegex
+     */
     public StringMatchConfiguration(String includeRegex, String excludeRegex) {
         this(includeRegex, excludeRegex, Collections.emptyList());
     }
 
+    /**
+     * 
+     * @param includeRegex
+     */
     public StringMatchConfiguration(String includeRegex) {
         this(includeRegex, "", Collections.emptyList());
     }
@@ -63,11 +82,16 @@ public class StringMatchConfiguration implements Predicate<String> {
         if (StringUtils.isBlank(s)) {
             return false;
         }
-        return (StringUtils.isBlank(includeRegex) || s.matches(includeRegex)) &&
-                (StringUtils.isBlank(excludeRegex) || !s.matches(excludeRegex)) &&
-                (allowedValues.isEmpty() || allowedValues.contains(s));
+        return (StringUtils.isBlank(includeRegex) || s.matches(includeRegex))
+                && (StringUtils.isBlank(excludeRegex) || !s.matches(excludeRegex))
+                && (allowedValues.isEmpty() || allowedValues.contains(s));
     }
 
+    /**
+     * 
+     * @param config
+     * @return {@link StringMatchConfiguration}
+     */
     public static StringMatchConfiguration fromConfig(HierarchicalConfiguration<ImmutableNode> config) {
         if (config != null) {
             String include = config.getString("regex.include", "");
