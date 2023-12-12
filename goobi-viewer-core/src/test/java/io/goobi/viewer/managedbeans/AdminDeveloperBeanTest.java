@@ -30,11 +30,14 @@ public class AdminDeveloperBeanTest {
     Path zipPath = Path.of("src/test/resources/output/viewer_dump");
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         config = Mockito.mock(Configuration.class);
         Mockito.when(config.getTheme()).thenReturn("reference");
         Mockito.when(config.getConfigLocalPath()).thenReturn(configPath.toAbsolutePath().toString());
         bean = new AdminDeveloperBean(config);
+        if(!Files.exists(zipPath)) {
+            Files.createDirectories(zipPath);
+        }
     }
     
     @Test

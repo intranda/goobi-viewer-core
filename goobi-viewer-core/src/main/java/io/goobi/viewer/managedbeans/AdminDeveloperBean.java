@@ -44,7 +44,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
 
-@Named("developerBean")
+@Named
 @SessionScoped
 public class AdminDeveloperBean implements Serializable {
 
