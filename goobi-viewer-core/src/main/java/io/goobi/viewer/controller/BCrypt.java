@@ -576,7 +576,7 @@ public class BCrypt {
      * 
      * @param plaintext the plaintext password to verify
      * @param hashed the previously-hashed password
-     * @return
+     * @return true if the passwords match, false otherwise
      */
     public boolean checkpw(String plaintext, String hashed) {
         return checkPassword(plaintext, hashed);

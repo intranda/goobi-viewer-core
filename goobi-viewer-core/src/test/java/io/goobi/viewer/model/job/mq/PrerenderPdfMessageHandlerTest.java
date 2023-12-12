@@ -57,7 +57,7 @@ public class PrerenderPdfMessageHandlerTest {
         if (!Files.exists(pdfFolder)) {
             Files.createDirectories(pdfFolder);
         }
-        List<Path> imageFiles = FileTools.listFiles(imageFolder, FileTools.imageNameFilter);
+        List<Path> imageFiles = FileTools.listFiles(imageFolder, FileTools.IMAGE_NAME_FILTER);
         assertEquals(17, imageFiles.size());
 
         ContentServerConfiguration contentServerConfig = ContentServerConfiguration.getInstance(contentServerConfigPath.toString());
@@ -72,7 +72,7 @@ public class PrerenderPdfMessageHandlerTest {
         ticket.getProperties().put("force", "true");
         assertEquals(MessageStatus.FINISH, handler.call(ticket));
 
-        List<Path> pdfFiles = FileTools.listFiles(pdfFolder, FileTools.pdfNameFilter);
+        List<Path> pdfFiles = FileTools.listFiles(pdfFolder, FileTools.PDF_NAME_FILTER);
 
         assertEquals(imageFiles.size(), pdfFiles.size());
 
