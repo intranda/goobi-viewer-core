@@ -267,30 +267,41 @@ public class XmlTools {
         return xpath.evaluate(parent);
 
     }
-
+    
     @SuppressWarnings("unchecked")
-    public static List<String> evaluateString(String expr, Object parent, List<Namespace> namespaces) {
-        XPathBuilder<Object> builder = new XPathBuilder(expr.trim().replace("\n", ""), Filters.element().or(Filters.attribute()));
+    public static List<String> evaluateAttributeString(String expr, Object parent, List<Namespace> namespaces) {
+        XPathBuilder<Attribute> builder = new XPathBuilder<>(expr.trim().replace("\n", ""), Filters.attribute());
 
         if (namespaces != null && !namespaces.isEmpty()) {
             builder.setNamespaces(namespaces);
         }
 
-        XPathExpression<Object> xpath = builder.compileWith(XPathFactory.instance());
-        return xpath.evaluate(parent).stream().map(object -> {
-            if (object instanceof Element) {
-                return ((Element) object).getText();
-            } else if (object instanceof Attribute) {
-                return ((Attribute) object).getValue();
-            } else {
-                return null;
-            }
-        })
+        XPathExpression<Attribute> xpath = builder.compileWith(XPathFactory.instance());
+        return xpath.evaluate(parent).stream().map(Attribute::getValue)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    public static Optional<String> evaluateToFirstElement(String expr, Object parent, List<Namespace> namespaces) {
+    @SuppressWarnings("unchecked")
+    public static List<String> evaluateString(String expr, Object parent, List<Namespace> namespaces) {
+        XPathBuilder<Element> builder = new XPathBuilder<>(expr.trim().replace("\n", ""), Filters.element());
+
+        if (namespaces != null && !namespaces.isEmpty()) {
+            builder.setNamespaces(namespaces);
+        }
+
+        XPathExpression<Element> xpath = builder.compileWith(XPathFactory.instance());
+        return xpath.evaluate(parent).stream().map(Element::getText)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+    
+    public static Optional<String> evaluateToFirstAttributeString(String expr, Object parent, List<Namespace> namespaces) {
+        return evaluateAttributeString(expr, parent, namespaces).stream().findFirst();
+    }
+
+
+    public static Optional<String> evaluateToFirstString(String expr, Object parent, List<Namespace> namespaces) {
         return evaluateString(expr, parent, namespaces).stream().findFirst();
     }
 

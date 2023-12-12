@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config>
+
+	<urls>
+
+		<rest>https://example.com/viewer/api/v1/</rest>
+        <solr>http://localhost:8983/solr/collection2</solr>
+        
+	</urls>
+
+
+	<viewer>
+
+		<theme mainTheme="mainTheme_value" discriminatorField="MD2_VIEWERSUBTHEME">
+            <rootPath>/opt/digiverso/goobi-viewer-theme-test/goobi-viewer-theme-mest/WebContent/resources/themes/</rootPath>
+		</theme>
+
+	</viewer>
+
+</config>
+
+
