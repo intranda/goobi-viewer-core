@@ -22,7 +22,6 @@
 package io.goobi.viewer.controller.model;
 
 import io.goobi.viewer.model.metadata.Metadata;
-import io.goobi.viewer.model.metadata.MetadataParameter;
 
 public class ManifestLinkConfiguration {
 
@@ -33,7 +32,7 @@ public class ManifestLinkConfiguration {
     /**
      * @param label
      * @param format
-     * @param param
+     * @param metadata
      */
     public ManifestLinkConfiguration(String label, String format, Metadata metadata) {
         super();
@@ -59,5 +58,4 @@ public class ManifestLinkConfiguration {
     public Metadata getMetadata() {
         return metadata;
     }
-
 }

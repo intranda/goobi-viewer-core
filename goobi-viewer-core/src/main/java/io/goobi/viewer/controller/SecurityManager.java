@@ -69,7 +69,7 @@ public class SecurityManager {
     /**
      * 
      * @param userName User name / e-mail address to check
-     * @return
+     * @return Current login delay for the given userName
      */
     public long getDelayForUserName(String userName) {
         if (userName == null) {
@@ -88,7 +88,7 @@ public class SecurityManager {
     /**
      * 
      * @param ipAddress IP address to check
-     * @return
+     * @return Current login delay for the given ipAddress
      */
     public long getDelayForIpAddress(String ipAddress) {
         if (ipAddress == null) {
