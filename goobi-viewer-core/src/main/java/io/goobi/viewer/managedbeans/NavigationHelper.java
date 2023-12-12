@@ -1774,7 +1774,7 @@ public class NavigationHelper implements Serializable {
     /**
      * 
      * @param pageType
-     * @return
+     * @return Appropriate exit URL
      */
     public String getExitUrl(PageType pageType) {
         String exitView = DataManager.getInstance().getConfiguration().getPageTypeExitView(pageType);

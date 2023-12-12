@@ -240,7 +240,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.generateSimpleSearchString("\"foo bar\"");
         assertEquals(
                 "SUPERDEFAULT:(\"foo bar\") OR SUPERFULLTEXT:(\"foo bar\") OR SUPERUGCTERMS:(\"foo bar\") OR DEFAULT:(\"foo bar\") OR FULLTEXT:(\"foo bar\") OR NORMDATATERMS:(\"foo bar\") OR UGCTERMS:(\"foo bar\") OR CMS_TEXT_ALL:(\"foo bar\")",
-                searchBean.searchStringInternal);
+                searchBean.getSearchStringInternal());
     }
 
     /**
@@ -251,7 +251,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
         searchBean.setCurrentSearchFilterString("filter_FULLTEXT");
         searchBean.generateSimpleSearchString("\"foo bar\"");
-        assertEquals("SUPERFULLTEXT:(\"foo bar\") OR FULLTEXT:(\"foo bar\")", searchBean.searchStringInternal);
+        assertEquals("SUPERFULLTEXT:(\"foo bar\") OR FULLTEXT:(\"foo bar\")", searchBean.getSearchStringInternal());
     }
 
     /**
@@ -263,7 +263,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.generateSimpleSearchString("foo bar");
         assertEquals(
                 "SUPERDEFAULT:(foo AND bar) SUPERFULLTEXT:(foo AND bar) SUPERUGCTERMS:(foo AND bar) DEFAULT:(foo AND bar) FULLTEXT:(foo AND bar) NORMDATATERMS:(foo AND bar) UGCTERMS:(foo AND bar) CMS_TEXT_ALL:(foo AND bar)",
-                searchBean.searchStringInternal);
+                searchBean.getSearchStringInternal());
     }
 
     /**
@@ -274,7 +274,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
         searchBean.setCurrentSearchFilterString("filter_FULLTEXT");
         searchBean.generateSimpleSearchString("foo bar");
-        assertEquals("SUPERFULLTEXT:(foo AND bar) OR FULLTEXT:(foo AND bar)", searchBean.searchStringInternal);
+        assertEquals("SUPERFULLTEXT:(foo AND bar) OR FULLTEXT:(foo AND bar)", searchBean.getSearchStringInternal());
     }
 
     /**
@@ -285,13 +285,13 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void generateSimpleSearchString_shouldAddProximitySearchTokenCorrectly() throws Exception {
         // All
         searchBean.generateSimpleSearchString("\"foo bar\"~20");
-        Assert.assertTrue(searchBean.searchStringInternal.contains("SUPERFULLTEXT:(\"foo bar\"~20)"));
-        Assert.assertTrue(searchBean.searchStringInternal.contains(" FULLTEXT:(\"foo bar\"~20)"));
+        Assert.assertTrue(searchBean.getSearchStringInternal().contains("SUPERFULLTEXT:(\"foo bar\"~20)"));
+        Assert.assertTrue(searchBean.getSearchStringInternal().contains(" FULLTEXT:(\"foo bar\"~20)"));
 
         // Just full-text
         searchBean.setCurrentSearchFilterString("filter_FULLTEXT");
         searchBean.generateSimpleSearchString("\"foo bar\"~20");
-        assertEquals("SUPERFULLTEXT:(\"foo bar\"~20) OR FULLTEXT:(\"foo bar\"~20)", searchBean.searchStringInternal);
+        assertEquals("SUPERFULLTEXT:(\"foo bar\"~20) OR FULLTEXT:(\"foo bar\"~20)", searchBean.getSearchStringInternal());
     }
 
     /**
@@ -540,10 +540,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         NavigationHelper nh = new NavigationHelper();
         searchBean.setNavigationHelper(nh);
 
-        searchBean.activeSearchType = SearchHelper.SEARCH_TYPE_ADVANCED;
+        searchBean.setActiveSearchTypeTest(SearchHelper.SEARCH_TYPE_ADVANCED);
         assertEquals(nh.getAdvancedSearchUrl(), searchBean.getSearchUrl());
 
-        searchBean.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
+        searchBean.setActiveSearchTypeTest(SearchHelper.SEARCH_TYPE_REGULAR);
         assertEquals(nh.getSearchUrl(), searchBean.getSearchUrl());
     }
 
@@ -567,21 +567,21 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Regular case
         searchBean.setHitIndexOperand(1);
-        searchBean.currentHitIndex = 6;
+        searchBean.setCurrentHitIndex(6);
         searchBean.increaseCurrentHitIndex();
-        assertEquals(7, searchBean.currentHitIndex);
+        assertEquals(7, searchBean.getCurrentHitIndex());
 
         // Edge case (min)
         searchBean.setHitIndexOperand(1);
-        searchBean.currentHitIndex = 0;
+        searchBean.setCurrentHitIndex(0);
         searchBean.increaseCurrentHitIndex();
-        assertEquals(1, searchBean.currentHitIndex);
+        assertEquals(1, searchBean.getCurrentHitIndex());
 
         // Edge case (max)
         searchBean.setHitIndexOperand(1);
-        searchBean.currentHitIndex = 8;
+        searchBean.setCurrentHitIndex(8);
         searchBean.increaseCurrentHitIndex();
-        assertEquals(9, searchBean.currentHitIndex);
+        assertEquals(9, searchBean.getCurrentHitIndex());
     }
 
     /**
@@ -595,21 +595,21 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Regular case
         searchBean.setHitIndexOperand(-1);
-        searchBean.currentHitIndex = 6;
+        searchBean.setCurrentHitIndex(6);
         searchBean.increaseCurrentHitIndex();
-        assertEquals(5, searchBean.currentHitIndex);
+        assertEquals(5, searchBean.getCurrentHitIndex());
 
         // Edge case (min)
         searchBean.setHitIndexOperand(-1);
-        searchBean.currentHitIndex = 1;
+        searchBean.setCurrentHitIndex(1);
         searchBean.increaseCurrentHitIndex();
-        assertEquals(0, searchBean.currentHitIndex);
+        assertEquals(0, searchBean.getCurrentHitIndex());
 
         // Edge case (max)
         searchBean.setHitIndexOperand(-1);
-        searchBean.currentHitIndex = 9;
+        searchBean.setCurrentHitIndex(9);
         searchBean.increaseCurrentHitIndex();
-        assertEquals(8, searchBean.currentHitIndex);
+        assertEquals(8, searchBean.getCurrentHitIndex());
     }
 
     /**
@@ -622,7 +622,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.getCurrentSearch().setHitsCount(10);
 
         searchBean.setHitIndexOperand(1);
-        searchBean.currentHitIndex = 6;
+        searchBean.setCurrentHitIndex(6);
         assertEquals(1, searchBean.getHitIndexOperand());
         searchBean.increaseCurrentHitIndex();
         assertEquals(0, searchBean.getHitIndexOperand());
@@ -637,10 +637,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
         searchBean.setHitIndexOperand(1);
-        searchBean.currentHitIndex = 9;
+        searchBean.setCurrentHitIndex(9);
 
         searchBean.increaseCurrentHitIndex();
-        assertEquals(9, searchBean.currentHitIndex);
+        assertEquals(9, searchBean.getCurrentHitIndex());
     }
 
     /**
@@ -652,10 +652,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
         searchBean.setHitIndexOperand(-1);
-        searchBean.currentHitIndex = 0;
+        searchBean.setCurrentHitIndex(0);
 
         searchBean.increaseCurrentHitIndex();
-        assertEquals(0, searchBean.currentHitIndex);
+        assertEquals(0, searchBean.getCurrentHitIndex());
     }
 
     @Test
@@ -866,11 +866,11 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void searchAdvanced_shouldGenerateSearchStringCorrectly() throws Exception {
-        Assert.assertTrue(StringUtils.isEmpty(searchBean.searchStringInternal));
+        Assert.assertTrue(StringUtils.isEmpty(searchBean.getSearchStringInternal()));
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setField(SolrConstants.PI);
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setValue(PI_KLEIUNIV);
         searchBean.searchAdvanced(false);
-        assertEquals("(+(PI:(PPN517154005)))", searchBean.searchStringInternal);
+        assertEquals("(+(PI:(PPN517154005)))", searchBean.getSearchStringInternal());
     }
 
     /**
@@ -894,7 +894,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void searchToday_shouldSetSearchStringCorrectly() throws Exception {
         searchBean.searchToday();
-        Assert.assertTrue(searchBean.searchStringInternal.startsWith(SolrConstants.MONTHDAY));
+        Assert.assertTrue(searchBean.getSearchStringInternal().startsWith(SolrConstants.MONTHDAY));
     }
 
     /**

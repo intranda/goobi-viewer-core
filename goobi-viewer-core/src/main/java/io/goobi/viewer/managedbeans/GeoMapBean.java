@@ -366,6 +366,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
                     break;
                 case SOLR_QUERY:
                     featureSet = new SolrFeatureSet();
+                    break;
                 default:
                     break;
             }

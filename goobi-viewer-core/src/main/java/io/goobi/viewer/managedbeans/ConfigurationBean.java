@@ -1391,7 +1391,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     * @param field
      * @return Configured value
      */
     public String getSearchSortingAscendingKey(String field) {
@@ -1399,7 +1399,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     * @param field
      * @return Configured value
      */
     public String getSearchSortingDescendingKey(String field) {
