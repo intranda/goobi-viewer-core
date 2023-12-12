@@ -13,9 +13,9 @@ public class ShellCommand {
 
     private static final Logger logger = LogManager.getLogger(ShellCommand.class);
 
-    private final static long DEFAULT_TIMEOUT_MILLIS = 8000;
-    
-    private String command[];
+    private static final long DEFAULT_TIMEOUT_MILLIS = 8000;
+
+    private String[] command;
     private ProcessOutputReader outputReader;
     private ProcessOutputReader errorReader;
     private boolean keepOutput = true;
@@ -26,13 +26,15 @@ public class ShellCommand {
         }
         this.command = command;
     }
+
     public int exec() throws IOException, InterruptedException {
         return exec(DEFAULT_TIMEOUT_MILLIS);
     }
 
     public int exec(long timeoutInMillis) throws IOException, InterruptedException {
-
-        logger.trace("execute shell command: " + StringUtils.join(command, " ")); //$NON-NLS-2$
+        if (logger.isTraceEnabled()) {
+            logger.trace("execute shell command: {}", StringUtils.join(command, " ")); //$NON-NLS-2$
+        }
         InputStream is = null;
         InputStream es = null;
         OutputStream out = null;
@@ -83,7 +85,7 @@ public class ShellCommand {
                     out = null;
                 }
             }
-            if(process != null) {
+            if (process != null) {
                 process.destroy();
             }
         }
@@ -100,18 +102,17 @@ public class ShellCommand {
     public String getOutput() {
         if (outputReader != null) {
             return outputReader.getOutput();
-        } else {
-            return "";
         }
+        
+        return "";
     }
 
     public String getErrorOutput() {
         if (errorReader != null) {
             return errorReader.getOutput();
-        } else {
-            return "";
         }
+        
+        return "";
     }
 
 }
-

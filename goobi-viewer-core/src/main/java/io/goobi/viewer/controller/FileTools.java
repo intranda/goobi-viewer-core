@@ -181,16 +181,11 @@ public final class FileTools {
      * @param encoding a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String getStringFromByteArray(byte[] bytes, String encoding) {
+    public static String getStringFromByteArray(byte[] bytes, final String encoding) {
         String result = "";
-
-        if (encoding == null) {
-            encoding = StringTools.DEFAULT_ENCODING;
-        }
-
         StringBuilder text = new StringBuilder();
         String nl = System.getProperty("line.separator");
-        try (Scanner scanner = new Scanner(new ByteArrayInputStream(bytes), encoding);) {
+        try (Scanner scanner = new Scanner(new ByteArrayInputStream(bytes), encoding == null ? StringTools.DEFAULT_ENCODING : encoding)) {
             while (scanner.hasNextLine()) {
                 text.append(scanner.nextLine()).append(nl);
             }
@@ -211,20 +206,17 @@ public final class FileTools {
      * @return a {@link java.io.File} object.
      * @throws java.io.IOException if any.
      */
-    public static File getFileFromString(String string, String filePath, String encoding, boolean append) throws IOException {
+    public static File getFileFromString(String string, String filePath, final String encoding, boolean append) throws IOException {
         if (string == null) {
             throw new IllegalArgumentException("string may not be null");
         }
-        if (encoding == null) {
-            encoding = StringTools.DEFAULT_ENCODING;
-        }
 
         File file = new File(filePath);
-
+        String useEncoding = encoding == null ? StringTools.DEFAULT_ENCODING : encoding;
         try (FileWriterWithEncoding writer = FileWriterWithEncoding.builder()
                 .setFile(file)
-                .setCharset(encoding)
-                .setCharsetEncoder(Charset.forName(encoding).newEncoder())
+                .setCharset(useEncoding)
+                .setCharsetEncoder(Charset.forName(useEncoding).newEncoder())
                 .setAppend(append)
                 .get()) {
             writer.write(string);

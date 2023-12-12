@@ -67,7 +67,7 @@ import io.goobi.viewer.model.xml.XMLError;
 /**
  * XML utilities.
  */
-public class XmlTools {
+public final class XmlTools {
 
     private static final Logger logger = LogManager.getLogger(XmlTools.class);
 
@@ -164,14 +164,10 @@ public class XmlTools {
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
      */
-    public static Document getDocumentFromString(String string, String encoding) throws JDOMException, IOException {
-        if (encoding == null) {
-            encoding = StringTools.DEFAULT_ENCODING;
-        }
-
+    public static Document getDocumentFromString(String string, final String encoding) throws JDOMException, IOException {
         byte[] byteArray = null;
         try {
-            byteArray = string.getBytes(encoding);
+            byteArray = string.getBytes(encoding == null ? StringTools.DEFAULT_ENCODING : encoding);
         } catch (UnsupportedEncodingException e) {
             logger.trace(e.getMessage());
         }
@@ -191,18 +187,17 @@ public class XmlTools {
      * @should return XML string correctly for elements
      * @return a {@link java.lang.String} object.
      */
-    public static String getStringFromElement(Object element, String encoding) {
+    public static String getStringFromElement(Object element, final String encoding) {
         if (element == null) {
             throw new IllegalArgumentException("element may not be null");
         }
-        if (encoding == null) {
-            encoding = StringTools.DEFAULT_ENCODING;
-        }
+
         Format format = Format.getRawFormat();
         XMLOutputter outputter = new XMLOutputter(format);
         Format xmlFormat = outputter.getFormat();
-        if (StringUtils.isNotEmpty(encoding)) {
-            xmlFormat.setEncoding(encoding);
+        String useEncoding = encoding == null ? StringTools.DEFAULT_ENCODING : encoding;
+        if (StringUtils.isNotEmpty(useEncoding)) {
+            xmlFormat.setEncoding(useEncoding);
         }
         xmlFormat.setExpandEmptyElements(true);
         outputter.setFormat(xmlFormat);
@@ -267,8 +262,7 @@ public class XmlTools {
         return xpath.evaluate(parent);
 
     }
-    
-    @SuppressWarnings("unchecked")
+
     public static List<String> evaluateAttributeString(String expr, Object parent, List<Namespace> namespaces) {
         XPathBuilder<Attribute> builder = new XPathBuilder<>(expr.trim().replace("\n", ""), Filters.attribute());
 
@@ -277,12 +271,13 @@ public class XmlTools {
         }
 
         XPathExpression<Attribute> xpath = builder.compileWith(XPathFactory.instance());
-        return xpath.evaluate(parent).stream().map(Attribute::getValue)
+        return xpath.evaluate(parent)
+                .stream()
+                .map(Attribute::getValue)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
     public static List<String> evaluateString(String expr, Object parent, List<Namespace> namespaces) {
         XPathBuilder<Element> builder = new XPathBuilder<>(expr.trim().replace("\n", ""), Filters.element());
 
@@ -291,15 +286,16 @@ public class XmlTools {
         }
 
         XPathExpression<Element> xpath = builder.compileWith(XPathFactory.instance());
-        return xpath.evaluate(parent).stream().map(Element::getText)
+        return xpath.evaluate(parent)
+                .stream()
+                .map(Element::getText)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
-    
+
     public static Optional<String> evaluateToFirstAttributeString(String expr, Object parent, List<Namespace> namespaces) {
         return evaluateAttributeString(expr, parent, namespaces).stream().findFirst();
     }
-
 
     public static Optional<String> evaluateToFirstString(String expr, Object parent, List<Namespace> namespaces) {
         return evaluateString(expr, parent, namespaces).stream().findFirst();
@@ -358,7 +354,7 @@ public class XmlTools {
     /**
      * 
      * @param xml
-     * @return
+     * @return List<XMLError>
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException

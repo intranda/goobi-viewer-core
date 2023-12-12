@@ -35,7 +35,7 @@ import org.apache.logging.log4j.LogManager;
  * TEITools class.
  * </p>
  */
-public class TEITools {
+public final class TEITools {
 
     private static final Logger logger = LogManager.getLogger(TEITools.class);
 

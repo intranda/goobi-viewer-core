@@ -54,12 +54,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ocpsoft.pretty.PrettyContext;
-import com.ocpsoft.pretty.faces.util.PrettyURLBuilder;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import de.intranda.monitoring.timer.Time;
-import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.StringMatchConfiguration;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -124,6 +121,7 @@ public class GeoCoordinateConverter {
      * @param filterQueries filter for solr query
      * @param coordinateFields fields containing the coordinate points to collect
      * @param markerTitleField solr field containing a title for the coordinates
+     * @param aggregateResults
      * @return a list of {@link GeoMapFeature}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -166,16 +164,17 @@ public class GeoCoordinateConverter {
         return features;
     }
 
-    private Map<SolrDocument, List<SolrDocument>> getSolrDocuments(String query, List<String> filterQueries, List<String> coordinateFields,
+    private Map<SolrDocument, List<SolrDocument>> getSolrDocuments(final String query, List<String> filterQueries, List<String> coordinateFields,
             String markerTitleField, boolean aggregateResults)
             throws PresentationException, IndexUnreachableException {
 
         String coordinateFieldsQuery = coordinateFields.stream().map(s -> s + ":*").collect(Collectors.joining(" "));
         String filterQuery = SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true);
-        if (!query.startsWith("{!join")) {
-            query = String.format("+(%s)", query);
+        String useQuery = query;
+        if (!useQuery.startsWith("{!join")) {
+            useQuery = String.format("+(%s)", useQuery);
         }
-        String finalQuery = String.format("%s +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
+        String finalQuery = String.format("%s +(%s) +(%s *:*)", useQuery, coordinateFieldsQuery, filterQuery);
         Map<String, String> params = new HashMap<>();
 
         QueryResponse response = DataManager.getInstance()
@@ -185,7 +184,7 @@ public class GeoCoordinateConverter {
         SolrDocumentList docs = response.getResults();
 
         if (aggregateResults) {
-            String expandQuery = query.replaceAll("\\{\\!join[^}]+}", "");
+            String expandQuery = useQuery.replaceAll("\\{\\!join[^}]+}", "");
             QueryResponse expandResponse = DataManager.getInstance()
                     .getSearchIndex()
                     .search(expandQuery, 0, 10_000, null, null, getSolrFieldsForExpandQuery(coordinateFields, markerTitleField), filterQueries,
@@ -199,9 +198,8 @@ public class GeoCoordinateConverter {
             return docs.stream()
                     .collect(Collectors.toMap(doc -> doc,
                             doc -> expandedResults.getOrDefault(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT), new SolrDocumentList())));
-        } else {
-            return docs.stream().collect(Collectors.toMap(doc -> doc, doc -> new SolrDocumentList()));
         }
+        return docs.stream().collect(Collectors.toMap(doc -> doc, doc -> new SolrDocumentList()));
 
     }
 
@@ -264,9 +262,10 @@ public class GeoCoordinateConverter {
      * Collect all point coordinate in the given metadata field within the given solr document
      * 
      * @param doc the document containing the coordinates
+     * @param children
      * @param metadataField The name of the solr field to search in
      * @param titleField solr field containing a title for the coordinates
-     * @param descriptionField solr field containing a description for the coordinates
+     * @return Collection<GeoMapFeature>
      */
     public Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, List<SolrDocument> children, String metadataField, String titleField) {
         String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
@@ -281,14 +280,14 @@ public class GeoCoordinateConverter {
         addMetadataToFeature(doc, children, docFeatures);
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(children.stream()
                 .findAny()
-                .map(child -> SolrTools.getSingleFieldStringValue(child, "LABEL"))
+                .map(child -> SolrTools.getSingleFieldStringValue(child, SolrConstants.LABEL))
                 .map(SolrTools::getBaseFieldName)
-                .orElse("_DEFAULT"), this.featureTitleConfigs.get("_DEFAULT"));
+                .orElse(StringConstants.DEFAULT_NAME), this.featureTitleConfigs.get(StringConstants.DEFAULT_NAME));
         Metadata entityLabelConfig = this.entityTitleConfigs.getOrDefault(children.stream()
                 .findAny()
-                .map(child -> SolrTools.getSingleFieldStringValue(child, "LABEL"))
+                .map(child -> SolrTools.getSingleFieldStringValue(child, SolrConstants.LABEL))
                 .map(SolrTools::getBaseFieldName)
-                .orElse("_DEFAULT"), this.entityTitleConfigs.get("_DEFAULT"));
+                .orElse(StringConstants.DEFAULT_NAME), this.entityTitleConfigs.get(StringConstants.DEFAULT_NAME));
         setLabels(docFeatures, titleConfig, title, entityLabelConfig);
 
         return docFeatures;
@@ -303,9 +302,11 @@ public class GeoCoordinateConverter {
         docFeatures.forEach(feature -> setLink(feature, doc));
         docFeatures.forEach(f -> f.setDocumentId((String) doc.getFieldValue(SolrConstants.LOGID)));
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(
-                Optional.ofNullable(doc).map(mc -> mc.getFirstValue("DOCSTRCT")).orElse("_DEFAULT"), this.featureTitleConfigs.get("_DEFAULT"));
+                Optional.ofNullable(doc).map(mc -> mc.getFirstValue(SolrConstants.DOCSTRCT)).orElse(StringConstants.DEFAULT_NAME),
+                this.featureTitleConfigs.get(StringConstants.DEFAULT_NAME));
         Metadata entityLabelConfig = this.entityTitleConfigs.getOrDefault(
-                Optional.ofNullable(doc).map(mc -> mc.getFirstValue("DOCSTRCT")).orElse("_DEFAULT"), this.entityTitleConfigs.get("_DEFAULT"));
+                Optional.ofNullable(doc).map(mc -> mc.getFirstValue(SolrConstants.DOCSTRCT)).orElse(StringConstants.DEFAULT_NAME),
+                this.entityTitleConfigs.get(StringConstants.DEFAULT_NAME));
         setLabels(docFeatures, titleConfig, title, entityLabelConfig);
 
         return docFeatures;
@@ -349,9 +350,11 @@ public class GeoCoordinateConverter {
         docFeatures.forEach(f -> f.addEntity(doc));
         String title = StringUtils.isBlank(titleField) ? null : doc.getFirstValue(titleField);
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(
-                Optional.ofNullable(doc).map(mc -> mc.getFirstValue("DOCSTRCT")).orElse("_DEFAULT"), this.featureTitleConfigs.get("_DEFAULT"));
+                Optional.ofNullable(doc).map(mc -> mc.getFirstValue(SolrConstants.DOCSTRCT)).orElse(StringConstants.DEFAULT_NAME),
+                this.featureTitleConfigs.get(StringConstants.DEFAULT_NAME));
         Metadata entityLabelConfig = this.entityTitleConfigs.getOrDefault(
-                Optional.ofNullable(doc).map(mc -> mc.getFirstValue("DOCSTRCT")).orElse("_DEFAULT"), this.entityTitleConfigs.get("_DEFAULT"));
+                Optional.ofNullable(doc).map(mc -> mc.getFirstValue(SolrConstants.DOCSTRCT)).orElse(StringConstants.DEFAULT_NAME),
+                this.entityTitleConfigs.get(StringConstants.DEFAULT_NAME));
         setLabels(docFeatures, titleConfig, title, entityLabelConfig);
         return docFeatures;
     }
@@ -370,12 +373,11 @@ public class GeoCoordinateConverter {
                     .orElse(new SimpleMetadataValue(defaultTitle));
             f.setTitle(title);
 
-            f.getEntities().forEach(entity -> {
-                Optional.ofNullable(entity.getMetadata())
-                        .map(metadata -> createTitle(entityLabelConfiguration, metadata))
-                        .filter(md -> !md.isEmpty())
-                        .ifPresent(entity::setLabel);
-            });
+            f.getEntities()
+                    .forEach(entity -> Optional.ofNullable(entity.getMetadata())
+                            .map(metadata -> createTitle(entityLabelConfiguration, metadata))
+                            .filter(md -> !md.isEmpty())
+                            .ifPresent(entity::setLabel));
 
         });
     }
@@ -383,9 +385,8 @@ public class GeoCoordinateConverter {
     public static IMetadataValue createTitle(Metadata labelConfig, Map<String, List<IMetadataValue>> metadata) {
         if (labelConfig != null) {
             return new MetadataBuilder(metadata).build(labelConfig);
-        } else {
-            return new SimpleMetadataValue("");
         }
+        return new SimpleMetadataValue("");
     }
 
     private static List<GeoMapFeature> getFeatures(List<String> points) {
@@ -445,10 +446,9 @@ public class GeoCoordinateConverter {
         if (aggregateHits) {
             return new StringMatchConfiguration(".*",
                     "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH|NORM_NAME|MD_LOCATION|MD_DESCRIPTION.*");
-        } else {
-            return new StringMatchConfiguration(".*",
-                    "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH");
         }
+        return new StringMatchConfiguration(".*",
+                "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH");
     }
 
     private static Predicate<String> getEntityFieldFilter() {
@@ -489,7 +489,7 @@ public class GeoCoordinateConverter {
     /**
      * Parse geo-coordinates from the value of a SOLR field
      * 
-     * @param a SOLR field value
+     * @param o SOLR field value
      * @return a list of {@link IArea} representing the locations from the given value
      */
     public static List<IArea> getLocations(Object o) {
@@ -531,7 +531,7 @@ public class GeoCoordinateConverter {
      * 
      * @param x
      * @param y
-     * @return
+     * @return Parsed point as a double[]
      */
     private static double[] parsePoint(Object x, Object y) {
         if (x instanceof Number) {

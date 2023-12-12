@@ -800,7 +800,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     * @return Configured values
      */
     public List<SelectItem> getGeomapFeatureTitleOptions() {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.option");
@@ -1409,7 +1409,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * url to rest api url for record media files. Always ends with a slash
      *
-     * @return
+     * @return Configured value
      */
     public String getIIIFApiUrl() {
         String urlString = getLocalString("urls.iiif", getRestApiUrl());
@@ -1421,7 +1421,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      */
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
         return getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
@@ -5316,6 +5316,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param value
+     * @return Configured value
      * @should return correct value
      */
     public CopyrightIndicatorStatus getCopyrightIndicatorStatusForValue(String value) {
@@ -5344,6 +5345,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param value
+     * @param Configured value
      * @should return correct value
      */
     public CopyrightIndicatorLicense getCopyrightIndicatorLicenseForValue(String value) {

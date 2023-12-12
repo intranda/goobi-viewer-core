@@ -95,11 +95,11 @@ public final class ALTOTools {
     }
 
     /**
-     * Read the plain fulltext from an alto file. Don't merge linebreaks
+     * Read the plain full-text from an alto file. Don't merge line breaks.
      *
      * @param path
      * @param encoding
-     * @return
+     * @return {@link String} containing plain text from ALTO at the given path
      * @throws IOException
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
