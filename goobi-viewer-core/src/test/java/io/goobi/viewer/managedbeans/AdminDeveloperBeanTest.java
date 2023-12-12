@@ -14,6 +14,7 @@ import java.util.Collections;
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -26,32 +27,20 @@ import io.goobi.viewer.controller.XmlTools;
 public class AdminDeveloperBeanTest {
 
     Configuration config;
-    AdminDeveloperBean bean = new AdminDeveloperBean();
+    AdminDeveloperBean bean;
     Path configPath = Path.of("src/test/resources/localConfig");
-    
+    Path zipPath = Path.of("src/test/resources/output/viewer_dump");
+
     @Before
     public void setup() {
         config = Mockito.mock(Configuration.class);
         Mockito.when(config.getTheme()).thenReturn("reference");
         Mockito.when(config.getConfigLocalPath()).thenReturn(configPath.toAbsolutePath().toString());
-    }
-    
-    @Test
-    public void test_getNextAutopullRun() throws ParseException {
-        
-        String expr = "0 */1 * * * ?";
-        CronExpression cron = new CronExpression(expr);
-        System.out.println(cron.getExpressionSummary());
+        bean = new AdminDeveloperBean(config);
     }
     
     @Test
     public void test_createZipFile() throws IOException, InterruptedException, JDOMException {
-        Path zipPath = Path.of("src/test/resources/output/viewer_dump");
-        if(Files.isDirectory(zipPath)) {
-            FileUtils.cleanDirectory(zipPath.toFile());
-        } else {
-            Files.createDirectories(zipPath);
-        }
         Path zipFile = bean.createDeveloperArchive(zipPath);
         assertTrue(Files.exists(zipPath));
         
@@ -68,4 +57,12 @@ public class AdminDeveloperBeanTest {
 
     }
 
+    @After
+    public void after() throws IOException {
+        if(Files.isDirectory(zipPath)) {
+            FileUtils.cleanDirectory(zipPath.toFile());
+        } else {
+            Files.createDirectories(zipPath);
+        }
+    }
 }
