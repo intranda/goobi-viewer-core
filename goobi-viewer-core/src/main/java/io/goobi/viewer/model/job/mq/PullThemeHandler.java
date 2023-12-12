@@ -72,7 +72,7 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
     @Override
     public String getMessageHandlerName() {
-        return TaskType.PRERENDER_PDF.name();
+        return TaskType.PULL_THEME.name();
     }
 
 

@@ -7,15 +7,14 @@ import java.io.Serializable;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.ParseException;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.UriBuilder;
 
@@ -25,14 +24,27 @@ import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.quartz.CronExpression;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.matchers.GroupMatcher;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.quartz.QuartzJobDetails;
+import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
+import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
 
 @Named
 @SessionScoped
@@ -71,6 +83,10 @@ public class AdminDeveloperBean implements Serializable {
     
     private static final String[] FILES_TO_INCLUDE = new String[] {"config_viewer-module-crowdsourcing.xml", "messages_*.properties"};
     
+    @Inject
+    private MessageQueueManager queueManager;
+    private Scheduler scheduler = null;
+    
     private final Configuration config;
     private final String viewerDatabaseName;
     private final String viewerConfigDirectory;
@@ -83,6 +99,11 @@ public class AdminDeveloperBean implements Serializable {
         this.config = config;
         viewerDatabaseName = config.getTheme();
         viewerConfigDirectory = config.getConfigLocalPath();
+        try {
+            this.scheduler = new StdSchedulerFactory().getScheduler();
+        } catch (SchedulerException e) {
+            logger.error("Error getting quartz scheduler", e);
+        }
     }
     
     public Path createDeveloperArchive() throws IOException, InterruptedException, JDOMException  {
@@ -95,7 +116,11 @@ public class AdminDeveloperBean implements Serializable {
         FilenameFilter filter = WildcardFileFilter.builder().setWildcards(FILES_TO_INCLUDE).get();
         
         zipEntryMap.put(Path.of("viewer/config/config_viewer.xml"), XmlTools.getStringFromElement(createDeveloperViewerConfig(Path.of(viewerConfigDirectory, "config_viewer.xml")).getRootElement(), StringTools.DEFAULT_ENCODING));
-        zipEntryMap.put(Path.of("viewer/config/viewer.sql"), createSqlDump());
+        try {            
+            zipEntryMap.put(Path.of("viewer/config/viewer.sql"), createSqlDump());
+        } catch(IOException e) {
+            logger.error("Error creating sql dump of viewer database: {}", e.toString());
+        }
         for(File file : Path.of(viewerConfigDirectory).toFile().listFiles(filter)) {
             Path zipEntryPath = Path.of("viewer/config", file.getName().toString());
             zipEntryMap.put(zipEntryPath, FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING));
@@ -151,34 +176,47 @@ public class AdminDeveloperBean implements Serializable {
         });
     }
     
-    public boolean isAutopullActive() {
-        //TODO: implement
-        return true;
-    }
-    
-    public Instant getNextRunAutopull() throws ParseException {
-        return getNextRunAutopull(Instant.now(), getAutpullCronExpression());
-    }
-    
-    private String getAutpullCronExpression() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-  
-    public Instant getNextRunAutopull(Instant time, String expression) throws ParseException {
-        CronExpression expr = new CronExpression(expression);
-        Date lastDate = expr.getNextValidTimeAfter(Date.from(time));
-        return lastDate.toInstant();
-    }
-    
-    public static String convertCronExpression(String expr) {
-        if(expr.endsWith("*")) {
-            expr = expr.substring(0, expr.length()-1) + "?";
+    public void activateAutopull() throws DAOException {
+        if(!isAutopullActive()) {
+            pauseJob(TaskType.PULL_THEME);
         }
-        if(expr.split("\\s+").length < 6) {
-            expr = "* " + expr; 
+    }
+    
+    public void triggerPullTheme() throws MessageQueueException {
+        ViewerMessage message = new ViewerMessage(TaskType.PULL_THEME.name());
+        queueManager.addToQueue(message);
+    }
+    
+    public boolean isAutopullActive() throws DAOException {
+        RecurringTaskTrigger trigger = DataManager.getInstance().getDao().getRecurringTaskTriggerForTask(TaskType.PULL_THEME);
+        return trigger != null && trigger.getStatus() == TaskTriggerStatus.RUNNING;
+    }
+    
+    public LocalDateTime getLastAutopull() throws DAOException {
+        RecurringTaskTrigger trigger = DataManager.getInstance().getDao().getRecurringTaskTriggerForTask(TaskType.PULL_THEME);
+        return Optional.ofNullable(trigger).map(t -> t.getLastTimeTriggered()).orElse(null);
+
+    }
+
+    
+    private void pauseJob(TaskType taskType) {
+        try {
+            scheduler.pauseJob(new JobKey(taskType.name(), taskType.name()));
+            persistTriggerStatus(taskType.name(), TaskTriggerStatus.PAUSED);
+        } catch (SchedulerException e) {
+            logger.error(e);
         }
-        return expr;
+    }
+
+    private void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
+        try {
+            IDAO dao = DataManager.getInstance().getDao();
+            RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
+            trigger.setStatus(status);
+            dao.updateRecurringTaskTrigger(trigger);
+        } catch (DAOException e) {
+            logger.error(e);
+        }
     }
     
 }
