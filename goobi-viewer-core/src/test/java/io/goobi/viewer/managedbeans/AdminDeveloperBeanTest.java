@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.ParseException;
 import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
@@ -18,7 +17,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.quartz.CronExpression;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.XmlTools;

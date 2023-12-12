@@ -35,12 +35,22 @@
 			<div class="admin__developer-autopull-wrapper">
 				<div class="admin__developer-autopull-status-wrapper">
 					<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
-					<div class="admin__developer-autopull-status-text">Autopull Status: OFF</div><div class="admin__developer-autopull-status-icon -isOff"></div>
+					<div class="admin__developer-autopull-status-text">Autopull Status: #{developerBean.isAutopullActive ? 'ON' : 'OFF'}</div><div class="admin__developer-autopull-status-icon #{developerBean.isAutopullActive ? '' : '-isOff'}"></div>
 
 				</div>
-				<div class="admin__developer-autopull-last-pull">17.11.2023 00:00</div>
+				<div class="admin__developer-autopull-last-pull">
+					<h:outputText value="#{developerBean.lastAutopull}">
+						<f:converter converterId="localDateTimeConverter" />
+						<f:attribute name="pattern"
+							value="#{navigationHelper.dateTimePattern}" />
+					</h:outputText>
+				</div>
 				<div class="admin__developer-autopull-branch-name">develop</div>
 			</div>
+			
+			<h:form>
+				<h:commandButton action="#{developerBean.triggerPullTheme}" value="Pull theme"/>
+			</h:form>
 
 				<!-- DOWNLOAD FILES -->
 				<h2>#{msg.admin__developer__download_files}</h2>
