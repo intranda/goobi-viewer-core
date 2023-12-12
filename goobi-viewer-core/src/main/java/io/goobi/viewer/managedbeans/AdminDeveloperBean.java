@@ -12,11 +12,8 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -30,6 +27,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.quartz.CronExpression;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
@@ -73,10 +71,19 @@ public class AdminDeveloperBean implements Serializable {
     
     private static final String[] FILES_TO_INCLUDE = new String[] {"config_viewer-module-crowdsourcing.xml", "messages_*.properties"};
     
-    private final String viewerDatabaseName = DataManager.getInstance().getConfiguration().getTheme();
-    private final String viewerConfigDirectory = DataManager.getInstance().getConfiguration().getConfigLocalPath();
+    private final Configuration config;
+    private final String viewerDatabaseName;
+    private final String viewerConfigDirectory;
     
+    public AdminDeveloperBean() {
+        this(DataManager.getInstance().getConfiguration());
+    }
 
+    public AdminDeveloperBean(Configuration config) {
+        this.config = config;
+        viewerDatabaseName = config.getTheme();
+        viewerConfigDirectory = config.getConfigLocalPath();
+    }
     
     public Path createDeveloperArchive() throws IOException, InterruptedException, JDOMException  {
         return createDeveloperArchive(Files.createTempDirectory("viewer_developer_"));

@@ -9,21 +9,32 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
-import java.time.Instant;
 import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.quartz.CronExpression;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.XmlTools;
 
 
 public class AdminDeveloperBeanTest {
 
+    Configuration config;
     AdminDeveloperBean bean = new AdminDeveloperBean();
+    Path configPath = Path.of("src/test/resources/localConfig");
+    
+    @Before
+    public void setup() {
+        config = Mockito.mock(Configuration.class);
+        Mockito.when(config.getTheme()).thenReturn("reference");
+        Mockito.when(config.getConfigLocalPath()).thenReturn(configPath.toAbsolutePath().toString());
+    }
     
     @Test
     public void test_getNextAutopullRun() throws ParseException {

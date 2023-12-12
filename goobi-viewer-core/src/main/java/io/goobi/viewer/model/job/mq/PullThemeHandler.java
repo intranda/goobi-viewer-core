@@ -22,33 +22,17 @@
 package io.goobi.viewer.model.job.mq;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.job.TaskType;
 
 public class PullThemeHandler implements MessageHandler<MessageStatus> {
