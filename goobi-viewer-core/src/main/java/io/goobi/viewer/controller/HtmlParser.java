@@ -22,8 +22,6 @@
 package io.goobi.viewer.controller;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -48,10 +46,17 @@ public class HtmlParser {
     private static final Map<String, String> HTML_REPLACEMENTS = Map.ofEntries(new SimpleEntry<>("<br\\s?>", "<br />"));
 
     /**
+     * Private constructor.
+     */
+    private HtmlParser() {
+        //
+    }
+
+    /**
      * Guess if the given text should be interpreted as html based in the existence of closing html tags or empty line break tags
      *
-     * @param json
-     * @return
+     * @param text
+     * @return true if text is HTML content; false otherwise
      */
     public static boolean isHtml(String text) {
         Matcher matcher = HTML_TAG_PATTERN.matcher(text);
@@ -62,7 +67,7 @@ public class HtmlParser {
      * Duplicate of {@link StringTools#stripJS(String)} because it seemed to fit here
      *
      * @param s
-     * @return
+     * @return s stripped of any JavaScript
      */
     public static String stripJS(String s) {
         return StringTools.stripJS(s);

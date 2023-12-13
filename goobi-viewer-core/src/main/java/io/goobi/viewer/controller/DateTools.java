@@ -46,7 +46,7 @@ import org.apache.logging.log4j.LogManager;
 /**
  * Utility methods for date parsing, etc.
  */
-public class DateTools {
+public final class DateTools {
 
     private static final Logger logger = LogManager.getLogger(DateTools.class);
 
@@ -132,11 +132,11 @@ public class DateTools {
         List<LocalDateTime> ret = new ArrayList<>();
         String splittingChar = "/";
         String[] dateStringSplit = dateString.split(splittingChar);
-        for (String s : dateStringSplit) {
-            s = s.trim();
+        for (final String s : dateStringSplit) {
+            String ds = s.trim();
 
             // Check whether this is a well-formed date and not a range or anything
-            LocalDateTime date = parseDateFromString(s);
+            LocalDateTime date = parseDateFromString(ds);
             if (date != null) {
                 ret.add(date);
                 continue;
@@ -144,11 +144,11 @@ public class DateTools {
 
             // Try finding a complete date in the string (enclosed in parentheses)
             Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
-            Matcher m = p.matcher(s);
+            Matcher m = p.matcher(ds);
             if (m.find()) {
-                s = s.substring(m.start() + 1, m.end() - 1);
-                logger.trace("Extracted date: {}", s);
-                date = parseDateFromString(s);
+                ds = ds.substring(m.start() + 1, m.end() - 1);
+                logger.trace("Extracted date: {}", ds);
+                date = parseDateFromString(ds);
                 if (date != null) {
                     ret.add(date);
                     continue;
@@ -156,15 +156,15 @@ public class DateTools {
             }
 
             // If no complete date was found, just use the year
-            if (s.contains(" ")) {
-                String[] sSplit = s.split(" ");
-                s = sSplit[0];
+            if (ds.contains(" ")) {
+                String[] sSplit = ds.split(" ");
+                ds = sSplit[0];
             }
             try {
-                int year = Integer.parseInt(s);
+                int year = Integer.parseInt(ds);
                 ret.add(LocalDateTime.of(year, 1, 1, 0, 0));
             } catch (NumberFormatException e) {
-                logger.error("Could not parse year: {}", s);
+                logger.error("Could not parse year: {}", ds);
             }
         }
 
@@ -175,7 +175,7 @@ public class DateTools {
      *
      * @param millis
      * @param utc
-     * @return
+     * @return {@link LocalDateTime} built from millis
      * @should create LocalDateTime correctly
      */
     public static LocalDateTime getLocalDateTimeFromMillis(long millis, boolean utc) {
@@ -186,7 +186,7 @@ public class DateTools {
      *
      * @param ldt
      * @param utc
-     * @return
+     * @return {@link Long} built from ldt
      */
     public static Long getMillisFromLocalDateTime(LocalDateTime ldt, boolean utc) {
         if (ldt == null) {
@@ -201,7 +201,7 @@ public class DateTools {
      *
      * @param dateString
      * @param fromUTC
-     * @return
+     * @return {@link LocalDateTime} parsed from dateString
      * @should parse iso date formats correctly
      * @should parse german date formats correctly
      * @should parse english date formats correctly
@@ -330,7 +330,7 @@ public class DateTools {
      *
      * @param dateToConvert
      * @param utc
-     * @return
+     * @return {@link Date} converted from dateToConvert
      */
     public static Date convertLocalDateTimeToDateViaInstant(LocalDateTime dateToConvert, boolean utc) {
         if (dateToConvert == null) {
@@ -342,7 +342,7 @@ public class DateTools {
     /**
      *
      * @param dateToConvert
-     * @return
+     * @return {@link LocalDateTime} converted form dateToConvert
      */
     public static LocalDateTime convertDateToLocalDateTimeViaInstant(Date dateToConvert) {
         if (dateToConvert == null) {
@@ -358,7 +358,7 @@ public class DateTools {
      * @param date java.util.Date
      * @param formatter
      * @param utc
-     * @return
+     * @return Formatted {@link Date} as {@link String}
      */
     public static String format(Date date, DateTimeFormatter formatter, boolean utc) {
         if (date == null) {
@@ -375,7 +375,7 @@ public class DateTools {
      * @param localDateTime
      * @param formatter
      * @param utc
-     * @return
+     * @return Formatted {@link LocalDateTime} as {@link String}
      */
     public static String format(LocalDateTime localDateTime, DateTimeFormatter formatter, boolean utc) {
         if (localDateTime == null) {

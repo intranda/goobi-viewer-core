@@ -44,7 +44,7 @@ import io.goobi.viewer.solr.SolrTools;
  * @author florian
  *
  */
-public class PrettyUrlTools {
+public final class PrettyUrlTools {
 
     private static final Logger logger = LogManager.getLogger(PrettyUrlTools.class);
 
@@ -131,10 +131,8 @@ public class PrettyUrlTools {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + getRelativePageUrl(pretty, prettyId, parameters);
     }
 
-    public static String getRecordURI(String pi, String imageNo, String logId, PageType pageType) {
+    public static String getRecordURI(String pi, final String imageNo, final String logId, PageType pageType) {
         String prettyId = "";
-        imageNo = StringUtils.isNotBlank(imageNo) ? imageNo : "-";
-        logId = StringUtils.isNotBlank(logId) ? logId : "-";
         switch (pageType) {
             case viewMetadata:
                 prettyId = "metadata3";
@@ -149,7 +147,11 @@ public class PrettyUrlTools {
         }
 
         URL mappedUrl =
-                PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(pi, imageNo, logId);
+                PrettyContext.getCurrentInstance()
+                        .getConfig()
+                        .getMappingById(prettyId)
+                        .getPatternParser()
+                        .getMappedURL(pi, StringUtils.isNotBlank(imageNo) ? imageNo : "-", StringUtils.isNotBlank(logId) ? logId : "-");
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 

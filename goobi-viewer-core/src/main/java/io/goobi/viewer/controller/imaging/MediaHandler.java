@@ -21,14 +21,10 @@
  */
 package io.goobi.viewer.controller.imaging;
 
-import org.jboss.weld.exceptions.IllegalArgumentException;
-
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
 /**
  * Resolves urls audio or video files
@@ -50,7 +46,7 @@ public class MediaHandler {
      * Constructor for MediaHandler.
      * </p>
      *
-     * @param config a {@link io.goobi.viewer.controller.Configuration} object.
+     * @param urls
      */
     public MediaHandler(AbstractApiUrlManager urls) {
         this.urls = urls;
@@ -59,7 +55,8 @@ public class MediaHandler {
     /**
      * Returns the url to the media object for the given pi and filename
      *
-     * @param mimeType The mime type to use
+     * @param type The mime type to use
+     * @param format
      * @param pi The pi of the requested work
      * @param filename The media filename
      * @return the url to the media file of the given pi and filename
@@ -75,10 +72,9 @@ public class MediaHandler {
             } else {
                 throw new IllegalRequestException("Unknown media type " + type);
             }
-        } else {
-            return DataManager.getInstance().getConfiguration().getIIIFApiUrl()
-                    + URL_TEMPLATE.replace("{mimeType}", type + "/" + format).replace("{identifier}", pi).replace("{filename}", filename);
         }
 
+        return DataManager.getInstance().getConfiguration().getIIIFApiUrl()
+                + URL_TEMPLATE.replace("{mimeType}", type + "/" + format).replace("{identifier}", pi).replace("{filename}", filename);
     }
 }
