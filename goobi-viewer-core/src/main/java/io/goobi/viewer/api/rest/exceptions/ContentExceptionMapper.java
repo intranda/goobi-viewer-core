@@ -60,9 +60,9 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
     private static final Logger logger = LogManager.getLogger(ContentExceptionMapper.class);
 
     @Context
-    HttpServletResponse response;
+    private HttpServletResponse response;
     @Context
-    HttpServletRequest request;
+    private HttpServletRequest request;
 
     public ContentExceptionMapper() {
     }
@@ -76,35 +76,36 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
     public Response toResponse(ContentLibException e) {
         Response.Status status;
         boolean printStackTrace = false;
+        ContentLibException ee = e;
         //Get actual exception if e if of the wrapper class ImageManagerException
-        if (e.getClass().equals(ImageManagerException.class) && e.getCause() != null && e.getCause() instanceof ContentLibException) {
-            e = (ContentLibException) e.getCause();
+        if (ee.getClass().equals(ImageManagerException.class) && ee.getCause() != null && ee.getCause() instanceof ContentLibException) {
+            ee = (ContentLibException) ee.getCause();
         }
-        if (e instanceof IllegalRequestException) {
+        if (ee instanceof IllegalRequestException) {
             status = Status.BAD_REQUEST;
-        } else if (e instanceof ServiceUnavailableException) {
+        } else if (ee instanceof ServiceUnavailableException) {
             status = Status.SERVICE_UNAVAILABLE;
-        } else if (e instanceof ServiceNotImplementedException) {
+        } else if (ee instanceof ServiceNotImplementedException) {
             status = Status.NOT_IMPLEMENTED;
-        } else if (e instanceof ContentNotFoundException) {
+        } else if (ee instanceof ContentNotFoundException) {
             status = Status.NOT_FOUND;
-        } else if (e instanceof ServiceNotAllowedException) {
+        } else if (ee instanceof ServiceNotAllowedException) {
             status = Status.FORBIDDEN;
-        } else if (e instanceof TimeoutException) {
+        } else if (ee instanceof TimeoutException) {
             status = Status.REQUEST_TIMEOUT;
         } else {
             status = Status.INTERNAL_SERVER_ERROR;
             printStackTrace = true;
         }
         if (printStackTrace) {
-            logger.error("Error on request {}: {}", request.getRequestURI(), e.toString());
+            logger.error("Error on request {}: {}", request.getRequestURI(), ee.toString());
         } else {
-            logger.debug("Faulty request {}: {}", request.getRequestURI(), SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
+            logger.debug("Faulty request {}: {}", request.getRequestURI(), SolrTools.extractExceptionMessageHtmlTitle(ee.getMessage()));
         }
 
         String mediaType = MediaType.APPLICATION_JSON;
 
-        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, printStackTrace)).build();
+        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, ee, printStackTrace)).build();
     }
 
     @JsonInclude(Include.NON_NULL)
@@ -122,6 +123,12 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         public ErrorMessage() {
         }
 
+        /**
+         * 
+         * @param status
+         * @param e
+         * @param printStackTrace
+         */
         public ErrorMessage(Status status, Throwable e, boolean printStackTrace) {
             this.status = status.getStatusCode();
             if (e != null) {
@@ -134,6 +141,13 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
             }
         }
 
+        /**
+         * 
+         * @param status
+         * @param e
+         * @param errorImage
+         * @param printStackTrace
+         */
         public ErrorMessage(Status status, Throwable e, String errorImage, boolean printStackTrace) {
             this.status = status.getStatusCode();
             this.errorImage = errorImage;

@@ -71,6 +71,8 @@ public class TaskManager {
 
     private static final Logger logger = LogManager.getLogger(TaskManager.class);
 
+    private static final String ERROR_IN_JOB = "Error in job {}: {}";
+
     private final ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
     private final Duration timeToLive;
@@ -86,8 +88,8 @@ public class TaskManager {
 
     public Long addTask(Task job) {
         cleanOldTasks();
-        tasks.put(job.id, job);
-        return job.id;
+        tasks.put(job.getId(), job);
+        return job.getId();
     }
 
     /**
@@ -97,8 +99,8 @@ public class TaskManager {
         this.tasks.values()
                 .stream()
                 .filter(
-                        job -> job.timeCreated.isBefore((LocalDateTime.now().minus(timeToLive))))
-                .map(job -> job.id)
+                        job -> job.getTimeCreated().isBefore((LocalDateTime.now().minus(timeToLive))))
+                .map(job -> job.getId())
                 .forEach(this::removeTask);
     }
 
@@ -120,8 +122,8 @@ public class TaskManager {
     }
 
     /**
-     * @param executorService2
-     * @return
+     * @param pool
+     * @return Number of active threads
      */
     private static int getActiveThreads(ExecutorService pool) {
         if (pool instanceof ThreadPoolExecutor) {
@@ -132,7 +134,7 @@ public class TaskManager {
     }
 
     public List<Task> getTasks(TaskType type) {
-        return this.tasks.values().stream().filter(job -> job.type == type).collect(Collectors.toList());
+        return this.tasks.values().stream().filter(job -> job.getType() == type).collect(Collectors.toList());
     }
 
     public List<Task> getTasks() {
@@ -141,7 +143,7 @@ public class TaskManager {
 
     /**
      * @param type
-     * @return
+     * @return BiConsumer<HttpServletRequest, Task>
      */
     public static BiConsumer<HttpServletRequest, Task> createTask(TaskType type) {
         switch (type) {
@@ -150,7 +152,7 @@ public class TaskManager {
                     try {
                         new SearchHitsNotifier().sendNewHitsNotifications();
                     } catch (DAOException | PresentationException | IndexUnreachableException | ViewerConfigurationException e) {
-                        logger.error("Error in job {}: {}", job.id, e.toString());
+                        logger.error(ERROR_IN_JOB, job.getId(), e.toString());
                         job.setError(e.toString());
                     }
                 };
@@ -159,15 +161,15 @@ public class TaskManager {
                     try {
                         deleteExpiredDownloadTickets();
                     } catch (DAOException e) {
-                        logger.error("Error in job {}: {}", job.id, e.toString());
+                        logger.error(ERROR_IN_JOB, job.getId(), e.toString());
                         job.setError(e.getMessage());
                     }
                 };
             case UPDATE_SITEMAP:
                 return (request, job) -> {
 
-                    SitemapRequestParameters params = Optional.ofNullable(job.params)
-                            .filter(p -> p instanceof SitemapRequestParameters)
+                    SitemapRequestParameters params = Optional.ofNullable(job.getParams())
+                            .filter(SitemapRequestParameters.class::isInstance)
                             .map(p -> (SitemapRequestParameters) p)
                             .orElse(null);
 
@@ -179,14 +181,14 @@ public class TaskManager {
                     try {
                         new SitemapBuilder(request).updateSitemap(outputPath, viewerRootUrl);
                     } catch (AccessDeniedException | JSONException | PresentationException e) {
-                        logger.error("Error in job {}: {}", job.id, e.toString());
+                        logger.error(ERROR_IN_JOB, job.getId(), e.toString());
                         job.setError(e.getMessage());
                     }
                 };
             case UPDATE_DATA_REPOSITORY_NAMES:
                 return (request, job) -> {
-                    ToolsRequestParameters params = Optional.ofNullable(job.params)
-                            .filter(p -> p instanceof ToolsRequestParameters)
+                    ToolsRequestParameters params = Optional.ofNullable(job.getParams())
+                            .filter(ToolsRequestParameters.class::isInstance)
                             .map(p -> (ToolsRequestParameters) p)
                             .orElse(null);
                     DataManager.getInstance().getSearchIndex().updateDataRepositoryNames(params.getPi(), params.getDataRepositoryName());
@@ -198,7 +200,7 @@ public class TaskManager {
                     try {
                         updateDownloadJobs();
                     } catch (DAOException | IndexUnreachableException | PresentationException e) {
-                        logger.error("Error in job {}: {}", job.id, e.toString());
+                        logger.error(ERROR_IN_JOB, job.getId(), e.toString());
                         job.setError(e.getMessage());
                     }
                 };
@@ -207,12 +209,13 @@ public class TaskManager {
                     try {
                         new StatisticsIndexTask().startTask();
                     } catch (DAOException | IOException e) {
-                        logger.error("Error in job {}: {}", job.id, e.toString());
+                        logger.error(ERROR_IN_JOB, job.getId(), e.toString());
                         job.setError(e.getMessage());
                     }
                 };
             default:
                 return (request, job) -> {
+                    //
                 };
         }
     }

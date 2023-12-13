@@ -37,16 +37,17 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
  */
 public class ViewerPage {
 
-    public final URI link;
-    public final IContent image;
-    public final IMetadataValue label;
-    public final long order;
+    private final URI link;
+    private final IContent image;
+    private final IMetadataValue label;
+    private final long order;
 
     /**
      * @param link
      * @param image
-     * @param header
+     * @param label
      * @param description
+     * @param order
      */
     public ViewerPage(URI link, IContent image, IMetadataValue label, IMetadataValue description, long order) {
         super();
@@ -73,5 +74,33 @@ public class ViewerPage {
                 .map(item -> MediaItem.getMediaResource(item.getMediaItem()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * @return the link
+     */
+    public URI getLink() {
+        return link;
+    }
+
+    /**
+     * @return the image
+     */
+    public IContent getImage() {
+        return image;
+    }
+
+    /**
+     * @return the label
+     */
+    public IMetadataValue getLabel() {
+        return label;
+    }
+
+    /**
+     * @return the order
+     */
+    public long getOrder() {
+        return order;
     }
 }

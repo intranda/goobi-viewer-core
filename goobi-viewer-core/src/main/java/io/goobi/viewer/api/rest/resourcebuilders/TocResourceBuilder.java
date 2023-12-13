@@ -42,14 +42,29 @@ import io.goobi.viewer.model.viewer.ViewManager;
  */
 public class TocResourceBuilder {
 
-    HttpServletRequest request;
-    HttpServletResponse response;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
 
+    /**
+     * 
+     * @param request
+     * @param response
+     */
     public TocResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
     }
 
+    /**
+     * 
+     * @param pi
+     * @return TOC as {@link String}
+     * @throws ContentNotFoundException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
     public String getToc(String pi)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         try {
