@@ -189,7 +189,7 @@ public class ThumbnailHandler {
      * @param pi the persistent identifier of the work which representative we want
      * @param width the width of the image
      * @param height the height of the image
-     * @param the file extension of the desiref format. Possible values are 'jpg', 'tif' and 'png'
+     * @param format the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
      * @return The url string or null of no work is found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -346,9 +346,9 @@ public class ThumbnailHandler {
             StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
             IPageLoader pageLoader = AbstractPageLoader.create(struct);
             return pageLoader.getPage(order);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -371,7 +371,7 @@ public class ThumbnailHandler {
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param width a int.
      * @param height a int.
-     * @param the file extension of the desiref format. Possible values are 'jpg', 'tif' and 'png'
+     * @param format the file extension of the desiref format. Possible values are 'jpg', 'tif' and 'png'
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl(PhysicalElement page, int width, int height, String format) {
@@ -381,14 +381,13 @@ public class ThumbnailHandler {
     public static ImageFileFormat getImageFileFormat(PhysicalElement page, String format) {
         if ("MASTER".equalsIgnoreCase(format)) {
             return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
-        } else {
-            ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);
-            if (iff == null) {
-                return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
-            } else {
-                return iff;
-            }
         }
+        ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);
+        if (iff == null) {
+            return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
+        }
+
+        return iff;
     }
 
     /**
@@ -402,7 +401,7 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(PhysicalElement page, Scale scale) {
         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
-        if(format == null) {
+        if (format == null) {
             format = ImageFileFormat.JPG;
         }
         return getImageUrl(page, scale, ImageFileFormat.getMatchingTargetFormat(format));
@@ -415,11 +414,11 @@ public class ThumbnailHandler {
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-     * @param the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
+     * @param format the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl(PhysicalElement page, Scale scale, ImageFileFormat format) {
-        
+
         String path = getImagePath(page);
         if (path == null) {
             return "";
@@ -522,11 +521,11 @@ public class ThumbnailHandler {
 
     /**
      * @param doc
-     * @return
+     * @return {@link StructElement} constructed out of given doc
      */
     private static StructElement getStructElement(SolrDocument doc) {
         String value = (String) doc.getFirstValue(SolrConstants.IDDOC);
-        Long iddoc = 0l;
+        Long iddoc = 0L;
         if (value != null) {
             iddoc = Long.valueOf(value);
         }
@@ -592,16 +591,16 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(StructElement doc, String pi, int width, int height) {
-             
+
         ImageFileFormat format = ImageFileFormat.JPG;
         String mimetype = doc.getMetadataValue(SolrConstants.MIMETYPE);
-        if(StringUtils.isNotBlank(mimetype)) {
+        if (StringUtils.isNotBlank(mimetype)) {
             format = ImageFileFormat.getImageFileFormatFromMimeType(mimetype);
-            if(format == null) {
+            if (format == null) {
                 format = ImageFileFormat.JPG;
             }
         }
-         
+
         String thumbnailUrl = getImagePath(doc);
         if (thumbnailUrl != null && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
@@ -614,7 +613,7 @@ public class ThumbnailHandler {
             if (doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
                 region = doc.getShapeMetadata().get(0).getCoords();
             }
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", StringConstants.DEFAULT, 
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", StringConstants.DEFAULT,
                     ImageFileFormat.getMatchingTargetFormat(format).getFileExtension());
         } else {
             return null;
@@ -704,6 +703,7 @@ public class ThumbnailHandler {
     /**
      * @param se
      * @param field
+     * @return {@link StringIndexOutOfBoundsException} value of field in se, if fond
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -725,7 +725,7 @@ public class ThumbnailHandler {
 
     /**
      * @param page
-     * @return
+     * @return Constructed path
      * @should return image thumbnail path correctly
      * @should return audio thumbnail path correctly
      * @should return video thumbnail path correctly
@@ -785,7 +785,7 @@ public class ThumbnailHandler {
         if (doc == null) {
             return null;
         }
-        // logger.trace("getImagePath: {}", doc.getPi());
+        // logger.trace("getImagePath: {}", doc.getPi()); //NOSONAR Sometimes needed for debugging
 
         String thumbnailUrl = null;
         String anchorThumbnailMode = DataManager.getInstance().getConfiguration().getAnchorThumbnailMode();
@@ -902,7 +902,7 @@ public class ThumbnailHandler {
 
     /**
      * @param thumbnailUrl
-     * @return
+     * @return true if thumbnailUrl points to an image resource; false otherwise
      */
     private static boolean isImageMimeType(String thumbnailUrl) {
         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl);
@@ -1022,7 +1022,7 @@ public class ThumbnailHandler {
      * Get the thumbnailUrl for a IIIF image identifier with default size
      *
      * @param baseUri IIIF image identifier
-     * @return
+     * @return Generated URL
      */
     public String getThumbnailUrl(URI baseUri) {
         return getThumbnailUrl(baseUri, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -1035,7 +1035,7 @@ public class ThumbnailHandler {
      * @param baseUri IIIF image identifier
      * @param width thumbnail width
      * @param height thumbnail height
-     * @return
+     * @return Generated URL
      */
     public String getThumbnailUrl(URI baseUri, int width, int height) {
         return getThumbnailUrl(baseUri, width, height, false);
@@ -1045,7 +1045,7 @@ public class ThumbnailHandler {
      * Get the square thumbnailUrl for a IIIF image identifier with default size
      *
      * @param baseUri IIIF image identifier
-     * @return
+     * @return Generated URL
      */
     public String getSquareThumbnailUrl(URI baseUri) {
         return getThumbnailUrl(baseUri, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -1057,7 +1057,7 @@ public class ThumbnailHandler {
      *
      * @param baseUri IIIF image identifier
      * @param size thumbnail size
-     * @return
+     * @return Generated URL
      */
     public String getSquareThumbnailUrl(URI baseUri, int size) {
         return getThumbnailUrl(baseUri, size, size, true);
@@ -1070,7 +1070,7 @@ public class ThumbnailHandler {
      * @param width thumbnail width
      * @param height thumbnail height
      * @param square true to deliver a square image
-     * @return
+     * @return Generated URL
      */
     public String getThumbnailUrl(URI baseUri, int width, int height, boolean square) {
         String size = getSize(width, height);
@@ -1090,7 +1090,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @return
+     * @param filename
+     * @return Generated URL
      */
     public static String getCMSMediaImageApiUrl(String filename) {
         if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
@@ -1110,7 +1111,7 @@ public class ThumbnailHandler {
     /**
      * @param contentApiUrl
      * @param filename
-     * @return
+     * @return Generated URL
      */
     private static String buildLegacyCMSMediaUrl(String contentApiUrl, String filename) {
         String viewerHomePath = DataManager.getInstance().getConfiguration().getViewerHome();
@@ -1197,7 +1198,7 @@ public class ThumbnailHandler {
     /**
      * @param width
      * @param height
-     * @return
+     * @return Given width and height in a {@link String} format
      * @should use width only if height null or zero
      * @should use height only if width null or zero
      * @should use width and height if both non zero

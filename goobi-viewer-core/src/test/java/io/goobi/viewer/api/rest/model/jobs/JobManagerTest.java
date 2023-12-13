@@ -58,22 +58,25 @@ public class JobManagerTest {
 
     @Test
     public void testAddJob() throws InterruptedException {
-        Task job = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
+        Task job = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
+        });
         manager.addTask(job);
-        assertEquals(TaskStatus.CREATED, manager.getTask(job.id).getStatus());
-        Future future = manager.triggerTaskInThread(job.id, null);
+        assertEquals(TaskStatus.CREATED, manager.getTask(job.getId()).getStatus());
+        Future future = manager.triggerTaskInThread(job.getId(), null);
         try {
             future.get(1, TimeUnit.SECONDS);
         } catch (ExecutionException | TimeoutException e) {
             fail(e.toString());
         }
-        assertEquals(TaskStatus.COMPLETE, manager.getTask(job.id).getStatus());
+        assertEquals(TaskStatus.COMPLETE, manager.getTask(job.getId()).getStatus());
     }
 
     @Test
     public void testListJobs() {
-        Task job1 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
-        Task job2 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
+        Task job1 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
+        });
+        Task job2 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
+        });
         manager.addTask(job1);
         manager.addTask(job2);
 

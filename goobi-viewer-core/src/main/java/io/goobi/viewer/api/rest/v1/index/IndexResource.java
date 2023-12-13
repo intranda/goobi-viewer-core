@@ -45,7 +45,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -54,7 +53,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
@@ -187,43 +185,43 @@ public class IndexResource {
     public String getRecordsForQuery(RecordsRequestParameters params)
             throws IndexUnreachableException, ViewerConfigurationException, DAOException, IllegalRequestException {
         JSONObject ret = new JSONObject();
-        if (params == null || params.query == null) {
+        if (params == null || params.getQuery() == null) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
             return ret.toString();
         }
 
-        String query = SearchHelper.buildFinalQuery(params.query, params.boostTopLevelDocstructs,
-                params.includeChildHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
+        String query = SearchHelper.buildFinalQuery(params.getQuery(), params.isBoostTopLevelDocstructs(),
+                params.isIncludeChildHits() ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
 
         logger.trace("query: {}", query);
 
-        int count = params.count;
+        int count = params.getCount();
         if (count < 0) {
             count = SolrSearchIndex.MAX_HITS;
         }
 
         List<StringPair> sortFieldList = new ArrayList<>();
-        for (String sortField : params.sortFields) {
+        for (String sortField : params.getSortFields()) {
             if (StringUtils.isNotEmpty(sortField)) {
-                sortFieldList.add(new StringPair(sortField, params.sortOrder));
+                sortFieldList.add(new StringPair(sortField, params.getSortOrder()));
             }
         }
-        if (params.randomize) {
+        if (params.isRandomize()) {
             sortFieldList.clear();
-            sortFieldList.add(new StringPair(SolrTools.generateRandomSortField(), ("desc".equals(params.sortOrder) ? "desc" : "asc")));
+            sortFieldList.add(new StringPair(SolrTools.generateRandomSortField(), ("desc".equals(params.getSortOrder()) ? "desc" : "asc")));
         }
         try {
-            List<String> fieldList = params.resultFields;
+            List<String> fieldList = params.getResultFields();
 
             Map<String, String> paramMap = null;
-            if (params.includeChildHits) {
-                paramMap = SearchHelper.getExpandQueryParams(params.query);
+            if (params.isIncludeChildHits()) {
+                paramMap = SearchHelper.getExpandQueryParams(params.getQuery());
             }
             QueryResponse response =
                     DataManager.getInstance()
                             .getSearchIndex()
-                            .search(query, params.offset, count, sortFieldList, params.facetFields, fieldList, null, paramMap);
+                            .search(query, params.getOffset(), count, sortFieldList, params.getFacetFields(), fieldList, null, paramMap);
 
             JSONObject object = new JSONObject();
             object.put("numFound", response.getResults().getNumFound());
@@ -410,14 +408,14 @@ public class IndexResource {
         Map<String, SolrDocumentList> expanded = response.getExpandedResults();
         logger.trace("hits: {}", result.size());
         JSONArray jsonArray = null;
-        if (params.jsonFormat != null) {
-            if ("datecentric".equals(params.jsonFormat)) {
+        if (params.getJsonFormat() != null) {
+            if ("datecentric".equals(params.getJsonFormat())) {
                 jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
             } else {
-                jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
+                jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.getLanguage());
             }
         } else {
-            jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
+            jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.getLanguage());
         }
         if (jsonArray == null) {
             jsonArray = new JSONArray();

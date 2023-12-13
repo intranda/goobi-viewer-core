@@ -5345,7 +5345,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param value
-     * @param Configured value
+     * @return Configured value
      * @should return correct value
      */
     public CopyrightIndicatorLicense getCopyrightIndicatorLicenseForValue(String value) {

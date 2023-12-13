@@ -51,6 +51,7 @@ public final class StringConstants {
     public static final String MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT = "download_ticket__email_subject";
     public static final String MSG_ERR_PASSWORD_INCORRECT = "errPasswordIncorrect";
     public static final String MSG_ERR_SEND_EMAIL = "errSendEmail";
+    public static final String MSG_TRANSKRIBUS_RECORDIGESTERROR = "transkribus_recordInjestError";
 
     public static final String PREFIX_PRETTY = "pretty:";
     public static final String PRETTY_NEWSEARCH5 = "pretty:newSearch5";

@@ -62,9 +62,14 @@ public class RisResourceBuilder {
 
     private static final Logger logger = LogManager.getLogger(RisResourceBuilder.class);
 
-    HttpServletRequest request;
-    HttpServletResponse response;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
 
+    /**
+     * 
+     * @param request
+     * @param response
+     */
     public RisResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
@@ -73,7 +78,7 @@ public class RisResourceBuilder {
     /**
      * 
      * @param searchHits
-     * @return
+     * @return {@link StreamingOutput}
      * @throws ContentLibException
      */
     public StreamingOutput writeRIS(List<SearchHit> searchHits) throws ContentLibException {
@@ -118,8 +123,7 @@ public class RisResourceBuilder {
 
     /**
      * @param se
-     * @param request
-     * @return
+     * @return {@link StreamingOutput}
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ContentNotFoundException
@@ -171,7 +175,7 @@ public class RisResourceBuilder {
 
     /**
      * @param se
-     * @return
+     * @return Generated RIS
      * @throws ContentNotFoundException
      * @throws DAOException
      * @throws IndexUnreachableException

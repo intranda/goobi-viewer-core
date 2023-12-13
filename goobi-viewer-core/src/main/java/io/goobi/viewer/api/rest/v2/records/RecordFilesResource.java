@@ -150,17 +150,17 @@ public class RecordFilesResource {
     @Operation(tags = { "records" }, summary = "Get source files of record")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public StreamingOutput getSourceFile(
-            @Parameter(description = "Source file name") @PathParam("filename") String filename)
+            @Parameter(description = "Source file name") @PathParam("filename") final String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
-        filename = FilenameUtils.getName(filename); // Make sure filename doesn't inject a path traversal
-        Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
+        String f = FilenameUtils.getName(filename); // Make sure filename doesn't inject a path traversal
+        Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, f);
         if (!Files.isRegularFile(path)) {
-            throw new ContentNotFoundException("Source file " + filename + " not found");
+            throw new ContentNotFoundException("Source file " + f + " not found");
         }
 
         boolean access = AccessConditionUtils.checkContentFileAccessPermission(pi, servletRequest).isGranted();
         if (!access) {
-            throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
+            throw new ServiceNotAllowedException("Access to source file " + f + " not allowed");
         }
 
         try {
@@ -169,13 +169,13 @@ public class RecordFilesResource {
             if (StringUtils.isNotBlank(contentType)) {
                 servletResponse.setContentType(contentType);
             }
-            servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(filename).toString());
+            servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(f).toString());
             servletResponse.setHeader("Content-Length", String.valueOf(Files.size(path)));
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }
 
-        return (out) -> {
+        return out -> {
             try (InputStream in = Files.newInputStream(path)) {
                 IOUtils.copy(in, out);
             }
@@ -188,15 +188,12 @@ public class RecordFilesResource {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public String getCMDI(
             @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
-            @Parameter(description = "Language for CMDI") @QueryParam("lang") String lang)
+            @Parameter(description = "Language for CMDI") @QueryParam("lang") final String lang)
             throws ContentLibException, PresentationException, IndexUnreachableException, IOException {
         checkFulltextAccessConditions(pi, filename);
 
-        if (lang == null) {
-            lang = BeanUtils.getLocale().getLanguage();
-        }
-
-        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(lang);
+        final Language language =
+                DataManager.getInstance().getLanguageHelper().getLanguage(lang == null ? BeanUtils.getLocale().getLanguage() : lang);
         Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         Path filePath = getDocumentLanguageVersion(cmdiPath, language);
         if (filePath != null && Files.isRegularFile(filePath)) {
@@ -215,7 +212,9 @@ public class RecordFilesResource {
 
     /**
      * Throw an AccessDenied error if the request doesn't satisfy the access conditions
-     *
+     * 
+     * @param pi
+     * @param filename
      * @throws ServiceNotAllowedException
      */
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {

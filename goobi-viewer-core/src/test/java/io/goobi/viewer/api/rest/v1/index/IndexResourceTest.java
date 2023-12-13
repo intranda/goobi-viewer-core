@@ -67,14 +67,14 @@ public class IndexResourceTest extends AbstractRestApiTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        params.offset = 10;
-        params.count = 5;
-        params.jsonFormat = "datecentric";
-        params.randomize = false;
-        params.sortFields = Stream.of(SolrConstants.SORTNUM_YEAR, SolrConstants.LABEL).collect(Collectors.toList());
-        params.sortOrder = "desc";
-        params.query = "DOCSTRCT:picture";
-        params.includeChildHits = false;
+        params.setOffset(10);
+        params.setCount(5);
+        params.setJsonFormat("datecentric");
+        params.setRandomize(false);
+        params.setSortFields(Stream.of(SolrConstants.SORTNUM_YEAR, SolrConstants.LABEL).collect(Collectors.toList()));
+        params.setSortOrder("desc");
+        params.setQuery("DOCSTRCT:picture");
+        params.setIncludeChildHits(false);
 
     }
 
@@ -89,7 +89,7 @@ public class IndexResourceTest extends AbstractRestApiTest {
 
     @Test
     public void testInvalidQuery() throws JsonMappingException, JsonProcessingException {
-        params.sortFields = Stream.of("BLA").collect(Collectors.toList());
+        params.setSortFields(Stream.of("BLA").collect(Collectors.toList()));
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
         try (Response response = target(urls.path(INDEX, INDEX_QUERY).build())
                 .request()
@@ -104,8 +104,8 @@ public class IndexResourceTest extends AbstractRestApiTest {
 
     @Test
     public void testQuery() {
-        params.count = 4;
-        params.jsonFormat = "recordcentric";
+        params.setCount(4);
+        params.setJsonFormat("recordcentric");
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
         try (Response response = target(urls.path(INDEX, INDEX_QUERY).build())
                 .request()

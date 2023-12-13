@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -44,7 +45,7 @@ import io.goobi.viewer.model.translations.Translation;
 public class TranslationListSerializer extends JsonSerializer<Collection<Translation>> {
 
     /* (non-Javadoc)
-     * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
+     * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, JsonGenerator, SerializerProvider)
      */
     /** {@inheritDoc} */
     @Override
@@ -54,9 +55,9 @@ public class TranslationListSerializer extends JsonSerializer<Collection<Transla
 
         if (!groupedTranslations.isEmpty()) {
             gen.writeStartObject();
-            for (String tag : groupedTranslations.keySet()) {
-                gen.writeObjectFieldStart(tag);
-                for (Translation translation : groupedTranslations.get(tag)) {
+            for (Entry<String, List<Translation>> entry : groupedTranslations.entrySet()) {
+                gen.writeObjectFieldStart(entry.getKey());
+                for (Translation translation : entry.getValue()) {
                     gen.writeArrayFieldStart(translation.getLanguage());
                     gen.writeString(translation.getValue());
                     gen.writeEndArray();
@@ -70,7 +71,7 @@ public class TranslationListSerializer extends JsonSerializer<Collection<Transla
 
     }
 
-    private Map<String, List<Translation>> groupByLabel(Collection<Translation> translations) {
+    private static Map<String, List<Translation>> groupByLabel(Collection<Translation> translations) {
         Map<String, List<Translation>> map = new HashMap<>();
         for (Translation translation : translations) {
             String tag = translation.getTag();

@@ -68,32 +68,35 @@ public abstract class AbstractApiUrlManager {
         return url;
     }
 
-    public String parseParameter(String template, String url, String parameter) {
-        if (StringUtils.isNoneBlank(url, parameter)) {
-            if (!parameter.matches("\\{.*\\}")) {
-                parameter = "{" + parameter + "}";
-            }
-            int paramStart = template.indexOf(parameter);
-            if (paramStart < 0) {
-                return ""; //not found
-            }
-            int paramEnd = paramStart + parameter.length();
-            String before = template.substring(0, paramStart);
-            String after = template.substring(paramEnd);
-            if (before.contains("}")) {
-                int lastBracketIndex = before.lastIndexOf("}") + 1;
-                before = before.substring(lastBracketIndex);
-            }
-            if (after.contains("{")) {
-                int firstBracketIndex = after.indexOf("{");
-                after = after.substring(0, firstBracketIndex);
-            }
-            if (url.contains(before) && url.contains(after)) {
-                int urlBeforeEnd = url.indexOf(before) + before.length();
-                int urlAfterStart = after.length() > 0 ? (after.length() > 1 ? url.indexOf(after) : url.length() - 1) : url.length();
-                return url.substring(urlBeforeEnd, urlAfterStart);
-            }
+    public String parseParameter(String template, String url, final String param) {
+        if (StringUtils.isAnyBlank(url, param)) {
             return "";
+        }
+
+        String parameter = param;
+        if (!parameter.matches("\\{.*\\}")) {
+            parameter = "{" + parameter + "}";
+        }
+        int paramStart = template.indexOf(parameter);
+        if (paramStart < 0) {
+            return ""; //not found
+        }
+        int paramEnd = paramStart + parameter.length();
+        String before = template.substring(0, paramStart);
+        String after = template.substring(paramEnd);
+        if (before.contains("}")) {
+            int lastBracketIndex = before.lastIndexOf("}") + 1;
+            before = before.substring(lastBracketIndex);
+        }
+        if (after.contains("{")) {
+            int firstBracketIndex = after.indexOf("{");
+            after = after.substring(0, firstBracketIndex);
+        }
+        if (url.contains(before) && url.contains(after)) {
+            int urlBeforeEnd = url.indexOf(before) + before.length();
+            int urlAfterStartIfNotEmpty = after.length() > 1 ? url.indexOf(after) : url.length() - 1;
+            int urlAfterStart = after.length() > 0 ? urlAfterStartIfNotEmpty : url.length();
+            return url.substring(urlBeforeEnd, urlAfterStart);
         }
 
         return "";
@@ -108,9 +111,8 @@ public abstract class AbstractApiUrlManager {
     }
 
     /**
-     * @param records2
-     * @param recordsRssJson
-     * @return
+     * @param paths
+     * @return {@link ApiPath}
      */
     public ApiPath path(String... paths) {
         String[] array = ArrayUtils.addAll(new String[] { getApiUrl() }, paths);
@@ -168,13 +170,14 @@ public abstract class AbstractApiUrlManager {
 
         /**
          *
-         * @param urlString
+         * @param url
          * @param pathParams
-         * @return
+         * @return urlSting with replacements
          */
-        static String replacePathParams(String urlString, Object[] pathParams) {
-            Matcher matcher = Pattern.compile("\\{\\w+\\}").matcher(urlString);
+        static String replacePathParams(final String url, Object[] pathParams) {
+            Matcher matcher = Pattern.compile("\\{\\w+\\}").matcher(url);
             Iterator<Object> i = new ArrayIterator<>(pathParams);
+            String urlString = url;
             while (matcher.find()) {
                 String group = matcher.group();
                 if (i.hasNext()) {
@@ -201,7 +204,7 @@ public abstract class AbstractApiUrlManager {
      *
      * @param urlString
      * @param pathParams
-     * @return
+     * @return urlString with replacements
      * @should remove trailing slash if file name contains period
      */
     static String replaceApiPathParams(String urlString, Object[] pathParams) {
@@ -259,18 +262,45 @@ public abstract class AbstractApiUrlManager {
     }
 
     public static class ApiInfo {
-        public final String name;
-        public final String version;
-        public final String specification;
+        private final String name;
+        private final String version;
+        private final String specification;
 
         public ApiInfo() {
             this("", "", "");
         }
 
+        /**
+         * 
+         * @param name
+         * @param version
+         * @param specification
+         */
         public ApiInfo(String name, String version, String specification) {
             this.name = name;
             this.version = version;
             this.specification = specification;
+        }
+
+        /**
+         * @return the name
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * @return the specification
+         */
+        public String getSpecification() {
+            return specification;
+        }
+
+        /**
+         * @return the version
+         */
+        public String getVersion() {
+            return version;
         }
     }
 

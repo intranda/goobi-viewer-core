@@ -2614,6 +2614,8 @@ public interface IDAO {
     public ViewerMessage getViewerMessage(Long id) throws DAOException;
 
     public ViewerMessage getViewerMessageByMessageID(String id) throws DAOException;
+    
+
 
     /**
      * <p>
