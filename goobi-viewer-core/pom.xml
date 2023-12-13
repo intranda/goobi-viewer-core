@@ -96,7 +96,6 @@
 		<normdataimporter.version>1.10.5</normdataimporter.version>
 
 		<!-- other libraries -->
-		<cdi.version>2.0.SP1</cdi.version>
 		<citationstyles.version>23.11</citationstyles.version>
 		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
 		<commons-codec.version>1.16.0</commons-codec.version>
@@ -246,12 +245,6 @@
 			<artifactId>xml-apis</artifactId>
 			<version>${xml-apis.version}</version>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<version>${cdi.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.undercouch</groupId>
