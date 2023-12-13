@@ -45,12 +45,12 @@ import io.goobi.viewer.exceptions.RestApiException;
 @Provider
 public class RestApiExceptionMapper implements ExceptionMapper<RestApiException> {
 
-    private static final Logger logger = LogManager.getLogger(ExceptionMapper.class);
+    private static final Logger logger = LogManager.getLogger(RestApiExceptionMapper.class);
 
     @Context
-    HttpServletResponse response;
+    private HttpServletResponse response;
     @Context
-    HttpServletRequest request;
+    private HttpServletRequest request;
 
     /* (non-Javadoc)
      * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Throwable)

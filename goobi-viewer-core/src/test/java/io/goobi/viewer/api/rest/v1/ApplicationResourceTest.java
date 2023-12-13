@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -66,7 +66,7 @@ public class ApplicationResourceTest extends AbstractRestApiTest {
                 .get()) {
             ApiInfo info = response.readEntity(ApiInfo.class);
             assertNotNull(info);
-            assertEquals("v1", info.version);
+            assertEquals("v1", info.getVersion());
         }
     }
 

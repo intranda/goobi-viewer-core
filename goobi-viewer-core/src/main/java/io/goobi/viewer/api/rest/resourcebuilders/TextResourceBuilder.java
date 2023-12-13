@@ -113,7 +113,7 @@ public class TextResourceBuilder {
     /**
      * 
      * @param pi
-     * @return
+     * @return {@link StreamingOutput}
      * @throws IOException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -206,7 +206,7 @@ public class TextResourceBuilder {
      * 
      * @param pi
      * @param filename
-     * @return
+     * @return Plain text extracted from TEI
      * @throws PresentationException
      * @throws ContentLibException
      * @throws IndexUnreachableException
@@ -242,7 +242,7 @@ public class TextResourceBuilder {
      * 
      * @param pi
      * @param langCode
-     * @return
+     * @return TEI document as {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws IOException
@@ -304,7 +304,7 @@ public class TextResourceBuilder {
      * 
      * @param pi
      * @param langCode
-     * @return
+     * @return {@link StreamingOutput}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws IOException
@@ -365,7 +365,7 @@ public class TextResourceBuilder {
      *
      * @param pi
      * @param langCode
-     * @return
+     * @return CMDI document as {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws ContentNotFoundException
@@ -594,7 +594,7 @@ public class TextResourceBuilder {
         Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.LABEL))
                 .map(SolrTools::getAsString)
                 .map(Title::new)
-                .ifPresent(title -> header.setTitle(title));
+                .ifPresent(header::setTitle);
 
         List<String> authors = Optional.ofNullable(solrDoc.getFieldValues("MD_AUTHOR"))
                 .orElse(Collections.emptyList())
@@ -613,7 +613,7 @@ public class TextResourceBuilder {
         Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.PI))
                 .map(SolrTools::getAsString)
                 .map(Identifier::new)
-                .ifPresent(id -> header.addIdentifier(id));
+                .ifPresent(header::addIdentifier);
         return header;
     }
 
@@ -688,6 +688,7 @@ public class TextResourceBuilder {
      * </p>
      *
      * @param pi a {@link java.lang.String} object.
+     * @param langCode
      * @return a {@link java.util.List} object.
      */
     public List<java.nio.file.Path> getTEIFiles(String pi, String langCode) {
@@ -786,7 +787,7 @@ public class TextResourceBuilder {
      * 
      * @param contentMap
      * @param filename
-     * @return
+     * @return {@link StreamingOutput}
      * @throws ContentLibException
      */
     private static StreamingOutput writeZipFile(Map<Path, String> contentMap, String filename) throws ContentLibException {
@@ -822,7 +823,7 @@ public class TextResourceBuilder {
      * 
      * @param files
      * @param filename
-     * @return
+     * @return {@link StreamingOutput}
      * @throws ContentLibException
      */
     private static StreamingOutput writeZipFile(List<Path> files, String filename) throws ContentLibException {
@@ -859,7 +860,7 @@ public class TextResourceBuilder {
      * @param converter
      * @param input
      * @param identifier
-     * @return
+     * @return Converted input
      * @throws UncheckedPresentationException
      */
     private static String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
