@@ -92,7 +92,6 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.MessageKeyConstants;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveResource;
@@ -3319,7 +3318,7 @@ public class ViewManager implements Serializable {
         UserBean ub = BeanUtils.getUserBean();
         if (ub == null) {
             logger.error("Could not retrieve UserBean");
-            Messages.error(MessageKeyConstants.TRANSKRIBUS_RECORDIGESTERROR);
+            Messages.error(StringConstants.MSG_TRANSKRIBUS_RECORDIGESTERROR);
             return "";
         }
 
@@ -3329,7 +3328,7 @@ public class ViewManager implements Serializable {
             session = ub.getUser().getTranskribusSession();
         }
         if (session == null) {
-            Messages.error(MessageKeyConstants.TRANSKRIBUS_RECORDIGESTERROR);
+            Messages.error(StringConstants.MSG_TRANSKRIBUS_RECORDIGESTERROR);
             return "";
         }
         try {
@@ -3338,24 +3337,24 @@ public class ViewManager implements Serializable {
             TranskribusJob job = TranskribusUtils.ingestRecord(DataManager.getInstance().getConfiguration().getTranskribusRestApiUrl(), session, pi,
                     resolverUrlRoot);
             if (job == null) {
-                Messages.error(MessageKeyConstants.TRANSKRIBUS_RECORDIGESTERROR);
+                Messages.error(StringConstants.MSG_TRANSKRIBUS_RECORDIGESTERROR);
                 return "";
             }
             Messages.info("transkribus_recordIngestSuccess");
         } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
-            Messages.error(MessageKeyConstants.TRANSKRIBUS_RECORDIGESTERROR);
+            Messages.error(StringConstants.MSG_TRANSKRIBUS_RECORDIGESTERROR);
         } catch (DAOException e) {
             logger.debug("DAOException thrown here");
             logger.error(e.getMessage(), e);
-            Messages.error(MessageKeyConstants.TRANSKRIBUS_RECORDIGESTERROR);
+            Messages.error(StringConstants.MSG_TRANSKRIBUS_RECORDIGESTERROR);
         } catch (HTTPException e) {
             if (e.getCode() == 401) {
                 ub.getUser().setTranskribusSession(null);
                 Messages.error("transkribus_sessionExpired");
             } else {
                 logger.error(e.getMessage(), e);
-                Messages.error(MessageKeyConstants.TRANSKRIBUS_RECORDIGESTERROR);
+                Messages.error(StringConstants.MSG_TRANSKRIBUS_RECORDIGESTERROR);
             }
         }
 
