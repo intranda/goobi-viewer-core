@@ -41,7 +41,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @FacesValidator("nameValidator")
 public class NameValidator implements Validator<String> {
 
-    private static final String REGEX = "^[\\wäáàâöóòôüúùûëéèêßñ ]+$"; //NOSONAR   input size is limited
+    private static final String REGEX = "^[\\wäáàâöóòôüúùûëéèêßñ\\- ]+$"; //NOSONAR   input size is limited
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     /* (non-Javadoc)
