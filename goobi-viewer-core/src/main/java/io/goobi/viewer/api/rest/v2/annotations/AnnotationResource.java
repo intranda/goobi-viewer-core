@@ -248,7 +248,7 @@ public class AnnotationResource {
                 template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
             } else {
                 //TODO: implement handling IIIF 3 resources
-                return null;//not implemented
+                return null; //not implemented
             }
 
             String pi = urls.parseParameter(template, servletRequest.getRequestURI(), "pi");

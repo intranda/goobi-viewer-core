@@ -147,9 +147,9 @@ public class CMSMediaResource {
             @Parameter(description = "Comma separated list of tags. Only media items with any of these tags will be included")
             @QueryParam("tags") String tags,
             @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
-            @Parameter( description = "Number of media items marks as 'important' that must be included in the result")
+            @Parameter(description = "Number of media items marks as 'important' that must be included in the result")
             @QueryParam("prioritySlots") Integer prioritySlots,
-            @Parameter( description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")
+            @Parameter(description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")
             @QueryParam("random") Boolean random)
             throws DAOException {
         List<String> tagList = new ArrayList<>();
@@ -511,7 +511,6 @@ public class CMSMediaResource {
      * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
      * no user is logged in, NULL is returned
      *
-     * @param session
      * @return Optional<User>
      */
     private static Optional<User> getUser() {
