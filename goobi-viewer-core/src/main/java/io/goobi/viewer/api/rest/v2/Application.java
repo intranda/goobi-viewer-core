@@ -22,7 +22,6 @@
 package io.goobi.viewer.api.rest.v2;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServlet;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Context;
 
@@ -53,9 +52,9 @@ public class Application extends ResourceConfig {
     private static final Logger logger = LogManager.getLogger(Application.class);
 
     /**
-     * <p>
      * Constructor for ViewerApplication.
-     * </p>
+     * 
+     * @param servletConfig
      */
     public Application(@Context ServletConfig servletConfig) {
         super();
@@ -79,7 +78,7 @@ public class Application extends ResourceConfig {
                 }
             }
         };
-        this.init(binder, servletConfig);
+        this.init(binder);
     }
 
     /**
@@ -89,11 +88,10 @@ public class Application extends ResourceConfig {
      */
     public Application(AbstractBinder binder) {
         super();
-        this.init(binder, new HttpServlet() {
-        });
+        this.init(binder);
     }
 
-    private void init(AbstractBinder injectionBinder, ServletConfig servletConfig) {
+    private void init(AbstractBinder injectionBinder) {
         //Allow receiving multi-part POST requests
         register(MultiPartFeature.class);
         //inject properties into Resources classes
