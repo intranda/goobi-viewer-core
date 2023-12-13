@@ -38,7 +38,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronScheduleBuilder;
@@ -179,7 +179,7 @@ public class QuartzListener implements ServletContextListener {
         } else if (storedTriggers.containsKey(TaskType.CACHE_GEOMAPS.name())) {
             dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.CACHE_GEOMAPS.name()).getId());
         }
-        if(Files.exists(Path.of(config.getThemeRootPath()))) {
+        if(StringUtils.isNotBlank(config.getThemeRootPath()) && Files.exists(Path.of(config.getThemeRootPath()))) {
             addTrigger(storedTriggers, triggers, TaskType.PULL_THEME, TaskTriggerStatus.PAUSED);
         } else if (storedTriggers.containsKey(TaskType.PULL_THEME.name())) {
             dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.PULL_THEME.name()).getId());

@@ -35,11 +35,11 @@
 			<div class="admin__developer-autopull-wrapper">
 				<div class="admin__developer-autopull-status-wrapper">
 					<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
-					<div class="admin__developer-autopull-status-text">Autopull Status: #{developerBean.isAutopullActive ? 'ON' : 'OFF'}</div><div class="admin__developer-autopull-status-icon #{developerBean.isAutopullActive ? '' : '-isOff'}"></div>
+					<div class="admin__developer-autopull-status-text">Autopull Status: #{adminDeveloperBean.isAutopullActive ? 'ON' : 'OFF'}</div><div class="admin__developer-autopull-status-icon #{adminDeveloperBean.isAutopullActive ? '' : '-isOff'}"></div>
 
 				</div>
 				<div class="admin__developer-autopull-last-pull">
-					<h:outputText value="#{developerBean.lastAutopull}">
+					<h:outputText value="#{adminDeveloperBean.lastAutopull}">
 						<f:converter converterId="localDateTimeConverter" />
 						<f:attribute name="pattern"
 							value="#{navigationHelper.dateTimePattern}" />
@@ -49,7 +49,7 @@
 			</div>
 			
 			<h:form>
-				<h:commandButton action="#{developerBean.triggerPullTheme}" value="Pull theme"/>
+				<h:commandButton action="#{adminDeveloperBean.triggerPullTheme}" value="Pull theme"/>
 			</h:form>
 
 				<!-- DOWNLOAD FILES -->

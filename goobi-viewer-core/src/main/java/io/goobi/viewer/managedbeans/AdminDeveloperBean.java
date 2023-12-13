@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.UriBuilder;
@@ -45,7 +45,7 @@ import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
 
 @Named
-@SessionScoped
+@ApplicationScoped
 public class AdminDeveloperBean implements Serializable {
 
     private static final long serialVersionUID = 9068383748390523908L;
@@ -82,10 +82,9 @@ public class AdminDeveloperBean implements Serializable {
     private static final String[] FILES_TO_INCLUDE = new String[] {"config_viewer-module-crowdsourcing.xml", "messages_*.properties"};
     
     @Inject
-    private MessageQueueManager queueManager;
-    private Scheduler scheduler = null;
+    private transient MessageQueueManager queueManager;
+    private transient Scheduler scheduler = null;
     
-    private final Configuration config;
     private final String viewerDatabaseName;
     private final String viewerConfigDirectory;
     
@@ -94,7 +93,6 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     public AdminDeveloperBean(Configuration config) {
-        this.config = config;
         viewerDatabaseName = config.getTheme();
         viewerConfigDirectory = config.getConfigLocalPath();
         try {
