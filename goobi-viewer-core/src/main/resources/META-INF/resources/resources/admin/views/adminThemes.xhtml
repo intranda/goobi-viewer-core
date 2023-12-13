@@ -88,7 +88,7 @@
 				<div class="admin__default-block mb-5 -success-box">
 					<div class="row">
 						<h2 class="col-12">
-						#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__themes__main_heading_configured, adminThemesBean.mainThemeName)}
+						#{msg.admin__themes__main_heading_configured} #{adminThemesBean.getThemeLabel(configurationBean.name)}
 						</h2>
 					</div>
 					<a
