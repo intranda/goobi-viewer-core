@@ -30,6 +30,8 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
  * <p>
  * TableDataSource interface.
  * </p>
+ * 
+ * @param <T>
  */
 public interface TableDataSource<T> {
 

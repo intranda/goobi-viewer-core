@@ -83,7 +83,8 @@ public class AdminDeveloperBean implements Serializable {
             + "";
 
     private static final String SQL_STATEMENT_ADD_SUPERUSER =
-            "INSERT INTO users (active,email,password_hash,score,superuser) VALUES (1,\"goobi@intranda.com\",\"$2a$10$Z5GTNKND9ZbuHt0ayDh0Remblc7pKUNlqbcoCxaNgKza05fLtkuYO\",0,1);";
+            "INSERT INTO users (active,email,password_hash,score,superuser) VALUES (1,\"goobi@intranda.com\","
+                    + "\"$2a$10$Z5GTNKND9ZbuHt0ayDh0Remblc7pKUNlqbcoCxaNgKza05fLtkuYO\",0,1);";
 
     private static final String BASH_STATEMENT_CREATE_SQL_DUMP =
             "mysqldump $VIEWERDBNAME --ignore-table=viewer.crowdsourcing_fulltexts --ignore-table=viewer.users";
@@ -116,7 +117,6 @@ public class AdminDeveloperBean implements Serializable {
         }
     }
 
-
     public void downloadDeveloperArchive() {
         Path tempDirectory = null;
         Path zipFile = null;
@@ -124,7 +124,7 @@ public class AdminDeveloperBean implements Serializable {
             sendDownloadProgressUpdate(0);
             tempDirectory = Files.createTempDirectory("viewer_developer_");
             sendDownloadProgressUpdate(0.1f);
-            zipFile = createDeveloperArchive(tempDirectory, p -> sendDownloadProgressUpdate(0.1f + p*0.8f));
+            zipFile = createDeveloperArchive(tempDirectory, p -> sendDownloadProgressUpdate(0.1f + p * 0.8f));
             logger.debug("Sending file...");
             Faces.sendFile(zipFile, true);
             logger.debug("Done sending file");
@@ -155,7 +155,7 @@ public class AdminDeveloperBean implements Serializable {
         }
 
     }
-    
+
     public void activateAutopull() throws DAOException {
         if (!isAutopullActive()) {
             pauseJob(TaskType.PULL_THEME);
@@ -173,14 +173,16 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     public LocalDateTime getLastAutopull() throws DAOException {
-        List<ViewerMessage> messages = DataManager.getInstance().getDao().getViewerMessages(0, 1, "lastUpdateTime", true, Map.of("taskName", TaskType.PULL_THEME.name(), "messageStatus", MessageStatus.FINISH.name()));
-        if(!messages.isEmpty()) {
+        List<ViewerMessage> messages = DataManager.getInstance()
+                .getDao()
+                .getViewerMessages(0, 1, "lastUpdateTime", true,
+                        Map.of("taskName", TaskType.PULL_THEME.name(), "messageStatus", MessageStatus.FINISH.name()));
+        if (!messages.isEmpty()) {
             return messages.get(0).getLastUpdateTime();
-        } else {
-            return null;
         }
+        return null;
     }
-    
+
     public String getThemeName() {
         return this.viewerThemeName;
     }
@@ -200,7 +202,7 @@ public class AdminDeveloperBean implements Serializable {
             logger.error("Error creating sql dump of viewer database: {}", e.toString());
         }
         for (File file : Path.of(viewerConfigDirectory).toFile().listFiles(filter)) {
-            Path zipEntryPath = Path.of("viewer/config", file.getName().toString());
+            Path zipEntryPath = Path.of("viewer/config", file.getName());
             zipEntryMap.put(zipEntryPath, FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING));
         }
         progressMonitor.accept(0.7f);
@@ -217,9 +219,8 @@ public class AdminDeveloperBean implements Serializable {
         if (ret < 1) {
             String output = command.getOutput();
             return new StringBuilder(output).append(SQL_STATEMENT_CREATE_USERS).append(SQL_STATEMENT_ADD_SUPERUSER).toString();
-        } else {
-            throw new IOException("Error executing command '" + createSqlDumpStatement + "':\t" + command.getErrorOutput());
         }
+        throw new IOException("Error executing command '" + createSqlDumpStatement + "':\t" + command.getErrorOutput());
     }
 
     protected Document createDeveloperViewerConfig(Path viewerConfigPath) throws IOException, JDOMException {
@@ -232,7 +233,7 @@ public class AdminDeveloperBean implements Serializable {
         return configDoc;
     }
 
-    private void replaceSolrUrl(Document configDoc) {
+    private static void replaceSolrUrl(Document configDoc) {
         Optional<String> restUrl = XmlTools.evaluateToFirstString("//config/urls/rest", configDoc.getRootElement(), Collections.emptyList());
         Optional<Element> solrElement = XmlTools.evaluateToFirstElement("//config/urls/solr", configDoc.getRootElement(), Collections.emptyList());
         restUrl.ifPresent(rest -> {
@@ -242,12 +243,12 @@ public class AdminDeveloperBean implements Serializable {
         });
     }
 
-    private void renameElement(Document configDoc, String path, String newName) {
+    private static void renameElement(Document configDoc, String path, String newName) {
         Optional<Element> restUrl = XmlTools.evaluateToFirstElement(path, configDoc.getRootElement(), Collections.emptyList());
         restUrl.ifPresent(rest -> rest.setName(newName));
     }
 
-    private void addElement(Document configDoc, String parentPath, String name, String value) {
+    private static void addElement(Document configDoc, String parentPath, String name, String value) {
         Optional<Element> urlElement = XmlTools.evaluateToFirstElement(parentPath, configDoc.getRootElement(), Collections.emptyList());
         urlElement.ifPresent(urls -> {
             Element ele = new Element(name);
@@ -265,7 +266,7 @@ public class AdminDeveloperBean implements Serializable {
         }
     }
 
-    private void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
+    private static void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
         try {
             IDAO dao = DataManager.getInstance().getDao();
             RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
@@ -275,19 +276,19 @@ public class AdminDeveloperBean implements Serializable {
             logger.error(e);
         }
     }
-  
+
     private void sendDownloadFinished() {
         updateDownlaodProgress("finished", Optional.empty(), 1.0f);
     }
-    
+
     private void sendDownloadError(String message) {
         updateDownlaodProgress("error", Optional.of(message), 0);
     }
-    
+
     private void sendDownloadProgressUpdate(float progress) {
         updateDownlaodProgress("processing", Optional.empty(), progress);
     }
-    
+
     private void updateDownlaodProgress(String status, Optional<String> message, float progress) {
         JSONObject json = new JSONObject();
         json.put("progress", progress);
@@ -295,5 +296,5 @@ public class AdminDeveloperBean implements Serializable {
         message.ifPresent(m -> json.put("message", m));
         downloadContext.send(json.toString());
     }
-    
+
 }
