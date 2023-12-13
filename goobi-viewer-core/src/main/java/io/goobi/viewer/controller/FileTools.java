@@ -328,7 +328,7 @@ public final class FileTools {
             }
             for (Entry<Path, String> entry : contentMap.entrySet()) {
                 try (InputStream in = IOUtils.toInputStream(entry.getValue(), StandardCharsets.UTF_8.name())) {
-                    zos.putNextEntry(new ZipEntry(entry.getKey().getFileName().toString()));
+                    zos.putNextEntry(new ZipEntry(entry.getKey().toString()));
                     byte[] buffer = new byte[1024];
                     int len;
                     while ((len = in.read(buffer)) != -1) {

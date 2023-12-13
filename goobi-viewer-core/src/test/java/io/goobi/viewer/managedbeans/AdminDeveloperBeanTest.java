@@ -5,6 +5,7 @@ package io.goobi.viewer.managedbeans;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,7 +44,18 @@ public class AdminDeveloperBeanTest {
     @Test
     public void test_createZipFile() throws IOException, InterruptedException, JDOMException {
         Path zipFile = bean.createDeveloperArchive(zipPath, f -> {});
-        assertTrue(Files.exists(zipPath));
+        assertTrue(Files.exists(zipFile));
+        
+    }
+    
+//    @Test
+    public void test_createSqlDump() throws IOException, InterruptedException {
+        String dump = bean.createSqlDump();
+        System.out.println(dump);
+        File sqlFile = new File("/opt/digiverso/viewer/config/sql/test.sql");
+        FileUtils.write(sqlFile, dump, "utf-8");
+        int nullIndex = dump.indexOf("\0");
+        assertEquals(-1, nullIndex);
         
     }
     
