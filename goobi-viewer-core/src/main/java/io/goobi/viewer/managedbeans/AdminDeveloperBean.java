@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,7 +52,7 @@ public class AdminDeveloperBean implements Serializable {
     private static final long serialVersionUID = 9068383748390523908L;
 
     private static final Logger logger = LogManager.getLogger(AdminDeveloperBean.class);
-    
+
     private static final String SQL_STATEMENT_CREATE_USERS = "DROP TABLE IF EXISTS `users`;\n"
             + "CREATE TABLE `users` (\n"
             + "  `user_id` bigint(20) NOT NULL AUTO_INCREMENT,\n"
@@ -74,20 +75,22 @@ public class AdminDeveloperBean implements Serializable {
             + "  KEY `index_users_email` (`email`)\n"
             + ") ENGINE=InnoDB AUTO_INCREMENT=191 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;\n"
             + "";
-    
-    private static final String SQL_STATEMENT_ADD_SUPERUSER = "INSERT INTO users (active,email,password_hash,score,superuser) VALUES (1,\"goobi@intranda.com\",\"$2a$10$Z5GTNKND9ZbuHt0ayDh0Remblc7pKUNlqbcoCxaNgKza05fLtkuYO\",0,1);";
-    
-    private static final String BASH_STATEMENT_CREATE_SQL_DUMP = "mysqldump $VIEWERDBNAME --ignore-table=viewer.crowdsourcing_fulltexts --ignore-table=viewer.users";
-    
-    private static final String[] FILES_TO_INCLUDE = new String[] {"config_viewer-module-crowdsourcing.xml", "messages_*.properties"};
-    
+
+    private static final String SQL_STATEMENT_ADD_SUPERUSER =
+            "INSERT INTO users (active,email,password_hash,score,superuser) VALUES (1,\"goobi@intranda.com\",\"$2a$10$Z5GTNKND9ZbuHt0ayDh0Remblc7pKUNlqbcoCxaNgKza05fLtkuYO\",0,1);";
+
+    private static final String BASH_STATEMENT_CREATE_SQL_DUMP =
+            "mysqldump $VIEWERDBNAME --ignore-table=viewer.crowdsourcing_fulltexts --ignore-table=viewer.users";
+
+    private static final String[] FILES_TO_INCLUDE = new String[] { "config_viewer-module-crowdsourcing.xml", "messages_*.properties" };
+
     @Inject
     private transient MessageQueueManager queueManager;
     private transient Scheduler scheduler = null;
-    
+
     private final String viewerDatabaseName;
     private final String viewerConfigDirectory;
-    
+
     public AdminDeveloperBean() {
         this(DataManager.getInstance().getConfiguration());
     }
@@ -101,54 +104,56 @@ public class AdminDeveloperBean implements Serializable {
             logger.error("Error getting quartz scheduler", e);
         }
     }
-    
-    public Path createDeveloperArchive() throws IOException, InterruptedException, JDOMException  {
-        return createDeveloperArchive(Files.createTempDirectory("viewer_developer_"));
+
+    public Path createDeveloperArchive() throws IOException, InterruptedException, JDOMException {
+        Path devFolder = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), "viewer_developer_");
+        return createDeveloperArchive(devFolder);
+        // return createDeveloperArchive(Files.createTempDirectory("viewer_developer_"));
     }
-    
-    protected Path createDeveloperArchive(Path tempDir) throws IOException, InterruptedException, JDOMException  {
-        
+
+    protected Path createDeveloperArchive(Path tempDir) throws IOException, InterruptedException, JDOMException {
+
         Map<Path, String> zipEntryMap = new HashMap<>();
         FilenameFilter filter = WildcardFileFilter.builder().setWildcards(FILES_TO_INCLUDE).get();
-        
-        zipEntryMap.put(Path.of("viewer/config/config_viewer.xml"), XmlTools.getStringFromElement(createDeveloperViewerConfig(Path.of(viewerConfigDirectory, "config_viewer.xml")).getRootElement(), StringTools.DEFAULT_ENCODING));
-        try {            
+
+        zipEntryMap.put(Path.of("viewer/config/config_viewer.xml"), XmlTools.getStringFromElement(
+                createDeveloperViewerConfig(Path.of(viewerConfigDirectory, "config_viewer.xml")).getRootElement(), StringTools.DEFAULT_ENCODING));
+        try {
             zipEntryMap.put(Path.of("viewer/config/viewer.sql"), createSqlDump());
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.error("Error creating sql dump of viewer database: {}", e.toString());
         }
-        for(File file : Path.of(viewerConfigDirectory).toFile().listFiles(filter)) {
-            Path zipEntryPath = Path.of("viewer/config", file.getName().toString());
+        for (File file : Path.of(viewerConfigDirectory).toFile().listFiles(filter)) {
+            Path zipEntryPath = Path.of("viewer/config", file.getName());
             zipEntryMap.put(zipEntryPath, FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING));
         }
-        
+
         File zipFile = tempDir.resolve("developer.zip").toFile();
         FileTools.compressZipFile(zipEntryMap, zipFile, 9);
         return zipFile.toPath();
     }
 
-
     protected String createSqlDump() throws IOException, InterruptedException {
         String createSqlDumpStatement = BASH_STATEMENT_CREATE_SQL_DUMP.replace("$VIEWERDBNAME", this.viewerDatabaseName);
         ShellCommand command = new ShellCommand(createSqlDumpStatement.split("\\s+"));
         int ret = command.exec();
-        if(ret < 1) {
+        if (ret < 1) {
             return new StringBuilder(command.getOutput()).append(SQL_STATEMENT_CREATE_USERS).append(SQL_STATEMENT_ADD_SUPERUSER).toString();
-        } else {
-            throw new IOException("Error executing command '" + createSqlDumpStatement + "':\t" + command.getErrorOutput());
         }
+        throw new IOException("Error executing command '" + createSqlDumpStatement + "':\t" + command.getErrorOutput());
     }
-    
+
     protected Document createDeveloperViewerConfig(Path viewerConfigPath) throws IOException, JDOMException {
         Document configDoc = XmlTools.readXmlFile(viewerConfigPath);
         replaceSolrUrl(configDoc);
         renameElement(configDoc, "//config/urls/rest", "iiif");
-        XmlTools.evaluateToFirstElement("//config/urls/iiif", configDoc.getRootElement(), Collections.emptyList()).ifPresent(ele -> ele.setAttribute("useForCmsMedia", "true"));
+        XmlTools.evaluateToFirstElement("//config/urls/iiif", configDoc.getRootElement(), Collections.emptyList())
+                .ifPresent(ele -> ele.setAttribute("useForCmsMedia", "true"));
         addElement(configDoc, "//config/urls", "rest", "http://localhost:8080/viewer/api/v1/");
         return configDoc;
     }
 
-    private void replaceSolrUrl(Document configDoc) {
+    private static void replaceSolrUrl(Document configDoc) {
         Optional<String> restUrl = XmlTools.evaluateToFirstString("//config/urls/rest", configDoc.getRootElement(), Collections.emptyList());
         Optional<Element> solrElement = XmlTools.evaluateToFirstElement("//config/urls/solr", configDoc.getRootElement(), Collections.emptyList());
         restUrl.ifPresent(rest -> {
@@ -157,44 +162,43 @@ public class AdminDeveloperBean implements Serializable {
             solrElement.ifPresent(solrEle -> solrEle.setText(modifiedSolr.toString()));
         });
     }
-    
-    private void renameElement(Document configDoc, String path, String newName) {
+
+    private static void renameElement(Document configDoc, String path, String newName) {
         Optional<Element> restUrl = XmlTools.evaluateToFirstElement(path, configDoc.getRootElement(), Collections.emptyList());
         restUrl.ifPresent(rest -> rest.setName(newName));
     }
-    
-    private void addElement(Document configDoc, String parentPath, String name, String value) {
+
+    private static void addElement(Document configDoc, String parentPath, String name, String value) {
         Optional<Element> urlElement = XmlTools.evaluateToFirstElement(parentPath, configDoc.getRootElement(), Collections.emptyList());
         urlElement.ifPresent(urls -> {
             Element ele = new Element(name);
             ele.setText(value);
-            urls.addContent(ele); 
+            urls.addContent(ele);
         });
     }
-    
+
     public void activateAutopull() throws DAOException {
-        if(!isAutopullActive()) {
+        if (!isAutopullActive()) {
             pauseJob(TaskType.PULL_THEME);
         }
     }
-    
+
     public void triggerPullTheme() throws MessageQueueException {
         ViewerMessage message = new ViewerMessage(TaskType.PULL_THEME.name());
         queueManager.addToQueue(message);
     }
-    
+
     public boolean isAutopullActive() throws DAOException {
         RecurringTaskTrigger trigger = DataManager.getInstance().getDao().getRecurringTaskTriggerForTask(TaskType.PULL_THEME);
         return trigger != null && trigger.getStatus() == TaskTriggerStatus.RUNNING;
     }
-    
+
     public LocalDateTime getLastAutopull() throws DAOException {
         RecurringTaskTrigger trigger = DataManager.getInstance().getDao().getRecurringTaskTriggerForTask(TaskType.PULL_THEME);
         return Optional.ofNullable(trigger).map(t -> t.getLastTimeTriggered()).orElse(null);
 
     }
 
-    
     private void pauseJob(TaskType taskType) {
         try {
             scheduler.pauseJob(new JobKey(taskType.name(), taskType.name()));
@@ -204,7 +208,7 @@ public class AdminDeveloperBean implements Serializable {
         }
     }
 
-    private void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
+    private static void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
         try {
             IDAO dao = DataManager.getInstance().getDao();
             RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
@@ -214,5 +218,5 @@ public class AdminDeveloperBean implements Serializable {
             logger.error(e);
         }
     }
-    
+
 }

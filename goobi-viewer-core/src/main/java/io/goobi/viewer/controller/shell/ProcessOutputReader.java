@@ -51,6 +51,7 @@ public class ProcessOutputReader implements Runnable {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     logger.trace("interrupted");
+                    Thread.currentThread().interrupt();
                 }
             }
         } catch (IOException e) {
