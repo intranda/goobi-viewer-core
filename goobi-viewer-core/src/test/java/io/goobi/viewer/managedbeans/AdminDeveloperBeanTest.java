@@ -34,7 +34,7 @@ public class AdminDeveloperBeanTest {
         config = Mockito.mock(Configuration.class);
         Mockito.when(config.getTheme()).thenReturn("reference");
         Mockito.when(config.getConfigLocalPath()).thenReturn(configPath.toAbsolutePath().toString());
-        bean = new AdminDeveloperBean(config);
+        bean = new AdminDeveloperBean(config, "viewer");
         if(!Files.exists(zipPath)) {
             Files.createDirectories(zipPath);
         }
@@ -42,7 +42,7 @@ public class AdminDeveloperBeanTest {
     
     @Test
     public void test_createZipFile() throws IOException, InterruptedException, JDOMException {
-        Path zipFile = bean.createDeveloperArchive(zipPath);
+        Path zipFile = bean.createDeveloperArchive(zipPath, f -> {});
         assertTrue(Files.exists(zipPath));
         
     }

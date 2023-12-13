@@ -6885,23 +6885,39 @@ public class JPADAO implements IDAO {
     }
 
     String addViewerMessageFilterQuery(Map<String, String> filters, Map<String, Object> params) {
-        String filterValue = filters.values().stream().findFirst().orElse("");
-        String filterQuery = "";
-        if (StringUtils.isNotBlank(filterValue)) {
-            filterQuery += " WHERE (a.taskName LIKE :value OR a.messageId LIKE :value";
-            try {
-                params.put("valueStatus", MessageStatus.valueOf(filterValue.toUpperCase()));
-                filterQuery += " OR a.messageStatus = :valueStatus";
-            } catch (IllegalArgumentException e) {
-                //noop
+        String filterQuery = " WHERE (";
+        
+        for (Entry<String, String> entry : filters.entrySet()) {
+            String field = entry.getKey();
+            String value = entry.getValue();
+            if(StringUtils.isBlank(field) || "all".equalsIgnoreCase(field)) {
+                if (StringUtils.isNotBlank(value)) {
+                    if(filterQuery.endsWith(")")) {
+                        filterQuery += " AND";
+                    }
+                    filterQuery += " (a.taskName LIKE :$field OR a.messageId LIKE :$field".replace("$field", field);
+                    try {
+                        params.put("valueStatus", MessageStatus.valueOf(value.toUpperCase()));
+                        filterQuery += " OR a.messageStatus = :valueStatus";
+                    } catch (IllegalArgumentException e) {
+                        //noop
+                    }
+                    filterQuery += " OR :valueProperty MEMBER OF (a.properties)";
+                    params.put("valueProperty", value);
+                    
+                    filterQuery += ")";
+                    params.put(field, "%" + value.trim() + "%");
+                }
+            } else {
+                if(filterQuery.endsWith(")")) {
+                    filterQuery += " AND";
+                }
+                filterQuery += " (a.$field LIKE :$value)".replace("$field", field).replace("$value", field);
+                params.put(field,  "%" + value.trim() + "%");
             }
-            filterQuery += " OR :valueProperty MEMBER OF (a.properties)";
-            params.put("valueProperty", filterValue);
-
-            filterQuery += ")";
-            params.put("value", "%" + filterValue + "%");
         }
-        return filterQuery;
+        filterQuery += ")";
+        return " WHERE ()".equals(filterQuery) ? "" : filterQuery;
     }
 
     /** {@inheritDoc} */
