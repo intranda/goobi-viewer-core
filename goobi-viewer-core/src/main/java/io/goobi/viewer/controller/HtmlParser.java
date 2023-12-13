@@ -37,7 +37,7 @@ import org.jsoup.nodes.Document;
  * @author florian
  *
  */
-public class HtmlParser {
+public final class HtmlParser {
 
     private static final String HTML_TAG_PATTERN_STRING = "(</\\w+>)|(<br\\s*/>)";
     private static final Pattern HTML_TAG_PATTERN = Pattern.compile(HTML_TAG_PATTERN_STRING);

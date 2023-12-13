@@ -134,7 +134,7 @@ public class PdfHandler {
 
     private String escapeURI(String uri) {
         try {
-            // logger.trace("Encoding param: {}", replacement);
+            // logger.trace("Encoding param: {}", replacement); //NOSONAR Sometimes needed for debugging
             return URLEncoder.encode(uri, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
             return uri;
@@ -193,15 +193,13 @@ public class PdfHandler {
      * Returns the url to a PDF build from the mets file for the given {@code pi}
      *
      * @param pi a {@link java.lang.String} object.
-     * @param divId a {@link java.util.Optional} object.
-     * @param watermarkId a {@link java.util.Optional} object.
-     * @param watermarkText a {@link java.util.Optional} object.
+     * @param divID a {@link java.util.Optional} object.
      * @param label a {@link java.util.Optional} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getPdfUrl(String pi, Optional<String> divId, Optional<String> label) {
+    public String getPdfUrl(String pi, final Optional<String> divID, Optional<String> label) {
 
-        divId = divId.filter(id -> StringUtils.isNotBlank(id));
+        Optional<String> divId = divID.filter(StringUtils::isNotBlank);
         String filename = label.filter(StringUtils::isNotBlank)
                 .map(l -> l.replaceAll("[\\s]", "_"))
                 .map(l -> l.replaceAll("[\\W]", ""))
@@ -231,17 +229,4 @@ public class PdfHandler {
     public WatermarkHandler getWatermarkHandler() {
         return watermarkHandler;
     }
-
-    /**
-     * @param text
-     * @return
-     */
-    private static Object encode(String text) {
-        try {
-            return URLEncoder.encode(text, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            return text;
-        }
-    }
-
 }
