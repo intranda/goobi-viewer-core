@@ -6886,13 +6886,13 @@ public class JPADAO implements IDAO {
 
     String addViewerMessageFilterQuery(Map<String, String> filters, Map<String, Object> params) {
         String filterQuery = " WHERE (";
-        
+
         for (Entry<String, String> entry : filters.entrySet()) {
             String field = entry.getKey();
             String value = entry.getValue();
-            if(StringUtils.isBlank(field) || "all".equalsIgnoreCase(field)) {
+            if (StringUtils.isBlank(field) || "all".equalsIgnoreCase(field)) {
                 if (StringUtils.isNotBlank(value)) {
-                    if(filterQuery.endsWith(")")) {
+                    if (filterQuery.endsWith(")")) {
                         filterQuery += " AND";
                     }
                     filterQuery += " (a.taskName LIKE :$field OR a.messageId LIKE :$field".replace("$field", field);
@@ -6904,16 +6904,16 @@ public class JPADAO implements IDAO {
                     }
                     filterQuery += " OR :valueProperty MEMBER OF (a.properties)";
                     params.put("valueProperty", value);
-                    
+
                     filterQuery += ")";
                     params.put(field, "%" + value.trim() + "%");
                 }
             } else {
-                if(filterQuery.endsWith(")")) {
+                if (filterQuery.endsWith(")")) {
                     filterQuery += " AND";
                 }
                 filterQuery += " (a.$field LIKE :$value)".replace("$field", field).replace("$value", field);
-                params.put(field,  "%" + value.trim() + "%");
+                params.put(field, "%" + value.trim() + "%");
             }
         }
         filterQuery += ")";
