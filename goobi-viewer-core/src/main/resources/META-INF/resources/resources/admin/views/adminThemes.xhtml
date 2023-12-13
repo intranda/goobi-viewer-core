@@ -32,7 +32,9 @@
 			<ui:fragment rendered="#{!adminThemesBean.mainThemeConfigured}">
 				<div class="admin__default-block mb-5 -danger">
 					<div class="row">
-						<h2 class="col-12">#{msg.admin__themes__main_heading_notConfigured}</h2>
+						<h2 class="col-12">
+							#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__themes__main_heading_notConfigured, adminThemesBean.mainThemeName)}
+						</h2>
 					</div>
 					<a
 						href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}/"
@@ -85,7 +87,8 @@
 			<ui:fragment rendered="#{adminThemesBean.mainThemeConfigured}">
 				<div class="admin__default-block mb-5 -success-box">
 					<div class="row">
-						<h2 class="col-12">#{msg.admin__themes__main_heading_configured}
+						<h2 class="col-12">
+						#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__themes__main_heading_configured, adminThemesBean.mainThemeName)}
 						</h2>
 					</div>
 					<a
@@ -104,7 +107,7 @@
 
 						</div>
 						<div class="col-2 d-flex justify-content-end">
-							<span>#{admin__themes__action_configured}</span>
+							<span>#{msg.admin__themes__action_configured}</span>
 						</div>
 					</a>
 				</div>
@@ -115,7 +118,8 @@
 				<div class="admin__default-block mb-5 -success-box">
 					<div class="row">
 						<h2 class="col-12">
-							#{msg.admin__themes__sub_heading_configured}</h2>
+						#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__themes__sub_heading_configured, theme.name)}
+							</h2>
 					</div>
 					<!-- value: Theme Names -->
 					<a href="#{request.contextPath}/admin/themes/edit/#{theme.name}/"
