@@ -281,17 +281,19 @@ public class MessageQueueManager {
     }
 
     private void updateMessageStatus(ViewerMessage message, MessageStatus rv) {
-        message.setMessageStatus(rv);
-        message.setQueue(MessageQueueManager.getQueueForMessageType(message.getTaskName()));
-        message.setLastUpdateTime(LocalDateTime.now());
-        try {
-            if (message.getId() == null) {
-                dao.addViewerMessage(message);
-            } else {
-                dao.updateViewerMessage(message);
+        if (MessageStatus.IGNORE != rv) {
+            message.setMessageStatus(rv);
+            message.setQueue(MessageQueueManager.getQueueForMessageType(message.getTaskName()));
+            message.setLastUpdateTime(LocalDateTime.now());
+            try {
+                if (message.getId() == null) {
+                    dao.addViewerMessage(message);
+                } else {
+                    dao.updateViewerMessage(message);
+                }
+            } catch (DAOException e) {
+                logger.error(e);
             }
-        } catch (DAOException e) {
-            logger.error(e);
         }
     }
 

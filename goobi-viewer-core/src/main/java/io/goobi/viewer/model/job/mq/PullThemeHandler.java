@@ -27,6 +27,7 @@ import java.nio.file.Path;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +37,6 @@ import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
 import io.goobi.viewer.managedbeans.AdminDeveloperBean;
-import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
 
@@ -45,7 +45,9 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     private static final Logger logger = LogManager.getLogger(PullThemeHandler.class);
 
     private static final String BASH_STATEMENT_PULL_THEME_REPOSITORY =
-            "git -C $VIEWERTHEMEPATH pull | grep -v -e \"Already up-to-date.\" -e \"Bereits aktuell.\"";
+            "git -C $VIEWERTHEMEPATH pull";
+
+    private static final String ALREADY_UP_TO_DATE_REGEX = "Already[\\s-]+up[\\s-]+to[\\s-]+date.?\\s*";
 
     @Inject
     AdminDeveloperBean developerBean;
@@ -58,9 +60,13 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
             themeRootPath = Path.of("/").resolve(themeRootPath.subpath(0, themeRootPath.getNameCount() - 4));
             if (Files.exists(themeRootPath) && Files.exists(themeRootPath.resolve(".git"))) {
                 try {
-                    pullThemeRepository(themeRootPath);
-                    updateProgress(1f);
-                    return MessageStatus.FINISH;
+                    if(pullThemeRepository(themeRootPath)) {
+                        updateProgress(1f);
+                        return MessageStatus.FINISH;                        
+                    } else {
+                        updateProgress(1f);
+                        return MessageStatus.IGNORE;       
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.error("Message handler thread interrupted while waiting for bash call to finish");
@@ -104,12 +110,20 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
        }
     }
 
-    private void pullThemeRepository(Path themePath) throws IOException, InterruptedException {
+    private boolean pullThemeRepository(Path themePath) throws IOException, InterruptedException {
         String commandString = BASH_STATEMENT_PULL_THEME_REPOSITORY.replace("$VIEWERTHEMEPATH", themePath.toAbsolutePath().toString());
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec();
+        String output = command.getOutput();
+        String error = command.getErrorOutput();
         if (ret > 0) {
             throw new IOException("Error executing command '" + commandString + "': " + command.getErrorOutput());
+        } else if(StringUtils.isNotBlank(error)) {
+            throw new IOException("Error calling git pull: " + error);
+        } else if(output != null && output.matches(ALREADY_UP_TO_DATE_REGEX)) {
+            return false;
+        } else {
+            return true;
         }
     }
 
