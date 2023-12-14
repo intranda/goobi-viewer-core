@@ -338,6 +338,38 @@ public final class FileTools {
             }
         }
     }
+    
+    /**
+     * <p>
+     * compressZipFile.
+     * </p>
+     *
+     * @param zipFile a {@link java.io.File} object.
+     * @param level a {@link java.lang.Integer} object.
+     * @should throw FileNotFoundException if file not found
+     * @param contentMap a {@link java.util.Map} object.
+     * @throws java.io.IOException if any.
+     */
+    public static void compressZip(OutputStream output, Map<Path, String> contentMap, Integer level) throws IOException {
+        if (contentMap == null || contentMap.isEmpty()) {
+            throw new IllegalArgumentException("texts may not be empty or null");
+        }
+        try (ZipOutputStream zos = new ZipOutputStream(output)) {
+            if (level != null) {
+                zos.setLevel(level);
+            }
+            for (Entry<Path, String> entry : contentMap.entrySet()) {
+                try (InputStream in = IOUtils.toInputStream(entry.getValue(), StandardCharsets.UTF_8.name())) {
+                    zos.putNextEntry(new ZipEntry(entry.getKey().toString()));
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while ((len = in.read(buffer)) != -1) {
+                        zos.write(buffer, 0, len);
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * <p>

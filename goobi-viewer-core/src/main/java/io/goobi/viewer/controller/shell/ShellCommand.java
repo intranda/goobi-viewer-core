@@ -62,7 +62,6 @@ public class ShellCommand {
             logger.trace("All output read");
             return result;
         } finally {
-            // Thread.sleep(2000);
             if (is != null) {
                 try {
                     is.close();
