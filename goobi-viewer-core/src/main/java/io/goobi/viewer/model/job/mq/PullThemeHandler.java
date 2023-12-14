@@ -37,7 +37,6 @@ import io.goobi.viewer.model.job.TaskType;
 
 public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
-
     private static final Logger logger = LogManager.getLogger(PullThemeHandler.class);
 
     private static final String BASH_STATEMENT_PULL_THEME_REPOSITORY =
@@ -48,32 +47,31 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
         if (DataManager.getInstance().getConfiguration().getThemeRootPath() != null) {
             Path themeRootPath = Path.of(DataManager.getInstance().getConfiguration().getThemeRootPath()).toAbsolutePath();
-            themeRootPath = Path.of("/").resolve(themeRootPath.subpath(0, themeRootPath.getNameCount()-4));
+            themeRootPath = Path.of("/").resolve(themeRootPath.subpath(0, themeRootPath.getNameCount() - 4));
             if (Files.exists(themeRootPath) && Files.exists(themeRootPath.resolve(".git"))) {
                 try {
                     pullThemeRepository(themeRootPath);
                     return MessageStatus.FINISH;
-                }catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.error("Message handler thread interrupted while waiting for bash call to finish");
-                    ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Message handler thread interrupted while waiting for bash call to finish");
+                    ticket.getProperties()
+                            .put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Message handler thread interrupted while waiting for bash call to finish");
                     return MessageStatus.ERROR;
                 } catch (IOException e) {
                     logger.error("Error pulling theme: {}", e.toString());
                     ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Error pulling theme: " + e.toString());
                     return MessageStatus.ERROR;
                 }
-            } else {
-                ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Theme root path is not accessible or is not a git repository");
-                return MessageStatus.ERROR;
             }
-        } else {
-            ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "No theme root path configured");
+            ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Theme root path is not accessible or is not a git repository");
             return MessageStatus.ERROR;
         }
+        ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "No theme root path configured");
+        return MessageStatus.ERROR;
     }
 
-    private void pullThemeRepository(Path themePath) throws IOException, InterruptedException {
+    private static void pullThemeRepository(Path themePath) throws IOException, InterruptedException {
         String commandString = BASH_STATEMENT_PULL_THEME_REPOSITORY.replace("$VIEWERTHEMEPATH", themePath.toAbsolutePath().toString());
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec();

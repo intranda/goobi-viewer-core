@@ -308,11 +308,11 @@ public final class FileTools {
      * compressZipFile.
      * </p>
      *
+     * @param contentMap a {@link java.util.Map} object.
      * @param zipFile a {@link java.io.File} object.
      * @param level a {@link java.lang.Integer} object.
-     * @should throw FileNotFoundException if file not found
-     * @param contentMap a {@link java.util.Map} object.
      * @throws java.io.IOException if any.
+     * @should throw FileNotFoundException if file not found
      */
     public static void compressZipFile(Map<Path, String> contentMap, File zipFile, Integer level) throws IOException {
         if (contentMap == null || contentMap.isEmpty()) {
@@ -344,11 +344,11 @@ public final class FileTools {
      * compressZipFile.
      * </p>
      *
-     * @param zipFile a {@link java.io.File} object.
-     * @param level a {@link java.lang.Integer} object.
-     * @should throw FileNotFoundException if file not found
+     * @param output
      * @param contentMap a {@link java.util.Map} object.
+     * @param level a {@link java.lang.Integer} object.
      * @throws java.io.IOException if any.
+     * @should throw FileNotFoundException if file not found
      */
     public static void compressZip(OutputStream output, Map<Path, String> contentMap, Integer level) throws IOException {
         if (contentMap == null || contentMap.isEmpty()) {

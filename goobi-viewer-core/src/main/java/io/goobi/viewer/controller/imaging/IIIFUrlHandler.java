@@ -103,6 +103,7 @@ public class IIIFUrlHandler {
      *
      * @param apiUrl
      * @param inFileUrl a {@link java.lang.String} object.
+     * @param docStructIdentifier
      * @param region a {@link java.lang.String} object.
      * @param size a {@link java.lang.String} object.
      * @param rotation a {@link java.lang.String} object.

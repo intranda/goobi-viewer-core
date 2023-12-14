@@ -63,7 +63,7 @@ import io.goobi.viewer.solr.SolrTools;
  * JsonTools class.
  * </p>
  */
-public class JsonTools {
+public final class JsonTools {
 
     private static final Logger logger = LogManager.getLogger(JsonTools.class);
 
