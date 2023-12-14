@@ -1,123 +1,141 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminThemes')}" />
+		</f:metadata>
+	</ui:define>
 
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminThemes')}" />
-        </f:metadata>
-    </ui:define>
+	<ui:define name="content">
 
-    <ui:define name="content">
+		<!-- TITLE -->
+		<div class="admin__title-bar">
+			<h1 class="admin__title">#{msg.admin__themes__title}</h1>
+		</div>
 
-    <!-- DUMMY-VARIABLEN zum Erstellen der views => BITTE RAUSNEHMEN -->
-    <c:set var="mainThemeName" value="mainThemeName" />
-    <!-- main theme Status: configured / not configured -->
-    <c:set var="mainThemeConfigured" value="false" />
-    <!-- Rendered condition: if sub theme exists -->
-    <c:set var="subThemeExists" value="true" />
-    <!-- sub theme Status: configured / not configured -->
-    <c:set var="subThemeConfigured" value="true" />
+		<viewerComponent:adminBreadcrumbs />
 
+		<div id="adminThemes" class="admin__content-inner-content">
 
-      <!-- TITLE -->
-      <div class="admin__title-bar">
-        <h1 class="admin__title">#{msg.admin__themes__title}</h1>
-      </div>
-      
-      <viewerComponent:adminBreadcrumbs />
+			<div class="admin__info-text">#{msg.admin__themes__info}</div>
 
-      <div id="adminThemes" class="admin__content-inner-content">
+			<!-- MAIN THEME NOT CONFIGURED -->
+			<ui:fragment rendered="#{!adminThemesBean.mainThemeConfigured}">
+				<div class="admin__default-block mb-5 -danger">
+					<div class="row">
+						<h2 class="col-12">
+							#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__themes__main_heading_notConfigured, adminThemesBean.mainThemeName)}
+						</h2>
+					</div>
+					<a
+						href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}/"
+						class="row admin__license-unconfigured-entry">
+						<div class="col-10 -textlink">
+							<ui:fragment rendered="#{!adminThemesBean.mainThemeConfigured}">
+								<h:outputFormat
+									value="#{msg.admin__themes__main_text_notConfigured}"
+									escape="false">
+									<f:param value="#{adminThemesBean.mainThemeName}" />
+								</h:outputFormat>
+							</ui:fragment>
 
-        <div class="admin__info-text">#{msg.admin__themes__info}</div>
-
-            <!-- MAIN THEME CONFIGS -->
-            <ui:fragment>
-                <div class="admin__default-block mb-5 #{adminThemesBean.mainThemeConfigured ? '-success-box' : '-danger' }">
-                    <div class="row">
-                      <h2 class="col-12">
-                        #{adminThemesBean.mainThemeConfigured ?
-                          msg.admin__themes__main_heading_configured :
-                          msg.admin__themes__main_heading_notConfigured
-                        }
-                      </h2>
-                    </div>
-                    <a href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}/"
-                        class="row admin__license-unconfigured-entry">
-                            <div class="col-10 -textlink">
-
-	                            <ui:fragment rendered="#{adminThemesBean.mainThemeConfigured}">
-	                              <h:outputFormat value="#{msg.admin__themes__main_text_configured}" escape="false">
-	                                <f:param value="#{adminThemesBean.mainThemeName}" />
-	                              </h:outputFormat>
-	                            </ui:fragment>
-	                            <ui:fragment rendered="#{!adminThemesBean.mainThemeConfigured}">
-	                              <h:outputFormat value="#{msg.admin__themes__main_text_notConfigured}" escape="false">
-	                                <f:param value="#{adminThemesBean.mainThemeName}" />
-	                              </h:outputFormat>
-	                            </ui:fragment>
-
-                            </div>
-                            <div class="col-2 d-flex justify-content-end">
-                            	<span>#{adminThemesBean.mainThemeConfigured ? msg.admin__themes__action_configured : msg.admin__themes__action_notConfigured}</span>
-                            </div>
-                 	</a>
-                </div>
-            </ui:fragment>
-
-            <!-- SUB THEMES -->
-			<ui:fragment rendered="#{not empty adminThemesBean.notConfiguredSubThemes}">
-            	<div class="admin__default-block mb-5 -danger">
-                    <div class="row">
-                      <h2 class="col-12">
-                          #{msg.admin__themes__sub_heading_notConfigured}
-                      </h2>
-                    </div>
-                    <ui:repeat var="themeName" value="#{adminThemesBean.notConfiguredSubThemes}">
-                    	<a href="#{request.contextPath}/admin/themes/edit/#{themeName}/"
-                        	class="row admin__license-unconfigured-entry">
-                            <div class="col-10 -textlink">
-                              <h:outputFormat value="#{msg.admin__themes__sub_text_notConfigured}" escape="false">
-                                <f:param value="#{themeName}" />
-                              </h:outputFormat>
-                            </div>
-                            <div class="col-2 d-flex justify-content-end">
-                            	<span>#{msg.admin__themes__action_notConfigured}</span>
-                            </div>
-						</a>
-                    </ui:repeat>
-                </div>
+						</div>
+						<div class="col-2 d-flex justify-content-end">
+							<span>#{msg.admin__themes__action_notConfigured}</span>
+						</div>
+					</a>
+				</div>
 			</ui:fragment>
 
-            <ui:repeat var="theme" value="#{adminThemesBean.configuredSubThemes}">
-				<div class="admin__default-block mb-5 -success-box}">
-                    <div class="row">
-                      <h2 class="col-12">
-                          #{msg.admin__themes__sub_heading_configured}
-                      </h2>
-                    </div>
-                    <!-- value: Theme Names -->
-                    <a href="#{request.contextPath}/admin/themes/edit/#{theme.name}/"
-                        	class="row admin__license-unconfigured-entry">
-                        <div class="col-10 -textlink">
-                          <h:outputFormat value="#{msg.admin__themes__sub_text_configured}" escape="false">
-                            <f:param value="#{theme.name}" />
-                          </h:outputFormat>
-                        </div>
-                        <div class="col-2 d-flex justify-content-end">
-                        	<span>#{msg.admin__themes__action_configured}</span>
-                        </div>
-                   	</a>
-		       </div>
-           </ui:repeat>
+			<!-- SUB THEMES NOT CONFIGURED -->
+			<ui:fragment
+				rendered="#{not empty adminThemesBean.notConfiguredSubThemes}">
+				<div class="admin__default-block mb-5 -danger">
+					<div class="row">
+						<h2 class="col-12">
+							#{msg.admin__themes__sub_heading_notConfigured}</h2>
+					</div>
+					<ui:repeat var="themeName"
+						value="#{adminThemesBean.notConfiguredSubThemes}">
+						<a href="#{request.contextPath}/admin/themes/edit/#{themeName}/"
+							class="row admin__license-unconfigured-entry">
+							<div class="col-10 -textlink">
+								<h:outputFormat
+									value="#{msg.admin__themes__sub_text_notConfigured}"
+									escape="false">
+									<f:param value="#{themeName}" />
+								</h:outputFormat>
+							</div>
+							<div class="col-2 d-flex justify-content-end">
+								<span>#{msg.admin__themes__action_notConfigured}</span>
+							</div>
+						</a>
+					</ui:repeat>
+				</div>
+			</ui:fragment>
+
+			<!-- MAIN THEME CONFIGURED -->
+			<ui:fragment rendered="#{adminThemesBean.mainThemeConfigured}">
+				<div class="admin__default-block mb-5 -success-box">
+					<div class="row">
+						<h2 class="col-12">
+						#{msg.admin__themes__main_heading_configured} #{adminThemesBean.getThemeLabel(configurationBean.name)}
+						</h2>
+					</div>
+					<a
+						href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}/"
+						class="row admin__license-unconfigured-entry">
+						<div class="col-10 -textlink">
+
+							<ui:fragment rendered="#{adminThemesBean.mainThemeConfigured}">
+								<h:outputFormat
+									value="#{msg.admin__themes__main_text_configured}"
+									escape="false">
+									<f:param value="#{adminThemesBean.mainThemeName}" />
+								</h:outputFormat>
+							</ui:fragment>
+
+
+						</div>
+						<div class="col-2 d-flex justify-content-end">
+							<span>#{msg.admin__themes__action_configured}</span>
+						</div>
+					</a>
+				</div>
+			</ui:fragment>
+
+			<!-- SUB THEMES CONFIGURED -->
+			<ui:repeat var="theme" value="#{adminThemesBean.configuredSubThemes}">
+				<div class="admin__default-block mb-5 -success-box">
+					<div class="row">
+						<h2 class="col-12">
+						#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__themes__sub_heading_configured, theme.name)}
+							</h2>
+					</div>
+					<!-- value: Theme Names -->
+					<a href="#{request.contextPath}/admin/themes/edit/#{theme.name}/"
+						class="row admin__license-unconfigured-entry">
+						<div class="col-10 -textlink">
+							<h:outputFormat value="#{msg.admin__themes__sub_text_configured}"
+								escape="false">
+								<f:param value="#{theme.name}" />
+							</h:outputFormat>
+						</div>
+						<div class="col-2 d-flex justify-content-end">
+							<span>#{msg.admin__themes__action_configured}</span>
+						</div>
+					</a>
+				</div>
+			</ui:repeat>
 		</div>
-    </ui:define>
+	</ui:define>
 </ui:composition>

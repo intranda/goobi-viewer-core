@@ -130,7 +130,10 @@ public class CMSMediaResource {
      * getMediaByTag.
      * </p>
      *
-     * @param tag a {@link java.lang.String} object.
+     * @param tags
+     * @param maxItems
+     * @param prioritySlots
+     * @param random
      * @return a {@link io.goobi.viewer.servlets.rest.cms.CMSMediaResource.MediaList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -141,13 +144,13 @@ public class CMSMediaResource {
             summary = "Get a list of CMS-Media Items")
 
     public MediaList getAllMedia(
-            @Parameter(
-                    description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") String tags,
+            @Parameter(description = "Comma separated list of tags. Only media items with any of these tags will be included")
+            @QueryParam("tags") String tags,
             @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
-            @Parameter(
-                    description = "Number of media items marks as 'important' that must be included in the result") @QueryParam("prioritySlots") Integer prioritySlots,
-            @Parameter(
-                    description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
+            @Parameter(description = "Number of media items marks as 'important' that must be included in the result")
+            @QueryParam("prioritySlots") Integer prioritySlots,
+            @Parameter(description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")
+            @QueryParam("random") Boolean random)
             throws DAOException {
         List<String> tagList = new ArrayList<>();
         if (StringUtils.isNotBlank(tags)) {
@@ -170,9 +173,9 @@ public class CMSMediaResource {
      * getPDFMediaItemContent.
      * </p>
      *
-     * @param id a {@link java.lang.Long} object.
-     * @return File contents as HTML
+     * @param filename
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -276,7 +279,7 @@ public class CMSMediaResource {
      * getMediaItemContent.
      * </p>
      *
-     * @param id a {@link java.lang.Long} object.
+     * @param filename
      * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -330,8 +333,9 @@ public class CMSMediaResource {
     }
 
     /**
-     * List all uplodaed media files
-     *
+     * List all uploaded media files
+     * 
+     * @return All CMS media files
      * @throws PresentationException
      *
      */
@@ -401,7 +405,7 @@ public class CMSMediaResource {
      * @param uploadedInputStream
      * @param cmsMediaFolder
      * @param mediaFile
-     * @return
+     * @return {@link Response}
      * @throws RestApiException
      */
     private Response writeMediaFile(InputStream uploadedInputStream, Path cmsMediaFolder, Path mediaFile) throws RestApiException {
@@ -468,7 +472,7 @@ public class CMSMediaResource {
      * rights If the user has unlimited category rights, return an empty optional
      *
      * @param user
-     * @return
+     * @return Optional<CMSCategory>
      * @throws DAOException
      * @throws AccessDeniedException if the user is not allowed to use any categories whatsoever
      */
@@ -507,8 +511,7 @@ public class CMSMediaResource {
      * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
      * no user is logged in, NULL is returned
      *
-     * @param session
-     * @return
+     * @return Optional<User>
      */
     private static Optional<User> getUser() {
         UserBean userBean = BeanUtils.getUserBean();
@@ -544,7 +547,7 @@ public class CMSMediaResource {
      * 
      * @param type
      * @param file
-     * @return
+     * @return {@link String}
      * @throws PresentationException
      * @throws WebApplicationException
      */

@@ -78,7 +78,7 @@
 		<sonar.java.target>11</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>2300</checkstyle.max.violations>
+		<checkstyle.max.violations>1900</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -975,7 +975,7 @@
 					<dependency>
 						<groupId>org.apache.maven.surefire</groupId>
 						<artifactId>surefire-junit47</artifactId>
-						<version>3.2.2</version>
+						<version>3.2.3</version>
 					</dependency>
 				</dependencies>
 			</plugin>
