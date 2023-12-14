@@ -160,7 +160,7 @@ public class AdminDeveloperBean implements Serializable {
         RecurringTaskTrigger trigger = DataManager.getInstance().getDao().getRecurringTaskTriggerForTask(TaskType.PULL_THEME);
         return trigger != null && trigger.getStatus() == TaskTriggerStatus.RUNNING;
     }
-    
+
     public boolean isAutopullError() throws DAOException {
         List<ViewerMessage> messages = DataManager.getInstance()
                 .getDao()
@@ -168,9 +168,8 @@ public class AdminDeveloperBean implements Serializable {
                         Map.of("taskName", TaskType.PULL_THEME.name()));
         if (!messages.isEmpty()) {
             return messages.get(0).getMessageStatus() == MessageStatus.ERROR;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public LocalDateTime getLastAutopull() throws DAOException {
@@ -291,8 +290,6 @@ public class AdminDeveloperBean implements Serializable {
     private void sendDownloadProgressUpdate(float progress) {
         updateDownlaodProgress("processing", Optional.empty(), progress);
     }
-    
-    
 
     private void updateDownlaodProgress(String status, Optional<String> message, float progress) {
         JSONObject json = new JSONObject();
@@ -301,8 +298,7 @@ public class AdminDeveloperBean implements Serializable {
         message.ifPresent(m -> json.put("message", m));
         downloadContext.send(json.toString());
     }
-    
-    
+
     public void sendPullThemeFinished() {
         updatePullThemeProgress("finished", Optional.empty(), 1.0f);
     }
@@ -314,7 +310,7 @@ public class AdminDeveloperBean implements Serializable {
     public void sendPullThemeUpdate(float progress) {
         updatePullThemeProgress("processing", Optional.empty(), progress);
     }
-    
+
     private void updatePullThemeProgress(String status, Optional<String> message, float progress) {
         JSONObject json = new JSONObject();
         json.put("progress", progress);
@@ -328,14 +324,12 @@ public class AdminDeveloperBean implements Serializable {
         Path path = Path.of(context.getRealPath("META-INF/MANIFEST.MF"));
         if (Files.exists(path)) {
             VersionInfo info = VersionInfo.getFromManifest(Files.readString(path));
-            if (info.buildDate == "?") {
+            if ("?".equals(info.buildDate)) {
                 info = getVersionFromTomcatDirectory();
             }
             return info;
-        } else {
-            return getVersionFromTomcatDirectory();
         }
-
+        return getVersionFromTomcatDirectory();
     }
 
     public VersionInfo getVersionFromTomcatDirectory() throws IOException {
@@ -344,9 +338,8 @@ public class AdminDeveloperBean implements Serializable {
         Path path = Path.of(tomcatBase, relPath);
         if (Files.exists(path)) {
             return VersionInfo.getFromManifest(Files.readString(path));
-        } else {
-            return new VersionInfo("goobi-viewer-theme-" + this.viewerThemeName, "unknown", "unknown", "unknown");
         }
+        return new VersionInfo("goobi-viewer-theme-" + this.viewerThemeName, "unknown", "unknown", "unknown");
     }
 
     public static class VersionInfo {
