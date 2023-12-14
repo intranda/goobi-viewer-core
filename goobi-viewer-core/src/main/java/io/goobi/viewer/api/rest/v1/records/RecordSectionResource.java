@@ -52,6 +52,7 @@ import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilde
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -100,7 +101,7 @@ public class RecordSectionResource {
 
         StructElement se = getStructElement(pi, divId);
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
-        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
         return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 

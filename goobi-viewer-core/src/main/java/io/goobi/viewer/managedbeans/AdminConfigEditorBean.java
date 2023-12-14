@@ -49,12 +49,12 @@ import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
@@ -62,6 +62,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -572,7 +573,7 @@ public class AdminConfigEditorBean implements Serializable {
         ec.responseReset();
         ec.setResponseContentType("text/".concat(currentFileRecord.getFileType()));
         ec.setResponseHeader("Content-Length", String.valueOf(Files.size(backupFile.toPath())));
-        ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
         try (OutputStream outputStream = ec.getResponseOutputStream(); FileInputStream fileInputStream = new FileInputStream(backupFile)) {
             byte[] buffer = new byte[1024];
             int bytesRead = 0;

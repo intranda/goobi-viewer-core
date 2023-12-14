@@ -100,7 +100,7 @@ public class TaskManager {
                 .stream()
                 .filter(
                         job -> job.getTimeCreated().isBefore((LocalDateTime.now().minus(timeToLive))))
-                .map(job -> job.getId())
+                .map(Task::getId)
                 .forEach(this::removeTask);
     }
 

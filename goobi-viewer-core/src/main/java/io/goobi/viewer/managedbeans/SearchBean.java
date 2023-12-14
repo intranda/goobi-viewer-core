@@ -2443,7 +2443,7 @@ public class SearchBean implements SearchInterface, Serializable {
                                     if (export.isHasResults()) {
                                         ((HttpServletResponse) facesContext.getExternalContext().getResponse())
                                                 .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
-                                                        "attachment; filename=\"" + export.getFileName() + "\"");
+                                                        NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + export.getFileName() + "\"");
                                         return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
                                     }
                                     return false;

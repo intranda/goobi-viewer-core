@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -166,7 +167,7 @@ public class DownloadBean implements Serializable {
             ec.responseReset();
             ec.setResponseContentType(downloadJob.getMimeType());
             ec.setResponseHeader("Content-Length", String.valueOf(Files.size(file)));
-            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             try (FileInputStream fis = new FileInputStream(file.toFile())) {
                 byte[] buffer = new byte[1024];

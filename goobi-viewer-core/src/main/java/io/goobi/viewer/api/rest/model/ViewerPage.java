@@ -46,10 +46,9 @@ public class ViewerPage {
      * @param link
      * @param image
      * @param label
-     * @param description
      * @param order
      */
-    public ViewerPage(URI link, IContent image, IMetadataValue label, IMetadataValue description, long order) {
+    public ViewerPage(URI link, IContent image, IMetadataValue label, long order) {
         super();
         this.link = link;
         this.image = image;

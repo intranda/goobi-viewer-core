@@ -45,7 +45,6 @@ import org.apache.commons.net.util.SubnetUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -100,6 +99,9 @@ public final class NetTools {
 
     public static final String HTTP_HEADER_CONTENT_DISPOSITION = "Content-Disposition";
     public static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
+    
+    public static final String HTTP_HEADER_VALUE_ATTACHMENT_FILENAME = "attachment; filename=\"";
+    
     private static final String HTTP_METHOD_DELETE = "DELETE";
 
     public static final String PARAM_CLEAR_CACHE_ALL = "all";

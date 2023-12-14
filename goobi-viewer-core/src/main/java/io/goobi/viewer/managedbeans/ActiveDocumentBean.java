@@ -2126,7 +2126,7 @@ public class ActiveDocumentBean implements Serializable {
             // We want to get rid of them, else it may collide.
             ec.responseReset();
             ec.setResponseContentType("application/pdf");
-            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             TocWriter writer = new TocWriter("", fileNameRaw);
             writer.createPdfDocument(os, getToc().getTocElements());

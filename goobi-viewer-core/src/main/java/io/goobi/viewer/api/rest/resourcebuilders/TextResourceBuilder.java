@@ -71,6 +71,7 @@ import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -90,7 +91,6 @@ public class TextResourceBuilder {
 
     private static final Logger logger = LogManager.getLogger(TextResourceBuilder.class);
 
-    private static final String RESOURCE_NOT_FOUND = "Resource not found";
     private static final String EXCEPTION_NO_DOCUMENT_FOUND = "No document found with pi ";
 
     /**
@@ -185,7 +185,7 @@ public class TextResourceBuilder {
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
         if (file == null || !Files.isRegularFile(file)) {
-            throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         try {
@@ -195,7 +195,7 @@ public class TextResourceBuilder {
             return new StringPair(alto, charset);
         } catch (FileNotFoundException e) {
             logger.debug(e.getMessage());
-            throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new PresentationException("Error reading resource");
@@ -274,7 +274,7 @@ public class TextResourceBuilder {
 
             Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
             if (fulltexts.isEmpty()) {
-                throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+                throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
             }
 
             TEIBuilder builder = new TEIBuilder();
@@ -297,7 +297,7 @@ public class TextResourceBuilder {
 
         }
 
-        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
     }
 
     /**
@@ -332,7 +332,7 @@ public class TextResourceBuilder {
 
         Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
         if (fulltexts.isEmpty()) {
-            throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         TEIBuilder builder = new TEIBuilder();
@@ -387,7 +387,7 @@ public class TextResourceBuilder {
             }
         }
 
-        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
     }
 
     public String getContentAsText(String contentFolder, String pi, String fileName)
@@ -404,7 +404,7 @@ public class TextResourceBuilder {
             }
         }
 
-        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
     }
 
     /**
@@ -444,7 +444,7 @@ public class TextResourceBuilder {
                 }
             }
         }
-        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
 
     }
 
