@@ -63,7 +63,6 @@ public class AdminThemesBean implements Serializable {
         mainThemeName = DataManager.getInstance().getConfiguration().getTheme();
         subThemeNames = getExistingSubThemes();
         configuredThemes = getConfiguredThemes();
-
     }
 
     private List<ThemeConfiguration> getConfiguredThemes() {
