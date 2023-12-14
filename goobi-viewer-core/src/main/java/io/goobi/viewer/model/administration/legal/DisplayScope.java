@@ -49,7 +49,7 @@ public class DisplayScope implements Serializable {
      * @author florian
      *
      */
-    public static enum PageScope {
+    public enum PageScope {
         /**
          * all viewer pages, except those in the admin backend
          */
@@ -74,7 +74,8 @@ public class DisplayScope implements Serializable {
     /**
      * Creates a scope from a given PageScope and filterQuery. The filterQuery is only meaningful if the scope is PageScope.RECORD
      *
-     * @param query
+     * @param scope
+     * @param filter
      */
     public DisplayScope(PageScope scope, String filter) {
         this.pageScope = scope;
@@ -135,7 +136,7 @@ public class DisplayScope implements Serializable {
      * @param query
      * @param pi
      * @param searchIndex
-     * @return
+     * @return true if given pi is found using query; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
      */

@@ -69,15 +69,15 @@ public class ConsentScope implements Serializable {
         }
     }
 
-    /**
-     * String representation of the consentScope, used when serializing the scope to database
+    /*
+     * String representation of the consentScope, used when serializing the scope to database.
      */
+    @Override
     public String toString() {
         if (StorageMode.SESSION.equals(this.storageMode)) {
             return "session";
-        } else {
-            return Integer.toString(daysToLive) + "d";
         }
+        return Integer.toString(daysToLive) + "d";
     }
 
     /**
@@ -94,8 +94,8 @@ public class ConsentScope implements Serializable {
      * 
      * @param storageMode the storageMode to set
      */
-    public void setStorageMode(StorageMode stoargeMode) {
-        this.storageMode = stoargeMode;
+    public void setStorageMode(StorageMode storageMode) {
+        this.storageMode = storageMode;
     }
 
     /**
@@ -122,7 +122,7 @@ public class ConsentScope implements Serializable {
      * @author florian
      *
      */
-    public static enum StorageMode {
+    public enum StorageMode {
         /**
          * Consent is valid for a single browser and stored it its local storage
          */
@@ -145,9 +145,8 @@ public class ConsentScope implements Serializable {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             return ((ConsentScope) obj).toString().equals(this.toString());
-        } else {
-            return false;
         }
+        return false;
     }
 
 }

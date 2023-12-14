@@ -41,7 +41,7 @@ public class FileLocks {
      * 
      * @param file
      * @param sessionId
-     * @return
+     * @return true if file locked successfully; false otherwise
      */
     public synchronized boolean lockFile(Path file, String sessionId) {
         if (!isFileLockedByOthers(file, sessionId)) {
@@ -57,7 +57,7 @@ public class FileLocks {
      * 
      * @param file
      * @param sessionId
-     * @return
+     * @return true if file unlocked successfully; false otherwise
      */
     public synchronized boolean unlockFile(Path file, String sessionId) {
         if (!isFileLockedByOthers(file, sessionId) && locks.remove(file) != null) {
@@ -72,7 +72,7 @@ public class FileLocks {
      * 
      * @param file
      * @param sessionId
-     * @return
+     * @return true if file locked by different session; false otherwise
      * @should return true if file locked by different session id
      * @should return false if file locked by own session id
      * @should return false if file not locked
