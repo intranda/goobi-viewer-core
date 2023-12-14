@@ -206,7 +206,7 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * @param preferedViewName
+     * @param preferredViewName
      * @return Preferred {@link PageType} for given preferredViewName
      */
     public PageType getPreferedPageTypeForCanvas(String preferredViewName) {

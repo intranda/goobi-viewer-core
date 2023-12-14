@@ -306,7 +306,8 @@ public abstract class AbstractApiUrlManager {
 
     /**
      * Calls the {@link #getApiUrl()} and returns a {@link ApiInfo} object if a valid response is returned. Otherwise an object with empty properties
-     * is returned Timeout after a maximum of 3 seconds
+     * is returned Timeout after a maximum of 3 seconds.
+     * @return {@link ApiInfo}
      */
     public ApiInfo getInfo() {
         try {
