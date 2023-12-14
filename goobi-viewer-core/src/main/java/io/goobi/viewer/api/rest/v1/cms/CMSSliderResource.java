@@ -108,7 +108,7 @@ public class CMSSliderResource {
 
     /**
      * @param categories
-     * @return
+     * @return List<URI>
      */
     private List<URI> getPages(List<String> categories) {
         return categories.stream()
@@ -117,7 +117,7 @@ public class CMSSliderResource {
                 .flatMap(category -> getPagesForCategory(category).stream())
                 .filter(CMSPage::isPublished)
                 //not needed. Slides are sorted in javascript
-//                .sorted((page1, page2) -> Long.compare(page1.getPageSortingOrElse(0), page2.getPageSortingOrElse(0)))
+                //                .sorted((page1, page2) -> Long.compare(page1.getPageSortingOrElse(0), page2.getPageSortingOrElse(0)))
                 .map(this::getApiUrl)
                 .collect(Collectors.toList());
     }
@@ -154,7 +154,7 @@ public class CMSSliderResource {
 
     /**
      * @param category
-     * @return
+     * @return List<CMSMediaItem>
      */
     private static List<CMSMediaItem> getMediaForCategory(CMSCategory category) {
         try {
@@ -183,7 +183,9 @@ public class CMSSliderResource {
 
     /**
      * @param solrQuery
-     * @return
+     * @param maxResults
+     * @param sortField
+     * @return List<URI>
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -213,8 +215,8 @@ public class CMSSliderResource {
     }
 
     /**
-     * @param collections
-     * @return
+     * @param collectionNames
+     * @return List<URI>
      */
     private static List<URI> getCollections(List<String> collectionNames) {
         List<URI> collections = new ArrayList<>();

@@ -97,7 +97,7 @@ public class AnnotationResource {
 
     /**
      *
-     * @return
+     * @return AnnotationCollection
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -113,7 +113,7 @@ public class AnnotationResource {
     /**
      *
      * @param page
-     * @return
+     * @return <a>
      * @throws DAOException
      * @throws ContentLibException
      * @throws IndexUnreachableException
@@ -132,7 +132,7 @@ public class AnnotationResource {
     /**
      *
      * @param id
-     * @return
+     * @return {@link IAnnotation}
      * @throws DAOException
      * @throws ContentLibException
      * @throws IndexUnreachableException
@@ -152,7 +152,7 @@ public class AnnotationResource {
     /**
      *
      * @param id
-     * @return
+     * @return {@link IAnnotation}
      * @throws DAOException
      * @throws ContentLibException
      * @throws IndexUnreachableException
@@ -172,7 +172,7 @@ public class AnnotationResource {
     /**
      *
      * @param anno
-     * @return
+     * @return {@link IAnnotation}
      * @throws DAOException
      * @throws NotImplementedException
      */
@@ -181,7 +181,8 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
     @ApiResponse(responseCode = "501",
-            description = "Persisting this king of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
+            description = "Persisting this king of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest,"
+                    + " canvas or part of a canvas may be persisted")
     public IAnnotation addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
@@ -195,7 +196,7 @@ public class AnnotationResource {
     /**
      *
      * @param id
-     * @return
+     * @return {@link IAnnotation}
      * @throws DAOException
      * @throws ContentLibException
      * @throws ViewerConfigurationException
@@ -238,8 +239,7 @@ public class AnnotationResource {
     /**
      *
      * @param anno
-     * @param builder
-     * @return
+     * @return {@link CrowdsourcingAnnotation}
      */
     public CrowdsourcingAnnotation createPersistentAnnotation(IAnnotation anno) {
         CrowdsourcingAnnotation pAnno = null;
@@ -254,7 +254,7 @@ public class AnnotationResource {
             template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
         } else {
             //TODO: implement handling IIIF 3 resources
-            return null;//not implemented
+            return null; //not implemented
         }
 
         String pi = urls.parseParameter(template, target.getId().toString(), "pi");

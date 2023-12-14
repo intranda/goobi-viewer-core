@@ -95,10 +95,9 @@ public class ClientApplicationsResource {
         Optional<ClientApplication> existingClient = DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier);
         if (existingClient.isPresent()) {
             throw new IllegalRequestException("Client with this machine identifier is already registered");
-        } else {
-            ClientApplication client = DataManager.getInstance().getClientManager().persistNewClient(clientIdentifier, servletRequest);
-            return createRegistrationResponse(client);
         }
+        ClientApplication client = DataManager.getInstance().getClientManager().persistNewClient(clientIdentifier, servletRequest);
+        return createRegistrationResponse(client);
     }
 
     @GET
@@ -118,16 +117,15 @@ public class ClientApplicationsResource {
         if (client.isPresent()) {
             boolean allowed = this.clientManager.registerClientInSession(client.get(), session);
             return createRequestResponse(client.get(), allowed);
-        } else {
-            throw new IllegalRequestException("No client registered with given identifier. Please register the client first");
         }
+        throw new IllegalRequestException("No client registered with given identifier. Please register the client first");
     }
 
     /**
      * Change properties of an existing {@link ClientApplication}
      * 
-     * @param requestedClient Object containing the properties to set. Must have one of 'id' and 'clientIdentifier' of an existing client to identify
-     *            the client to change
+     * @param clientIdentifier
+     * @param update
      * @throws DAOException If an error occurs accessing the database
      * @throws ContentNotFoundException If no 'id' or 'clientIdentier' values are given or if no matching client could be found
      */
@@ -159,12 +157,10 @@ public class ClientApplicationsResource {
                     tempClient.initializeSubnetMask();
                     dao.saveClientApplication(tempClient);
                     return tempClient;
-                } else {
-                    throw new IllegalArgumentException("The requested client is internal static resource. It may not be changed");
                 }
-            } else {
-                throw new ContentNotFoundException("No client found with client-identifier '{}'".replace("{}", clientIdentifier));
+                throw new IllegalArgumentException("The requested client is internal static resource. It may not be changed");
             }
+            throw new ContentNotFoundException("No client found with client-identifier '{}'".replace("{}", clientIdentifier));
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException(e);
         }
@@ -173,6 +169,7 @@ public class ClientApplicationsResource {
     /**
      * List all registered {@link ClientApplication}s
      * 
+     * @return All clients from the DB
      * @throws DAOException If an error occurs accessing the database
      */
     @GET
@@ -190,6 +187,8 @@ public class ClientApplicationsResource {
     /**
      * List all registered {@link ClientApplication}s
      * 
+     * @param clientIdentifier
+     * @return Client with given clientIdentifier
      * @throws DAOException If an error occurs accessing the database
      * @throws ContentNotFoundException
      */
@@ -207,7 +206,7 @@ public class ClientApplicationsResource {
             throws DAOException, ContentNotFoundException {
         ClientApplication client = dao.getClientApplicationByClientId(clientIdentifier);
         if (client == null) {
-            throw new ContentNotFoundException("No client with client identifier '{}' found".replace("{}", clientIdentifier.toString()));
+            throw new ContentNotFoundException("No client with client identifier '{}' found".replace("{}", clientIdentifier));
         } else if (clientManager.isNotAllClients(client)) {
             return client;
         } else {
@@ -218,11 +217,11 @@ public class ClientApplicationsResource {
 
     /**
      * 
-     * 
      * @param target the client to change
      * @param source the client carrying the changes to the target
+     * @return target
      */
-    private ClientApplication updateClient(ClientApplication target, ClientApplication source) {
+    private static ClientApplication updateClient(ClientApplication target, ClientApplication source) {
 
         if (source.getAccessStatus() != null) {
             if (target.isRegistrationPending() && !source.isRegistrationPending()) {
@@ -262,9 +261,9 @@ public class ClientApplicationsResource {
     /**
      * @param client
      * @param allowed
-     * @return
+     * @return JSON response
      */
-    private String createRequestResponse(ClientApplication client, boolean allowed) {
+    private static String createRequestResponse(ClientApplication client, boolean allowed) {
         JSONObject obj = new JSONObject();
         obj.put("access", allowed);
         obj.put("status", client.getAccessStatus());
@@ -273,9 +272,9 @@ public class ClientApplicationsResource {
 
     /**
      * @param client
-     * @return
+     * @return JSON response
      */
-    private String createRegistrationResponse(ClientApplication client) {
+    private static String createRegistrationResponse(ClientApplication client) {
         JSONObject obj = new JSONObject();
         obj.put("status", client.getAccessStatus());
         return obj.toString();

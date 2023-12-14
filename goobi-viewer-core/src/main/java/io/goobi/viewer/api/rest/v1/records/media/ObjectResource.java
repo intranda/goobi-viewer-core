@@ -21,6 +21,13 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_AUXILIARY_FILE_1;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_AUXILIARY_FILE_1_ALT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_AUXILIARY_FILE_2;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_INFO;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,21 +56,17 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.controller.DataFileTools;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.object.ObjectInfo;
 import io.swagger.v3.oas.annotations.Parameter;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * <p>
@@ -84,7 +87,12 @@ public class ObjectResource {
     private final String filename;
 
     /**
-     *
+     * @param context
+     * @param request
+     * @param response
+     * @param urls
+     * @param pi
+     * @param filename
      */
     public ObjectResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -104,8 +112,6 @@ public class ObjectResource {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.object.ObjectInfo} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -139,8 +145,6 @@ public class ObjectResource {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
      * @return a {@link javax.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -188,7 +192,7 @@ public class ObjectResource {
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      * @param pi a {@link java.lang.String} object.
      * @param subfolder a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
+     * @param auxfilename a {@link java.lang.String} object.
      * @return a {@link javax.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -219,7 +223,7 @@ public class ObjectResource {
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      * @param pi a {@link java.lang.String} object.
      * @param subfolder a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
+     * @param auxfilename a {@link java.lang.String} object.
      * @return a {@link javax.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -244,7 +248,7 @@ public class ObjectResource {
      * @param pi a {@link java.lang.String} object.
      * @param subfolder1 a {@link java.lang.String} object.
      * @param subfolder2 a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
+     * @param auxfilename a {@link java.lang.String} object.
      * @return a {@link javax.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -276,7 +280,7 @@ public class ObjectResource {
      * @param pi a {@link java.lang.String} object.
      * @param subfolder1 a {@link java.lang.String} object.
      * @param subfolder2 a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
+     * @param auxfilename a {@link java.lang.String} object.
      * @return a {@link javax.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -304,11 +308,8 @@ public class ObjectResource {
             try {
                 try (InputStream inputStream = new java.io.FileInputStream(this.filePath.toString())) {
                     IOUtils.copy(inputStream, output);
-                    return;
                 }
-                //            } catch (LostConnectionException e) {
-                //                logger.trace("aborted writing 3d object from  " + this.filePath);
-            } catch (Throwable e) {
+            } catch (FileNotFoundException | SecurityException e) {
                 throw new WebApplicationException(e);
             }
 
@@ -316,19 +317,14 @@ public class ObjectResource {
     }
 
     /**
-     * @param foldername
+     * @param baseFolder
      * @param baseFilename
      * @param baseURI
-     * @param process
-     * @return
+     * @return List<URI>
      * @throws IOException
-     * @throws InterruptedException
-     * @throws SwapException
-     * @throws DAOException
      * @throws URISyntaxException
      */
-    private static List<URI> getResources(String baseFolder, String baseFilename, String baseURI)
-            throws IOException, URISyntaxException {
+    private static List<URI> getResources(String baseFolder, String baseFilename, String baseURI) throws IOException, URISyntaxException {
         List<URI> resourceURIs = new ArrayList<>();
 
         java.nio.file.Path mtlFilePath = Paths.get(baseFolder, baseFilename + ".mtl");

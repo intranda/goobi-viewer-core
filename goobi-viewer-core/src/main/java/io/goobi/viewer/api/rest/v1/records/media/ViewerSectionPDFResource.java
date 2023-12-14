@@ -56,9 +56,12 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     private String filename;
 
     /**
+     * @param context
      * @param request
-     * @param type
-     * @param filename
+     * @param response
+     * @param urls
+     * @param pi
+     * @param divId
      * @throws ContentLibException
      */
     public ViewerSectionPDFResource(
@@ -73,6 +76,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
         request.setAttribute(FilterTools.ATTRIBUTE_LOGID, divId);
     }
 
+    @Override
     @GET
     @Path(ApiUrls.RECORDS_SECTIONS_PDF)
     @Produces("application/pdf")

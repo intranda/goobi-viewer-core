@@ -35,7 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -60,7 +59,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -89,12 +87,14 @@ public class RecordFileResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-    @Inject
-    private ApiUrls urls;
 
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
 
+    /**
+     * 
+     * @param pi
+     */
     public RecordFileResource(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
@@ -189,15 +189,14 @@ public class RecordFileResource {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public String getCMDI(
             @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
-            @Parameter(description = "Language for CMDI") @QueryParam("lang") String lang)
+            @Parameter(description = "Language for CMDI") @QueryParam("lang") final String lang)
             throws ContentLibException, PresentationException, IndexUnreachableException, IOException {
         checkFulltextAccessConditions(pi, filename);
 
-        if (lang == null) {
-            lang = BeanUtils.getLocale().getLanguage();
-        }
-
-        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(lang);
+        final Language language =
+                DataManager.getInstance()
+                        .getLanguageHelper()
+                        .getLanguage(lang == null ? BeanUtils.getLocale().getLanguage() : StringTools.stripJS(lang));
         Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         Path filePath = getDocumentLanguageVersion(cmdiPath, language);
         if (filePath != null && Files.isRegularFile(filePath)) {
@@ -216,7 +215,9 @@ public class RecordFileResource {
 
     /**
      * Throw an AccessDenied error if the request doesn't satisfy the access conditions
-     *
+     * 
+     * @param pi
+     * @param filename
      * @throws ServiceNotAllowedException
      */
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
