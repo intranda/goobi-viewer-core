@@ -48,7 +48,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
-public class FilterTools {
+public final class FilterTools {
 
     private static final Logger logger = LogManager.getLogger(FilterTools.class);
 

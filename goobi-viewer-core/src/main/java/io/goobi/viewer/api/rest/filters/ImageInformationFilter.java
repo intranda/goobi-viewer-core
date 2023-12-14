@@ -325,7 +325,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param imageInfo<
+     * @param imageInfo
      * @param tileSizes
      */
     private static void setTileSizes(ImageInformation imageInfo, List<ImageTile> tileSizes) {

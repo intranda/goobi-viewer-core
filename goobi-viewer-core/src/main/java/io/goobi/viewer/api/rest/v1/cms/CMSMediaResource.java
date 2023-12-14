@@ -179,9 +179,8 @@ public class CMSMediaResource {
      * </p>
      *
      * @param filename
-     * @param response
-     * @return File contents as HTML
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

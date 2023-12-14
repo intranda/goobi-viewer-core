@@ -358,8 +358,7 @@ public class DownloadResource {
     /**
      * Remove a download job from the database
      *
-     * @param type The jobtype, either pdf or epub
-     * @param identifier The job idenfier
+     * @param pi
      * @return A json object containing the job identifier and wether the job could be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
@@ -385,7 +384,8 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_EPUB_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "downloads" }, summary = "Get the EPUB download job for the given PI, creating it if neccessary",
-            description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
+            description = "Returns a json object with properties 'url', containing the URL to the download page,"
+                    + " and 'job' containing job information")
     @DownloadBinding
     public String putEPUBDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
@@ -396,7 +396,6 @@ public class DownloadResource {
     /**
      * Get information about all download jobs of a type
      *
-     * @param type The jobtype, either pdf or epub
      * @return An array of json representations of all {@link io.goobi.viewer.model.job.download.DownloadJob}s of the given type
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
@@ -550,16 +549,18 @@ public class DownloadResource {
 
     /**
      * @param pi
-     * @param logId
-     * @param email
+     * @param inLogId
+     * @param inEmail
      * @param type
      * @return Response as JSON
      * @throws ContentLibException
      */
-    public String getOrCreateDownloadJob(String pi, String logId, String email, String type) throws ContentLibException {
+    public String getOrCreateDownloadJob(String pi, final String inLogId, final String inEmail, String type) throws ContentLibException {
+        String email = inEmail;
         if (email == null || "-".equals(email)) {
             email = "";
         }
+        String logId = inLogId;
         if (logId == null || "-".equals(logId)) {
             logId = "";
         }

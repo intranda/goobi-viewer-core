@@ -273,7 +273,7 @@ public class AnnotationResource {
 
     /**
      *
-     * @return
+     * @return User from session
      */
     public User getUser() {
         UserBean userBean = BeanUtils.getUserBeanFromRequest(servletRequest);

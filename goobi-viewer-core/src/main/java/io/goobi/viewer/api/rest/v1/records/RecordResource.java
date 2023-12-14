@@ -166,7 +166,6 @@ public class RecordResource {
      * getRISAsText.
      * </p>
      *
-     * @param iddoc a long.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -605,7 +604,7 @@ public class RecordResource {
 
     /**
      * @param pi
-     * @return
+     * @return {@link StructElement} constructed out of given pi
      * @throws IndexUnreachableException
      * @throws PresentationException
      */

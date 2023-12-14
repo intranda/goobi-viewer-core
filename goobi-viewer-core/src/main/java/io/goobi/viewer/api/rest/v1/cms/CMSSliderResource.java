@@ -189,10 +189,11 @@ public class CMSSliderResource {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private static List<URI> getRecords(String solrQuery, int maxResults, String sortField) throws PresentationException, IndexUnreachableException {
+    private static List<URI> getRecords(final String solrQuery, int maxResults, String sortField)
+            throws PresentationException, IndexUnreachableException {
 
         //limit query to records only
-        solrQuery = "+(" + solrQuery + ") +(ISWORK:* ISANCHOR:*)";
+        String useQuery = "+(" + solrQuery + ") +(ISWORK:* ISANCHOR:*)";
 
         List<URI> manifests = new ArrayList<>();
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
@@ -203,7 +204,7 @@ public class CMSSliderResource {
         List<StringPair> sortFields = StringUtils.isBlank(sortField) ? null : SearchHelper.parseSortString(sortField, null);
         SolrDocumentList solrDocs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(solrQuery, 0, maxResults, sortFields, null, Arrays.asList(SolrConstants.PI))
+                .search(useQuery, 0, maxResults, sortFields, null, Arrays.asList(SolrConstants.PI))
                 .getResults();
         for (SolrDocument doc : solrDocs) {
             String pi = (String) SolrTools.getSingleFieldValue(doc, SolrConstants.PI);

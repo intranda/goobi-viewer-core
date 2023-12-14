@@ -117,7 +117,7 @@ public class CacheResource {
      * @param content
      * @param thumbs
      * @param pdf
-     * @returnCACHE_RECORD
+     * @return {@link IResponseMessage}
      * @throws IOException
      */
     @DELETE

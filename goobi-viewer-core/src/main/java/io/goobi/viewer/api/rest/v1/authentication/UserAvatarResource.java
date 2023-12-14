@@ -237,7 +237,6 @@ public class UserAvatarResource extends ImageResource {
      * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
      * no user is logged in, NULL is returned
      *
-     * @param session
      * @return Optional<User>
      */
     private static Optional<User> getUser() {

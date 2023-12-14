@@ -219,6 +219,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
+     * @param pi
      * @param uri
      * @param page
      * @return {@link AnnotationPage}

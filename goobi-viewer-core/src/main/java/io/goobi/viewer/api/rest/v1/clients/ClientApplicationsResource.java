@@ -126,6 +126,7 @@ public class ClientApplicationsResource {
      * 
      * @param clientIdentifier
      * @param update
+     * @return {@link ClientApplication}
      * @throws DAOException If an error occurs accessing the database
      * @throws ContentNotFoundException If no 'id' or 'clientIdentier' values are given or if no matching client could be found
      */
@@ -135,7 +136,8 @@ public class ClientApplicationsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Set properties of an existing client",
             description = "Set properties of the client with the clientIdentifier given in the URL to the ones specified in the data json-object."
-                    + "Only properties 'name', 'description', 'subnetMask' and 'accessStatus' may be altered this way. Requires an access token in the query paramter or header field 'token'.",
+                    + "Only properties 'name', 'description', 'subnetMask' and 'accessStatus' may be altered this way."
+                    + " Requires an access token in the query paramter or header field 'token'.",
             tags = { "clients" })
     @ApiResponse(responseCode = "200",
             description = "Any changes requested have been persisted. The current state of the client is contained within the response body as JSON")
