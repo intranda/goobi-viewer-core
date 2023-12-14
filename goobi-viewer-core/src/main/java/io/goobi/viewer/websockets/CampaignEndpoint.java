@@ -69,10 +69,10 @@ public class CampaignEndpoint {
             this.pageNumber = pageNumber;
         }
 
-        public final Session session;
-        public final long campaignId;
-        public final String recordIdentifier;
-        public final int pageNumber;
+        private final Session session;
+        private final long campaignId;
+        private final String recordIdentifier;
+        private final int pageNumber;
 
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
@@ -94,9 +94,9 @@ public class CampaignEndpoint {
         public boolean equals(Object obj) {
             if (obj != null && obj.getClass().equals(this.getClass())) {
                 PageLock other = (PageLock) obj;
-                return this.campaignId == other.campaignId &&
-                        this.recordIdentifier.equals(other.recordIdentifier) &&
-                        this.pageNumber == other.pageNumber;
+                return this.campaignId == other.campaignId
+                        && this.recordIdentifier.equals(other.recordIdentifier)
+                        && this.pageNumber == other.pageNumber;
             }
 
             return false;
@@ -129,7 +129,7 @@ public class CampaignEndpoint {
             int pageNo = json.getInt("page");
             long campaignId = json.getLong("campaign");
 
-            if (getLockedPages(httpSessionId, campaignId, pi).contains(pageNo)) {
+            if (getLockedPages(httpSessionId).contains(pageNo)) {
                 sendPageLocks(campaignId, pi);
             } else {
                 PageLock lock = new PageLock(session, campaignId, pi, pageNo);
@@ -189,8 +189,8 @@ public class CampaignEndpoint {
                     synchronized (entry) { //NOSONAR       entry is in fact part of the property pageLocks and may be used for synchronization
                         String httpSessionId = entry.getKey();
                         PageLock lock = entry.getValue();
-                        if (sessionLock.campaignId == lock.campaignId &&
-                                sessionLock.recordIdentifier.equals(lock.recordIdentifier)) {
+                        if (sessionLock.campaignId == lock.campaignId
+                                && sessionLock.recordIdentifier.equals(lock.recordIdentifier)) {
                             try {
                                 lock.session.getBasicRemote().sendText(getLockedPagesAsJson(httpSessionId, lock.campaignId, lock.recordIdentifier));
                             } catch (IOException | DAOException e) {
@@ -209,7 +209,7 @@ public class CampaignEndpoint {
      * @param httpSessionId
      * @param campaignId
      * @param recordIdentifier
-     * @return
+     * @return JSON containing pages locked by other sessions
      * @throws DAOException
      */
     private static String getLockedPagesAsJson(String httpSessionId, long campaignId, String recordIdentifier) throws DAOException {
@@ -234,7 +234,7 @@ public class CampaignEndpoint {
     /**
      * @param campaignId
      * @param recordIdentifier
-     * @return
+     * @return Map<Integer, String>
      * @throws DAOException
      */
     private static Map<Integer, String> getPageStatus(long campaignId, String recordIdentifier) throws DAOException {
@@ -244,15 +244,16 @@ public class CampaignEndpoint {
             CampaignRecordStatistic statistics = campaign.getStatistics().get(recordIdentifier);
             for (String key : statistics.getPageStatistics().keySet()) {
                 CampaignRecordPageStatistic pageStatistic = statistics.getPageStatistics().get(key);
-                if (pageStatistic.getPage() != null)
+                if (pageStatistic.getPage() != null) {
                     map.put(pageStatistic.getPage(), pageStatistic.getStatus().name());
+                }
             }
             logger.debug("pageStatusMap set");
         }
         return map;
     }
 
-    private static List<Integer> getLockedPages(String httpSessionId, long campaignId, String recordIdentifier) {
+    private static List<Integer> getLockedPages(String httpSessionId) {
         return pageLocks.entrySet()
                 .stream()
                 .filter(entry -> !entry.getKey().equals(httpSessionId))
@@ -274,10 +275,10 @@ public class CampaignEndpoint {
     }
 
     /**
-     * Checks if the given http session id has a registerd lock
+     * Checks if the given http session id has a registered lock
      *
      * @param sessionId
-     * @return
+     * @return true if given sesisonId has a registered lock; false otherwise
      */
     public static boolean hasLock(String sessionId) {
         return pageLocks.containsKey(sessionId);

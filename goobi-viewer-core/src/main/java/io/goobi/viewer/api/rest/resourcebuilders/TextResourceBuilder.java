@@ -735,7 +735,7 @@ public class TextResourceBuilder {
     public java.nio.file.Path getCMDIFile(String pi, String langCode) throws IOException, PresentationException, IndexUnreachableException {
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = null;
-        logger.trace("CMDI: {}", cmdiPath.toAbsolutePath().toString());
+        logger.trace("CMDI: {}", cmdiPath.toAbsolutePath());
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {

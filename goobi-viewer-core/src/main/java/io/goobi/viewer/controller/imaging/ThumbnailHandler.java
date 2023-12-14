@@ -1003,7 +1003,8 @@ public class ThumbnailHandler {
                         String size = getSize(width, height);
                         ImageFileFormat format = ImageFileFormat.JPG;
                         ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
-                        if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
+                        //match any image-mimetype except jpg and png
+                        if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) {
                             format = formatType;
                         }
                         String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE,

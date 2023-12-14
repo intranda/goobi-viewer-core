@@ -49,13 +49,16 @@ public class RecordsRequestParameters {
     private int count = -1;
     @Schema(description = "The absolute index of the first result to return", example = "0")
     private int offset = 0;
-    @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields, randomization only applies to results with identical values in the sortFields",
+    @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields,"
+            + " randomization only applies to results with identical values in the sortFields",
             example = "false")
     private boolean randomize = false;
-    @Schema(description = "If this field is set, all SOLR field names and values will be translated into this language if possible. If no language parameter is given, no fields will be translated",
+    @Schema(description = "If this field is set, all SOLR field names and values will be translated into this language if possible."
+            + " If no language parameter is given, no fields will be translated",
             example = "en")
     private String language = "";
-    @Schema(description = "Set to 'true' to include all child documents (sections, pages) that match the query. Child documents are appended in the 'children' property",
+    @Schema(description = "Set to 'true' to include all child documents (sections, pages) that match the query."
+            + " Child documents are appended in the 'children' property",
             example = "false")
     private boolean includeChildHits = false;
     @Schema(description = "Set to 'true' to place main record that contain the search terms in the title on top", example = "false")

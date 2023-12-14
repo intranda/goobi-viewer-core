@@ -183,7 +183,7 @@ public abstract class AbstractBookmarkResourceBuilder {
 
     /**
      * @param shareKey
-     * @return
+     * @return {@link BookmarkList}
      * @throws DAOException If an error occured talking to the database
      * @throws RestApiException If no user session exists or if the user has no access to the requested list
      * @throws ContentNotFoundException If no list with the given key was found

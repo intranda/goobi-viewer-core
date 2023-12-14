@@ -86,7 +86,7 @@ public class TasksResource {
     @Inject
     private MessageQueueManager messageBroker;
     @Context
-    IDAO dao;
+    private IDAO dao;
 
     public TasksResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
         this.request = request;

@@ -114,9 +114,9 @@ public class RisResourceBuilder {
             } finally {
                 out.flush();
                 out.close();
-                if (Files.exists(tempFile)) {
-                    //                    FileUtils.deleteQuietly(tempFile.toFile());
-                }
+//                if (Files.exists(tempFile)) {
+//                    //                    FileUtils.deleteQuietly(tempFile.toFile());
+//                }
             }
         };
     }

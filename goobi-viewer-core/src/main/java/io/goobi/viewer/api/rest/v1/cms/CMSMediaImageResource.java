@@ -103,7 +103,7 @@ public class CMSMediaImageResource extends ImageResource {
 
     /**
      * @param filename
-     * @return
+     * @return {@link URI}
      */
     private static URI getMediaFileUrl(String filename) {
         Path folder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),

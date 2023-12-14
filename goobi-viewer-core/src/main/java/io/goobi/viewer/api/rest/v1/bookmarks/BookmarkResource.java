@@ -96,7 +96,7 @@ public class BookmarkResource {
     private HttpServletResponse servletResponse;
 
     @Inject
-    ApiUrls urls;
+    private ApiUrls urls;
 
     public BookmarkResource(@Context HttpServletRequest servletRequest, @Context HttpServletResponse servletResponse) {
         this.servletRequest = servletRequest;
@@ -118,7 +118,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Get all bookmark lists owned by the current user. If not logged in, a single temporary bookmark list is stored in the http session which is returned")
+            summary = "Get all bookmark lists owned by the current user. If not logged in, a single temporary bookmark list is stored"
+                    + " in the http session which is returned")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public List<BookmarkList> getOwnedBookmarkLists() throws DAOException, IOException, RestApiException {
         return builder.getAllBookmarkLists();
@@ -144,7 +145,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Get a bookmarklist owned by the current user by its id. If not logged in, the single bookmark list stored in the session is always returned")
+            summary = "Get a bookmarklist owned by the current user by its id. If not logged in, the single bookmark list stored"
+                    + " in the session is always returned")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList getBookmarkList(
@@ -205,7 +207,7 @@ public class BookmarkResource {
             @Parameter(description = "The id of the bookmark list.") @PathParam("listId") Long id,
             Bookmark item) throws DAOException, IOException, RestApiException {
         builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(),
-                Optional.ofNullable(item.getOrder()).map(i -> i.toString()).orElse(null));
+                Optional.ofNullable(item.getOrder()).map(Object::toString).orElse(null));
         return builder.getBookmarkListById(id);
     }
 
@@ -245,7 +247,7 @@ public class BookmarkResource {
         Bookmark item = list.getItems().stream().filter(i -> i.getId().equals(bookmarkId)).findAny().orElse(null);
         if (item != null) {
             return builder.deleteBookmarkFromBookmarkList(list.getId(), item.getPi(), item.getLogId(),
-                    Optional.ofNullable(item.getOrder()).map(o -> o.toString()).orElse(null));
+                    Optional.ofNullable(item.getOrder()).map(Object::toString).orElse(null));
         }
         throw new RestApiException("No item found in list " + listId + "with id" + bookmarkId, HttpServletResponse.SC_NOT_FOUND);
     }
@@ -255,7 +257,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks", "iiif" },
-            summary = "Get a bookmarklist owned by the current user by its id and return it as a IIIF Presentation 2.1.1 collection resource. If not logged in, the single bookmark list stored in the session is always returned")
+            summary = "Get a bookmarklist owned by the current user by its id and return it as a IIIF Presentation 2.1.1 collection resource."
+                    + " If not logged in, the single bookmark list stored in the session is always returned")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Collection2 getBookmarkListAsIIIFCollection(
@@ -269,7 +272,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Get a bookmarklist owned by the current user by its id and return it as a Mirador viewe config object. If not logged in, the single bookmark list stored in the session is always returned")
+            summary = "Get a bookmarklist owned by the current user by its id and return it as a Mirador viewe config object. If not logged in,"
+                    + " the single bookmark list stored in the session is always returned")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListForMirador(
@@ -284,7 +288,8 @@ public class BookmarkResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(
             tags = { "bookmarks", "rss" },
-            summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed. If not logged in, the single bookmark list stored in the session is always returned")
+            summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed. If not logged in,"
+                    + " the single bookmark list stored in the session is always returned")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListAsRSS(
@@ -302,7 +307,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks", "rss" },
-            summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed in json format. If not logged in, the single bookmark list stored in the session is always returned")
+            summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed in json format. If not logged in,"
+                    + " the single bookmark list stored in the session is always returned")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Channel getBookmarkListAsRSSJson(

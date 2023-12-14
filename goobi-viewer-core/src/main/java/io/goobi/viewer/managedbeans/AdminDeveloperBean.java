@@ -15,10 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
@@ -96,6 +99,11 @@ public class AdminDeveloperBean implements Serializable {
     @Push
     private PushContext downloadContext;
     @Inject
+    @Push
+    private PushContext pullThemeContext;
+    @Inject
+    private ServletContext context;
+    @Inject
     private transient MessageQueueManager queueManager;
     private transient Scheduler scheduler = null;
 
@@ -143,6 +151,7 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     public void triggerPullTheme() throws MessageQueueException {
+        sendPullThemeUpdate(0f);
         ViewerMessage message = new ViewerMessage(TaskType.PULL_THEME.name());
         queueManager.addToQueue(message);
     }
@@ -150,6 +159,18 @@ public class AdminDeveloperBean implements Serializable {
     public boolean isAutopullActive() throws DAOException {
         RecurringTaskTrigger trigger = DataManager.getInstance().getDao().getRecurringTaskTriggerForTask(TaskType.PULL_THEME);
         return trigger != null && trigger.getStatus() == TaskTriggerStatus.RUNNING;
+    }
+    
+    public boolean isAutopullError() throws DAOException {
+        List<ViewerMessage> messages = DataManager.getInstance()
+                .getDao()
+                .getViewerMessages(0, 1, "lastUpdateTime", true,
+                        Map.of("taskName", TaskType.PULL_THEME.name()));
+        if (!messages.isEmpty()) {
+            return messages.get(0).getMessageStatus() == MessageStatus.ERROR;
+        } else {
+            return false;
+        }
     }
 
     public LocalDateTime getLastAutopull() throws DAOException {
@@ -165,7 +186,7 @@ public class AdminDeveloperBean implements Serializable {
 
     public String getThemeName() {
         return this.viewerThemeName;
-    } 
+    }
 
     protected byte[] createDeveloperArchive(Consumer<Float> progressMonitor) throws InterruptedException, JDOMException, IOException {
 
@@ -186,10 +207,10 @@ public class AdminDeveloperBean implements Serializable {
             zipEntryMap.put(zipEntryPath, FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING));
         }
         progressMonitor.accept(0.7f);
-        try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {            
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             FileTools.compressZip(out, zipEntryMap, 9);
             return out.toByteArray();
-        } finally {            
+        } finally {
             progressMonitor.accept(1f);
         }
     }
@@ -270,6 +291,8 @@ public class AdminDeveloperBean implements Serializable {
     private void sendDownloadProgressUpdate(float progress) {
         updateDownlaodProgress("processing", Optional.empty(), progress);
     }
+    
+    
 
     private void updateDownlaodProgress(String status, Optional<String> message, float progress) {
         JSONObject json = new JSONObject();
@@ -277,6 +300,102 @@ public class AdminDeveloperBean implements Serializable {
         json.put("status", status);
         message.ifPresent(m -> json.put("message", m));
         downloadContext.send(json.toString());
+    }
+    
+    
+    public void sendPullThemeFinished() {
+        updatePullThemeProgress("finished", Optional.empty(), 1.0f);
+    }
+
+    public void sendPullThemeError(String message) {
+        updatePullThemeProgress("error", Optional.of(message), 0);
+    }
+
+    public void sendPullThemeUpdate(float progress) {
+        updatePullThemeProgress("processing", Optional.empty(), progress);
+    }
+    
+    private void updatePullThemeProgress(String status, Optional<String> message, float progress) {
+        JSONObject json = new JSONObject();
+        json.put("progress", progress);
+        json.put("status", status);
+        message.ifPresent(m -> json.put("message", m));
+        pullThemeContext.send(json.toString());
+    }
+
+    public VersionInfo getThemeVersion() throws IOException {
+
+        Path path = Path.of(context.getRealPath("META-INF/MANIFEST.MF"));
+        if (Files.exists(path)) {
+            VersionInfo info = VersionInfo.getFromManifest(Files.readString(path));
+            if (info.buildDate == "?") {
+                info = getVersionFromTomcatDirectory();
+            }
+            return info;
+        } else {
+            return getVersionFromTomcatDirectory();
+        }
+
+    }
+
+    public VersionInfo getVersionFromTomcatDirectory() throws IOException {
+        String tomcatBase = System.getProperty("catalina.base");
+        String relPath = String.format("wtpwebapps/goobi-viewer-theme-%s/META-INF/MANIFEST.MF", this.getThemeName());
+        Path path = Path.of(tomcatBase, relPath);
+        if (Files.exists(path)) {
+            return VersionInfo.getFromManifest(Files.readString(path));
+        } else {
+            return new VersionInfo("goobi-viewer-theme-" + this.viewerThemeName, "unknown", "unknown", "unknown");
+        }
+    }
+
+    public static class VersionInfo {
+        private final String applicationName;
+        private final String buildDate;
+        private final String gitRevision;
+        private final String releaseVersion;
+
+        public VersionInfo(String applicationName, String buildDate, String gitRevision, String releaseVersion) {
+            this.applicationName = applicationName;
+            this.buildDate = buildDate;
+            this.gitRevision = gitRevision;
+            this.releaseVersion = releaseVersion;
+        }
+
+        public static VersionInfo getFromManifest(String manifest) {
+            return new VersionInfo(
+                    getInfo("ApplicationName", manifest),
+                    getInfo("Implementation-Build-Date", manifest),
+                    getInfo("Implementation-Version", manifest),
+                    getInfo("version", manifest));
+        }
+
+        private static String getInfo(String label, String infoText) {
+            String regex = label + ": *(.*)";
+            Matcher matcher = Pattern.compile(regex).matcher(infoText);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+
+            return "?";
+        }
+
+        public String getApplicationName() {
+            return applicationName;
+        }
+
+        public String getBuildDate() {
+            return buildDate;
+        }
+
+        public String getGitRevision() {
+            return gitRevision;
+        }
+
+        public String getReleaseVersion() {
+            return releaseVersion;
+        }
+
     }
 
 }

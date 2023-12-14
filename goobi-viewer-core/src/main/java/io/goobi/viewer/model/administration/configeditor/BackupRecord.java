@@ -55,7 +55,7 @@ public class BackupRecord implements Serializable {
 
     /**
      * 
-     * @return
+     * @return the name
      */
     public String getName() {
         return name;
@@ -63,7 +63,7 @@ public class BackupRecord implements Serializable {
 
     /**
      * 
-     * @return
+     * @return the number
      */
     public int getNumber() {
         return number;
