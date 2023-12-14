@@ -73,7 +73,7 @@ public class QuartzListener implements ServletContextListener {
     private final IDAO dao;
     private final Configuration config;
     @Inject
-    transient private MessageQueueManager messageBroker;
+    private MessageQueueManager messageBroker;
     @Inject
     private ServletContext context;
 

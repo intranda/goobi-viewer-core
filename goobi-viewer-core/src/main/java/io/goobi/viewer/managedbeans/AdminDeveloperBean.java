@@ -1,5 +1,6 @@
 package io.goobi.viewer.managedbeans;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -118,15 +119,11 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     public void downloadDeveloperArchive() {
-        Path tempDirectory = null;
-        Path zipFile = null;
         try {
             sendDownloadProgressUpdate(0);
-            tempDirectory = Files.createTempDirectory("viewer_developer_");
-            sendDownloadProgressUpdate(0.1f);
-            zipFile = createDeveloperArchive(tempDirectory, p -> sendDownloadProgressUpdate(0.1f + p * 0.8f));
+            byte[] zip = createDeveloperArchive(p -> sendDownloadProgressUpdate(0.1f + p * 0.8f));
             logger.debug("Sending file...");
-            Faces.sendFile(zipFile, true);
+            Faces.sendFile(zip, this.viewerThemeName + "_developer.zip", true);
             logger.debug("Done sending file");
             sendDownloadFinished();
         } catch (InterruptedException e) {
@@ -134,26 +131,9 @@ public class AdminDeveloperBean implements Serializable {
             logger.error("Bean thread interrupted while waiting for bash call to finish");
             sendDownloadError("Backing thread interrupted");
         } catch (IOException | JDOMException e) {
-            if (tempDirectory != null) {
-                logger.error("Error creating zip archive in {}: {}", tempDirectory, e.toString());
-            } else {
-                logger.error("Error creating zip archive: {}", e.toString());
-            }
+            logger.error("Error creating zip archive: {}", e.toString());
             sendDownloadError("Error creating zip archive: " + e.toString());
-        } finally {
-            logger.debug("Cleanup after sending file");
-            try {
-                if (tempDirectory != null && Files.exists(tempDirectory)) {
-                    if (zipFile != null && Files.exists(zipFile)) {
-                        Files.delete(zipFile);
-                    }
-                    Files.delete(tempDirectory);
-                }
-            } catch (IOException e) {
-                logger.error("Error cleaning up temp directory {}", tempDirectory);
-            }
         }
-
     }
 
     public void activateAutopull() throws DAOException {
@@ -185,9 +165,9 @@ public class AdminDeveloperBean implements Serializable {
 
     public String getThemeName() {
         return this.viewerThemeName;
-    }
+    } 
 
-    protected Path createDeveloperArchive(Path tempDir, Consumer<Float> progressMonitor) throws IOException, InterruptedException, JDOMException {
+    protected byte[] createDeveloperArchive(Consumer<Float> progressMonitor) throws InterruptedException, JDOMException, IOException {
 
         Map<Path, String> zipEntryMap = new HashMap<>();
         FilenameFilter filter = WildcardFileFilter.builder().setWildcards(FILES_TO_INCLUDE).get();
@@ -206,10 +186,12 @@ public class AdminDeveloperBean implements Serializable {
             zipEntryMap.put(zipEntryPath, FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING));
         }
         progressMonitor.accept(0.7f);
-        File zipFile = tempDir.resolve("developer.zip").toFile();
-        FileTools.compressZipFile(zipEntryMap, zipFile, 9);
-        progressMonitor.accept(1f);
-        return zipFile.toPath();
+        try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {            
+            FileTools.compressZip(out, zipEntryMap, 9);
+            return out.toByteArray();
+        } finally {            
+            progressMonitor.accept(1f);
+        }
     }
 
     protected String createSqlDump() throws IOException, InterruptedException {

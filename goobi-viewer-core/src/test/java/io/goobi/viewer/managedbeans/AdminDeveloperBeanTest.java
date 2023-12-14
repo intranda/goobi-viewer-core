@@ -43,8 +43,8 @@ public class AdminDeveloperBeanTest {
     
     @Test
     public void test_createZipFile() throws IOException, InterruptedException, JDOMException {
-        Path zipFile = bean.createDeveloperArchive(zipPath, f -> {});
-        assertTrue(Files.exists(zipFile));
+        byte[] zipBytes = bean.createDeveloperArchive(f -> {});
+        assertTrue(zipBytes != null && zipBytes.length > 0);
         
     }
     

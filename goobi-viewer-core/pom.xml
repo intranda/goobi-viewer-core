@@ -70,7 +70,6 @@
 		<skipDependencyCheck>true</skipDependencyCheck>
 		<failOnSnapshot>false</failOnSnapshot>
 
-
 		<!-- Sonar -->
 		<sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
 		<sonar.organization>intranda</sonar.organization>
@@ -79,9 +78,8 @@
 		<sonar.java.target>11</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>2300</checkstyle.max.violations>
+		<checkstyle.max.violations>1900</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
-
 
 		<!-- Manifest information -->
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
@@ -89,7 +87,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.12</alto.version>
-		<ics.version>3.9.1</ics.version>
+		<ics.version>3.9.2</ics.version>
 		<tei-conversion.version>1.3.0</tei-conversion.version>
 
 		<iiif-api-model.version>2.6.1</iiif-api-model.version>
@@ -144,7 +142,7 @@
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.4</omnifaces.version>
 		<openpdf.version>1.3.34</openpdf.version>
-		<poi.version>5.2.4</poi.version>
+		<poi.version>5.2.5</poi.version>
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
 		<log4j.version>2.22.0</log4j.version>
@@ -977,7 +975,7 @@
 					<dependency>
 						<groupId>org.apache.maven.surefire</groupId>
 						<artifactId>surefire-junit47</artifactId>
-						<version>3.2.2</version>
+						<version>3.2.3</version>
 					</dependency>
 				</dependencies>
 			</plugin>
