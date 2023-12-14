@@ -303,7 +303,7 @@ public final class NetTools {
                 case "PUT":
                     requestBase = new HttpPut(url);
                     break;
-                case "DELETE":
+                case HTTP_METHOD_DELETE:
                     requestBase = new HttpDelete(url);
                     break;
                 default:

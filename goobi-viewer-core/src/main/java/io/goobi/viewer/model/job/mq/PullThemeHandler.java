@@ -42,7 +42,6 @@ import io.goobi.viewer.model.job.TaskType;
 
 public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
-
     private static final Logger logger = LogManager.getLogger(PullThemeHandler.class);
 
     private static final String BASH_STATEMENT_PULL_THEME_REPOSITORY =
@@ -56,16 +55,17 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
         updateProgress(0.1f);
         if (DataManager.getInstance().getConfiguration().getThemeRootPath() != null) {
             Path themeRootPath = Path.of(DataManager.getInstance().getConfiguration().getThemeRootPath()).toAbsolutePath();
-            themeRootPath = Path.of("/").resolve(themeRootPath.subpath(0, themeRootPath.getNameCount()-4));
+            themeRootPath = Path.of("/").resolve(themeRootPath.subpath(0, themeRootPath.getNameCount() - 4));
             if (Files.exists(themeRootPath) && Files.exists(themeRootPath.resolve(".git"))) {
                 try {
                     pullThemeRepository(themeRootPath);
                     updateProgress(1f);
                     return MessageStatus.FINISH;
-                }catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.error("Message handler thread interrupted while waiting for bash call to finish");
-                    ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Message handler thread interrupted while waiting for bash call to finish");
+                    ticket.getProperties()
+                            .put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Message handler thread interrupted while waiting for bash call to finish");
                     sendProgressError("Message handler thread interrupted while waiting for bash call to finish");
                     return MessageStatus.ERROR;
                 } catch (IOException e) {

@@ -22,7 +22,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;

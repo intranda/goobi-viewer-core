@@ -469,7 +469,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param bundle
      * @return Translated message key
      */
-    private static String getTranslationFromBundle(String key, ResourceBundle bundle) {
+    private static String getTranslationFromBundle(final String key, ResourceBundle bundle) {
         if (key == null) {
             throw new IllegalArgumentException("key may not be null");
         }
@@ -477,21 +477,22 @@ public class ViewerResourceBundle extends ResourceBundle {
             throw new IllegalArgumentException("bundle may not be null");
         }
 
-        if (bundle.containsKey(key)) {
-            return bundle.getString(key);
+        String useKey = key;
+        if (bundle.containsKey(useKey)) {
+            return bundle.getString(useKey);
         }
 
         // Remove leading _LANG_XX
-        if (key.contains(SolrConstants.MIDFIX_LANG)) {
-            String translation = getTranslationFromBundleUsingCleanedUpKeys(key, bundle);
+        if (useKey.contains(SolrConstants.MIDFIX_LANG)) {
+            String translation = getTranslationFromBundleUsingCleanedUpKeys(useKey, bundle);
             if (translation != null) {
                 return translation;
             }
             // Fall back to translations without the language part
-            key = key.replaceAll(SolrConstants.MIDFIX_LANG + "[A-Z{][A-Z}]", "");
+            useKey = useKey.replaceAll(SolrConstants.MIDFIX_LANG + "[A-Z{][A-Z}]", "");
         }
 
-        return getTranslationFromBundleUsingCleanedUpKeys(key, bundle);
+        return getTranslationFromBundleUsingCleanedUpKeys(useKey, bundle);
 
     }
 
