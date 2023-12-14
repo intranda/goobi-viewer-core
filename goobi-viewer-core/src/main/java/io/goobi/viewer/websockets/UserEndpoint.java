@@ -128,8 +128,6 @@ public class UserEndpoint {
                         AdminBean.setTranslationGroupsEditorSession(null);
                         logger.trace("Removed translation editing lock for session '{}'.", sessionId);
                     }
-                } else {
-                    // logger.trace("Session {} has been refreshed and won't be cleared", sessionId);
                 }
             }
         };

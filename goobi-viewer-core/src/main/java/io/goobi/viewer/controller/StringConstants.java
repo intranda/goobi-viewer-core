@@ -30,6 +30,7 @@ public final class StringConstants {
     public static final String HTML_BR_ESCAPED = "&lt;br /&gt;";
 
     public static final String MIMETYPE_TEI = "application/tei+xml";
+    public static final String MIMETYPE_TEXT_CSV = "text/csv";
     public static final String MIMETYPE_TEXT_HTML = "text/html";
     public static final String MIMETYPE_TEXT_PLAIN = "text/plain";
     public static final String MIMETYPE_TEXT_XML = "text/xml";

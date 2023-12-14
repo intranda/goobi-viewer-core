@@ -92,6 +92,8 @@ public class CookieBanner implements Serializable {
 
     /**
      * Cloning constructor
+     * 
+     * @param orig
      */
     public CookieBanner(CookieBanner orig) {
         this.id = orig.id;

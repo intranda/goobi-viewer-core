@@ -69,6 +69,9 @@ public final class JsonTools {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
+    public static String KEY_MESSAGE = "message";
+    public static String KEY_STATUS = "status";
+
     /**
      * Private construtor.
      */

@@ -83,23 +83,20 @@ public class RecordsListResource {
     @Operation(tags = { "records" }, summary = "List records in an ordered collection page, use query parameter for filtering")
     public OrderedCollectionPage<IPresentationModelElement> listManifests(
             @Parameter(description = "filter query") @QueryParam("query") String query,
-            @Parameter(description = "Index of the first result to return") @QueryParam("first") Integer firstRow,
-            @Parameter(description = "Number of results to return") @QueryParam("rows") Integer rows,
+            @Parameter(description = "Index of the first result to return") @QueryParam("first") final Integer firstRow,
+            @Parameter(description = "Number of results to return") @QueryParam("rows") final Integer rows,
             @Parameter(description = "filter for records from this date or later") @QueryParam("start") String start,
             @Parameter(description = "filter for records from this date or earlier") @QueryParam("end") String end,
             @Parameter(description = "filter for records of this subtheme") @QueryParam("subtheme") String subtheme,
             @Parameter(description = "sort string") @QueryParam("sort") String sort)
             throws IndexUnreachableException, DAOException, PresentationException, URISyntaxException, ViewerConfigurationException {
 
-        firstRow = firstRow == null ? 0 : firstRow;
-        rows = rows == null ? DEFAULT_MAX_ROWS : rows;
-        // logger.trace("rows: {}", rows);
-
         String finalQuery = createQuery(query, start, end, subtheme);
 
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
 
-        List<IPresentationModelElement> items = builder.getManifestsForQuery(finalQuery, sort, firstRow, rows);
+        List<IPresentationModelElement> items =
+                builder.getManifestsForQuery(finalQuery, sort, firstRow == null ? 0 : firstRow, rows == null ? DEFAULT_MAX_ROWS : rows);
 
         OrderedCollectionPage<IPresentationModelElement> page = new OrderedCollectionPage<>();
         page.setOrderedItems(items);
@@ -112,18 +109,17 @@ public class RecordsListResource {
      * @param start
      * @param end
      * @param subtheme
-     * @return
-     * @throws IndexUnreachableException
+     * @return Generated query
      */
-    private String createQuery(String query, String start, String end, String subtheme) throws IndexUnreachableException {
+    private String createQuery(String query, final String start, final String end, String subtheme) {
         String finalQuery = "";
         if (StringUtils.isNotBlank(query)) {
             finalQuery += "+(" + query + ")";
         }
         if (!StringUtils.isAllBlank(start, end)) {
-            start = StringUtils.isNotBlank(start) ? start : "*";
-            end = StringUtils.isNotBlank(end) ? end : "*";
-            finalQuery += " +YEAR:[ " + start + " TO " + end + " ]";
+            String s = StringUtils.isNotBlank(start) ? start : "*";
+            String e = StringUtils.isNotBlank(end) ? end : "*";
+            finalQuery += " +YEAR:[ " + s + " TO " + e + " ]";
         }
         if (StringUtils.isNotBlank(subtheme)) {
             String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();

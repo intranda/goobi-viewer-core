@@ -93,7 +93,7 @@ public class CacheResource {
      * @param content
      * @param thumbs
      * @param pdf
-     * @return
+     * @return {@link IResponseMessage}
      */
     @DELETE
     @Produces({ MediaType.APPLICATION_JSON })
@@ -117,7 +117,7 @@ public class CacheResource {
      * @param content
      * @param thumbs
      * @param pdf
-     * @return
+     * @returnCACHE_RECORD
      * @throws IOException
      */
     @DELETE
@@ -130,7 +130,9 @@ public class CacheResource {
             @Parameter(description = "If true, main image content cache will be cleared for all records") @QueryParam("content") boolean content,
             @Parameter(description = "If true, thumbnail cache will be cleared for all records") @QueryParam("thumbs") boolean thumbs,
             @Parameter(description = "If true, PDF cache will be cleared for all records") @QueryParam("pdf") boolean pdf) throws IOException {
-        logger.trace("clearCacheForRecord: {} {}/{}/{}", pi.replaceAll("[\n\r\t]", "_"), content, thumbs, pdf);
+        if (logger.isTraceEnabled()) {
+            logger.trace("clearCacheForRecord: {} {}/{}/{}", pi.replaceAll("[\n\r\t]", "_"), content, thumbs, pdf);
+        }
         if (StringUtils.isEmpty(pi)) {
             servletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "pi is required");
             return null;
@@ -142,7 +144,9 @@ public class CacheResource {
         if (pdf) {
             try {
                 int count = DownloadJobTools.removeJobsForRecord(pi);
-                logger.debug("Removed {} download jobs for '{}'", count, pi.replaceAll("[\n\r\t]", "_"));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Removed {} download jobs for '{}'", count, pi.replaceAll("[\n\r\t]", "_"));
+                }
             } catch (DAOException e) {
                 logger.error(e.getMessage(), e);
             }
