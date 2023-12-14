@@ -68,7 +68,7 @@ public class TranslationResource {
      * getTranslations.
      * </p>
      *
-     * @param keys a {@link java.lang.String} object.
+     * @param inKeys a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.servlets.rest.TranslationResource.TranslationList} object.
      * @throws IllegalRequestException
      */
@@ -80,8 +80,9 @@ public class TranslationResource {
     @ApiResponse(responseCode = "200", description = "Return translations for given keys")
     @ApiResponse(responseCode = "400", description = "No keys passed")
     public TranslationList getTranslations(
-            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") String keys) throws IllegalRequestException {
-        keys = StringTools.stripPatternBreakingChars(keys);
+            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") final String inKeys)
+            throws IllegalRequestException {
+        String keys = StringTools.stripPatternBreakingChars(inKeys);
 
         Collection<String> keysCollection;
         if (StringUtils.isBlank(keys)) {

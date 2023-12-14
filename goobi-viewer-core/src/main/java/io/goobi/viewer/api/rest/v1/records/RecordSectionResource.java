@@ -70,7 +70,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class RecordSectionResource {
 
-    private static final Logger logger = LogManager.getLogger(RecordResource.class);
+    private static final Logger logger = LogManager.getLogger(RecordSectionResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -101,8 +101,7 @@ public class RecordSectionResource {
         StructElement se = getStructElement(pi, divId);
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-        String ris = new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
-        return ris;
+        return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 
     /**
@@ -110,7 +109,6 @@ public class RecordSectionResource {
      * getRISAsText.
      * </p>
      *
-     * @param iddoc a long.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -141,14 +139,14 @@ public class RecordSectionResource {
 
     /**
      * @param pi
-     * @return
+     * @param divId
+     * @return {@link StructElement}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private StructElement getStructElement(String pi, String divId) throws PresentationException, IndexUnreachableException {
+    private static StructElement getStructElement(String pi, String divId) throws PresentationException, IndexUnreachableException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("+PI_TOPSTRUCT:" + pi + " +DOCTYPE:DOCSTRCT +LOGID:" + divId, null);
-        StructElement struct = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
-        return struct;
+        return new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
     }
 
 }

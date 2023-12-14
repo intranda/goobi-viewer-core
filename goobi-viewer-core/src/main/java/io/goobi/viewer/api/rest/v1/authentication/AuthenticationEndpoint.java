@@ -125,7 +125,7 @@ public class AuthenticationEndpoint {
     /**
      *
      * @param email
-     * @return
+     * @return email
      */
     private static String issueToken(String email) {
         // Issue a token (can be a random String persisted to a database or a JWT token)
@@ -138,7 +138,7 @@ public class AuthenticationEndpoint {
     /**
      * 
      * @param redirectUrl
-     * @return
+     * @return {@link Response}
      * @should return status 403 if redirectUrl external
      * @should return status 403 if no httpHeader type provider configured
      * @should return status 403 if no matching provider found
