@@ -431,7 +431,7 @@ public class ProcessDataResolver {
                             .map(NetTools::callUrlGET)
                             .filter(array -> NetTools.isStatusOk(array[0]))
                             .map(array -> array[1])
-                            .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
+                            .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND));
                 } catch (ContentNotFoundException e1) {
                     // fall through to loading alto
                 }
@@ -486,7 +486,7 @@ public class ProcessDataResolver {
                     .map(NetTools::callUrlGET)
                     .filter(array -> NetTools.isStatusOk(array[0]))
                     .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException("Resource not found")), null);
+                    .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND)), null);
         }
     }
 

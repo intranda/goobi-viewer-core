@@ -45,6 +45,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
@@ -85,7 +86,7 @@ public class RisResourceBuilder {
 
         String fileName = "viewer_search_"
                 + LocalDateTime.now().format(DateTools.formatterFileName) + ".ris";
-        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
 
         Path tempFile = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), fileName);
         if (Files.exists(tempFile)) {
@@ -132,20 +133,20 @@ public class RisResourceBuilder {
     public StreamingOutput writeRIS(StructElement se)
             throws IndexUnreachableException, DAOException, ContentLibException {
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
-        response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
 
         try {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)
                     .isGranted()) {
-                throw new ContentNotFoundException("Resource not found");
+                throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
             }
         } catch (RecordNotFoundException e1) {
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         String ris = MetadataTools.generateRIS(se);
         if (ris == null) {
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         java.nio.file.Path tempFile = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), fileName);
@@ -184,10 +185,10 @@ public class RisResourceBuilder {
         try {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)
                     .isGranted()) {
-                throw new ContentNotFoundException("Resource not found");
+                throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
             }
         } catch (RecordNotFoundException e) {
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         return MetadataTools.generateRIS(se);

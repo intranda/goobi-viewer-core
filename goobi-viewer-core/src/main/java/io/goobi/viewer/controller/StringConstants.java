@@ -26,6 +26,8 @@ public final class StringConstants {
     public static final String DEFAULT = "default";
     public static final String DEFAULT_NAME = "_DEFAULT";
 
+    public static final String EXCEPTION_RESOURCE_NOT_FOUND = "Resource not found";
+
     public static final String HTML_BR = "<br />";
     public static final String HTML_BR_ESCAPED = "&lt;br /&gt;";
 

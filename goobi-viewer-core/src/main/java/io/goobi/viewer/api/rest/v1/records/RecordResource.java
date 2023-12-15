@@ -157,7 +157,7 @@ public class RecordResource {
 
         StructElement se = getStructElement(pi);
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
-        servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+        servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
         return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 
@@ -352,7 +352,7 @@ public class RecordResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
             String filename = pi + "_plaintext.zip";
-            servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
+            servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         }
 
         return builder.getFulltextAsZip(pi);
@@ -379,7 +379,7 @@ public class RecordResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
             String filename = pi + "_alto.zip";
-            servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
+            servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         }
 
         return builder.getAltoAsZip(pi);
@@ -445,7 +445,7 @@ public class RecordResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
             String filename = pi + "_tei.zip";
-            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         }
 
         return builder.getTeiAsZip(pi, language == null ? servletRequest.getLocale().getLanguage() : StringTools.stripPatternBreakingChars(language));

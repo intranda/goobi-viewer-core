@@ -125,13 +125,13 @@ public class AuthorityResource {
         Record rec = MetadataTools.getAuthorityDataRecord(url);
         if (rec == null) {
             logger.trace("Record not found");
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         List<NormData> normDataList = rec.getNormDataList();
         if (normDataList == null) {
             logger.trace("Normdata map is empty");
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         // Add link elements for Viaf and authority entries
