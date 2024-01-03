@@ -578,6 +578,9 @@ public class SearchQueryItem implements Serializable {
 
                 boolean additionalValue = false;
                 for (String value : values) {
+                    if (StringUtils.isEmpty(value)) {
+                        continue;
+                    }
                     if (additionalValue) {
                         // TODO AND-option?
                         sbItem.append(' ');
