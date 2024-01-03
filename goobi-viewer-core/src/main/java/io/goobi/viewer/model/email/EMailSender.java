@@ -60,6 +60,10 @@ public class EMailSender {
         this(DataManager.getInstance().getConfiguration());
     }
 
+    /**
+     * 
+     * @param config
+     */
     public EMailSender(Configuration config) {
         this(config.getSmtpServer(), config.getSmtpUser(), config.getSmtpPassword(), config.getSmtpSenderAddress(), config.getSmtpSenderName(),
                 config.getSmtpSecurity(), config.getSmtpPort());
@@ -105,13 +109,7 @@ public class EMailSender {
      * @param bcc
      * @param subject
      * @param body
-     * @param smtpServer
-     * @param smtpUser
-     * @param smtpPassword
-     * @param smtpSenderAddress
-     * @param smtpSenderName
-     * @param smtpSecurity
-     * @param smtpPort
+     * @return true if mail sent successfully; false otherwise
      * @throws MessagingException
      * @throws UnsupportedEncodingException
      */
@@ -143,8 +141,20 @@ public class EMailSender {
         return true;
     }
 
+    /**
+     * 
+     * @param recipients
+     * @param cc
+     * @param bcc
+     * @param subject
+     * @param body
+     * @param session
+     * @return Created {@link Message}
+     * @throws UnsupportedEncodingException
+     * @throws MessagingException
+     */
     private Message createMessage(List<String> recipients, List<String> cc, List<String> bcc, String subject, String body, Session session)
-            throws UnsupportedEncodingException, MessagingException, AddressException {
+            throws UnsupportedEncodingException, MessagingException {
         Message msg = new MimeMessage(session);
         InternetAddress addressFrom = new InternetAddress(smtpSenderAddress, smtpSenderName);
         msg.setFrom(addressFrom);
@@ -165,15 +175,15 @@ public class EMailSender {
         // Optional : You can also set your custom headers in the Email if you want
         // msg.addHeader("MyHeaderName", "myHeaderValue");
         msg.setSubject(subject);
-        {
-            // Message body
-            MimeBodyPart messagePart = new MimeBodyPart();
-            messagePart.setText(body, "utf-8");
-            messagePart.setHeader(NetTools.HTTP_HEADER_CONTENT_TYPE, "text/html; charset=\"utf-8\"");
-            MimeMultipart multipart = new MimeMultipart();
-            multipart.addBodyPart(messagePart);
-            msg.setContent(multipart);
-        }
+
+        // Message body
+        MimeBodyPart messagePart = new MimeBodyPart();
+        messagePart.setText(body, "utf-8");
+        messagePart.setHeader(NetTools.HTTP_HEADER_CONTENT_TYPE, "text/html; charset=\"utf-8\"");
+        MimeMultipart multipart = new MimeMultipart();
+        multipart.addBodyPart(messagePart);
+        msg.setContent(multipart);
+
         msg.setSentDate(new Date());
         return msg;
     }
@@ -197,6 +207,11 @@ public class EMailSender {
         return session;
     }
 
+    /**
+     * 
+     * @param auth
+     * @return {@link Properties}
+     */
     private Properties createProperties(boolean auth) {
         Properties props = new Properties();
         switch (smtpSecurity.toUpperCase()) {
@@ -233,7 +248,7 @@ public class EMailSender {
     /**
      *
      * @param recipients
-     * @return
+     * @return {@link InternetAddress}[]
      * @throws AddressException
      */
     static InternetAddress[] prepareRecipients(List<String> recipients) throws AddressException {
