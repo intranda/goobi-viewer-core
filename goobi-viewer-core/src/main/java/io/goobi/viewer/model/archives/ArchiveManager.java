@@ -118,11 +118,11 @@ public class ArchiveManager implements Serializable {
     }
 
     public ArchiveManager(String basexUrl, Map<String, String> archiveNodeTypes, SolrSearchIndex searchIndex) {
-        BasexEADParser eadParser = null;
+        BasexEADParser parser = null;
         if (StringUtils.isNotBlank(basexUrl)) {
             try {
-                eadParser = new BasexEADParser(basexUrl, searchIndex);
-                initArchivesFromBaseXServer(eadParser);
+                parser = new BasexEADParser(basexUrl, searchIndex);
+                initArchivesFromBaseXServer(parser);
                 //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
             } catch (PresentationException | IndexUnreachableException e) {
@@ -133,7 +133,7 @@ public class ArchiveManager implements Serializable {
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
             }
         }
-        this.eadParser = eadParser;
+        this.eadParser = parser;
         this.nodeTypes = loadNodeTypes(archiveNodeTypes);
     }
 
@@ -179,7 +179,8 @@ public class ArchiveManager implements Serializable {
                 cachedDatabases.remove(cachedResource);
             }
         }
-        //cached databases that are included in the basex response are removed from the cachedDatabases list. If it is still not empty at this point, databases were removed
+        // cached databases that are included in the basex response are removed from the cachedDatabases list.
+        // If it is still not empty at this point, databases were removed
         updated = updated || !cachedDatabases.isEmpty();
         return updated;
     }
@@ -210,6 +211,8 @@ public class ArchiveManager implements Serializable {
 
     /**
      * If only one archive database exists and database status is {@link DatabaseState#ARCHIVES_LOADED}, redirect to the matching url.
+     * 
+     * @param Optional<ArchiveResource>
      */
     public Optional<ArchiveResource> getOnlyDatabaseResource() {
         if (this.databaseState == DatabaseState.ARCHIVES_LOADED && this.archives.size() == 1) {
@@ -249,14 +252,12 @@ public class ArchiveManager implements Serializable {
     /**
      * In the list of archive document search hits, find the id of the entry just before the given one
      *
-     * @param entry
-     * @param sortOrder 'asc' to get the preceding entry, 'desc' to get the succeeding one
+     * @param entryId
      * @return the neighboring entry id if it exists
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId)
-            throws PresentationException, IndexUnreachableException {
+    public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId) throws PresentationException, IndexUnreachableException {
         String query = SolrConstants.ARCHIVE_ENTRY_ID + ":*";
         List<StringPair> sortFields = Collections.singletonList(new StringPair(SolrConstants.PI, "asc"));
         List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.ARCHIVE_ENTRY_ID);
@@ -286,8 +287,9 @@ public class ArchiveManager implements Serializable {
     /**
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
      *
+     * @param resource
      * @param identifier Entry identifier
-     * @param List of entries An empty list if the identified node has no ancestors or doesn't exist
+     * @return List of entries An empty list if the identified node has no ancestors or doesn't exist
      */
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(ArchiveResource resource, String identifier) {
         if (StringUtils.isEmpty(identifier)) {
@@ -357,7 +359,7 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     *
+     * @param tree
      * @return actual root element of the document, even if it's not in the displayed tree
      */
     private static ArchiveEntry getTrueRoot(ArchiveTree tree) {
@@ -463,9 +465,9 @@ public class ArchiveManager implements Serializable {
     }
 
     public boolean isInErrorState() {
-        return this.databaseState == DatabaseState.ERROR_INVALID_CONFIGURATION ||
-                this.databaseState == DatabaseState.ERROR_INVALID_FORMAT || 
-                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED || 
-                this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
+        return this.databaseState == DatabaseState.ERROR_INVALID_CONFIGURATION
+                || this.databaseState == DatabaseState.ERROR_INVALID_FORMAT
+                || this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED
+                || this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
     }
 }

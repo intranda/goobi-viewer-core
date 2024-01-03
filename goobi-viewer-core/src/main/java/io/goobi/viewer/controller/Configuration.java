@@ -1577,7 +1577,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return skip fields that don't match given language
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate, String language) {
-        logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate);
+        // logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate);
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return new ArrayList<>();
