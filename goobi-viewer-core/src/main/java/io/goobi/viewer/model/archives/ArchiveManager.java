@@ -212,7 +212,7 @@ public class ArchiveManager implements Serializable {
     /**
      * If only one archive database exists and database status is {@link DatabaseState#ARCHIVES_LOADED}, redirect to the matching url.
      * 
-     * @param Optional<ArchiveResource>
+     * @return Optional<ArchiveResource>
      */
     public Optional<ArchiveResource> getOnlyDatabaseResource() {
         if (this.databaseState == DatabaseState.ARCHIVES_LOADED && this.archives.size() == 1) {
