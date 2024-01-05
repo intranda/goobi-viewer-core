@@ -126,7 +126,7 @@ public class LoginFilter implements Filter {
      * @should return false for bookmarks list uri
      * @should return false for bookmarks session uris
      * @should return false for bookmarks share key uris
-     * @should return true for bookmarks send list uris
+     * @should return false for bookmarks send list uris
      * @should return false for user account activation uris
      * @should return false for user password reset uris
      */
@@ -164,12 +164,8 @@ public class LoginFilter implements Filter {
 
                 //make an exception for session bookmarks search list or share key
                 if (localUri.contains("bookmarks/search/") || localUri.contains("bookmarks/session/") || localUri.contains("bookmarks/key/")
-                        || localUri.contains("bookmarks/search/session")) {
+                        || localUri.contains("bookmarks/send/") || localUri.contains("bookmarks/search/session")) {
                     return false;
-                }
-                // Only allow sending bookmark lists if logged in
-                if (localUri.contains("bookmarks/send/")) {
-                    return true;
                 }
                 // Regular URLs
                 if ((localUri.contains("/crowd") && !(localUri.contains("about")) || localUri.contains("/admin")

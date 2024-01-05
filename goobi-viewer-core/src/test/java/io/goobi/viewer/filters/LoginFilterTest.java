@@ -117,7 +117,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForBookmarksSendListUris() throws Exception {
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/bookmarks/send/"));
+        Assert.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/send/"));
     }
 
     /**

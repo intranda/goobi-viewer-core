@@ -815,26 +815,24 @@ public class BookmarkBean implements Serializable {
      * </p>
      */
     public void sendSessionBookmarkListAsMail() {
-        if (!userBean.isLoggedIn() || StringUtils.isBlank(getSessionBookmarkListEmail())) {
+        if (StringUtils.isBlank(getSessionBookmarkListEmail())) {
             return;
         }
 
         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession(false)).ifPresent(bookmarkList -> {
-            if (bookmarkList.getItems().size() > 0) {
-                String body =
-                        SessionStoreBookmarkManager.generateBookmarkListInfo(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
-                                ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null),
-                                ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST, null),
-                                bookmarkList);
-                String subject = ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUBJECT, null);
-                try {
-                    NetTools.postMail(Collections.singletonList(getSessionBookmarkListEmail()), null, null, subject, body);
-                    Messages.info(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUCCESS, null));
-                } catch (UnsupportedEncodingException | MessagingException e) {
-                    logger.error(e.getMessage(), e);
-                    Messages.error(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ERROR, null)
-                            .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
-                }
+            String body =
+                    SessionStoreBookmarkManager.generateBookmarkListInfo(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
+                            ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null),
+                            ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST, null),
+                            bookmarkList);
+            String subject = ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUBJECT, null);
+            try {
+                NetTools.postMail(Collections.singletonList(getSessionBookmarkListEmail()), null, null, subject, body);
+                Messages.info(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUCCESS, null));
+            } catch (UnsupportedEncodingException | MessagingException e) {
+                logger.error(e.getMessage(), e);
+                Messages.error(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ERROR, null)
+                        .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
             }
         });
     }
