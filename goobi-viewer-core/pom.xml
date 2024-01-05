@@ -157,7 +157,7 @@
 		<reflections.version>0.10.2</reflections.version>
 		<quartz.version>2.3.2</quartz.version>
 		<cron-expression-descriptor.version>1.2.8</cron-expression-descriptor.version>
-		<slf4j.version>2.0.9</slf4j.version>
+		<slf4j.version>2.0.10</slf4j.version>
 	</properties>
 
 
