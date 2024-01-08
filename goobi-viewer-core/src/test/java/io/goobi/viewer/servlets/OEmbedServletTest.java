@@ -54,4 +54,13 @@ public class OEmbedServletTest extends AbstractSolrEnabledTest {
         Assert.assertNotNull(rec.getPhysicalElement());
         Assert.assertEquals(1, rec.getPhysicalElement().getOrder());
     }
+
+    /**
+     * @see OEmbedServlet#parseUrl(String)
+     * @verifies return null if url contains no pi
+     */
+    @Test
+    public void parseUrl_shouldReturnNullIfUrlContainsNoPi() throws Exception {
+        Assert.assertNull(OEmbedServlet.parseUrl("/image/"));
+    }
 }
