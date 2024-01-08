@@ -93,7 +93,8 @@
 		<iiif-api-model.version>2.6.1</iiif-api-model.version>
 		<normdataimporter.version>1.10.5</normdataimporter.version>
 
-		<!-- other libraries -->
+        <!-- other libraries -->
+        <angus.mail.version>2.0.2</angus.mail.version>
 		<citationstyles.version>23.11</citationstyles.version>
 		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
 		<commons-codec.version>1.16.0</commons-codec.version>
@@ -120,7 +121,7 @@
 		<javax.annotation.version>1.3.2</javax.annotation.version>
 		<javax.el.version>3.0.1-b06</javax.el.version>
 		<javax.faces.version>2.3.9</javax.faces.version>
-		<jakarta.mail.version>2.1.2</jakarta.mail.version>
+		<jakarta.mail-api.version>2.1.2</jakarta.mail-api.version>
 		<jakarta.persistence.version>3.1.0</jakarta.persistence.version>
 		<jakarta.jms-api.version>2.0.3</jakarta.jms-api.version>
 		<javax.websocket.version>1.1</javax.websocket.version>
@@ -395,8 +396,13 @@
 		<dependency>
 			<groupId>jakarta.mail</groupId>
 			<artifactId>jakarta.mail-api</artifactId>
-			<version>${jakarta.mail.version}</version>
-		</dependency>
+			<version>${jakarta.mail-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>${angus.mail.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
