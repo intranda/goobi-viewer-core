@@ -830,9 +830,9 @@ public class BookmarkBean implements Serializable {
 
         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession(false)).ifPresent(bookmarkList -> {
             if (bookmarkList.getItems().isEmpty()) {
-                // TODO abort
+                Messages.error(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST, null));
+                return;
             }
-            logger.trace("sending list");
             String body =
                     SessionStoreBookmarkManager.generateBookmarkListInfo(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
                             ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null),
