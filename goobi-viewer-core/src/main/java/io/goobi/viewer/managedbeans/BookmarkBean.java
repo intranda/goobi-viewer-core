@@ -74,6 +74,8 @@ public class BookmarkBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(BookmarkBean.class);
 
     @Inject
+    private CaptchaBean captchaBean;
+    @Inject
     private UserBean userBean;
     @Inject
     private NavigationHelper navigationHelper;
@@ -819,7 +821,18 @@ public class BookmarkBean implements Serializable {
             return;
         }
 
+        // Check whether the security question has been answered correct, if configured
+        if (captchaBean != null && !captchaBean.checkAnswer()) {
+            Messages.error("user__security_question_wrong");
+            logger.debug("Wrong security question answer.");
+            return;
+        }
+
         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession(false)).ifPresent(bookmarkList -> {
+            if (bookmarkList.getItems().isEmpty()) {
+                // TODO abort
+            }
+            logger.trace("sending list");
             String body =
                     SessionStoreBookmarkManager.generateBookmarkListInfo(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
                             ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null),

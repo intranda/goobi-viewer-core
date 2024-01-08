@@ -28,6 +28,7 @@
             <div class="user-bookmark-send-list">
                 <h1 >#{msg.bookmarkList_session_mail_heading}</h1>
                 <div class="user-bookmark-send-list__form">
+                    <ui:fragment rendered="#{captchaBean.resetSecurityQuestion()}">
                     <h:form
                         id="userBookshelfSendListForm"
                         styleClass="form-horizontal"
@@ -48,6 +49,23 @@
                             </div>
                         </div>
                         <p>#{msg.bookmarkList_session_mail_text}</p>
+
+                        <ui:fragment rendered="#{captchaBean.securityQuestion != null}">
+                            <div class="form-group form-row no-gutters">
+                                <label for="sendSessionBookmarkListConfirm"
+                                    class="control-label col-12 col-lg-12">#{msg.user__security_question}: #{msg[captchaBean.securityQuestion.questionKey]}</label>
+                                <div class="col-12 col-lg-12">  
+                                    <span></span>
+                                    <h:inputSecret id="sendSessionBookmarkListConfirm"
+                                        styleClass="form-control"
+                                        autocomplete="off" value="#{captchaBean.securityAnswer}"
+                                        required="true"
+                                        requiredMessage="#{msg.user__security_question_required_msg}">
+                                        <f:passThroughAttribute name="autocomplete" value="new-password" />
+                                    </h:inputSecret>
+                                </div>
+                            </div>
+                        </ui:fragment>
                         <div class="user-bookmark-send-list__action">
                             <h:commandButton
                                 styleClass="btn btn--full"
@@ -55,6 +73,7 @@
                                 action="#{bookmarkBean.sendSessionBookmarkListAsMail}" />
                         </div>
                     </h:form>
+                    </ui:fragment>
                 </div>
             </div>
         </f:view>

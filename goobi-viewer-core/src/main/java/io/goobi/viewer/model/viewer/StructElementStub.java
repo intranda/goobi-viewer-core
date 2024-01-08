@@ -680,7 +680,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         if (!values.isEmpty()) {
             return values.get(0);
         } else if (fieldName != null && !fieldName.contains(SolrConstants.MIDFIX_LANG)) {
-            return getMetadataValue(fieldName + SolrConstants.MIDFIX_LANG + BeanUtils.getLocale().getLanguage().toUpperCase());
+            return getMetadataValue(fieldName + SolrConstants.MIDFIX_LANG + "DE");
         }
 
         return null;
@@ -697,7 +697,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         if (values != null) {
             return values;
         } else if (fieldName != null && !fieldName.contains(SolrConstants.MIDFIX_LANG)) {
-            return getMetadataValues(fieldName + SolrConstants.MIDFIX_LANG + BeanUtils.getLocale().getLanguage().toUpperCase());
+            return getMetadataValues(fieldName + SolrConstants.MIDFIX_LANG + "DE");
         }
 
         return Collections.emptyList();
