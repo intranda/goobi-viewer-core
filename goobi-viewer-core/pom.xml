@@ -94,7 +94,7 @@
 		<normdataimporter.version>1.10.5</normdataimporter.version>
 
         <!-- other libraries -->
-        <angus.mail.version>2.0.2</angus.mail.version>
+        <angus-mail.version>2.0.2</angus-mail.version>
 		<citationstyles.version>23.11</citationstyles.version>
 		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
 		<commons-codec.version>1.16.0</commons-codec.version>
@@ -401,7 +401,7 @@
         <dependency>
             <groupId>org.eclipse.angus</groupId>
             <artifactId>jakarta.mail</artifactId>
-            <version>${angus.mail.version}</version>
+            <version>${angus-mail.version}</version>
         </dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
@@ -925,7 +925,11 @@
 									SLF4J: Defaulting to no-operation (NOP) logger implementation
 									SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
 								-->
-								<ignoredUnusedDeclaredDependency>org.slf4j:slf4j-nop</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-nop</ignoredUnusedDeclaredDependency>
+
+                                <!-- angus-mail is the implementation of the jakarta.mail specification and used for sending emails -->
+                                <ignoredUnusedDeclaredDependency>org.eclipse.angus:angus-mail</ignoredUnusedDeclaredDependency>
+
 
 								<!-- activemq libs -->
 									<!-- KahaDB is the used file based persistence database and declared in the config file  -->
