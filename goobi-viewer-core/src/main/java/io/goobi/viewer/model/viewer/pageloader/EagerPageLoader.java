@@ -173,8 +173,9 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
 
     /**
      * Generates a list of PhysicalElement objects that belong to this structure element.
-     *
-     * @return
+     * 
+     * @param topElement
+     * @return Map<Integer, PhysicalElement> containing all pages
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException

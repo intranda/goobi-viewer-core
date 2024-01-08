@@ -97,8 +97,10 @@ public class TempMediaImageResource extends ImageResource {
     }
 
     /**
+     * 
+     * @param foldername
      * @param filename
-     * @return
+     * @return {@link URI}
      */
     private static URI getMediaFileUrl(String foldername, String filename) {
         Path folder =
@@ -127,7 +129,7 @@ public class TempMediaImageResource extends ImageResource {
     /**
      * Delete the file with the given filename in the temp media folder for the given uuid
      *
-     * @param uuid
+     * @param folder
      * @param filename
      * @return A 200 "OK" answer if deletion was successfull, 406 if the file was not found and 500 if there was an error
      */
@@ -154,7 +156,7 @@ public class TempMediaImageResource extends ImageResource {
                 }
             }
             return Response.status(Status.NOT_ACCEPTABLE).entity(TempMediaFileResource.errorMessage("File doesn't exist")).build();
-        } catch (Throwable e) {
+        } catch (IOException e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(TempMediaFileResource.errorMessage("Unknown error: " + e.toString())).build();
         }
     }

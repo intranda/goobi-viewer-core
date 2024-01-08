@@ -265,7 +265,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void findDataRepositoryName_shouldReturnValueFromMapIfAvailable() throws Exception {
-        DataManager.getInstance().getSearchIndex().dataRepositoryNames.put("PPN123", "superrepo");
+        DataManager.getInstance().getSearchIndex().getDataRepositoryNames().put("PPN123", "superrepo");
         Assert.assertEquals("superrepo", DataManager.getInstance().getSearchIndex().findDataRepositoryName("PPN123"));
     }
 
@@ -275,9 +275,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void updateDataRepositoryNames_shouldUpdateValueCorrectly() throws Exception {
-        Assert.assertNull(DataManager.getInstance().getSearchIndex().dataRepositoryNames.get("PPN123"));
+        Assert.assertNull(DataManager.getInstance().getSearchIndex().getDataRepositoryNames().get("PPN123"));
         DataManager.getInstance().getSearchIndex().updateDataRepositoryNames("PPN123", "repo/a");
-        Assert.assertEquals("repo/a", DataManager.getInstance().getSearchIndex().dataRepositoryNames.get("PPN123"));
+        Assert.assertEquals("repo/a", DataManager.getInstance().getSearchIndex().getDataRepositoryNames().get("PPN123"));
     }
 
     /**

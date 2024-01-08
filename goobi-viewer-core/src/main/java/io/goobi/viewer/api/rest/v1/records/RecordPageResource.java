@@ -126,9 +126,13 @@ public class RecordPageResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 base sequence")
     @IIIFPresentationBinding
     public IPresentationModelElement getSequence(@Parameter(
-            description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode,
+            description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF"
+                    + " manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores"
+                    + " all resources from files") @QueryParam("mode") String mode,
             @Parameter(
-                    description = "Set prefered goobi-viewer view for rendering attribute of canvases. Only valid values is 'fullscreen', any other value results in default object/image view being referenced.") @QueryParam("preferedView") String preferedView)
+                    description = "Set prefered goobi-viewer view for rendering attribute of canvases. Only valid values is 'fullscreen',"
+                            + " any other value results in default object/image view being referenced.") 
+            @QueryParam("preferedView") String preferedView)
 
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {
@@ -183,7 +187,8 @@ public class RecordPageResource {
     public IAnnotationCollection getTextForPage(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
+                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
+                            + " otherwise as W3C-Webannotations") @QueryParam("format") String format)
             throws URISyntaxException, DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
 
         //        ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);

@@ -32,7 +32,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -243,7 +242,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         }
                     }
                     return;
-                case "get_overviewpage": {
+                case "get_overviewpage":
                     Path tempFolder = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder());
                     try {
                         if (!FileTools.checkPathExistance(tempFolder, true)) {
@@ -259,103 +258,104 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         } catch (IOException e1) {
                             logger.error(e1.getMessage());
                         }
-                    }
-                    // Thread ID as the temp folder path so that it doesn't collide with other users' calls
-                    Path localTempFolder =
-                            Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), String.valueOf(Thread.currentThread().getId()));
-                    try {
-                        // ?action=get_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
-                        List<CMSPage> pages = DataManager.getInstance().getDao().getCMSPagesForRecord(identifier, null);
-                        if (pages.isEmpty()) {
-                            try {
-                                response.sendError(HttpServletResponse.SC_NOT_FOUND, "CMS pages not found");
-                            } catch (IOException e) {
-                                logger.error(e.getMessage());
-                            }
-                            return;
-                        }
+
+                        // Thread ID as the temp folder path so that it doesn't collide with other users' calls
+                        Path localTempFolder =
+                                Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(),
+                                        String.valueOf(Thread.currentThread().getId()));
                         try {
-                            Files.createDirectory(localTempFolder);
-                        } catch (IOException e) {
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                    "Temp folder could not be created: " + localTempFolder.toAbsolutePath().toString());
-                            return;
-                        }
-                        String fileName =
-                                identifier + "_cmspage_" + (fromDate != null ? DateTools.getMillisFromLocalDateTime(fromDate, true) : "-") + "-"
-                                        + (toDate != null ? DateTools.getMillisFromLocalDateTime(toDate, true) : "-") + ".zip";
-                        fileName = FilenameUtils.getName(fileName); // Make sure identifier doesn't inject a path traversal
-                        Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName);
-                        List<File> tempFiles = new ArrayList<>(pages.size() * 2);
-                        try {
-                            for (CMSPage page : pages) {
-                                tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
+                            // ?action=get_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
+                            List<CMSPage> pages = DataManager.getInstance().getDao().getCMSPagesForRecord(identifier, null);
+                            if (pages.isEmpty()) {
+                                try {
+                                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "CMS pages not found");
+                                } catch (IOException e1) {
+                                    logger.error(e1.getMessage());
+                                }
+                                return;
                             }
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
                             try {
-                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                                Files.createDirectory(localTempFolder);
                             } catch (IOException e1) {
-                                logger.error(e1.getMessage());
+                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                        "Temp folder could not be created: " + localTempFolder.toAbsolutePath().toString());
+                                return;
                             }
-                            return;
-                        }
-
-                        if (tempFiles.isEmpty()) {
+                            String fileName =
+                                    identifier + "_cmspage_" + (fromDate != null ? DateTools.getMillisFromLocalDateTime(fromDate, true) : "-") + "-"
+                                            + (toDate != null ? DateTools.getMillisFromLocalDateTime(toDate, true) : "-") + ".zip";
+                            fileName = FilenameUtils.getName(fileName); // Make sure identifier doesn't inject a path traversal
+                            Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName);
+                            List<File> tempFiles = new ArrayList<>(pages.size() * 2);
                             try {
-                                response.sendError(HttpServletResponse.SC_NOT_FOUND, "No content found");
+                                for (CMSPage page : pages) {
+                                    tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
+                                }
                             } catch (IOException e1) {
-                                logger.error(e1.getMessage());
+                                logger.error(e1.getMessage(), e1);
+                                try {
+                                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                                } catch (IOException e2) {
+                                    logger.error(e2.getMessage());
+                                }
+                                return;
                             }
-                            return;
-                        }
 
-                        // Compress to a ZIP
-                        try {
-                            FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
-                            if (Files.isRegularFile(zipFile)) {
-                                String now = LocalDateTime.now().format(DateTools.formatterISO8601BasicDateTime);
-                                response.setContentType("application/zip");
-                                response.setHeader("Content-Disposition",
-                                        new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
+                            if (tempFiles.isEmpty()) {
+                                try {
+                                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "No content found");
+                                } catch (IOException e1) {
+                                    logger.error(e1.getMessage());
+                                }
+                                return;
+                            }
 
-                                response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
-                                response.flushBuffer();
-                                OutputStream os = response.getOutputStream();
-                                try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
-                                    byte[] buffer = new byte[1024];
-                                    int bytesRead = 0;
-                                    while ((bytesRead = fis.read(buffer)) != -1) {
-                                        os.write(buffer, 0, bytesRead);
+                            // Compress to a ZIP
+                            try {
+                                FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
+                                if (Files.isRegularFile(zipFile)) {
+                                    String now = LocalDateTime.now().format(DateTools.formatterISO8601BasicDateTime);
+                                    response.setContentType("application/zip");
+                                    response.setHeader("Content-Disposition",
+                                            new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
+
+                                    response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
+                                    response.flushBuffer();
+                                    OutputStream os = response.getOutputStream();
+                                    try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
+                                        byte[] buffer = new byte[1024];
+                                        int bytesRead = 0;
+                                        while ((bytesRead = fis.read(buffer)) != -1) {
+                                            os.write(buffer, 0, bytesRead);
+                                        }
                                     }
                                 }
-                            }
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
-                            try {
-                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                             } catch (IOException e1) {
-                                logger.error(e1.getMessage());
+                                logger.error(e1.getMessage(), e1);
+                                try {
+                                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                                } catch (IOException e2) {
+                                    logger.error(e2.getMessage());
+                                }
                             }
-                        }
 
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                        try {
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
-                        } catch (IOException e1) {
-                            logger.error(e1.getMessage());
-                        }
-                    } finally {
-                        if (localTempFolder != null && Files.isDirectory(localTempFolder)) {
+                        } catch (DAOException e1) {
+                            logger.error(e1.getMessage(), e1);
                             try {
-                                FileUtils.deleteDirectory(localTempFolder.toFile());
-                            } catch (IOException e1) {
-                                logger.error(e1.getMessage());
+                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
+                            } catch (IOException e2) {
+                                logger.error(e2.getMessage());
+                            }
+                        } finally {
+                            if (localTempFolder != null && Files.isDirectory(localTempFolder)) {
+                                try {
+                                    FileUtils.deleteDirectory(localTempFolder.toFile());
+                                } catch (IOException e1) {
+                                    logger.error(e1.getMessage());
+                                }
                             }
                         }
                     }
-                }
                     return;
                 case "dl_update":
                     // http://localhost:8080/viewer/harvest?&action=dl_update&identifier=7062b2225caf97a5e80f91f647f66b95&status=READY
@@ -452,7 +452,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 // Redirect crowdsourcing requests to
                 case "getlist_crowdsourcing":
                 case "snoop_cs":
-                case "get_cs": {
+                case "get_cs":
                     String contextPath = request.getContextPath();
                     if (contextPath == null || contextPath.equals("/")) {
                         contextPath = "";
@@ -464,7 +464,6 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     } catch (IOException e) {
                         logger.error(e.getMessage());
                     }
-                }
                     return;
                 default:
                     try {

@@ -79,14 +79,14 @@ public class StatisticsBean implements Serializable {
 
     private static final long serialVersionUID = -1530519697198096431L;
 
-    private static final Logger logger = LogManager.getLogger(ActiveDocumentBean.class);
+    private static final Logger logger = LogManager.getLogger(StatisticsBean.class);
 
     /** Constant <code>SEPARATOR="::"</code> */
     public static final String SEPARATOR = "::";
     private static final int DAY_MS = 86400000;
 
     private Map<String, Long> lastUpdateMap = new HashMap<>();
-    private Map<String, Object> valueMap = new HashMap<>();
+    private transient Map<String, Object> valueMap = new HashMap<>();
 
     /**
      * <p>
@@ -97,7 +97,7 @@ public class StatisticsBean implements Serializable {
      * @param dataPoints a int.
      * @return a {@link java.util.List} object.
      */
-    public List<String> getImportedRecordsTrend(int days, int dataPoints) {
+    public List<String> getImportedRecordsTrend(final int days, final int dataPoints) {
         logger.debug("getImportedRecordsTrend start");
 
         List<Integer> countList = new ArrayList<>();
@@ -116,31 +116,29 @@ public class StatisticsBean implements Serializable {
                 dateList = new ArrayList<>(counts.size());
                 for (Count count : counts) {
                     String name = ViewerResourceBundle.getTranslation(count.getName(), null);
-                    // TODO limit the number of results?
-                    // ret.add(new String[] { count.getName(), String.valueOf(count.getCount()) });
                     dateList.add(name);
                 }
             }
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-            return null;
+            return Collections.emptyList();
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
 
         logger.debug("getImportedRecordsTrend mid");
 
-        if (dataPoints > days) {
-            dataPoints = days;
+        int localDataPoints = dataPoints;
+        if (localDataPoints > days) {
+            localDataPoints = days;
         }
         List<Long> dataPointList = new ArrayList<>();
-        int dataPointDiv = days / dataPoints;
-        days = dataPoints * dataPointDiv;
+        int dataPointDiv = days / localDataPoints;
         dataPointList.add(DateTools.getMillisFromLocalDateTime(LocalDateTime.now(), false));
         countList.add(0);
         GregorianCalendar cal = new GregorianCalendar();
-        for (int i = 1; i < dataPoints; i++) {
+        for (int i = 1; i < localDataPoints; i++) {
             cal.add(Calendar.DAY_OF_MONTH, -dataPointDiv);
             dataPointList.add(cal.getTime().getTime());
             countList.add(0);
@@ -149,12 +147,11 @@ public class StatisticsBean implements Serializable {
         Collections.reverse(dataPointList);
 
         for (String string : dateList) {
-            long creationTime = Long.valueOf(string);
+            long creationTime = Long.parseLong(string);
             int count = 0;
             for (Long time : dataPointList) {
                 if (creationTime < time) {
                     countList.set(count, countList.get(count) + 1);
-                    //                    break;
                 }
                 count++;
             }
@@ -166,7 +163,6 @@ public class StatisticsBean implements Serializable {
         }
 
         logger.debug("getImportedRecordsTrend end");
-        //        Collections.reverse(ret);
         return ret;
     }
 
@@ -196,9 +192,7 @@ public class StatisticsBean implements Serializable {
                 List<Count> counts = resp.getFacetField(SolrConstants.DOCSTRCT).getValues();
                 List<String> ret = new ArrayList<>(counts.size());
                 for (Count count : counts) {
-                    String name = ViewerResourceBundle.getTranslation(count.getName(), null).replaceAll(",", "");
-                    // TODO limit the number of results?
-                    //                    ret.add(new String[] { count.getName(), String.valueOf(count.getCount()) });
+                    String name = ViewerResourceBundle.getTranslation(count.getName(), null).replace(",", "");
                     ret.add(name + SEPARATOR + count.getCount() + SEPARATOR + count.getName());
                 }
                 return ret;
@@ -226,7 +220,6 @@ public class StatisticsBean implements Serializable {
         try {
             if (lastUpdateMap.get("getImportedPages") == null || now - lastUpdateMap.get("getImportedPages") >= DAY_MS) {
                 logger.debug("Refreshing number of imported pages...");
-                // TODO filter query might not work for PAGE documents
                 long pages = DataManager.getInstance()
                         .getSearchIndex()
                         .getHitCount(SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes());
@@ -336,7 +329,7 @@ public class StatisticsBean implements Serializable {
     /**
      * 
      * @param pi
-     * @return
+     * @return {@link StatisticsSummary}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException

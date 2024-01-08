@@ -171,7 +171,7 @@ public class ActiveDocumentBean implements Serializable {
     private BrowseElement nextHit;
 
     /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
-    String lastReceivedIdentifier;
+    private String lastReceivedIdentifier;
     /** Available languages for this record. */
     private List<String> recordLanguages;
     /** Currently selected language for multilingual records. */
@@ -310,8 +310,15 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      *
-     * @param pi @throws PresentationException @throws RecordNotFoundException @throws RecordDeletedException @throws
-     *            IndexUnreachableException @throws DAOException @throws ViewerConfigurationException @throws RecordLimitExceededException @throws
+     * @param pi
+     * @return output of open()
+     * @throws PresentationException
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     * @throws RecordLimitExceededException
      */
     public String reload(String pi) throws PresentationException, RecordNotFoundException, RecordDeletedException, IndexUnreachableException,
             DAOException, ViewerConfigurationException, RecordLimitExceededException {
@@ -417,7 +424,8 @@ public class ActiveDocumentBean implements Serializable {
                     if (access.isRedirect() && StringUtils.isNotEmpty(access.getRedirectUrl())) {
                         logger.debug("Redirecting to {}", access.getRedirectUrl());
                         try {
-                            //reset the bean's state. Otherwise this code will be called again when the redirected page uses activeDocumentBean at all (may the the case in widgets)
+                            // reset the bean's state. Otherwise this code will be called again when the redirected page uses
+                            // activeDocumentBean at all (may the the case in widgets)
                             reset();
                             FacesContext.getCurrentInstance().getExternalContext().redirect(access.getRedirectUrl());
                             return;
@@ -527,7 +535,8 @@ public class ActiveDocumentBean implements Serializable {
                 // Search hit navigation
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
                     if (searchBean.getCurrentHitIndex() < 0) {
-                        // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
+                        // Determine the index of this element in the search result list.
+                        // Must be done after re-initializing ViewManager so that the PI is correct!
                         searchBean.findCurrentHitIndex(getPersistentIdentifier(), viewManager.getCurrentImageOrder(), true);
                     } else if (mayChangeHitIndex) {
                         // Modify the current hit index
@@ -576,6 +585,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * @return created {@link TOC}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -674,13 +684,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws PresentationException
      * @throws RecordLimitExceededException
      * @throws NumberFormatException
      */
     public String openFulltext()
             throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
-            PresentationException, NumberFormatException, RecordLimitExceededException {
+            NumberFormatException, RecordLimitExceededException {
         open();
         return "viewFulltext";
     }
@@ -721,19 +730,6 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return nextHit;
-    }
-
-    /**
-     ********************************* Getter and Setter **************************************
-     *
-     * @return a long.
-     */
-    public long getActiveDocumentIddoc() {
-        if (viewManager != null) {
-            return viewManager.getTopStructElementIddoc();
-        }
-
-        return 0;
     }
 
     /**
@@ -940,7 +936,6 @@ public class ActiveDocumentBean implements Serializable {
                 logger.warn("Invalid identifier '{}'.", persistentIdentifier);
                 reset();
                 return;
-                // throw new RecordNotFoundException("Illegal identifier: " + persistentIdentifier);
             }
             lastReceivedIdentifier = persistentIdentifier;
             if (!"-".equals(persistentIdentifier) && (viewManager == null || !persistentIdentifier.equals(viewManager.getPi()))) {
@@ -953,7 +948,6 @@ public class ActiveDocumentBean implements Serializable {
                 } else {
                     logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
                     reset();
-                    // throw new RecordNotFoundException(new StringBuilder(persistentIdentifier).toString());
                 }
             }
         }
@@ -1024,23 +1018,24 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @param pageType a {@link java.lang.String} object.
      * @param pageOrderRange Single page number or range
-     * @should construct url correctly
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should construct url correctly
      */
-    public String getPageUrl(String pageType, String pageOrderRange) throws IndexUnreachableException {
+    public String getPageUrl(final String pageType, String pageOrderRange) throws IndexUnreachableException {
         StringBuilder sbUrl = new StringBuilder();
-        if (StringUtils.isBlank(pageType)) {
+        String localPageType = pageType;
+        if (StringUtils.isBlank(localPageType)) {
             if (navigationHelper != null) {
-                pageType = navigationHelper.getCurrentView();
-                if (pageType == null) {
-                    pageType = PageType.viewObject.name();
+                localPageType = navigationHelper.getCurrentView();
+                if (localPageType == null) {
+                    localPageType = PageType.viewObject.name();
                 }
             }
-            if (StringUtils.isBlank(pageType)) {
-                pageType = PageType.viewObject.name();
+            if (StringUtils.isBlank(localPageType)) {
+                localPageType = PageType.viewObject.name();
             }
-            // logger.trace("current view: {}", pageType);
+            // logger.trace("current view: {}", localPageType);
         }
 
         int[] pages = StringTools.getIntegerRange(pageOrderRange);
@@ -1055,14 +1050,12 @@ public class ActiveDocumentBean implements Serializable {
                 page2 = Math.min(page2, viewManager.getPageLoader().getLastPageOrder());
             }
         }
-        //        if (page == page2) {
-        //            page2 = Integer.MAX_VALUE;
-        //        }
+
         String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
-        // logger.trace("final range: {}", range);
+        // logger.trace("final range: {}", range); //NOSONAR Sometimes needed for debugging
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
-                .append(PageType.getByName(pageType).getName())
+                .append(PageType.getByName(localPageType).getName())
                 .append('/')
                 .append(getPersistentIdentifier())
                 .append('/')
@@ -1094,13 +1087,11 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPageUrl() throws IndexUnreachableException {
-        String pageType = null;
-        if (StringUtils.isBlank(pageType)) {
-            pageType = navigationHelper.getPreferredView();
-        }
+        String pageType = navigationHelper.getPreferredView();
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
+
         return getPageUrlByType(pageType);
     }
 
@@ -1175,14 +1166,13 @@ public class ActiveDocumentBean implements Serializable {
      * @param step a int.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      * @should return correct page in single page mode
      * @should return correct range in double page mode if current page double image
      * @should return correct range in double page mode if currently showing two pages
      * @should return correct range in double page mode if currently showing one page
      */
-    public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException, DAOException {
-        // logger.trace("getPageUrl: {}", step);
+    public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException {
+        // logger.trace("getPageUrl: {}", step); //NOSONAR Sometimes needed for debugging
         if (viewManager == null) {
             return getPageUrl(imageToShow);
         }
@@ -1196,7 +1186,7 @@ public class ActiveDocumentBean implements Serializable {
 
         // Current image contains two pages
         if (viewManager.getCurrentPage().isDoubleImage()) {
-            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder());
+            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder()); //NOSONAR Sometimes needed for debugging
             if (step < 0) {
                 number = viewManager.getCurrentImageOrder() + 2 * step;
             } else {
@@ -1213,11 +1203,11 @@ public class ActiveDocumentBean implements Serializable {
 
         // Only go back one step unit at first
         if (currentLeftPage.isPresent()) {
-            // logger.trace("{} is left page", currentLeftPage.get().getOrder());
+            // logger.trace("{} is left page", currentLeftPage.get().getOrder()); //NOSONAR Sometimes needed for debugging
             number = currentLeftPage.get().getOrder() + step;
         } else if (currentRightPage.isPresent()) {
             // If only the right page is present, it's probably the first page - do not add step at this point
-            // logger.trace("{} is right page", currentRightPage.get().getOrder());
+            // logger.trace("{} is right page", currentRightPage.get().getOrder()); //NOSONAR Sometimes needed for debugging
             number = currentRightPage.get().getOrder();
         } else {
             number = viewManager.getCurrentImageOrder() + step;
@@ -1226,22 +1216,28 @@ public class ActiveDocumentBean implements Serializable {
         // Target image candidate contains two pages
         Optional<PhysicalElement> nextPage = viewManager.getPage(number);
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
-            return getPageUrl(String.valueOf(number) + "-" + String.valueOf(number));
+            return getPageUrl(String.valueOf(number) + "-" + number);
         }
         // If the immediate neighbor is not a double image, add another step
         number += step;
 
         nextPage = viewManager.getPage(number);
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
-            return getPageUrl(String.valueOf(number) + "-" + String.valueOf(number));
+            return getPageUrl(String.valueOf(number) + "-" + number);
         }
 
-        // logger.trace("step: {}", step);
-        // logger.trace("Number: {}", number);
+        // logger.trace("step: {}", step); //NOSONAR Sometimes needed for debugging
+        // logger.trace("Number: {}", number); //NOSONAR Sometimes needed for debugging
 
         return getPageUrl(number + "-" + (number + 1));
     }
 
+    /**
+     * 
+     * @param order
+     * @return Page URL for the given page number
+     * @throws IndexUnreachableException
+     */
     public String getPageUrl(int order) throws IndexUnreachableException {
         return getPageUrl(Integer.toString(order));
     }
@@ -1254,9 +1250,8 @@ public class ActiveDocumentBean implements Serializable {
      * @param step
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getPreviousPageUrl(int step) throws IndexUnreachableException, DAOException {
+    public String getPreviousPageUrl(int step) throws IndexUnreachableException {
         return getPageUrlRelativeToCurrentPage(step * -1);
     }
 
@@ -1268,9 +1263,8 @@ public class ActiveDocumentBean implements Serializable {
      * @param step
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getNextPageUrl(int step) throws IndexUnreachableException, DAOException {
+    public String getNextPageUrl(int step) throws IndexUnreachableException {
         return getPageUrlRelativeToCurrentPage(step);
     }
 
@@ -1281,9 +1275,8 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getPreviousPageUrl() throws IndexUnreachableException, DAOException {
+    public String getPreviousPageUrl() throws IndexUnreachableException {
         return getPreviousPageUrl(1);
     }
 
@@ -1294,22 +1287,21 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getNextPageUrl() throws IndexUnreachableException, DAOException {
+    public String getNextPageUrl() throws IndexUnreachableException {
         return getNextPageUrl(1);
     }
 
     /**
      *
-     * @return
+     * @return URL to the previous docstruct
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
      * @throws DAOException
      * @throws PresentationException
      */
     public String getPreviousDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        // logger.trace("getPreviousDocstructUrl");
+        // logger.trace("getPreviousDocstructUrl"); //NOSONAR Sometimes needed for debugging
         if (viewManager == null) {
             return null;
         }
@@ -1357,14 +1349,14 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return URL to the next docstruct
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
      * @throws DAOException
      * @throws PresentationException
      */
     public String getNextDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        // logger.trace("getNextDocstructUrl");
+        // logger.trace("getNextDocstructUrl"); //NOSONAR Sometimes needed for debugging
         if (viewManager == null) {
             return "";
         }
@@ -1429,9 +1421,8 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getFullscreenImageUrl() throws IndexUnreachableException, DAOException {
+    public String getFullscreenImageUrl() throws IndexUnreachableException {
         if (viewManager != null && viewManager.isDoublePageMode() && !viewManager.getCurrentPage().isDoubleImage()) {
             Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
             Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
@@ -1451,9 +1442,8 @@ public class ActiveDocumentBean implements Serializable {
      * @deprecated renamed to fullscreen
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getReadingModeUrl() throws IndexUnreachableException, DAOException {
+    public String getReadingModeUrl() throws IndexUnreachableException {
         return getFullscreenImageUrl();
     }
 
@@ -1618,7 +1608,8 @@ public class ActiveDocumentBean implements Serializable {
             if (this.tocCurrentPage < 1) {
                 this.tocCurrentPage = 1;
             }
-            // Do not call getToc() here - the setter is usually called before update(), so the required information for proper TOC creation is not yet available
+            // Do not call getToc() here - the setter is usually called before update(),
+            // so the required information for proper TOC creation is not yet available
             if (viewManager != null && viewManager.getToc() != null) {
                 int currentCurrentPage = viewManager.getToc().getCurrentPage();
                 viewManager.getToc().setCurrentPage(this.tocCurrentPage);
@@ -1627,8 +1618,8 @@ public class ActiveDocumentBean implements Serializable {
                     this.tocCurrentPage = viewManager.getToc().getCurrentPage();
                 }
                 // Create a new TOC if pagination is enabled and the paginator page has changed
-                if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
-                        && viewManager != null) {
+                if (currentCurrentPage != this.tocCurrentPage
+                        && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0) {
                     viewManager.getToc()
                             .generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(),
                                     this.tocCurrentPage);
@@ -1708,7 +1699,7 @@ public class ActiveDocumentBean implements Serializable {
                     String suffix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarSuffix(labelTemplate);
                     prefix = ViewerResourceBundle.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
                     suffix = ViewerResourceBundle.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
-                    label = prefix = toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
+                    label = prefix + toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
                 } else {
                     label = toc.getLabel(viewManager.getPi(), language);
                 }
@@ -1804,6 +1795,16 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     *
+     * @return a long.
+     * @deprecated Use getTopDocumentIddoc()
+     */
+    @Deprecated(since = "2023.11")
+    public long getActiveDocumentIddoc() {
+        return getTopDocumentIddoc();
+    }
+
+    /**
      * Indicates whether a record is currently properly loaded in this bean. Use to determine whether to display components.
      *
      * @return a boolean.
@@ -1873,7 +1874,7 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return empty string
      * @throws IOException
      * @throws IndexUnreachableException
      */
@@ -1940,6 +1941,20 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * @return the lastReceivedIdentifier
+     */
+    public String getLastReceivedIdentifier() {
+        return lastReceivedIdentifier;
+    }
+
+    /**
+     * @param lastReceivedIdentifier the lastReceivedIdentifier to set
+     */
+    public void setLastReceivedIdentifier(String lastReceivedIdentifier) {
+        this.lastReceivedIdentifier = lastReceivedIdentifier;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>recordLanguages</code>.
      * </p>
@@ -1977,7 +1992,7 @@ public class ActiveDocumentBean implements Serializable {
      * Setter for the field <code>selectedRecordLanguage</code>.
      * </p>
      *
-     * @param selectedRecordLanguage the selectedRecordLanguage to set
+     * @param selectedRecordLanguageCode the selectedRecordLanguageCode to set
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguageCode) {
         logger.trace("setSelectedRecordLanguage: {}", selectedRecordLanguageCode);
@@ -2060,8 +2075,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * @param currentPage
-     * @return
+     * @param downloadType
+     * @param pageTypeName
+     * @return true if download of the given type is enabled for the given page type; false otherwise
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
         if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
@@ -2106,13 +2122,17 @@ public class ActiveDocumentBean implements Serializable {
 
             FacesContext fc = FacesContext.getCurrentInstance();
             ExternalContext ec = fc.getExternalContext();
-            ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+            // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
+            // We want to get rid of them, else it may collide.
+            ec.responseReset();
             ec.setResponseContentType("application/pdf");
-            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             TocWriter writer = new TocWriter("", fileNameRaw);
             writer.createPdfDocument(os, getToc().getTocElements());
-            fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+            // Important! Otherwise JSF will attempt to render the response which obviously
+            // will fail since it's already written with a file and closed.
+            fc.responseComplete();
         } catch (IndexOutOfBoundsException e) {
             logger.error("No toc to generate");
         } catch (WriteTocException e) {
@@ -2392,7 +2412,7 @@ public class ActiveDocumentBean implements Serializable {
      * Get a CMSSidebarElement with a map containing all GeoMarkers for the current PI. The widget is stored in the bean, but refreshed each time the
      * PI changes
      *
-     * @return
+     * @return {@link GeoMap}
      * @throws DAOException
      * @throws IndexUnreachableException
      */
@@ -2400,6 +2420,12 @@ public class ActiveDocumentBean implements Serializable {
         return getRecordGeoMap().getGeoMap();
     }
 
+    /**
+     * 
+     * @return {@link RecordGeoMap}
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
         RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
         if (map == null) {
@@ -2432,7 +2458,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * 
      * @param pi
-     * @return
+     * @return {@link GeoMap}
      * @throws PresentationException
      * @throws DAOException
      */
@@ -2481,7 +2507,7 @@ public class ActiveDocumentBean implements Serializable {
                     .stream()
                     .filter(a -> PublicationStatus.PUBLISHED.equals(a.getPublicationStatus()))
                     .filter(a -> StringUtils.isNotBlank(a.getBody()))
-                    .map(a -> new DisplayUserGeneratedContent(a))
+                    .map(DisplayUserGeneratedContent::new)
                     .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
                     .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
                     .collect(Collectors.toList());
@@ -2537,7 +2563,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     *
+     * @return Selected {@link DownloadOption}
      */
     public DownloadOption getSelectedDownloadOption() {
         if (selectedDownloadOptionLabel == null) {
@@ -2576,11 +2602,10 @@ public class ActiveDocumentBean implements Serializable {
      * This method augments the setter <code>ViewManager.setDoublePageMode(boolean)</code> with URL modifications to reflect the mode.
      *
      * @param doublePageMode The doublePageMode to set
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @return empty string
      * @should set imageToShow if value changes
      */
-    public String setDoublePageModeAction(boolean doublePageMode) throws IndexUnreachableException, DAOException {
+    public String setDoublePageModeAction(boolean doublePageMode) {
         if (viewManager == null) {
             return "";
         }

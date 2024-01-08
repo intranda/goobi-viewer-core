@@ -94,12 +94,12 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
             throw new RestApiException("No Bookmark list foud with id " + id, HttpServletResponse.SC_NOT_FOUND);
         }
         if (bookmarkList.isIsPublic()) {
-            logger.trace("Serving public bookmark list " + id);
+            logger.trace("Serving public bookmark list {}", id);
             return bookmarkList;
         }
 
         if (user.equals(bookmarkList.getOwner())) {
-            logger.trace("Serving bookmark list " + id + " owned by user " + user);
+            logger.trace("Serving bookmark list {} owned by user {}", id, user);
             return bookmarkList;
         }
         throw new RestApiException("User has no access to bookmark list " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
@@ -245,7 +245,8 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
     /**
      * Adds the current session bookmark list to the current user bookmark lists under a newly generated name
-     *
+     * 
+     * @param session
      * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -260,6 +261,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * Adds the current session bookmark list to the current user's bookmark lists under the given name
      *
      * @param name a {@link java.lang.String} object.
+     * @param session
      * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -345,8 +347,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
         try {
             Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), false);
-            List<BookmarkList> containingShelves = bookmarkLists.stream().filter(bs -> bs.getItems().contains(item)).collect(Collectors.toList());
-            return containingShelves;
+            return bookmarkLists.stream().filter(bs -> bs.getItems().contains(item)).collect(Collectors.toList());
         } catch (IndexUnreachableException | PresentationException e) {
             throw new RestApiException("Error retrieving bookmark lists: " + e.toString(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -383,7 +384,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     /**
      * @param user
      * @param name
-     * @return
+     * @return true if given user has bookmark list with given name; false otherwise
      * @throws RestApiException
      * @throws IOException
      * @throws DAOException
@@ -395,7 +396,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     /**
      * @param user
      * @param id
-     * @return
+     * @return Optional<BookmarkList>
      * @throws DAOException
      */
     private static Optional<BookmarkList> getBookmarkList(User user, Long id) throws DAOException {
@@ -420,7 +421,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
         try {
             return group.getMembers().contains(user);
         } catch (DAOException e) {
-            logger.error("Cannot determine user affiliation with group: " + e.toString());
+            logger.error("Cannot determine user affiliation with group: {}", e.toString());
             return false;
         }
     }

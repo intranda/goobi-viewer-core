@@ -46,6 +46,7 @@ public class UserJsonFacadeTest {
      */
     @Before
     public void setUp() throws Exception {
+        //
     }
 
     /**
@@ -53,6 +54,7 @@ public class UserJsonFacadeTest {
      */
     @After
     public void tearDown() throws Exception {
+        //
     }
 
     @Test
@@ -61,7 +63,7 @@ public class UserJsonFacadeTest {
         User user = new User("nick");
 
         UserJsonFacade facade = new UserJsonFacade(user);
-        String avatarUrl = facade.avatar;
+        String avatarUrl = facade.getAvatar();
         URI avatarURI = URI.create(avatarUrl);
         Assert.assertFalse(avatarURI.isAbsolute());
 
@@ -70,7 +72,7 @@ public class UserJsonFacadeTest {
         Mockito.when(request.getContextPath()).thenReturn("/viewer");
 
         facade = new UserJsonFacade(user, request);
-        avatarUrl = facade.avatar;
+        avatarUrl = facade.getAvatar();
         avatarURI = URI.create(avatarUrl);
         Assert.assertTrue(avatarUrl.startsWith("/viewer/resources"));
 

@@ -171,11 +171,11 @@ public class LicenseTest {
      */
     @Test
     public void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfLicenseTypeUgcType() throws Exception {
-       License lic = new License();
-       lic.setLicenseType(new LicenseType());
-       lic.getLicenseType().ugcType = true;
-       List<String> result = lic.getAvailablePrivileges(Collections.emptySet());
-       Assert.assertEquals(1, result.size());
-       Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
+        License lic = new License();
+        lic.setLicenseType(new LicenseType());
+        lic.getLicenseType().setUgcType(true);
+        List<String> result = lic.getAvailablePrivileges(Collections.emptySet());
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
 }

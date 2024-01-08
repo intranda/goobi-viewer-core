@@ -138,25 +138,26 @@ public class IpRange extends AbstractLicensee implements Serializable {
      * @should match edge addresses
      */
     public boolean matchIp(String inIp) {
-        if (inIp.equals(NetTools.ADDRESS_LOCALHOST_IPV6)) {
-            inIp = NetTools.ADDRESS_LOCALHOST_IPV4;
+        String ip = inIp;
+        if (ip.equals(NetTools.ADDRESS_LOCALHOST_IPV6)) {
+            ip = NetTools.ADDRESS_LOCALHOST_IPV4;
         }
 
         // Workaround for single IP ranges (isInRange() doesn't seem to match these)
-        if (subnetMask.endsWith("/32") && subnetMask.substring(0, subnetMask.length() - 3).equals(inIp)) {
-            // logger.trace("Exact IP match: {}", inIp);
+        if (subnetMask.endsWith("/32") && subnetMask.substring(0, subnetMask.length() - 3).equals(ip)) {
+            // logger.trace("Exact IP match: {}", inIp); //NOSONAR Debug
             return true;
         }
 
         try {
             SubnetUtils subnetUtils = new SubnetUtils(subnetMask);
             subnetUtils.setInclusiveHostCount(true);
-            if (subnetUtils.getInfo().isInRange(inIp)) {
-                logger.debug("IP matches: {}", inIp);
+            if (subnetUtils.getInfo().isInRange(ip)) {
+                logger.debug("IP matches: {}", ip);
             }
-            return subnetUtils.getInfo().isInRange(inIp);
+            return subnetUtils.getInfo().isInRange(ip);
         } catch (IllegalArgumentException e) {
-            if (!NetTools.ADDRESS_LOCALHOST_IPV6.equals(inIp)) {
+            if (!NetTools.ADDRESS_LOCALHOST_IPV6.equals(ip)) {
                 logger.error(e.getMessage());
             }
         }

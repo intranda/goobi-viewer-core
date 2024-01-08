@@ -62,23 +62,22 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     private static final String SIDEBAR_ELEMENT_ID_PREFIX = "sidebar_widget_";
 
-    private static final String SIDEBAR_COMPONENT_ATTRIBUTE__GEOMAP = "geoMap";
+    private static final String SIDEBAR_COMPONENT_ATTRIBUTE_GEOMAP = "geoMap";
 
-    private static final String SIDEBAR_COMPONENT_ATTRIBUTE__CMS_PAGE = "cmsPage";
+    private static final String SIDEBAR_COMPONENT_ATTRIBUTE_CMS_PAGE = "cmsPage";
 
-    private static final String SIDEBAR_COMPONENT_ATTRIBUTE__WIDGET = "widget";
+    private static final String SIDEBAR_COMPONENT_ATTRIBUTE_WIDGET = "widget";
 
-    private static final String SIDEBAR_COMPONENT_ATTRIBUTE__SIDEBAR_ELEMENT = "sidebarElement";
-    
+    private static final String SIDEBAR_COMPONENT_ATTRIBUTE_SIDEBAR_ELEMENT = "sidebarElement";
+
     private transient HtmlPanelGroup sidebarGroup = null;
 
     private static final long serialVersionUID = -6039330925483238481L;
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarWidgetsBean.class);
 
-
     @Inject
-    CmsBean cmsBean;
+    private CmsBean cmsBean;
 
     public List<WidgetDisplayElement> getAllWidgets() throws DAOException {
         return getAllWidgets(false);
@@ -110,6 +109,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
                                 widgetType, geoMap.getId(), null);
                         widgets.add(widget);
                     }
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -164,7 +166,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     public HtmlPanelGroup getSidebarGroup() {
         return Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(page -> {
             List<CMSSidebarElement> elements = Optional.of(page).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
-            return getSidebarGroup(new ArrayList<>(elements), page);            
+            return getSidebarGroup(new ArrayList<>(elements), page);
         }).orElseGet(() -> getSidebarGroup(Collections.emptyList(), null));
     }
 
@@ -176,14 +178,14 @@ public class CMSSidebarWidgetsBean implements Serializable {
         DynamicContentBuilder builder = new DynamicContentBuilder();
         DynamicContent content = new DynamicContent(DynamicContentType.WIDGET, component.getContentType().getFilename());
         content.setId(SIDEBAR_ELEMENT_ID_PREFIX + component.getId());
-        
+
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE__CMS_PAGE, page);
-        attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE__SIDEBAR_ELEMENT, component);
+        attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_CMS_PAGE, page);
+        attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_SIDEBAR_ELEMENT, component);
         if (component instanceof CMSSidebarElementCustom) {
-            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE__WIDGET, ((CMSSidebarElementCustom) component).getWidget());
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_WIDGET, ((CMSSidebarElementCustom) component).getWidget());
         } else if (component instanceof CMSSidebarElementAutomatic) {
-            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE__GEOMAP, ((CMSSidebarElementAutomatic) component).getMap());
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_GEOMAP, ((CMSSidebarElementAutomatic) component).getMap());
         }
         content.setAttributes(attributes);
         UIComponent widgetComponent = builder.build(content, parent);

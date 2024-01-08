@@ -46,7 +46,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @FacesValidator("htmlTagValidator")
 public class HtmlTagValidator implements Validator<String> {
 
-    private static final List<String> allowedTags =
+    private static final List<String> ALLOWED_TAGS =
             Arrays.asList("br", "b", "strong", "em", "i", "mark", "small", "del", "ins", "sub", "sup");
 
     /**
@@ -73,12 +73,12 @@ public class HtmlTagValidator implements Validator<String> {
     public boolean validate(String input) {
         if (StringUtils.isNotBlank(input)) {
             Document doc = Jsoup.parse(input);
-            return doc.head().childNodes().isEmpty() && //no content in head
-                    doc.body()
+            return doc.head().childNodes().isEmpty() //no content in head
+                    && doc.body()
                             .select("*")
                             .stream() //all tags within body
                             .skip(1) //skip body tag itself
-                            .allMatch(element -> allowedTags.contains(element.tagName().toLowerCase())); //all tags have names contained in allowedTags
+                            .allMatch(element -> ALLOWED_TAGS.contains(element.tagName().toLowerCase())); //all tags have names in allowedTags
         }
 
         return true;

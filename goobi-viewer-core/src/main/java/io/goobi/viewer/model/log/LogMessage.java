@@ -98,8 +98,8 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         if (creator == UNASSIGNED) {
             this.loadCreator(request);
         }
-        if (this.creatorId == null && this.creator.userId != null) {
-            this.creatorId = this.creator.userId;
+        if (this.creatorId == null && this.creator.getUserId() != null) {
+            this.creatorId = this.creator.getUserId();
         }
         this.id = source.id;
     }
@@ -165,7 +165,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
                     this.creator = new UserJsonFacade(user, request);
                 }
             } catch (DAOException e) {
-                logger.error("Error loading user with id " + this.creatorId, e);
+                logger.error("Error loading user with id {}", this.creatorId, e);
                 this.creator = UNASSIGNED;
             }
         }
@@ -184,7 +184,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
      */
     @Override
     public String toString() {
-        return this.message + " (" + (this.creator == null ? ("ID:" + this.creatorId) : this.creator.name) + " - " + this.dateCreated;
+        return this.message + " (" + (this.creator == null ? ("ID:" + this.creatorId) : this.creator.getName()) + " - " + this.dateCreated;
     }
 
 }

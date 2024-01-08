@@ -21,7 +21,8 @@
                                     <!-- Default multivalue separator (new line) -->
                                     <ui:fragment rendered="#{browseElementMetadata.separator == null}">
                                         <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
-                                            <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" styleClass="search-list__hit-text-value">
+                                            <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false"
+                                                styleClass="search-list__hit-text-value">
                                             </h:outputFormat>
                                         </ui:repeat>
                                     </ui:fragment>
@@ -35,7 +36,9 @@
                                                         <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
                                                     </ui:fragment>
                                                     <span class="metadata__element-wrapper-single-custom">
-                                                        #{val.getDisplayValue(navigationHelper.locale)}
+                                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false"
+                                                            styleClass="search-list__hit-text-value">
+                                                        </h:outputFormat>
                                                     </span>
                                                 </ui:fragment>
                                             </ui:repeat>

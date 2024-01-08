@@ -55,6 +55,7 @@ public class DatabaseUpdater {
      * </p>
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+     * @param templateManager
      */
     public DatabaseUpdater(IDAO dao, CMSTemplateManager templateManager) {
         this.dao = dao;
@@ -79,7 +80,6 @@ public class DatabaseUpdater {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private static List<IModelUpdate> instantiateUpdater() {
         List<IModelUpdate> updaterList = new ArrayList<>();
         Set<Class<? extends IModelUpdate>> classList = new Reflections("io.goobi.viewer.dao.update.*").getSubTypesOf(IModelUpdate.class);

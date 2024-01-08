@@ -54,10 +54,10 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -125,11 +125,9 @@ public class UserAvatarResource extends ImageResource {
     }
 
     /**
-     * @throws IOException
-     * @param filename
-     * @return
-     * @throws IOException
-     * @throws
+     * @param userId
+     * @return {@link URI}
+     * @throws WebApplicationException
      */
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
         try {
@@ -141,16 +139,13 @@ public class UserAvatarResource extends ImageResource {
     }
 
     public static Path getUserAvatarFolder() {
-        Path folder =
-                Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                        DataManager.getInstance().getConfiguration().getUserAvatarFolder());
-        return folder;
+        return Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getUserAvatarFolder());
     }
 
     /**
-     * @param folder
      * @param userId
-     * @return
+     * @return Optional<Path>
      * @throws IOException
      */
     public static Optional<Path> getUserAvatarFile(Long userId) throws IOException {
@@ -235,16 +230,14 @@ public class UserAvatarResource extends ImageResource {
         ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(uploadFilename);
         String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + fileFormat.getFileExtension();
 
-        Path mediaFile = getUserAvatarFolder().resolve(filename);
-        return mediaFile;
+        return getUserAvatarFolder().resolve(filename);
     }
 
     /**
      * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
      * no user is logged in, NULL is returned
      *
-     * @param session
-     * @return
+     * @return Optional<User>
      */
     private static Optional<User> getUser() {
         UserBean userBean = BeanUtils.getUserBean();

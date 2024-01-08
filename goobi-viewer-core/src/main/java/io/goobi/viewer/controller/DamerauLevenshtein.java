@@ -9,6 +9,11 @@ public class DamerauLevenshtein {
     private int[][] matrix;
     private boolean calculated = false;
 
+    /**
+     * 
+     * @param a
+     * @param b
+     */
     public DamerauLevenshtein(String a, String b) {
         if ((a.length() > 0 || !a.isEmpty()) || (b.length() > 0 || !b.isEmpty())) {
             compOne = a;
@@ -24,10 +29,10 @@ public class DamerauLevenshtein {
     /**
      * Calculate distance according to Optimal String Alignment Distance Algorithm
      * 
-     * @return
+     * @return Calculated distance
      */
     public int getSimilarity() {
-        if (!calculated) {            
+        if (!calculated) {
             setupMatrix();
         }
 
@@ -37,7 +42,7 @@ public class DamerauLevenshtein {
     /**
      * Calculate distance according to the actual Damerau-Levenshtein distance
      * 
-     * @return
+     * @return Calculated disstance
      */
     public int getDHSimilarity() {
         int inf = compOne.length() + compTwo.length();
@@ -68,8 +73,9 @@ public class DamerauLevenshtein {
                 int i1 = da[compTwo.indexOf(compTwo.charAt(j - 1))];
                 int j1 = db;
                 int d = ((compOne.charAt(i - 1) == compTwo.charAt(j - 1)) ? 0 : 1);
-                if (d == 0)
+                if (d == 0) {
                     db = j;
+                }
 
                 matrix[i + 1][j + 1] = Math.min(Math.min(matrix[i][j] + d, matrix[i + 1][j] + 1),
                         Math.min(matrix[i][j + 1] + 1, matrix[i1][j1] + (i - i1 - 1) + 1 + (j - j1 - 1)));
@@ -123,15 +129,15 @@ public class DamerauLevenshtein {
     public String toString() {
         return displayMatrix();
     }
-    
+
     private String displayMatrix() {
         StringBuilder sb = new StringBuilder();
         for (int y = 0; y <= compTwo.length(); y++) {
-            if (y - 1 < 0) {    
+            if (y - 1 < 0) {
                 sb.append(" ");
-            }
-            else
+            } else {
                 sb.append(compTwo.charAt(y - 1));
+            }
             for (int x = 0; x <= compOne.length(); x++) {
                 sb.append(matrix[x][y]);
             }
@@ -140,26 +146,44 @@ public class DamerauLevenshtein {
         return sb.toString();
     }
 
-    private int minimum(int d, int i, int s) {
+    /**
+     * 
+     * @param d
+     * @param i
+     * @param s
+     * @return Calculated minimum
+     */
+    private static int minimum(int d, int i, int s) {
         int m = Integer.MAX_VALUE;
 
-        if (d < m)
+        if (d < m) {
             m = d;
-        if (i < m)
+        }
+        if (i < m) {
             m = i;
-        if (s < m)
+        }
+        if (s < m) {
             m = s;
+        }
 
         return m;
     }
 
-    private int minimum(int d, int t) {
+    /**
+     * 
+     * @param d
+     * @param t
+     * @return Calculated minimum
+     */
+    private static int minimum(int d, int t) {
         int m = Integer.MAX_VALUE;
 
-        if (d < m)
+        if (d < m) {
             m = d;
-        if (t < m)
+        }
+        if (t < m) {
             m = t;
+        }
 
         return m;
     }

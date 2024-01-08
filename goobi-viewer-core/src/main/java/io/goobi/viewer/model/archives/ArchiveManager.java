@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -71,7 +72,9 @@ import io.goobi.viewer.solr.SolrTools;
  * @author florian
  *
  */
-public class ArchiveManager {
+public class ArchiveManager implements Serializable {
+
+    private static final long serialVersionUID = -2417652614144759711L;
 
     private static final Logger logger = LogManager.getLogger(ArchiveManager.class);
 
@@ -115,11 +118,11 @@ public class ArchiveManager {
     }
 
     public ArchiveManager(String basexUrl, Map<String, String> archiveNodeTypes, SolrSearchIndex searchIndex) {
-        BasexEADParser eadParser = null;
+        BasexEADParser parser = null;
         if (StringUtils.isNotBlank(basexUrl)) {
             try {
-                eadParser = new BasexEADParser(basexUrl, searchIndex);
-                initArchivesFromBaseXServer(eadParser);
+                parser = new BasexEADParser(basexUrl, searchIndex);
+                initArchivesFromBaseXServer(parser);
                 //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
             } catch (PresentationException | IndexUnreachableException e) {
@@ -130,7 +133,7 @@ public class ArchiveManager {
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
             }
         }
-        this.eadParser = eadParser;
+        this.eadParser = parser;
         this.nodeTypes = loadNodeTypes(archiveNodeTypes);
     }
 
@@ -176,7 +179,8 @@ public class ArchiveManager {
                 cachedDatabases.remove(cachedResource);
             }
         }
-        //cached databases that are included in the basex response are removed from the cachedDatabases list. If it is still not empty at this point, databases were removed
+        // cached databases that are included in the basex response are removed from the cachedDatabases list.
+        // If it is still not empty at this point, databases were removed
         updated = updated || !cachedDatabases.isEmpty();
         return updated;
     }
@@ -207,6 +211,8 @@ public class ArchiveManager {
 
     /**
      * If only one archive database exists and database status is {@link DatabaseState#ARCHIVES_LOADED}, redirect to the matching url.
+     * 
+     * @return Optional<ArchiveResource>
      */
     public Optional<ArchiveResource> getOnlyDatabaseResource() {
         if (this.databaseState == DatabaseState.ARCHIVES_LOADED && this.archives.size() == 1) {
@@ -246,14 +252,12 @@ public class ArchiveManager {
     /**
      * In the list of archive document search hits, find the id of the entry just before the given one
      *
-     * @param entry
-     * @param sortOrder 'asc' to get the preceding entry, 'desc' to get the succeeding one
+     * @param entryId
      * @return the neighboring entry id if it exists
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId)
-            throws PresentationException, IndexUnreachableException {
+    public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId) throws PresentationException, IndexUnreachableException {
         String query = SolrConstants.ARCHIVE_ENTRY_ID + ":*";
         List<StringPair> sortFields = Collections.singletonList(new StringPair(SolrConstants.PI, "asc"));
         List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.ARCHIVE_ENTRY_ID);
@@ -283,8 +287,9 @@ public class ArchiveManager {
     /**
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
      *
+     * @param resource
      * @param identifier Entry identifier
-     * @param List of entries An empty list if the identified node has no ancestors or doesn't exist
+     * @return List of entries An empty list if the identified node has no ancestors or doesn't exist
      */
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(ArchiveResource resource, String identifier) {
         if (StringUtils.isEmpty(identifier)) {
@@ -354,7 +359,7 @@ public class ArchiveManager {
     }
 
     /**
-     *
+     * @param tree
      * @return actual root element of the document, even if it's not in the displayed tree
      */
     private static ArchiveEntry getTrueRoot(ArchiveTree tree) {
@@ -381,7 +386,8 @@ public class ArchiveManager {
                 throw new ArchiveParseException("Error reading database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl(), e);
             } catch (ConfigurationException e) {
                 this.databaseState = DatabaseState.ERROR_INVALID_CONFIGURATION;
-                throw new ArchiveConfigurationException("Error loading database configuration for archive {}: {}", resource.getCombinedName(), e.getMessage());
+                throw new ArchiveConfigurationException("Error loading database configuration for archive {}: {}", resource.getCombinedName(),
+                        e.getMessage());
             }
         }
 
@@ -459,10 +465,9 @@ public class ArchiveManager {
     }
 
     public boolean isInErrorState() {
-        return this.databaseState == DatabaseState.ERROR_INVALID_CONFIGURATION ||
-                this.databaseState == DatabaseState.ERROR_INVALID_FORMAT || 
-                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED || 
-                this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED || 
-                this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
+        return this.databaseState == DatabaseState.ERROR_INVALID_CONFIGURATION
+                || this.databaseState == DatabaseState.ERROR_INVALID_FORMAT
+                || this.databaseState == DatabaseState.ERROR_NOT_CONFIGURED
+                || this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
     }
 }

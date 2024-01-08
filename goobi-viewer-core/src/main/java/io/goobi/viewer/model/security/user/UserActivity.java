@@ -139,8 +139,8 @@ public class UserActivity {
     }
 
     /**
-     * @param displayText
-     * @return
+     * @param text
+     * @return text truncated to MAX_LABEL_LENGTH
      */
     private static String truncate(String text) {
         return truncate(text, MAX_LABEL_LENGTH);

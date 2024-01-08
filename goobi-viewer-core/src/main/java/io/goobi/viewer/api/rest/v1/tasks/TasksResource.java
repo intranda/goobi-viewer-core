@@ -86,7 +86,7 @@ public class TasksResource {
     @Inject
     private MessageQueueManager messageBroker;
     @Context
-    IDAO dao;
+    private IDAO dao;
 
     public TasksResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
         this.request = request;
@@ -167,13 +167,12 @@ public class TasksResource {
 
                 // TODO create useful response, containing the message id
                 return Response.ok(message).build();
-            } else {
-                Task job = new Task(desc, TaskManager.createTask(desc.getType()));
-                logger.debug("Created new task REST API task '{}'", job);
-                DataManager.getInstance().getRestApiJobManager().addTask(job);
-                DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
-                return Response.ok(job).build();
             }
+            Task job = new Task(desc, TaskManager.createTask(desc.getType()));
+            logger.debug("Created new task REST API task '{}'", job);
+            DataManager.getInstance().getRestApiJobManager().addTask(job);
+            DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.getId(), request);
+            return Response.ok(job).build();
         }
 
         throw new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
@@ -189,23 +188,20 @@ public class TasksResource {
         if (id.matches("\\d+")) {
             Long idLong = Long.parseLong(id);
             Task job = DataManager.getInstance().getRestApiJobManager().getTask(idLong);
-            if (job == null || !isAuthorized(job.type, job.sessionId, request)) {
+            if (job == null || !isAuthorized(job.getType(), job.getSessionId(), request)) {
                 throw new ContentNotFoundException("No Job found with id " + id);
             }
             return Response.ok(job).build();
-        } else {
-            ViewerMessage message = this.messageBroker.getMessageById(id)
-                    .orElse(getMessageFromDAO(id).orElse(null));
-            if (message != null && isAuthorized(getTaskType(message.getTaskName()).orElse(null), Optional.empty(), request)) {
-                return Response.ok(message).build();
-            } else {
-                throw new ContentNotFoundException("No Job found with id " + id);
-            }
         }
-
+        ViewerMessage message = this.messageBroker.getMessageById(id)
+                .orElse(getMessageFromDAO(id).orElse(null));
+        if (message != null && isAuthorized(getTaskType(message.getTaskName()).orElse(null), Optional.empty(), request)) {
+            return Response.ok(message).build();
+        }
+        throw new ContentNotFoundException("No Job found with id " + id);
     }
 
-    private Optional<TaskType> getTaskType(String taskName) {
+    private static Optional<TaskType> getTaskType(String taskName) {
         try {
             return Optional.ofNullable(TaskType.valueOf(taskName.toUpperCase()));
         } catch (IllegalArgumentException e) {
@@ -229,7 +225,7 @@ public class TasksResource {
                 .getRestApiJobManager()
                 .getTasks()
                 .stream()
-                .filter(job -> this.isAuthorized(job.type, job.sessionId, request))
+                .filter(job -> this.isAuthorized(job.getType(), job.getSessionId(), request))
                 .collect(Collectors.toList());
     }
 

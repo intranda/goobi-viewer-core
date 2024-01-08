@@ -33,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
-import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
@@ -75,9 +74,9 @@ public class CmsSliderBean implements Serializable {
                 .getDao()
                 .getAllSliders()
                 .stream()
-                .filter(slider -> StringUtils.isBlank(filter) ||
-                        slider.getName().toLowerCase().contains(filter.toLowerCase()) ||
-                        slider.getDescription() != null && slider.getDescription().toLowerCase().contains(filter.toLowerCase()))
+                .filter(slider -> StringUtils.isBlank(filter)
+                        || slider.getName().toLowerCase().contains(filter.toLowerCase())
+                        || slider.getDescription() != null && slider.getDescription().toLowerCase().contains(filter.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -100,5 +99,4 @@ public class CmsSliderBean implements Serializable {
         return DataManager.getInstance().getDao().getPagesUsingSlider(slider);
 
     }
-
 }

@@ -14,7 +14,7 @@
     }
 	form {
 		display: flex;
-		flex-wrap: wrap;
+		flex-wrap: wrap-reverse;
 	}
 	/* DOCUMENT OPTIONS */
 	&__options {
@@ -265,9 +265,16 @@
 	              border-radius: 0;
 				}
 				&::-webkit-slider-runnable-track {
-				}
+				} 
 	        }
 	    }
+		&.-imageControlsFont {
+			font-family: image-controls;
+			font-style: normal;
+			i {
+				font-style: normal;
+			}
+		}
 	}
     /* MODIFICATION */
 	.labeltext {

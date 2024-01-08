@@ -96,7 +96,7 @@ public class ProcessDataResolver {
      * by clients.
      *
      * @param dataRepositoryPath Data repository name or absolute path
-     * @return
+     * @return Absolute path for the given dataRepositoryPath as {@link String}
      * @should return correct path for empty data repository
      * @should return correct path for data repository name
      * @should return correct path for absolute data repository path
@@ -130,10 +130,10 @@ public class ProcessDataResolver {
      *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
      * @return HashMap<dataFolderName,Path>
-     * @should return all requested data folders
      * @param dataFolderNames a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return all requested data folders
      */
     public Map<String, Path> getDataFolders(String pi, String... dataFolderNames) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -177,9 +177,9 @@ public class ProcessDataResolver {
      * @param pi a {@link java.lang.String} object.
      * @param dataFolderName a {@link java.lang.String} object.
      * @param dataRepositoryFolder Absolute path to the data repository folder or just the folder name
+     * @return a {@link java.nio.file.Path} object.
      * @should return correct folder if no data repository used
      * @should return correct folder if data repository used
-     * @return a {@link java.nio.file.Path} object.
      */
     public Path getDataFolder(String pi, String dataFolderName, String dataRepositoryFolder) {
         Path repository;
@@ -192,9 +192,7 @@ public class ProcessDataResolver {
             repository = Paths.get(config.getDataRepositoriesHome(), dataRepositoryFolder);
         }
 
-        Path folder = repository.resolve(dataFolderName).resolve(pi);
-
-        return folder;
+        return repository.resolve(dataFolderName).resolve(pi);
     }
 
     /**
@@ -203,15 +201,15 @@ public class ProcessDataResolver {
      * @param pi Record identifier
      * @param dataFolderName Name of the data folder (e.g. 'alto') - first choice
      * @param altDataFolderName Name of the data folder - second choice
-     * @param fileName Optional name of the content file
+     * @param inFileName Optional name of the content file
      * @return Path to the requested file or folder
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
+    public Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, final String inFileName)
             throws PresentationException, IndexUnreachableException {
         // Make sure fileName is a pure file name and not a path
-        fileName = sanitizeFileName(fileName);
+        String fileName = sanitizeFileName(inFileName);
 
         java.nio.file.Path dataFolderPath = getDataFolder(pi, dataFolderName);
         if (StringUtils.isNotBlank(fileName)) {
@@ -284,12 +282,12 @@ public class ProcessDataResolver {
      * @param fileName a {@link java.lang.String} object.
      * @param dataRepository a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      * @should construct METS file path correctly
      * @should construct LIDO file path correctly
      * @should construct DenkXweb file path correctly
      * @should throw IllegalArgumentException if fileName is null
      * @should throw IllegalArgumentException if format is unknown
-     * @return a {@link java.lang.String} object.
      */
     public String getSourceFilePath(String fileName, String dataRepository, String format) {
         if (StringUtils.isEmpty(fileName)) {
@@ -328,6 +326,8 @@ public class ProcessDataResolver {
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
                 sb.append(config.getIndexedMetsFolder());
                 break;
+            default:
+                break;
         }
         sb.append('/').append(fileName);
 
@@ -342,10 +342,10 @@ public class ProcessDataResolver {
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
-     * @should return correct path
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return correct path
      */
     public String getTextFilePath(String pi, String fileName, String format) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(fileName)) {
@@ -365,6 +365,8 @@ public class ProcessDataResolver {
                 break;
             case SolrConstants.FILENAME_TEI:
                 dataFolderName = config.getTeiFolder();
+                break;
+            default:
                 break;
         }
 
@@ -388,9 +390,7 @@ public class ProcessDataResolver {
         }
 
         String dataRepository = this.searchIndex.findDataRepositoryName(pi);
-        Path filePath = Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
-
-        return filePath;
+        return Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
     }
 
     /**
@@ -400,19 +400,18 @@ public class ProcessDataResolver {
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
      * @param mergeLineBreakWords a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @should load fulltext from alto correctly
-     * @should load fulltext from plain text correctly
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should load fulltext from alto correctly
+     * @should load fulltext from plain text correctly
      */
     public String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords, HttpServletRequest request)
-            throws FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        // logger.trace("loadFulltext: {}/{}", altoFilePath, fulltextFilePath);
+            throws IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        // logger.trace("loadFulltext: {}/{}", altoFilePath, fulltextFilePath); //NOSONAR Sometimes needed for debugging
         TextResourceBuilder builder = new TextResourceBuilder();
         if (fulltextFilePath != null) {
             // Plain full-text file
@@ -427,13 +426,12 @@ public class ProcessDataResolver {
                 try {
                     String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
                     String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
-                    return this.restApiManager.getContentApiManager().map(urls -> {
-                        return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
-                    })
-                            .map(url -> NetTools.callUrlGET(url))
+                    return this.restApiManager.getContentApiManager()
+                            .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build())
+                            .map(NetTools::callUrlGET)
                             .filter(array -> NetTools.isStatusOk(array[0]))
                             .map(array -> array[1])
-                            .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
+                            .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND));
                 } catch (ContentNotFoundException e1) {
                     // fall through to loading alto
                 }
@@ -474,7 +472,7 @@ public class ProcessDataResolver {
         if (altoFilePath == null) {
             return null;
         }
-        // logger.trace("loadAlto: {}", altoFilePath);
+        // logger.trace("loadAlto: {}", altoFilePath); //NOSONAR Sometimes needed for debugging
 
         String filename = FileTools.getFilenameFromPathString(altoFilePath);
         String pi = FileTools.getBottomFolderFromPathString(altoFilePath);
@@ -483,16 +481,12 @@ public class ProcessDataResolver {
             TextResourceBuilder builder = new TextResourceBuilder();
             return builder.getAltoDocument(pi, filename);
         } catch (ContentNotFoundException e) {
-            return new StringPair(this.restApiManager.getContentApiManager().map(urls -> {
-                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build();
-            }).map(url -> {
-                String[] u = NetTools.callUrlGET(url);
-                // logger.trace(u[1]);
-                return u;
-            })
+            return new StringPair(this.restApiManager.getContentApiManager()
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build())
+                    .map(NetTools::callUrlGET)
                     .filter(array -> NetTools.isStatusOk(array[0]))
                     .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException("Resource not found")), null);
+                    .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND)), null);
         }
     }
 
@@ -505,11 +499,10 @@ public class ProcessDataResolver {
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public String loadTei(String pi, String language) throws FileNotFoundException, IOException, ViewerConfigurationException {
+    public String loadTei(String pi, String language) throws IOException, ViewerConfigurationException {
         logger.trace("loadTei: {}/{}", pi, language);
         if (pi == null) {
             return null;

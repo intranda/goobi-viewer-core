@@ -1,0 +1,47 @@
+/* ==============================================================
+   Accessibility additions
+   ==============================================================*/
+.skip-menu {
+	overflow: hidden;
+	&__link {
+		position: absolute;
+		z-index: 2100;
+		background: #5c5e75;
+	    padding: 8px;
+	    border-radius: 12px;
+	    border: 1px solid #fff;
+	    font-weight: 700;
+	    font-size: 14px;
+	    color: white !important;
+		overflow: hidden;
+		left: -3000px;
+		top: 30px;
+		opacity: 0;
+		width: 1px;
+		height: 1px;
+		text-decoration: none;
+		&:hover,
+		&:focus {
+			text-decoration: none;
+		}
+		&:focus-visible {
+			visibility: visible;
+			opacity: 1;
+			width: auto;
+			height: auto;
+			left: 30px;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

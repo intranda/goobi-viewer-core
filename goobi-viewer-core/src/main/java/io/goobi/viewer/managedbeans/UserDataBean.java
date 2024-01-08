@@ -66,7 +66,7 @@ public class UserDataBean implements Serializable {
     private static final long serialVersionUID = -766868003675598285L;
 
     /** Logger for this class. */
-    private static final Logger logger = LogManager.getLogger(UserBean.class);
+    private static final Logger logger = LogManager.getLogger(UserDataBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
@@ -108,15 +108,16 @@ public class UserDataBean implements Serializable {
 
             @SuppressWarnings("unchecked")
             @Override
-            public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+            public List<PersistentAnnotation> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
                     Map<String, String> filters) {
-                if (StringUtils.isBlank(sortField)) {
-                    sortField = "id";
-                    sortOrder = SortOrder.DESCENDING;
+                String useSortField = sortField;
+                SortOrder useSortOrder = sortOrder;
+                if (StringUtils.isBlank(useSortField)) {
+                    useSortField = "id";
+                    useSortOrder = SortOrder.DESCENDING;
                 }
-                List<PersistentAnnotation> ret = lister.getAnnotations(first, pageSize, filters.get("targetPI_body_campaign_dateCreated"), null, null,
-                        Collections.singletonList(userBean.getUser().getId()), null, null, sortField, sortOrder.asBoolean());
-                return ret;
+                return lister.getAnnotations(first, pageSize, filters.get("targetPI_body_campaign_dateCreated"), null, null,
+                        Collections.singletonList(userBean.getUser().getId()), null, null, useSortField, useSortOrder.asBoolean());
             }
 
             @SuppressWarnings("unchecked")
@@ -126,7 +127,7 @@ public class UserDataBean implements Serializable {
                     numCreatedPages = Optional.ofNullable(lister.getAnnotationCount(filters.get("targetPI_body_campaign_dateCreated"), null, null,
                             Collections.singletonList(userBean.getUser().getId()), null, null));
                 }
-                return numCreatedPages.orElse(0l);
+                return numCreatedPages.orElse(0L);
             }
 
             @Override
@@ -142,6 +143,8 @@ public class UserDataBean implements Serializable {
     /**
      * Returns saved searches for the logged in user.
      *
+     * @param user
+     * @param numEntries
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should return searches for correct user
@@ -159,7 +162,7 @@ public class UserDataBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return List of annotations for the logged in user
      * @throws DAOException
      */
     public List<CrowdsourcingAnnotation> getAnnotations() throws DAOException {
@@ -251,7 +254,7 @@ public class UserDataBean implements Serializable {
      *
      * @param user
      * @param numEntries
-     * @return
+     * @return List of comments for the given user
      * @throws DAOException
      * @should return the latest comments
      */

@@ -29,7 +29,7 @@ package io.goobi.viewer.controller.imaging;
 public class UrlParameterSeparator {
 
     private char[] separators = new char[] { '?', '&' };
-    int index = 0;
+    private int index = 0;
 
     /**
      * <p>
@@ -40,7 +40,5 @@ public class UrlParameterSeparator {
      */
     public char getChar() {
         return separators[Math.min(1, index++)];
-
     }
-
 }

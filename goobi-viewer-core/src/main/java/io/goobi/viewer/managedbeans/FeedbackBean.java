@@ -40,7 +40,6 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.faces.validators.EmailValidator;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.email.EMailSender;
@@ -56,15 +55,15 @@ public class FeedbackBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(FeedbackBean.class);
 
     @Inject
-    UserBean userBean;
+    private UserBean userBean;
     @Inject
-    NavigationHelper navigationHelper;
+    private NavigationHelper navigationHelper;
     @Inject
-    CaptchaBean captchaBean;
+    private CaptchaBean captchaBean;
     @Inject
-    EMailSender emailSender;
+    private EMailSender emailSender;
     @Inject
-    FacesContext facesContext;
+    private FacesContext facesContext;
 
     private final Configuration config;
 
@@ -117,6 +116,7 @@ public class FeedbackBean implements Serializable {
      * submitFeedbackAction.
      * </p>
      *
+     * @param setCurrentUrl
      * @return a {@link java.lang.String} object.
      */
     public String submitFeedbackAction(boolean setCurrentUrl) {
@@ -225,4 +225,59 @@ public class FeedbackBean implements Serializable {
         return this.captchaBean;
     }
 
+    /**
+     * @param captchaBean the captchaBean to set
+     */
+    void setCaptchaBean(CaptchaBean captchaBean) {
+        this.captchaBean = captchaBean;
+    }
+
+    /**
+     * @return the userBean
+     */
+    UserBean getUserBean() {
+        return userBean;
+    }
+
+    /**
+     * @param userBean the userBean to set
+     */
+    void setUserBean(UserBean userBean) {
+        this.userBean = userBean;
+    }
+
+    /**
+     * @return the navigationHelper
+     */
+    NavigationHelper getNavigationHelper() {
+        return navigationHelper;
+    }
+
+    /**
+     * @param navigationHelper the navigationHelper to set
+     */
+    void setNavigationHelper(NavigationHelper navigationHelper) {
+        this.navigationHelper = navigationHelper;
+    }
+
+    /**
+     * @return the emailSender
+     */
+    EMailSender getEmailSender() {
+        return emailSender;
+    }
+
+    /**
+     * @param emailSender the emailSender to set
+     */
+    void setEmailSender(EMailSender emailSender) {
+        this.emailSender = emailSender;
+    }
+
+    /**
+     * @param facesContext the facesContext to set
+     */
+    void setFacesContext(FacesContext facesContext) {
+        this.facesContext = facesContext;
+    }
 }

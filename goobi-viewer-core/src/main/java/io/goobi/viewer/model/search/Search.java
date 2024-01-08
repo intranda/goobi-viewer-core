@@ -1284,7 +1284,7 @@ public class Search implements Serializable {
      * @return the hitsCount
      */
     public long getHitsCount() {
-        int ret = 0;
+        long ret = 0;
         if (!resultGroups.isEmpty()) {
             for (SearchResultGroup resultGroup : resultGroups) {
                 ret += resultGroup.getHitsCount();

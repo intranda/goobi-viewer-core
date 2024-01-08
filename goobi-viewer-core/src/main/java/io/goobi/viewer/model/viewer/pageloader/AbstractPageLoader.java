@@ -76,7 +76,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * Creates and returns the appropriate loader instance for the given <code>StructElement</code>.
      *
      * @param topStructElement Top level <code>StructElement</code> of the record
-     * @return
+     * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException

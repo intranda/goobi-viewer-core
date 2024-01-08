@@ -33,7 +33,7 @@ public class LicenseDescription {
     private String label;
 
     /**
-     *
+     * @param url
      */
     public LicenseDescription(String url) {
         this.url = url;

@@ -220,11 +220,12 @@ public class ApiUrls extends AbstractApiUrlManager {
         this(DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/api/v1", API));
     }
 
-    public ApiUrls(String apiUrl) {
+    public ApiUrls(final String apiUrl) {
         if (StringUtils.isNotBlank(apiUrl) && apiUrl.endsWith("/")) {
-            apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
+            this.apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
+        } else {
+            this.apiUrl = apiUrl;
         }
-        this.apiUrl = apiUrl;
     }
 
     @Override

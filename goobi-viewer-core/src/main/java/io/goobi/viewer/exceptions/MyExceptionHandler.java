@@ -160,6 +160,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } else if (t instanceof SocketException || isCausedByExceptionType(t, SocketException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(SocketException.class.getSimpleName()))) {
                     //do nothing
+                    logger.trace("Caused by SocketException");
                 } else if (t instanceof DownloadException || isCausedByExceptionType(t, DownloadException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(DownloadException.class.getSimpleName()))) {
                     logger.error(getRootCause(t).getMessage());
@@ -189,11 +190,6 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     }
 
     /**
-     * @param i
-     * @param fc
-     * @param requestMap
-     * @param nav
-     * @param flash
      * @param errorDetails
      * @param errorType
      */
@@ -237,7 +233,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     /**
      * @param t
-     * @return
+     * @return String
      */
     public String createRecodLimitExceededMessage(Throwable t) {
         String data = t.getMessage()
@@ -273,7 +269,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     /**
      * @param fc
-     * @return
+     * @return String
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String getSessionDetails(FacesContext fc) {
@@ -285,10 +281,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         StringBuilder details = new StringBuilder()
                 .append("Session ID: ")
                 .append(session.getId())
-                .append("</br>")
+                .append(StringConstants.HTML_BR)
                 .append("Session created: ")
                 .append(DateTools.getLocalDateTimeFromMillis(session.getCreationTime(), false))
-                .append("</br>")
+                .append(StringConstants.HTML_BR)
                 .append("Session last accessed: ")
                 .append(DateTools.getLocalDateTimeFromMillis(session.getLastAccessedTime(), false));
 
@@ -297,9 +293,9 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
         Integer numberOfTotalViews =
                 logicalViews.map(map -> map.values().stream().mapToInt(value -> value.keySet().size()).sum()).orElse(0);
-        details.append("</br>");
+        details.append(StringConstants.HTML_BR);
         details.append("Logical Views stored in session: ").append(numberOfLogicalViews.toString());
-        details.append("</br>");
+        details.append(StringConstants.HTML_BR);
         details.append("Total views stored in session: ").append(numberOfTotalViews.toString());
 
         return details.toString();
@@ -309,6 +305,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      * Checks whether the given Throwable was at some point caused by an IndexUnreachableException.
      *
      * @param t
+     * @param className
      * @return true if the root cause of the exception is className
      */
     @SuppressWarnings("rawtypes")

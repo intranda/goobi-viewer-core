@@ -21,12 +21,10 @@
  */
 package io.goobi.viewer.api.rest.v1.crowdsourcing;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
@@ -38,8 +36,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -80,12 +78,21 @@ public class CampaignItemLogResource {
      * <p>
      * Constructor for CampaignItemResource.
      * </p>
+     * 
+     * @param servletRequest
+     * @param campaignId
      */
     public CampaignItemLogResource(@Context HttpServletRequest servletRequest, @PathParam("campaignId") Long campaignId) {
         this.campaignId = campaignId;
         servletRequest.setAttribute(CrowdsourcingCampaignFilter.CAMPAIGN_ID_REQUEST_ATTRIBUTE, campaignId);
     }
 
+    /**
+     * 
+     * @param servletRequest
+     * @param urls
+     * @param campaignId
+     */
     public CampaignItemLogResource(HttpServletRequest servletRequest, AbstractApiUrlManager urls, @PathParam("campaignId") Long campaignId) {
         this.urls = urls;
         this.campaignId = campaignId;
@@ -97,17 +104,15 @@ public class CampaignItemLogResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public List<LogMessage> getLogForManifest(@PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
-            throws URISyntaxException, DAOException, ContentNotFoundException {
+            throws DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
-            List<LogMessage> messages =
-                    campaign.getLogMessages()
-                            .stream()
-                            .filter(m -> m.getPi().equals(pi))
-                            .map(clm -> new LogMessage(clm, servletRequest))
-                            .sorted()
-                            .collect(Collectors.toList());
-            return messages;
+            return campaign.getLogMessages()
+                    .stream()
+                    .filter(m -> m.getPi().equals(pi))
+                    .map(clm -> new LogMessage(clm, servletRequest))
+                    .sorted()
+                    .collect(Collectors.toList());
         }
         throw new ContentNotFoundException("No campaign found with id " + campaignId);
     }
@@ -117,23 +122,21 @@ public class CampaignItemLogResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public LogMessage addMessage(LogMessage message, @PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
-            throws URISyntaxException, DAOException, ContentNotFoundException {
+            throws DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
             CampaignLogMessage campaignMessage = campaign.addLogMessage(message, pi);
             DataManager.getInstance().getDao().updateCampaign(campaign);
             return new LogMessage(campaignMessage, servletRequest);
-        } else {
-            throw new ContentNotFoundException("No campaign found with id " + campaignId);
         }
+        throw new ContentNotFoundException("No campaign found with id " + campaignId);
     }
 
     @DELETE
     @Path("/{pi}/log/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void deleteMessage(@PathParam("pi") String pi, @PathParam("id") Long messageId)
-            throws URISyntaxException, DAOException, ContentNotFoundException {
+    public void deleteMessage(@PathParam("pi") String pi, @PathParam("id") Long messageId) throws DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
             campaign.deleteLogMessage(messageId);
@@ -148,7 +151,7 @@ public class CampaignItemLogResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public LogMessage getMessage(@PathParam("pi") String pi, @PathParam("id") Long messageId, @Context HttpServletRequest servletRequest)
-            throws URISyntaxException, DAOException, ContentNotFoundException {
+            throws DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
             Optional<CampaignLogMessage> message =

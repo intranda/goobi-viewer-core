@@ -27,9 +27,8 @@ public interface MessageHandler<V> {
      * call this method to execute the ticket
      * 
      * @param ticket
-     * @return
+     * @return V
      */
-
     public V call(ViewerMessage ticket);
 
     public String getMessageHandlerName();

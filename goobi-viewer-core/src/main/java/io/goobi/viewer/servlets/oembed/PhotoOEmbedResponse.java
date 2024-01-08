@@ -35,28 +35,29 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     /**
      * Constructor.
      *
-     * @param record a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
+     * @param rec a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public PhotoOEmbedResponse(OEmbedRecord record) throws ViewerConfigurationException {
+    public PhotoOEmbedResponse(OEmbedRecord rec) throws ViewerConfigurationException {
         this.type = "photo";
         this.width = 300;
         this.height = 450;
-        this.title = record.getStructElement().getLabel();
-        generateUrl(record, width);
+        this.title = rec.getStructElement().getLabel();
+        generateUrl(rec, width);
     }
 
     /**
      *
-     * @param se
+     * @param rec
+     * @param size
      * @throws ViewerConfigurationException
      */
-    private void generateUrl(OEmbedRecord record, int size) throws ViewerConfigurationException {
-        if (record == null) {
+    private void generateUrl(OEmbedRecord rec, int size) {
+        if (rec == null) {
             throw new IllegalArgumentException("record may not be null");
         }
 
-        url = record.getPhysicalElement().getImageUrl(size);
+        url = rec.getPhysicalElement().getImageUrl(size);
     }
 
     /**
@@ -80,5 +81,4 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     public void setUrl(String url) {
         this.url = url;
     }
-
 }

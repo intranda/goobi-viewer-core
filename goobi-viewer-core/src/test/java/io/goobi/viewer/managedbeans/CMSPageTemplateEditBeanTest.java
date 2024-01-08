@@ -51,36 +51,36 @@ public class CMSPageTemplateEditBeanTest {
     private static final String DESCRIPTION_COMPONENT = "description_component";
     private static final String NAME_COMPONENT = "name_component";
     private static final Long PAGE_TEMPLATE_ID = 7l;
-    
+
     CMSPageTemplateEditBean bean;
-    
+
     @Before
     public void setup() throws DAOException {
-        
+
         CMSSidebarWidgetsBean widgetsBean = Mockito.mock(CMSSidebarWidgetsBean.class);
         Mockito.when(widgetsBean.getAllWidgets()).thenReturn(Collections.emptyList());
-                
+
         CMSPageTemplate selectedTemplate = new CMSPageTemplate();
         selectedTemplate.setId(PAGE_TEMPLATE_ID);
         IDAO dao = Mockito.mock(IDAO.class);
         Mockito.when(dao.getCMSPageTemplate(PAGE_TEMPLATE_ID)).thenReturn(selectedTemplate);
         Mockito.when(dao.removeCMSPageTemplate(Mockito.any())).thenReturn(true);
-        
+
         bean = new CMSPageTemplateEditBean();
-        bean.widgetsBean = widgetsBean;
-        bean.userBean = mockUserBean(true);
-        bean.dao = dao;
+        bean.setWidgetsBean(widgetsBean);
+        bean.setUserBean(mockUserBean(true));
+        bean.setDao(dao);
     }
 
-    private FacesContext mockFacesContext(Map<String, String> requestParameters) {
+    private static FacesContext mockFacesContext(Map<String, String> requestParameters) {
         FacesContext facesContext = Mockito.mock(FacesContext.class);
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
         Mockito.when(externalContext.getRequestParameterMap()).thenReturn(requestParameters);
         return facesContext;
     }
-    
-    private UserBean mockUserBean(boolean asCmsAdmin) {
+
+    private static UserBean mockUserBean(boolean asCmsAdmin) {
         UserBean userBean = Mockito.mock(UserBean.class);
         User user = Mockito.mock(User.class);
         Mockito.when(user.isCmsAdmin()).thenReturn(asCmsAdmin);
@@ -90,20 +90,20 @@ public class CMSPageTemplateEditBeanTest {
 
         return userBean;
     }
-    
 
-    private CMSTemplateManager createTemplateManager() {
+    private static CMSTemplateManager createTemplateManager() {
         CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);
-        CMSComponent component = new CMSComponent(null, NAME_COMPONENT, DESCRIPTION_COMPONENT, null, FILENAME_COMPONENT, CMSComponentScope.PAGEVIEW, Collections.emptyMap(), null);
+        CMSComponent component = new CMSComponent(null, NAME_COMPONENT, DESCRIPTION_COMPONENT, null, FILENAME_COMPONENT, CMSComponentScope.PAGEVIEW,
+                Collections.emptyMap(), null);
         Mockito.when(templateManager.getComponent(FILENAME_COMPONENT)).thenReturn(Optional.of(component));
         return templateManager;
     }
-    
+
     @Test
     public void testEditTemplate() {
-        bean.facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
-        bean.templateManager = createTemplateManager();
-        
+        bean.setFacesContext(mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString())));
+        bean.setTemplateManager(createTemplateManager());
+
         bean.setup();
         assertEquals(PAGE_TEMPLATE_ID, bean.getSelectedTemplate().getId());
         assertTrue(bean.isEditMode());
@@ -111,39 +111,39 @@ public class CMSPageTemplateEditBeanTest {
 
     @Test
     public void testCreateTemplate() {
-        bean.facesContext = mockFacesContext(Map.of());
-        bean.templateManager = createTemplateManager();
-        
+        bean.setFacesContext(mockFacesContext(Map.of()));
+        bean.setTemplateManager(createTemplateManager());
+
         bean.setup();
         assertNull(bean.getSelectedTemplate().getId());
         assertFalse(bean.isEditMode());
     }
-    
+
     @Test
     public void testSaveTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
-        bean.facesContext = facesContext;
+        bean.setFacesContext(facesContext);
         bean.setup();
         bean.saveSelectedTemplate();
-        Mockito.verify(bean.dao, Mockito.times(1)).updateCMSPageTemplate(bean.getSelectedTemplate());
+        Mockito.verify(bean.getDao(), Mockito.times(1)).updateCMSPageTemplate(bean.getSelectedTemplate());
     }
-    
+
     @Test
     public void testDeleteTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
-        bean.facesContext = facesContext;
+        bean.setFacesContext(facesContext);
         bean.setup();
         CMSPageTemplate template = bean.getSelectedTemplate();
         bean.deleteSelectedTemplate();
-        Mockito.verify(bean.dao, Mockito.times(1)).removeCMSPageTemplate(template);
+        Mockito.verify(bean.getDao(), Mockito.times(1)).removeCMSPageTemplate(template);
         assertNull(bean.getSelectedTemplate());
     }
-    
+
     @Test
     public void testAddComponent() {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
-        bean.facesContext = facesContext;
-        bean.templateManager = createTemplateManager();
+        bean.setFacesContext(facesContext);
+        bean.setTemplateManager(createTemplateManager());
         bean.setup();
         bean.setSelectedComponent(FILENAME_COMPONENT);
         assertTrue(bean.getSelectedTemplate().getComponents().isEmpty());

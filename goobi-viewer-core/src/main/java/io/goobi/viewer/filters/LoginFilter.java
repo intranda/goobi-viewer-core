@@ -69,17 +69,10 @@ public class LoginFilter implements Filter {
                 SearchHelper.updateFilterQuerySuffix(httpRequest, IPrivilegeHolder.PRIV_LIST);
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                //                httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                //                return;
             } catch (PresentationException e) {
                 logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-                //                httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                //                return;
             } catch (DAOException e) {
                 logger.debug("DAOException thrown here: {}", e.getMessage());
-                //                httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                //                httpResponse.sendRedirect("/viewer/error/");
-                //                return;
             }
         }
         PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
@@ -109,11 +102,7 @@ public class LoginFilter implements Filter {
                     return;
                 }
                 logger.debug("User '{}' not superuser, redirecting to login...", user.getDisplayName());
-            } catch (PresentationException e) {
-                logger.error(e.getMessage(), e);
-            } catch (IndexUnreachableException e) {
-                logger.error(e.getMessage(), e);
-            } catch (DAOException e) {
+            } catch (DAOException | IndexUnreachableException | PresentationException e) {
                 logger.error(e.getMessage(), e);
             }
             ((HttpServletResponse) response).sendRedirect(
@@ -141,44 +130,46 @@ public class LoginFilter implements Filter {
      * @should return false for user account activation uris
      * @should return false for user password reset uris
      */
-    public static boolean isRestrictedUri(String uri) {
+    public static boolean isRestrictedUri(final String uri) {
         if (uri == null) {
             return false;
         }
 
-        if (uri.matches("/?viewer/.*")) {
-            uri = uri.replaceAll("/?viewer/", "/");
+        String localUri = uri;
+        if (localUri.matches("/?viewer/.*")) {
+            localUri = localUri.replaceAll("/?viewer/", "/");
         }
-        logger.trace("uri: {}", uri);
-        switch (uri.trim()) {
+        logger.trace("uri: {}", localUri);
+        switch (localUri.trim()) {
             case "/myactivity/":
                 return true;
             default:
                 // Allow activation URLs
-                if (uri.startsWith("/user/activate/")) {
+                if (localUri.startsWith("/user/activate/")) {
                     return false;
                 }
                 // Password reset URLs
-                if (uri.startsWith("/user/resetpw/")) {
+                if (localUri.startsWith("/user/resetpw/")) {
                     return false;
                 }
                 // any URIs starting with /user/ are supposed to be only accessible to logged in users
-                if (uri.startsWith("/user/")) {
+                if (localUri.startsWith("/user/")) {
                     return true;
                 }
 
                 //any URIs leading to campaign annotation/review
-                if (uri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) { //NOSONAR no catastrophic backtracking detected
+                if (localUri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) { //NOSONAR no catastrophic backtracking detected
                     return true;
                 }
 
                 //make an exception for session bookmarks search list or share key
-                if (uri.contains("bookmarks/search/") || uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/")
-                        || uri.contains("bookmarks/send/") || uri.contains("bookmarks/search/session")) {
+                if (localUri.contains("bookmarks/search/") || localUri.contains("bookmarks/session/") || localUri.contains("bookmarks/key/")
+                        || localUri.contains("bookmarks/send/") || localUri.contains("bookmarks/search/session")) {
                     return false;
                 }
                 // Regular URLs
-                if ((uri.contains("/crowd") && !(uri.contains("about")) || uri.contains("/admin") || uri.contains("/userBackend"))) {
+                if ((localUri.contains("/crowd") && !(localUri.contains("about")) || localUri.contains("/admin")
+                        || localUri.contains("/userBackend"))) {
                     return true;
                 }
         }

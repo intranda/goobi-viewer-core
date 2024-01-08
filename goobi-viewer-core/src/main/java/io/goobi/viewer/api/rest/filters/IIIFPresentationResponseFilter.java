@@ -54,7 +54,7 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     public static final String CONTENT_TYPE_IIIF3 = "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"";
 
     /* (non-Javadoc)
-     * @see javax.ws.rs.container.ContainerResponseFilter#filter(javax.ws.rs.container.ContainerRequestContext, javax.ws.rs.container.ContainerResponseContext)
+     * @see javax.ws.rs.container.ContainerResponseFilter#filter(javax.ws.rs.container.ContainerRequestContext, ContainerResponseContext)
      */
     /** {@inheritDoc} */
     @Override

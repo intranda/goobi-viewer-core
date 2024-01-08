@@ -53,7 +53,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 /**
  * Utility class for Solr indexer interactions (indexing, deleting, etc.).
  */
-public class IndexerTools {
+public final class IndexerTools {
 
     private static final Logger logger = LogManager.getLogger(IndexerTools.class);
 
@@ -131,10 +131,11 @@ public class IndexerTools {
      * performance is of importance, use <code>triggerReIndexRecord</code> instead.
      *
      * @param pi a {@link java.lang.String} object.
-     * @should write overview page data
-     * @return a boolean.
+     * @param augmenters
+     * @return true if export for reindexing successful; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
+     * @should write overview page data
      */
     public static synchronized boolean reIndexRecord(String pi, Collection<? extends IndexAugmenter> augmenters)
             throws DAOException, RecordNotFoundException {
@@ -234,7 +235,9 @@ public class IndexerTools {
     }
 
     /**
-     * @return
+     * @param pi
+     * @param page
+     * @return Collection<? extends IndexAugmenter>
      * @throws DAOException
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -264,7 +267,8 @@ public class IndexerTools {
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
-     * @return a boolean.
+     * @param augmenters
+     * @return true if export for reindexing successful; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -363,7 +367,7 @@ public class IndexerTools {
      * 
      * @param page
      * @param augmenters
-     * @return
+     * @return true if export for reindexing successful; false otherwise
      */
     public static synchronized boolean reIndexCMSPage(CMSPage page, Collection<? extends IndexAugmenter> augmenters) {
         if (page == null) {
@@ -390,7 +394,7 @@ public class IndexerTools {
      * @param baseName Main file initial base name
      * @param extension Main file extension
      * @param otherFiles Optional additional files/folders to check for existence
-     * @return
+     * @return Available file naming scheme
      * @should return original baseName if no files exist
      * @should return alternative naming scheme if initial name already exists
      */
