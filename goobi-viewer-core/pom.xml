@@ -928,7 +928,7 @@
                                 <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-nop</ignoredUnusedDeclaredDependency>
 
                                 <!-- angus-mail is the implementation of the jakarta.mail specification and used for sending emails -->
-                                <ignoredUnusedDeclaredDependency>org.eclipse.angus:angus-mail</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.eclipse.angus:jakarta.mail</ignoredUnusedDeclaredDependency>
 
 
 								<!-- activemq libs -->
