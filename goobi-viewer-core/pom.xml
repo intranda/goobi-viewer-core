@@ -136,6 +136,7 @@
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20231013</json.version>
 		<jsoup.version>1.17.2</jsoup.version>
+		<junit4.version>4.13.2</junit4.version>
 		<junit.version>5.9.1</junit.version>
 		<mariadb-java-client.version>3.3.2</mariadb-java-client.version>
 		<mockito.version>5.8.0</mockito.version>
@@ -540,6 +541,13 @@
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
 			<version>${jaxb-runtime.version}</version>
+		</dependency>
+		<!-- JUnit4 needed for httpunit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit4.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
