@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.model.search;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,8 +33,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -81,7 +81,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR"));
         se.getMetadataFields().put("MD_YEARPUBLISH", Collections.singletonList("ca. 1984"));
-        Assert.assertEquals(2, se.getMetadataFields().size());
+        Assertions.assertEquals(2, se.getMetadataFields().size());
 
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
@@ -92,23 +92,23 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
                 factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
                         String.valueOf(se.getLuceneId()), be.getLabel());
 
-        Assert.assertEquals(2, result.size());
+        Assertions.assertEquals(2, result.size());
         if (!result.isEmpty()) {
             for (MetadataWrapper mw : result) {
                 be.getMetadataList().add(mw.getMetadata());
             }
         }
 
-        Assert.assertNotNull(be.getMetadataList("MD_TITLE"));
+        Assertions.assertNotNull(be.getMetadataList("MD_TITLE"));
         List<Metadata> mdList1 = be.getMetadataList("MD_TITLE");
-        Assert.assertFalse(mdList1.get(0).getValues().isEmpty());
-        Assert.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>",
+        Assertions.assertFalse(mdList1.get(0).getValues().isEmpty());
+        Assertions.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>",
                 mdList1.get(0).getValues().get(0).getComboValueShort(0));
-        Assert.assertNotNull(be.getMetadataList("MD_YEARPUBLISH"));
+        Assertions.assertNotNull(be.getMetadataList("MD_YEARPUBLISH"));
 
         List<Metadata> mdList2 = be.getMetadataList("MD_YEARPUBLISH");
-        Assert.assertFalse(mdList2.get(0).getValues().isEmpty());
-        Assert.assertEquals("ca. <span class=\"search-list--highlight\">1984</span>", mdList2.get(0).getValues().get(0).getComboValueShort(0));
+        Assertions.assertFalse(mdList2.get(0).getValues().isEmpty());
+        Assertions.assertEquals("ca. <span class=\"search-list--highlight\">1984</span>", mdList2.get(0).getValues().get(0).getComboValueShort(0));
     }
 
     /**
@@ -124,14 +124,14 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
-        Assert.assertEquals(1, se.getMetadataFields().size());
+        Assertions.assertEquals(1, se.getMetadataFields().size());
 
         List<MetadataWrapper> result =
                 factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
                         String.valueOf(se.getLuceneId()), be.getLabel());
 
-        Assert.assertTrue(result.isEmpty());
-        Assert.assertTrue(be.getMetadataList("MD_TITLE").isEmpty());
+        Assertions.assertTrue(result.isEmpty());
+        Assertions.assertTrue(be.getMetadataList("MD_TITLE").isEmpty());
 
     }
 
@@ -146,7 +146,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
-        Assert.assertEquals(1, se.getMetadataFields().size());
+        Assertions.assertEquals(1, se.getMetadataFields().size());
 
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
@@ -161,7 +161,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
             }
         }
 
-        Assert.assertEquals(1, be.getMetadataList("MD_TITLE").size());
+        Assertions.assertEquals(1, be.getMetadataList("MD_TITLE").size());
     }
 
     /**
@@ -175,7 +175,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_IGNOREME", Collections.singletonList("foo ignores bar"));
-        Assert.assertEquals(1, se.getMetadataFields().size());
+        Assertions.assertEquals(1, se.getMetadataFields().size());
 
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
@@ -191,7 +191,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
             }
         }
 
-        Assert.assertEquals(0, be.getMetadataList("MD_IGNOREME").size());
+        Assertions.assertEquals(0, be.getMetadataList("MD_IGNOREME").size());
     }
 
     /**
@@ -205,7 +205,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
         StructElement se = new StructElement();
         se.getMetadataFields().put(SolrConstants.DC, Collections.singletonList("admin"));
-        Assert.assertEquals(1, se.getMetadataFields().size());
+        Assertions.assertEquals(1, se.getMetadataFields().size());
 
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
@@ -222,7 +222,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
             }
         }
 
-        Assert.assertEquals(1, be.getMetadataList(SolrConstants.DC).size());
+        Assertions.assertEquals(1, be.getMetadataList(SolrConstants.DC).size());
     }
 
     /**
@@ -237,7 +237,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_COUNT_EN", Arrays.asList(new String[] { "one", "two", "three" }));
         se.getMetadataFields().put("MD_COUNT_JP", Arrays.asList(new String[] { "ichi", "ni", "san" }));
-        Assert.assertEquals(2, se.getMetadataFields().size());
+        Assertions.assertEquals(2, se.getMetadataFields().size());
 
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "ichi", "ni" })));
@@ -255,14 +255,14 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         }
 
         // Via explicit term field
-        Assert.assertEquals(1, be.getMetadataList("MD_COUNT_EN").size());
-        Assert.assertEquals(
+        Assertions.assertEquals(1, be.getMetadataList("MD_COUNT_EN").size());
+        Assertions.assertEquals(
                 "<span class=\"search-list--highlight\">one</span>, <span class=\"search-list--highlight\">three</span>",
                 be.getMetadataList("MD_COUNT_EN").get(0).getValues().get(0).getComboValueShort(0));
 
         // Via DEFAULT
-        Assert.assertEquals(1, be.getMetadataList("MD_COUNT_JP").size());
-        Assert.assertEquals("<span class=\"search-list--highlight\">ichi</span>, <span class=\"search-list--highlight\">ni</span>",
+        Assertions.assertEquals(1, be.getMetadataList("MD_COUNT_JP").size());
+        Assertions.assertEquals("<span class=\"search-list--highlight\">ichi</span>, <span class=\"search-list--highlight\">ni</span>",
                 be.getMetadataList("MD_COUNT_JP").get(0).getValues().get(0).getComboValueShort(0));
     }
 
@@ -281,7 +281,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_DESCRIPTION", Collections.singletonList(StringConstants.LOREM_IPSUM));
         se.getMetadataFields().put("MD_SOMETEXT", Collections.singletonList(StringConstants.LOREM_IPSUM.replace("labore", "foo")));
-        Assert.assertEquals(2, se.getMetadataFields().size());
+        Assertions.assertEquals(2, se.getMetadataFields().size());
 
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, Collections.singleton("labore"));
@@ -299,10 +299,10 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         }
 
         // Via DEFAULT
-        Assert.assertEquals(1, be.getMetadataList("MD_DESCRIPTION").size());
-        Assert.assertTrue(be.getMetadataList("MD_DESCRIPTION").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
+        Assertions.assertEquals(1, be.getMetadataList("MD_DESCRIPTION").size());
+        Assertions.assertTrue(be.getMetadataList("MD_DESCRIPTION").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
-        Assert.assertTrue(be.getMetadataList("MD_DESCRIPTION")
+        Assertions.assertTrue(be.getMetadataList("MD_DESCRIPTION")
                 .get(0)
                 .getValues()
                 .get(0)
@@ -310,10 +310,10 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
                 .contains("ut <span class=\"search-list--highlight\">labore</span> et"));
 
         // Via explicit term field
-        Assert.assertEquals(1, be.getMetadataList("MD_SOMETEXT").size());
-        Assert.assertTrue(be.getMetadataList("MD_SOMETEXT").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
+        Assertions.assertEquals(1, be.getMetadataList("MD_SOMETEXT").size());
+        Assertions.assertTrue(be.getMetadataList("MD_SOMETEXT").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
-        Assert.assertTrue(be.getMetadataList("MD_SOMETEXT")
+        Assertions.assertTrue(be.getMetadataList("MD_SOMETEXT")
                 .get(0)
                 .getValues()
                 .get(0)
@@ -332,7 +332,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_IDENTIFIER", Collections.singletonList("id10T"));
-        Assert.assertEquals(1, se.getMetadataFields().size());
+        Assertions.assertEquals(1, se.getMetadataFields().size());
 
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "id10T", })));
@@ -349,7 +349,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
             }
         }
 
-        Assert.assertEquals(1, be.getMetadataList("MD_IDENTIFIER").size());
-        Assert.assertEquals("id10T", be.getMetadataList("MD_IDENTIFIER").get(0).getValues().get(0).getComboValueShort(0));
+        Assertions.assertEquals(1, be.getMetadataList("MD_IDENTIFIER").size());
+        Assertions.assertEquals("id10T", be.getMetadataList("MD_IDENTIFIER").get(0).getValues().get(0).getComboValueShort(0));
     }
 }

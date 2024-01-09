@@ -22,12 +22,12 @@
 package io.goobi.viewer.api.rest.v1.authentication;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 
@@ -35,17 +35,16 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  * @author florian
  *
  */
-public class UserAvatarResourceTest extends AbstractRestApiTest {
+class UserAvatarResourceTest extends AbstractRestApiTest {
 
     @Test
-    public void testGetMissingAvatar() {
+    void testGetMissingAvatar() {
         String url = urls.path(USERS_USER_AVATAR_IMAGE).params(1l).build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
+            assertEquals(404, response.getStatus(), "Should return status 404");
         }
     }
-
 }

@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.servlet.ServletContext;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
@@ -44,7 +44,7 @@ public class FileResourceManagerTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         ServletContext servletContext = Mockito.mock(ServletContext.class);
         Mockito.when(servletContext.getRealPath(Mockito.matches("^resources\\/themes.*"))).thenAnswer(invocation -> {
@@ -59,7 +59,7 @@ public class FileResourceManagerTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 

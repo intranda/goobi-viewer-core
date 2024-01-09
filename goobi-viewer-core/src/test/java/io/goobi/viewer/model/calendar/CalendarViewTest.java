@@ -23,8 +23,8 @@ package io.goobi.viewer.model.calendar;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 
@@ -38,6 +38,6 @@ public class CalendarViewTest extends AbstractSolrEnabledTest {
     public void getVolumeYears_shouldOnlyReturnVolumeYearsThatHaveYEARMONTHDAYField() throws Exception {
         CalendarView cv = new CalendarView("168714434_1805", "168714434", null);
         List<String> years = cv.getVolumeYears();
-        Assert.assertEquals(9, years.size());
+        Assertions.assertEquals(9, years.size());
     }
 }

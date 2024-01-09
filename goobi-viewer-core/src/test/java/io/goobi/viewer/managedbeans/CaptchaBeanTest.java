@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.SecurityQuestion;
 
@@ -35,13 +35,13 @@ public class CaptchaBeanTest {
     @Test
     public void resetSecurityQuestion_shouldNotResetSecurityQuestIfNotYetAnswered() throws Exception {
         CaptchaBean bean = new CaptchaBean();
-        Assert.assertTrue(bean.resetSecurityQuestion());
+        Assertions.assertTrue(bean.resetSecurityQuestion());
         SecurityQuestion sq = bean.getSecurityQuestion();
-        Assert.assertNotNull(sq);
-        Assert.assertFalse(sq.isAnswered());
+        Assertions.assertNotNull(sq);
+        Assertions.assertFalse(sq.isAnswered());
         for (int i = 0; i < 10; ++i) {
-            Assert.assertTrue(bean.resetSecurityQuestion());
+            Assertions.assertTrue(bean.resetSecurityQuestion());
         }
-        Assert.assertEquals(sq, bean.getSecurityQuestion());
+        Assertions.assertEquals(sq, bean.getSecurityQuestion());
     }
 }

@@ -23,8 +23,8 @@ package io.goobi.viewer.model.security.user;
 
 import java.time.LocalDateTime;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.License;
 
@@ -37,26 +37,26 @@ public class LicenseTest {
     @Test
     public void isValid_shouldReturnCorrectValue() throws Exception {
         License lic = new License();
-        Assert.assertTrue(lic.isValid());
+        Assertions.assertTrue(lic.isValid());
         {
             // Start date before now: true
             lic.setStart(LocalDateTime.of(1970, 1, 1, 0, 0));
-            Assert.assertTrue(lic.isValid());
+            Assertions.assertTrue(lic.isValid());
         }
         {
             // End date before now: false
             lic.setEnd(LocalDateTime.of(2000, 1, 1, 0, 0));
-            Assert.assertFalse(lic.isValid());
+            Assertions.assertFalse(lic.isValid());
         }
         {
             // End date after now: true
             lic.setEnd(LocalDateTime.of(2270, 1, 1, 0, 0));
-            Assert.assertTrue(lic.isValid());
+            Assertions.assertTrue(lic.isValid());
         }
         {
             // Start date after now: false
             lic.setStart(LocalDateTime.of(2269, 1, 1, 0, 0));
-            Assert.assertFalse(lic.isValid());
+            Assertions.assertFalse(lic.isValid());
         }
     }
 }

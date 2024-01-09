@@ -21,11 +21,11 @@
  */
 package io.goobi.viewer.model.bookmark;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -43,7 +43,7 @@ public class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
     private final String LOGID = "LOG_0003";
     private final Integer PAGE = 10;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
@@ -51,7 +51,7 @@ public class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -59,7 +59,7 @@ public class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -71,13 +71,13 @@ public class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
         Bookmark bookmarkPage = new Bookmark(PI, null, PAGE);
 
         MetadataElement mdWork = bookmarkWork.getMetadataElement();
-        Assert.assertNotNull(mdWork);
+        Assertions.assertNotNull(mdWork);
 
         MetadataElement mdChapter = bookmarkChapter.getMetadataElement();
-        Assert.assertNotNull(mdChapter);
+        Assertions.assertNotNull(mdChapter);
 
         MetadataElement mdPage = bookmarkPage.getMetadataElement();
-        Assert.assertNotNull(mdPage);
+        Assertions.assertNotNull(mdPage);
     }
 
 }

@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -37,7 +37,7 @@ public class ConfigurationBeanTest extends AbstractTest {
 
     private ConfigurationBean bean;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         bean = new ConfigurationBean();
     }
@@ -48,18 +48,18 @@ public class ConfigurationBeanTest extends AbstractTest {
      */
     @Test
     public void isDisplaySearchRssLinks_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(bean.isDisplaySearchRssLinks());
+        Assertions.assertFalse(bean.isDisplaySearchRssLinks());
     }
 
     @Test
     public void testPageBrowseConfiguration() throws Exception {
-        Assert.assertTrue(bean.isPagePdfEnabled());
-        Assert.assertFalse(bean.isPageBrowseStep1Visible());
-        Assert.assertTrue(bean.isPageBrowseStep2Visible());
-        Assert.assertTrue(bean.isPageBrowseStep2Visible());
-        Assert.assertEquals(0, bean.getPageBrowseStep1());
-        Assert.assertEquals(5, bean.getPageBrowseStep2());
-        Assert.assertEquals(10, bean.getPageBrowseStep3());
+        Assertions.assertTrue(bean.isPagePdfEnabled());
+        Assertions.assertFalse(bean.isPageBrowseStep1Visible());
+        Assertions.assertTrue(bean.isPageBrowseStep2Visible());
+        Assertions.assertTrue(bean.isPageBrowseStep2Visible());
+        Assertions.assertEquals(0, bean.getPageBrowseStep1());
+        Assertions.assertEquals(5, bean.getPageBrowseStep2());
+        Assertions.assertEquals(10, bean.getPageBrowseStep3());
     }
 
     /**
@@ -68,7 +68,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      */
     @Test
     public void isSidebarPageLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, bean.isSidebarPageLinkVisible());
+        Assertions.assertEquals(false, bean.isSidebarPageLinkVisible());
     }
 
     /**
@@ -77,7 +77,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      */
     @Test
     public void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, bean.isSidebarCalendarLinkVisible());
+        Assertions.assertEquals(false, bean.isSidebarCalendarLinkVisible());
     }
 
     /**
@@ -86,7 +86,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      */
     @Test
     public void isSidebarThumbsLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, bean.isSidebarThumbsLinkVisible());
+        Assertions.assertEquals(false, bean.isSidebarThumbsLinkVisible());
     }
 
     /**
@@ -95,7 +95,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      */
     @Test
     public void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, bean.isSidebarMetadataLinkVisible());
+        Assertions.assertEquals(false, bean.isSidebarMetadataLinkVisible());
     }
 
     /**
@@ -104,7 +104,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      */
     @Test
     public void isSidebarFulltextLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, bean.isSidebarFulltextLinkVisible());
+        Assertions.assertEquals(false, bean.isSidebarFulltextLinkVisible());
     }
 
     /**
@@ -113,6 +113,6 @@ public class ConfigurationBeanTest extends AbstractTest {
      */
     @Test
     public void getSearchResultGroupNames_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(3, bean.getSearchResultGroupNames().size());
+        Assertions.assertEquals(3, bean.getSearchResultGroupNames().size());
     }
 }

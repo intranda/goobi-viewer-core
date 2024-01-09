@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -30,9 +30,9 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -43,7 +43,7 @@ import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.ViewManager;
 
-public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(ActiveDocumentBeanTest.class);
@@ -52,7 +52,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     private NavigationHelper navigationHelper;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -83,15 +83,15 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
-        Assert.assertNotNull(adb.getViewManager());
+        Assertions.assertNotNull(adb.getViewManager());
         assertEquals(PI_KLEIUNIV, adb.getPersistentIdentifier());
         assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
         assertEquals(iddocKleiuniv, adb.getTopDocumentIddoc());
         assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
-        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
-        Assert.assertNotNull(adb.getViewManager().getTopStructElement());
+        Assertions.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
+        Assertions.assertNotNull(adb.getViewManager().getTopStructElement());
         assertEquals(adb.getTopDocument(), adb.getViewManager().getTopStructElement());
-        Assert.assertNotNull(adb.getViewManager().getCurrentStructElement());
+        Assertions.assertNotNull(adb.getViewManager().getCurrentStructElement());
         assertEquals(adb.getCurrentElement(), adb.getViewManager().getCurrentStructElement());
         assertEquals("", adb.getViewManager().getLogId());
     }
@@ -105,17 +105,17 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
-        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
+        Assertions.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
         ViewManager oldViewManager = adb.getViewManager();
-        Assert.assertSame(oldViewManager, adb.getViewManager());
+        Assertions.assertSame(oldViewManager, adb.getViewManager());
 
         adb.setLogid("LOG_0003");
         adb.update();
         assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
         assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
-        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
+        Assertions.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
         // assertEquals("LOG_0003", adb.getViewManager().getLogId());
-        Assert.assertNotSame(oldViewManager, adb.getViewManager());
+        Assertions.assertNotSame(oldViewManager, adb.getViewManager());
     }
 
     /**
@@ -231,7 +231,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
+        Assertions.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
 
         adb.update();
         assertTrue(adb.isRecordLoaded());
@@ -241,17 +241,17 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see ActiveDocumentBean#update()
      * @verifies throw RecordNotFoundException if listing not allowed by default
      */
-    @Test(expected = RecordNotFoundException.class)
-    public void update_shouldThrowRecordNotFoundExceptionIfListingNotAllowedByDefault() throws Exception {
+    @Test
+    void update_shouldThrowRecordNotFoundExceptionIfListingNotAllowedByDefault() throws Exception {
         // Record will be released by a moving wall in 2041
         adb.setPersistentIdentifier("557335825");
         adb.setImageToShow("1");
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
+        Assertions.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
 
-        adb.update();
+        Assertions.assertThrows(RecordNotFoundException.class, () -> adb.update());
     }
 
     /**
@@ -366,7 +366,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setLastReceivedIdentifier("PPN123");
         assertEquals("PPN123", adb.getLastReceivedIdentifier());
         adb.reset();
-        Assert.assertNull(adb.getLastReceivedIdentifier());
+        Assertions.assertNull(adb.getLastReceivedIdentifier());
     }
 
     /**

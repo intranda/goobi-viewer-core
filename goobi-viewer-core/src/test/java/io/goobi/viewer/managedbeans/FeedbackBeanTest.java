@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -36,8 +36,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -59,7 +59,7 @@ public class FeedbackBeanTest {
 
     FeedbackBean bean;
 
-    @Before
+    @BeforeEach
     public void setup() throws UnsupportedEncodingException, MessagingException {
 
         NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);

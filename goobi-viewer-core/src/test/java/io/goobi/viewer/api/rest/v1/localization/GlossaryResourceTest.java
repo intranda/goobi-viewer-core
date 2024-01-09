@@ -24,8 +24,8 @@ package io.goobi.viewer.api.rest.v1.localization;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION_VOCABS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION_VOCABS_FILE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -45,16 +45,16 @@ import io.goobi.viewer.model.glossary.Glossary;
  * @author florian
  *
  */
-public class GlossaryResourceTest extends AbstractRestApiTest {
+class GlossaryResourceTest extends AbstractRestApiTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGetGlossaries() throws JsonMappingException, JsonProcessingException {
+    void testGetGlossaries() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(LOCALIZATION, LOCALIZATION_VOCABS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals(200, response.getStatus(), "Should return status 200");
             String entity = response.readEntity(String.class);
             List<Glossary> glossaries = new ArrayList<>();
             glossaries = mapper.readValue(entity, glossaries.getClass());
@@ -65,16 +65,15 @@ public class GlossaryResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetGlossaryFile() {
+    void testGetGlossaryFile() {
         try (Response response = target(urls.path(LOCALIZATION, LOCALIZATION_VOCABS_FILE).params("wiener.json").build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals(200, response.getStatus(), "Should return status 200");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
 
         }
     }
-
 }

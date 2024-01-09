@@ -22,9 +22,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -44,7 +44,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
     ClientApplication allClients;
     Set<String> recordAccessConditions = new HashSet<>();
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         super.setUp();
         lt = new LicenseType();
@@ -72,7 +72,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
 
     @Test
     public void checkAccessPermission_shouldReturnFalseIfClientNotContainsLicense() throws Exception {
-        Assert.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        Assertions.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
@@ -81,7 +81,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
 
         client.addLicense(license);
 
-        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
@@ -92,7 +92,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
 
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add(lt.getName());
-        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
@@ -103,7 +103,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
         allClients.addLicense(license);
         client.setSubnetMask("11.22.33.45/32");
 
-        Assert.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        Assertions.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
@@ -114,7 +114,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
         allClients.addLicense(license);
         client.setSubnetMask("11.22.33.45/31");
 
-        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 }

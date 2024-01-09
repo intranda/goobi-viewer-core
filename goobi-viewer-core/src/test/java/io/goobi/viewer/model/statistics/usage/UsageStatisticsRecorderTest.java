@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.util.Random;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -43,7 +43,7 @@ public class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
     
     volatile IDAO dao;
     
-    @Before
+    @BeforeEach
     public void before() throws Exception  {
         super.setUp();
         dao = DataManager.getInstance().getDao();

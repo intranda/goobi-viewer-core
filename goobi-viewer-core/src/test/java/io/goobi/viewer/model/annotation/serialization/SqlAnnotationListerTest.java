@@ -21,12 +21,12 @@
  */
 package io.goobi.viewer.model.annotation.serialization;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -42,7 +42,7 @@ public class SqlAnnotationListerTest {
     IDAO dao;
     SqlAnnotationLister lister;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         CrowdsourcingAnnotation a1 = createAnnotation(1l, "OPENACCESS", "Text 1", 10l, 100l, "describing", "PI01", 5);
         CrowdsourcingAnnotation a2 = createAnnotation(2l, "OPENACCESS", "Text 2", 10l, 101l, "describing", "PI02", 10);

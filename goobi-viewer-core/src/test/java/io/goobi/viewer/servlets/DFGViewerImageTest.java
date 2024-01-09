@@ -27,8 +27,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
@@ -43,7 +43,7 @@ public class DFGViewerImageTest extends AbstractTest {
     DFGViewerImage servlet;
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         servlet = new DFGViewerImage();

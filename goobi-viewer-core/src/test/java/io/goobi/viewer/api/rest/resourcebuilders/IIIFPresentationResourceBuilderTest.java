@@ -24,10 +24,10 @@ package io.goobi.viewer.api.rest.resourcebuilders;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -48,7 +48,7 @@ public class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         testee = new IIIFPresentation2ResourceBuilder(new ApiUrls(""), null);
@@ -57,7 +57,7 @@ public class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -65,7 +65,7 @@ public class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest
     @Test
     public void successfullyQueryManifests() throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
        List<IPresentationModelElement> collection = testee.getManifestsForQuery("ISWORK:*", "", 0, 2);
-       Assert.assertEquals(2, collection.size());
+       Assertions.assertEquals(2, collection.size());
     }
 
 }

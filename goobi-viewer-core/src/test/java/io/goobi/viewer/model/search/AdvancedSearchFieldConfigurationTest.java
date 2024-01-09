@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.search;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class AdvancedSearchFieldConfigurationTest {
 
@@ -32,6 +32,6 @@ public class AdvancedSearchFieldConfigurationTest {
      */
     @Test
     public void getLabel_shouldReturnFieldIfLabelNull() throws Exception {
-        Assert.assertEquals("field", new AdvancedSearchFieldConfiguration("field").getLabel());
+        Assertions.assertEquals("field", new AdvancedSearchFieldConfiguration("field").getLabel());
     }
 }

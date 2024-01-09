@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.viewer.pageloader;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -38,9 +38,9 @@ public class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getNumPages_shouldReturnSizeCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         EagerPageLoader pageLoader = new EagerPageLoader(se);
-        Assert.assertEquals(16, pageLoader.getNumPages());
+        Assertions.assertEquals(16, pageLoader.getNumPages());
     }
 
     /**
@@ -50,11 +50,11 @@ public class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPage_shouldReturnCorrectPage() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         EagerPageLoader pageLoader = new EagerPageLoader(se);
         PhysicalElement pe = pageLoader.getPage(3);
-        Assert.assertNotNull(pe);
-        Assert.assertEquals(3, pe.getOrder());
+        Assertions.assertNotNull(pe);
+        Assertions.assertEquals(3, pe.getOrder());
     }
 
     /**
@@ -64,11 +64,11 @@ public class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPageForFileName_shouldReturnTheCorrectPage() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         EagerPageLoader pageLoader = new EagerPageLoader(se);
         PhysicalElement pe = pageLoader.getPageForFileName("00000004.tif");
-        Assert.assertNotNull(pe);
-        Assert.assertEquals(4, pe.getOrder());
+        Assertions.assertNotNull(pe);
+        Assertions.assertEquals(4, pe.getOrder());
     }
 
     /**
@@ -78,10 +78,10 @@ public class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPageForFileName_shouldReturnNullIfFileNameNotFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         EagerPageLoader pageLoader = new EagerPageLoader(se);
         PhysicalElement pe = pageLoader.getPageForFileName("NOTFOUND.tif");
-        Assert.assertNull(pe);
+        Assertions.assertNull(pe);
     }
 
     /**
@@ -91,9 +91,9 @@ public class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void setFirstAndLastPageOrder_shouldSetFirstPageOrderCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         EagerPageLoader pageLoader = new EagerPageLoader(se);
-        Assert.assertEquals(1, pageLoader.getFirstPageOrder());
+        Assertions.assertEquals(1, pageLoader.getFirstPageOrder());
     }
 
     /**
@@ -103,8 +103,8 @@ public class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void setFirstAndLastPageOrder_shouldSetLastPageOrderCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         EagerPageLoader pageLoader = new EagerPageLoader(se);
-        Assert.assertEquals(16, pageLoader.getLastPageOrder());
+        Assertions.assertEquals(16, pageLoader.getLastPageOrder());
     }
 }

@@ -21,12 +21,12 @@
  */
 package io.goobi.viewer.model.cms.pages;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.cms.legacy.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;

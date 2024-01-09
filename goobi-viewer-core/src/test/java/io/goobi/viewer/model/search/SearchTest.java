@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.model.search;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.URI;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
@@ -45,15 +45,15 @@ public class SearchTest extends AbstractTest {
     @Test
     public void getAllSortFields_shouldReturnAllFields() throws Exception {
         List<String> staticFields = DataManager.getInstance().getConfiguration().getStaticSortFields();
-        Assert.assertEquals(1, staticFields.size());
+        Assertions.assertEquals(1, staticFields.size());
 
         Search search = new Search();
         search.setSortString("SORT_FOO;SORT_BAR");
-        Assert.assertEquals(2, search.getSortFields().size());
+        Assertions.assertEquals(2, search.getSortFields().size());
 
         List<StringPair> result = search.getAllSortFields();
-        Assert.assertTrue(result.containsAll(search.getSortFields()));
-        Assert.assertTrue(result.contains(new StringPair(staticFields.get(0).substring(1), "desc")));
+        Assertions.assertTrue(result.containsAll(search.getSortFields()));
+        Assertions.assertTrue(result.contains(new StringPair(staticFields.get(0).substring(1), "desc")));
     }
 
     @Test

@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
@@ -42,11 +42,11 @@ public class MessageEntryTest extends AbstractTest {
     @Test
     public void create_shouldCreateMessageEntryCorrectly() throws Exception {
         MessageEntry entry = MessageEntry.create(null, "foo", Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN }));
-        Assert.assertNotNull(entry);
-        Assert.assertEquals("foo", entry.getKey());
-        Assert.assertEquals(2, entry.getValues().size());
-        Assert.assertEquals("en", entry.getValues().get(0).getLanguage());
-        Assert.assertEquals("de", entry.getValues().get(1).getLanguage());
+        Assertions.assertNotNull(entry);
+        Assertions.assertEquals("foo", entry.getKey());
+        Assertions.assertEquals(2, entry.getValues().size());
+        Assertions.assertEquals("en", entry.getValues().get(0).getLanguage());
+        Assertions.assertEquals("de", entry.getValues().get(1).getLanguage());
     }
 
     /**
@@ -57,9 +57,9 @@ public class MessageEntryTest extends AbstractTest {
     public void compareTo_shouldCompareCorrectly() throws Exception {
         MessageEntry entry1 = new MessageEntry("one", Collections.emptyList());
         MessageEntry entry2 = new MessageEntry("two", Collections.emptyList());
-        Assert.assertTrue(entry1.compareTo(entry2) < 0);
-        Assert.assertTrue(entry1.compareTo(entry1) == 0);
-        Assert.assertTrue(entry2.compareTo(entry1) > 0);
+        Assertions.assertTrue(entry1.compareTo(entry2) < 0);
+        Assertions.assertTrue(entry1.compareTo(entry1) == 0);
+        Assertions.assertTrue(entry2.compareTo(entry1) > 0);
     }
 
     /**
@@ -72,8 +72,8 @@ public class MessageEntryTest extends AbstractTest {
         values.add(new MessageValue("en", null, "value"));
         values.add(new MessageValue("de", null, "value"));
         MessageEntry entry = new MessageEntry("key", values);
-        Assert.assertEquals(2, entry.getValues().size());
-        Assert.assertEquals(TranslationStatus.NONE, entry.getTranslationStatus());
+        Assertions.assertEquals(2, entry.getValues().size());
+        Assertions.assertEquals(TranslationStatus.NONE, entry.getTranslationStatus());
     }
 
     /**
@@ -87,16 +87,16 @@ public class MessageEntryTest extends AbstractTest {
             values.add(new MessageValue("en", "value", "value"));
             values.add(new MessageValue("de", null, "wert"));
             MessageEntry entry = new MessageEntry("key", values);
-            Assert.assertEquals(2, entry.getValues().size());
-            Assert.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatus());
+            Assertions.assertEquals(2, entry.getValues().size());
+            Assertions.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatus());
         }
         {
             List<MessageValue> values = new ArrayList<>(2);
             values.add(new MessageValue("en", "value zzz", "value"));
             values.add(new MessageValue("de", "wert", "wert"));
             MessageEntry entry = new MessageEntry("key", values);
-            Assert.assertEquals(2, entry.getValues().size());
-            Assert.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatus());
+            Assertions.assertEquals(2, entry.getValues().size());
+            Assertions.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatus());
         }
     }
 
@@ -110,8 +110,8 @@ public class MessageEntryTest extends AbstractTest {
         values.add(new MessageValue("en", "value", "value"));
         values.add(new MessageValue("de", "wert", "wert"));
         MessageEntry entry = new MessageEntry("key", values);
-        Assert.assertEquals(2, entry.getValues().size());
-        Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        Assertions.assertEquals(2, entry.getValues().size());
+        Assertions.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
     }
 
     /**
@@ -125,10 +125,10 @@ public class MessageEntryTest extends AbstractTest {
         values.add(new MessageValue("de", "wert zzz", "wert"));
         values.add(new MessageValue("fr", "", ""));
         MessageEntry entry = new MessageEntry("key", values);
-        Assert.assertEquals(3, entry.getValues().size());
-        Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatusForLanguage("en"));
-        Assert.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatusForLanguage("de"));
-        Assert.assertEquals(TranslationStatus.NONE, entry.getTranslationStatusForLanguage("fr"));
+        Assertions.assertEquals(3, entry.getValues().size());
+        Assertions.assertEquals(TranslationStatus.FULL, entry.getTranslationStatusForLanguage("en"));
+        Assertions.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatusForLanguage("de"));
+        Assertions.assertEquals(TranslationStatus.NONE, entry.getTranslationStatusForLanguage("fr"));
     }
 
     /**
@@ -138,8 +138,8 @@ public class MessageEntryTest extends AbstractTest {
     @Test
     public void getKey_shouldTrimSuffix() throws Exception {
         MessageEntry entry = new MessageEntry("foo", "bar   ", Collections.emptyList());
-        Assert.assertEquals("foo", entry.getKeyPrefix());
-        Assert.assertEquals("bar   ", entry.getKeySuffix());
-        Assert.assertEquals("foobar", entry.getKey());
+        Assertions.assertEquals("foo", entry.getKeyPrefix());
+        Assertions.assertEquals("bar   ", entry.getKeySuffix());
+        Assertions.assertEquals("foobar", entry.getKey());
     }
 }

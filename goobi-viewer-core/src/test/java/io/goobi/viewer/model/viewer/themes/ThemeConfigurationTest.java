@@ -21,12 +21,12 @@
  */
 package io.goobi.viewer.model.viewer.themes;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -58,7 +58,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     private CMSMediaItem logoItem;
     private CMSMediaItem iconItem;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         super.setUp();
         logoItem = DataManager.getInstance().getDao().getCMSMediaItem(LOGO_ID);

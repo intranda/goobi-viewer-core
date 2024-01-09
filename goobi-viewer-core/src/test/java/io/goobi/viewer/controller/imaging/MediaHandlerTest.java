@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.controller.imaging;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractTest;
@@ -43,7 +43,7 @@ public class MediaHandlerTest extends AbstractTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         handler = new MediaHandler();
@@ -52,14 +52,14 @@ public class MediaHandlerTest extends AbstractTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
     public void testGetMediaUrl() throws IllegalRequestException {
         String mediaUrl = handler.getMediaUrl("audio","ogg", "1234", "audio.ogg");
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/1234/files/audio/ogg/audio.ogg", mediaUrl);
+        Assertions.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/1234/files/audio/ogg/audio.ogg", mediaUrl);
     }
 
 }

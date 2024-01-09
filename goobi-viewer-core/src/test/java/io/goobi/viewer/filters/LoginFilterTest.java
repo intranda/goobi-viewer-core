@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.filters;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LoginFilterTest {
 
@@ -32,11 +32,11 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnTrueForCertainPrettyUris() throws Exception {
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/myactivity/"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/user/annotations/"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/user/searches/"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/user/bookmarks/show"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/viewer/user/bookmarks/show"));
+        Assertions.assertTrue(LoginFilter.isRestrictedUri("/myactivity/"));
+        Assertions.assertTrue(LoginFilter.isRestrictedUri("/user/annotations/"));
+        Assertions.assertTrue(LoginFilter.isRestrictedUri("/user/searches/"));
+        Assertions.assertTrue(LoginFilter.isRestrictedUri("/user/bookmarks/show"));
+        Assertions.assertTrue(LoginFilter.isRestrictedUri("/viewer/user/bookmarks/show"));
     }
 
     /**
@@ -45,7 +45,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnTrueForCrowdsourcingUris() throws Exception {
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/crowdMyAss/"));
+        Assertions.assertTrue(LoginFilter.isRestrictedUri("/crowdMyAss/"));
     }
 
     /**
@@ -54,7 +54,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForCrowdsourcingAboutPage() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("/crowdsourcing/about.xhtml"));
+        Assertions.assertFalse(LoginFilter.isRestrictedUri("/crowdsourcing/about.xhtml"));
     }
 
     /**
@@ -63,7 +63,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnTrueForAdminUris() throws Exception {
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/adminMyAss.xhtml"));
+        Assertions.assertTrue(LoginFilter.isRestrictedUri("/adminMyAss.xhtml"));
     }
 
     /**
@@ -72,7 +72,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnTrueForUserBackendUris() throws Exception {
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/userBackendSlap.xhtml"));
+        Assertions.assertTrue(LoginFilter.isRestrictedUri("/userBackendSlap.xhtml"));
     }
 
     /**
@@ -81,7 +81,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnTrueForUserBookmarksUris() throws Exception {
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/viewer/user/bookmarks/etc"));
+        Assertions.assertTrue(LoginFilter.isRestrictedUri("/viewer/user/bookmarks/etc"));
     }
 
     /**
@@ -90,7 +90,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForBookmarksListUri() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("/bookmarks"));
+        Assertions.assertFalse(LoginFilter.isRestrictedUri("/bookmarks"));
     }
 
     /**
@@ -99,7 +99,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForBookmarksSessionUris() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/session/foo"));
+        Assertions.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/session/foo"));
     }
 
     /**
@@ -108,7 +108,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForBookmarksShareKeyUris() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/key/somesharekey/"));
+        Assertions.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/key/somesharekey/"));
     }
 
     /**
@@ -117,7 +117,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForBookmarksSendListUris() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/send/"));
+        Assertions.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/send/"));
     }
 
     /**
@@ -126,7 +126,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForUserAccountActivationUris() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("/user/activate/foo@bar.com/abcde/"));
+        Assertions.assertFalse(LoginFilter.isRestrictedUri("/user/activate/foo@bar.com/abcde/"));
     }
 
     /**
@@ -135,6 +135,6 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForUserPasswordResetUris() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("/user/resetpw/foo@bar.com/abcde/"));
+        Assertions.assertFalse(LoginFilter.isRestrictedUri("/user/resetpw/foo@bar.com/abcde/"));
     }
 }

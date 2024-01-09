@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.model.bookmark;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,9 +30,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -45,7 +45,7 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
     AbstractApiUrlManager urls;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         urls = DataManager.getInstance()
@@ -78,7 +78,7 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
 
         bookmarkList.setItems(items);
         String query = bookmarkList.generateSolrQueryForItems();
-        Assert.assertEquals("(PI:PI1) OR (PI_TOPSTRUCT:PI2 AND LOGID:LOG1 AND DOCTYPE:DOCSTRCT) OR (URN:URN1 OR IMAGEURN:URN1)", query);
+        Assertions.assertEquals("(PI:PI1) OR (PI_TOPSTRUCT:PI2 AND LOGID:LOG1 AND DOCTYPE:DOCSTRCT) OR (URN:URN1 OR IMAGEURN:URN1)", query);
     }
 
     /**
@@ -95,7 +95,7 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
         }
 
         String json = bookmarkList.getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
-        Assert.assertFalse(StringUtils.isBlank(json));
+        Assertions.assertFalse(StringUtils.isBlank(json));
 
         JSONObject miradorConfig = new JSONObject(json);
         JSONArray dataList = miradorConfig.getJSONArray("data");
@@ -128,7 +128,7 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
             bookmarkList.getItems().add(item);
         }
 
-        Assert.assertEquals("+( PI:PI1 PI:PI2 PI:PI3 PI:PI4)", bookmarkList.getFilterQuery());
+        Assertions.assertEquals("+( PI:PI1 PI:PI2 PI:PI3 PI:PI4)", bookmarkList.getFilterQuery());
     }
 
     /**
@@ -159,8 +159,8 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
         }
 
         BookmarkList.sortBookmarkLists(lists);
-        Assert.assertEquals(Long.valueOf(3), lists.get(0).getId());
-        Assert.assertEquals(Long.valueOf(2), lists.get(1).getId());
-        Assert.assertEquals(Long.valueOf(1), lists.get(2).getId());
+        Assertions.assertEquals(Long.valueOf(3), lists.get(0).getId());
+        Assertions.assertEquals(Long.valueOf(2), lists.get(1).getId());
+        Assertions.assertEquals(Long.valueOf(1), lists.get(2).getId());
     }
 }

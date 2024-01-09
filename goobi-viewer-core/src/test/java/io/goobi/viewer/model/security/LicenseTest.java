@@ -24,8 +24,8 @@ package io.goobi.viewer.model.security;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
@@ -42,16 +42,16 @@ public class LicenseTest {
         {
             License lic = new License();
             lic.setUser(new User());
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
             lic.setIpRange(new IpRange());
-            Assert.assertNull(lic.getUser());
+            Assertions.assertNull(lic.getUser());
         }
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
             lic.setIpRange(new IpRange());
-            Assert.assertNull(lic.getUserGroup());
+            Assertions.assertNull(lic.getUserGroup());
         }
     }
 
@@ -64,16 +64,16 @@ public class LicenseTest {
         {
             License lic = new License();
             lic.setUser(new User());
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
             lic.setIpRange(null);
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
         }
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
             lic.setIpRange(null);
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
         }
     }
 
@@ -86,16 +86,16 @@ public class LicenseTest {
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
             lic.setUser(new User());
-            Assert.assertNull(lic.getUserGroup());
+            Assertions.assertNull(lic.getUserGroup());
         }
         {
             License lic = new License();
             lic.setIpRange(new IpRange());
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
             lic.setUser(new User());
-            Assert.assertNull(lic.getIpRange());
+            Assertions.assertNull(lic.getIpRange());
         }
     }
 
@@ -108,16 +108,16 @@ public class LicenseTest {
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
             lic.setUser(null);
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
         }
         {
             License lic = new License();
             lic.setIpRange(new IpRange());
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
             lic.setUser(null);
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
         }
     }
 
@@ -130,16 +130,16 @@ public class LicenseTest {
         {
             License lic = new License();
             lic.setUser(new User());
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
             lic.setUserGroup(new UserGroup());
-            Assert.assertNull(lic.getUser());
+            Assertions.assertNull(lic.getUser());
         }
         {
             License lic = new License();
             lic.setIpRange(new IpRange());
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
             lic.setUserGroup(new UserGroup());
-            Assert.assertNull(lic.getIpRange());
+            Assertions.assertNull(lic.getIpRange());
         }
     }
 
@@ -152,16 +152,16 @@ public class LicenseTest {
         {
             License lic = new License();
             lic.setUser(new User());
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
             lic.setUserGroup(null);
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
         }
         {
             License lic = new License();
             lic.setIpRange(new IpRange());
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
             lic.setUserGroup(null);
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
         }
     }
 
@@ -175,7 +175,7 @@ public class LicenseTest {
         lic.setLicenseType(new LicenseType());
         lic.getLicenseType().setUgcType(true);
         List<String> result = lic.getAvailablePrivileges(Collections.emptySet());
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
 }

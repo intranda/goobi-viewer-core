@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.search;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class HitTypeTest {
 
@@ -32,8 +32,8 @@ public class HitTypeTest {
      */
     @Test
     public void getByName_shouldReturnAllKnownTypesCorrectly() {
-        Assert.assertEquals(HitType.CMS, HitType.getByName("OVERVIEWPAGE"));
-        Assert.assertEquals(HitType.CMS, HitType.getByName("CMS"));
-        Assert.assertEquals(HitType.PAGE, HitType.getByName("PAGE"));
+        Assertions.assertEquals(HitType.CMS, HitType.getByName("OVERVIEWPAGE"));
+        Assertions.assertEquals(HitType.CMS, HitType.getByName("CMS"));
+        Assertions.assertEquals(HitType.PAGE, HitType.getByName("PAGE"));
     }
 }

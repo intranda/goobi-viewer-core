@@ -23,8 +23,8 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -37,7 +37,7 @@ public class MetadataViewTest {
     @Test
     public void isVisible_shouldReturnTrueIfConditionNullOrEmpty() throws Exception {
         MetadataView view = new MetadataView();
-        Assert.assertTrue(view.isVisible(new StructElement()));
+        Assertions.assertTrue(view.isVisible(new StructElement()));
     }
 
     /**
@@ -47,7 +47,7 @@ public class MetadataViewTest {
     @Test
     public void isVisible_shouldReturnFalseIfStructElementNull() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo:bar");
-        Assert.assertFalse(view.isVisible(null));
+        Assertions.assertFalse(view.isVisible(null));
     }
 
     /**
@@ -59,7 +59,7 @@ public class MetadataViewTest {
         MetadataView view = new MetadataView().setCondition("foo:bar");
         StructElement se = new StructElement();
         se.getMetadataFields().put("foo", Collections.singletonList("bar"));
-        Assert.assertTrue(view.isVisible(se));
+        Assertions.assertTrue(view.isVisible(se));
     }
 
     /**
@@ -71,7 +71,7 @@ public class MetadataViewTest {
         MetadataView view = new MetadataView().setCondition("foo:bar");
         StructElement se = new StructElement();
         se.getMetadataFields().put("foo", Collections.singletonList("other"));
-        Assert.assertFalse(view.isVisible(se));
+        Assertions.assertFalse(view.isVisible(se));
     }
 
     /**
@@ -83,7 +83,7 @@ public class MetadataViewTest {
         MetadataView view = new MetadataView().setCondition("foo");
         StructElement se = new StructElement();
         se.getMetadataFields().put("foo", Collections.singletonList("bar"));
-        Assert.assertTrue(view.isVisible(se));
+        Assertions.assertTrue(view.isVisible(se));
     }
 
     /**
@@ -95,6 +95,6 @@ public class MetadataViewTest {
         MetadataView view = new MetadataView().setCondition("foo");
         StructElement se = new StructElement();
         se.getMetadataFields().put("bar", Collections.singletonList("other"));
-        Assert.assertFalse(view.isVisible(se));
+        Assertions.assertFalse(view.isVisible(se));
     }
 }

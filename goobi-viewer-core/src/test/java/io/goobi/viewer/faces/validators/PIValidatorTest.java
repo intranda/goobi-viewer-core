@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.faces.validators;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.faces.validators.PIValidator;
 
@@ -34,11 +34,11 @@ public class PIValidatorTest {
      */
     @Test
     public void validatePi_shouldReturnFalseIfPiContainsIllegalCharacters() throws Exception {
-        Assert.assertFalse(PIValidator.validatePi("PPN!"));
-        Assert.assertFalse(PIValidator.validatePi("PPN?"));
-        Assert.assertFalse(PIValidator.validatePi("PPN/"));
-        Assert.assertFalse(PIValidator.validatePi("PPN\\"));
-        Assert.assertFalse(PIValidator.validatePi("PPN:"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN!"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN?"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN/"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN\\"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN:"));
     }
 
     /**
@@ -47,9 +47,9 @@ public class PIValidatorTest {
      */
     @Test
     public void validatePi_shouldReturnFalseIfPiEmptyBlankOrNull() throws Exception {
-        Assert.assertFalse(PIValidator.validatePi(null));
-        Assert.assertFalse(PIValidator.validatePi(""));
-        Assert.assertFalse(PIValidator.validatePi("    "));
+        Assertions.assertFalse(PIValidator.validatePi(null));
+        Assertions.assertFalse(PIValidator.validatePi(""));
+        Assertions.assertFalse(PIValidator.validatePi("    "));
     }
 
     /**
@@ -58,6 +58,6 @@ public class PIValidatorTest {
      */
     @Test
     public void validatePi_shouldReturnTrueIfPiGood() throws Exception {
-        Assert.assertTrue(PIValidator.validatePi("PPN123456789"));
+        Assertions.assertTrue(PIValidator.validatePi("PPN123456789"));
     }
 }

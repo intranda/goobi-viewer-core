@@ -25,16 +25,16 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_COMMENTS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -59,7 +59,7 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -67,7 +67,7 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -79,8 +79,8 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject canvas = new JSONObject(entity);
@@ -103,8 +103,8 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             AnnotationPage annoPage = mapper.readValue(entity, AnnotationPage.class);
             assertNotNull(annoPage);
@@ -124,8 +124,8 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             AnnotationPage annoPage = mapper.readValue(entity, AnnotationPage.class);
             assertNotNull(annoPage);

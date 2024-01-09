@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean.CMSCollectionImageMode;
@@ -44,15 +44,15 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         bean.getCurrentCollection().setRepresentativeWorkPI("PPN123");
         bean.initImageMode();
-        Assert.assertEquals(CMSCollectionImageMode.PI, bean.getImageMode());
+        Assertions.assertEquals(CMSCollectionImageMode.PI, bean.getImageMode());
 
         bean.getCurrentCollection().setRepresentativeWorkPI(null);
         bean.initImageMode();
-        Assert.assertEquals(CMSCollectionImageMode.NONE, bean.getImageMode());
+        Assertions.assertEquals(CMSCollectionImageMode.NONE, bean.getImageMode());
 
         bean.getCurrentCollection().setMediaItem(new CMSMediaItem());
         bean.initImageMode();
-        Assert.assertEquals(CMSCollectionImageMode.IMAGE, bean.getImageMode());
+        Assertions.assertEquals(CMSCollectionImageMode.IMAGE, bean.getImageMode());
     }
 
     /**
@@ -63,7 +63,7 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void isDisplayTranslationWidget_shouldReturnFalseIfSolrFieldNotAmongConfiguredTranslationGroups() throws Exception {
         CmsCollectionsBean bean = new CmsCollectionsBean();
         bean.setSolrFieldNoUpdates("MD_NOPE"); // Do not use CmsCollectionsBean.setSolrField(), that'd require more test infrastructure
-        Assert.assertFalse(bean.isDisplayTranslationWidget());
+        Assertions.assertFalse(bean.isDisplayTranslationWidget());
     }
 
     /**
@@ -74,7 +74,7 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void isDisplayTranslationWidget_shouldReturnTrueIfSolrFieldValuesNotOrPartiallyTranslated() throws Exception {
         CmsCollectionsBean bean = new CmsCollectionsBean();
         bean.setSolrFieldNoUpdates(SolrConstants.DC); // Do not use CmsCollectionsBean.setSolrField(), that'd require more test infrastructure
-        Assert.assertTrue(bean.isDisplayTranslationWidget());
+        Assertions.assertTrue(bean.isDisplayTranslationWidget());
     }
 
     /**
@@ -84,9 +84,9 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void isDisplaySolrFieldSelectionWidget_shouldReturnFalseIfOnlyOneCollectionFieldIsConfigured() throws Exception {
         CmsCollectionsBean bean = new CmsCollectionsBean();
-        Assert.assertEquals(3, bean.getAllCollectionFields().size());
+        Assertions.assertEquals(3, bean.getAllCollectionFields().size());
 
-        Assert.assertTrue(bean.isDisplaySolrFieldSelectionWidget());
+        Assertions.assertTrue(bean.isDisplaySolrFieldSelectionWidget());
     }
 
     /**
@@ -97,7 +97,7 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void isDisplayTranslationWidgetEdit_shouldReturnFalseIfSolrFieldNotAmongConfiguredTranslationGroups() throws Exception {
         CmsCollectionsBean bean = new CmsCollectionsBean();
         bean.setSolrFieldNoUpdates("MD_NOPE"); // Do not use CmsCollectionsBean.setSolrField(), that'd require more test infrastructure
-        Assert.assertFalse(bean.isDisplayTranslationWidgetEdit());
+        Assertions.assertFalse(bean.isDisplayTranslationWidgetEdit());
     }
 
     /**
@@ -109,7 +109,7 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         CmsCollectionsBean bean = new CmsCollectionsBean();
         bean.setSolrFieldNoUpdates(SolrConstants.DC); // Do not use CmsCollectionsBean.setSolrField(), that'd require more test infrastructure
         bean.setSolrFieldValue("dcmetadata");
-        Assert.assertTrue(bean.isDisplayTranslationWidgetEdit());
+        Assertions.assertTrue(bean.isDisplayTranslationWidgetEdit());
     }
 
     /**
@@ -122,7 +122,7 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.setSolrFieldNoUpdates("foo"); // Do not use CmsCollectionsBean.setSolrField(), that'd require more test infrastructure
         bean.setSolrFieldValue("bar");
         MessageEntry entry = bean.getMessageEntryForFieldValue();
-        Assert.assertNotNull(entry);
-        Assert.assertEquals(2, entry.getValues().size());
+        Assertions.assertNotNull(entry);
+        Assertions.assertEquals(2, entry.getValues().size());
     }
 }

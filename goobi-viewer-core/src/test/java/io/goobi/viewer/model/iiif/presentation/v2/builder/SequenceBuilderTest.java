@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,7 +86,7 @@ public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         ObjectWriter writer = mapper.writer().forType(AnnotationList.class);
         String json = writer.writeValueAsString(fulltext);
-        Assert.assertTrue(StringUtils.isNotBlank(json));
+        Assertions.assertTrue(StringUtils.isNotBlank(json));
     }
 
 }

@@ -25,8 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -44,20 +44,20 @@ public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     public void removeJobsForRecord_shouldDeleteAllFinishedJobsForRecord() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("epub.downloadFolder", "target");
 
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
         DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(2);
-        Assert.assertNotNull(job);
+        Assertions.assertNotNull(job);
         Path path = DownloadJobTools.getDownloadFileStatic(job.getIdentifier(), job.getType(), job.getFileExtension()).toPath();
         if (!Files.exists(path)) {
             Files.createFile(path);
         }
-        Assert.assertTrue(Files.isRegularFile(path));
+        Assertions.assertTrue(Files.isRegularFile(path));
 
-        Assert.assertEquals(1, DownloadJobTools.removeJobsForRecord("PI_1"));
-        Assert.assertFalse(Files.exists(path));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-        Assert.assertNull(DataManager.getInstance().getDao().getDownloadJob(2));
+        Assertions.assertEquals(1, DownloadJobTools.removeJobsForRecord("PI_1"));
+        Assertions.assertFalse(Files.exists(path));
+        Assertions.assertEquals(1, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assertions.assertNull(DataManager.getInstance().getDao().getDownloadJob(2));
     }
 
     /**
@@ -66,18 +66,18 @@ public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void cleanupExpiredDownloads_shouldDeleteExpiredJobsCorrectly() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
         DownloadJob job = new PDFDownloadJob("PI_3", null, LocalDateTime.now(), 3000000);
-        Assert.assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assertions.assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
+        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
         Long id = job.getId();
-        Assert.assertNotNull(id);
+        Assertions.assertNotNull(id);
 
         // The two jobs in the static DB should be removed while the new one should remain
-        Assert.assertEquals(2, DownloadJobTools.cleanupExpiredDownloads());
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-        Assert.assertNotNull(DataManager.getInstance().getDao().getDownloadJob(id));
+        Assertions.assertEquals(2, DownloadJobTools.cleanupExpiredDownloads());
+        Assertions.assertEquals(1, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assertions.assertNotNull(DataManager.getInstance().getDao().getDownloadJob(id));
     }
 
     /**
@@ -88,22 +88,22 @@ public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     public void cleanupExpiredDownloads_shouldDeleteFileCorrectly() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("pdf.downloadFolder", "target");
 
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
         DownloadJob job = new PDFDownloadJob("PI_3", null, LocalDateTime.now().minusDays(2), 86400000);
-        Assert.assertTrue(job.isExpired());
-        Assert.assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assertions.assertTrue(job.isExpired());
+        Assertions.assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
+        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
         Long id = job.getId();
-        Assert.assertNotNull(id);
+        Assertions.assertNotNull(id);
 
         Path path = DownloadJobTools.getDownloadFileStatic(job.getIdentifier(), job.getType(), job.getFileExtension()).toPath();
         if (!Files.exists(path)) {
             Files.createFile(path);
         }
-        Assert.assertTrue(Files.isRegularFile(path));
+        Assertions.assertTrue(Files.isRegularFile(path));
 
-        Assert.assertEquals(3, DownloadJobTools.cleanupExpiredDownloads());
-        Assert.assertFalse(Files.exists(path));
+        Assertions.assertEquals(3, DownloadJobTools.cleanupExpiredDownloads());
+        Assertions.assertFalse(Files.exists(path));
     }
 }

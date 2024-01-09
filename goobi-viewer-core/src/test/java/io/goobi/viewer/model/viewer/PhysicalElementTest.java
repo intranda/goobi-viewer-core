@@ -25,9 +25,9 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +41,7 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     private static final Logger logger = LogManager.getLogger(PhysicalElementTest.class);
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -57,8 +57,8 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void determineFileName_shouldCutOffEverythingButTheFileNameForNormalFilePaths() throws Exception {
-        Assert.assertEquals("image.jpg", PhysicalElement.determineFileName("image.jpg"));
-        Assert.assertEquals("image.jpg", PhysicalElement.determineFileName("/opt/digiverso/viewer/media/123/image.jpg"));
+        Assertions.assertEquals("image.jpg", PhysicalElement.determineFileName("image.jpg"));
+        Assertions.assertEquals("image.jpg", PhysicalElement.determineFileName("/opt/digiverso/viewer/media/123/image.jpg"));
     }
 
     /**
@@ -67,16 +67,16 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void determineFileName_shouldLeaveExternalUrlsIntact() throws Exception {
-        Assert.assertEquals("http://www.example.com/image.jpg", PhysicalElement.determineFileName("http://www.example.com/image.jpg"));
+        Assertions.assertEquals("http://www.example.com/image.jpg", PhysicalElement.determineFileName("http://www.example.com/image.jpg"));
     }
 
     @Test
     public void isAdaptImageViewHeight_test() {
         PhysicalElement page =
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
-        Assert.assertEquals(0, page.getImageWidth());
-        Assert.assertEquals(0, page.getImageHeight());
-        Assert.assertTrue(page.isAdaptImageViewHeight());
+        Assertions.assertEquals(0, page.getImageWidth());
+        Assertions.assertEquals(0, page.getImageHeight());
+        Assertions.assertTrue(page.isAdaptImageViewHeight());
     }
 
     /**
@@ -85,7 +85,7 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getFullMimeType_shouldReturnMimeTypeIfAlreadyFullMimeType() throws Exception {
-        Assert.assertEquals("application/pdf", PhysicalElement.getFullMimeType("application/pdf", "foo.bar"));
+        Assertions.assertEquals("application/pdf", PhysicalElement.getFullMimeType("application/pdf", "foo.bar"));
     }
 
     /**
@@ -94,7 +94,7 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getFullMimeType_shouldReturnMimeTypeIfNotImage() throws Exception {
-        Assert.assertEquals("application", PhysicalElement.getFullMimeType("application", "foo.bar"));
+        Assertions.assertEquals("application", PhysicalElement.getFullMimeType("application", "foo.bar"));
     }
 
     /**
@@ -103,7 +103,7 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getFullMimeType_shouldReturnPngImageMimeTypeFromFileName() throws Exception {
-        Assert.assertEquals("image/png", PhysicalElement.getFullMimeType("image", "foo.png"));
+        Assertions.assertEquals("image/png", PhysicalElement.getFullMimeType("image", "foo.png"));
     }
 
     /**
@@ -112,7 +112,7 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getFullMimeType_shouldReturnJpegIfNotPng() throws Exception {
-        Assert.assertEquals("image/jpeg", PhysicalElement.getFullMimeType("image", "foo.bmp"));
+        Assertions.assertEquals("image/jpeg", PhysicalElement.getFullMimeType("image", "foo.bmp"));
     }
 
     /**
@@ -121,14 +121,14 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getBaseMimeType_shouldReturnCorrectBaseMimeType() throws Exception {
-        Assert.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("image/tiff").build().getBaseMimeType());
-        Assert.assertEquals(BaseMimeType.AUDIO.getName(), new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getBaseMimeType());
-        Assert.assertEquals(BaseMimeType.VIDEO.getName(), new PhysicalElementBuilder().setMimeType("video/webm").build().getBaseMimeType());
-        Assert.assertEquals(BaseMimeType.APPLICATION.getName(),
+        Assertions.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("image/tiff").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.AUDIO.getName(), new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.VIDEO.getName(), new PhysicalElementBuilder().setMimeType("video/webm").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.APPLICATION.getName(),
                 new PhysicalElementBuilder().setMimeType("application/pdf").build().getBaseMimeType());
-        Assert.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(), new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
-        Assert.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/gltf+json").build().getBaseMimeType());
-        Assert.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/object").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(), new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/gltf+json").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/object").build().getBaseMimeType());
     }
 
     /**
@@ -137,6 +137,6 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getBaseMimeType_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
-        Assert.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
     }
 }

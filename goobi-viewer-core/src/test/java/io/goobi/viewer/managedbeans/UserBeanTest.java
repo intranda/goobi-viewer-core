@@ -27,9 +27,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -56,7 +56,7 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
     String userSuspended_pwHash = "abcdef3";
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -137,11 +137,11 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
         bean.setEmail(userActive_email);
         bean.setPassword(userActive_pwHash);
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
         bean.login();
-        Assert.assertNotNull(bean.getUser());
-        Assert.assertTrue(bean.getUser().isActive());
-        Assert.assertFalse(bean.getUser().isSuspended());
+        Assertions.assertNotNull(bean.getUser());
+        Assertions.assertTrue(bean.getUser().isActive());
+        Assertions.assertFalse(bean.getUser().isSuspended());
     }
 
     @Test
@@ -149,9 +149,9 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
         bean.setEmail(userActive_email);
         bean.setPassword(userSuspended_pwHash);
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
         bean.login();
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
     }
 
     @Test
@@ -159,9 +159,9 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
         bean.setEmail(userActive_email + "test");
         bean.setPassword(userActive_pwHash);
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
         bean.login();
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
     }
 
     @Test
@@ -169,10 +169,10 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
         bean.setEmail(userSuspended_email);
         bean.setPassword(userSuspended_pwHash);
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
         bean.login();
-        Assert.assertNull(bean.getUser());
-        //        Assert.assertTrue(bean.getUser().isActive());
-        //        Assert.assertTrue(bean.getUser().isSuspended());
+        Assertions.assertNull(bean.getUser());
+        //        Assertions.assertTrue(bean.getUser().isActive());
+        //        Assertions.assertTrue(bean.getUser().isSuspended());
     }
 }

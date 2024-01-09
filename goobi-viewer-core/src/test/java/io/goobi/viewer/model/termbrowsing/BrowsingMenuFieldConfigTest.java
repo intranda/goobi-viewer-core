@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.termbrowsing;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
@@ -38,8 +38,8 @@ public class BrowsingMenuFieldConfigTest {
     public void setDocstructFilterString_shouldCreateFilterQueryCorrectly() throws Exception {
         BrowsingMenuFieldConfig bmfc =
                 new BrowsingMenuFieldConfig("MD_TITLE", "SORT_TITLE", "+(DOCSTRCT:monograph DOCSTRCT:manuscript)", false, false, false);
-        Assert.assertEquals(2, bmfc.getFilterQueries().size());
-        Assert.assertEquals("+(DOCSTRCT:monograph DOCSTRCT:manuscript)", bmfc.getFilterQueries().get(0));
+        Assertions.assertEquals(2, bmfc.getFilterQueries().size());
+        Assertions.assertEquals("+(DOCSTRCT:monograph DOCSTRCT:manuscript)", bmfc.getFilterQueries().get(0));
     }
 
     /**
@@ -49,8 +49,8 @@ public class BrowsingMenuFieldConfigTest {
     @Test
     public void setRecordsAndAnchorsOnly_shouldCreateFilterQueryCorrectly() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_TITLE", "SORT_TITLE", null, false, true, false);
-        Assert.assertEquals(2, bmfc.getFilterQueries().size());
-        Assert.assertEquals(SearchHelper.ALL_RECORDS_QUERY, bmfc.getFilterQueries().get(0));
+        Assertions.assertEquals(2, bmfc.getFilterQueries().size());
+        Assertions.assertEquals(SearchHelper.ALL_RECORDS_QUERY, bmfc.getFilterQueries().get(0));
     }
 
     /**
@@ -61,13 +61,13 @@ public class BrowsingMenuFieldConfigTest {
     public void addDoctypeFilterQuery_shouldAddDoctypeFilterIfFieldMDOrMD2() throws Exception {
         {
             BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_FOO", null, null, false, false, false);
-            Assert.assertEquals(1, bmfc.getFilterQueries().size());
-            Assert.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
+            Assertions.assertEquals(1, bmfc.getFilterQueries().size());
+            Assertions.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
         }
         {
             BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD2_FOO", null, null, false, false, false);
-            Assert.assertEquals(1, bmfc.getFilterQueries().size());
-            Assert.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
+            Assertions.assertEquals(1, bmfc.getFilterQueries().size());
+            Assertions.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
         }
     }
 
@@ -78,8 +78,8 @@ public class BrowsingMenuFieldConfigTest {
     @Test
     public void addDoctypeFilterQuery_shouldAddDoctypeFilterIfFieldDC() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig(SolrConstants.DC, null, null, false, false, false);
-        Assert.assertEquals(1, bmfc.getFilterQueries().size());
-        Assert.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
+        Assertions.assertEquals(1, bmfc.getFilterQueries().size());
+        Assertions.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
     }
 
     /**
@@ -89,8 +89,8 @@ public class BrowsingMenuFieldConfigTest {
     @Test
     public void addDoctypeFilterQuery_shouldAddDoctypeFilterIfFieldDOCSTRCT() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig(SolrConstants.DOCSTRCT, null, null, false, false, false);
-        Assert.assertEquals(1, bmfc.getFilterQueries().size());
-        Assert.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
+        Assertions.assertEquals(1, bmfc.getFilterQueries().size());
+        Assertions.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
     }
 
     /**
@@ -100,6 +100,6 @@ public class BrowsingMenuFieldConfigTest {
     @Test
     public void addDoctypeFilterQuery_shouldNotAddDoctypeFilterIfFieldNE() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("NE_FOO", null, null, false, false, false);
-        Assert.assertEquals(0, bmfc.getFilterQueries().size());
+        Assertions.assertEquals(0, bmfc.getFilterQueries().size());
     }
 }

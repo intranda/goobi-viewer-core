@@ -23,9 +23,9 @@ package io.goobi.viewer.model.rss;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.rometools.rome.feed.synd.SyndFeed;
 
@@ -33,7 +33,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 
 public class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
@@ -45,8 +45,8 @@ public class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void createRss_shouldProduceFeedCorrectly() throws Exception {
         SyndFeed feed = RSSFeed.createRss("https://example.com", "PI:*", null, "en", 10, null, true);
-        Assert.assertNotNull(feed);
-        Assert.assertEquals(10, feed.getEntries().size());
+        Assertions.assertNotNull(feed);
+        Assertions.assertEquals(10, feed.getEntries().size());
         // TODO in-detail assertions
     }
 
@@ -57,8 +57,8 @@ public class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void createRssFeed_shouldProduceFeedCorrectly() throws Exception {
         Channel channel = RSSFeed.createRssFeed("https://example.com", "PI:*", null, 10, "en", null, true);
-        Assert.assertNotNull(channel);
-        Assert.assertEquals(10, channel.getItems().size());
+        Assertions.assertNotNull(channel);
+        Assertions.assertEquals(10, channel.getItems().size());
         // TODO in-detail assertions
     }
 }

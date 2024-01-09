@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.citation;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import de.undercouch.citeproc.csl.CSLType;
 
@@ -34,15 +34,15 @@ public class CitationToolsTest {
      */
     @Test
     public void getCSLTypeForDocstrct_shouldReturnCorrectType() throws Exception {
-        Assert.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct(null, null));
-        Assert.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct("article", null));
-        Assert.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct("article", "Other"));
-        Assert.assertEquals(CSLType.ARTICLE_JOURNAL, CitationTools.getCSLTypeForDocstrct("article", "PeriodicalVolume"));
-        Assert.assertEquals(CSLType.ARTICLE_NEWSPAPER, CitationTools.getCSLTypeForDocstrct("article", "NewspaperIssue"));
-        Assert.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct("object", null));
-        Assert.assertEquals(CSLType.BOOK, CitationTools.getCSLTypeForDocstrct("monograph", null));
-        Assert.assertEquals(CSLType.CHAPTER, CitationTools.getCSLTypeForDocstrct("chapter", null));
-        Assert.assertEquals(CSLType.MANUSCRIPT, CitationTools.getCSLTypeForDocstrct("manuscript", null));
-        Assert.assertEquals(CSLType.MAP, CitationTools.getCSLTypeForDocstrct("SingleMap", null));
+        Assertions.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct(null, null));
+        Assertions.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct("article", null));
+        Assertions.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct("article", "Other"));
+        Assertions.assertEquals(CSLType.ARTICLE_JOURNAL, CitationTools.getCSLTypeForDocstrct("article", "PeriodicalVolume"));
+        Assertions.assertEquals(CSLType.ARTICLE_NEWSPAPER, CitationTools.getCSLTypeForDocstrct("article", "NewspaperIssue"));
+        Assertions.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct("object", null));
+        Assertions.assertEquals(CSLType.BOOK, CitationTools.getCSLTypeForDocstrct("monograph", null));
+        Assertions.assertEquals(CSLType.CHAPTER, CitationTools.getCSLTypeForDocstrct("chapter", null));
+        Assertions.assertEquals(CSLType.MANUSCRIPT, CitationTools.getCSLTypeForDocstrct("manuscript", null));
+        Assertions.assertEquals(CSLType.MAP, CitationTools.getCSLTypeForDocstrct("SingleMap", null));
     }
 }

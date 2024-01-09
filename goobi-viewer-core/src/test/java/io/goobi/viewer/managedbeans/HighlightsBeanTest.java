@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -41,7 +41,7 @@ public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);
     ImageDeliveryBean imaging = Mockito.mock(ImageDeliveryBean.class);
     
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         super.setUp();
         bean = new HighlightsBean(DataManager.getInstance().getDao(), navigationHelper, imaging);

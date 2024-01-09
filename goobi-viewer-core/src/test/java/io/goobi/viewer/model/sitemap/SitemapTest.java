@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.model.sitemap;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,8 +31,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Element;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -54,8 +54,8 @@ public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
     public void createUrlElement_shouldCreateLocElementCorrectly() throws Exception {
         Sitemap sitemap = new Sitemap();
         Element eleUrl = sitemap.createUrlElement("https://foo.bar", null, null, null);
-        Assert.assertNotNull(eleUrl);
-        Assert.assertEquals("https://foo.bar", eleUrl.getChildText("loc", Sitemap.nsSitemap));
+        Assertions.assertNotNull(eleUrl);
+        Assertions.assertEquals("https://foo.bar", eleUrl.getChildText("loc", Sitemap.nsSitemap));
     }
 
     /**
@@ -66,8 +66,8 @@ public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
     public void createUrlElement_shouldCreateLastmodElementCorrectly() throws Exception {
         Sitemap sitemap = new Sitemap();
         Element eleUrl = sitemap.createUrlElement("https://foo.bar", "2018-08-21", null, null);
-        Assert.assertNotNull(eleUrl);
-        Assert.assertEquals("2018-08-21", eleUrl.getChildText("lastmod", Sitemap.nsSitemap));
+        Assertions.assertNotNull(eleUrl);
+        Assertions.assertEquals("2018-08-21", eleUrl.getChildText("lastmod", Sitemap.nsSitemap));
     }
 
     @Test

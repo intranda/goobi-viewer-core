@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.text.StringEscapeUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.translations.TranslatedText;
 
@@ -49,14 +49,14 @@ public class TranslatedTextConverterTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
@@ -67,7 +67,7 @@ public class TranslatedTextConverterTest {
         value.setText(ENGLISHVALUE, Locale.ENGLISH);
 
         String json = converter.convertToDatabaseColumn(value);
-        Assert.assertEquals(EXPECTED_JSON, json);
+        Assertions.assertEquals(EXPECTED_JSON, json);
 
     }
 
@@ -76,10 +76,10 @@ public class TranslatedTextConverterTest {
 
         TranslatedText value = converter.convertToEntityAttribute(JSON);
 
-        Assert.assertEquals(locales.size(), value.getValues().size());
-        Assert.assertEquals(GERMANVALUE, value.getText(Locale.GERMAN));
-        Assert.assertEquals(ENGLISHVALUE, value.getText(Locale.ENGLISH));
-        Assert.assertEquals("", value.getText(Locale.CHINESE));
+        Assertions.assertEquals(locales.size(), value.getValues().size());
+        Assertions.assertEquals(GERMANVALUE, value.getText(Locale.GERMAN));
+        Assertions.assertEquals(ENGLISHVALUE, value.getText(Locale.ENGLISH));
+        Assertions.assertEquals("", value.getText(Locale.CHINESE));
 
 
     }
@@ -92,8 +92,8 @@ public class TranslatedTextConverterTest {
         String json = converter.convertToDatabaseColumn(value);
         TranslatedText restoredValue = converter.convertToEntityAttribute(json);
 
-        Assert.assertEquals(GERMANVALUE, restoredValue.getValue(Locale.GERMAN).orElse(null));
-        Assert.assertNull(restoredValue.getValue(Locale.ENGLISH).orElse(null));
+        Assertions.assertEquals(GERMANVALUE, restoredValue.getValue(Locale.GERMAN).orElse(null));
+        Assertions.assertNull(restoredValue.getValue(Locale.ENGLISH).orElse(null));
 
 
     }

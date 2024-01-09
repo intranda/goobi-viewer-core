@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -31,9 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -54,7 +54,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     private SearchBean searchBean;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         searchBean = new SearchBean();
@@ -67,9 +67,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void clearSearchItemLists_shouldClearMapCorrectly() throws Exception {
         searchBean.getAdvancedSearchSelectItems(SolrConstants.DOCSTRCT, "en", false);
-        Assert.assertFalse(searchBean.getAdvancedSearchSelectItems().isEmpty());
+        Assertions.assertFalse(searchBean.getAdvancedSearchSelectItems().isEmpty());
         searchBean.clearSearchItemLists();
-        Assert.assertTrue(searchBean.getAdvancedSearchSelectItems().isEmpty());
+        Assertions.assertTrue(searchBean.getAdvancedSearchSelectItems().isEmpty());
     }
 
     /**
@@ -165,7 +165,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.getFacets().setActiveFacetString("-");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         assertEquals(SolrConstants.DC, item.getField());
-        Assert.assertNull(item.getValue());
+        Assertions.assertNull(item.getValue());
     }
 
     /**
@@ -285,8 +285,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void generateSimpleSearchString_shouldAddProximitySearchTokenCorrectly() throws Exception {
         // All
         searchBean.generateSimpleSearchString("\"foo bar\"~20");
-        Assert.assertTrue(searchBean.getSearchStringInternal().contains("SUPERFULLTEXT:(\"foo bar\"~20)"));
-        Assert.assertTrue(searchBean.getSearchStringInternal().contains(" FULLTEXT:(\"foo bar\"~20)"));
+        Assertions.assertTrue(searchBean.getSearchStringInternal().contains("SUPERFULLTEXT:(\"foo bar\"~20)"));
+        Assertions.assertTrue(searchBean.getSearchStringInternal().contains(" FULLTEXT:(\"foo bar\"~20)"));
 
         // Just full-text
         searchBean.setCurrentSearchFilterString("filter_FULLTEXT");
@@ -383,13 +383,13 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("bar");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         searchBean.generateAdvancedSearchString();
 
@@ -410,13 +410,13 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("bar");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         searchBean.generateAdvancedSearchString();
 
@@ -436,13 +436,13 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         searchBean.generateAdvancedSearchString();
 
@@ -464,13 +464,13 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         searchBean.generateAdvancedSearchString();
 
@@ -494,13 +494,13 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         searchBean.generateAdvancedSearchString();
 
@@ -519,7 +519,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         searchBean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
         assertEquals(2, searchBean.getFacets().getActiveFacets().size());
-        Assert.assertTrue(searchBean.getFacets().getActiveFacets().get(0).isHierarchial());
+        Assertions.assertTrue(searchBean.getFacets().getActiveFacets().get(0).isHierarchial());
 
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
         item.setField(SolrConstants.DC);
@@ -553,7 +553,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getSearchUrl_shouldReturnNullIfNavigationHelperIsNull() throws Exception {
-        Assert.assertNull(searchBean.getSearchUrl());
+        Assertions.assertNull(searchBean.getSearchUrl());
     }
 
     /**
@@ -692,9 +692,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
                     break;
             }
         }
-        Assert.assertTrue(en);
-        Assert.assertFalse(de);
-        Assert.assertFalse(es);
+        Assertions.assertTrue(en);
+        Assertions.assertFalse(de);
+        Assertions.assertFalse(es);
     }
 
     /**
@@ -866,7 +866,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void searchAdvanced_shouldGenerateSearchStringCorrectly() throws Exception {
-        Assert.assertTrue(StringUtils.isEmpty(searchBean.getSearchStringInternal()));
+        Assertions.assertTrue(StringUtils.isEmpty(searchBean.getSearchStringInternal()));
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setField(SolrConstants.PI);
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setValue(PI_KLEIUNIV);
         searchBean.searchAdvanced(false);
@@ -894,7 +894,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void searchToday_shouldSetSearchStringCorrectly() throws Exception {
         searchBean.searchToday();
-        Assert.assertTrue(searchBean.getSearchStringInternal().startsWith(SolrConstants.MONTHDAY));
+        Assertions.assertTrue(searchBean.getSearchStringInternal().startsWith(SolrConstants.MONTHDAY));
     }
 
     /**
@@ -948,7 +948,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.setActiveResultGroupName("stories");
 
         List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
-        Assert.assertFalse(items.isEmpty());
+        Assertions.assertFalse(items.isEmpty());
         items.get(0).setOperator(SearchItemOperator.NOT);
         items.get(0).setValue("foo bar");
 
@@ -965,7 +965,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // Template group, reset
         sb.setActiveResultGroupName("lido_objects");
         assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
-        Assert.assertNull(items.get(0).getValue());
+        Assertions.assertNull(items.get(0).getValue());
     }
 
     /**
@@ -978,13 +978,13 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.setActiveResultGroupName("lido_objects");
 
         List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
-        Assert.assertFalse(items.isEmpty());
+        Assertions.assertFalse(items.isEmpty());
         items.get(0).setOperator(SearchItemOperator.NOT);
         items.get(0).setValue("foo bar");
 
         // No group, reset
         sb.setActiveResultGroupName("-");
         assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
-        Assert.assertNull(items.get(0).getValue());
+        Assertions.assertNull(items.get(0).getValue());
     }
 }

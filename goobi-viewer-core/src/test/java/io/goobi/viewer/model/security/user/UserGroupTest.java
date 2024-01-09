@@ -23,8 +23,8 @@ package io.goobi.viewer.model.security.user;
 
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -39,18 +39,18 @@ public class UserGroupTest extends AbstractDatabaseEnabledTest {
     public void getMemberCount_shouldCountCorrectly() throws Exception {
         {   //owner + user
             UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
-            Assert.assertNotNull(ug);
-            Assert.assertEquals(2, ug.getMemberCount());
+            Assertions.assertNotNull(ug);
+            Assertions.assertEquals(2, ug.getMemberCount());
         }
         {   //only owner
             UserGroup ug = DataManager.getInstance().getDao().getUserGroup(2);
-            Assert.assertNotNull(ug);
-            Assert.assertEquals(1, ug.getMemberCount());
+            Assertions.assertNotNull(ug);
+            Assertions.assertEquals(1, ug.getMemberCount());
         }
         {   //owner + two users including owner
             UserGroup ug = DataManager.getInstance().getDao().getUserGroup(3);
-            Assert.assertNotNull(ug);
-            Assert.assertEquals(2, ug.getMemberCount());
+            Assertions.assertNotNull(ug);
+            Assertions.assertEquals(2, ug.getMemberCount());
         }
     }
 
@@ -61,10 +61,10 @@ public class UserGroupTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getMembers_shouldReturnAllMembers() throws Exception {
         UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
-        Assert.assertNotNull(ug);
+        Assertions.assertNotNull(ug);
         Set<User> members = ug.getMembers();
-        Assert.assertEquals(1, members.size());
-        Assert.assertEquals(Long.valueOf(2), members.iterator().next().getId());
+        Assertions.assertEquals(1, members.size());
+        Assertions.assertEquals(Long.valueOf(2), members.iterator().next().getId());
     }
 
     /**
@@ -75,18 +75,18 @@ public class UserGroupTest extends AbstractDatabaseEnabledTest {
     public void getMembersAndOwner_shouldReturnAllMembersAndOwner() throws Exception {
         {
         UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
-        Assert.assertNotNull(ug);
-        Assert.assertEquals(2, ug.getMembersAndOwner().size());
+        Assertions.assertNotNull(ug);
+        Assertions.assertEquals(2, ug.getMembersAndOwner().size());
         }
         {
             UserGroup ug = DataManager.getInstance().getDao().getUserGroup(2);
-            Assert.assertNotNull(ug);
-            Assert.assertEquals(1, ug.getMembersAndOwner().size());
+            Assertions.assertNotNull(ug);
+            Assertions.assertEquals(1, ug.getMembersAndOwner().size());
         }
         {
             UserGroup ug = DataManager.getInstance().getDao().getUserGroup(3);
-            Assert.assertNotNull(ug);
-            Assert.assertEquals(2, ug.getMembersAndOwner().size());
+            Assertions.assertNotNull(ug);
+            Assertions.assertEquals(2, ug.getMembersAndOwner().size());
         }
     }
 }

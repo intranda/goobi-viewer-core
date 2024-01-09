@@ -21,15 +21,15 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
@@ -53,7 +53,7 @@ public class DisclaimerBeanTest extends AbstractTest {
     private ActiveDocumentBean activeDocumentBean;
     private UserBean userBean;
 
-    @Before
+    @BeforeEach
     public void setup() throws DAOException, PresentationException, IndexUnreachableException {
         storedDisclaimer = new Disclaimer();
         storedDisclaimer.getText().setText("Trigger Warnung", Locale.GERMAN);

@@ -26,8 +26,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
@@ -40,13 +40,13 @@ public class TEIToolsTest extends AbstractTest {
     @Test
     public void getTeiFulltext_shouldExtractFulltextCorrectly() throws Exception {
         Path path = Paths.get("src/test/resources/data/viewer/tei/DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
-        Assert.assertTrue(Files.isRegularFile(path));
+        Assertions.assertTrue(Files.isRegularFile(path));
         String tei = FileTools.getStringFromFile(path.toFile(), StringTools.DEFAULT_ENCODING);
-        Assert.assertFalse(StringUtils.isEmpty(tei));
-        Assert.assertTrue(tei.contains("<note>"));
+        Assertions.assertFalse(StringUtils.isEmpty(tei));
+        Assertions.assertTrue(tei.contains("<note>"));
         String text = TEITools.getTeiFulltext(tei);
-        Assert.assertFalse(StringUtils.isEmpty(text));
-        Assert.assertFalse(text.contains("<note>"));
+        Assertions.assertFalse(StringUtils.isEmpty(text));
+        Assertions.assertFalse(text.contains("<note>"));
     }
 
 }

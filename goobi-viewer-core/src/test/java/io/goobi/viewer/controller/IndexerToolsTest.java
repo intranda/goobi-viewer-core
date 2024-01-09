@@ -27,8 +27,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
@@ -46,8 +46,8 @@ public class IndexerToolsTest extends AbstractTest {
         }
         Path file = Paths.get(hotfolder.toAbsolutePath().toString(), "PPN123.delete");
         try {
-            Assert.assertTrue(IndexerTools.deleteRecord("PPN123", true, hotfolder));
-            Assert.assertTrue(Files.isRegularFile(file));
+            Assertions.assertTrue(IndexerTools.deleteRecord("PPN123", true, hotfolder));
+            Assertions.assertTrue(Files.isRegularFile(file));
         } finally {
             if (Files.isRegularFile(file)) {
                 Files.delete(file);
@@ -70,8 +70,8 @@ public class IndexerToolsTest extends AbstractTest {
         }
         Path file = Paths.get(hotfolder.toAbsolutePath().toString(), "PPN123.purge");
         try {
-            Assert.assertTrue(IndexerTools.deleteRecord("PPN123", false, hotfolder));
-            Assert.assertTrue(Files.isRegularFile(file));
+            Assertions.assertTrue(IndexerTools.deleteRecord("PPN123", false, hotfolder));
+            Assertions.assertTrue(Files.isRegularFile(file));
         } finally {
             if (Files.isRegularFile(file)) {
                 Files.delete(file);
@@ -93,9 +93,9 @@ public class IndexerToolsTest extends AbstractTest {
             if (!Files.exists(hotfolder)) {
                 Files.createDirectory(hotfolder);
             }
-            Assert.assertTrue(Files.isDirectory(hotfolder));
+            Assertions.assertTrue(Files.isDirectory(hotfolder));
 
-            Assert.assertEquals("foo", IndexerTools.findNamingScheme("foo", "xml"));
+            Assertions.assertEquals("foo", IndexerTools.findNamingScheme("foo", "xml"));
         } finally {
             FileUtils.deleteDirectory(hotfolder.toFile());
         }
@@ -112,13 +112,13 @@ public class IndexerToolsTest extends AbstractTest {
             if (!Files.exists(hotfolder)) {
                 Files.createDirectory(hotfolder);
             }
-            Assert.assertTrue(Files.isDirectory(hotfolder));
+            Assertions.assertTrue(Files.isDirectory(hotfolder));
 
             Path dataFolder = Paths.get(hotfolder.toAbsolutePath().toString(), "foo_data");
             Files.createDirectory(dataFolder);
-            Assert.assertTrue(Files.isDirectory(dataFolder));
+            Assertions.assertTrue(Files.isDirectory(dataFolder));
 
-            Assert.assertTrue(IndexerTools.findNamingScheme("foo", "xml", dataFolder.toFile()).startsWith("foo#"));
+            Assertions.assertTrue(IndexerTools.findNamingScheme("foo", "xml", dataFolder.toFile()).startsWith("foo#"));
         } finally {
             FileUtils.deleteDirectory(hotfolder.toFile());
         }

@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class VersionTest {
 
@@ -36,8 +36,8 @@ public class VersionTest {
      */
     @Test
     public void getInfo_shouldExtractFieldsCorrectly() throws Exception {
-        Assert.assertEquals("20.01", Version.getInfo("Public-Version", MANIFEST));
-        Assert.assertEquals("Apache Maven", Version.getInfo("Created-By", MANIFEST));
-        Assert.assertEquals("2020-01-15 18:30", Version.getInfo("Implementation-Build-Date", MANIFEST));
+        Assertions.assertEquals("20.01", Version.getInfo("Public-Version", MANIFEST));
+        Assertions.assertEquals("Apache Maven", Version.getInfo("Created-By", MANIFEST));
+        Assertions.assertEquals("2020-01-15 18:30", Version.getInfo("Implementation-Build-Date", MANIFEST));
     }
 }

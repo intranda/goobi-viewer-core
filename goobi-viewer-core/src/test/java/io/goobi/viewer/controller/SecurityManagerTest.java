@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.controller;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
@@ -34,7 +34,7 @@ public class SecurityManagerTest extends AbstractTest {
      */
     @Test
     public void getDelay_shouldReturnZeroIfAttemptsZero() throws Exception {
-        Assert.assertEquals(0, SecurityManager.getDelay(0, 0, System.currentTimeMillis()));
+        Assertions.assertEquals(0, SecurityManager.getDelay(0, 0, System.currentTimeMillis()));
     }
 
     /**
@@ -43,7 +43,7 @@ public class SecurityManagerTest extends AbstractTest {
      */
     @Test
     public void getDelay_shouldReturnZeroIfTimeBetweenLastAttemptAndNowLargerThanDelay() throws Exception {
-        Assert.assertEquals(0, SecurityManager.getDelay(1, 1000, 5000));
+        Assertions.assertEquals(0, SecurityManager.getDelay(1, 1000, 5000));
     }
 
     /**
@@ -52,6 +52,6 @@ public class SecurityManagerTest extends AbstractTest {
      */
     @Test
     public void getDelay_shouldReturnDelayIfTimeBetweenLastAttemptAndNowSmallerThanDelay() throws Exception {
-        Assert.assertEquals(500, SecurityManager.getDelay(1, 1000, 3500));
+        Assertions.assertEquals(500, SecurityManager.getDelay(1, 1000, 3500));
     }
 }

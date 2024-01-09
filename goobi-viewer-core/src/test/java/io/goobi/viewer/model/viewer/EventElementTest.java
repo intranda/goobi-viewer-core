@@ -24,9 +24,9 @@ package io.goobi.viewer.model.viewer;
 import java.util.Locale;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
@@ -45,8 +45,8 @@ public class EventElementTest extends AbstractTest {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTDATE, "2018-11-23");
         EventElement ee = new EventElement(doc, null, false);
-        Assert.assertNotNull(ee.getDateStart());
-        Assert.assertEquals("2018-11-23", DateTools.format(ee.getDateStart(), DateTools.formatterISO8601Date, false));
+        Assertions.assertNotNull(ee.getDateStart());
+        Assertions.assertEquals("2018-11-23", DateTools.format(ee.getDateStart(), DateTools.formatterISO8601Date, false));
     }
 
     /**
@@ -58,8 +58,8 @@ public class EventElementTest extends AbstractTest {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTDATESTART, "2018-11-23");
         EventElement ee = new EventElement(doc, null, false);
-        Assert.assertNotNull(ee.getDateEnd());
-        Assert.assertEquals("2018-11-23", DateTools.format(ee.getDateEnd(), DateTools.formatterISO8601Date, false));
+        Assertions.assertNotNull(ee.getDateEnd());
+        Assertions.assertEquals("2018-11-23", DateTools.format(ee.getDateEnd(), DateTools.formatterISO8601Date, false));
     }
 
     /**
@@ -71,7 +71,7 @@ public class EventElementTest extends AbstractTest {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTTYPE, "Creation");
         EventElement ee = new EventElement(doc, null, false);
-        Assert.assertEquals("Creation", ee.getLabel());
+        Assertions.assertEquals("Creation", ee.getLabel());
     }
 
     /**
@@ -84,7 +84,7 @@ public class EventElementTest extends AbstractTest {
         doc.setField(SolrConstants.EVENTTYPE, "Creation");
         doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");
         EventElement ee = new EventElement(doc, null, false);
-        Assert.assertEquals("Creation", ee.getLabel());
+        Assertions.assertEquals("Creation", ee.getLabel());
     }
 
     /**
@@ -97,9 +97,9 @@ public class EventElementTest extends AbstractTest {
         doc.setField(SolrConstants.EVENTTYPE, "Creation");
         doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");
         EventElement ee = new EventElement(doc, null, true); // search mode
-        Assert.assertNotNull(ee.getSearchHitMetadata());
-        Assert.assertNull(ee.getMetadata());
-        Assert.assertNull(ee.getSidebarMetadata());
+        Assertions.assertNotNull(ee.getSearchHitMetadata());
+        Assertions.assertNull(ee.getMetadata());
+        Assertions.assertNull(ee.getSidebarMetadata());
         // TODO test case with actual metadata values
     }
 
@@ -113,9 +113,9 @@ public class EventElementTest extends AbstractTest {
         doc.setField(SolrConstants.EVENTTYPE, "Creation");
         doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");
         EventElement ee = new EventElement(doc, null, false); // non search mode
-        Assert.assertNull(ee.getSearchHitMetadata());
-        Assert.assertNotNull(ee.getMetadata());
-        Assert.assertNotNull(ee.getSidebarMetadata());
+        Assertions.assertNull(ee.getSearchHitMetadata());
+        Assertions.assertNotNull(ee.getMetadata());
+        Assertions.assertNotNull(ee.getSidebarMetadata());
         // TODO test case with actual metadata values
     }
 }

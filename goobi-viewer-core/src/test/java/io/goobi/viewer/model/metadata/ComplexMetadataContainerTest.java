@@ -21,15 +21,15 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.solr.SolrConstants;
@@ -39,7 +39,7 @@ public class ComplexMetadataContainerTest extends AbstractTest {
     List<SolrDocument> metadataDocs;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {   
 
         metadataDocs = List.of(

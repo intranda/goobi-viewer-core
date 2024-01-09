@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,8 +34,8 @@ import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class StringToolsTest {
 
@@ -141,7 +141,7 @@ public class StringToolsTest {
         assertTrue(Files.isRegularFile(file));
 
         String html = FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
-        Assert.assertNotNull(html);
+        Assertions.assertNotNull(html);
         assertTrue(html.contains(".20Formatvorlage"));
         assertTrue(html.contains("class=\"20Formatvorlage"));
 

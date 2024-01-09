@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,7 +35,7 @@ import java.util.stream.StreamSupport;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.solr.SolrConstants;

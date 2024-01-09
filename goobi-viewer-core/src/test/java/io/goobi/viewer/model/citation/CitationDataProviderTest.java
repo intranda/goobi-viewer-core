@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLType;
@@ -53,14 +53,14 @@ public class CitationDataProviderTest extends AbstractTest {
             CitationDataProvider provider = new CitationDataProvider();
             provider.addItemData("id", fields, CSLType.BOOK);
             CSLItemData itemData = provider.retrieveItem("id");
-            Assert.assertNotNull(itemData);
-            Assert.assertNotNull(itemData.getAuthor());
-            Assert.assertEquals(1, itemData.getAuthor().length);
-            Assert.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
-            Assert.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
-            Assert.assertEquals("2017-04-11", itemData.getIssued().getRaw());
-            Assert.assertNull(itemData.getIssued().getDateParts());
-            Assert.assertEquals("https://example.com/9780606412148", itemData.getURL());
+            Assertions.assertNotNull(itemData);
+            Assertions.assertNotNull(itemData.getAuthor());
+            Assertions.assertEquals(1, itemData.getAuthor().length);
+            Assertions.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
+            Assertions.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
+            Assertions.assertEquals("2017-04-11", itemData.getIssued().getRaw());
+            Assertions.assertNull(itemData.getIssued().getDateParts());
+            Assertions.assertEquals("https://example.com/9780606412148", itemData.getURL());
 
         }
         {
@@ -70,11 +70,11 @@ public class CitationDataProviderTest extends AbstractTest {
             //            CitationDataProvider provider = new CitationDataProvider();
             //            provider.addItemData("id", fields, CSLType.BOOK);
             //            CSLItemData itemData =provider.retrieveItem("id");
-            //            Assert.assertNotNull(itemData);
-            //            Assert.assertNotNull(itemData.getAuthor());
-            //            Assert.assertEquals(1, itemData.getAuthor().length);
-            //            Assert.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
-            //            Assert.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
+            //            Assertions.assertNotNull(itemData);
+            //            Assertions.assertNotNull(itemData.getAuthor());
+            //            Assertions.assertEquals(1, itemData.getAuthor().length);
+            //            Assertions.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
+            //            Assertions.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
         }
     }
 
@@ -93,13 +93,13 @@ public class CitationDataProviderTest extends AbstractTest {
         CitationDataProvider provider = new CitationDataProvider();
         provider.addItemData("id", fields, CSLType.BOOK);
         CSLItemData itemData = provider.retrieveItem("id");
-        Assert.assertNotNull(itemData);
-        Assert.assertNotNull(itemData.getAuthor());
-        Assert.assertEquals(1, itemData.getAuthor().length);
-        Assert.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
-        Assert.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
-        Assert.assertNull(itemData.getIssued().getRaw());
-        Assert.assertEquals(2017, itemData.getIssued().getDateParts()[0][0]);
+        Assertions.assertNotNull(itemData);
+        Assertions.assertNotNull(itemData.getAuthor());
+        Assertions.assertEquals(1, itemData.getAuthor().length);
+        Assertions.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
+        Assertions.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
+        Assertions.assertNull(itemData.getIssued().getRaw());
+        Assertions.assertEquals(2017, itemData.getIssued().getDateParts()[0][0]);
 
     }
 }

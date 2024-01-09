@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.faces.converters;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.Collections;
 
 import javax.faces.component.UIComponent;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**

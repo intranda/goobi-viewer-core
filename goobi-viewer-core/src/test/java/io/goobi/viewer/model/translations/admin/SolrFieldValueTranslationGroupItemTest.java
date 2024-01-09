@@ -24,8 +24,8 @@ package io.goobi.viewer.model.translations.admin;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
@@ -41,7 +41,7 @@ public class SolrFieldValueTranslationGroupItemTest extends AbstractSolrEnabledT
     public void loadEntries_shouldLoadHierarchicalEntriesCorrectly() throws Exception {
         TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_VALUES, SolrConstants.DC, false);
         item.loadEntries();
-        Assert.assertFalse(item.getEntries().isEmpty());
+        Assertions.assertFalse(item.getEntries().isEmpty());
         Map<String, Integer> keys = new HashMap<>();
         for (MessageEntry entry : item.getEntries()) {
             Integer count = keys.get(entry.getKey());
@@ -51,8 +51,8 @@ public class SolrFieldValueTranslationGroupItemTest extends AbstractSolrEnabledT
                 keys.put(entry.getKey(), count + 1);
             }
         }
-        Assert.assertEquals(Integer.valueOf(1), keys.get("dcimage")); // Parent keys should only be added once
-        Assert.assertEquals(Integer.valueOf(1), keys.get("dcimage.many"));
-        Assert.assertEquals(Integer.valueOf(1), keys.get("dcimage.png"));
+        Assertions.assertEquals(Integer.valueOf(1), keys.get("dcimage")); // Parent keys should only be added once
+        Assertions.assertEquals(Integer.valueOf(1), keys.get("dcimage.many"));
+        Assertions.assertEquals(Integer.valueOf(1), keys.get("dcimage.png"));
     }
 }

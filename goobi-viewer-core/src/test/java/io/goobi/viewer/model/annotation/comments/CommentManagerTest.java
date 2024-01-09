@@ -21,18 +21,18 @@
  */
 package io.goobi.viewer.model.annotation.comments;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -69,7 +69,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     private IDAO dao;
     private ChangeNotificator notificator;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
@@ -151,8 +151,8 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getNotificationUserGroupsForRecord_shouldReturnUserGroupsForMatchingCommentViews() throws Exception {
         Set<UserGroup> result = CommentManager.getNotificationUserGroupsForRecord("02008011811811");
-        Assert.assertNotNull(result);
-        Assert.assertEquals(2, result.size());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.size());
     }
 
     /**
@@ -161,7 +161,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void isUserHasAccessToCommentGroups_shouldReturnFalseIfUserNull() throws Exception {
-        Assert.assertFalse(CommentManager.isUserHasAccessToCommentGroups(null));
+        Assertions.assertFalse(CommentManager.isUserHasAccessToCommentGroups(null));
     }
 
     /**
@@ -172,7 +172,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void isUserHasAccessToCommentGroups_shouldReturnTrueIfUserAdmin() throws Exception {
         User admin = new User();
         admin.setSuperuser(true);
-        Assert.assertTrue(CommentManager.isUserHasAccessToCommentGroups(admin));
+        Assertions.assertTrue(CommentManager.isUserHasAccessToCommentGroups(admin));
     }
 
     /**
@@ -182,8 +182,8 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void isUserHasAccessToCommentGroups_shouldReturnTrueIfUserOwnerOfUserGroupLinkedToCommentGroup() throws Exception {
         User owner = DataManager.getInstance().getDao().getUser(1);
-        Assert.assertNotNull(owner);
-        Assert.assertTrue(CommentManager.isUserHasAccessToCommentGroups(owner));
+        Assertions.assertNotNull(owner);
+        Assertions.assertTrue(CommentManager.isUserHasAccessToCommentGroups(owner));
     }
 
     /**
@@ -193,7 +193,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void isUserHasAccessToCommentGroups_shouldReturnTrueIfUserMemberOfUserGroupLinkedToCommentGroup() throws Exception {
         User member = DataManager.getInstance().getDao().getUser(2);
-        Assert.assertNotNull(member);
-        Assert.assertTrue(CommentManager.isUserHasAccessToCommentGroups(member));
+        Assertions.assertNotNull(member);
+        Assertions.assertTrue(CommentManager.isUserHasAccessToCommentGroups(member));
     }
 }

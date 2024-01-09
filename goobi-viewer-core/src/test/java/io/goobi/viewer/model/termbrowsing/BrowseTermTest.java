@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.termbrowsing;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class BrowseTermTest {
 
@@ -33,12 +33,12 @@ public class BrowseTermTest {
     @Test
     public void addToHitCount_shouldAddToHitCountCorrectly() throws Exception {
         BrowseTerm browseTerm = new BrowseTerm("foo", null, null);
-        Assert.assertEquals(0, browseTerm.getHitCount());
+        Assertions.assertEquals(0, browseTerm.getHitCount());
 
         browseTerm.addToHitCount(1);
-        Assert.assertEquals(1, browseTerm.getHitCount());
+        Assertions.assertEquals(1, browseTerm.getHitCount());
 
         browseTerm.addToHitCount(2);
-        Assert.assertEquals(3, browseTerm.getHitCount());
+        Assertions.assertEquals(3, browseTerm.getHitCount());
     }
 }

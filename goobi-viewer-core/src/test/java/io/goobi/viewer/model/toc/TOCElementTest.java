@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.model.toc;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -32,7 +32,7 @@ import io.goobi.viewer.model.viewer.PageType;
 
 public class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
@@ -40,7 +40,7 @@ public class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -53,9 +53,9 @@ public class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     public void TOCElement_shouldAddLogIdToUrl() throws Exception {
         TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, true, false, true,
                 "image", null, null);
-        Assert.assertEquals("LOG_0001", tef.getLogId());
-        Assert.assertTrue(tef.getUrl().endsWith("/LOG_0001/"));
-        Assert.assertTrue(tef.getFullscreenUrl().endsWith("/LOG_0001/"));
+        Assertions.assertEquals("LOG_0001", tef.getLogId());
+        Assertions.assertTrue(tef.getUrl().endsWith("/LOG_0001/"));
+        Assertions.assertTrue(tef.getFullscreenUrl().endsWith("/LOG_0001/"));
     }
 
     /**
@@ -66,8 +66,8 @@ public class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     public void TOCElement_shouldSetCorrectViewUrlForGivenDocStructType() throws Exception {
         TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, true, false, true,
                 "image", "Catalogue", null);
-        Assert.assertEquals("LOG_0001", tef.getLogId());
-        Assert.assertTrue(tef.getUrl().contains("/" + PageType.viewToc.getName() + "/"));
+        Assertions.assertEquals("LOG_0001", tef.getLogId());
+        Assertions.assertTrue(tef.getUrl().contains("/" + PageType.viewToc.getName() + "/"));
 
     }
 
@@ -79,7 +79,7 @@ public class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getUrl_shouldConstructFullScreenUrlCorrectly() throws Exception {
         TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, true,
                 "image", null, null);
-        Assert.assertEquals('/' + PageType.viewFullscreen.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewFullscreen.getName()));
+        Assertions.assertEquals('/' + PageType.viewFullscreen.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewFullscreen.getName()));
     }
 
     /**
@@ -90,6 +90,6 @@ public class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getUrl_shouldConstructReadingModeUrlCorrectly() throws Exception {
         TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, true,
                 "image", null, null);
-        Assert.assertEquals('/' + PageType.viewFullscreen.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewFullscreen.getName()));
+        Assertions.assertEquals('/' + PageType.viewFullscreen.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewFullscreen.getName()));
     }
 }

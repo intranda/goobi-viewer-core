@@ -21,16 +21,16 @@
  */
 package io.goobi.viewer.model.cms.pages;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -48,7 +48,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     CMSTemplateManager templateManager;
     CMSPageContentManager contentManager;
     
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();

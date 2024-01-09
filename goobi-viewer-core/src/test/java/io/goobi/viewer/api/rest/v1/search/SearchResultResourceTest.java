@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.api.rest.v1.search;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class SearchResultResourceTest {
 
@@ -32,6 +32,6 @@ public class SearchResultResourceTest {
      */
     @Test
     public void getSearchHitChildren_shouldReturnNullIfSearchHitsNull() throws Exception {
-        Assert.assertNull(SearchResultResource.getSearchHitChildren(null, "123", 1, null, null));
+        Assertions.assertNull(SearchResultResource.getSearchHitChildren(null, "123", 1, null, null));
     }
 }

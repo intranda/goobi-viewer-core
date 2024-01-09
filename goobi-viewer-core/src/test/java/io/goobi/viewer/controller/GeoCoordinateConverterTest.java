@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.controller;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import io.goobi.viewer.AbstractTest;
 
 public class GeoCoordinateConverterTest extends AbstractTest {
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         super.setUp();
     }

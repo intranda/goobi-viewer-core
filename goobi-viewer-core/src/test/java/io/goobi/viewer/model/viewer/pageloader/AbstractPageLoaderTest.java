@@ -25,8 +25,8 @@ import java.util.Locale;
 
 import javax.faces.model.SelectItem;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -41,7 +41,7 @@ public class AbstractPageLoaderTest extends AbstractTest {
     public void buildPageLabelTemplate_shouldReplaceNumpagesCurrectly() throws Exception {
         StructElement se = new StructElement();
         EagerPageLoader loader = new EagerPageLoader(se);
-        Assert.assertEquals("foo 0 bar", loader.buildPageLabelTemplate("foo {numpages} bar", null));
+        Assertions.assertEquals("foo 0 bar", loader.buildPageLabelTemplate("foo {numpages} bar", null));
     }
 
     /**
@@ -52,7 +52,7 @@ public class AbstractPageLoaderTest extends AbstractTest {
     public void buildPageLabelTemplate_shouldReplaceMessageKeysCorrectly() throws Exception {
         StructElement se = new StructElement();
         EagerPageLoader loader = new EagerPageLoader(se);
-        Assert.assertEquals("1 of 10", loader.buildPageLabelTemplate("1 {msg.of} 10", null));
+        Assertions.assertEquals("1 of 10", loader.buildPageLabelTemplate("1 {msg.of} 10", null));
     }
 
     /**
@@ -62,9 +62,9 @@ public class AbstractPageLoaderTest extends AbstractTest {
     @Test
     public void buildPageSelectItem_shouldConstructSinglePageItemCorrectly() throws Exception {
         SelectItem si = AbstractPageLoader.buildPageSelectItem("{order}: {orderlabel}", 1, "one", null, null);
-        Assert.assertNotNull(si);
-        Assert.assertEquals("1: one", si.getLabel());
-        Assert.assertEquals("1", si.getValue());
+        Assertions.assertNotNull(si);
+        Assertions.assertEquals("1: one", si.getLabel());
+        Assertions.assertEquals("1", si.getValue());
     }
 
     /**
@@ -74,8 +74,8 @@ public class AbstractPageLoaderTest extends AbstractTest {
     @Test
     public void buildPageSelectItem_shouldConstructDoublePageItemCorrectly() throws Exception {
         SelectItem si = AbstractPageLoader.buildPageSelectItem("{order}: {orderlabel}", 1, "one", 2, "two");
-        Assert.assertNotNull(si);
-        Assert.assertEquals("1-2: one - two", si.getLabel());
-        Assert.assertEquals("1-2", si.getValue());
+        Assertions.assertNotNull(si);
+        Assertions.assertEquals("1-2: one - two", si.getLabel());
+        Assertions.assertEquals("1-2", si.getValue());
     }
 }

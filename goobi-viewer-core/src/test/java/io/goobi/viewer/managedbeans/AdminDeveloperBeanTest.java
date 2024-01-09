@@ -2,8 +2,8 @@ package io.goobi.viewer.managedbeans;
 
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,9 +14,9 @@ import java.util.Collections;
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.controller.Configuration;
@@ -30,7 +30,7 @@ public class AdminDeveloperBeanTest {
     Path configPath = Path.of("src/test/resources/localConfig");
     Path zipPath = Path.of("src/test/resources/output/viewer_dump");
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         config = Mockito.mock(Configuration.class);
         Mockito.when(config.getTheme()).thenReturn("reference");
@@ -70,7 +70,7 @@ public class AdminDeveloperBeanTest {
 
     }
 
-    @After
+    @AfterEach
     public void after() throws IOException {
         if(Files.isDirectory(zipPath)) {
             FileUtils.cleanDirectory(zipPath.toFile());

@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
@@ -32,7 +32,7 @@ import io.goobi.viewer.controller.DataManager;
 public class PageTypeTest extends AbstractTest {
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -43,7 +43,7 @@ public class PageTypeTest extends AbstractTest {
      */
     @Test
     public void determinePageType_shouldReturnConfiguredPageTypeCorrectly() throws Exception {
-        Assert.assertEquals(PageType.viewToc, PageType.determinePageType("Catalogue", null, false, true, false));
+        Assertions.assertEquals(PageType.viewToc, PageType.determinePageType("Catalogue", null, false, true, false));
     }
 
     /**
@@ -52,7 +52,7 @@ public class PageTypeTest extends AbstractTest {
      */
     @Test
     public void determinePageType_shouldReturnMetadataPageTypeForApplicationMimeType() throws Exception {
-        Assert.assertEquals(PageType.viewMetadata, PageType.determinePageType("Monograph", "application", false, false, false));
+        Assertions.assertEquals(PageType.viewMetadata, PageType.determinePageType("Monograph", "application", false, false, false));
     }
 
     /**
@@ -61,7 +61,7 @@ public class PageTypeTest extends AbstractTest {
      */
     @Test
     public void determinePageType_shouldReturnTocPageTypeForAnchors() throws Exception {
-        Assert.assertEquals(PageType.viewToc, PageType.determinePageType("Periodical", null, true, false, false));
+        Assertions.assertEquals(PageType.viewToc, PageType.determinePageType("Periodical", null, true, false, false));
     }
 
     /**
@@ -70,7 +70,7 @@ public class PageTypeTest extends AbstractTest {
      */
     @Test
     public void determinePageType_shouldReturnImagePageTypeCorrectly() throws Exception {
-        Assert.assertEquals(PageType.viewObject, PageType.determinePageType("Monograph", null, false, true, false));
+        Assertions.assertEquals(PageType.viewObject, PageType.determinePageType("Monograph", null, false, true, false));
     }
 
     /**
@@ -79,7 +79,7 @@ public class PageTypeTest extends AbstractTest {
      */
     @Test
     public void determinePageType_shouldReturnMedatataPageTypeIfNothingElseMatches() throws Exception {
-        Assert.assertEquals(PageType.viewMetadata, PageType.determinePageType("Monograph", null, false, false, false));
+        Assertions.assertEquals(PageType.viewMetadata, PageType.determinePageType("Monograph", null, false, false, false));
     }
 
     /**
@@ -88,7 +88,7 @@ public class PageTypeTest extends AbstractTest {
      */
     @Test
     public void getByName_shouldReturnCorrectTypeForRawNames() throws Exception {
-        Assert.assertEquals(PageType.viewFulltext, PageType.getByName("fulltext"));
+        Assertions.assertEquals(PageType.viewFulltext, PageType.getByName("fulltext"));
     }
 
     /**
@@ -97,7 +97,7 @@ public class PageTypeTest extends AbstractTest {
      */
     @Test
     public void getByName_shouldReturnCorrectTypeForMappedNames() throws Exception {
-        Assert.assertEquals(PageType.viewImage, PageType.getByName("image"));
+        Assertions.assertEquals(PageType.viewImage, PageType.getByName("image"));
     }
 
     /**
@@ -106,7 +106,7 @@ public class PageTypeTest extends AbstractTest {
      */
     @Test
     public void getByName_shouldReturnCorrectTypeForEnumNames() throws Exception {
-        Assert.assertEquals(PageType.viewFulltext, PageType.getByName("viewFulltext"));
+        Assertions.assertEquals(PageType.viewFulltext, PageType.getByName("viewFulltext"));
     }
 
     /**
@@ -115,6 +115,6 @@ public class PageTypeTest extends AbstractTest {
      */
     @Test
     public void getByName_shouldReturnCorrectTypeIfNameStartsWithMetadata() throws Exception {
-        Assert.assertEquals(PageType.viewMetadata, PageType.getByName("metadata_other"));
+        Assertions.assertEquals(PageType.viewMetadata, PageType.getByName("metadata_other"));
     }
 }

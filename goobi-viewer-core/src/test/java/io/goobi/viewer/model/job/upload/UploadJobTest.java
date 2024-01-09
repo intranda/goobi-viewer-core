@@ -23,8 +23,8 @@ package io.goobi.viewer.model.job.upload;
 
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -46,17 +46,17 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
         uj.setDescription("Lorem ipsum dolor sit amet...");
 
         ProcessCreationRequest result = uj.buildProcessCreationRequest();
-        Assert.assertNotNull(result);
-        Assert.assertEquals("Sample_workflow", result.getTemplateName());
-        Assert.assertEquals("PPN123", result.getIdentifier());
-        Assert.assertEquals("viewer_PPN123", result.getProcesstitle());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("Sample_workflow", result.getTemplateName());
+        Assertions.assertEquals("PPN123", result.getIdentifier());
+        Assertions.assertEquals("viewer_PPN123", result.getProcesstitle());
 
-        Assert.assertNotNull(result.getMetadata());
-        Assert.assertEquals("Lorem ipsum", result.getMetadata().get("TitleDocMain"));
-        Assert.assertEquals("Lorem ipsum dolor sit amet...", result.getMetadata().get("Description"));
+        Assertions.assertNotNull(result.getMetadata());
+        Assertions.assertEquals("Lorem ipsum", result.getMetadata().get("TitleDocMain"));
+        Assertions.assertEquals("Lorem ipsum dolor sit amet...", result.getMetadata().get("Description"));
 
-        Assert.assertNotNull(result.getProperties());
-        Assert.assertEquals("a@b.com", result.getProperties().get("email"));
+        Assertions.assertNotNull(result.getProperties());
+        Assertions.assertEquals("a@b.com", result.getProperties().get("email"));
     }
 
     /**
@@ -66,9 +66,9 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
     @Test
     public void updateStatus_shouldDoNothingIfResponseNull() throws Exception {
         UploadJob uj = new UploadJob();
-        Assert.assertEquals(JobStatus.UNDEFINED, uj.getStatus());
-        Assert.assertFalse(uj.updateStatus(null));
-        Assert.assertEquals(JobStatus.UNDEFINED, uj.getStatus());
+        Assertions.assertEquals(JobStatus.UNDEFINED, uj.getStatus());
+        Assertions.assertFalse(uj.updateStatus(null));
+        Assertions.assertEquals(JobStatus.UNDEFINED, uj.getStatus());
     }
 
     /**
@@ -81,8 +81,8 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
         ProcessStatusResponse psr = new ProcessStatusResponse();
         psr.setId(0);
         psr.setCreationDate(null);
-        Assert.assertTrue(uj.updateStatus(psr));
-        Assert.assertEquals(JobStatus.ERROR, uj.getStatus());
+        Assertions.assertTrue(uj.updateStatus(psr));
+        Assertions.assertEquals(JobStatus.ERROR, uj.getStatus());
 
     }
 
@@ -102,9 +102,9 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
         psr.getProperties()
                 .add(new PropertyResponse().setTitle(DataManager.getInstance().getConfiguration().getContentUploadRejectionReasonPropertyName())
                         .setValue("Not good enough"));
-        Assert.assertTrue(uj.updateStatus(psr));
-        Assert.assertEquals(JobStatus.ERROR, uj.getStatus());
-        Assert.assertEquals("Not good enough", uj.getMessage());
+        Assertions.assertTrue(uj.updateStatus(psr));
+        Assertions.assertEquals(JobStatus.ERROR, uj.getStatus());
+        Assertions.assertEquals("Not good enough", uj.getMessage());
     }
 
     /**
@@ -118,8 +118,8 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
         ProcessStatusResponse psr = new ProcessStatusResponse();
         psr.setId(1);
         psr.setCreationDate(new Date());
-        Assert.assertTrue(uj.updateStatus(psr));
-        Assert.assertEquals(JobStatus.READY, uj.getStatus());
+        Assertions.assertTrue(uj.updateStatus(psr));
+        Assertions.assertEquals(JobStatus.READY, uj.getStatus());
     }
 
     //    /**
@@ -134,7 +134,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
     //        psr.setCreationDate(new Date());
     //        psr.setProcessCompleted(true);
     //        uj.updateStatus(psr);
-    //        Assert.assertEquals(JobStatus.READY, uj.getStatus());
+    //        Assertions.assertEquals(JobStatus.READY, uj.getStatus());
     //    }
 
     //    /**
@@ -153,6 +153,6 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
     //        sr.setStatus("Completed");
     //        psr.getStep().add(sr);
     //        uj.updateStatus(psr);
-    //        Assert.assertEquals(JobStatus.READY, uj.getStatus());
+    //        Assertions.assertEquals(JobStatus.READY, uj.getStatus());
     //    }
 }

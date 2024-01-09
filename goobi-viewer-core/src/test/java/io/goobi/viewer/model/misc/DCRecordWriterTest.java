@@ -22,10 +22,10 @@
 package io.goobi.viewer.model.misc;
 
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -43,14 +43,14 @@ public class DCRecordWriterTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
@@ -61,7 +61,7 @@ public class DCRecordWriterTest {
         writer.addDCMetadata("identifier", "ID");
 
         String xml = writer.getAsString().replaceAll("[\n\r]+",  "").replaceAll("\\s+", " ");
-        Assert.assertEquals(RECORD_REFERENCE, xml);
+        Assertions.assertEquals(RECORD_REFERENCE, xml);
     }
 
 }

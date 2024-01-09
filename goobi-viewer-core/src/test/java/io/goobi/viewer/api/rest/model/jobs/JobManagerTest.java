@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.api.rest.model.jobs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -31,8 +31,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.Task.TaskStatus;
@@ -51,7 +51,7 @@ public class JobManagerTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         manager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
     }

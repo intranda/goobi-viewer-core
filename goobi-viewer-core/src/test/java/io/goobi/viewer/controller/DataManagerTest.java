@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.IModule;
@@ -181,7 +181,7 @@ public class DataManagerTest {
                 return 0;
             }
         }
-        Assert.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
-        Assert.assertFalse(DataManager.getInstance().registerModule(new TestModule()));
+        Assertions.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
+        Assertions.assertFalse(DataManager.getInstance().registerModule(new TestModule()));
     }
 }

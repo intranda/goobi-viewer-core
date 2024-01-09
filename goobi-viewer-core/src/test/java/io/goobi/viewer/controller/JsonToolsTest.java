@@ -24,9 +24,9 @@ package io.goobi.viewer.controller;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -37,7 +37,7 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final String PI = PI_KLEIUNIV;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
@@ -50,25 +50,27 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getRecordJsonObject_shouldAddAllMetadata() throws Exception {
         String rootUrl = "http://localhost:8080/viewer";
         QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + PI, 0, 1, null, null, null);
-        Assert.assertFalse("Required Solr document not found in index: " + PI, response.getResults().isEmpty());
+        Assertions.assertFalse(response.getResults().isEmpty(), "Required Solr document not found in index: " + PI);
         SolrDocument doc = response.getResults().get(0);
         JSONObject json = JsonTools.getRecordJsonObject(doc, rootUrl, BeanUtils.getImageDeliveryBean().getThumbs());
-        Assert.assertNotNull(json);
-        Assert.assertTrue(json.has("id"));
-        Assert.assertEquals(PI, json.get("id"));
-        Assert.assertEquals(doc.getFieldValue(SolrConstants.TITLE), json.get("title"));
-        Assert.assertEquals(doc.getFieldValue(SolrConstants.DATECREATED), json.get("dateCreated"));
-        //        Assert.assertEquals(doc.getFieldValues("MD_PERSON_UNTOKENIZED"), json.get("personList"));
-        Assert.assertEquals(doc.getFieldValue(SolrConstants.DC), json.get("collection"));
+        Assertions.assertNotNull(json);
+        Assertions.assertTrue(json.has("id"));
+        Assertions.assertEquals(PI, json.get("id"));
+        Assertions.assertEquals(doc.getFieldValue(SolrConstants.TITLE), json.get("title"));
+        Assertions.assertEquals(doc.getFieldValue(SolrConstants.DATECREATED), json.get("dateCreated"));
+        //        Assertions.assertEquals(doc.getFieldValues("MD_PERSON_UNTOKENIZED"), json.get("personList"));
+        Assertions.assertEquals(doc.getFieldValue(SolrConstants.DC), json.get("collection"));
         // URL root depends on the current config state and may vary, so only compare the args
         String thumbnailUrl = (String) json.get("thumbnailUrl");
-        Assert.assertTrue("Thumbnail url was: " + ((String) json.get("thumbnailUrl")), thumbnailUrl
-                .contains("records/" + PI + "/files/images/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!100,120/0/default.jpg"));
+        Assertions.assertTrue(thumbnailUrl
+                .contains("records/" + PI + "/files/images/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!100,120/0/default.jpg"),
+                "Thumbnail url was: " + ((String) json.get("thumbnailUrl")));
         // URL root depends on the current config state and may variate, so only compare the args
-        Assert.assertTrue("Image url was " + thumbnailUrl, ((String) json.get("mediumimage"))
-                .contains("records/" + PI + "/files/images/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!600,500/0/default.jpg"));
-        Assert.assertEquals(rootUrl + "/" + PageType.viewObject.getName() + "/" + PI + "/", json.get("url"));
-        //        Assert.assertEquals(doc.getFieldValue(SolrConstants._CALENDAR_YEAR), json.get("date"));
+        Assertions.assertTrue(((String) json.get("mediumimage"))
+                .contains("records/" + PI + "/files/images/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!600,500/0/default.jpg"),
+                "Image url was " + thumbnailUrl);
+        Assertions.assertEquals(rootUrl + "/" + PageType.viewObject.getName() + "/" + PI + "/", json.get("url"));
+        //        Assertions.assertEquals(doc.getFieldValue(SolrConstants._CALENDAR_YEAR), json.get("date"));
     }
 
     /**
@@ -77,7 +79,7 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void formatVersionString_shouldFormatStringCorrectly() throws Exception {
-        Assert.assertEquals("goobi-viewer-core 1337 2020-06-30 abcdefg",
+        Assertions.assertEquals("goobi-viewer-core 1337 2020-06-30 abcdefg",
                 JsonTools.formatVersionString(
                         "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
     }
@@ -88,7 +90,7 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void formatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() throws Exception {
-        Assert.assertEquals("admin__dashboard_versions_not_available", JsonTools.formatVersionString("not json"));
+        Assertions.assertEquals("admin__dashboard_versions_not_available", JsonTools.formatVersionString("not json"));
     }
 
     /**
@@ -97,7 +99,7 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void shortFormatVersionString_shouldFormatStringCorrectly() throws Exception {
-        Assert.assertEquals("1337 (abcdefg)",
+        Assertions.assertEquals("1337 (abcdefg)",
                 JsonTools.shortFormatVersionString(
                         "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
     }
@@ -108,6 +110,6 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void shortFormatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() throws Exception {
-        Assert.assertEquals("admin__dashboard_versions_not_available", JsonTools.shortFormatVersionString("not json"));
+        Assertions.assertEquals("admin__dashboard_versions_not_available", JsonTools.shortFormatVersionString("not json"));
     }
 }

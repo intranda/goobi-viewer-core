@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -52,7 +52,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getDaysLeft_shouldReturn1IfNoDateEnd() throws Exception {
         Campaign campaign = new Campaign();
-        Assert.assertEquals(-1, campaign.getDaysLeft());
+        Assertions.assertEquals(-1, campaign.getDaysLeft());
     }
 
     /**
@@ -65,12 +65,12 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         {
             LocalDateTime later = LocalDateTime.now().plusDays(99);
             campaign.setDateEnd(later);
-            Assert.assertEquals(99, campaign.getDaysLeft());
+            Assertions.assertEquals(99, campaign.getDaysLeft());
         }
         {
             LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
             campaign.setDateEnd(earlier);
-            Assert.assertEquals(0, campaign.getDaysLeft());
+            Assertions.assertEquals(0, campaign.getDaysLeft());
         }
     }
 
@@ -81,7 +81,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getDaysBeforeStart_shouldReturn1IfNoDateStart() throws Exception {
         Campaign campaign = new Campaign();
-        Assert.assertEquals(-1, campaign.getDaysBeforeStart());
+        Assertions.assertEquals(-1, campaign.getDaysBeforeStart());
     }
 
     /**
@@ -94,12 +94,12 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         {
             LocalDateTime later = LocalDateTime.now().plusDays(15);
             campaign.setDateStart(later);
-            Assert.assertEquals(15, campaign.getDaysBeforeStart());
+            Assertions.assertEquals(15, campaign.getDaysBeforeStart());
         }
         {
             LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
             campaign.setDateStart(earlier);
-            Assert.assertEquals(0, campaign.getDaysBeforeStart());
+            Assertions.assertEquals(0, campaign.getDaysBeforeStart());
         }
     }
 
@@ -111,7 +111,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     public void isHasEnded_shouldReturnFalseIfDateEndNull() throws Exception {
         Campaign campaign = new Campaign();
         campaign.setTimePeriodEnabled(true);
-        Assert.assertFalse(campaign.isHasEnded());
+        Assertions.assertFalse(campaign.isHasEnded());
     }
 
     /**
@@ -124,7 +124,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
         campaign.setDateEnd(earlier);
         campaign.setTimePeriodEnabled(true);
-        Assert.assertTrue(campaign.isHasEnded());
+        Assertions.assertTrue(campaign.isHasEnded());
     }
 
     /**
@@ -137,7 +137,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         LocalDateTime later = LocalDateTime.now().plusDays(20);
         campaign.setDateEnd(later);
         campaign.setTimePeriodEnabled(true);
-        Assert.assertFalse(campaign.isHasEnded());
+        Assertions.assertFalse(campaign.isHasEnded());
     }
 
     /**
@@ -149,7 +149,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = new Campaign();
         LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
         campaign.setDateEnd(earlier);
-        Assert.assertFalse(campaign.isHasEnded());
+        Assertions.assertFalse(campaign.isHasEnded());
     }
 
     /**
@@ -159,7 +159,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     public void isHasStarted_shouldReturnTrueIfDateStartNull() throws Exception {
         Campaign campaign = new Campaign();
-        Assert.assertTrue(campaign.isHasStarted());
+        Assertions.assertTrue(campaign.isHasStarted());
         campaign.setTimePeriodEnabled(true);
         campaign.setTimePeriodEnabled(true);
     }
@@ -173,7 +173,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = new Campaign();
         campaign.setDateStart(LocalDateTime.now());
         campaign.setTimePeriodEnabled(true);
-        Assert.assertTrue(campaign.isHasStarted());
+        Assertions.assertTrue(campaign.isHasStarted());
     }
 
     /**
@@ -186,7 +186,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         LocalDateTime later = LocalDateTime.now().plusDays(-20);
         campaign.setDateStart(later);
         campaign.setTimePeriodEnabled(true);
-        Assert.assertTrue(campaign.isHasStarted());
+        Assertions.assertTrue(campaign.isHasStarted());
     }
 
     /**
@@ -199,7 +199,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         LocalDateTime later = LocalDateTime.now().plusDays(20);
         campaign.setDateStart(later);
         campaign.setTimePeriodEnabled(true);
-        Assert.assertFalse(campaign.isHasStarted());
+        Assertions.assertFalse(campaign.isHasStarted());
     }
 
     /**
@@ -212,7 +212,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         LocalDateTime later = LocalDateTime.now().plusDays(-20);
         campaign.setDateStart(later);
         campaign.setTimePeriodEnabled(true);
-        Assert.assertTrue(campaign.isHasStarted());
+        Assertions.assertTrue(campaign.isHasStarted());
     }
 
     /**
@@ -224,7 +224,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = new Campaign();
         campaign.setVisibility(CampaignVisibility.PUBLIC);
         campaign.getQuestions().add(new Question(campaign));
-        Assert.assertTrue(campaign.isUserAllowedAction(null, CrowdsourcingStatus.ANNOTATE));
+        Assertions.assertTrue(campaign.isUserAllowedAction(null, CrowdsourcingStatus.ANNOTATE));
     }
 
     /**
@@ -241,7 +241,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setTimePeriodEnabled(true);
         campaign.setDateStart(LocalDateTime.of(2000, 01, 01, 0, 0));
         campaign.setDateEnd(LocalDateTime.of(2001, 01, 01, 0, 0));
-        Assert.assertFalse(campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE));
+        Assertions.assertFalse(campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE));
     }
 
     /**
@@ -256,7 +256,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(new UserGroup());
         campaign.getUserGroup().setOwner(user);
-        Assert.assertTrue(campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE));
+        Assertions.assertTrue(campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE));
     }
 
     /**
@@ -266,18 +266,18 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     public void isUserAllowedAction_shouldReturnTrueIfUserMemberOfGroup() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assert.assertNotNull(userGroup);
+        Assertions.assertNotNull(userGroup);
         Role role = DataManager.getInstance().getDao().getRole(1);
-        Assert.assertNotNull(role);
+        Assertions.assertNotNull(role);
 
         Campaign campaign = new Campaign();
         campaign.getQuestions().add(new Question(campaign));
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(userGroup);
         campaign.getUserGroup().addMember(user, role);
-        Assert.assertTrue(campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE));
+        Assertions.assertTrue(campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE));
     }
 
     /**
@@ -290,7 +290,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = new Campaign();
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(new UserGroup());
-        Assert.assertFalse(campaign.isUserMayEdit(user));
+        Assertions.assertFalse(campaign.isUserMayEdit(user));
     }
 
     /**
@@ -304,7 +304,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(new UserGroup());
         campaign.getUserGroup().setOwner(user);
-        Assert.assertFalse(campaign.isUserMayEdit(null));
+        Assertions.assertFalse(campaign.isUserMayEdit(null));
     }
 
     /**
@@ -318,7 +318,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(new UserGroup());
         campaign.getUserGroup().setOwner(user);
-        Assert.assertTrue(campaign.isUserMayEdit(user));
+        Assertions.assertTrue(campaign.isUserMayEdit(user));
     }
 
     /**
@@ -333,7 +333,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(new UserGroup());
         campaign.getUserGroup().setOwner(user);
-        Assert.assertFalse(campaign.isUserMayEdit(user));
+        Assertions.assertFalse(campaign.isUserMayEdit(user));
     }
 
     /**
@@ -346,7 +346,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = new Campaign();
         campaign.setUserGroup(new UserGroup());
         campaign.getUserGroup().setOwner(user);
-        Assert.assertFalse(campaign.isUserMayEdit(user));
+        Assertions.assertFalse(campaign.isUserMayEdit(user));
     }
 
     /**
@@ -358,7 +358,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         User user = new User();
         Campaign campaign = new Campaign();
         campaign.setLimitToGroup(true);
-        Assert.assertFalse(campaign.isUserMayEdit(user));
+        Assertions.assertFalse(campaign.isUserMayEdit(user));
     }
 
     /**
@@ -372,7 +372,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(new UserGroup());
         campaign.getUserGroup().setOwner(user);
-        Assert.assertTrue(campaign.isUserMayEdit(user));
+        Assertions.assertTrue(campaign.isUserMayEdit(user));
     }
 
     /**
@@ -382,17 +382,17 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     public void isUserMayEdit_shouldReturnTrueIfUserMember() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assert.assertNotNull(userGroup);
+        Assertions.assertNotNull(userGroup);
         Role role = DataManager.getInstance().getDao().getRole(1);
-        Assert.assertNotNull(role);
+        Assertions.assertNotNull(role);
 
         Campaign campaign = new Campaign();
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(userGroup);
         campaign.getUserGroup().addMember(user, role);
-        Assert.assertTrue(campaign.isUserMayEdit(user));
+        Assertions.assertTrue(campaign.isUserMayEdit(user));
     }
 
     /**
@@ -404,7 +404,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = new Campaign();
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(new UserGroup());
-        Assert.assertTrue(campaign.isGroupLimitActive());
+        Assertions.assertTrue(campaign.isGroupLimitActive());
     }
 
     /**
@@ -416,7 +416,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = new Campaign();
         campaign.setLimitToGroup(false);
         campaign.setUserGroup(new UserGroup());
-        Assert.assertFalse(campaign.isGroupLimitActive());
+        Assertions.assertFalse(campaign.isGroupLimitActive());
     }
 
     /**
@@ -427,7 +427,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     public void isGroupLimitActive_shouldReturnFalseIfUserGroupNull() throws Exception {
         Campaign campaign = new Campaign();
         campaign.setLimitToGroup(true);
-        Assert.assertFalse(campaign.isGroupLimitActive());
+        Assertions.assertFalse(campaign.isGroupLimitActive());
     }
 
     /**
@@ -452,7 +452,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
             statistic.setStatus(CrowdsourcingStatus.REVIEW);
             campaign.getStatistics().put("PI3", statistic);
         }
-        Assert.assertEquals(2, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
+        Assertions.assertEquals(2, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
     }
 
     /**
@@ -505,8 +505,8 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
             }
             campaign.getStatistics().put("PI3", statistic);
         }
-        Assert.assertEquals(4, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
-        Assert.assertEquals(1, campaign.getNumRecordsForStatus(CrowdsourcingStatus.REVIEW.name()));
+        Assertions.assertEquals(4, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
+        Assertions.assertEquals(1, campaign.getNumRecordsForStatus(CrowdsourcingStatus.REVIEW.name()));
     }
 
     @Test

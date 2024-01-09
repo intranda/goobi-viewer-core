@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
@@ -56,7 +56,7 @@ public class ApiUrlManagerTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.manager = new ApiUrls(HOST_URL);
     }
@@ -64,7 +64,7 @@ public class ApiUrlManagerTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 

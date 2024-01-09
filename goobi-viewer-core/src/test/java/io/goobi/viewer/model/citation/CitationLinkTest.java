@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.citation;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.viewer.ViewManager;
@@ -37,11 +37,11 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
     @Test
     public void getUrl_shouldConstructInternalRecordUrlCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assert.assertNotNull(viewManager);
-        Assert.assertTrue(viewManager.getTopStructElementIddoc() == viewManager.getCurrentStructElementIddoc());
+        Assertions.assertNotNull(viewManager);
+        Assertions.assertTrue(viewManager.getTopStructElementIddoc() == viewManager.getCurrentStructElementIddoc());
 
         CitationLink link = new CitationLink("internal", "record", "foo");
-        Assert.assertEquals("/object/" + PI_KLEIUNIV + "/1/", link.getUrl(viewManager));
+        Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/1/", link.getUrl(viewManager));
     }
 
     /**
@@ -51,12 +51,12 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
     @Test
     public void getUrl_shouldConstructInternalDocstructUrlCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assert.assertNotNull(viewManager);
+        Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
-        Assert.assertFalse(viewManager.getTopStructElementIddoc() == viewManager.getCurrentStructElementIddoc());
+        Assertions.assertFalse(viewManager.getTopStructElementIddoc() == viewManager.getCurrentStructElementIddoc());
 
         CitationLink link = new CitationLink("internal", "docstruct", "foo").setField(SolrConstants.PI_TOPSTRUCT);
-        Assert.assertEquals("/object/" + PI_KLEIUNIV + "/5/LOG_0003/", link.getUrl(viewManager));
+        Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/5/LOG_0003/", link.getUrl(viewManager));
     }
 
     /**
@@ -66,11 +66,11 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
     @Test
     public void getUrl_shouldConstructInternalImageUrlCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assert.assertNotNull(viewManager);
+        Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);
 
         CitationLink link = new CitationLink("internal", "image", "foo");
-        Assert.assertEquals("/object/" + PI_KLEIUNIV + "/2/", link.getUrl(viewManager));
+        Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/2/", link.getUrl(viewManager));
     }
 
     /**
@@ -80,12 +80,12 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
     @Test
     public void getUrl_shouldConstructExternalUrlCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assert.assertNotNull(viewManager);
+        Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);
 
         CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.PI_TOPSTRUCT)
                 .setPattern("https://viewer.goobi.io/resolver?id={value}&page={page}");
-        Assert.assertEquals("https://viewer.goobi.io/resolver?id=" + PI_KLEIUNIV + "&page=2", link.getUrl(viewManager));
+        Assertions.assertEquals("https://viewer.goobi.io/resolver?id=" + PI_KLEIUNIV + "&page=2", link.getUrl(viewManager));
     }
 
     /**
@@ -95,10 +95,10 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
     @Test
     public void getValue_shouldReturnCorrectValueForRecordType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assert.assertNotNull(viewManager);
+        Assertions.assertNotNull(viewManager);
 
         CitationLink link = new CitationLink("url", "record", "foo").setField(SolrConstants.PI);
-        Assert.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
+        Assertions.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
     }
 
     /**
@@ -108,10 +108,10 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
     @Test
     public void getValue_shouldReturnCorrectValueForDocstructType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assert.assertNotNull(viewManager);
+        Assertions.assertNotNull(viewManager);
 
         CitationLink link = new CitationLink("url", "docstruct", "foo").setField(SolrConstants.PI);
-        Assert.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
+        Assertions.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
     }
 
     /**
@@ -121,11 +121,11 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
     @Test
     public void getValue_shouldReturnCorrectValueForImageType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assert.assertNotNull(viewManager);
+        Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
 
         CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.ORDER);
-        Assert.assertEquals("10", link.getValue(viewManager));
+        Assertions.assertEquals("10", link.getValue(viewManager));
     }
 
     /**
@@ -135,10 +135,10 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
     @Test
     public void getValue_shouldFallBackToTopstructValueCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assert.assertNotNull(viewManager);
+        Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
 
         CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.PI).setTopstructValueFallback(true);
-        Assert.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
+        Assertions.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
     }
 }

@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.model.maps;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -42,30 +42,30 @@ public class GeoMapMarkerTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
     public void testToJSONString() throws JsonProcessingException {
         String s = testObject.toJSONString();
-        Assert.assertEquals(testString, s);
+        Assertions.assertEquals(testString, s);
     }
 
     @Test
     public void testDeserialize() throws JsonMappingException, JsonProcessingException {
         GeoMapMarker m = GeoMapMarker.fromJSONString(testString);
-        Assert.assertEquals(testObject.getName(), m.getName());
-        Assert.assertEquals(testObject.getIconRotate(), m.getIconRotate());
-        Assert.assertEquals(testObject.getShape(), m.getShape());
-        Assert.assertEquals(testObject.isSvg(), m.isSvg());
+        Assertions.assertEquals(testObject.getName(), m.getName());
+        Assertions.assertEquals(testObject.getIconRotate(), m.getIconRotate());
+        Assertions.assertEquals(testObject.getShape(), m.getShape());
+        Assertions.assertEquals(testObject.isSvg(), m.isSvg());
     }
 
 }

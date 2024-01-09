@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.servlets;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.servlets.oembed.OEmbedRecord;
@@ -36,10 +36,10 @@ public class OEmbedServletTest extends AbstractSolrEnabledTest {
     @Test
     public void parseUrl_shouldParseUrlWithPageNumberCorrectly() throws Exception {
         OEmbedRecord rec = OEmbedServlet.parseUrl("/image/PPN517154005/2/");
-        Assert.assertNotNull(rec);
-        Assert.assertNotNull(rec.getPhysicalElement());
-        Assert.assertEquals("PPN517154005", rec.getPhysicalElement().getPi());
-        Assert.assertEquals(2, rec.getPhysicalElement().getOrder());
+        Assertions.assertNotNull(rec);
+        Assertions.assertNotNull(rec.getPhysicalElement());
+        Assertions.assertEquals("PPN517154005", rec.getPhysicalElement().getPi());
+        Assertions.assertEquals(2, rec.getPhysicalElement().getOrder());
 
     }
 
@@ -50,9 +50,9 @@ public class OEmbedServletTest extends AbstractSolrEnabledTest {
     @Test
     public void parseUrl_shouldParseUrlWithoutPageNumberCorrectly() throws Exception {
         OEmbedRecord rec = OEmbedServlet.parseUrl("/image/PPN517154005/");
-        Assert.assertNotNull(rec);
-        Assert.assertNotNull(rec.getPhysicalElement());
-        Assert.assertEquals(1, rec.getPhysicalElement().getOrder());
+        Assertions.assertNotNull(rec);
+        Assertions.assertNotNull(rec.getPhysicalElement());
+        Assertions.assertEquals(1, rec.getPhysicalElement().getOrder());
     }
 
     /**
@@ -61,6 +61,6 @@ public class OEmbedServletTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void parseUrl_shouldReturnNullIfUrlContainsNoPi() throws Exception {
-        Assert.assertNull(OEmbedServlet.parseUrl("/image/"));
+        Assertions.assertNull(OEmbedServlet.parseUrl("/image/"));
     }
 }

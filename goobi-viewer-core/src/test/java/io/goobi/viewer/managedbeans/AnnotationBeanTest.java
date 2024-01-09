@@ -23,10 +23,10 @@ package io.goobi.viewer.managedbeans;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -43,7 +43,7 @@ public class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         bean = new AnnotationBean();
@@ -55,7 +55,7 @@ public class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -75,21 +75,21 @@ public class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
 //        firstPageAnnotations.stream().map(anno -> anno.getGeneratorId()).forEach(System.out::println);
 //        firstPageAnnotations.stream().map(anno -> bean.getOwningCampaign(anno).orElse(null)).filter(c -> c != null).map(c -> c.getId()).forEach(System.out::println);
 
-        Assert.assertEquals(5, firstPageAnnotations.size());
+        Assertions.assertEquals(5, firstPageAnnotations.size());
     }
 
     @Test
     public void testGetAllAnnotationsOfCampaign() {
         bean.setOwnerCampaignId("1");
         List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();
-        Assert.assertEquals(3, firstPageAnnotations.size());
+        Assertions.assertEquals(3, firstPageAnnotations.size());
     }
 
     @Test
     public void testGetAllAnnotationsOfRecord() {
         bean.setTargetRecordPI("PI_2");
         List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();
-        Assert.assertEquals(2, firstPageAnnotations.size());
+        Assertions.assertEquals(2, firstPageAnnotations.size());
     }
 
 }

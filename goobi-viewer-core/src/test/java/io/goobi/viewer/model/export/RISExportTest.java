@@ -28,8 +28,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.solr.SolrConstants;
@@ -43,7 +43,7 @@ public class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void RISExport_shouldSetFileNameCorrectly() throws Exception {
         RISExport export = new RISExport();
-        Assert.assertNotNull(export.getFileName());
+        Assertions.assertNotNull(export.getFileName());
     }
 
     /**
@@ -54,7 +54,7 @@ public class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
     public void executeSearch_shouldExecuteSearchCorrectly() throws Exception {
         RISExport export = new RISExport();
         export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, Locale.ENGLISH, 0);
-        Assert.assertEquals(1, export.getSearchHits().size());
+        Assertions.assertEquals(1, export.getSearchHits().size());
     }
 
     /**
@@ -64,8 +64,8 @@ public class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void isHasResults_shouldReturnCorrectValue() throws Exception {
         RISExport export = new RISExport();
-        Assert.assertFalse(export.isHasResults());
+        Assertions.assertFalse(export.isHasResults());
         export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, Locale.ENGLISH, 0);
-        Assert.assertTrue(export.isHasResults());
+        Assertions.assertTrue(export.isHasResults());
     }
 }

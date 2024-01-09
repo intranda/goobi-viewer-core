@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.annotation;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
@@ -37,10 +37,10 @@ public class CommentTest {
     public void Comment_shouldConstructObjectCorrectly() throws Exception {
         User owner = new User();
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null, null);
-        Assert.assertEquals("PPN123", comment.getTargetPI());
-        Assert.assertEquals(owner, comment.getCreator());
-        Assert.assertEquals("comment text", comment.getText());
-        //        Assert.assertNull(comment.getParent());
+        Assertions.assertEquals("PPN123", comment.getTargetPI());
+        Assertions.assertEquals(owner, comment.getCreator());
+        Assertions.assertEquals("comment text", comment.getText());
+        //        Assertions.assertNull(comment.getParent());
     }
 
     /**
@@ -52,7 +52,7 @@ public class CommentTest {
         User owner = new User();
         owner.setId(1L);
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null, null);
-        Assert.assertTrue(comment.mayEdit(owner));
+        Assertions.assertTrue(comment.mayEdit(owner));
     }
 
     /**
@@ -63,7 +63,7 @@ public class CommentTest {
     public void mayEdit_shouldReturnFalseIfOwnerIdIsNull() throws Exception {
         User owner = new User(); // no ID set
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null, null);
-        Assert.assertFalse(comment.mayEdit(owner));
+        Assertions.assertFalse(comment.mayEdit(owner));
 
     }
 
@@ -75,7 +75,7 @@ public class CommentTest {
     public void mayEdit_shouldReturnFalseIfUserIsNull() throws Exception {
         User owner = new User();
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null, null);
-        Assert.assertFalse(comment.mayEdit(null));
+        Assertions.assertFalse(comment.mayEdit(null));
     }
 
     /**
@@ -89,6 +89,6 @@ public class CommentTest {
         Comment comment =
                 new Comment("PPN123", 1, owner, "foo <script type=\\\"javascript\\\">\\nfunction f {\\n alert();\\n}\\n</script> bar", null, null);
         String cleanedText = CommentManager.checkAndCleanScripts(comment.getText(), null, null, null);
-        Assert.assertEquals("foo  bar", cleanedText);
+        Assertions.assertEquals("foo  bar", cleanedText);
     }
 }

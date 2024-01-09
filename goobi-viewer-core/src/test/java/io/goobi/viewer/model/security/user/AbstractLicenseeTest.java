@@ -23,8 +23,8 @@ package io.goobi.viewer.model.security.user;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.AccessPermission;
 
@@ -36,7 +36,7 @@ public class AbstractLicenseeTest {
      */
     @Test
     public void getAccessPermissionFromMap_shouldReturnDeniedIfPermissionMapEmpty() throws Exception {
-        Assert.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.emptyMap()).isGranted());
+        Assertions.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.emptyMap()).isGranted());
     }
 
     /**
@@ -45,7 +45,7 @@ public class AbstractLicenseeTest {
      */
     @Test
     public void getAccessPermissionFromMap_shouldReturnDeniedIfAllPermissionsInMapDenied() throws Exception {
-        Assert.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.denied())).isGranted());
+        Assertions.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.denied())).isGranted());
     }
 
     /**
@@ -54,7 +54,7 @@ public class AbstractLicenseeTest {
      */
     @Test
     public void getAccessPermissionFromMap_shouldPreserveTicketRequired() throws Exception {
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.granted().setTicketRequired(true)))
                         .isTicketRequired());
     }
@@ -69,7 +69,7 @@ public class AbstractLicenseeTest {
                 AbstractLicensee
                         .getAccessPermissionFromMap(Collections.singletonMap("",
                                 AccessPermission.granted().setRedirect(true).setRedirectUrl("https://example.com")));
-        Assert.assertTrue(access.isRedirect());
-        Assert.assertEquals("https://example.com", access.getRedirectUrl());
+        Assertions.assertTrue(access.isRedirect());
+        Assertions.assertEquals("https://example.com", access.getRedirectUrl());
     }
 }

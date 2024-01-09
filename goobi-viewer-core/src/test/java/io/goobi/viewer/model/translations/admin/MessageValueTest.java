@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.translations.admin;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
@@ -34,7 +34,7 @@ public class MessageValueTest {
      */
     @Test
     public void getTranslationStatus_shouldReturnNoneStatusCorrectly() throws Exception {
-        Assert.assertEquals(TranslationStatus.NONE, new MessageValue("en", "", "value").getTranslationStatus());
+        Assertions.assertEquals(TranslationStatus.NONE, new MessageValue("en", "", "value").getTranslationStatus());
     }
 
     /**
@@ -43,7 +43,7 @@ public class MessageValueTest {
      */
     @Test
     public void getTranslationStatus_shouldReturnPartialStatusCorrectly() throws Exception {
-        Assert.assertEquals(TranslationStatus.PARTIAL, new MessageValue("en", "value zzz", "value").getTranslationStatus());
+        Assertions.assertEquals(TranslationStatus.PARTIAL, new MessageValue("en", "value zzz", "value").getTranslationStatus());
     }
 
     /**
@@ -52,7 +52,7 @@ public class MessageValueTest {
      */
     @Test
     public void getTranslationStatus_shouldReturnFullStatusCorrectly() throws Exception {
-        Assert.assertEquals(TranslationStatus.FULL, new MessageValue("en", "value", "value").getTranslationStatus());
+        Assertions.assertEquals(TranslationStatus.FULL, new MessageValue("en", "value", "value").getTranslationStatus());
     }
 
     /**
@@ -61,8 +61,8 @@ public class MessageValueTest {
      */
     @Test
     public void isDisplayHighlight_shouldReturnTrueIfStatusNoneOfPartial() throws Exception {
-        Assert.assertTrue(new MessageValue("en", "", "value").isDisplayHighlight());
-        Assert.assertTrue(new MessageValue("en", "value zzz", "value").isDisplayHighlight());
+        Assertions.assertTrue(new MessageValue("en", "", "value").isDisplayHighlight());
+        Assertions.assertTrue(new MessageValue("en", "value zzz", "value").isDisplayHighlight());
     }
 
     /**
@@ -71,6 +71,6 @@ public class MessageValueTest {
      */
     @Test
     public void isDisplayHighlight_shouldReturnFalseIfStatusFull() throws Exception {
-        Assert.assertFalse(new MessageValue("en", "value", "value").isDisplayHighlight());
+        Assertions.assertFalse(new MessageValue("en", "value", "value").isDisplayHighlight());
     }
 }

@@ -23,8 +23,8 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
@@ -37,7 +37,7 @@ public class MetadataElementTest {
     @Test
     public void isSkip_shouldReturnTrueIfMetadataListEmpty() throws Exception {
         MetadataElement me = new MetadataElement();
-        Assert.assertTrue(me.isSkip());
+        Assertions.assertTrue(me.isSkip());
 
     }
 
@@ -49,9 +49,9 @@ public class MetadataElementTest {
     public void isSkip_shouldReturnTrueIfAllMetadataFieldsBlank() throws Exception {
         MetadataElement me = new MetadataElement();
         me.getMetadataList().add(new Metadata());
-        Assert.assertTrue(me.getMetadataList().get(0).isBlank());
-        Assert.assertFalse(me.getMetadataList().get(0).isHideIfOnlyMetadataField());
-        Assert.assertTrue(me.isSkip());
+        Assertions.assertTrue(me.getMetadataList().get(0).isBlank());
+        Assertions.assertFalse(me.getMetadataList().get(0).isHideIfOnlyMetadataField());
+        Assertions.assertTrue(me.isSkip());
     }
 
     /**
@@ -65,17 +65,17 @@ public class MetadataElementTest {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
             md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
         {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
-        Assert.assertTrue(me.isSkip());
+        Assertions.assertTrue(me.isSkip());
     }
 
     /**
@@ -89,17 +89,17 @@ public class MetadataElementTest {
             Metadata md = new Metadata();
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
             md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
         {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
-        Assert.assertFalse(me.isSkip());
+        Assertions.assertFalse(me.isSkip());
     }
 
     /**
@@ -113,7 +113,7 @@ public class MetadataElementTest {
             Metadata md = new Metadata();
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
             md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
             md.setSingleString(true);
         }
@@ -121,11 +121,11 @@ public class MetadataElementTest {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
             md.setSingleString(false); // single string false
         }
-        Assert.assertFalse(me.isDisplayBoxed(0));
+        Assertions.assertFalse(me.isDisplayBoxed(0));
     }
 
     /**
@@ -139,7 +139,7 @@ public class MetadataElementTest {
             Metadata md = new Metadata();
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
             md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
             md.setSingleString(true);
         }
@@ -147,12 +147,12 @@ public class MetadataElementTest {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
             md.setSingleString(false); // single string false
             md.setType(1); //different type
         }
-        Assert.assertTrue(me.isDisplayBoxed(0));
+        Assertions.assertTrue(me.isDisplayBoxed(0));
     }
 
     /**
@@ -163,7 +163,7 @@ public class MetadataElementTest {
     public void getDocStructTypeLabel_shouldReturnDocstructTypeIfRecord() throws Exception {
         MetadataElement me = new MetadataElement();
         me.setDocStructType("manuscript");
-        Assert.assertEquals("manuscript", me.getDocStructTypeLabel());
+        Assertions.assertEquals("manuscript", me.getDocStructTypeLabel());
     }
 
     /**
@@ -175,6 +175,6 @@ public class MetadataElementTest {
         MetadataElement me = new MetadataElement();
         me.setDocStructType("_GROUPS");
         me.setGroupType("Series");
-        Assert.assertEquals("Series", me.getDocStructTypeLabel());
+        Assertions.assertEquals("Series", me.getDocStructTypeLabel());
     }
 }

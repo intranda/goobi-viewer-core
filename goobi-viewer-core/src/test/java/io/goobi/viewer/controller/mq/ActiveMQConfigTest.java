@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.controller.mq;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ActiveMQConfigTest {
 
@@ -35,7 +35,7 @@ public class ActiveMQConfigTest {
 
     ActiveMQConfig config;
     
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         this.config = new ActiveMQConfig(Paths.get(activeMqConfigPath));
     }

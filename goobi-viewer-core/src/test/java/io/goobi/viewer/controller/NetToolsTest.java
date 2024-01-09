@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.controller;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
@@ -34,7 +34,7 @@ public class NetToolsTest extends AbstractTest {
      */
     @Test
     public void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
-        Assert.assertEquals("3.3.3.3", NetTools.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
+        Assertions.assertEquals("3.3.3.3", NetTools.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
     }
 
     /**
@@ -43,8 +43,8 @@ public class NetToolsTest extends AbstractTest {
      */
     @Test
     public void scrambleEmailAddress_shouldModifyStringCorrectly() throws Exception {
-        Assert.assertEquals("foo***com", NetTools.scrambleEmailAddress("foo@bar.com"));
-        Assert.assertEquals("foo***com", NetTools.scrambleEmailAddress("foofoofoo@barbarbar.com"));
+        Assertions.assertEquals("foo***com", NetTools.scrambleEmailAddress("foo@bar.com"));
+        Assertions.assertEquals("foo***com", NetTools.scrambleEmailAddress("foofoofoo@barbarbar.com"));
     }
 
     /**
@@ -53,7 +53,7 @@ public class NetToolsTest extends AbstractTest {
      */
     @Test
     public void scrambleIpAddress_shouldModifyStringCorrectly() throws Exception {
-        Assert.assertEquals("192.168.X.X", NetTools.scrambleIpAddress("192.168.0.1"));
+        Assertions.assertEquals("192.168.X.X", NetTools.scrambleIpAddress("192.168.0.1"));
     }
 
     /**
@@ -62,13 +62,13 @@ public class NetToolsTest extends AbstractTest {
      */
     @Test
     public void buildClearCacheUrl_shouldBuildUrlCorrectly() throws Exception {
-        Assert.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true&thumbs=true&pdf=true",
+        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true&thumbs=true&pdf=true",
                 NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_ALL, "PPN123", "https://example.com/", "test"));
-        Assert.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true",
+        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true",
                 NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_CONTENT, "PPN123", "https://example.com/", "test"));
-        Assert.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&thumbs=true",
+        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&thumbs=true",
                 NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_THUMBS, "PPN123", "https://example.com/", "test"));
-        Assert.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&pdf=true",
+        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&pdf=true",
                 NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_PDF, "PPN123", "https://example.com/", "test"));
     }
 }

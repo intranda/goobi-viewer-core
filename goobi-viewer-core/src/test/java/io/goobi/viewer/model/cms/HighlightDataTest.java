@@ -21,15 +21,15 @@
  */
 package io.goobi.viewer.model.cms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -43,7 +43,7 @@ public class HighlightDataTest extends AbstractDatabaseEnabledTest {
 
     private IDAO dao;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         super.setUp();
         this.dao = DataManager.getInstance().getDao();

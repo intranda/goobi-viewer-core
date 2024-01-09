@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.faces.validators;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.faces.validators.EmailValidator;
 
@@ -34,9 +34,9 @@ public class EmailValidatorTest {
      */
     @Test
     public void validateEmailAddress_shouldMatchCorrectEmailAddresses() throws Exception {
-        Assert.assertTrue(EmailValidator.validateEmailAddress("a@b.com"));
-        Assert.assertTrue(EmailValidator.validateEmailAddress("A@B.COM"));
-        Assert.assertTrue(EmailValidator.validateEmailAddress("lord.elsington.hallstingdingdingworth@royal.chamber.of.carpetbaggery.co.uk"));
+        Assertions.assertTrue(EmailValidator.validateEmailAddress("a@b.com"));
+        Assertions.assertTrue(EmailValidator.validateEmailAddress("A@B.COM"));
+        Assertions.assertTrue(EmailValidator.validateEmailAddress("lord.elsington.hallstingdingdingworth@royal.chamber.of.carpetbaggery.co.uk"));
     }
 
     /**
@@ -45,7 +45,7 @@ public class EmailValidatorTest {
      */
     @Test
     public void validateEmailAddress_shouldMatchEntireEmailAddressOnly() throws Exception {
-        Assert.assertFalse(EmailValidator.validateEmailAddress("a@b.com###"));
+        Assertions.assertFalse(EmailValidator.validateEmailAddress("a@b.com###"));
     }
 
     /**
@@ -54,6 +54,6 @@ public class EmailValidatorTest {
      */
     @Test
     public void validateEmailAddress_shouldNotMatchInvalidAddresses() throws Exception {
-        Assert.assertFalse(EmailValidator.validateEmailAddress("blup"));
+        Assertions.assertFalse(EmailValidator.validateEmailAddress("blup"));
     }
 }

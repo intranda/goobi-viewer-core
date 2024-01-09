@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.model.archives;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.time.ZoneOffset;
@@ -36,8 +36,8 @@ import java.util.List;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
@@ -53,7 +53,7 @@ public class ArchiveManagerTest extends AbstractTest{
     BasexEADParser eadParser;
     List<ArchiveResource> possibleDatabases;
 
-    @Before
+    @BeforeEach
     public void before() {
         try {
             Document doc = XmlTools.readXmlFile("src/test/resources/data/EAD_Export_Tektonik.XML");

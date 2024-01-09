@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.solr;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Map;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -36,7 +36,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.viewer.StringPair;
 
-public class SolrToolsTest extends AbstractSolrEnabledTest {
+class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#getFieldValueMap(SolrDocument)
@@ -45,10 +45,10 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     public void getFieldValueMap_shouldReturnAllFieldsInTheGivenDocExceptPageUrns() throws Exception {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
-        Assert.assertNotNull(doc);
+        Assertions.assertNotNull(doc);
         Map<String, List<String>> fieldValueMap = SolrTools.getFieldValueMap(doc);
-        Assert.assertFalse(fieldValueMap.containsKey(SolrConstants.IMAGEURN_OAI));
-        Assert.assertFalse(fieldValueMap.containsKey("PAGEURNS"));
+        Assertions.assertFalse(fieldValueMap.containsKey(SolrConstants.IMAGEURN_OAI));
+        Assertions.assertFalse(fieldValueMap.containsKey("PAGEURNS"));
     }
 
     /**
@@ -58,9 +58,9 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     public void getMetadataValues_shouldReturnAllValuesForTheGivenField() throws Exception {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":AC13451894", null);
-        Assert.assertNotNull(doc);
+        Assertions.assertNotNull(doc);
         List<String> values = SolrTools.getMetadataValues(doc, "MD_CREATOR");
-        Assert.assertTrue(values.size() >= 2);
+        Assertions.assertTrue(values.size() >= 2);
     }
 
     /**
@@ -70,7 +70,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     public void getSingleFieldStringValue_shouldNotReturnNullAsStringIfValueIsNull() throws Exception {
         SolrDocument doc = new SolrDocument();
-        Assert.assertNull(SolrTools.getSingleFieldStringValue(doc, "MD_NOSUCHFIELD"));
+        Assertions.assertNull(SolrTools.getSingleFieldStringValue(doc, "MD_NOSUCHFIELD"));
     }
 
     /**
@@ -91,7 +91,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     public void getSolrSortFieldsAsList_shouldSplitFieldsCorrectly() throws Exception {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A; SORT_B, desc;SORT_C,asc", ";", ",");
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         assertEquals(3, result.size());
         assertEquals("SORT_A", result.get(0).getOne());
         assertEquals("asc", result.get(0).getTwo());
@@ -108,7 +108,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     public void getSolrSortFieldsAsList_shouldSplitSingleFieldCorrectly() throws Exception {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A , desc ", ";", ",");
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("SORT_A", result.get(0).getOne());
         assertEquals("desc", result.get(0).getTwo());
@@ -118,27 +118,27 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
      * @see SolrTools#getSolrSortFieldsAsList(String,String,String)
      * @verifies throw IllegalArgumentException if solrSortFields is null
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSolrSortFieldsIsNull() throws Exception {
-        SolrTools.getSolrSortFieldsAsList(null, ";", ",");
+    @Test
+    void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSolrSortFieldsIsNull() throws Exception {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SolrTools.getSolrSortFieldsAsList(null, ";", ","));
     }
 
     /**
      * @see SolrTools#getSolrSortFieldsAsList(String,String,String)
      * @verifies throw IllegalArgumentException if splitFieldsBy is null
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitFieldsByIsNull() throws Exception {
-        SolrTools.getSolrSortFieldsAsList("bla,blup", null, ",");
+    @Test
+    void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitFieldsByIsNull() throws Exception {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SolrTools.getSolrSortFieldsAsList("bla,blup", null, ","));
     }
 
     /**
      * @see SolrTools#getSolrSortFieldsAsList(String,String,String)
      * @verifies throw IllegalArgumentException if splitNameOrderBy is null
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitNameOrderByIsNull() throws Exception {
-        SolrTools.getSolrSortFieldsAsList("bla,blup", ";", null);
+    @Test
+    void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitNameOrderByIsNull() throws Exception {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> SolrTools.getSolrSortFieldsAsList("bla,blup", ";", null));
     }
 
     /**
@@ -146,10 +146,10 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return correct value for docsctrct docs
      */
     @Test
-    public void isHasImages_shouldReturnCorrectValueForDocsctrctDocs() throws Exception {
+    void isHasImages_shouldReturnCorrectValueForDocsctrctDocs() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.THUMBNAIL, "foo.jpg");
-        Assert.assertTrue(SolrTools.isHasImages(doc));
+        Assertions.assertTrue(SolrTools.isHasImages(doc));
     }
 
     /**
@@ -160,9 +160,9 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     public void isHasImages_shouldReturnCorrectValueForPageDocs() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.FILENAME, "foo.jpg");
-        Assert.assertTrue(SolrTools.isHasImages(doc));
+        Assertions.assertTrue(SolrTools.isHasImages(doc));
         doc.setField(SolrConstants.FILENAME, "foo.txt");
-        Assert.assertFalse(SolrTools.isHasImages(doc));
+        Assertions.assertFalse(SolrTools.isHasImages(doc));
     }
 
     /**
@@ -173,7 +173,7 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     public void isHasImages_shouldReturnCorrectValueForIiifManifestsInFileName() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.THUMBNAIL, "https://example.com/iiif/2/foo.jpg/info.json");
-        Assert.assertTrue(SolrTools.isHasImages(doc));
+        Assertions.assertTrue(SolrTools.isHasImages(doc));
     }
 
     @Test
@@ -225,15 +225,15 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     public void getAvailableValuesForField_shouldReturnAllExistingValuesForTheGivenField() throws Exception {
         List<String> values = SolrTools.getAvailableValuesForField("MD_YEARPUBLISH", SolrConstants.ISWORK + ":true");
-        Assert.assertFalse(values.isEmpty());
+        Assertions.assertFalse(values.isEmpty());
     }
 
     @Test
     public void getAvailableValuesForField_shouldReturnAllEntireValues() throws Exception {
         List<String> values = SolrTools.getAvailableValuesForField("MD_PLACEPUBLISH", SolrConstants.ISWORK + ":true");
-        Assert.assertFalse(values.isEmpty());
+        Assertions.assertFalse(values.isEmpty());
         //values.forEach(System.out::println);
-        Assert.assertTrue(values.contains("Ateliersituation vor neutralem Hintergrund"));
+        Assertions.assertTrue(values.contains("Ateliersituation vor neutralem Hintergrund"));
     }
 
     /**
@@ -244,8 +244,8 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     public void getExistingSubthemes_shouldReturnCorrectValues() throws Exception {
         List<String> result = SolrTools.getExistingSubthemes();
         assertEquals(2, result.size());
-        Assert.assertTrue(result.contains("subtheme1"));
-        Assert.assertTrue(result.contains("subtheme2"));
+        Assertions.assertTrue(result.contains("subtheme1"));
+        Assertions.assertTrue(result.contains("subtheme2"));
     }
 
     /**

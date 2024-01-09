@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.api.rest;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
@@ -34,7 +34,7 @@ public class AbstractApiUrlManagerTest extends AbstractTest {
      */
     @Test
     public void replaceApiPathParams_shouldRemoveTrailingSlashIfFileNameContainsPeriod() throws Exception {
-        Assert.assertEquals("http://example.com/with space/info.json",
+        Assertions.assertEquals("http://example.com/with space/info.json",
                 AbstractApiUrlManager.replaceApiPathParams("http://example.com/with space/info.json/", new Object[] {}));
     }
 }

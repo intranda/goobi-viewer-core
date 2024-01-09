@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.toc;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,10 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -41,12 +41,12 @@ import io.goobi.viewer.controller.StringConstants;
 
 public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -59,9 +59,9 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getNumPages_shouldCalculateNumberCorrectly() throws Exception {
         TOC toc = new TOC();
         toc.setTotalTocSize(70);
-        Assert.assertEquals(7, toc.getNumPages());
+        Assertions.assertEquals(7, toc.getNumPages());
         toc.setTotalTocSize(77);
-        Assert.assertEquals(8, toc.getNumPages());
+        Assertions.assertEquals(8, toc.getNumPages());
     }
 
     /**
@@ -86,8 +86,8 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
                 .add(new TOCElement(new SimpleMetadataValue("three"), "1", null, "3", "LOG_0002", 2, "PPN_volume", null, false, false, true, null,
                         "article", null));
 
-        Assert.assertEquals("one", toc.getLabel("PPN_anchor"));
-        Assert.assertEquals("two", toc.getLabel("PPN_volume"));
+        Assertions.assertEquals("one", toc.getLabel("PPN_anchor"));
+        Assertions.assertEquals("two", toc.getLabel("PPN_volume"));
     }
 
     /**
@@ -98,7 +98,7 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     public void setCurrentPage_shouldSetValueTo1IfGivenValueTooLow() throws Exception {
         TOC toc = new TOC();
         toc.setCurrentPage(0);
-        Assert.assertEquals(1, toc.getCurrentPage());
+        Assertions.assertEquals(1, toc.getCurrentPage());
     }
 
     /**
@@ -109,13 +109,13 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     public void setCurrentPage_shouldSetValueToLastPageNumberIfGivenValueTooHigh() throws Exception {
         TOC toc = new TOC();
         toc.setTotalTocSize(70);
-        Assert.assertEquals(7, toc.getNumPages());
+        Assertions.assertEquals(7, toc.getNumPages());
         // Valid value
         toc.setCurrentPage(4);
-        Assert.assertEquals(4, toc.getCurrentPage());
+        Assertions.assertEquals(4, toc.getCurrentPage());
         // Invalid value
         toc.setCurrentPage(40);
-        Assert.assertEquals(7, toc.getCurrentPage());
+        Assertions.assertEquals(7, toc.getCurrentPage());
     }
 
     @Test

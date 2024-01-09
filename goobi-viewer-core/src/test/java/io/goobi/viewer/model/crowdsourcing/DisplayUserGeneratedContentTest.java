@@ -22,9 +22,9 @@
 package io.goobi.viewer.model.crowdsourcing;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
@@ -32,7 +32,7 @@ import io.goobi.viewer.solr.SolrConstants;
 
 public class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractSolrEnabledTest.setUpClass();
     }
@@ -54,12 +54,12 @@ public class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
         doc.setField(SolrConstants.ACCESSCONDITION, "restricted");
 
         DisplayUserGeneratedContent ugc = DisplayUserGeneratedContent.buildFromSolrDoc(doc);
-        Assert.assertNotNull(ugc);
-        Assert.assertEquals(Long.valueOf(123), ugc.getId());
-        Assert.assertEquals(ContentType.PERSON, ugc.getType());
-        Assert.assertEquals(coords, ugc.getAreaString());
-        Assert.assertEquals(coords, ugc.getDisplayCoordinates());
-        Assert.assertEquals("Doe, John", ugc.getLabel());
-        Assert.assertEquals("restricted", ugc.getAccessCondition());
+        Assertions.assertNotNull(ugc);
+        Assertions.assertEquals(Long.valueOf(123), ugc.getId());
+        Assertions.assertEquals(ContentType.PERSON, ugc.getType());
+        Assertions.assertEquals(coords, ugc.getAreaString());
+        Assertions.assertEquals(coords, ugc.getDisplayCoordinates());
+        Assertions.assertEquals("Doe, John", ugc.getLabel());
+        Assertions.assertEquals("restricted", ugc.getAccessCondition());
     }
 }

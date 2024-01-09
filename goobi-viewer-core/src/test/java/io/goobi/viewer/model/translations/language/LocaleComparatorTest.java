@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.translations.language.LocaleComparator;
 
@@ -42,14 +42,14 @@ public class LocaleComparatorTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
@@ -64,17 +64,17 @@ public class LocaleComparatorTest {
 
         List<Locale> germanFirst = locales.stream().sorted(new LocaleComparator(Locale.GERMANY)).collect(Collectors.toList());
 
-        Assert.assertEquals(Locale.GERMAN, germanFirst.get(0));
-        Assert.assertEquals(Locale.ENGLISH, germanFirst.get(1));
+        Assertions.assertEquals(Locale.GERMAN, germanFirst.get(0));
+        Assertions.assertEquals(Locale.ENGLISH, germanFirst.get(1));
 
         List<Locale> englishFirst = locales.stream().sorted(new LocaleComparator(Locale.US)).collect(Collectors.toList());
 
-        Assert.assertEquals(Locale.ENGLISH, englishFirst.get(0));
+        Assertions.assertEquals(Locale.ENGLISH, englishFirst.get(0));
 
         List<Locale> chineseFirst = locales.stream().sorted(new LocaleComparator(Locale.CHINESE)).collect(Collectors.toList());
 
-        Assert.assertEquals(Locale.CHINA, chineseFirst.get(0));
-        Assert.assertEquals(Locale.ENGLISH, chineseFirst.get(1));
+        Assertions.assertEquals(Locale.CHINA, chineseFirst.get(0));
+        Assertions.assertEquals(Locale.ENGLISH, chineseFirst.get(1));
 
     }
 

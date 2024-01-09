@@ -21,11 +21,11 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -49,7 +49,7 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         urls = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
@@ -62,7 +62,7 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }

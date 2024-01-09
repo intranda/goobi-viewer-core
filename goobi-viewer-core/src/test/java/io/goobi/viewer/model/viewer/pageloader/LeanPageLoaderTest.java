@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.viewer.pageloader;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -38,13 +38,13 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getNumPages_shouldReturnSizeCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         // Page number as a constructor arg
         LeanPageLoader pageLoader = new LeanPageLoader(se, 5);
-        Assert.assertEquals(5, pageLoader.getNumPages());
+        Assertions.assertEquals(5, pageLoader.getNumPages());
         // Page number from the StructElement
         pageLoader = new LeanPageLoader(se, -1);
-        Assert.assertEquals(16, pageLoader.getNumPages());
+        Assertions.assertEquals(16, pageLoader.getNumPages());
     }
 
     /**
@@ -54,11 +54,11 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPage_shouldReturnCorrectPage() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
         PhysicalElement pe = pageLoader.getPage(3);
-        Assert.assertNotNull(pe);
-        Assert.assertEquals(3, pe.getOrder());
+        Assertions.assertNotNull(pe);
+        Assertions.assertEquals(3, pe.getOrder());
     }
 
     /**
@@ -68,10 +68,10 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPage_shouldReturnNullIfPageOrderSmallerThanFirstPageOrder() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
         PhysicalElement pe = pageLoader.getPage(-1);
-        Assert.assertNull(pe);
+        Assertions.assertNull(pe);
     }
 
     /**
@@ -81,10 +81,10 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPage_shouldReturnNullIfPageOrderLargerThanLastPageOrder() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
         PhysicalElement pe = pageLoader.getPage(20);
-        Assert.assertNull(pe);
+        Assertions.assertNull(pe);
     }
 
     /**
@@ -94,11 +94,11 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPageForFileName_shouldReturnTheCorrectPage() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
         PhysicalElement pe = pageLoader.getPageForFileName("00000004.tif");
-        Assert.assertNotNull(pe);
-        Assert.assertEquals(4, pe.getOrder());
+        Assertions.assertNotNull(pe);
+        Assertions.assertEquals(4, pe.getOrder());
     }
 
     /**
@@ -108,10 +108,10 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPageForFileName_shouldReturnNullIfFileNameNotFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
         PhysicalElement pe = pageLoader.getPageForFileName("NOTFOUND.tif");
-        Assert.assertNull(pe);
+        Assertions.assertNull(pe);
     }
 
     /**
@@ -121,9 +121,9 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void setFirstAndLastPageOrder_shouldSetFirstPageOrderCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, se.getNumPages());
-        Assert.assertEquals(1, pageLoader.getFirstPageOrder());
+        Assertions.assertEquals(1, pageLoader.getFirstPageOrder());
     }
 
     /**
@@ -133,9 +133,9 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void setFirstAndLastPageOrder_shouldSetLastPageOrderCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, se.getNumPages());
-        Assert.assertEquals(16, pageLoader.getLastPageOrder());
+        Assertions.assertEquals(16, pageLoader.getLastPageOrder());
     }
 
     /**
@@ -145,11 +145,11 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void loadPage_shouldLoadPageCorrectlyViaPageNumber() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
         PhysicalElement pe = pageLoader.loadPage(3, null);
-        Assert.assertNotNull(pe);
-        Assert.assertEquals(3, pe.getOrder());
+        Assertions.assertNotNull(pe);
+        Assertions.assertEquals(3, pe.getOrder());
     }
 
     /**
@@ -159,11 +159,11 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void loadPage_shouldLoadPageCorrectlyViaFileName() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
         PhysicalElement pe = pageLoader.loadPage(-1, "00000004.tif");
-        Assert.assertNotNull(pe);
-        Assert.assertEquals(4, pe.getOrder());
+        Assertions.assertNotNull(pe);
+        Assertions.assertEquals(4, pe.getOrder());
     }
 
     /**
@@ -173,7 +173,7 @@ public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void loadPage_shouldReturnNullIfPageNotFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
         PhysicalElement pe = pageLoader.loadPage(-1, "NOTFOUND.tif");
     }

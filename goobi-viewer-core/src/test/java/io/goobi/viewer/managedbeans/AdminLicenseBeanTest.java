@@ -26,8 +26,8 @@ import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 
@@ -43,8 +43,8 @@ public class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
         bean.init();
 
         List<SelectItem> items = bean.getGroupedLicenseTypeSelectItems();
-        Assert.assertEquals(2, items.size());
-        Assert.assertEquals(1, ((SelectItemGroup) items.get(0)).getSelectItems().length);
-        Assert.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
+        Assertions.assertEquals(2, items.size());
+        Assertions.assertEquals(1, ((SelectItemGroup) items.get(0)).getSelectItems().length);
+        Assertions.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
     }
 }
