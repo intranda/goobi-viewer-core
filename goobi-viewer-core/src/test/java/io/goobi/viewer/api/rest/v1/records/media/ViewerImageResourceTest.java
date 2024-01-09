@@ -83,7 +83,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetImageInformation() {
+    public void testGetImageInformation() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
@@ -99,7 +99,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetImageInformationFromBaseUrl() {
+    public void testGetImageInformationFromBaseUrl() {
         String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
@@ -115,7 +115,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetImageInformationSpecialCharacters() {
+    public void testGetImageInformationSpecialCharacters() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
         try (Response response = target(url)
@@ -131,7 +131,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetImageSpecialCharacters() {
+    public void testGetImageSpecialCharacters() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS, REGION, SIZE, ROTATION, QUALITY, FORMAT)
                 .build();
@@ -150,7 +150,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetImage() {
+    public void testGetImage() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params(PI, FILENAME + ".tif", REGION, SIZE, ROTATION, QUALITY, FORMAT)
                 .build();
@@ -168,7 +168,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetPdf() {
+    public void testGetPdf() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(PI, FILENAME).build();
         try (Response response = target(url)
                 .request()
@@ -184,7 +184,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetImageClosedLicense() throws DAOException {
+    public void testGetImageClosedLicense() throws DAOException {
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(false);
         licenseType.setPrivileges(Collections.emptySet());
@@ -219,7 +219,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetImageOpenLicense() throws DAOException {
+    public void testGetImageOpenLicense() throws DAOException {
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(true);
         DataManager.getInstance().getDao().addLicenseType(licenseType);
@@ -253,7 +253,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetImageThumbnailLicense() throws DAOException {
+    public void testGetImageThumbnailLicense() throws DAOException {
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(false);
         licenseType.setPrivileges(Collections.singleton(LicenseType.PRIV_VIEW_THUMBNAILS));

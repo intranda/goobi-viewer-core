@@ -61,7 +61,7 @@ public class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetPdf() {
+    public void testGetPdf() {
         String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI).build();
         try (Response response = target(url)
                 .request()
@@ -78,7 +78,7 @@ public class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetPdf_refuseAccess() {
+    public void testGetPdf_refuseAccess() {
         String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI_ACCESS_RESTRICTED).build();
         try (Response response = target(url)
                 .request()
