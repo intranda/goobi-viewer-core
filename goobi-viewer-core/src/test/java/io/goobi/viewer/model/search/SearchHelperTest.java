@@ -96,7 +96,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies filter by collection correctly
      */
     @Test
-    public void searchAutosuggestion_shouldFilterByCollectionCorrectly() throws Exception {
+    void searchAutosuggestion_shouldFilterByCollectionCorrectly() throws Exception {
         FacetItem item = new FacetItem(SolrConstants.FACET_DC + ":varia", true);
         List<String> values = SearchHelper.searchAutosuggestion("kartenundplaene", Collections.singletonList(item));
         Assertions.assertTrue(values.isEmpty());
@@ -107,7 +107,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies filter by facet correctly
      */
     @Test
-    public void searchAutosuggestion_shouldFilterByFacetCorrectly() throws Exception {
+    void searchAutosuggestion_shouldFilterByFacetCorrectly() throws Exception {
         FacetItem item = new FacetItem(SolrConstants.TITLE + ":something", false);
         List<String> values = SearchHelper.searchAutosuggestion("kartenundplaene", Collections.singletonList(item));
         Assertions.assertTrue(values.isEmpty());
@@ -118,7 +118,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies find all collections
      */
     @Test
-    public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
+    void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, CollectionResult> collections =
                 SearchHelper.findAllCollectionsFromField(SolrConstants.DC, null, null, true, true, ".");
@@ -126,7 +126,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void findAllCollectionsFromField_shouldGroupCorrectly() throws Exception {
+    void findAllCollectionsFromField_shouldGroupCorrectly() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, CollectionResult> collections =
                 SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DOCSTRCT, null, true, true, ".");
@@ -147,7 +147,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct suffix correctly
      */
     @Test
-    public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
         String suffix =
                 SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, null, Optional.empty(),
                         IPrivilegeHolder.PRIV_LIST);
@@ -177,7 +177,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct suffix correctly if ip range has license privilege
      */
     @Test
-    public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfIpRangeHasLicensePrivilege() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfIpRangeHasLicensePrivilege() throws Exception {
         {
             // Localhost with full access enabled
             String suffix = SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, "127.0.0.1",
@@ -202,7 +202,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct suffix correctly if moving wall license
      */
     @Test
-    public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfMovingWallLicense() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfMovingWallLicense() throws Exception {
         String suffix =
                 SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, null, Optional.empty(),
                         IPrivilegeHolder.PRIV_LIST);
@@ -218,7 +218,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add overridden license types from user privilege
      */
     @Test
-    public void getPersonalFilterQuerySuffix_shouldAddOverriddenLicenseTypesFromUserPrivilege() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldAddOverriddenLicenseTypesFromUserPrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         String suffix =
                 SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty(),
@@ -232,7 +232,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add overridden license types from license type privilege
      */
     @Test
-    public void getPersonalFilterQuerySuffix_shouldAddOverriddenLicenseTypesFromLicenseTypePrivilege() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldAddOverriddenLicenseTypesFromLicenseTypePrivilege() throws Exception {
         List<LicenseType> licenseTypes = new ArrayList<>(3);
         LicenseType lt = new LicenseType("lt1");
         Assertions.assertTrue(lt.getPrivileges().add(IPrivilegeHolder.PRIV_LIST));
@@ -254,7 +254,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add overridden license types from open access license
      */
     @Test
-    public void getPersonalFilterQuerySuffix_shouldAddOverriddenLicenseTypesFromOpenAccessLicense() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldAddOverriddenLicenseTypesFromOpenAccessLicense() throws Exception {
         List<LicenseType> licenseTypes = new ArrayList<>(3);
         LicenseType lt = new LicenseType("lt1");
         lt.setOpenAccess(true);
@@ -277,7 +277,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct suffix correctly for alternate privilege
      */
     @Test
-    public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyForAlternatePrivilege() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyForAlternatePrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         // User has metadata download privilege for 'license type 3 name', but not listing
         Assertions.assertFalse(SearchHelper
@@ -295,7 +295,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies make terms bold if found in text
      */
     @Test
-    public void truncateFulltext_shouldMakeTermsBoldIfFoundInText() throws Exception {
+    void truncateFulltext_shouldMakeTermsBoldIfFoundInText() throws Exception {
         String original = StringConstants.LOREM_IPSUM;
         String[] terms = { "ipsum", "tempor", "labore" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true, 0);
@@ -311,7 +311,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add prefix and suffix to text
      */
     @Test
-    public void truncateFulltext_shouldNotAddPrefixAndSuffixToText() throws Exception {
+    void truncateFulltext_shouldNotAddPrefixAndSuffixToText() throws Exception {
         String original = "text";
         List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true, true, 0);
         Assertions.assertFalse(truncated.isEmpty());
@@ -323,7 +323,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies truncate string to 200 chars if no terms are given
      */
     @Test
-    public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermsAreGiven() throws Exception {
+    void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermsAreGiven() throws Exception {
         String original = StringConstants.LOREM_IPSUM;
         List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true, true, 0);
         Assertions.assertFalse(truncated.isEmpty());
@@ -335,7 +335,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies truncate string to 200 chars if no term has been found
      */
     @Test
-    public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermHasBeenFound() throws Exception {
+    void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermHasBeenFound() throws Exception {
         String original = StringConstants.LOREM_IPSUM;
         String[] terms = { "boogers" };
         {
@@ -354,7 +354,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove unclosed HTML tags
      */
     @Test
-    public void truncateFulltext_shouldRemoveUnclosedHTMLTags() throws Exception {
+    void truncateFulltext_shouldRemoveUnclosedHTMLTags() throws Exception {
         List<String> truncated = SearchHelper.truncateFulltext(null, "Hello <a href", 200, true, true, 0);
         Assertions.assertFalse(truncated.isEmpty());
         Assertions.assertEquals("Hello", truncated.get(0));
@@ -367,7 +367,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return multiple match fragments correctly
      */
     @Test
-    public void truncateFulltext_shouldReturnMultipleMatchFragmentsCorrectly() throws Exception {
+    void truncateFulltext_shouldReturnMultipleMatchFragmentsCorrectly() throws Exception {
         String original = StringConstants.LOREM_IPSUM;
         String[] terms = { "in" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
@@ -382,7 +382,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies replace line breaks with spaces
      */
     @Test
-    public void truncateFulltext_shouldReplaceLineBreaksWithSpaces() throws Exception {
+    void truncateFulltext_shouldReplaceLineBreaksWithSpaces() throws Exception {
         String original = "one<br>two<br>three";
         String[] terms = { "two" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
@@ -397,7 +397,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies highlight multi word terms while removing stopwords
      */
     @Test
-    public void truncateFulltext_shouldHighlightMultiWordTermsWhileRemovingStopwords() throws Exception {
+    void truncateFulltext_shouldHighlightMultiWordTermsWhileRemovingStopwords() throws Exception {
         String original = "funky beats";
         String[] terms = { "two beats one" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
@@ -408,7 +408,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void truncateFulltext_shouldFindFuzzySearchTermsCorrectly() throws Exception {
+    void truncateFulltext_shouldFindFuzzySearchTermsCorrectly() throws Exception {
         String original = StringConstants.LOREM_IPSUM;
         String[] terms = { "dolor~1" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
@@ -422,7 +422,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies extract all values from query except from NOT blocks
      */
     @Test
-    public void extractSearchTermsFromQuery_shouldExtractAllValuesFromQueryExceptFromNOTBlocks() throws Exception {
+    void extractSearchTermsFromQuery_shouldExtractAllValuesFromQueryExceptFromNOTBlocks() throws Exception {
         {
             // NOT with brackets
             Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
@@ -472,7 +472,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies handle multiple phrases in query correctly
      */
     @Test
-    public void extractSearchTermsFromQuery_shouldHandleMultiplePhrasesInQueryCorrectly() throws Exception {
+    void extractSearchTermsFromQuery_shouldHandleMultiplePhrasesInQueryCorrectly() throws Exception {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery("(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")", null);
         Assertions.assertEquals(5, result.size());
@@ -507,7 +507,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies skip discriminator value
      */
     @Test
-    public void extractSearchTermsFromQuery_shouldSkipDiscriminatorValue() throws Exception {
+    void extractSearchTermsFromQuery_shouldSkipDiscriminatorValue() throws Exception {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery("(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value3\")", "value1");
         Assertions.assertEquals(3, result.size());
@@ -559,7 +559,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not remove truncation
      */
     @Test
-    public void extractSearchTermsFromQuery_shouldNotRemoveTruncation() throws Exception {
+    void extractSearchTermsFromQuery_shouldNotRemoveTruncation() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
         Assertions.assertEquals(2, result.size());
         {
@@ -575,7 +575,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove proximity search tokens
      */
     @Test
-    public void extractSearchTermsFromQuery_shouldRemoveProximitySearchTokens() throws Exception {
+    void extractSearchTermsFromQuery_shouldRemoveProximitySearchTokens() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
                 "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10 AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
                 null);
@@ -590,7 +590,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove range values
      */
     @Test
-    public void extractSearchTermsFromQuery_shouldRemoveRangeValues() throws Exception {
+    void extractSearchTermsFromQuery_shouldRemoveRangeValues() throws Exception {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +MD_YEARPUBLISH:[2020 TO 2022]", null);
         {
@@ -604,7 +604,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove operators from field names
      */
     @Test
-    public void extractSearchTermsFromQuery_shouldRemoveOperatorsFromFieldNames() throws Exception {
+    void extractSearchTermsFromQuery_shouldRemoveOperatorsFromFieldNames() throws Exception {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery(
                         " (+(SUPERDEFAULT:(berlin) SUPERFULLTEXT:(berlin) SUPERUGCTERMS:(berlin)) +(MD_AUTHOR:(karl)))",
@@ -618,7 +618,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct suffix correctly
      */
     @Test
-    public void generateCollectionBlacklistFilterSuffix_shouldConstructSuffixCorrectly() throws Exception {
+    void generateCollectionBlacklistFilterSuffix_shouldConstructSuffixCorrectly() throws Exception {
         String suffix = SearchHelper.generateCollectionBlacklistFilterSuffix(SolrConstants.DC);
         Assertions.assertEquals(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2", suffix);
     }
@@ -628,7 +628,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies match simple collections correctly
      */
     @Test
-    public void checkCollectionInBlacklist_shouldMatchSimpleCollectionsCorrectly() throws Exception {
+    void checkCollectionInBlacklist_shouldMatchSimpleCollectionsCorrectly() throws Exception {
         {
             Set<String> blacklist = new HashSet<>(Collections.singletonList("a"));
             Assertions.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist, "."));
@@ -676,7 +676,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct subquery correctly
      */
     @Test
-    public void getDiscriminatorFieldFilterSuffix_shouldConstructSubqueryCorrectly() throws Exception {
+    void getDiscriminatorFieldFilterSuffix_shouldConstructSubqueryCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setSubThemeDiscriminatorValue("val");
         Assertions.assertEquals(" +fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
@@ -687,7 +687,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return empty string if discriminator value is empty or hyphen
      */
     @Test
-    public void getDiscriminatorFieldFilterSuffix_shouldReturnEmptyStringIfDiscriminatorValueIsEmptyOrHyphen() throws Exception {
+    void getDiscriminatorFieldFilterSuffix_shouldReturnEmptyStringIfDiscriminatorValueIsEmptyOrHyphen() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         Assertions.assertEquals("", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
         nh.setSubThemeDiscriminatorValue("-");
@@ -699,7 +699,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies defacetify correctly
      */
     @Test
-    public void defacetifyField_shouldDefacetifyCorrectly() throws Exception {
+    void defacetifyField_shouldDefacetifyCorrectly() throws Exception {
         Assertions.assertEquals(SolrConstants.DC, SearchHelper.defacetifyField(SolrConstants.FACET_DC));
         Assertions.assertEquals(SolrConstants.DOCSTRCT, SearchHelper.defacetifyField("FACET_DOCSTRCT"));
         Assertions.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.defacetifyField("FACET_YEAR"));
@@ -713,7 +713,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies facetify correctly
      */
     @Test
-    public void facetifyField_shouldFacetifyCorrectly() throws Exception {
+    void facetifyField_shouldFacetifyCorrectly() throws Exception {
         Assertions.assertEquals(SolrConstants.FACET_DC, SearchHelper.facetifyField(SolrConstants.DC));
         Assertions.assertEquals("FACET_DOCSTRCT", SearchHelper.facetifyField(SolrConstants.DOCSTRCT));
         //        Assertions.assertEquals("FACET_SUPERDOCSTRCT", SearchHelper.facetifyField(SolrConstants.SUPERDOCSTRCT));
@@ -727,7 +727,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies leave bool fields unaltered
      */
     @Test
-    public void facetifyField_shouldLeaveBoolFieldsUnaltered() throws Exception {
+    void facetifyField_shouldLeaveBoolFieldsUnaltered() throws Exception {
         Assertions.assertEquals("BOOL_FOO", SearchHelper.facetifyField("BOOL_FOO"));
     }
 
@@ -736,7 +736,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies leave year month day fields unaltered
      */
     @Test
-    public void facetifyField_shouldLeaveYearMonthDayFieldsUnaltered() throws Exception {
+    void facetifyField_shouldLeaveYearMonthDayFieldsUnaltered() throws Exception {
         Assertions.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.facetifyField(SolrConstants.CALENDAR_YEAR));
         Assertions.assertEquals(SolrConstants.CALENDAR_MONTH, SearchHelper.facetifyField(SolrConstants.CALENDAR_MONTH));
         Assertions.assertEquals(SolrConstants.CALENDAR_DAY, SearchHelper.facetifyField(SolrConstants.CALENDAR_DAY));
@@ -747,7 +747,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies facetify correctly
      */
     @Test
-    public void facetifyList_shouldFacetifyCorrectly() throws Exception {
+    void facetifyList_shouldFacetifyCorrectly() throws Exception {
         List<String> result = SearchHelper.facetifyList(Arrays.asList(new String[] { SolrConstants.DC, "MD_TITLE_UNTOKENIZED" }));
         Assertions.assertEquals(2, result.size());
         Assertions.assertEquals(SolrConstants.FACET_DC, result.get(0));
@@ -759,7 +759,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies sortify correctly
      */
     @Test
-    public void sortifyField_shouldSortifyCorrectly() throws Exception {
+    void sortifyField_shouldSortifyCorrectly() throws Exception {
         Assertions.assertEquals("SORT_DC", SearchHelper.sortifyField(SolrConstants.DC));
         Assertions.assertEquals("SORT_DOCSTRCT", SearchHelper.sortifyField(SolrConstants.DOCSTRCT));
         Assertions.assertEquals("SORT_TITLE", SearchHelper.sortifyField("MD_TITLE_UNTOKENIZED"));
@@ -772,7 +772,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies normalize correctly
      */
     @Test
-    public void normalizeField_shouldNormalizeCorrectly() throws Exception {
+    void normalizeField_shouldNormalizeCorrectly() throws Exception {
         Assertions.assertEquals("MD_FOO", SearchHelper.normalizeField("MD_FOO_UNTOKENIZED"));
     }
 
@@ -781,7 +781,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies apply prefix correctly
      */
     @Test
-    public void adaptField_shouldApplyPrefixCorrectly() throws Exception {
+    void adaptField_shouldApplyPrefixCorrectly() throws Exception {
         Assertions.assertEquals("SORT_DC", SearchHelper.adaptField(SolrConstants.DC, "SORT_"));
         Assertions.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO", "SORT_"));
         Assertions.assertEquals("SORT_FOO", SearchHelper.adaptField("MD2_FOO", "SORT_"));
@@ -795,7 +795,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not apply prefix to regular fields if empty
      */
     @Test
-    public void adaptField_shouldNotApplyPrefixToRegularFieldsIfEmpty() throws Exception {
+    void adaptField_shouldNotApplyPrefixToRegularFieldsIfEmpty() throws Exception {
         Assertions.assertEquals("MD_FOO", SearchHelper.adaptField("MD_FOO", ""));
     }
 
@@ -804,7 +804,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove untokenized correctly
      */
     @Test
-    public void adaptField_shouldRemoveUntokenizedCorrectly() throws Exception {
+    void adaptField_shouldRemoveUntokenizedCorrectly() throws Exception {
         Assertions.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO_UNTOKENIZED", "SORT_"));
     }
 
@@ -813,7 +813,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not apply facet prefix to calendar fields
      */
     @Test
-    public void adaptField_shouldNotApplyFacetPrefixToCalendarFields() throws Exception {
+    void adaptField_shouldNotApplyFacetPrefixToCalendarFields() throws Exception {
         Assertions.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.adaptField(SolrConstants.CALENDAR_YEAR, "FACET_"));
         Assertions.assertEquals(SolrConstants.CALENDAR_MONTH, SearchHelper.adaptField(SolrConstants.CALENDAR_MONTH, "FACET_"));
         Assertions.assertEquals(SolrConstants.CALENDAR_DAY, SearchHelper.adaptField(SolrConstants.CALENDAR_DAY, "FACET_"));
@@ -824,7 +824,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add static suffix
      */
     @Test
-    public void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
+    void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
         String suffix = SearchHelper.getAllSuffixes(null, true, false);
         Assertions.assertNotNull(suffix);
         Assertions.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
@@ -835,7 +835,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add static suffix if not requested
      */
     @Test
-    public void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
+    void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
         String suffix = SearchHelper.getAllSuffixes(null, false, false);
         Assertions.assertNotNull(suffix);
         Assertions.assertFalse(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
@@ -846,7 +846,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add collection blacklist suffix
      */
     @Test
-    public void getAllSuffixes_shouldAddCollectionBlacklistSuffix() throws Exception {
+    void getAllSuffixes_shouldAddCollectionBlacklistSuffix() throws Exception {
 
         String suffix = SearchHelper.getAllSuffixes();
         Assertions.assertNotNull(suffix);
@@ -858,7 +858,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     //     * @verifies add discriminator value suffix
     //     */
     //    @Test
-    //    public void getAllSuffixes_shouldAddDiscriminatorValueSuffix() throws Exception {
+    //    void getAllSuffixes_shouldAddDiscriminatorValueSuffix() throws Exception {
     //        FacesContext facesContext = ContextMocker.mockFacesContext();
     //        ExternalContext externalContext = Mockito.mock(ExternalContext.class);
     //        Map<String, Object> sessionMap = new HashMap<>();
@@ -888,7 +888,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate query correctly
      */
     @Test
-    public void generateExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
+    void generateExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS,
                 SolrConstants.UGCTERMS, SolrConstants.CMS_TEXT_ALL });
         Map<String, Set<String>> searchTerms = new HashMap<>();
@@ -908,7 +908,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return empty string if no fields match
      */
     @Test
-    public void generateExpandQuery_shouldReturnEmptyStringIfNoFieldsMatch() throws Exception {
+    void generateExpandQuery_shouldReturnEmptyStringIfNoFieldsMatch() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS,
                 SolrConstants.UGCTERMS, SolrConstants.CMS_TEXT_ALL });
         Map<String, Set<String>> searchTerms = new HashMap<>();
@@ -922,7 +922,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies skip reserved fields
      */
     @Test
-    public void generateExpandQuery_shouldSkipReservedFields() throws Exception {
+    void generateExpandQuery_shouldSkipReservedFields() throws Exception {
         List<String> fields =
                 Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS, SolrConstants.UGCTERMS,
                         SolrConstants.CMS_TEXT_ALL, SolrConstants.PI_TOPSTRUCT, SolrConstants.PI_ANCHOR, SolrConstants.DC, SolrConstants.DOCSTRCT });
@@ -945,7 +945,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not escape asterisks
      */
     @Test
-    public void generateExpandQuery_shouldNotEscapeAsterisks() throws Exception {
+    void generateExpandQuery_shouldNotEscapeAsterisks() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.CALENDAR_DAY });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
@@ -957,7 +957,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not escape truncation
      */
     @Test
-    public void generateExpandQuery_shouldNotEscapeTruncation() throws Exception {
+    void generateExpandQuery_shouldNotEscapeTruncation() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo*", })));
@@ -969,7 +969,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies escape reserved characters
      */
     @Test
-    public void generateExpandQuery_shouldEscapeReservedCharacters() throws Exception {
+    void generateExpandQuery_shouldEscapeReservedCharacters() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "[one]", ":two:" })));
@@ -981,7 +981,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add quotation marks if phraseSearch is true
      */
     @Test
-    public void generateExpandQuery_shouldAddQuotationMarksIfPhraseSearchIsTrue() throws Exception {
+    void generateExpandQuery_shouldAddQuotationMarksIfPhraseSearchIsTrue() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one two three" })));
@@ -993,7 +993,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add proximity search token correctly
      */
     @Test
-    public void generateExpandQuery_shouldAddProximitySearchTokenCorrectly() throws Exception {
+    void generateExpandQuery_shouldAddProximitySearchTokenCorrectly() throws Exception {
         List<String> fields =
                 Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS, SolrConstants.UGCTERMS,
                         SolrConstants.CMS_TEXT_ALL, SolrConstants.PI_TOPSTRUCT, SolrConstants.PI_ANCHOR, SolrConstants.DC, SolrConstants.DOCSTRCT });
@@ -1022,7 +1022,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate query correctly
      */
     @Test
-    public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
+    void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         group.setOperator(SearchQueryGroupOperator.AND);
         group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
@@ -1037,7 +1037,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly_fuzzySearch() throws Exception {
+    void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly_fuzzySearch() throws Exception {
         SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         group.getQueryItems().get(0).setField("MD_FIELD");
         group.getQueryItems().get(0).setValue("val2");
@@ -1054,7 +1054,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies skip reserved fields
      */
     @Test
-    public void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
+    void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
         SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         group.getQueryItems().add(new SearchQueryItem());
         group.getQueryItems().add(new SearchQueryItem());
@@ -1090,7 +1090,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies switch to OR operator on fulltext items
      */
     @Test
-    public void generateAdvancedExpandQuery_shouldSwitchToOROperatorOnFulltextItems() throws Exception {
+    void generateAdvancedExpandQuery_shouldSwitchToOROperatorOnFulltextItems() throws Exception {
         SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         group.setOperator(SearchQueryGroupOperator.AND);
         group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
@@ -1109,7 +1109,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies create excel workbook correctly
      */
     @Test
-    public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
+    void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
         // TODO makes this more robust against changes to the index
         String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:18*";
         try (SXSSFWorkbook wb = new SXSSFWorkbook(25)) {
@@ -1145,7 +1145,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     //     * @verifies return correct hit for non-aggregated search
     //     */
     //    @Test
-    //    public void getBrowseElement_shouldReturnCorrectHitForNonaggregatedSearch() throws Exception {
+    //    void getBrowseElement_shouldReturnCorrectHitForNonaggregatedSearch() throws Exception {
     //        String rawQuery = SolrConstants.IDDOC + ":*";
     //        List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, false), 0, 10, null, null, null, null, null,
     //                null, Locale.ENGLISH, null);
@@ -1162,7 +1162,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct hit for aggregated search
      */
     @Test
-    public void getBrowseElement_shouldReturnCorrectHitForAggregatedSearch() throws Exception {
+    void getBrowseElement_shouldReturnCorrectHitForAggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT),
@@ -1180,7 +1180,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies apply highlighting for all terms
      */
     @Test
-    public void applyHighlightingToPhrase_shouldApplyHighlightingForAllTerms() throws Exception {
+    void applyHighlightingToPhrase_shouldApplyHighlightingForAllTerms() throws Exception {
         {
             String phrase = "FOO BAR Foo Bar foo bar";
             Set<String> terms = new HashSet<>();
@@ -1205,7 +1205,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void applyHighlightingToPhrase_shouldIgnoreDiacriticsForHightlighting() throws Exception {
+    void applyHighlightingToPhrase_shouldIgnoreDiacriticsForHightlighting() throws Exception {
         String phrase = "Širvintos";
         Set<String> terms = new HashSet<>();
         terms.add("sirvintos");
@@ -1219,7 +1219,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies skip single character terms
      */
     @Test
-    public void applyHighlightingToPhrase_shouldSkipSingleCharacterTerms() throws Exception {
+    void applyHighlightingToPhrase_shouldSkipSingleCharacterTerms() throws Exception {
         String phrase = "FOO BAR Foo Bar foo bar";
         Set<String> terms = new HashSet<>();
         terms.add("o");
@@ -1232,7 +1232,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies apply highlighting to all occurrences of term
      */
     @Test
-    public void applyHighlightingToPhrase_shouldApplyHighlightingToAllOccurrencesOfTerm() throws Exception {
+    void applyHighlightingToPhrase_shouldApplyHighlightingToAllOccurrencesOfTerm() throws Exception {
         String phrase = "FOO BAR Foo Bar foo bar";
         String highlightedPhrase1 = SearchHelper.applyHighlightingToPhrase(phrase, "foo");
         Assertions.assertEquals(
@@ -1254,7 +1254,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies ignore special characters
      */
     @Test
-    public void applyHighlightingToPhrase_shouldIgnoreSpecialCharacters() throws Exception {
+    void applyHighlightingToPhrase_shouldIgnoreSpecialCharacters() throws Exception {
         String phrase = "FOO BAR Foo Bar foo bar";
         String highlightedPhrase1 = SearchHelper.applyHighlightingToPhrase(phrase, "foo-bar");
         Assertions.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "FOO BAR" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
@@ -1267,7 +1267,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add highlighting to hyperlink urls
      */
     @Test
-    public void applyHighlightingToPhrase_shouldNotAddHighlightingToHyperlinkUrls() throws Exception {
+    void applyHighlightingToPhrase_shouldNotAddHighlightingToHyperlinkUrls() throws Exception {
         String phrase = "foo <a href=\"https://example.com/foo\">foo</a> foo";
         String highlightedPhrase1 = SearchHelper.applyHighlightingToPhrase(phrase, "foo");
         Assertions.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END
@@ -1280,7 +1280,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add span correctly
      */
     @Test
-    public void applyHighlightingToTerm_shouldAddSpanCorrectly() throws Exception {
+    void applyHighlightingToTerm_shouldAddSpanCorrectly() throws Exception {
         Assertions.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END,
                 SearchHelper.applyHighlightingToTerm("foo"));
     }
@@ -1290,7 +1290,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies replace placeholders with html tags
      */
     @Test
-    public void replaceHighlightingPlaceholders_shouldReplacePlaceholdersWithHtmlTags() throws Exception {
+    void replaceHighlightingPlaceholders_shouldReplacePlaceholdersWithHtmlTags() throws Exception {
         Assertions.assertEquals("<span class=\"search-list--highlight\">foo</span>", SearchHelper
                 .replaceHighlightingPlaceholders(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
     }
@@ -1300,7 +1300,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies replace placeholders with empty strings
      */
     @Test
-    public void removeHighlightingPlaceholders_shouldReplacePlaceholdersWithEmptyStrings() throws Exception {
+    void removeHighlightingPlaceholders_shouldReplacePlaceholdersWithEmptyStrings() throws Exception {
         Assertions.assertEquals("foo", SearchHelper
                 .removeHighlightingPlaceholders(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
     }
@@ -1310,7 +1310,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies prepare non-empty queries correctly
      */
     @Test
-    public void prepareQuery_shouldPrepareNonemptyQueriesCorrectly() throws Exception {
+    void prepareQuery_shouldPrepareNonemptyQueriesCorrectly() throws Exception {
         Assertions.assertEquals("(FOO:bar)", SearchHelper.prepareQuery("FOO:bar", null));
     }
 
@@ -1319,7 +1319,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies prepare empty queries correctly
      */
     @Test
-    public void prepareQuery_shouldPrepareEmptyQueriesCorrectly() throws Exception {
+    void prepareQuery_shouldPrepareEmptyQueriesCorrectly() throws Exception {
         Assertions.assertEquals("(ISWORK:true OR ISANCHOR:true) AND BLA:blup",
                 SearchHelper.prepareQuery(null, "(ISWORK:true OR ISANCHOR:true) AND BLA:blup"));
         Assertions.assertEquals("+(ISWORK:true ISANCHOR:true)", SearchHelper.prepareQuery(null, ""));
@@ -1330,7 +1330,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies parse string correctly
      */
     @Test
-    public void parseSortString_shouldParseStringCorrectly() throws Exception {
+    void parseSortString_shouldParseStringCorrectly() throws Exception {
         String sortString = "!SORT_1;SORT_2;SORT_3";
         Assertions.assertEquals(3, SearchHelper.parseSortString(sortString, null).size());
     }
@@ -1340,7 +1340,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove illegal chars correctly
      */
     @Test
-    public void cleanUpSearchTerm_shouldRemoveIllegalCharsCorrectly() throws Exception {
+    void cleanUpSearchTerm_shouldRemoveIllegalCharsCorrectly() throws Exception {
         Assertions.assertEquals("a", SearchHelper.cleanUpSearchTerm("(a)"));
     }
 
@@ -1349,7 +1349,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove trailing punctuation
      */
     @Test
-    public void cleanUpSearchTerm_shouldRemoveTrailingPunctuation() throws Exception {
+    void cleanUpSearchTerm_shouldRemoveTrailingPunctuation() throws Exception {
         Assertions.assertEquals("a", SearchHelper.cleanUpSearchTerm("a,:;"));
     }
 
@@ -1358,7 +1358,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies preserve truncation
      */
     @Test
-    public void cleanUpSearchTerm_shouldPreserveTruncation() throws Exception {
+    void cleanUpSearchTerm_shouldPreserveTruncation() throws Exception {
         Assertions.assertEquals("*a*", SearchHelper.cleanUpSearchTerm("*a*"));
     }
 
@@ -1367,7 +1367,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies preserve negation
      */
     @Test
-    public void cleanUpSearchTerm_shouldPreserveNegation() throws Exception {
+    void cleanUpSearchTerm_shouldPreserveNegation() throws Exception {
         Assertions.assertEquals("-a", SearchHelper.cleanUpSearchTerm("-a"));
     }
 
@@ -1376,7 +1376,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies preserve digits
      */
     @Test
-    public void normalizeString_shouldPreserveDigits() throws Exception {
+    void normalizeString_shouldPreserveDigits() throws Exception {
         Assertions.assertEquals("1 2 3", SearchHelper.normalizeString("1*2*3"));
     }
 
@@ -1385,7 +1385,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies preserve latin chars
      */
     @Test
-    public void normalizeString_shouldPreserveLatinChars() throws Exception {
+    void normalizeString_shouldPreserveLatinChars() throws Exception {
         Assertions.assertEquals("f o obar", SearchHelper.normalizeString("F*O*Obar"));
     }
 
@@ -1394,7 +1394,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies preserve hebrew chars
      */
     @Test
-    public void normalizeString_shouldPreserveHebrewChars() throws Exception {
+    void normalizeString_shouldPreserveHebrewChars() throws Exception {
         Assertions.assertEquals("דעה", SearchHelper.normalizeString("דעה"));
     }
 
@@ -1403,7 +1403,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove hyperlink html elements including terms
      */
     @Test
-    public void normalizeString_shouldRemoveHyperlinkHtmlElementsIncludingTerms() throws Exception {
+    void normalizeString_shouldRemoveHyperlinkHtmlElementsIncludingTerms() throws Exception {
         Assertions.assertEquals("one                                           two                                           three",
                 SearchHelper
                         .normalizeString("one <a href=\"https://example.com/foo\">foo</a> two <a href=\"https://example.com/bar\">bar</a> three"));
@@ -1414,7 +1414,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies preserve string length
      */
     @Test
-    public void normalizeString_shouldPreserveStringLength() throws Exception {
+    void normalizeString_shouldPreserveStringLength() throws Exception {
         String orig =
                 "Lutgen est née à Esch-sur-Alzette. Son père était fonctionnaire d’État et sa mère avait un atelier de couture.</p><br/><p>Lutgen a reçu une formation en arts plastiques à l’École Nationale Supérieure des Beaux-Arts à Paris de 1959 à 1961, puis à la Kunstakademie de Munich en 1962. En 1972, elle a repris ses études afin d’obtenir un diplôme en tant que professeur d’éducation artistique. Plus précisément, elle a fréquenté la Staatliche Kunstakademie de Düsseldorf de 1972 à 1976 et elle a suivi encore une formation supplémentaire à la Rheinische Friedrich-Wilhelm-Universität de Bonn de 1977 à 1979. Elle a enseigné l’éducation artistique à partir de 1979 au Lycée technique Nic-Biever à Dudelange et de 1982 à 1996 à l’Athénée de Luxembourg.</p><br/><p>En 1959, Lutgen a épousé <a href=\"http://example.com/viewer/resolver?id=8aa04e25-1d79-4463-8ef8-47f16bf212ad\" target=\"_blank\" rel=\"noopener\">Joseph Weydert</a>, artiste et professeur de langue allemande. Elle a donné naissance à une fille. Sa vie durant, elle a effectué régulièrement des voyages en Europe, notamment pour visiter les Biennales de Venise et la Documenta de Kassel.</p><br/><p>Lutgen a créé dans différents domaines artistiques : huile et acrylique sur toile, sur papier, technique mixte, collage, gravure (sérigraphie), dessin et installation. La représentation de la femme dans la société a été dès ses débuts le thème principal dans son œuvre. Depuis la fin des années soixante, le sujet a pris de plus en plus d’ampleur (p. ex. dans <em>Sans titre</em>, 1968), constituant la base de sa démarche créative jusqu’à aujourd’hui. En tant qu’artiste engagée, elle a également traité des événements socio-politiques (l’injustice sociale, le sort des réfugiés, la pollution, la destruction de l’environnement, le réchauffement climatique). Par ailleurs, elle a souvent intégré dans son travail des motifs de l’histoire de l’art, avec des références par exemple à Albrecht Dürer (1471-1528), Pablo Picasso (1881-1973), Henri Matisse (1869-1954), Frida Kahlo (1907-1954), Edouard Manet (1832-1883) ou René Magritte (1898-1967).</p><br/><p>Depuis le début de sa carrière, Lutgen a eu des expositions monographiques et collectives. En 1965, sa première exposition monographique nationale a eu lieu dans la <a href=\"http://example.com/viewer/resolver?id=f7aaa0b7-0d53-4585-ac96-2aba965f72ec\" target=\"_blank\" rel=\"noopener\">Galerie Ernest Horn</a>, suivie en 1967, par la <a href=\"http://example.com/viewer/resolver?id=07979bb7-bac9-4f9d-8289-baf2be4b7763\" target=\"_blank\" rel=\"noopener\">Galerie Interart </a>à Luxembourg-Ville. En 1968, sa première exposition personnelle à l’étranger a été organisée à la Galerie Gabriel à Mannheim. Il a fallu attendre ensuite l’année 2001 pour revoir une exposition monographique à la <a href=\"http://example.com/viewer/resolver?id=db6612d3-f474-4aee-a6db-a8d774299091\" target=\"_blank\" rel=\"noopener\">Galerie d’Art du Théâtre d’Esch-sur-Alzette</a>. Plusieurs expositions ont suivi dans la Galerie Toxic au Luxembourg, mais aussi à Paris dans la Galerie La Capitale. Le <a href=\"http://example.com/viewer/resolver?id=7aebda32-3537-45ac-9152-b021e0532f6c\" target=\"_blank\" rel=\"noopener\">Centre Culturel de Rencontre Abbaye de Neimünster</a> à Luxembourg-Ville lui a consacré une exposition en 2022. En ce qui concerne les expositions collectives, Lutgen a participé pour la première fois au <a href=\"http://example.com/viewer/resolver?id=e632d960-0088-42b8-a43d-9ce8af6e3349\" target=\"_blank\" rel=\"noopener\">Salon du Cercle Artistique du Luxembourg (CAL) </a>en 1962. En 1968, une exposition intitulée <em>Situation 1968 de l’Art Moderne au Luxembourg</em> a eu lieu à Esch-sur-Alzette. À l’étranger, l’artiste a été présente en 1969 à <em>la XII. </em><em>Kunstausstellung der Europäischen Vereinigung aus Eifel und Ardennen </em>(<em>12</em><em><sup>e</sup></em><em> Exposition de l‘Association Européenne des Artistes plasticiens de l'Eiffel et des Ardennes)</em> à Prüm. La même année s’est tenue une grande exposition internationale intitulée <em>Initiative 69. Première exposition non affirmative et coopérative d'art actuel </em>à Luxembourg-Ville. En 2008, l’exposition <em>Dissidences. Ronderëm 68</em> a eu lieu à la Kulturfabrik d’Esch-sur-Alzette. L’exposition <em>Summer of ‘69</em> en 2021 à la Villa Vauban a mis en relation deux artistes Berthe Lutgen et <a href=\"http://example.com/viewer/resolver?id=b2cd18a9-d279-47d9-8c35-27c9d8b6b48b\" target=\"_blank\" rel=\"noopener\">Misch Da Leiden</a>.</p><br/><p>En 1968, Lutgen a travaillé avec <a title=\"Carlo Dickes\" href=\"http://example.com/viewer/resolver?id=1b8f7643-2fbc-4b95-8c97-e176043c0b8a\" target=\"_blank\" rel=\"noopener\">Carlo Dickes</a>, <a href=\"http://example.com/viewer/resolver?id=66113f8e-3d5c-4529-b147-a0e7b38557ec\" target=\"_blank\" rel=\"noopener\">Roger Kieffe</a>r, <a href=\"http://example.com/viewer/resolver?id=a98cf86d-4730-49e8-b836-5d6aad7831a7\" target=\"_blank\" rel=\"noopener\">Marc-Henri Reckinger</a>, <a href=\"http://example.com/viewer/resolver?id=5f7cdae8-5ace-4539-9a3f-b82e5dd2dfc3\" target=\"_blank\" rel=\"noopener\">René Wiroth</a>, <a href=\"http://example.com/viewer/resolver?id=06f80e24-b56e-432f-b673-db6bb5733e4f\" target=\"_blank\" rel=\"noopener\">Pierre Ziesaire</a>, Misch Da Leiden, Joseph Weydert, <a href=\"http://example.com/viewer/resolver?id=c8080883-8b78-4817-8eb4-6cf1e05bdc1f\" target=\"_blank\" rel=\"noopener\">Robert Collignon</a>. Le groupe, nommé <a href=\"http://example.com/viewer/resolver?id=6d98f3d7-a8d4-43e5-8b2e-fd2d104ae74c\" target=\"_blank\" rel=\"noopener\">Arbeitsgruppe Kunst</a>, était à l’origine du premier « happening » luxembourgeois dans un cadre institutionnel.</p><br/><p>L’artiste est présente dans plusieurs collections publiques (<a href=\"http://example.com/viewer/resolver?id=4045c2c9-3147-4cba-9064-f7621e98e2c7\" target=\"_blank\" rel=\"noopener\">Musée national d’archéologie, d'histoire et d’art (MNAHA)</a>, <a href=\"http://example.com/viewer/resolver?id=91877f20-6087-4dee-96c4-6e21cee3d944\" target=\"_blank\" rel=\"noopener\">Les 2 Musées de la Ville de Luxembourg</a>, <a href=\"http://example.com/viewer/resolver?id=9232253c-2435-4226-a94c-6123a3059e22\" target=\"_blank\" rel=\"noopener\">Ministère de la Culture</a>) et privées au Luxembourg.</p><br/><p>Lutgen a réalisé à plusieurs reprises des actes engagées dans l’espace publique. En 1969, elle a participé à tracer la <em>Ligne brisée</em> dans le quartier du Grund de la Ville de Luxembourg. En 2012, elle a collé des affiches de son <em>Codex Aureus Epeternacesis Reloaded</em> sur les colonnes de la Ville de Luxembourg, à l'occasion d’une campagne lancée sur la réforme restrictive de la législation sur l'avortement. En 2020, elle a exposé <em>La Marche des Femmes</em> à la Place d'Armes, une œuvre constituée d’un portrait de groupe de 50 femmes, dénonçant les injustices et violences faites aux femmes du monde entier. L’événement a été réalisé dans le cadre de l’inauguration de la première édition de la « Grève des Femmes » au Luxembourg. En 2022, pendant une semaine, elle a effectué une action intitulée <em>Nevermore</em> sur les colonnes publicitaires de la capitale, pour attirer l’attention aux violences faites aux femmes.</p><br/><p>Comme mentionné ci-dessus, en 1968, Lutgen a été la cofondatrice de l'<em>Arbeitsgruppe Kunst</em>, collectif artistique actif jusqu’en 1970. En 1969, elle est devenue brièvement membre de la <em>Ligue communiste révolutionnaire (LCR)</em> et ensuite du <a href=\"http://example.com/viewer/resolver?id=1ccaf694-59d8-478a-812d-9decbc382502\" target=\"_blank\" rel=\"noopener\"><em>Groupe Initiative 69</em></a>. De 1970 à 1976, elle a été la cofondatrice du <a href=\"http://example.com/viewer/resolver?id=d1405224-333a-4a14-9f26-76d6e87231dd\" target=\"_blank\" rel=\"noopener\"><em>Groupe de recherche d'art politique (GRAP)</em></a> et en 1971 elle a fondé le <a href=\"http://example.com/viewer/resolver?id=03659291-b8af-4531-a883-37e5de477c86\" target=\"_blank\" rel=\"noopener\"><em>Mouvement de libération des femmes (MLF)</em></a>, association active jusqu’en 1992. </p><br/><p>En 1996, Lutgen a reçu du gouvernement luxembourgeois le titre honorifique pour sa carrière dans l’enseignement. En 2020, elle a été décorée de l’Ordre de Mérite du Grand-Duché de Luxembourg. Le premier <a href=\"http://example.com/viewer/resolver?id=7f835634-aad0-4f42-8dd1-c5064c780879\" target=\"_blank\" rel=\"noopener\">Lëtzebuerger Konschtpräis</a> lui a été attribué en 2022.</p><br/><p>La réception critique de son œuvre peut être suivie à partir de sa première exposition au Salon du CAL, où l’artiste s’est fait remarquer par l’originalité de son travail informel qui par contre, selon le critique Jean-Paul Raus, n’était pas apprécié par le public (10). En 1967, l’historien d’art Joseph Walentiny a constaté que le travail de l’artiste rassemble un art de la protestation, où Pop Art, Op Art, Dada, Surréalisme et Naturalisme cohabitent (4). En 1968, le même auteur a décrit Lutgen comme une jeune peintre, certes la plus téméraire de nos avant-gardistes, qui a désorienté le public avec ses œuvres plus matérialistes (Walentiny 4) avant de s’orienter vers un art plus conceptuel. En 1968, suite au happening présenté dans le cadre du Salon du CAL, l’artiste Joseph Weydert se félicite de voir finalement, après avoir battu en sa faveur, un art plus expérimental présenté au Luxembourg (Thill 170). Un article du <em>Tageblatt </em>de 2006 affirme que Lutgen se sert du vocabulaire existant pour représenter la femme, mais le décline différemment et d’une façon plus personnelle (\"Berthe Lutgen expose à Paris.\"). L’historienne de la photographie Françoise Poos a mis en avant en 2010 le rôle primordial joué par Lutgen";
         String norm = SearchHelper.normalizeString(orig);
@@ -1429,7 +1429,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @throws PresentationException
      */
     @Test
-    public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
+    void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
         String query = "DC:dctei";
 
         String finalQuery = SearchHelper.buildFinalQuery(query, false, SearchAggregationType.NO_AGGREGATION);
@@ -1473,7 +1473,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies contain facets for the main field
      */
     @Test
-    public void getFilteredTermsFromIndex_shouldContainFacetsForTheMainField() throws Exception {
+    void getFilteredTermsFromIndex_shouldContainFacetsForTheMainField() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null, false, false, false);
         QueryResponse resp = SearchHelper.getFilteredTermsFromIndex(bmfc, "", null, null, 0, SolrSearchIndex.MAX_HITS, null);
         Assertions.assertNotNull(resp);
@@ -1485,7 +1485,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies contain facets for the sort field
      */
     @Test
-    public void getFilteredTermsFromIndex_shouldContainFacetsForTheSortField() throws Exception {
+    void getFilteredTermsFromIndex_shouldContainFacetsForTheSortField() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATORDISPLAY_UNTOKENIZED", "SORT_CREATOR", null, false, false, false);
         QueryResponse resp = SearchHelper.getFilteredTermsFromIndex(bmfc, "", null, null, 0, SolrSearchIndex.MAX_HITS, null);
         Assertions.assertNotNull(resp);
@@ -1497,7 +1497,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies build escaped query correctly
      */
     @Test
-    public void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() throws Exception {
+    void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() throws Exception {
         Assertions.assertEquals(
                 "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + StringTools.SLASH_REPLACEMENT + "bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", true));
@@ -1508,7 +1508,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies build not escaped query correctly
      */
     @Test
-    public void getQueryForAccessCondition_shouldBuildNotEscapedQueryCorrectly() throws Exception {
+    void getQueryForAccessCondition_shouldBuildNotEscapedQueryCorrectly() throws Exception {
         Assertions.assertEquals("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", false));
     }
@@ -1518,7 +1518,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add join statement if aggregateHits true
      */
     @Test
-    public void buildFinalQuery_shouldAddJoinStatementIfAggregateHitsTrue() throws Exception {
+    void buildFinalQuery_shouldAddJoinStatementIfAggregateHitsTrue() throws Exception {
         String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", false, null, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assertions.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
@@ -1528,7 +1528,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add join statement if aggregateHits false
      */
     @Test
-    public void buildFinalQuery_shouldNotAddJoinStatementIfAggregateHitsFalse() throws Exception {
+    void buildFinalQuery_shouldNotAddJoinStatementIfAggregateHitsFalse() throws Exception {
         String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", false, null, SearchAggregationType.NO_AGGREGATION);
         Assertions.assertEquals("+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
@@ -1538,7 +1538,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove existing join statement
      */
     @Test
-    public void buildFinalQuery_shouldRemoveExistingJoinStatement() throws Exception {
+    void buildFinalQuery_shouldRemoveExistingJoinStatement() throws Exception {
         String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", false, null,
                 SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assertions.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
@@ -1549,7 +1549,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add embedded query template if boostTopLevelDocstructs true
      */
     @Test
-    public void buildFinalQuery_shouldAddEmbeddedQueryTemplateIfBoostTopLevelDocstructsTrue() throws Exception {
+    void buildFinalQuery_shouldAddEmbeddedQueryTemplateIfBoostTopLevelDocstructsTrue() throws Exception {
         String finalQuery =
                 SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", true, null,
                         SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
@@ -1564,7 +1564,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies escape quotation marks in embedded query
      */
     @Test
-    public void buildFinalQuery_shouldEscapeQuotationMarksInEmbeddedQuery() throws Exception {
+    void buildFinalQuery_shouldEscapeQuotationMarksInEmbeddedQuery() throws Exception {
         String finalQuery =
                 SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(\"foo bar\")", true, null,
                         SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
@@ -1575,7 +1575,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testGetWildcards() {
+    void testGetWildcards() {
         String prefix = "*term";
         String suffix = "term*";
         String both = "*term*";
@@ -1611,7 +1611,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add token correctly
      */
     @Test
-    public void addProximitySearchToken_shouldAddTokenCorrectly() throws Exception {
+    void addProximitySearchToken_shouldAddTokenCorrectly() throws Exception {
         Assertions.assertEquals("\"foo bar\"~10", SearchHelper.addProximitySearchToken("foo bar", 10));
         Assertions.assertEquals("\"foo bar\"~10", SearchHelper.addProximitySearchToken("\"foo bar\"", 10));
     }
@@ -1621,7 +1621,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove token correctly
      */
     @Test
-    public void removeProximitySearchToken_shouldRemoveTokenCorrectly() throws Exception {
+    void removeProximitySearchToken_shouldRemoveTokenCorrectly() throws Exception {
         Assertions.assertEquals("\"foo bar\"", SearchHelper.removeProximitySearchToken("\"foo bar\"~10"));
     }
 
@@ -1630,7 +1630,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return unmodified term if no token found
      */
     @Test
-    public void removeProximitySearchToken_shouldReturnUnmodifiedTermIfNoTokenFound() throws Exception {
+    void removeProximitySearchToken_shouldReturnUnmodifiedTermIfNoTokenFound() throws Exception {
         Assertions.assertEquals("\"foo bar\"", SearchHelper.removeProximitySearchToken("\"foo bar\""));
         Assertions.assertEquals("", SearchHelper.removeProximitySearchToken(""));
     }
@@ -1640,7 +1640,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies build regex correctly
      */
     @Test
-    public void buildProximitySearchRegexPattern_shouldBuildRegexCorrectly() throws Exception {
+    void buildProximitySearchRegexPattern_shouldBuildRegexCorrectly() throws Exception {
         Assertions.assertEquals("\\b"
                 + "(?:o(| )n(| )e\\W+(?:\\w+\\W+){0,10}?t(| )w(| )o\\W+(?:\\w+\\W+){0,10}?t(| )h(| )r(| )e(| )e"
                 + "|"
@@ -1654,7 +1654,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return 0 if query empty
      */
     @Test
-    public void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryEmpty() throws Exception {
+    void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryEmpty() throws Exception {
         Assertions.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery(null));
         Assertions.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery(""));
     }
@@ -1664,7 +1664,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return 0 if query does not contain token
      */
     @Test
-    public void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryDoesNotContainToken() throws Exception {
+    void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryDoesNotContainToken() throws Exception {
         Assertions.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery("\"foo bar\""));
     }
 
@@ -1673,7 +1673,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return 0 if query not phrase search
      */
     @Test
-    public void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryNotPhraseSearch() throws Exception {
+    void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryNotPhraseSearch() throws Exception {
         Assertions.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery("foo~10"));
     }
 
@@ -1682,7 +1682,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies extract distance correctly
      */
     @Test
-    public void extractProximitySearchDistanceFromQuery_shouldExtractDistanceCorrectly() throws Exception {
+    void extractProximitySearchDistanceFromQuery_shouldExtractDistanceCorrectly() throws Exception {
         Assertions.assertEquals(10, SearchHelper.extractProximitySearchDistanceFromQuery("\"foobar\"~10"));
     }
 
@@ -1691,7 +1691,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies detect phrase correctly
      */
     @Test
-    public void isPhrase_shouldDetectPhraseCorrectly() throws Exception {
+    void isPhrase_shouldDetectPhraseCorrectly() throws Exception {
         Assertions.assertFalse(SearchHelper.isPhrase("foo bar"));
         Assertions.assertTrue(SearchHelper.isPhrase("\"foo bar\""));
     }
@@ -1701,7 +1701,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies detect phrase with proximity correctly
      */
     @Test
-    public void isPhrase_shouldDetectPhraseWithProximityCorrectly() throws Exception {
+    void isPhrase_shouldDetectPhraseWithProximityCorrectly() throws Exception {
         Assertions.assertFalse(SearchHelper.isPhrase("foo bar~10"));
         Assertions.assertTrue(SearchHelper.isPhrase("\"foo bar\"~10"));
     }
@@ -1711,7 +1711,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct values via json response
      */
     @Test
-    public void getFacetValues_shouldReturnCorrectValuesViaJsonResponse() throws Exception {
+    void getFacetValues_shouldReturnCorrectValuesViaJsonResponse() throws Exception {
         Map<String, String> params = Collections.singletonMap("json.facet", "{uniqueCount : \"unique(" + SolrConstants.PI + ")\"}");
         List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":[* TO *]", "json:uniqueCount", null, 1, params);
         Assertions.assertNotNull(values);
@@ -1725,7 +1725,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return empty string if list null or empty
      */
     @Test
-    public void buildExpandQueryFromFacets_shouldReturnEmptyStringIfListNullOrEmpty() throws Exception {
+    void buildExpandQueryFromFacets_shouldReturnEmptyStringIfListNullOrEmpty() throws Exception {
         Assertions.assertEquals("", SearchHelper.buildExpandQueryFromFacets(null, null));
         Assertions.assertEquals("", SearchHelper.buildExpandQueryFromFacets(Collections.emptyList(), null));
     }
@@ -1735,7 +1735,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct query correctly
      */
     @Test
-    public void buildExpandQueryFromFacets_shouldConstructQueryCorrectly() throws Exception {
+    void buildExpandQueryFromFacets_shouldConstructQueryCorrectly() throws Exception {
         List<String> facets = new ArrayList<>(2);
         facets.add("FOO:bar");
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
@@ -1748,7 +1748,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies only use queries that match allowed regex
      */
     @Test
-    public void buildExpandQueryFromFacets_shouldOnlyUseQueriesThatMatchAllowedRegex() throws Exception {
+    void buildExpandQueryFromFacets_shouldOnlyUseQueriesThatMatchAllowedRegex() throws Exception {
         // Regular query
         List<String> facets = new ArrayList<>(2);
         facets.add("FOO:bar");
@@ -1777,7 +1777,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return empty string of no query allowed
      */
     @Test
-    public void buildExpandQueryFromFacets_shouldReturnEmptyStringOfNoQueryAllowed() throws Exception {
+    void buildExpandQueryFromFacets_shouldReturnEmptyStringOfNoQueryAllowed() throws Exception {
         List<String> facets = new ArrayList<>(2);
         facets.add("FOO:bar");
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
@@ -1790,7 +1790,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies parse phrase search query correctly
      */
     @Test
-    public void parseSearchQueryGroupFromQuery_shouldParsePhraseSearchQueryCorrectly() throws Exception {
+    void parseSearchQueryGroupFromQuery_shouldParsePhraseSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
                 "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") +(SUPERFULLTEXT:\"bla blüp\" FULLTEXT:\"bla blüp\"))",
                 null, null, "en");
@@ -1812,7 +1812,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies parse regular search query correctly
      */
     @Test
-    public void parseSearchQueryGroupFromQuery_shouldParseRegularSearchQueryCorrectly() throws Exception {
+    void parseSearchQueryGroupFromQuery_shouldParseRegularSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
                 "(+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) -(SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)))",
                 null, null, "en");
@@ -1834,7 +1834,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies parse range items correctly
      */
     @Test
-    public void parseSearchQueryGroupFromQuery_shouldParseRangeItemsCorrectly() throws Exception {
+    void parseSearchQueryGroupFromQuery_shouldParseRangeItemsCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("(MD_YEARPUBLISH:([1900 TO 2000]))", null, null, "en");
         Assertions.assertNotNull(group);
         Assertions.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
@@ -1851,7 +1851,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies parse items from facet string correctly
      */
     @Test
-    public void parseSearchQueryGroupFromQuery_shouldParseItemsFromFacetStringCorrectly() throws Exception {
+    void parseSearchQueryGroupFromQuery_shouldParseItemsFromFacetStringCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("", "DC:varia;;MD_CREATOR:bar;;", null, "en");
         Assertions.assertNotNull(group);
         Assertions.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
@@ -1871,7 +1871,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies parse mixed search query correctly
      */
     @Test
-    public void parseSearchQueryGroupFromQuery_shouldParseMixedSearchQueryCorrectly() throws Exception {
+    void parseSearchQueryGroupFromQuery_shouldParseMixedSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
                 "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") (SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)) +(DOCSTRCT_TOP:\"monograph\") -(MD_YEARPUBLISH:([1900 TO 2000])))",
                 "DC:varia;;MD_CREATOR:bar;;", null, "en");
@@ -1909,7 +1909,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies wrap query correctly
      */
     @Test
-    public void prepareQuery_shouldWrapQueryCorrectly() throws Exception {
+    void prepareQuery_shouldWrapQueryCorrectly() throws Exception {
         assertEquals("+(foo:bar)", SearchHelper.prepareQuery("foo:bar"));
     }
 }
