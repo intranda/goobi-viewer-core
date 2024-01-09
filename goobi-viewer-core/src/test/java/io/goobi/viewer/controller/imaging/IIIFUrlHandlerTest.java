@@ -32,7 +32,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  * @author Florian Alpers
  *
  */
-public class IIIFUrlHandlerTest extends AbstractTest {
+class IIIFUrlHandlerTest extends AbstractTest {
 
     IIIFUrlHandler handler;
     String fileUrl = "filename.tif";

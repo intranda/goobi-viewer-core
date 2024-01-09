@@ -39,7 +39,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 
-public class AdminBeanTest extends AbstractDatabaseEnabledTest {
+class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminBean#getAllUsersExcept(List)

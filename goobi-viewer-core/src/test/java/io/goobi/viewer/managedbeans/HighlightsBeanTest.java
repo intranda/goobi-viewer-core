@@ -35,7 +35,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.Highlight;
 
-public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
+class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
 
     HighlightsBean bean;
     NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);

@@ -32,7 +32,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.security.user.User;
 
-public class UserDataBeanTest extends AbstractDatabaseEnabledTest {
+class UserDataBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see UserDataBean#getAnnotationCount()

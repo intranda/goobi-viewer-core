@@ -32,7 +32,7 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian
  *
  */
-public class ClientApplicationTest extends AbstractDatabaseEnabledTest {
+class ClientApplicationTest extends AbstractDatabaseEnabledTest {
 
     IDAO dao;
     

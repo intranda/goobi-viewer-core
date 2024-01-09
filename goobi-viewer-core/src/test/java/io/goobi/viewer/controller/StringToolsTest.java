@@ -37,7 +37,7 @@ import org.jsoup.safety.Safelist;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class StringToolsTest {
+class StringToolsTest {
 
     /**
      * @see StringTools#escapeHtmlChars(String)

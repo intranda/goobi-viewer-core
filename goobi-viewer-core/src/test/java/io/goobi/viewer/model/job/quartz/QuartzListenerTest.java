@@ -48,7 +48,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.QuartzBean;
 
-public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
+class QuartzListenerTest extends AbstractDatabaseEnabledTest{
 
     IDAO dao;
     Configuration config;

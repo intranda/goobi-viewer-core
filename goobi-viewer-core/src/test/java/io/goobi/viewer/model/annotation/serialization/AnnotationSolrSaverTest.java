@@ -39,7 +39,7 @@ import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target
  * @author florian
  *
  */
-public class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest {
+class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest {
 
 
     @Test

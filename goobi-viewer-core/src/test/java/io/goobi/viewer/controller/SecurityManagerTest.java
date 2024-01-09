@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
-public class SecurityManagerTest extends AbstractTest {
+class SecurityManagerTest extends AbstractTest {
 
     /**
      * @see SecurityManager#getDelay(int,long,long)

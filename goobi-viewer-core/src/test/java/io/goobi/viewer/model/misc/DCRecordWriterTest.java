@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  * @author florian
  *
  */
-public class DCRecordWriterTest {
+class DCRecordWriterTest {
 
     private static final String RECORD_REFERENCE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<record xmlns:dc=\"http://purl.org/dc/elements/1.1/\">" +

@@ -44,7 +44,7 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.AbstractTest;
 
-public class ALTOToolsTest extends AbstractTest {
+class ALTOToolsTest extends AbstractTest {
 
     /**
      * @throws java.lang.Exception

@@ -48,7 +48,7 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian
  *
  */
-public class RecordPagesResourceTest extends AbstractRestApiTest {
+class RecordPagesResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
     private static final String PAGENO = "10";

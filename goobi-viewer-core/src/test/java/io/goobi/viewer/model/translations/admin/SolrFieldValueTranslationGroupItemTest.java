@@ -31,7 +31,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SolrFieldValueTranslationGroupItemTest extends AbstractSolrEnabledTest {
+class SolrFieldValueTranslationGroupItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrFieldValueTranslationGroupItem#loadEntries()

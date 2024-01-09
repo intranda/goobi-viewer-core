@@ -36,7 +36,7 @@ import io.goobi.viewer.model.metadata.MetadataElement;
  * @author florian
  *
  */
-public class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
+class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private final String TITLE = "Nobiltà pisana osservata";
     private final String PI = "74241";

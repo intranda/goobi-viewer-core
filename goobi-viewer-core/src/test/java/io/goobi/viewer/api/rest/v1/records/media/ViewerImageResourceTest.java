@@ -50,7 +50,7 @@ import io.goobi.viewer.model.security.LicenseType;
  * @author florian
  *
  */
-public class ViewerImageResourceTest extends AbstractRestApiTest {
+class ViewerImageResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
     private static final String FILENAME = "00000010";

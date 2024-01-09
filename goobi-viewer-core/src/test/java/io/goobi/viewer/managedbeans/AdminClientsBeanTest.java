@@ -33,7 +33,7 @@ import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
  * @author florian
  *
  */
-public class AdminClientsBeanTest {
+class AdminClientsBeanTest {
 
     @Test
     void test_tableDataProvider() throws DAOException {

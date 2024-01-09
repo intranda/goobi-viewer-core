@@ -36,7 +36,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
  * @author florian
  *
  */
-public class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
+class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
 
     AnnotationBean bean;
 

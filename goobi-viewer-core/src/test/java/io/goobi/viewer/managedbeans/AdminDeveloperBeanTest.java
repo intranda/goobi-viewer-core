@@ -23,7 +23,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.XmlTools;
 
 
-public class AdminDeveloperBeanTest {
+class AdminDeveloperBeanTest {
 
     Configuration config;
     AdminDeveloperBean bean;

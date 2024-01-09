@@ -56,7 +56,7 @@ import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvide
 import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
+class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     List<String> collections;
 

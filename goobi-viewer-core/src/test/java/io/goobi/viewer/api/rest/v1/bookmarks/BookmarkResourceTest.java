@@ -37,7 +37,7 @@ import io.goobi.viewer.model.bookmark.Bookmark;
  * @author florian
  *
  */
-public class BookmarkResourceTest {
+class BookmarkResourceTest {
 
     /**
      * @throws java.lang.Exception

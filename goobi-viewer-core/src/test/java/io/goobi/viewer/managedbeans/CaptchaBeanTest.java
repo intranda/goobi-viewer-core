@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.SecurityQuestion;
 
-public class CaptchaBeanTest {
+class CaptchaBeanTest {
     
     /**
      * @see CaptchaBean#resetSecurityQuestion()

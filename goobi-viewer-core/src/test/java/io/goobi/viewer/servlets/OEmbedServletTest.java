@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.servlets.oembed.OEmbedRecord;
 
-public class OEmbedServletTest extends AbstractSolrEnabledTest {
+class OEmbedServletTest extends AbstractSolrEnabledTest {
 
     /**
      * @see OEmbedServlet#parseUrl(String)

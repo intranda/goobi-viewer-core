@@ -29,7 +29,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
-public class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
+class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see LeanPageLoader#getNumPages()

@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.search.SearchHelper;
 
-public class MetadataValueTest {
+class MetadataValueTest {
 
     /**
      * @see MetadataValue#getComboValueShort(int)

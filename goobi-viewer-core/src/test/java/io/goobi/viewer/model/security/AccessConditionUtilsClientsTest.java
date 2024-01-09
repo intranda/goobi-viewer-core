@@ -36,7 +36,7 @@ import io.goobi.viewer.model.security.clients.ClientApplicationManager;
  * @author florian
  *
  */
-public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
+class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
 
     LicenseType lt;
     License license;

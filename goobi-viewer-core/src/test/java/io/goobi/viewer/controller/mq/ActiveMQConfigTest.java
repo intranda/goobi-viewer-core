@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ActiveMQConfigTest {
+class ActiveMQConfigTest {
 
     private static final String activeMqConfigPath = "src/test/resources/config_activemq.xml";
 

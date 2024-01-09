@@ -42,7 +42,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.sitemap.Sitemap;
 
-public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
+class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final Logger logger = LogManager.getLogger(SitemapTest.class);
 

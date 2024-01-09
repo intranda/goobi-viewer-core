@@ -41,7 +41,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
  * @author florian
  *
  */
-public class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
+class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @throws java.lang.Exception

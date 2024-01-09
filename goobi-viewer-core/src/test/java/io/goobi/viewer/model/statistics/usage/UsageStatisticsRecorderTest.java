@@ -39,7 +39,7 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian
  *
  */
-public class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
+class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
     
     volatile IDAO dao;
     

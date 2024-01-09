@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
-public class MessageValueTest {
+class MessageValueTest {
 
     /**
      * @see MessageValue#getTranslationStatus()

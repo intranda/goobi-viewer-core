@@ -31,7 +31,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchQueryItemTest extends AbstractSolrEnabledTest {
+class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryItem#generateQuery(Set)

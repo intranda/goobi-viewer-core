@@ -32,7 +32,7 @@ import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class TranslationGroupTest extends AbstractSolrEnabledTest {
+class TranslationGroupTest extends AbstractSolrEnabledTest {
 
     /**
      * @see TranslationGroup#getEntryCount()

@@ -40,7 +40,7 @@ import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
  * @author florian
  *
  */
-public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
+class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
 
     private static final Long LOGO_ID = 1l;
     private static final String STYLESHEET = "div {color:green;}\n a {color:blue};";

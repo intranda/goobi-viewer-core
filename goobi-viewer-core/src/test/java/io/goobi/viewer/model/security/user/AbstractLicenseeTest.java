@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.AccessPermission;
 
-public class AbstractLicenseeTest {
+class AbstractLicenseeTest {
 
     /**
      * @see AbstractLicensee#getAccessPermissionFromMap(Map)

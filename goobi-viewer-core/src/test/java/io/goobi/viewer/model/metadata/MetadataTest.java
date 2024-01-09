@@ -36,7 +36,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
-public class MetadataTest extends AbstractTest {
+class MetadataTest extends AbstractTest {
 
     /**
      * @see Metadata#filterMetadata(List,Locale)

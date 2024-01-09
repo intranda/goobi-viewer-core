@@ -24,7 +24,7 @@ package io.goobi.viewer.model.export;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ExportFieldConfigurationTest {
+class ExportFieldConfigurationTest {
 
     /**
      * @see ExportFieldConfiguration#getLabel()

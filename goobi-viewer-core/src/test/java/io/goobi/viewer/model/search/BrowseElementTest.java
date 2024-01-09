@@ -37,7 +37,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
-public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
+class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @BeforeAll
     public static void setUpClass() throws Exception {

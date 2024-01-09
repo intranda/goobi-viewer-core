@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 
-public class CalendarViewTest extends AbstractSolrEnabledTest {
+class CalendarViewTest extends AbstractSolrEnabledTest {
 
     /**
      * @see CalendarView#getVolumeYears()

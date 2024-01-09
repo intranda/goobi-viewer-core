@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
-public class MetadataElementTest {
+class MetadataElementTest {
 
     /**
      * @see MetadataElement#isSkip()

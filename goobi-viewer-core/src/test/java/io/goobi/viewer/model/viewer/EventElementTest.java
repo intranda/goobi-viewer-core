@@ -34,7 +34,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class EventElementTest extends AbstractTest {
+class EventElementTest extends AbstractTest {
 
     /**
      * @see EventElement#EventElement(SolrDocument,Locale)

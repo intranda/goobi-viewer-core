@@ -24,7 +24,7 @@ package io.goobi.viewer.api.rest.v1.search;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class SearchResultResourceTest {
+class SearchResultResourceTest {
 
     /**
      * @see SearchResultResource#getSearchHitChildren(List,String,int,Locale)

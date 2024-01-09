@@ -42,7 +42,7 @@ import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.ConfigurationTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -69,7 +69,7 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void doGet_shouldReturn400IfRecordIdentifierMissing() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
         Assertions.assertThrows(HttpException.class, () -> sc.getResponse(request));
     }
 
@@ -80,7 +80,7 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void doGet_shouldReturn404IfRecordNotFound() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("urn", "NOTFOUND");
         Assertions.assertThrows(HttpNotFoundException.class, () -> sc.getResponse(request));
     }
@@ -92,7 +92,7 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void doGet_shouldReturn500IfRecordFieldNameBad() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("field", "NOSUCHFIELD");
         request.setParameter("identifier", "PPN123");
         Assertions.assertThrows(HttpInternalErrorException.class, () -> sc.getResponse(request));
@@ -105,7 +105,7 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void doGet_shouldReturn500IfRecordFieldValueBad() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("field", SolrConstants.PI);
         request.setParameter("identifier", "a:b");
         Assertions.assertThrows(HttpException.class, () -> sc.getResponse(request));

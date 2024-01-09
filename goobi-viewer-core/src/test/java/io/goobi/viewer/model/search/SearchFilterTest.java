@@ -24,7 +24,7 @@ package io.goobi.viewer.model.search;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class SearchFilterTest {
+class SearchFilterTest {
 
     /**
      * @see SearchFilter#SearchFilter(String,String)

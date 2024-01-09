@@ -28,7 +28,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class CitationLinkTest extends AbstractSolrEnabledTest {
+class CitationLinkTest extends AbstractSolrEnabledTest {
 
     /**
      * @see CitationLink#getUrl(ViewManager)

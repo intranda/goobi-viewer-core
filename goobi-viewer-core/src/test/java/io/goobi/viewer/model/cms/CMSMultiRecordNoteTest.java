@@ -41,7 +41,7 @@ import io.goobi.viewer.solr.SolrConstants;
  * @author florian
  *
  */
-public class CMSMultiRecordNoteTest extends AbstractDatabaseAndSolrEnabledTest {
+class CMSMultiRecordNoteTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     void testGetRecords() throws DAOException {

@@ -21,19 +21,18 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.controller.ConfigurationTest;
 
-public class ConfigurationBeanTest extends AbstractTest {
+class ConfigurationBeanTest extends AbstractTest {
 
     /** Logger for this class. */
-    private static final Logger logger = LogManager.getLogger(ConfigurationTest.class);
+    private static final Logger logger = LogManager.getLogger(ConfigurationBeanTest.class);
 
     private ConfigurationBean bean;
 

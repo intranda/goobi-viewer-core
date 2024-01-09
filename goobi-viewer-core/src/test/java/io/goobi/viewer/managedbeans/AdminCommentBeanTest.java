@@ -32,7 +32,7 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.security.user.User;
 
-public class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
+class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminCommentBean#init()

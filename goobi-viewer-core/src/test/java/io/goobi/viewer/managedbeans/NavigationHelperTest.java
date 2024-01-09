@@ -33,7 +33,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
 
-public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
+class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getCurrentView()

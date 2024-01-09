@@ -36,7 +36,7 @@ import io.goobi.viewer.AbstractTest;
  * @author Florian Alpers
  *
  */
-public class LicenseTypeTest extends AbstractTest {
+class LicenseTypeTest extends AbstractTest {
 
     /**
      * @see LicenseType#getAvailablePrivileges(Set)

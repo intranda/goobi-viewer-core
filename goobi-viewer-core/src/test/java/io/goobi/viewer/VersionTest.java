@@ -24,7 +24,7 @@ package io.goobi.viewer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class VersionTest {
+class VersionTest {
 
     final static String MANIFEST = "Manifest-Version: 1.0\r\n" + "Public-Version: 20.01\r\n" + "Implementation-Version: 6d948ec\r\n"
             + "Built-By: root\r\n" + "version: 4.3.0-SNAPSHOT\r\n" + "Created-By: Apache Maven\r\n" + "Build-Jdk: 1.8.0_232\r\n"

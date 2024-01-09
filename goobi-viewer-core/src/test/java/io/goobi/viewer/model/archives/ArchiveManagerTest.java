@@ -48,7 +48,7 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
-public class ArchiveManagerTest extends AbstractTest{
+class ArchiveManagerTest extends AbstractTest{
 
     BasexEADParser eadParser;
     List<ArchiveResource> possibleDatabases;

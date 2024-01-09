@@ -38,7 +38,7 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
  * @author Florian Alpers
  *
  */
-public class ViewerPathBuilderTest {
+class ViewerPathBuilderTest {
 
     /**
      * @throws java.lang.Exception

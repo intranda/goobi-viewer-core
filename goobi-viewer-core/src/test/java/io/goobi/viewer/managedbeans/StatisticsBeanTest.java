@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 
-public class StatisticsBeanTest extends AbstractSolrEnabledTest {
+class StatisticsBeanTest extends AbstractSolrEnabledTest {
 
     /**
      * @see StatisticsBean#getTopStructTypesByNumber()

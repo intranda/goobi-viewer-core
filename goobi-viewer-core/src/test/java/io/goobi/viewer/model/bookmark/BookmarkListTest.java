@@ -40,7 +40,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
-public class BookmarkListTest extends AbstractSolrEnabledTest {
+class BookmarkListTest extends AbstractSolrEnabledTest {
 
     AbstractApiUrlManager urls;
 

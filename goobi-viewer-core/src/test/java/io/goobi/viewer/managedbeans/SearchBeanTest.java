@@ -49,7 +49,7 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private SearchBean searchBean;
 

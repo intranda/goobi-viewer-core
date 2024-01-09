@@ -46,7 +46,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
 
-public class ViewerResourceBundleTest extends AbstractTest {
+class ViewerResourceBundleTest extends AbstractTest {
 
     @Test
     void testGetDefaultLocale() {

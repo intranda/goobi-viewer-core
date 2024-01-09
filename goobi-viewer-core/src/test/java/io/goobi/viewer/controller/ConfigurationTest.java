@@ -43,6 +43,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
@@ -74,13 +75,10 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class ConfigurationTest extends AbstractTest {
+class ConfigurationTest extends AbstractTest {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(ConfigurationTest.class);
-
-    public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
-    public static final int NUM_ALL_SEARCH_SORTING_OPTIONS = 12;
 
     /**
      * @see Configuration#getConfigLocalPath()
@@ -1446,7 +1444,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     void getSearchSortingOptions_shouldPlaceDefaultSortingFieldOnTop() throws Exception {
         List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions(null);
-        assertEquals(NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
+        assertEquals(TestUtils.NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
         assertEquals("SORT_TITLE_LANG_DE", result.get(0).getField());
     }
 
@@ -1457,7 +1455,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     void getSearchSortingOptions_shouldHandleDescendingConfigurationsCorrectly() throws Exception {
         List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions(null);
-        assertEquals(NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
+        assertEquals(TestUtils.NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
         assertEquals(SolrConstants.DATECREATED, result.get(8).getField());
         assertEquals(SolrConstants.DATECREATED, result.get(9).getField());
     }
@@ -1469,7 +1467,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     void getSearchSortingOptions_shouldIgnoreSecondaryFieldsFromDefaultConfig() throws Exception {
         List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions(null);
-        assertEquals(NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
+        assertEquals(TestUtils.NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
         assertEquals("SORT_YEARPUBLISH", result.get(10).getField());
         assertEquals("SORT_YEARPUBLISH", result.get(11).getField());
     }
@@ -1481,7 +1479,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     void getSearchSortingOptions_shouldIgnoreFieldsWithMismatchedLanguage() throws Exception {
         List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions("en");
-        assertEquals(NUM_ALL_SEARCH_SORTING_OPTIONS - 2, result.size());
+        assertEquals(TestUtils.NUM_ALL_SEARCH_SORTING_OPTIONS - 2, result.size());
         assertEquals("SORT_YEARPUBLISH", result.get(8).getField());
         assertEquals("SORT_YEARPUBLISH", result.get(9).getField());
     }

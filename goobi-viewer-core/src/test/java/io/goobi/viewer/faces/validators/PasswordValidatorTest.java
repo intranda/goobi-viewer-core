@@ -24,7 +24,7 @@ package io.goobi.viewer.faces.validators;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class PasswordValidatorTest {
+class PasswordValidatorTest {
 
     /**
      * @see PasswordValidator#validatePassword(String)

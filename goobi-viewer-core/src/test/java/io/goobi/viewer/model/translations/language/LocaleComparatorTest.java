@@ -37,7 +37,7 @@ import io.goobi.viewer.model.translations.language.LocaleComparator;
  * @author Florian Alpers
  *
  */
-public class LocaleComparatorTest {
+class LocaleComparatorTest {
 
     /**
      * @throws java.lang.Exception

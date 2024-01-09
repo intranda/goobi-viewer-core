@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.cms.CMSStaticPage;
 
-public class CMSStaticPageTest {
+class CMSStaticPageTest {
 
     private CMSStaticPage page = new CMSStaticPage("test");
 

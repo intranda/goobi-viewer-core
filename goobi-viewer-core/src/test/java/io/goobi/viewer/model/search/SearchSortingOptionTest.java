@@ -28,7 +28,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchSortingOptionTest extends AbstractTest {
+class SearchSortingOptionTest extends AbstractTest {
 
     /**
      * @see SearchSortingOption#SearchSortingOption(String)

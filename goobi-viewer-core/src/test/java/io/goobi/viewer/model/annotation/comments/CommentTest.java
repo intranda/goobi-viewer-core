@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 
-public class CommentTest extends AbstractSolrEnabledTest {
+class CommentTest extends AbstractSolrEnabledTest {
 
     /**
     * @see Comment#isTargetPiRecordIndexed()

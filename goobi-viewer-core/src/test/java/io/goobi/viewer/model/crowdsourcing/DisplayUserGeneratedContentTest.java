@@ -30,7 +30,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
+class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
 
     @BeforeAll
     public static void setUpClass() throws Exception {

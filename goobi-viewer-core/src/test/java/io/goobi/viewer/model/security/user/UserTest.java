@@ -40,7 +40,7 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class UserTest extends AbstractDatabaseEnabledTest {
+class UserTest extends AbstractDatabaseEnabledTest {
     
     /**
      * @see User#User(User)

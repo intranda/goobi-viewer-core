@@ -34,7 +34,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.viewer.StructElement;
 
-public class MetadataParameterTest {
+class MetadataParameterTest {
 
     @Test
     void testReadMetadata() throws IndexUnreachableException, PresentationException {

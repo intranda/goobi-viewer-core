@@ -38,7 +38,7 @@ import io.goobi.viewer.controller.DataManager;
  * @author florian
  *
  */
-public class DFGViewerImageTest extends AbstractTest {
+class DFGViewerImageTest extends AbstractTest {
 
     DFGViewerImage servlet;
 

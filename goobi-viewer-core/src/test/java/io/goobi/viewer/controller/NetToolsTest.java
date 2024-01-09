@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
-public class NetToolsTest extends AbstractTest {
+class NetToolsTest extends AbstractTest {
 
     /**
      * @see NetTools#parseMultipleIpAddresses(String)

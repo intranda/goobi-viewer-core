@@ -48,7 +48,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.viewer.StringPair;
 
-public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
+class SolrSearchIndexTest extends AbstractSolrEnabledTest {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrSearchIndexTest.class);

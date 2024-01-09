@@ -43,7 +43,7 @@ import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
-public class CampaignTest extends AbstractDatabaseEnabledTest {
+class CampaignTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see Campaign#getDaysLeft()

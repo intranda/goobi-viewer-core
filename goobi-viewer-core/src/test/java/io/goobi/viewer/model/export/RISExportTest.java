@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
+class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see RISExport#RISExport()

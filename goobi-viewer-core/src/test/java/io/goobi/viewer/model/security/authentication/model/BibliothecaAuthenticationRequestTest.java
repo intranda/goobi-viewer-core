@@ -24,7 +24,7 @@ package io.goobi.viewer.model.security.authentication.model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class BibliothecaAuthenticationRequestTest {
+class BibliothecaAuthenticationRequestTest {
 
     /**
      * @see BibliothecaAuthenticationRequest#normalizeUsername(String)

@@ -42,7 +42,7 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian
  *
  */
-public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
+class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
 
     IDAO dao;
     

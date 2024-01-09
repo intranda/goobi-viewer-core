@@ -31,7 +31,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 
-public class FeatureSetConfigurationTest extends AbstractTest {
+class FeatureSetConfigurationTest extends AbstractTest {
 
     @Test
     void testReadConfiguation() {

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.faces.validators.EmailValidator;
 
-public class EmailValidatorTest {
+class EmailValidatorTest {
 
     /**
      * @see EmailValidator#validateEmailAddress(String)

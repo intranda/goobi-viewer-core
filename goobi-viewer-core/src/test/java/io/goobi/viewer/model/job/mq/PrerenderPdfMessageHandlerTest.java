@@ -44,7 +44,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.job.TaskType;
 
-public class PrerenderPdfMessageHandlerTest {
+class PrerenderPdfMessageHandlerTest {
 
     Path imageFolder = Paths.get("src/test/resources/data/viewer/images/PPN615391702").toAbsolutePath();
     Path pdfFolder = Paths.get("src/test/resources/output/pdf").toAbsolutePath();

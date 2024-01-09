@@ -55,7 +55,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author Florian
  *
  */
-public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
+class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     public static final String PI = PI_KLEIUNIV;
     public static final int ORDER = 1;

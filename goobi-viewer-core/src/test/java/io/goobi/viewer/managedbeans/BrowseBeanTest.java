@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
 
-public class BrowseBeanTest extends AbstractTest {
+class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)

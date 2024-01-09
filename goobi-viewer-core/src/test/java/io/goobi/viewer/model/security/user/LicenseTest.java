@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.License;
 
-public class LicenseTest {
+class LicenseTest {
 
     /**
      * @see License#isValid()

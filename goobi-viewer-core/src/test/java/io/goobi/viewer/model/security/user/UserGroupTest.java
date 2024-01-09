@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 
-public class UserGroupTest extends AbstractDatabaseEnabledTest {
+class UserGroupTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see UserGroup#getMemberCount()

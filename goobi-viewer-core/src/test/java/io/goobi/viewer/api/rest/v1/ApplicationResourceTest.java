@@ -37,7 +37,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
  * @author florian
  *
  */
-public class ApplicationResourceTest extends AbstractRestApiTest {
+class ApplicationResourceTest extends AbstractRestApiTest {
 
     /**
      * @throws java.lang.Exception

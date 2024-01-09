@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.viewer.StructElement;
 
-public class AbstractPageLoaderTest extends AbstractTest {
+class AbstractPageLoaderTest extends AbstractTest {
 
     /**
      * @see AbstractPageLoader#buildPageLabelTemplate(String, Locale)

@@ -37,7 +37,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSComponentAttribute;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 
-public class CMSPageContentManagerTest {
+class CMSPageContentManagerTest {
 
     @Test
     void testReadFromTemplateFiles() throws IOException {

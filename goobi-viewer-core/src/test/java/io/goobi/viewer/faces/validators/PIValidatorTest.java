@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.faces.validators.PIValidator;
 
-public class PIValidatorTest {
+class PIValidatorTest {
 
     /**
      * @see PIValidator#validatePi(String)

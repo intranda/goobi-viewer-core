@@ -31,7 +31,7 @@ import com.rometools.rome.feed.synd.SyndFeed;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 
-public class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
+class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @BeforeAll
     public static void setUpClass() throws Exception {

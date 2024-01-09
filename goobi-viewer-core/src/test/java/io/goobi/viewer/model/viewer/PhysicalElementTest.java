@@ -35,7 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.ContextMocker;
 
-public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
+class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(PhysicalElementTest.class);

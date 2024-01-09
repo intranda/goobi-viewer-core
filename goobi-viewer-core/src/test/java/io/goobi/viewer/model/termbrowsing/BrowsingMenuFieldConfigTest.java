@@ -28,7 +28,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
-public class BrowsingMenuFieldConfigTest {
+class BrowsingMenuFieldConfigTest {
 
     /**
      * @see BrowsingMenuFieldConfig#setDocstructFilterString(String)

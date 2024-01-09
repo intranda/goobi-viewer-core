@@ -36,7 +36,7 @@ import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
-public class DisplayScopeTest extends AbstractSolrEnabledTest {
+class DisplayScopeTest extends AbstractSolrEnabledTest {
 
     @Test
     void testClone() {

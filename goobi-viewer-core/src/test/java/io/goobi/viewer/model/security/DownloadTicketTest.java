@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
-public class DownloadTicketTest extends AbstractTest {
+class DownloadTicketTest extends AbstractTest {
     
     /**
     * @see DownloadTicket#checkPassword(String)

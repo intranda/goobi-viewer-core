@@ -34,7 +34,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
+class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void testPersist() throws DAOException {

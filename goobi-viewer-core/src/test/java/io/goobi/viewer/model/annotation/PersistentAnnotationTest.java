@@ -65,7 +65,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
-public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
+class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     private WebAnnotation annotation;
     private CrowdsourcingAnnotation daoAnno;

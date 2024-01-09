@@ -34,7 +34,7 @@ import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleTyp
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
-public class MetadataToolsTest extends AbstractSolrEnabledTest {
+class MetadataToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see MetadataTools#applyReplaceRules(String,Map)

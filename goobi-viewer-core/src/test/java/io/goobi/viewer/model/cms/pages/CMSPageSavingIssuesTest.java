@@ -41,7 +41,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 
-public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
+class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
 
     IDAO dao;
     Path componentTemplatesPath = Paths.get("src/test/resources/data/viewer/cms/component_templates");

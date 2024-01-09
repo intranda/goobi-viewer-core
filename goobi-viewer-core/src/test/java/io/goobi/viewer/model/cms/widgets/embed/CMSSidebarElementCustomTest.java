@@ -37,7 +37,7 @@ import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 
-public class CMSSidebarElementCustomTest extends AbstractDatabaseEnabledTest {
+class CMSSidebarElementCustomTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void test() throws DAOException {

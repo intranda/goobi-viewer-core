@@ -40,7 +40,7 @@ import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
  * @author florian
  *
  */
-public class ContentBeanTest extends AbstractDatabaseEnabledTest {
+class ContentBeanTest extends AbstractDatabaseEnabledTest {
 
     private static final String PI = "PI_1";
 

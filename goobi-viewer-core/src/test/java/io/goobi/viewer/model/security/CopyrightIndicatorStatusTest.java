@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 
-public class CopyrightIndicatorStatusTest {
+class CopyrightIndicatorStatusTest {
 
     /**
      * @see CopyrightIndicatorStatus#getByName(String)

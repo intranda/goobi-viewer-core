@@ -24,7 +24,7 @@ package io.goobi.viewer.model.search;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class HitTypeTest {
+class HitTypeTest {
 
     /**
      * @see HitType#getByName(String)

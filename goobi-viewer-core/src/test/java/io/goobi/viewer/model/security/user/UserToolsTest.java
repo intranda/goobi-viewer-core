@@ -31,7 +31,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 
-public class UserToolsTest extends AbstractDatabaseEnabledTest {
+class UserToolsTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see UserTools#deleteBookmarkListsForUser(User)

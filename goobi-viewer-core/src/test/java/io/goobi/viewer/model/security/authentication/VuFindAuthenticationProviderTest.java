@@ -61,7 +61,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
  * @author Florian Alpers
  *
  */
-public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
+class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     VuFindProvider provider;
 

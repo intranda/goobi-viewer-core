@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.controller.ConfigurationTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ContextMocker;
 import io.goobi.viewer.solr.SolrConstants;
@@ -132,7 +132,7 @@ class StructElementTest extends AbstractSolrEnabledTest {
     void getImageUrl_shouldConstructUrlCorrectly() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
         Assertions.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/" + PI_KLEIUNIV + "/files/images/00000001.tif/full/!600,800/0/default.jpg",
+                TestUtils.APPLICATION_ROOT_URL + "api/v1/records/" + PI_KLEIUNIV + "/files/images/00000001.tif/full/!600,800/0/default.jpg",
                 element.getImageUrl(600, 800));
     }
 

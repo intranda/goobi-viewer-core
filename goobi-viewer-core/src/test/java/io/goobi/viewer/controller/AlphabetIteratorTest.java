@@ -32,7 +32,7 @@ import io.goobi.viewer.controller.AlphabetIterator;
  * @author Florian Alpers
  *
  */
-public class AlphabetIteratorTest {
+class AlphabetIteratorTest {
 
     /**
      * @throws java.lang.Exception

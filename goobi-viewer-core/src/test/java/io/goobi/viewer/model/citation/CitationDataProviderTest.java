@@ -34,7 +34,7 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLType;
 import io.goobi.viewer.AbstractTest;
 
-public class CitationDataProviderTest extends AbstractTest {
+class CitationDataProviderTest extends AbstractTest {
 
     /**
      * @see CitationDataProvider#addItemData(String,Map,CSLType)

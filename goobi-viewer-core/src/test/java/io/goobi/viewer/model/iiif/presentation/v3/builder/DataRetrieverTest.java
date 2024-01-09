@@ -48,7 +48,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  * @author florian
  *
  */
-public class DataRetrieverTest extends AbstractSolrEnabledTest{
+class DataRetrieverTest extends AbstractSolrEnabledTest{
 
     private DataRetriever dataRetriever = new DataRetriever();
 

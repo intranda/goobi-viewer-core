@@ -33,11 +33,10 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
-public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
+class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 
     CmsMediaBean bean;
 
@@ -88,7 +87,7 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
         bean.setFilter("tag1");
         Assertions.assertEquals(3, bean.getMediaItems().size());
         bean.setFilter("");
-        bean.setFilenameFilter(bean.getImageFilter());
+        bean.setFilenameFilter(CmsMediaBean.getImageFilter());
         Assertions.assertEquals(4, bean.getMediaItems().size());
         bean.setFilenameFilter(".*\\.xml");
         Assertions.assertEquals(0, bean.getMediaItems().size());
@@ -99,16 +98,16 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
         String file1 = "image.jpg";
         String file2 = "image.JPEG";
         String file3 = "image.xml";
-        Assertions.assertTrue(file1.matches(bean.getImageFilter()));
-        Assertions.assertTrue(file2.matches(bean.getImageFilter()));
-        Assertions.assertFalse(file3.matches(bean.getImageFilter()));
+        Assertions.assertTrue(file1.matches(CmsMediaBean.getImageFilter()));
+        Assertions.assertTrue(file2.matches(CmsMediaBean.getImageFilter()));
+        Assertions.assertFalse(file3.matches(CmsMediaBean.getImageFilter()));
     }
 
     @Test
-    void testGetMediaUrlForGif() throws NumberFormatException, ViewerConfigurationException {
+    void testGetMediaUrlForGif() throws NumberFormatException {
         CMSMediaItem item = new CMSMediaItem();
         item.setFileName("lorelai.gif");
-        String url = bean.getMediaUrl(item);
+        String url = CmsMediaBean.getMediaUrl(item);
         assertTrue(url.endsWith("lorelai.gif/full.gif"));
     }
 }

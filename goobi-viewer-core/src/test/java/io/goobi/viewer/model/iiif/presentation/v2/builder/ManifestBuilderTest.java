@@ -62,7 +62,7 @@ import io.goobi.viewer.solr.SolrConstants;
  * @author Florian
  *
  */
-public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
+class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
 
     public static final String PI = "74241";

@@ -44,7 +44,7 @@ import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
-public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
+class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @BeforeAll
     public static void setUpClass() throws Exception {

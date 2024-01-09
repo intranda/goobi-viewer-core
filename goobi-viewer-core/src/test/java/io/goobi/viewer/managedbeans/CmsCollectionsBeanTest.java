@@ -31,7 +31,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see CmsCollectionsBean#initImageMode()

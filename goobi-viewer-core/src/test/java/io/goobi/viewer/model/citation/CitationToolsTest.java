@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import de.undercouch.citeproc.csl.CSLType;
 
-public class CitationToolsTest {
+class CitationToolsTest {
 
     /**
      * @see CitationTools#getCSLTypeForDocstrct(String)

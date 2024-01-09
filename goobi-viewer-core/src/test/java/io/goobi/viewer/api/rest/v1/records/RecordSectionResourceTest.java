@@ -48,7 +48,7 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  * @author florian
  *
  */
-public class RecordSectionResourceTest extends AbstractRestApiTest {
+class RecordSectionResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "74241";
     private static final String DIVID ="LOG_0004";

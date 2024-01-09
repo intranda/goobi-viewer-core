@@ -34,7 +34,7 @@ import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.DownloadJobTools;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
 
-public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
+class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see DownloadJobTools#removeJobsForRecord(String)

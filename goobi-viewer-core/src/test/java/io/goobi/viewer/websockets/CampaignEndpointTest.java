@@ -42,7 +42,7 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian
  *
  */
-public class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
+class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
 
     private final Session session1 = Mockito.mock(Session.class);
     private final Session session2 = Mockito.mock(Session.class);

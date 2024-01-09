@@ -45,7 +45,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
  * @author florian
  *
  */
-public class LitteraProviderTest extends AbstractDatabaseEnabledTest {
+class LitteraProviderTest extends AbstractDatabaseEnabledTest {
 
     private static String user_id = "test";
     private static String user_id_invalid = "blub";

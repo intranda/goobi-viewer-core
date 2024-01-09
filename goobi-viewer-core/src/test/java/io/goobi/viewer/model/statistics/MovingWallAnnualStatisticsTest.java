@@ -24,7 +24,7 @@ package io.goobi.viewer.model.statistics;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class MovingWallAnnualStatisticsTest {
+class MovingWallAnnualStatisticsTest {
 
     /**
      * @see MovingWallAnnualStatistics#getQuery()

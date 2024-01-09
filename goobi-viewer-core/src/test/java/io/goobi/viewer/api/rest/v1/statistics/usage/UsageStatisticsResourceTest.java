@@ -28,7 +28,7 @@ import java.time.Month;
 
 import org.junit.jupiter.api.Test;
 
-public class UsageStatisticsResourceTest {
+class UsageStatisticsResourceTest {
 
     @Test
     void testParseDate() {

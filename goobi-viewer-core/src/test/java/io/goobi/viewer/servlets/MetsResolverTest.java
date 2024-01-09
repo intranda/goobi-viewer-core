@@ -37,7 +37,7 @@ import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.ConfigurationTest;
+import io.goobi.viewer.TestUtils;
 
 class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -61,7 +61,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void doGet_shouldReturnMETSFileCorrectlyViaPi() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("id", PI_KLEIUNIV);
         WebResponse response = sc.getResponse(request);
         Assertions.assertNotNull(response);
@@ -74,7 +74,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void doGet_shouldReturnMETSFileCorrectlyViaUrn() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("urn", "urn:nbn:de:gbv:9-g-4882158");
         WebResponse response = sc.getResponse(request);
         Assertions.assertNotNull(response);
@@ -87,7 +87,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void doGet_shouldReturnLIDOFileCorrectly() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("id", "455820");
         WebResponse response = sc.getResponse(request);
         Assertions.assertNotNull(response);
@@ -101,12 +101,12 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     void doGet_shouldReturn404IfFileNotFound() throws Exception {
         ServletUnitClient sc = sr.newClient();
         {
-            WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+            WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
             request.setParameter("id", "NOTFOUND");
             Assertions.assertThrows(HttpNotFoundException.class, () -> sc.getResponse(request));
         }
         {
-            WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+            WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
             request.setParameter("urn", "NOTFOUND");
             Assertions.assertThrows(HttpNotFoundException.class, () -> sc.getResponse(request));
         }
@@ -119,7 +119,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void doGet_shouldReturn409IfMoreThanOneRecordMatched() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("urn", "test:1234:goobi:3431");
         Assertions.assertThrows(HttpException.class, () -> sc.getResponse(request));
     }
@@ -131,7 +131,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void doGet_shouldReturn500IfRecordIdentifierBad() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("id", "a:b");
         Assertions.assertThrows(HttpException.class, () -> sc.getResponse(request));
     }

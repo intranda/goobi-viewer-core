@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 
-public class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
+class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminLicenseBean#getGroupedLicenseTypeSelectItems()

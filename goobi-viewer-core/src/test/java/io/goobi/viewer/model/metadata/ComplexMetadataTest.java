@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
-public class ComplexMetadataTest {
+class ComplexMetadataTest {
 
     private static final String YEAR = "1972";
     private static final String TITLE_EN = "The title";

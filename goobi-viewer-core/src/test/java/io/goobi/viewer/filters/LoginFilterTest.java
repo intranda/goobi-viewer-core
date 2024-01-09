@@ -24,7 +24,7 @@ package io.goobi.viewer.filters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class LoginFilterTest {
+class LoginFilterTest {
 
     /**
      * @see LoginFilter#isRestrictedUri(String)

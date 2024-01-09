@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class StatisticsIndexerTest {
+class StatisticsIndexerTest {
 
     @Test
     void test() throws DAOException, IOException {

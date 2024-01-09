@@ -30,7 +30,7 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.model.viewer.PageType;
 
-public class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
+class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @BeforeAll
     public static void setUpClass() throws Exception {

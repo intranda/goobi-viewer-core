@@ -35,7 +35,7 @@ import io.goobi.viewer.AbstractTest;
  * @author florian
  *
  */
-public class GeoCoordinateFeatureTest extends AbstractTest {
+class GeoCoordinateFeatureTest extends AbstractTest {
 
     @Test
     void testParseSearchString() {

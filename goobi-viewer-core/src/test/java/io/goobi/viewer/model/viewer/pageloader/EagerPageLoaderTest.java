@@ -29,7 +29,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 
-public class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
+class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see EagerPageLoader#getNumPages()

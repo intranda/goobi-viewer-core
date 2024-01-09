@@ -47,7 +47,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchFacetsTest extends AbstractSolrEnabledTest {
+class SearchFacetsTest extends AbstractSolrEnabledTest {
 
     @BeforeAll
     public static void setUpClass() throws Exception {

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * @author florian
  *
  */
-public class PolygonTest {
+class PolygonTest {
 
     @Test
     void test() {

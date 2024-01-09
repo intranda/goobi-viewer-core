@@ -47,7 +47,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.security.user.User;
 
-public class CmsPageEditBeanTest {
+class CmsPageEditBeanTest {
 
     private static final String FILENAME_COMPONENT = "text";
     private static final String DESCRIPTION_COMPONENT = "description_component";

@@ -32,7 +32,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 
-public class CookieBannerTest extends AbstractDatabaseEnabledTest {
+class CookieBannerTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void testPersistence() throws DAOException {

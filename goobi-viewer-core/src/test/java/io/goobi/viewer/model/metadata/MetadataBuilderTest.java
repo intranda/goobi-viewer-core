@@ -32,7 +32,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
-public class MetadataBuilderTest {
+class MetadataBuilderTest {
 
     @Test
     void test() {

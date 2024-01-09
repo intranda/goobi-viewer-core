@@ -47,7 +47,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
-public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
+class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
 
     @Test
     void test_filterResults() throws DAOException, IndexUnreachableException, PresentationException {

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
-public class DateToolsTest extends AbstractTest {
+class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#getLocalDate(Date,String)

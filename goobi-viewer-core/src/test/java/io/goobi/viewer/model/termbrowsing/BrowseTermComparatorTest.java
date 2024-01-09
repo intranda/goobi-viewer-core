@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.AbstractTest;
 
-public class BrowseTermComparatorTest extends AbstractTest {
+class BrowseTermComparatorTest extends AbstractTest {
 
     /**
      * @see BrowseTermComparator#compare(BrowseTerm,BrowseTerm)

@@ -55,7 +55,7 @@ import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
  * @author Florian Alpers
  *
  */
-public class ThumbnailHandlerTest extends AbstractTest {
+class ThumbnailHandlerTest extends AbstractTest {
 
     private static final String STATIC_IMAGES_PATH = "http://localhost:8080/viewer/resources/images";
     private ThumbnailHandler handler;

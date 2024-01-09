@@ -36,7 +36,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class IpRangeTest extends AbstractDatabaseEnabledTest {
+class IpRangeTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)

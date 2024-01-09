@@ -111,7 +111,7 @@ import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 /**
  * JPADAO test suite using H2 DB.
  */
-public class JPADAOTest extends AbstractDatabaseEnabledTest {
+class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     public static final int NUM_LICENSE_TYPES = 6;
 

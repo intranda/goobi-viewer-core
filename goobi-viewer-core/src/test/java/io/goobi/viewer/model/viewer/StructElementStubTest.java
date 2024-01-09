@@ -40,7 +40,7 @@ import io.goobi.viewer.managedbeans.ContextMocker;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
 
-public class StructElementStubTest extends AbstractSolrEnabledTest {
+class StructElementStubTest extends AbstractSolrEnabledTest {
 
     @Override
     @BeforeEach

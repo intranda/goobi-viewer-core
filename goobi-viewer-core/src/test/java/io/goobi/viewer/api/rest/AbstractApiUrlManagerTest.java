@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
-public class AbstractApiUrlManagerTest extends AbstractTest {
+class AbstractApiUrlManagerTest extends AbstractTest {
 
     /**
      * @see AbstractApiUrlManager#replaceApiPathParams(String,Object[])

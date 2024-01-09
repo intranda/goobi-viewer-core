@@ -30,7 +30,7 @@ import io.goobi.viewer.AbstractTest;
  * @author Florian Alpers
  *
  */
-public class LanguageHelperTest extends AbstractTest {
+class LanguageHelperTest extends AbstractTest {
 
     @Test
     void test() {

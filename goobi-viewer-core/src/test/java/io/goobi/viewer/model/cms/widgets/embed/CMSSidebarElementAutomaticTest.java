@@ -34,7 +34,7 @@ import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.maps.GeoMap;
 
-public class CMSSidebarElementAutomaticTest extends AbstractDatabaseEnabledTest {
+class CMSSidebarElementAutomaticTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void test() throws DAOException {

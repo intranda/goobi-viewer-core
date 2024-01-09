@@ -35,7 +35,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  * @author florian
  *
  */
-public class AbstractBuilderTest extends AbstractTest {
+class AbstractBuilderTest extends AbstractTest {
 
     AbstractBuilder builder;
 

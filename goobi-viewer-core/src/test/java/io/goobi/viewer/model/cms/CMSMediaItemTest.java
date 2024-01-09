@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItem.Priority;
 
-public class CMSMediaItemTest {
+class CMSMediaItemTest {
 
     @Test
     void testStImportant() {

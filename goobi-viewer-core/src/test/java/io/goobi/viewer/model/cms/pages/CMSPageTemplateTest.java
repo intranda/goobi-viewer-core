@@ -32,7 +32,7 @@ import io.goobi.viewer.model.cms.legacy.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.jsf.JsfComponent;
 
-public class CMSPageTemplateTest {
+class CMSPageTemplateTest {
 
     Path themeComponentFile = Paths.get("src/test/resources/data/viewer/cms/theme_templates/custom_template_01_home.xml");
 

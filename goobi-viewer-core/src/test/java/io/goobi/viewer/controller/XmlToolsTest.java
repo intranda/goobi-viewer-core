@@ -33,7 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class XmlToolsTest {
+class XmlToolsTest {
 
     private File tempDir = new File("target/temp");
 

@@ -28,7 +28,7 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.security.user.User;
 
-public class CommentTest {
+class CommentTest {
     /**
      * @see Comment#Comment(String,int,User,String,Comment)
      * @verifies construct object correctly

@@ -29,7 +29,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 
-public class PageTypeTest extends AbstractTest {
+class PageTypeTest extends AbstractTest {
 
     @Override
     @BeforeEach

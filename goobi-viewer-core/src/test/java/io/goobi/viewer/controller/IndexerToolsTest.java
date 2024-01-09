@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
-public class IndexerToolsTest extends AbstractTest {
+class IndexerToolsTest extends AbstractTest {
 
     /**
      * @see IndexerTools#deleteRecord(String,boolean,Path)

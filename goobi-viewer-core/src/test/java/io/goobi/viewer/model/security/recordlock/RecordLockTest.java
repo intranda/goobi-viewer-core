@@ -24,7 +24,7 @@ package io.goobi.viewer.model.security.recordlock;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class RecordLockTest {
+class RecordLockTest {
 
     /**
      * @see RecordLock#equals(Object)

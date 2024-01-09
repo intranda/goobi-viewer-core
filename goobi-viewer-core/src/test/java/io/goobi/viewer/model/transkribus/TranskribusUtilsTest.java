@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 
-public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
+class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void dummy() throws Exception {

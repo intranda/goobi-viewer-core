@@ -36,7 +36,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
  * @author florian
  *
  */
-public class ApiUrlManagerTest {
+class ApiUrlManagerTest {
 
     private final static String PI = "12345";
     private final static String DIVID = "LOG_0003";

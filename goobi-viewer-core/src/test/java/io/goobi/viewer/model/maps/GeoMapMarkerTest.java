@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  * @author florian
  *
  */
-public class GeoMapMarkerTest {
+class GeoMapMarkerTest {
 
     private GeoMapMarker testObject = new GeoMapMarker("test");
     private String testString = "{\"name\":\"test\",\"icon\":\"\",\"markerColor\":\"blue\",\"highlightColor\":\"cyan\",\"shape\":\"circle\",\"extraClasses\":\"\",\"prefix\":\"fa\",\"iconColor\":\"white\",\"iconRotate\":0,\"number\":\"\",\"highlightIcon\":\"\",\"useDefault\":false,\"svg\":false,\"shadow\":true,\"type\":\"ExtraMarkers\",\"className\":\"\"}";

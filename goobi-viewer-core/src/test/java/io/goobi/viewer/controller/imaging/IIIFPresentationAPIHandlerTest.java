@@ -23,7 +23,6 @@ package io.goobi.viewer.controller.imaging;
 
 import java.net.URISyntaxException;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,11 +30,9 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
 
-public class IIIFPresentationAPIHandlerTest extends AbstractTest {
+class IIIFPresentationAPIHandlerTest extends AbstractTest {
 
     private static final String REST_API_URL = "http://localhost:8080/viewer/api/v1";
 
@@ -51,10 +48,6 @@ public class IIIFPresentationAPIHandlerTest extends AbstractTest {
         super.setUp();
         this.urls = new ApiUrls();
         handler = new IIIFPresentationAPIHandler(urls, DataManager.getInstance().getConfiguration());
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
     }
 
     @Test

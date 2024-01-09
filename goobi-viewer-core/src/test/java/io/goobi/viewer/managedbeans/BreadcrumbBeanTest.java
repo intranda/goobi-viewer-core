@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.model.viewer.LabeledLink;
 
-public class BreadcrumbBeanTest extends AbstractDatabaseEnabledTest {
+class BreadcrumbBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see BreadcrumbBean#addCollectionHierarchyToBreadcrumb(String,String,String)

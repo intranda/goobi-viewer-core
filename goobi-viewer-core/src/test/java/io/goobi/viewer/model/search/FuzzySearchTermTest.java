@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-public class FuzzySearchTermTest {
+class FuzzySearchTermTest {
 
     @Test
     void testSpecialCharacters() {

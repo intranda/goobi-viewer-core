@@ -32,7 +32,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
+class SearchQueryGroupTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryGroup#init(List)

@@ -30,7 +30,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
 
-public class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
+class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see DefaultURLBuilder#generateURL(BrowseElement)

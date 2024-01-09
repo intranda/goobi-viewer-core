@@ -31,7 +31,7 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
-public class LicenseTest {
+class LicenseTest {
 
     /**
      * @see License#setIpRange(IpRange)

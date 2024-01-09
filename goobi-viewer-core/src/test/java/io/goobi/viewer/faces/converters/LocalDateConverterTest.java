@@ -35,7 +35,7 @@ import org.mockito.Mockito;
  * @author florian
  *
  */
-public class LocalDateConverterTest {
+class LocalDateConverterTest {
 
     private static final LocalDate DATE = LocalDate.of(2021, 12, 24);
 

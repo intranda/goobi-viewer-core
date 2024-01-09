@@ -35,7 +35,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
  * @author florian
  *
  */
-public class CanvasBuilderTest extends AbstractSolrEnabledTest {
+class CanvasBuilderTest extends AbstractSolrEnabledTest {
 
     ApiUrls urls = new ApiUrls("http://localhost:8080/viewer/api/v2");
     CanvasBuilder builder = new CanvasBuilder(urls);

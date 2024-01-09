@@ -24,7 +24,7 @@ package io.goobi.viewer.model.termbrowsing;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class BrowseTermTest {
+class BrowseTermTest {
 
     /**
      * @see BrowseTerm#addToHitCount(int)

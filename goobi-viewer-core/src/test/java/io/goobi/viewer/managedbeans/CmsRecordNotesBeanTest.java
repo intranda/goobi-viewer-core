@@ -41,7 +41,7 @@ import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
  * @author florian
  *
  */
-public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
+class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
 
     CmsRecordNotesBean bean;
     AbstractApiUrlManager urls;

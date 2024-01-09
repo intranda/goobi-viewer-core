@@ -38,7 +38,7 @@ import io.goobi.viewer.model.annotation.comments.Comment;
  * @author florian
  *
  */
-public class AnnotationConverterTest {
+class AnnotationConverterTest {
 
     private static final String campaignAnnotation = "{\n"
             + "      \"id\": \"https://viewer.goobi.io/api/v1/annotations/annotation_2/\",\n"

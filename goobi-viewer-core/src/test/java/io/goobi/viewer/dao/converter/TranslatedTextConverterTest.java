@@ -37,7 +37,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
  * @author florian
  *
  */
-public class TranslatedTextConverterTest {
+class TranslatedTextConverterTest {
 
     private static final String ENGLISHVALUE = "This is the <span font='bold'>value</span> for the \"English\" language";
     private static final String GERMANVALUE = "Deutsch";

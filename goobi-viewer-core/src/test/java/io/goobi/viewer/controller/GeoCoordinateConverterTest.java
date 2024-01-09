@@ -25,7 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import io.goobi.viewer.AbstractTest;
 
-public class GeoCoordinateConverterTest extends AbstractTest {
+class GeoCoordinateConverterTest extends AbstractTest {
 
     @BeforeEach
     public void setUp() throws Exception {

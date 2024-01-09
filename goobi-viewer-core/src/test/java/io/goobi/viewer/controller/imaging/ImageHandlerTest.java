@@ -25,7 +25,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.controller.ConfigurationTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 
@@ -43,7 +42,7 @@ import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
  * @author Florian Alpers
  *
  */
-public class ImageHandlerTest extends AbstractTest{
+class ImageHandlerTest extends AbstractTest {
 
     ImageHandler handler;
 
@@ -54,13 +53,6 @@ public class ImageHandlerTest extends AbstractTest{
     public void setUp() throws Exception {
         super.setUp();
         handler = new ImageHandler();
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @AfterEach
-    public void tearDown() throws Exception {
     }
 
     //    @Test
@@ -90,7 +82,7 @@ public class ImageHandlerTest extends AbstractTest{
                 .build();
 
         String url = handler.getImageUrl(page);
-        Assertions.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/1234/00000001.tif/info.json", url);
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/image/1234/00000001.tif/info.json", url);
     }
 
     @Test
@@ -108,7 +100,7 @@ public class ImageHandlerTest extends AbstractTest{
 
         String url = handler.getImageUrl(page);
         URI uri = URI.create(url);
-        Assertions.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/PI+1234/ab+00000001.tif/info.json", url);
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/image/PI+1234/ab+00000001.tif/info.json", url);
         Assertions.assertEquals(url, uri.toString());
 
     }
@@ -145,7 +137,7 @@ public class ImageHandlerTest extends AbstractTest{
 
         String url = handler.getImageUrl(page);
         Assertions.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
+                TestUtils.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
                 url);
     }
 

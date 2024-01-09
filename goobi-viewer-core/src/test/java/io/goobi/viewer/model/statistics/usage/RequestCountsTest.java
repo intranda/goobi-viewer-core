@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * @author florian
  *
  */
-public class RequestCountsTest {
+class RequestCountsTest {
 
     @Test
     void test_serialize() {

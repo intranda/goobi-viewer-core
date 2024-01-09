@@ -26,7 +26,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class SecurityQuestionTest {
+class SecurityQuestionTest {
 
     /**
      * @see SecurityQuestion#isAnswerCorrect(String)

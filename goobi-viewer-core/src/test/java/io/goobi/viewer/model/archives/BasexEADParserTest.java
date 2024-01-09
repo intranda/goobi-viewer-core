@@ -29,7 +29,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
 
-public class BasexEADParserTest extends AbstractDatabaseAndSolrEnabledTest {
+class BasexEADParserTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see BasexEADParser#parseEadFile(Document)

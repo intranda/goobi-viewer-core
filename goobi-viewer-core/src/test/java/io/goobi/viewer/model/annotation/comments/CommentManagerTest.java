@@ -55,7 +55,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
  * @author florian
  *
  */
-public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
+class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final PublicationStatus PUBLISHED = PublicationStatus.PUBLISHED;
     private static final String OPEN_ACCESS = "OPEN_ACCESS";

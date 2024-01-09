@@ -33,7 +33,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
-public class DataManagerTest {
+class DataManagerTest {
 
     /**
      * @see DataManager#registerModule(IModule)

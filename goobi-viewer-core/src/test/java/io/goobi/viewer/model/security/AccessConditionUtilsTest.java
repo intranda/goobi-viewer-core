@@ -49,7 +49,7 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
+class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @BeforeAll
     public static void setUpClass() throws Exception {

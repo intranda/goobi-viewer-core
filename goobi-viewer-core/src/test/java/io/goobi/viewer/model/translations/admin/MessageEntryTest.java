@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
-public class MessageEntryTest extends AbstractTest {
+class MessageEntryTest extends AbstractTest {
 
     /**
      * @see MessageEntry#create(String,List)

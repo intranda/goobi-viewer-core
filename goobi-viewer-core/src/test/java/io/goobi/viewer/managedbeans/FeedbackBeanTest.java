@@ -47,7 +47,7 @@ import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.user.User;
 import jakarta.mail.MessagingException;
 
-public class FeedbackBeanTest {
+class FeedbackBeanTest {
 
     private static final String USER_NAME = "Karla";
     private static final String SENDER_ADDRESS = "karla@mustermann.de";

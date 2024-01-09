@@ -37,7 +37,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
  * @author florian
  *
  */
-public class SqlAnnotationListerTest {
+class SqlAnnotationListerTest {
 
     IDAO dao;
     SqlAnnotationLister lister;

@@ -46,7 +46,7 @@ import io.goobi.viewer.model.metadata.MetadataWrapper;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
+class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
     @Test
     void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException {

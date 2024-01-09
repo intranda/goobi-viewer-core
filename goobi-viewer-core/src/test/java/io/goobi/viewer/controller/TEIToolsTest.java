@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
-public class TEIToolsTest extends AbstractTest {
+class TEIToolsTest extends AbstractTest {
 
     /**
      * @see TEITools#getTeiFulltext(String)

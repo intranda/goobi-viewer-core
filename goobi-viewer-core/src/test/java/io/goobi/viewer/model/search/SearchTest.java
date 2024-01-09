@@ -36,7 +36,7 @@ import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.viewer.StringPair;
 
-public class SearchTest extends AbstractTest {
+class SearchTest extends AbstractTest {
 
     /**
      * @see Search#getAllSortFields()

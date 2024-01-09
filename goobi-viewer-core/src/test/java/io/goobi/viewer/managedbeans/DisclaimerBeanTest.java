@@ -43,7 +43,7 @@ import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
-public class DisclaimerBeanTest extends AbstractTest {
+class DisclaimerBeanTest extends AbstractTest {
 
     private IDAO dao;
     private SolrSearchIndex searchIndex;

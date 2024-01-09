@@ -35,7 +35,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
-public class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
+class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
 
     @Test
     void testPersist() throws DAOException {

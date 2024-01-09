@@ -42,7 +42,7 @@ import io.goobi.viewer.model.security.authentication.LoginResult;
  * @author Florian Alpers
  *
  */
-public class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
+class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     LocalAuthenticationProvider provider;
 

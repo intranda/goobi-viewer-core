@@ -30,7 +30,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.job.JobStatus;
 
-public class UploadJobTest extends AbstractSolrEnabledTest {
+class UploadJobTest extends AbstractSolrEnabledTest {
 
     /**
      * @see UploadJob#buildProcessCreationRequest()

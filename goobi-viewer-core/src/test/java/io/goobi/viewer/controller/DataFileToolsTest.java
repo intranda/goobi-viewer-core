@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class DataFileToolsTest extends AbstractTest {
+class DataFileToolsTest extends AbstractTest {
 
     /**
      * @see DataFileTools#getSourceFilePath(String,String,String)

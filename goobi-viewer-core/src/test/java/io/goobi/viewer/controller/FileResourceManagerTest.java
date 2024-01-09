@@ -34,7 +34,7 @@ import org.mockito.Mockito;
  * @author florian
  *
  */
-public class FileResourceManagerTest {
+class FileResourceManagerTest {
 
     FileResourceManager manager;
 

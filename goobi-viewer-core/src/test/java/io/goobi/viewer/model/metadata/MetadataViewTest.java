@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.viewer.StructElement;
 
-public class MetadataViewTest {
+class MetadataViewTest {
 
     /**
      * @see MetadataView#isVisible(StructElement)
