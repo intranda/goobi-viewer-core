@@ -648,10 +648,9 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getMetadataConfigurationForTemplate_shouldThrowIllegalArgumentExceptionIfTypeNull() throws Exception {
+        Configuration config = DataManager.getInstance().getConfiguration();
         Exception e = Assertions.assertThrows(IllegalArgumentException.class,
-                () -> DataManager.getInstance()
-                        .getConfiguration()
-                        .getMetadataConfigurationForTemplate(null, Configuration.VALUE_DEFAULT, false, false));
+                () -> config.getMetadataConfigurationForTemplate(null, Configuration.VALUE_DEFAULT, false, false));
         assertEquals("type may not be null", e.getMessage());
     }
 
@@ -911,7 +910,7 @@ class ConfigurationTest extends AbstractTest {
     void loadStopwords_shouldThrowIllegalArgumentExceptionIfStopwordsFilePathEmpty() throws Exception {
         Exception e = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> Configuration.loadStopwords(null));
-        assertEquals("type may not be null", e.getMessage());
+        assertEquals("stopwordsFilePath may not be null or empty", e.getMessage());
     }
 
     /**
@@ -2892,7 +2891,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getLimitImageHeightUpperRatioThreshold_shouldReturnCorrectValue() throws Exception {
-        assertTrue(0.2f == DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold());
+        assertEquals(0.2f, DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold());
     }
 
     /**
@@ -2901,7 +2900,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getLimitImageHeightLowerRatioThreshold_shouldReturnCorrectValue() throws Exception {
-        assertTrue(2.0f == DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold());
+        assertEquals(2.0f, DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold());
     }
 
     @Test
