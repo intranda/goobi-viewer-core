@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -87,7 +86,7 @@ class RecordLockManagerTest extends AbstractTest {
     @Test
     void lockRecord_shouldThrowRecordLimitExceededExceptionIfLimitExceeded() throws Exception {
         DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 1);
-        Assert.assertThrows(RecordLimitExceededException.class,
+        Assertions.assertThrows(RecordLimitExceededException.class,
                 () -> DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID789", 1));
     }
 
