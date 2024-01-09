@@ -79,7 +79,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies create ViewManager correctly
      */
     @Test
-    public void update_shouldCreateViewManagerCorrectly() throws Exception {
+    void update_shouldCreateViewManagerCorrectly() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
@@ -101,7 +101,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies update ViewManager correctly if LOGID has changed
      */
     @Test
-    public void update_shouldUpdateViewManagerCorrectlyIfLOGIDHasChanged() throws Exception {
+    void update_shouldUpdateViewManagerCorrectlyIfLOGIDHasChanged() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
@@ -123,7 +123,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not override topDocumentIddoc if LOGID has changed
      */
     @Test
-    public void update_shouldNotOverrideTopDocumentIddocIfLOGIDHasChanged() throws Exception {
+    void update_shouldNotOverrideTopDocumentIddocIfLOGIDHasChanged() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
@@ -141,7 +141,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies determine currentElementIddoc correctly
      */
     @Test
-    public void setPersistentIdentifier_shouldDetermineCurrentElementIddocCorrectly() throws Exception {
+    void setPersistentIdentifier_shouldDetermineCurrentElementIddocCorrectly() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
     }
@@ -151,7 +151,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies increase image number by given step
      */
     @Test
-    public void getNextUrl_shouldIncreaseImageNumberByGivenStep() throws Exception {
+    void getNextUrl_shouldIncreaseImageNumberByGivenStep() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
@@ -164,7 +164,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies go no higher than last page
      */
     @Test
-    public void getNextUrl_shouldGoNoHigherThanLastPage() throws Exception {
+    void getNextUrl_shouldGoNoHigherThanLastPage() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("15");
@@ -178,7 +178,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies decrease image number by given step
      */
     @Test
-    public void getPrevUrl_shouldDecreaseImageNumberByGivenStep() throws Exception {
+    void getPrevUrl_shouldDecreaseImageNumberByGivenStep() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
@@ -191,7 +191,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies go no lower than first page order
      */
     @Test
-    public void getPrevUrl_shouldGoNoLowerThanFirstPageOrder() throws Exception {
+    void getPrevUrl_shouldGoNoLowerThanFirstPageOrder() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("2");
@@ -208,7 +208,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct url correctly
      */
     @Test
-    public void getUrl_shouldConstructUrlCorrectly() throws Exception {
+    void getUrl_shouldConstructUrlCorrectly() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         navigationHelper.setLocaleString("en");
         adb.setPersistentIdentifier(PI_KLEIUNIV);
@@ -222,7 +222,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies load records that have been released via moving wall
      */
     @Test
-    public void update_shouldLoadRecordsThatHaveBeenReleasedViaMovingWall() throws Exception {
+    void update_shouldLoadRecordsThatHaveBeenReleasedViaMovingWall() throws Exception {
         // Record has been unlocked via a moving wall functionality and should load withour throwing a RecordNotFoundException.
         // The public release year metadata is only available in docstruct and page Solr docs. Here, it is important that none of the
         // record's docs match the conditional query of the license type anyway.
@@ -259,7 +259,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct page in single page mode
      */
     @Test
-    public void getPageUrl_shouldReturnCorrectPageInSinglePageMode() throws Exception {
+    void getPageUrl_shouldReturnCorrectPageInSinglePageMode() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("2");
         adb.update();
@@ -278,7 +278,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct range in double page mode if currently showing one page
      */
     @Test
-    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
+    void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
 
         adb.setImageToShow("1");
@@ -319,7 +319,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct range in double page mode if currently showing two pages
      */
     @Test
-    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingTwoPages() throws Exception {
+    void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingTwoPages() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("4-5");
         adb.update();
@@ -340,7 +340,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct range in double page mode if current page double image
      */
     @Test
-    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentPageDoubleImage() throws Exception {
+    void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentPageDoubleImage() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("3");
         adb.update();
@@ -362,7 +362,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset lastReceivedIdentifier
      */
     @Test
-    public void reset_shouldResetLastReceivedIdentifier() throws Exception {
+    void reset_shouldResetLastReceivedIdentifier() throws Exception {
         adb.setLastReceivedIdentifier("PPN123");
         assertEquals("PPN123", adb.getLastReceivedIdentifier());
         adb.reset();
@@ -374,7 +374,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return empty string if no record loaded
      */
     @Test
-    public void getRelativeUrlTags_shouldReturnEmptyStringIfNoRecordLoaded() throws Exception {
+    void getRelativeUrlTags_shouldReturnEmptyStringIfNoRecordLoaded() throws Exception {
         assertEquals("", adb.getRelativeUrlTags());
     }
 
@@ -383,7 +383,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return empty string if navigationHelper null
      */
     @Test
-    public void getRelativeUrlTags_shouldReturnEmptyStringIfNavigationHelperNull() throws Exception {
+    void getRelativeUrlTags_shouldReturnEmptyStringIfNavigationHelperNull() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("3");
         adb.update();
@@ -397,7 +397,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate tags correctly
      */
     @Test
-    public void getRelativeUrlTags_shouldGenerateTagsCorrectly() throws Exception {
+    void getRelativeUrlTags_shouldGenerateTagsCorrectly() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("3");
         adb.update();

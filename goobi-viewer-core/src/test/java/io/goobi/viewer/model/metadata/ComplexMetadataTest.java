@@ -44,7 +44,7 @@ public class ComplexMetadataTest {
     private static final Long IDDOC_OWNER = 123l;
 
     @Test
-    public void testSingleDoc() {
+    void testSingleDoc() {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.PI_TOPSTRUCT, PI);
         doc.setField(SolrConstants.IDDOC, IDDOC.toString());
@@ -68,7 +68,7 @@ public class ComplexMetadataTest {
     }
 
     @Test
-    public void testMultiDoc() {
+    void testMultiDoc() {
         List<SolrDocument> docs = new ArrayList<>();
         {
             SolrDocument doc = new SolrDocument();
@@ -105,7 +105,7 @@ public class ComplexMetadataTest {
     }
 
     @Test
-    public void testMultiMetadata() {
+    void testMultiMetadata() {
         List<SolrDocument> docs = new ArrayList<>();
 
         {

@@ -59,7 +59,7 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
      * @verifies return correct query
      */
     @Test
-    public void generateSolrQueryForItems_shouldReturnCorrectQuery() throws Exception {
+    void generateSolrQueryForItems_shouldReturnCorrectQuery() throws Exception {
         BookmarkList bookmarkList = new BookmarkList();
         List<Bookmark> items = new ArrayList<>();
 
@@ -86,7 +86,7 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
      * @verifies generate JSON object correctly
      */
     @Test
-    public void getMiradorJsonObject_shouldGenerateJSONObjectCorrectly() throws Exception {
+    void getMiradorJsonObject_shouldGenerateJSONObjectCorrectly() throws Exception {
         BookmarkList bookmarkList = new BookmarkList();
         for (int i = 1; i <= 16; ++i) {
             Bookmark item = new Bookmark();
@@ -120,7 +120,7 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
      * @verifies construct query correctly
      */
     @Test
-    public void getFilterQuery_shouldConstructQueryCorrectly() throws Exception {
+    void getFilterQuery_shouldConstructQueryCorrectly() throws Exception {
         BookmarkList bookmarkList = new BookmarkList();
         for (int i = 1; i <= 4; ++i) {
             Bookmark item = new Bookmark();
@@ -136,7 +136,7 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
      * @verifies sort lists correctly
      */
     @Test
-    public void sortBookmarkLists_shouldSortListCorrectly() throws Exception {
+    void sortBookmarkLists_shouldSortListCorrectly() throws Exception {
         List<BookmarkList> lists = new ArrayList<>();
         {
             BookmarkList list = new BookmarkList();

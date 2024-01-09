@@ -38,7 +38,7 @@ public class UserToolsTest extends AbstractDatabaseEnabledTest {
      * @verifies delete all bookmark lists owned by user
      */
     @Test
-    public void deleteBookmarkListsForUser_shouldDeleteAllBookmarkListsOwnedByUser() throws Exception {
+    void deleteBookmarkListsForUser_shouldDeleteAllBookmarkListsOwnedByUser() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assertions.assertNotNull(user);
         Assertions.assertFalse(DataManager.getInstance().getDao().getBookmarkLists(user).isEmpty());
@@ -52,7 +52,7 @@ public class UserToolsTest extends AbstractDatabaseEnabledTest {
      * @verifies delete all searches owned by user
      */
     @Test
-    public void deleteSearchesForUser_shouldDeleteAllSearchesOwnedByUser() throws Exception {
+    void deleteSearchesForUser_shouldDeleteAllSearchesOwnedByUser() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assertions.assertNotNull(user);
         Assertions.assertFalse(DataManager.getInstance().getDao().getSearches(user).isEmpty());
@@ -66,7 +66,7 @@ public class UserToolsTest extends AbstractDatabaseEnabledTest {
      * @verifies delete all user groups owned by user
      */
     @Test
-    public void deleteUserGroupOwnedByUser_shouldDeleteAllUserGroupsOwnedByUser() throws Exception {
+    void deleteUserGroupOwnedByUser_shouldDeleteAllUserGroupsOwnedByUser() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assertions.assertNotNull(user);
         Assertions.assertNotNull(DataManager.getInstance().getDao().getUserGroup(1));
@@ -80,7 +80,7 @@ public class UserToolsTest extends AbstractDatabaseEnabledTest {
      * @verifies delete all user public content correctly
      */
     @Test
-    public void deleteUserPublicContributions_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
+    void deleteUserPublicContributions_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         UserTools.deleteUserPublicContributions(user);
@@ -101,7 +101,7 @@ public class UserToolsTest extends AbstractDatabaseEnabledTest {
      * @verifies anonymize all user public content correctly
      */
     @Test
-    public void anonymizeUserPublicContributions_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
+    void anonymizeUserPublicContributions_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         Assertions.assertTrue(UserTools.anonymizeUserPublicContributions(user));

@@ -55,7 +55,7 @@ public class ViewerPathBuilderTest {
     }
 
     @Test
-    public void testStartsWith() {
+    void testStartsWith() {
         String url1 = "a";
         String url2 = "a/b";
         String url3 = "a/b/c";
@@ -75,7 +75,7 @@ public class ViewerPathBuilderTest {
     }
 
     @Test
-    public void testCreateCorrectPathWIthLeadingExcamationMark() throws DAOException {
+    void testCreateCorrectPathWIthLeadingExcamationMark() throws DAOException {
         String url = "http://localhost:8082/viewer/!fulltext/AC03343066/13/";
         String serverUrl = "http://localhost:8082/viewer";
         String applicationName ="/viewer";

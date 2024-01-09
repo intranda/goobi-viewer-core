@@ -148,7 +148,7 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
     }
 
     @Test
-    public void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActive_nickname, userActive_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().getUser().get().isActive());
@@ -156,20 +156,20 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
     }
 
     @Test
-    public void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActive_nickname, userSuspended_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().isRefused());
     }
 
     @Test
-    public void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActive_nickname + "test", userActive_pwHash);
         Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
     @Test
-    public void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userSuspended_nickname, userSuspended_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().getUser().get().isActive());

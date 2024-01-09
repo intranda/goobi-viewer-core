@@ -31,7 +31,7 @@ public class PasswordValidatorTest {
      * @verifies return true if password good
      */
     @Test
-    public void validatePassword_shouldReturnTrueIfPasswordGood() throws Exception {
+    void validatePassword_shouldReturnTrueIfPasswordGood() throws Exception {
         Assertions.assertTrue(PasswordValidator.validatePassword("12345678")); // 8 chars
         Assertions.assertTrue(PasswordValidator.validatePassword("ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ")); // 72B (UTF-8)
         Assertions.assertTrue(PasswordValidator.validatePassword("very long secure password, very hard to guess or brüte förce")); // 62B (UTF-8)
@@ -42,7 +42,7 @@ public class PasswordValidatorTest {
      * @verifies return false if password empty
      */
     @Test
-    public void validatePassword_shouldReturnTrueIfPasswordEmpty() throws Exception {
+    void validatePassword_shouldReturnTrueIfPasswordEmpty() throws Exception {
         Assertions.assertTrue(PasswordValidator.validatePassword(""));
     }
 
@@ -51,7 +51,7 @@ public class PasswordValidatorTest {
      * @verifies return false if password blank
      */
     @Test
-    public void validatePassword_shouldReturnFalseIfPasswordBlank() throws Exception {
+    void validatePassword_shouldReturnFalseIfPasswordBlank() throws Exception {
         Assertions.assertFalse(PasswordValidator.validatePassword("   "));
     }
 
@@ -60,7 +60,7 @@ public class PasswordValidatorTest {
      * @verifies return false if password too short
      */
     @Test
-    public void validatePassword_shouldReturnFalseIfPasswordTooShort() throws Exception {
+    void validatePassword_shouldReturnFalseIfPasswordTooShort() throws Exception {
         Assertions.assertFalse(PasswordValidator.validatePassword("1234567"));
     }
 
@@ -69,7 +69,7 @@ public class PasswordValidatorTest {
      * @verifies return false if password too long
      */
     @Test
-    public void validatePassword_shouldReturnFalseIfPasswordTooLong() throws Exception {
+    void validatePassword_shouldReturnFalseIfPasswordTooLong() throws Exception {
         Assertions.assertFalse(PasswordValidator.validatePassword("eagle fury ominous booger respected quantum table greedy river what baggage stood")); // 81B (UTF-8)
         Assertions.assertFalse(PasswordValidator.validatePassword("ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ")); // 74B (UTF-8)
         Assertions.assertFalse(PasswordValidator.validatePassword("♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠")); // 75B (UTF-8)

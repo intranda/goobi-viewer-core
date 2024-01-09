@@ -39,7 +39,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public class DisplayScopeTest extends AbstractSolrEnabledTest {
 
     @Test
-    public void testClone() {
+    void testClone() {
         {
             DisplayScope scope = new DisplayScope(PageScope.ALL, "PI:abc");
             String json = scope.getAsJson();
@@ -57,7 +57,7 @@ public class DisplayScopeTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void testAppliesToPage() throws PresentationException, IndexUnreachableException {
+    void testAppliesToPage() throws PresentationException, IndexUnreachableException {
         {
             PageType pageType = PageType.search;
             DisplayScope scope = new DisplayScope(PageScope.ALL, "");
@@ -97,7 +97,7 @@ public class DisplayScopeTest extends AbstractSolrEnabledTest {
     
 
     @Test
-    public void testAppliesToPage_emptyArgs() throws PresentationException, IndexUnreachableException {
+    void testAppliesToPage_emptyArgs() throws PresentationException, IndexUnreachableException {
         DisplayScope scope = new DisplayScope(PageScope.RECORD, "PI:1");
         PageType pageType = PageType.viewImage;
         SolrSearchIndex searchIndex = DataManager.getInstance().getSearchIndex();

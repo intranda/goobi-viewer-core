@@ -43,7 +43,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author Florian Alpers
  *
  */
-public class UserBeanTest extends AbstractDatabaseEnabledTest {
+class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     UserBean bean = new UserBean();
 
@@ -65,7 +65,8 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
             private User user = null;
 
             @Override
-            public void logout() throws AuthenticationProviderException {
+            public
+                    void logout() throws AuthenticationProviderException {
                 //
             }
 
@@ -116,7 +117,8 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
             }
 
             @Override
-            public void setAddUserToGroups(List<String> addUserToGroups) {
+            public
+                    void setAddUserToGroups(List<String> addUserToGroups) {
                 //
             }
 
@@ -126,14 +128,15 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
             }
 
             @Override
-            public void setRedirectUrl(String redirectUrl) {
+            public
+                    void setRedirectUrl(String redirectUrl) {
                 //
             }
         });
     }
 
     @Test
-    public void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userActive_email);
         bean.setPassword(userActive_pwHash);
@@ -145,7 +148,7 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testLogin_invalid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_invalid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userActive_email);
         bean.setPassword(userSuspended_pwHash);
@@ -155,7 +158,7 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testLogin_unknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_unknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userActive_email + "test");
         bean.setPassword(userActive_pwHash);
@@ -165,7 +168,7 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testLogin_suspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_suspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userSuspended_email);
         bean.setPassword(userSuspended_pwHash);

@@ -51,7 +51,7 @@ public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies create loc element correctly
      */
     @Test
-    public void createUrlElement_shouldCreateLocElementCorrectly() throws Exception {
+    void createUrlElement_shouldCreateLocElementCorrectly() throws Exception {
         Sitemap sitemap = new Sitemap();
         Element eleUrl = sitemap.createUrlElement("https://foo.bar", null, null, null);
         Assertions.assertNotNull(eleUrl);
@@ -63,7 +63,7 @@ public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies create lastmod element correctly
      */
     @Test
-    public void createUrlElement_shouldCreateLastmodElementCorrectly() throws Exception {
+    void createUrlElement_shouldCreateLastmodElementCorrectly() throws Exception {
         Sitemap sitemap = new Sitemap();
         Element eleUrl = sitemap.createUrlElement("https://foo.bar", "2018-08-21", null, null);
         Assertions.assertNotNull(eleUrl);
@@ -71,7 +71,7 @@ public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testSitemap() throws IOException, InterruptedException {
+    void testSitemap() throws IOException, InterruptedException {
 
         int timeout = 20; //minutes
 

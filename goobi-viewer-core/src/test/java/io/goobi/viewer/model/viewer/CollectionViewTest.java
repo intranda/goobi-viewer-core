@@ -86,7 +86,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void test() throws IndexUnreachableException, IllegalRequestException {
+    void test() throws IndexUnreachableException, IllegalRequestException {
         CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
         collection.populateCollectionList();
         List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
@@ -108,7 +108,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
 //    @Test
-//    public void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
+//    void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
 //        CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
 //        collection.setBaseElementName("c.c");
 //        collection.populateCollectionList();
@@ -137,7 +137,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return identifier resolver url if single record and pi known
      */
     @Test
-    public void getCollectionUrl_shouldReturnIdentifierResolverUrlIfSingleRecordAndPiKnown() throws Exception {
+    void getCollectionUrl_shouldReturnIdentifierResolverUrlIfSingleRecordAndPiKnown() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
         Assertions.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
 
@@ -152,14 +152,14 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies escape critical url chars in collection name
      */
     @Test
-    public void getCollectionUrl_shouldEscapeCriticalUrlCharsInCollectionName() throws Exception {
+    void getCollectionUrl_shouldEscapeCriticalUrlCharsInCollectionName() throws Exception {
         CollectionView col = new CollectionView("foo", getTestProvider());
         HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("foo/bar", 2, SolrConstants.DC, null, col.getSplittingChar(), col.getDisplayNumberOfVolumesLevel());
         Assertions.assertEquals("/search/-/-/1/-/foo%3AfooU002Fbar/", col.getCollectionUrl(element));
     }
 
     @Test
-    public void loadCMSCollection_addCMSCollectionInfo() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
+    void loadCMSCollection_addCMSCollectionInfo() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
         CMSPage page = new CMSPage();
         page.setId(1l);
         PersistentCMSComponent component = new PersistentCMSComponent();
@@ -185,7 +185,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies give priority to exact matches
      */
     @Test
-    public void getCollectionDefaultSortField_shouldGivePriorityToExactMatches() throws Exception {
+    void getCollectionDefaultSortField_shouldGivePriorityToExactMatches() throws Exception {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
         Assertions.assertEquals("SORT_TITLE", CollectionView.getCollectionDefaultSortField("collection1", sortFields));
     }
@@ -197,7 +197,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct field for collection
      */
     @Test
-    public void getCollectionDefaultSortField_shouldReturnCorrectFieldForCollection() throws Exception {
+    void getCollectionDefaultSortField_shouldReturnCorrectFieldForCollection() throws Exception {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
         Assertions.assertEquals("SORT_CREATOR", CollectionView.getCollectionDefaultSortField("collection1.sub1", sortFields));
     }
@@ -206,7 +206,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return hyphen if collection not found
      */
     @Test
-    public void getCollectionDefaultSortField_shouldReturnHyphenIfCollectionNotFound() throws Exception {
+    void getCollectionDefaultSortField_shouldReturnHyphenIfCollectionNotFound() throws Exception {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
         Assertions.assertEquals("-", CollectionView.getCollectionDefaultSortField("nonexistingcollection", sortFields));
     }

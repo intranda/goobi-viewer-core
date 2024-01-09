@@ -54,7 +54,7 @@ public class DisclaimerBeanTest extends AbstractTest {
     private UserBean userBean;
 
     @BeforeEach
-    public void setup() throws DAOException, PresentationException, IndexUnreachableException {
+    public void setUp() throws DAOException, PresentationException, IndexUnreachableException {
         storedDisclaimer = new Disclaimer();
         storedDisclaimer.getText().setText("Trigger Warnung", Locale.GERMAN);
         storedDisclaimer.getText().setText("Trigger wariung", Locale.ENGLISH);
@@ -87,7 +87,7 @@ public class DisclaimerBeanTest extends AbstractTest {
     }
 
     @Test
-    public void testWriteJson() {
+    void testWriteJson() {
 
         String string = bean.getDisclaimerConfig();
         assertTrue(StringUtils.isNotBlank(string));

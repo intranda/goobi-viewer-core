@@ -65,7 +65,7 @@ public class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
     private final CampaignEndpoint endpoint3 = new CampaignEndpoint();
 
      @BeforeEach
-     public void setup() throws Exception {
+     public void setUp() throws Exception {
          super.setUp();
          Mockito.when(httpSession1.getId()).thenReturn("http1");
          Mockito.when(httpSession2.getId()).thenReturn("http2");
@@ -82,7 +82,7 @@ public class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
      }
 
     @Test
-    public void test() throws IOException, DAOException {
+    void test() throws IOException, DAOException {
         endpoint1.onMessage(createMessage(1l, "PPN1234", 0));
         endpoint2.onMessage(createMessage(1l, "PPN1234", 2));
 

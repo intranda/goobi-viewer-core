@@ -50,7 +50,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
 
     @Test
-    public void test_filterResults() throws DAOException, IndexUnreachableException, PresentationException {
+    void test_filterResults() throws DAOException, IndexUnreachableException, PresentationException {
 
         IDAO dao = createDAOData();
 
@@ -134,7 +134,7 @@ public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
      * @verifies extract pi from filter correctly
      */
     @Test
-    public void getFilteredIdentifierList_shouldExtractPiFromFilterCorrectly() throws Exception {
+    void getFilteredIdentifierList_shouldExtractPiFromFilterCorrectly() throws Exception {
         StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(AbstractSolrEnabledTest.PI_KLEIUNIV);
         IDAO dao = createDAOData();
         List<String> result = new StatisticsSummaryBuilder(dao, DataManager.getInstance().getSearchIndex()).getFilteredIdentifierList(filter);

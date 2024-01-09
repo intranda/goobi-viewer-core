@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 public class MetadataContainerTest {
 
     @Test
-    public void test_translatedFieldsFromSingleDocument() {
+    void test_translatedFieldsFromSingleDocument() {
 
         SolrDocument doc = new SolrDocument(Map.of(
                 "MD_ROLE_LANG_FR", "Curateur.rice",
@@ -50,7 +50,7 @@ public class MetadataContainerTest {
     }
 
     @Test
-    public void test_translatedFieldsFromMultipleDocuments() {
+    void test_translatedFieldsFromMultipleDocuments() {
 
         SolrDocument main = new SolrDocument(Map.of(
                 "PI", "1234"));

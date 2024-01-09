@@ -60,7 +60,7 @@ public class FeedbackBeanTest {
     FeedbackBean bean;
 
     @BeforeEach
-    public void setup() throws UnsupportedEncodingException, MessagingException {
+    public void setUp() throws UnsupportedEncodingException, MessagingException {
 
         NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);
         Mockito.when(navigationHelper.getCurrentPrettyUrl()).thenReturn(CURRENT_VIEWER_URL);
@@ -86,7 +86,7 @@ public class FeedbackBeanTest {
     }
 
     @Test
-    public void testNoUser() throws UnsupportedEncodingException, MessagingException {
+    void testNoUser() throws UnsupportedEncodingException, MessagingException {
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
         bean.getFeedback().setName(USER_NAME);
@@ -118,7 +118,7 @@ public class FeedbackBeanTest {
     }
 
     @Test
-    public void testUser() throws UnsupportedEncodingException, MessagingException {
+    void testUser() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
@@ -149,7 +149,7 @@ public class FeedbackBeanTest {
     }
 
     @Test
-    public void testWrongCaptcha() throws UnsupportedEncodingException, MessagingException {
+    void testWrongCaptcha() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
@@ -162,7 +162,7 @@ public class FeedbackBeanTest {
     }
 
     @Test
-    public void testFilledHoneypot() throws UnsupportedEncodingException, MessagingException {
+    void testFilledHoneypot() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);

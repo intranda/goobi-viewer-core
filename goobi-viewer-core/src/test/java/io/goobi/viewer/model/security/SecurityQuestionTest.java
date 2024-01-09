@@ -33,7 +33,7 @@ public class SecurityQuestionTest {
      * @verifies return true on correct answer
      */
     @Test
-    public void isAnswerCorrect_shouldReturnTrueOnCorrectAnswer() throws Exception {
+    void isAnswerCorrect_shouldReturnTrueOnCorrectAnswer() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
         Assertions.assertTrue(q.isAnswerCorrect("answer"));
     }
@@ -43,7 +43,7 @@ public class SecurityQuestionTest {
      * @verifies return true on correct answer and ignore case
      */
     @Test
-    public void isAnswerCorrect_shouldReturnTrueOnCorrectAnswerAndIgnoreCase() throws Exception {
+    void isAnswerCorrect_shouldReturnTrueOnCorrectAnswerAndIgnoreCase() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
         Assertions.assertTrue(q.isAnswerCorrect("ANSWER"));
     }
@@ -53,7 +53,7 @@ public class SecurityQuestionTest {
      * @verifies return false on incorrect answer
      */
     @Test
-    public void isAnswerCorrect_shouldReturnFalseOnIncorrectAnswer() throws Exception {
+    void isAnswerCorrect_shouldReturnFalseOnIncorrectAnswer() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
         Assertions.assertFalse(q.isAnswerCorrect("wronganswer"));
     }
@@ -63,7 +63,7 @@ public class SecurityQuestionTest {
      * @verifies return false empty answer
      */
     @Test
-    public void isAnswerCorrect_shouldReturnFalseEmptyAnswer() throws Exception {
+    void isAnswerCorrect_shouldReturnFalseEmptyAnswer() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
         Assertions.assertFalse(q.isAnswerCorrect(null));
         Assertions.assertFalse(q.isAnswerCorrect(""));
@@ -75,7 +75,7 @@ public class SecurityQuestionTest {
      * @verifies mark question as answered
      */
     @Test
-    public void isAnswerCorrect_shouldMarkQuestionAsAnswered() throws Exception {
+    void isAnswerCorrect_shouldMarkQuestionAsAnswered() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
         Assertions.assertFalse(q.isAnswered());
         q.isAnswerCorrect("wrong");

@@ -53,7 +53,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     IDAO dao;
     
     @BeforeEach
-    public void setup() throws Exception { 
+    public void setUp() throws Exception { 
         super.setUp();
         dao = DataManager.getInstance().getDao();
         templateManager = new CMSTemplateManager(componentTemplatesPath.toString(), null);
@@ -61,7 +61,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testPersistPage() throws DAOException {
+    void testPersistPage() throws DAOException {
                 
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
@@ -79,7 +79,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testPersistPageWithContent() throws DAOException {
+    void testPersistPageWithContent() throws DAOException {
                 
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
@@ -105,7 +105,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
      * @verifies create doc correctly
      */
     @Test
-    public void exportAsXml_shouldCreateDocCorrectly() throws Exception {
+    void exportAsXml_shouldCreateDocCorrectly() throws Exception {
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Title", Locale.ENGLISH);
         page.addCategory(new CMSCategory("foo"));

@@ -46,7 +46,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies return all users except given
      */
     @Test
-    public void getAllUsersExcept_shouldReturnAllUsersExceptGiven() throws Exception {
+    void getAllUsersExcept_shouldReturnAllUsersExceptGiven() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assertions.assertNotNull(user);
 
@@ -63,7 +63,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies delete all user public content correctly
      */
     @Test
-    public void deleteUserAction_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
+    void deleteUserAction_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         AdminBean bean = new AdminBean();
@@ -86,7 +86,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies anonymize all user public content correctly
      */
     @Test
-    public void deleteUserAction_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
+    void deleteUserAction_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         AdminBean bean = new AdminBean();
@@ -111,7 +111,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies add user if not yet in group
      */
     @Test
-    public void addUserRoleAction_shouldAddUserIfNotYetInGroup() throws Exception {
+    void addUserRoleAction_shouldAddUserIfNotYetInGroup() throws Exception {
         AdminBean bean = new AdminBean();
         bean.init();
 
@@ -135,7 +135,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies persist UserRole correctly
      */
     @Test
-    public void updateUserRoles_shouldPersistUserRoleCorrectly() throws Exception {
+    void updateUserRoles_shouldPersistUserRoleCorrectly() throws Exception {
 
         UserGroup group = DataManager.getInstance().getDao().getUserGroup(1);
         Assertions.assertNotNull(group);
@@ -164,7 +164,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void updateUserRoles_multipleRolesAddedOnNewGroup() throws Exception {
+    void updateUserRoles_multipleRolesAddedOnNewGroup() throws Exception {
         AdminBean bean = new AdminBean();
         bean.init();
 

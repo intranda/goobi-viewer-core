@@ -39,7 +39,7 @@ public class IndexerToolsTest extends AbstractTest {
      * @verifies create delete file correctly
      */
     @Test
-    public void deleteRecord_shouldCreateDeleteFileCorrectly() throws Exception {
+    void deleteRecord_shouldCreateDeleteFileCorrectly() throws Exception {
         Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
@@ -63,7 +63,7 @@ public class IndexerToolsTest extends AbstractTest {
      * @verifies create purge file correctly
      */
     @Test
-    public void deleteRecord_shouldCreatePurgeFileCorrectly() throws Exception {
+    void deleteRecord_shouldCreatePurgeFileCorrectly() throws Exception {
         Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
@@ -87,7 +87,7 @@ public class IndexerToolsTest extends AbstractTest {
      * @verifies return original baseName if no files exist
      */
     @Test
-    public void findNamingScheme_shouldReturnOriginalBaseNameIfNoFilesExist() throws Exception {
+    void findNamingScheme_shouldReturnOriginalBaseNameIfNoFilesExist() throws Exception {
         Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
         try {
             if (!Files.exists(hotfolder)) {
@@ -106,7 +106,7 @@ public class IndexerToolsTest extends AbstractTest {
      * @verifies return alternative naming scheme if initial name already exists
      */
     @Test
-    public void findNamingScheme_shouldReturnAlternativeNamingSchemeIfInitialNameAlreadyExists() throws Exception {
+    void findNamingScheme_shouldReturnAlternativeNamingSchemeIfInitialNameAlreadyExists() throws Exception {
         Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
         try {
             if (!Files.exists(hotfolder)) {

@@ -47,7 +47,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies clone blueprint correctly
      */
     @Test
-    public void User_shouldCloneBlueprintCorrectly() throws Exception {
+    void User_shouldCloneBlueprintCorrectly() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         License license = new License();
         
@@ -106,7 +106,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return true if condition is open access
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionIsOpenAccess() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionIsOpenAccess() throws Exception {
         User user = new User();
         user.setSuperuser(false);
         Assertions.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(SolrConstants.OPEN_ACCESS_VALUE)),
@@ -118,7 +118,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return true if user is superuser
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnTrueIfUserIsSuperuser() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnTrueIfUserIsSuperuser() throws Exception {
         User user = new User();
         user.setSuperuser(true);
         Assertions.assertTrue(
@@ -131,7 +131,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return true if user has license
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnTrueIfUserHasLicense() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnTrueIfUserHasLicense() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         List<String> licenceTypes = Arrays.asList(new String[] { "license type 1 name", "license type 3 name" });
@@ -143,7 +143,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return false if user has no license
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnFalseIfUserHasNoLicense() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnFalseIfUserHasNoLicense() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         Assertions.assertFalse(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 1 name")),
@@ -155,7 +155,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return true if condition list empty
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionListEmpty() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionListEmpty() throws Exception {
         User user = new User();
         user.setSuperuser(false);
         Assertions.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<String>(0), IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
@@ -166,7 +166,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies extract id correctly
      */
     @Test
-    public void getId_shouldExtractIdCorrectly() throws Exception {
+    void getId_shouldExtractIdCorrectly() throws Exception {
         Assertions.assertEquals(Long.valueOf(1234567890L), User.getId(new URI("https://example.com/viewer/users/1234567890/")));
     }
 }

@@ -55,7 +55,7 @@ public class DCRecordWriterTest {
     }
 
     @Test
-    public void testWrite() {
+    void testWrite() {
         DCRecordWriter writer = new DCRecordWriter();
         writer.addDCMetadata("title", "Titel");
         writer.addDCMetadata("identifier", "ID");

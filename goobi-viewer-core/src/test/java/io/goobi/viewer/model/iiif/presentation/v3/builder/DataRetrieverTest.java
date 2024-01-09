@@ -68,7 +68,7 @@ public class DataRetrieverTest extends AbstractSolrEnabledTest{
     }
 
     @Test
-    public void testGetTopCollections() throws IndexUnreachableException {
+    void testGetTopCollections() throws IndexUnreachableException {
         try (Timer timer = new Timer(TimerOutput.SIMPLE, (time -> {}))){
             List<CollectionResult> results = dataRetriever.getTopLevelCollections("DC");
             assertFalse(results.isEmpty());
@@ -81,7 +81,7 @@ public class DataRetrieverTest extends AbstractSolrEnabledTest{
     }
 
     @Test
-    public void testGetChildCollections() throws IndexUnreachableException {
+    void testGetChildCollections() throws IndexUnreachableException {
         try (Timer timer = new Timer(TimerOutput.SIMPLE, (time -> {}))){
             List<CollectionResult> results = dataRetriever.getChildCollections("DC", "dctext");
             assertFalse(results.isEmpty());
@@ -93,7 +93,7 @@ public class DataRetrieverTest extends AbstractSolrEnabledTest{
     }
 
     @Test
-    public void testGetContainedRecords() throws IndexUnreachableException, PresentationException {
+    void testGetContainedRecords() throws IndexUnreachableException, PresentationException {
         try (Timer timer = new Timer(TimerOutput.SIMPLE, (time -> {}))){
             List<StructElement> results = dataRetriever.getContainedRecords("DC", "dctext.ocr");
             assertFalse(results.isEmpty());

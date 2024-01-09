@@ -64,7 +64,7 @@ public class ImageHandlerTest extends AbstractTest{
     }
 
     //    @Test
-    public void testGetImageInformation() throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
+    void testGetImageInformation() throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
         String url1 = "http://localhost:8081/ics/iiif/image/18979459-1830/00375666.png/info.json";
         String url2 = "18979459-1830/00375666.png";
 
@@ -77,7 +77,7 @@ public class ImageHandlerTest extends AbstractTest{
     }
 
     @Test
-    public void testGetImageUrlLocal() {
+    void testGetImageUrlLocal() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("00000001.tif")
@@ -94,7 +94,7 @@ public class ImageHandlerTest extends AbstractTest{
     }
 
     @Test
-    public void testGetImageUrlLocal_handleSpecialCharacters() {
+    void testGetImageUrlLocal_handleSpecialCharacters() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("PI 1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("ab 00000001.tif")
@@ -114,7 +114,7 @@ public class ImageHandlerTest extends AbstractTest{
     }
 
     @Test
-    public void testGetImageUrlExternal() {
+    void testGetImageUrlExternal() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("http://otherServer/images/00000001.tif/info.json")
@@ -131,7 +131,7 @@ public class ImageHandlerTest extends AbstractTest{
     }
 
     @Test
-    public void testGetImageUrlInternal() {
+    void testGetImageUrlInternal() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("http://exteral/restricted/images/00000001.tif")
@@ -150,7 +150,7 @@ public class ImageHandlerTest extends AbstractTest{
     }
 
     @Test
-    public void testResolveURIs() throws URISyntaxException {
+    void testResolveURIs() throws URISyntaxException {
         String stringExternal = "https://localhost:8080/a/b/c d";
         String stringInternal = "file:/a/b/c d#yxwg=123,52,564,213";
         String stringRelative = "a/b/c d [1]-falls.jpg";

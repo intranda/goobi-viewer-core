@@ -56,7 +56,7 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies calculate number correctly
      */
     @Test
-    public void getNumPages_shouldCalculateNumberCorrectly() throws Exception {
+    void getNumPages_shouldCalculateNumberCorrectly() throws Exception {
         TOC toc = new TOC();
         toc.setTotalTocSize(70);
         Assertions.assertEquals(7, toc.getNumPages());
@@ -69,7 +69,7 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct label
      */
     @Test
-    public void getLabel_shouldReturnCorrectLabel() throws Exception {
+    void getLabel_shouldReturnCorrectLabel() throws Exception {
         TOC toc = new TOC();
         toc.setTocElementMap(new HashMap<>());
         toc.getTocElementMap().put(StringConstants.DEFAULT_NAME, new ArrayList<>(3));
@@ -95,7 +95,7 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set value to 1 if given value too low
      */
     @Test
-    public void setCurrentPage_shouldSetValueTo1IfGivenValueTooLow() throws Exception {
+    void setCurrentPage_shouldSetValueTo1IfGivenValueTooLow() throws Exception {
         TOC toc = new TOC();
         toc.setCurrentPage(0);
         Assertions.assertEquals(1, toc.getCurrentPage());
@@ -106,7 +106,7 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set value to last page number if given value too high
      */
     @Test
-    public void setCurrentPage_shouldSetValueToLastPageNumberIfGivenValueTooHigh() throws Exception {
+    void setCurrentPage_shouldSetValueToLastPageNumberIfGivenValueTooHigh() throws Exception {
         TOC toc = new TOC();
         toc.setTotalTocSize(70);
         Assertions.assertEquals(7, toc.getNumPages());
@@ -119,7 +119,7 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void expandToCurrentStruct() {
+    void expandToCurrentStruct() {
         TOC toc = new TOC();
         Map<String, List<TOCElement>> tocElementMap = new HashMap<>();
         TOCElement top = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);

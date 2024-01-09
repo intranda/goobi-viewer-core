@@ -73,7 +73,7 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetCanvas() throws JsonMappingException, JsonProcessingException {
+    void testGetCanvas() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI, PAGENO).build();
         try(Response response = target(url)
                 .request()
@@ -97,7 +97,7 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
      * @throws NumberFormatException 
      */
     @Test
-    public void testGetAnnotationsForPage() throws JsonMappingException, JsonProcessingException, NumberFormatException, DAOException {
+    void testGetAnnotationsForPage() throws JsonMappingException, JsonProcessingException, NumberFormatException, DAOException {
         long annoCount = DataManager.getInstance().getDao().getAnnotationCountForTarget(PI_ANNOTATIONS, Integer.parseInt(PAGENO_ANNOTATIONS));
         try(Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()
@@ -119,7 +119,7 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
      * @throws JsonMappingException
      */
     @Test
-    public void testGetCommentsForPage() throws JsonMappingException, JsonProcessingException {
+    void testGetCommentsForPage() throws JsonMappingException, JsonProcessingException {
         try(Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)

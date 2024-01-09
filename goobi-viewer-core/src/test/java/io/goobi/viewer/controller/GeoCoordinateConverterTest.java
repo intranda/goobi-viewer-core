@@ -28,12 +28,12 @@ import io.goobi.viewer.AbstractTest;
 public class GeoCoordinateConverterTest extends AbstractTest {
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
     }
 
     //@Test
-    //    public void test_createTitle() {
+    //    void test_createTitle() {
     //        Metadata md = DataManager.getInstance().getConfiguration().getRecordGeomapFeatureConfiguration("MD_BIOGRAPHY_JOURNEY");
     //        Map<String, List<IMetadataValue>> mdMap = Map.of(
     //                "MD_LOCATION", List.of(new SimpleMetadataValue("Mexico"))

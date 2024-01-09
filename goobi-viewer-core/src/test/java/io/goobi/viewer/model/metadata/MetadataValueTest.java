@@ -39,7 +39,7 @@ public class MetadataValueTest {
      * @verifies construct param correctly
      */
     @Test
-    public void getComboValueShort_shouldConstructParamCorrectly() throws Exception {
+    void getComboValueShort_shouldConstructParamCorrectly() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
@@ -57,7 +57,7 @@ public class MetadataValueTest {
      * @verifies construct multivalued param correctly
      */
     @Test
-    public void getComboValueShort_shouldConstructMultivaluedParamCorrectly() throws Exception {
+    void getComboValueShort_shouldConstructMultivaluedParamCorrectly() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
@@ -76,7 +76,7 @@ public class MetadataValueTest {
      * @verifies return empty string if value index larger than number of values
      */
     @Test
-    public void getComboValueShort_shouldReturnEmptyStringIfValueIndexLargerThanNumberOfValues() throws Exception {
+    void getComboValueShort_shouldReturnEmptyStringIfValueIndexLargerThanNumberOfValues() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
@@ -90,7 +90,7 @@ public class MetadataValueTest {
      * @verifies return empty string if value is empty
      */
     @Test
-    public void getComboValueShort_shouldReturnEmptyStringIfValueIsEmpty() throws Exception {
+    void getComboValueShort_shouldReturnEmptyStringIfValueIsEmpty() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
@@ -104,7 +104,7 @@ public class MetadataValueTest {
      * @verifies not add prefix if first param
      */
     @Test
-    public void getComboValueShort_shouldNotAddPrefixIfFirstParam() throws Exception {
+    void getComboValueShort_shouldNotAddPrefixIfFirstParam() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
@@ -118,7 +118,7 @@ public class MetadataValueTest {
      * @verifies not add null suffix
      */
     @Test
-    public void getComboValueShort_shouldNotAddNullSuffix() throws Exception {
+    void getComboValueShort_shouldNotAddNullSuffix() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -134,7 +134,7 @@ public class MetadataValueTest {
      * @verifies not add empty prefix
      */
     @Test
-    public void getComboValueShort_shouldNotAddEmptyPrefix() throws Exception {
+    void getComboValueShort_shouldNotAddEmptyPrefix() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -150,7 +150,7 @@ public class MetadataValueTest {
      * @verifies not add empty suffix
      */
     @Test
-    public void getComboValueShort_shouldNotAddEmptySuffix() throws Exception {
+    void getComboValueShort_shouldNotAddEmptySuffix() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -166,7 +166,7 @@ public class MetadataValueTest {
      * @verifies add separator between values if no prefix used
      */
     @Test
-    public void getComboValueShort_shouldAddSeparatorBetweenValuesIfNoPrefixUsed() throws Exception {
+    void getComboValueShort_shouldAddSeparatorBetweenValuesIfNoPrefixUsed() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -180,7 +180,7 @@ public class MetadataValueTest {
      * @verifies use master value fragment correctly
      */
     @Test
-    public void getComboValueShort_shouldUseMasterValueFragmentCorrectly() throws Exception {
+    void getComboValueShort_shouldUseMasterValueFragmentCorrectly() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamMasterValueFragments().add("foo {0} bar");
         value.getParamSuffixes().add("pre_");
@@ -202,7 +202,7 @@ public class MetadataValueTest {
      * @verifies apply highlighting correctly
      */
     @Test
-    public void applyHighlightingToParamValue_shouldApplyHighlightingCorrectly() throws Exception {
+    void applyHighlightingToParamValue_shouldApplyHighlightingCorrectly() throws Exception {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("foobar", "something");
         mdValue.getParamValues().add(values);
@@ -215,7 +215,7 @@ public class MetadataValueTest {
      * @verifies return true if all param values blank
      */
     @Test
-    public void isAllParamValuesBlank_shouldReturnTrueIfAllParamValuesBlank() throws Exception {
+    void isAllParamValuesBlank_shouldReturnTrueIfAllParamValuesBlank() throws Exception {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("", "");
         mdValue.getParamValues().add(values);
@@ -229,7 +229,7 @@ public class MetadataValueTest {
      * @verifies return false if any param value not blank
      */
     @Test
-    public void isAllParamValuesBlank_shouldReturnFalseIfAnyParamValueNotBlank() throws Exception {
+    void isAllParamValuesBlank_shouldReturnFalseIfAnyParamValueNotBlank() throws Exception {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("", "foo");
         mdValue.getParamValues().add(values);

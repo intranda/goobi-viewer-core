@@ -41,7 +41,7 @@ public class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set fileName correctly
      */
     @Test
-    public void RISExport_shouldSetFileNameCorrectly() throws Exception {
+    void RISExport_shouldSetFileNameCorrectly() throws Exception {
         RISExport export = new RISExport();
         Assertions.assertNotNull(export.getFileName());
     }
@@ -51,7 +51,7 @@ public class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies execute search correctly
      */
     @Test
-    public void executeSearch_shouldExecuteSearchCorrectly() throws Exception {
+    void executeSearch_shouldExecuteSearchCorrectly() throws Exception {
         RISExport export = new RISExport();
         export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, Locale.ENGLISH, 0);
         Assertions.assertEquals(1, export.getSearchHits().size());
@@ -62,7 +62,7 @@ public class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct value
      */
     @Test
-    public void isHasResults_shouldReturnCorrectValue() throws Exception {
+    void isHasResults_shouldReturnCorrectValue() throws Exception {
         RISExport export = new RISExport();
         Assertions.assertFalse(export.isHasResults());
         export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, Locale.ENGLISH, 0);

@@ -38,7 +38,7 @@ public class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies group license types in select item groups correctly
      */
     @Test
-    public void getGroupedLicenseTypeSelectItems_shouldGroupLicenseTypesInSelectItemGroupsCorrectly() throws Exception {
+    void getGroupedLicenseTypeSelectItems_shouldGroupLicenseTypesInSelectItemGroupsCorrectly() throws Exception {
         AdminLicenseBean bean = new AdminLicenseBean();
         bean.init();
 

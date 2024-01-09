@@ -39,7 +39,7 @@ import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 public class CMSSidebarElementDefaultTest extends AbstractDatabaseEnabledTest  {
 
     @Test
-    public void test() throws DAOException {
+    void test() throws DAOException {
         CMSPage owner = DataManager.getInstance().getDao().getCMSPage(1l);
         assumeNotNull(owner);
 

@@ -41,7 +41,7 @@ public class CitationDataProviderTest extends AbstractTest {
      * @verifies add item data correctly
      */
     @Test
-    public void addItemData_shouldAddItemDataCorrectly() throws Exception {
+    void addItemData_shouldAddItemDataCorrectly() throws Exception {
         {
             Map<String, List<String>> fields = new HashMap<>();
             fields.put(CitationDataProvider.AUTHOR, Arrays.asList(new String[] { "Zahn, Timothy" }));
@@ -83,7 +83,7 @@ public class CitationDataProviderTest extends AbstractTest {
      * @verifies parse years correctly
      */
     @Test
-    public void addItemData_shouldParseYearsCorrectly() throws Exception {
+    void addItemData_shouldParseYearsCorrectly() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
         fields.put(CitationDataProvider.AUTHOR, Arrays.asList(new String[] { "Zahn, Timothy" }));
         fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));

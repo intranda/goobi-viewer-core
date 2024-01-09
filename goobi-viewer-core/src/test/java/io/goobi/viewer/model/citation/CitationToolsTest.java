@@ -33,7 +33,7 @@ public class CitationToolsTest {
      * @verifies return correct type
      */
     @Test
-    public void getCSLTypeForDocstrct_shouldReturnCorrectType() throws Exception {
+    void getCSLTypeForDocstrct_shouldReturnCorrectType() throws Exception {
         Assertions.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct(null, null));
         Assertions.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct("article", null));
         Assertions.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct("article", "Other"));

@@ -49,7 +49,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     CMSPageContentManager contentManager;
     
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
         templateManager = new CMSTemplateManager(componentTemplatesPath.toString(), null);
@@ -57,7 +57,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void test() throws DAOException {
+    void test() throws DAOException {
         CMSPage page = new CMSPage();
         
         page.initialiseCMSComponents(templateManager);
@@ -99,7 +99,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testNoContent() throws DAOException {
+    void testNoContent() throws DAOException {
         CMSPage page = new CMSPage();
         
         page.initialiseCMSComponents(templateManager);
@@ -133,7 +133,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testComponent() throws DAOException {
+    void testComponent() throws DAOException {
         
         CMSShortTextContent text = new CMSShortTextContent();
         text.getText().setText("text");

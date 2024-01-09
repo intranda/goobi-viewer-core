@@ -64,7 +64,7 @@ public class ALTOToolsTest extends AbstractTest {
     }
 
     @Test
-    public void testRotate() {
+    void testRotate() {
         Rectangle rect = new Rectangle(589, 502, 948 - 589, 654 - 502);
         Dimension canvasSize = new Dimension(1792, 2747);
         Rectangle expectedRotatedRect_270 = new Rectangle(502, 844, 654 - 502, 1203 - 844);
@@ -74,7 +74,7 @@ public class ALTOToolsTest extends AbstractTest {
     }
 
     @Test
-    public void testGetWordCoords() throws IOException {
+    void testGetWordCoords() throws IOException {
         File testFile = new File("src/test/resources/data/sample_alto.xml");
         int rotation = 0;
 
@@ -108,7 +108,7 @@ public class ALTOToolsTest extends AbstractTest {
      * @verifies match hyphenated words
      */
     @Test
-    public void getWordCoords_shouldMatchHyphenatedWords() throws Exception {
+    void getWordCoords_shouldMatchHyphenatedWords() throws Exception {
         File file = new File("src/test/resources/data/viewer/alto/0230L.xml");
         Assertions.assertTrue(file.isFile());
         String altoString = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
@@ -121,7 +121,7 @@ public class ALTOToolsTest extends AbstractTest {
      * @verifies match phrases
      */
     @Test
-    public void getWordCoords_shouldMatchPhrases() throws Exception {
+    void getWordCoords_shouldMatchPhrases() throws Exception {
         File file = new File("src/test/resources/data/sample_alto.xml");
         Assertions.assertTrue(file.isFile());
         String altoString = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
@@ -146,7 +146,7 @@ public class ALTOToolsTest extends AbstractTest {
      * @verifies match diacritics via base letter
      */
     @Test
-    public void getWordCoords_shouldMatchDiacriticsViaBaseLetter() throws Exception {
+    void getWordCoords_shouldMatchDiacriticsViaBaseLetter() throws Exception {
         File file = new File("src/test/resources/data/sample_alto.xml");
         Assertions.assertTrue(file.isFile());
         String altoString = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
@@ -161,7 +161,7 @@ public class ALTOToolsTest extends AbstractTest {
      * @verifies use extract fulltext correctly
      */
     @Test
-    public void alto2Txt_shouldUseExtractFulltextCorrectly() throws Exception {
+    void alto2Txt_shouldUseExtractFulltextCorrectly() throws Exception {
         File file = new File("src/test/resources/data/viewer/alto/LIWZ_1877_01_05_001.xml");
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
@@ -176,7 +176,7 @@ public class ALTOToolsTest extends AbstractTest {
      * @verifies concatenate word at line break correctly
      */
     @Test
-    public void alto2Txt_shouldConcatenateWordAtLineBreakCorrectly() throws Exception {
+    void alto2Txt_shouldConcatenateWordAtLineBreakCorrectly() throws Exception {
         File file = new File("src/test/resources/data/viewer/alto/0230L.xml");
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
@@ -191,7 +191,7 @@ public class ALTOToolsTest extends AbstractTest {
      * @verifies extract fulltext correctly
      */
     @Test
-    public void getFullText_shouldExtractFulltextCorrectly() throws Exception {
+    void getFullText_shouldExtractFulltextCorrectly() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/00000010.xml");
         Assertions.assertTrue(file.isFile());
         String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
@@ -200,7 +200,7 @@ public class ALTOToolsTest extends AbstractTest {
     }
 
     @Test
-    public void getMatchALTOWord_findFuzzyTerms() {
+    void getMatchALTOWord_findFuzzyTerms() {
         String[] searchTerms = new String[] {"Steigbügel~1", "Halter~1"};
         {
             Word word = new Word("Steigbugle", new AltoCoords(10, 10, 12, 12));

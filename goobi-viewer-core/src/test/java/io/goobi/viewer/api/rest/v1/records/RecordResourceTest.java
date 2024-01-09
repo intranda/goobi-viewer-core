@@ -249,7 +249,7 @@ class RecordResourceTest extends AbstractRestApiTest {
     }
 
     //    @Test
-    public void testGetRequiredPrivilege() {
+    void testGetRequiredPrivilege() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURI()).thenReturn("/viewer/api/v1/records/PPN615391702/manifest/");
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8082/viewer/api/v1/records/PPN615391702/manifest/"));

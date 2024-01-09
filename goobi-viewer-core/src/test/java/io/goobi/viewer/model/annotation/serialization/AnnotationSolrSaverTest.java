@@ -43,7 +43,7 @@ public class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest 
 
 
     @Test
-    public void callRedindexTargetWithCorrectArguments() throws IOException {
+    void callRedindexTargetWithCorrectArguments() throws IOException {
         String pi1 = "PI1";
         Integer page1 = 5;
 
@@ -58,7 +58,7 @@ public class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest 
     }
 
     @Test
-    public void callReindexTargetCorrectNumberOfTimes() throws IOException {
+    void callReindexTargetCorrectNumberOfTimes() throws IOException {
         String pi1 = "PI1";
         String pi2 = "PI2";
         Integer noPage = null;

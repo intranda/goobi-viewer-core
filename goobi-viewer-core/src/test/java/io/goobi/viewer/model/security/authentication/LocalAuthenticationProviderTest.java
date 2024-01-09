@@ -77,7 +77,7 @@ public class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest
     }
 
     @Test
-    public void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email, userActive_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
@@ -86,7 +86,7 @@ public class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest
     }
 
     @Test
-    public void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email, userSuspended_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
@@ -94,14 +94,14 @@ public class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest
     }
 
     @Test
-    public void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email + "test", userActive_pwHash);
         Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
     @Test
-    public void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userSuspended_email, userSuspended_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());

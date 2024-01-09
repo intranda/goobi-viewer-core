@@ -39,7 +39,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
      * @verifies return correct count
      */
     @Test
-    public void getEntryCount_shouldReturnCorrectCount() throws Exception {
+    void getEntryCount_shouldReturnCorrectCount() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_NAMES, "group", null, 2);
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "DC", false));
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "PI", false));
@@ -51,7 +51,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
      * @verifies filter by key correctly
      */
     @Test
-    public void getFilteredEntries_shouldFilterByKeyCorrectly() throws Exception {
+    void getFilteredEntries_shouldFilterByKeyCorrectly() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.CORE_STRINGS, "group", null, 1);
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "FOO", false));
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "bar", false));
@@ -72,7 +72,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
      * @verifies filter by value correctly
      */
     @Test
-    public void getFilteredEntries_shouldFilterByValueCorrectly() throws Exception {
+    void getFilteredEntries_shouldFilterByValueCorrectly() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.CORE_STRINGS, "group", null, 1);
         TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
         group.getItems().add(item);
@@ -110,7 +110,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
      * @verifies only select unfinished entries
      */
     @Test
-    public void selectEntry_shouldOnlySelectUnfinishedEntries() throws Exception {
+    void selectEntry_shouldOnlySelectUnfinishedEntries() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_NAMES, "group", null, 1);
         TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
         group.getItems().add(item);
@@ -168,7 +168,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
      * @verifies select fully translated entries if all are fully translated
      */
     @Test
-    public void selectEntry_shouldSelectFullyTranslatedEntriesIfAllAreFullyTranslated() throws Exception {
+    void selectEntry_shouldSelectFullyTranslatedEntriesIfAllAreFullyTranslated() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_NAMES, "group", null, 1);
         TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
         group.getItems().add(item);
@@ -233,7 +233,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
      * @verifies resume at the end when moving past first element
      */
     @Test
-    public void selectEntry_shouldResumeAtTheEndWhenMovingPastFirstElement() throws Exception {
+    void selectEntry_shouldResumeAtTheEndWhenMovingPastFirstElement() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_NAMES, "group", null, 1);
         TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
         group.getItems().add(item);
@@ -278,7 +278,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
      * @verifies resume at the beginning when moving past last element
      */
     @Test
-    public void selectEntry_shouldResumeAtTheBeginningWhenMovingPastLastElement() throws Exception {
+    void selectEntry_shouldResumeAtTheBeginningWhenMovingPastLastElement() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_NAMES, "group", null, 1);
         TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
         group.getItems().add(item);
@@ -323,7 +323,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
      * @verifies return false if group has no entries
      */
     @Test
-    public void isHasEntries_shouldReturnFalseIfGroupHasNoEntries() throws Exception {
+    void isHasEntries_shouldReturnFalseIfGroupHasNoEntries() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_VALUES, "group", null, 2);
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_VALUES, "MD_FOO", false));
         Assertions.assertFalse(group.isHasEntries());
@@ -334,7 +334,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
      * @verifies return true if group has entries
      */
     @Test
-    public void isHasEntries_shouldReturnTrueIfGroupHasEntries() throws Exception {
+    void isHasEntries_shouldReturnTrueIfGroupHasEntries() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_VALUES, "group", null, 2);
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_VALUES, SolrConstants.DC, false));
         Assertions.assertTrue(group.isHasEntries());

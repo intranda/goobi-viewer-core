@@ -49,7 +49,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
     @Test
-    public void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException {
+    void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, Long.toString(1l));
         doc.setField("MD_FOO", "Norden");
@@ -60,7 +60,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void createSearchHit_findUmlaute() throws PresentationException, IndexUnreachableException {
+    void createSearchHit_findUmlaute() throws PresentationException, IndexUnreachableException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, Long.toString(1l));
         doc.setField("MD_FOO", "Nörden");
@@ -75,7 +75,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
      * @verifies add metadata fields that match search terms
      */
     @Test
-    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() throws Exception {
+    void findAdditionalMetadataFieldsContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "label", null, Locale.ENGLISH, null, null);
 
         StructElement se = new StructElement();
@@ -116,7 +116,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
      * @verifies not add duplicates from default terms
      */
     @Test
-    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddDuplicatesFromDefaultTerms() throws Exception {
+    void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddDuplicatesFromDefaultTerms() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
@@ -140,7 +140,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
      * @verifies not add duplicates from explicit terms
      */
     @Test
-    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddDuplicatesFromExplicitTerms() throws Exception {
+    void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddDuplicatesFromExplicitTerms() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
         be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
 
@@ -169,7 +169,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
      * @verifies not add ignored fields
      */
     @Test
-    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddIgnoredFields() throws Exception {
+    void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddIgnoredFields() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
         be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
 
@@ -199,7 +199,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
      * @verifies translate configured field values correctly
      */
     @Test
-    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
+    void findAdditionalMetadataFieldsContainingSearchTerms_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
         be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
 
@@ -230,7 +230,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
      * @verifies write one line fields into a single string
      */
     @Test
-    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
+    void findAdditionalMetadataFieldsContainingSearchTerms_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
         be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
 
@@ -271,7 +271,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
      * @verifies truncate snippet fields correctly
      */
     @Test
-    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldTruncateSnippetFieldsCorrectly() throws Exception {
+    void findAdditionalMetadataFieldsContainingSearchTerms_shouldTruncateSnippetFieldsCorrectly() throws Exception {
         int maxLength = 50;
         DataManager.getInstance().getConfiguration().overrideValue("search.fulltextFragmentLength", maxLength);
 
@@ -326,7 +326,7 @@ public class SearchHitFactoryTest extends AbstractSolrEnabledTest {
      * @verifies not add highlighting to nohighlight fields
      */
     @Test
-    public void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddHighlightingToNohighlightFields() throws Exception {
+    void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddHighlightingToNohighlightFields() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
         be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
 

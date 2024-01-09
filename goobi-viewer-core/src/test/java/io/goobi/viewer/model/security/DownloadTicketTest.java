@@ -36,7 +36,7 @@ public class DownloadTicketTest extends AbstractTest {
     * @verifies check password correctly
     */
     @Test
-    public void checkPassword_shouldCheckPasswordCorrectly() throws Exception {
+    void checkPassword_shouldCheckPasswordCorrectly() throws Exception {
         DownloadTicket ticket = new DownloadTicket();
         ticket.setPasswordHash("$2a$10$H580saN37o2P03A5myUCm.V0ac/lO.79AfkiNjVhDzljqS3RGojzO");
         
@@ -49,7 +49,7 @@ public class DownloadTicketTest extends AbstractTest {
      * @verifies return true if ticket active
      */
     @Test
-    public void isActive_shouldReturnTrueIfTicketActive() throws Exception {
+    void isActive_shouldReturnTrueIfTicketActive() throws Exception {
         DownloadTicket ticket = new DownloadTicket();
         ticket.setPasswordHash("abcde");
         ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
@@ -61,7 +61,7 @@ public class DownloadTicketTest extends AbstractTest {
      * @verifies return true if expiration date before now
      */
     @Test
-    public void isExpired_shouldReturnTrueIfExpirationDateBeforeNow() throws Exception {
+    void isExpired_shouldReturnTrueIfExpirationDateBeforeNow() throws Exception {
         DownloadTicket ticket = new DownloadTicket();
         ticket.setExpirationDate(LocalDateTime.now().minusDays(1));
         Assertions.assertTrue(ticket.isExpired());
@@ -72,7 +72,7 @@ public class DownloadTicketTest extends AbstractTest {
      * @verifies return false if expiration date after now
      */
     @Test
-    public void isExpired_shouldReturnFalseIfExpirationDateAfterNow() throws Exception {
+    void isExpired_shouldReturnFalseIfExpirationDateAfterNow() throws Exception {
         DownloadTicket ticket = new DownloadTicket();
         ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
         Assertions.assertFalse(ticket.isExpired());

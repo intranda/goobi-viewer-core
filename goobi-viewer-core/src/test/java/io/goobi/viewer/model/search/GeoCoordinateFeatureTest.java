@@ -38,7 +38,7 @@ import io.goobi.viewer.AbstractTest;
 public class GeoCoordinateFeatureTest extends AbstractTest {
 
     @Test
-    public void testParseSearchString() {
+    void testParseSearchString() {
         double[][] points = new double[][] { { 1.1, 1.2 }, { 2.1, 2.2 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
         String referencePointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
         String referenceQuery = "IsWithin(POLYGON((" + referencePointsString + ")))";
@@ -49,7 +49,7 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
     }
 
     @Test
-    public void testParsePoints() {
+    void testParsePoints() {
         double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 2.1, -2.2 }, { 3.1, 3.2 }, { -4.1, 4.2 }, { 1.1, 1.2 } };
         String pointsString = "1.1 1.2, 2.1 -2.2, 3.1 3.2, -4.1 4.2, 1.1 1.2";
         String query = "WKT_COORDS:\"Intersects(POLYGON((" + pointsString + ")))";
@@ -59,7 +59,7 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
     }
 
     @Test
-    public void testParseIllegalPoints() {
+    void testParseIllegalPoints() {
         {
             double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 0, 0 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
             String pointsString = "1.1 1.2, 2.1 , 3.1 3.2, 4.1 4.2, 1.1 1.2";
@@ -90,7 +90,7 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
     }
 
     @Test
-    public void testFacetEscaping() throws UnsupportedEncodingException {
+    void testFacetEscaping() throws UnsupportedEncodingException {
         String origFacetString =
                 "WKT_COORDS:\"IsWithin(POLYGON((11.83273903383027 51.94656677497078,11.83273903383027 53.48917317885388,13.855459790711027 53.48917317885388,13.855459790711027 51.94656677497078,11.83273903383027 51.94656677497078)))\"";
         String geoJson =

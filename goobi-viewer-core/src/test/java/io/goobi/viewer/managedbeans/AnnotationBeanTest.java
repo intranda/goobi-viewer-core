@@ -69,7 +69,7 @@ public class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetAllConfiguredAnnotations() {
+    void testGetAllConfiguredAnnotations() {
         List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();
 
 //        firstPageAnnotations.stream().map(anno -> anno.getGeneratorId()).forEach(System.out::println);
@@ -79,14 +79,14 @@ public class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetAllAnnotationsOfCampaign() {
+    void testGetAllAnnotationsOfCampaign() {
         bean.setOwnerCampaignId("1");
         List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();
         Assertions.assertEquals(3, firstPageAnnotations.size());
     }
 
     @Test
-    public void testGetAllAnnotationsOfRecord() {
+    void testGetAllAnnotationsOfRecord() {
         bean.setTargetRecordPI("PI_2");
         List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();
         Assertions.assertEquals(2, firstPageAnnotations.size());

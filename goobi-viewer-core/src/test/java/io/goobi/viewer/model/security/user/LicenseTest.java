@@ -35,7 +35,7 @@ public class LicenseTest {
      * @verifies return correct value
      */
     @Test
-    public void isValid_shouldReturnCorrectValue() throws Exception {
+    void isValid_shouldReturnCorrectValue() throws Exception {
         License lic = new License();
         Assertions.assertTrue(lic.isValid());
         {

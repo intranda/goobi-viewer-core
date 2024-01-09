@@ -41,7 +41,7 @@ import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 public class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     @Test
-    public void testPersist() throws DAOException {
+    void testPersist() throws DAOException {
         PageListSidebarWidget widget = new PageListSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -59,7 +59,7 @@ public class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testClone() {
+    void testClone() {
         PageListSidebarWidget widget = new PageListSidebarWidget();
         widget.getTitle().setValue("Titel", Locale.GERMAN);
         widget.setPageIds(List.of(23l, 93l, 1023l, 2l));
@@ -70,7 +70,7 @@ public class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testType() {
+    void testType() {
         assertEquals(CustomWidgetType.WIDGET_CMSPAGES, new PageListSidebarWidget().getType());
     }
 }

@@ -33,7 +33,7 @@ public class SecurityManagerTest extends AbstractTest {
      * @verifies return zero if attempts zero
      */
     @Test
-    public void getDelay_shouldReturnZeroIfAttemptsZero() throws Exception {
+    void getDelay_shouldReturnZeroIfAttemptsZero() throws Exception {
         Assertions.assertEquals(0, SecurityManager.getDelay(0, 0, System.currentTimeMillis()));
     }
 
@@ -42,7 +42,7 @@ public class SecurityManagerTest extends AbstractTest {
      * @verifies return zero if time between lastAttempt and now larger than delay
      */
     @Test
-    public void getDelay_shouldReturnZeroIfTimeBetweenLastAttemptAndNowLargerThanDelay() throws Exception {
+    void getDelay_shouldReturnZeroIfTimeBetweenLastAttemptAndNowLargerThanDelay() throws Exception {
         Assertions.assertEquals(0, SecurityManager.getDelay(1, 1000, 5000));
     }
 
@@ -51,7 +51,7 @@ public class SecurityManagerTest extends AbstractTest {
      * @verifies return delay if time between lastAttempt and now smaller than delay
      */
     @Test
-    public void getDelay_shouldReturnDelayIfTimeBetweenLastAttemptAndNowSmallerThanDelay() throws Exception {
+    void getDelay_shouldReturnDelayIfTimeBetweenLastAttemptAndNowSmallerThanDelay() throws Exception {
         Assertions.assertEquals(500, SecurityManager.getDelay(1, 1000, 3500));
     }
 }

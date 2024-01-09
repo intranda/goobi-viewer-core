@@ -65,7 +65,7 @@ public class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testGetMetadataElement() throws IndexUnreachableException, PresentationException {
+    void testGetMetadataElement() throws IndexUnreachableException, PresentationException {
         Bookmark bookmarkWork = new Bookmark(PI, null, TITLE);
         Bookmark bookmarkChapter = new Bookmark(PI, LOGID, TITLE);
         Bookmark bookmarkPage = new Bookmark(PI, null, PAGE);

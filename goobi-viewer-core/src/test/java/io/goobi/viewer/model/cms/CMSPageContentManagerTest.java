@@ -40,7 +40,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 public class CMSPageContentManagerTest {
 
     @Test
-    public void testReadFromTemplateFiles() throws IOException {
+    void testReadFromTemplateFiles() throws IOException {
         Path path = Paths.get("src/test/resources/data/viewer/cms/component_templates");
         
         CMSPageContentManager manager = new CMSPageContentManager(path);

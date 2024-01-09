@@ -66,7 +66,7 @@ public class PdfHandlerTest extends AbstractTest{
     }
 
     @Test
-    public void test() {
+    void test() {
         String pi = "1234";
         Optional<String> divId = Optional.ofNullable("LOG_0003");
         Optional<String> label = Optional.ofNullable("output-filename.pdf");

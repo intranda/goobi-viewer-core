@@ -35,7 +35,7 @@ public class MetadataViewTest {
      * @verifies return true if condition null or empty
      */
     @Test
-    public void isVisible_shouldReturnTrueIfConditionNullOrEmpty() throws Exception {
+    void isVisible_shouldReturnTrueIfConditionNullOrEmpty() throws Exception {
         MetadataView view = new MetadataView();
         Assertions.assertTrue(view.isVisible(new StructElement()));
     }
@@ -45,7 +45,7 @@ public class MetadataViewTest {
      * @verifies return false if struct element null
      */
     @Test
-    public void isVisible_shouldReturnFalseIfStructElementNull() throws Exception {
+    void isVisible_shouldReturnFalseIfStructElementNull() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo:bar");
         Assertions.assertFalse(view.isVisible(null));
     }
@@ -55,7 +55,7 @@ public class MetadataViewTest {
      * @verifies return true if field value pair found
      */
     @Test
-    public void isVisible_shouldReturnTrueIfFieldValuePairFound() throws Exception {
+    void isVisible_shouldReturnTrueIfFieldValuePairFound() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo:bar");
         StructElement se = new StructElement();
         se.getMetadataFields().put("foo", Collections.singletonList("bar"));
@@ -67,7 +67,7 @@ public class MetadataViewTest {
      * @verifies return false if field value pair not found
      */
     @Test
-    public void isVisible_shouldReturnFalseIfFieldValuePairNotFound() throws Exception {
+    void isVisible_shouldReturnFalseIfFieldValuePairNotFound() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo:bar");
         StructElement se = new StructElement();
         se.getMetadataFields().put("foo", Collections.singletonList("other"));
@@ -79,7 +79,7 @@ public class MetadataViewTest {
      * @verifies return true if field name found
      */
     @Test
-    public void isVisible_shouldReturnTrueIfFieldNameFound() throws Exception {
+    void isVisible_shouldReturnTrueIfFieldNameFound() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo");
         StructElement se = new StructElement();
         se.getMetadataFields().put("foo", Collections.singletonList("bar"));
@@ -91,7 +91,7 @@ public class MetadataViewTest {
      * @verifies return false if field name not found
      */
     @Test
-    public void isVisible_shouldReturnFalseIfFieldNameNotFound() throws Exception {
+    void isVisible_shouldReturnFalseIfFieldNameNotFound() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo");
         StructElement se = new StructElement();
         se.getMetadataFields().put("bar", Collections.singletonList("other"));

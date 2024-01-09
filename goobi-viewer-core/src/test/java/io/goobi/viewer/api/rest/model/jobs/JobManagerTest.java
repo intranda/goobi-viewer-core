@@ -44,7 +44,7 @@ import io.goobi.viewer.model.job.TaskType;
  * @author florian
  *
  */
-public class JobManagerTest {
+class JobManagerTest {
 
     TaskManager manager;
 
@@ -57,7 +57,7 @@ public class JobManagerTest {
     }
 
     @Test
-    public void testAddJob() throws InterruptedException {
+    void testAddJob() throws InterruptedException {
         Task job = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
         });
         manager.addTask(job);
@@ -72,7 +72,7 @@ public class JobManagerTest {
     }
 
     @Test
-    public void testListJobs() {
+    void testListJobs() {
         Task job1 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
         });
         Task job2 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
@@ -82,5 +82,4 @@ public class JobManagerTest {
 
         assertEquals(2, manager.getTasks(TaskType.NOTIFY_SEARCH_UPDATE).size());
     }
-
 }

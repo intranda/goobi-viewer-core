@@ -54,7 +54,7 @@ public class BookmarkResourceTest {
     }
 
     @Test
-    public void testDeserializeBookmark() throws JsonMappingException, JsonProcessingException {
+    void testDeserializeBookmark() throws JsonMappingException, JsonProcessingException {
         String jsonString = "{\"name\": \"Test Bookmark\", \"description\": \"some testing...\", \"pi\": \"PPN743674162\"}";
         ObjectMapper mapper = new ObjectMapper();
         Bookmark bookmark = mapper.readValue(jsonString, Bookmark.class);

@@ -40,7 +40,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
  * @author Florian Alpers
  *
  */
-public class TableDataProviderTest {
+class TableDataProviderTest {
 
     List<Integer> sourceList;
     TableDataProvider<Integer> provider;
@@ -96,10 +96,11 @@ public class TableDataProviderTest {
      */
     @AfterEach
     public void tearDown() throws Exception {
+        //
     }
 
     @Test
-    public void testGetFirstPage() {
+    void testGetFirstPage() {
         provider.resetAll();
         List<Integer> list = provider.getPaginatorList();
         Assertions.assertEquals(10, list.size());
@@ -108,13 +109,13 @@ public class TableDataProviderTest {
     }
 
     @Test
-    public void testGetTotalSize() {
+    void testGetTotalSize() {
         provider.resetAll();
         Assertions.assertEquals(2005, provider.getSizeOfDataList());
     }
 
     @Test
-    public void testChangePageSize() {
+    void testChangePageSize() {
         provider.resetAll();
         List<Integer> list = provider.getPaginatorList();
         Assertions.assertEquals(10, list.size());
@@ -127,7 +128,7 @@ public class TableDataProviderTest {
     }
 
     @Test
-    public void testGotoLastPage() {
+    void testGotoLastPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         List<Integer> list = provider.getPaginatorList();
@@ -136,7 +137,7 @@ public class TableDataProviderTest {
     }
 
     @Test
-    public void testGotoFirstPage() {
+    void testGotoFirstPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         provider.cmdMoveFirst();
@@ -146,7 +147,7 @@ public class TableDataProviderTest {
     }
 
     @Test
-    public void testGotoNextPage() {
+    void testGotoNextPage() {
         provider.resetAll();
         provider.cmdMoveNext();
         List<Integer> list = provider.getPaginatorList();
@@ -155,7 +156,7 @@ public class TableDataProviderTest {
     }
 
     @Test
-    public void testGotoPreviousPage() {
+    void testGotoPreviousPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         provider.cmdMovePrevious();
@@ -165,7 +166,7 @@ public class TableDataProviderTest {
     }
 
     @Test
-    public void testGotoPage() {
+    void testGotoPage() {
         provider.resetAll();
         provider.setTxtMoveTo(100);
         List<Integer> list = provider.getPaginatorList();
@@ -174,7 +175,7 @@ public class TableDataProviderTest {
     }
 
     @Test
-    public void testFilter() {
+    void testFilter() {
         provider.resetAll();
         provider.getFilterIfPresent("MIN").ifPresent(filter -> filter.setValue("100"));
         Assertions.assertEquals("100", provider.getFilterIfPresent("MIN").map(filter -> filter.getValue()).orElse("x"));
@@ -210,7 +211,7 @@ public class TableDataProviderTest {
     }
 
     @Test
-    public void testSorting() {
+    void testSorting() {
         provider.resetAll();
         provider.setSortOrder(SortOrder.DESCENDING);
         Assertions.assertEquals(2005, provider.getPaginatorList().get(0), 0);

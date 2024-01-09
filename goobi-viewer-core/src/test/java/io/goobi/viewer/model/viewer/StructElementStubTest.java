@@ -63,7 +63,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies generate string element correctly
      */
     @Test
-    public void generateContextObject_shouldGenerateStringElementCorrectly() throws Exception {
+    void generateContextObject_shouldGenerateStringElementCorrectly() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
         StructElementStub stub = element.createStub();
         Assertions.assertEquals(element.getDocStructType(), stub.getDocStructType());
@@ -77,7 +77,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies return unknown format if topstruct null
      */
     @Test
-    public void generateContextObject_shouldReturnUnknownFormatIfTopstructNull() throws Exception {
+    void generateContextObject_shouldReturnUnknownFormatIfTopstructNull() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
         StructElementStub stub = element.createStub();
         Assertions.assertEquals(element.getDocStructType(), stub.getDocStructType());
@@ -91,7 +91,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies return locale specific title if so requested
      */
     @Test
-    public void getLabel_shouldReturnLocaleSpecificTitleIfSoRequested() throws Exception {
+    void getLabel_shouldReturnLocaleSpecificTitleIfSoRequested() throws Exception {
         StructElement element = new StructElement();
         element.setLabel("label");
         element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
@@ -104,7 +104,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies return label if no locale specific title found
      */
     @Test
-    public void getLabel_shouldReturnLabelIfNoLocaleSpecificTitleFound() throws Exception {
+    void getLabel_shouldReturnLabelIfNoLocaleSpecificTitleFound() throws Exception {
         StructElement element = new StructElement();
         element.setLabel("label");
         element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
@@ -117,7 +117,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies return label if locale is null
      */
     @Test
-    public void getLabel_shouldReturnLabelIfLocaleIsNull() throws Exception {
+    void getLabel_shouldReturnLabelIfLocaleIsNull() throws Exception {
         StructElement element = new StructElement();
         element.setLabel("label");
         element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));

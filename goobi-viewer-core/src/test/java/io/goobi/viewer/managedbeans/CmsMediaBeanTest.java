@@ -68,20 +68,20 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testSelectedTag() {
+    void testSelectedTag() {
         String tag = "sampleTag";
         bean.setSelectedTag(tag);
         Assertions.assertEquals(tag, bean.getSelectedTag());
     }
 
     @Test
-    public void testGetAllMediaCategories() throws DAOException {
+    void testGetAllMediaCategories() throws DAOException {
         List<CMSCategory> tags = bean.getAllMediaCategories();
         Assertions.assertEquals(7, tags.size());
     }
 
     @Test
-    public void testGetMediaItems() throws DAOException {
+    void testGetMediaItems() throws DAOException {
 
         bean.setFilter("");
         Assertions.assertEquals(4, bean.getMediaItems().size());
@@ -95,7 +95,7 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetImageFilter() {
+    void testGetImageFilter() {
         String file1 = "image.jpg";
         String file2 = "image.JPEG";
         String file3 = "image.xml";
@@ -105,7 +105,7 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetMediaUrlForGif() throws NumberFormatException, ViewerConfigurationException {
+    void testGetMediaUrlForGif() throws NumberFormatException, ViewerConfigurationException {
         CMSMediaItem item = new CMSMediaItem();
         item.setFileName("lorelai.gif");
         String url = bean.getMediaUrl(item);

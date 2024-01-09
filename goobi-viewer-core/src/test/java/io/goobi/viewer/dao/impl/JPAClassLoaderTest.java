@@ -28,18 +28,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.dao.impl.JPAClassLoader;
 
-public class JPAClassLoaderTest extends AbstractTest {
+ class JPAClassLoaderTest extends AbstractTest {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(JPAClassLoaderTest.class);
@@ -49,7 +48,7 @@ public class JPAClassLoaderTest extends AbstractTest {
      * @verifies merge persistence xml files correctly
      */
     @Test
-    public void scanPersistenceXML_shouldMergePersistenceXmlFilesCorrectly() throws Exception {
+    void scanPersistenceXML_shouldMergePersistenceXmlFilesCorrectly() throws Exception {
         // TODO Fails on Jenkins
         File masterFile = new File("src/main/resources/META-INF/persistence.xml");
         Assertions.assertTrue(masterFile.isFile());

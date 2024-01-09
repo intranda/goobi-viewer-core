@@ -69,13 +69,13 @@ public class ApiUrlManagerTest {
     }
 
     @Test
-    public void testGetUrl() {
+    void testGetUrl() {
         String url = manager.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF).params(PI, DIVID).build();
         assertEquals(PATH_FINAL, url);
     }
 
     @Test
-    public void testGetUrlWithQuery() {
+    void testGetUrlWithQuery() {
         String url = manager.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF)
                 .params(PI, DIVID)
                 .query(QUERY_PARAM_MAX, QUERY_PARAM_MAX_VALUE)
@@ -86,7 +86,7 @@ public class ApiUrlManagerTest {
     }
 
     @Test
-    public void testParseParameter() {
+    void testParseParameter() {
         String pi = "PPN1234";
         String pageNo = "5";
         String id = "172";

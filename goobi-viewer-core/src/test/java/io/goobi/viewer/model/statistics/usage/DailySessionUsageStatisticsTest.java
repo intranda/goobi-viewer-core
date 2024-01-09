@@ -47,7 +47,7 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
     IDAO dao;
     
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
         List<DailySessionUsageStatistics> stats = dao.getUsageStatistics(LocalDate.of(0, Month.JANUARY, 1), LocalDate.of(3000, Month.JANUARY, 1));
@@ -62,7 +62,7 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
     }
     
     @Test
-    public void test_persistence() throws DAOException {
+    void test_persistence() throws DAOException {
         
         
         LocalDate date = LocalDate.now();
@@ -80,7 +80,7 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
     }
     
     @Test
-    public void test_persistenceWithEntries() throws DAOException {
+    void test_persistenceWithEntries() throws DAOException {
         
         LocalDate date = LocalDate.now();
         RequestType type = RequestType.RECORD_VIEW;
@@ -117,7 +117,7 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
     }
     
     @Test
-    public void test_persistenceDelete() throws DAOException {
+    void test_persistenceDelete() throws DAOException {
         
         LocalDate date = LocalDate.now();
         RequestType type = RequestType.RECORD_VIEW;
@@ -145,7 +145,7 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
     }
     
     @Test
-    public void test_testCounting() {
+    void test_testCounting() {
         
         LocalDate date = LocalDate.now();
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
@@ -170,7 +170,7 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
     }
     
     @Test
-    public void test_getDateRange() throws DAOException {
+    void test_getDateRange() throws DAOException {
 
         RequestType type = RequestType.RECORD_VIEW;
         

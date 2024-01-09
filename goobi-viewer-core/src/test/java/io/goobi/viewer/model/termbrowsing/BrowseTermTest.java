@@ -31,7 +31,7 @@ public class BrowseTermTest {
      * @verifies add to hit count correctly
      */
     @Test
-    public void addToHitCount_shouldAddToHitCountCorrectly() throws Exception {
+    void addToHitCount_shouldAddToHitCountCorrectly() throws Exception {
         BrowseTerm browseTerm = new BrowseTerm("foo", null, null);
         Assertions.assertEquals(0, browseTerm.getHitCount());
 

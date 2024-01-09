@@ -57,7 +57,7 @@ public class MediaHandlerTest extends AbstractTest {
     }
 
     @Test
-    public void testGetMediaUrl() throws IllegalRequestException {
+    void testGetMediaUrl() throws IllegalRequestException {
         String mediaUrl = handler.getMediaUrl("audio","ogg", "1234", "audio.ogg");
         Assertions.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/1234/files/audio/ogg/audio.ogg", mediaUrl);
     }

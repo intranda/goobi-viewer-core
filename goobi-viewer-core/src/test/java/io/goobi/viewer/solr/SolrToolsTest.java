@@ -43,7 +43,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return all fields in the given doc except page urns
      */
     @Test
-    public void getFieldValueMap_shouldReturnAllFieldsInTheGivenDocExceptPageUrns() throws Exception {
+    void getFieldValueMap_shouldReturnAllFieldsInTheGivenDocExceptPageUrns() throws Exception {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
         Assertions.assertNotNull(doc);
         Map<String, List<String>> fieldValueMap = SolrTools.getFieldValueMap(doc);
@@ -56,7 +56,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return all values for the given field
      */
     @Test
-    public void getMetadataValues_shouldReturnAllValuesForTheGivenField() throws Exception {
+    void getMetadataValues_shouldReturnAllValuesForTheGivenField() throws Exception {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":AC13451894", null);
         Assertions.assertNotNull(doc);
         List<String> values = SolrTools.getMetadataValues(doc, "MD_CREATOR");
@@ -68,7 +68,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies not return null as string if value is null
      */
     @Test
-    public void getSingleFieldStringValue_shouldNotReturnNullAsStringIfValueIsNull() throws Exception {
+    void getSingleFieldStringValue_shouldNotReturnNullAsStringIfValueIsNull() throws Exception {
         SolrDocument doc = new SolrDocument();
         Assertions.assertNull(SolrTools.getSingleFieldStringValue(doc, "MD_NOSUCHFIELD"));
     }
@@ -78,7 +78,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return value as string correctly
      */
     @Test
-    public void getSingleFieldStringValue_shouldReturnValueAsStringCorrectly() throws Exception {
+    void getSingleFieldStringValue_shouldReturnValueAsStringCorrectly() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.addField("NUM", 1337);
         assertEquals("1337", SolrTools.getSingleFieldStringValue(doc, "NUM"));
@@ -89,7 +89,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies split fields correctly
      */
     @Test
-    public void getSolrSortFieldsAsList_shouldSplitFieldsCorrectly() throws Exception {
+    void getSolrSortFieldsAsList_shouldSplitFieldsCorrectly() throws Exception {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A; SORT_B, desc;SORT_C,asc", ";", ",");
         Assertions.assertNotNull(result);
         assertEquals(3, result.size());
@@ -106,7 +106,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies split single field correctly
      */
     @Test
-    public void getSolrSortFieldsAsList_shouldSplitSingleFieldCorrectly() throws Exception {
+    void getSolrSortFieldsAsList_shouldSplitSingleFieldCorrectly() throws Exception {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A , desc ", ";", ",");
         Assertions.assertNotNull(result);
         assertEquals(1, result.size());
@@ -157,7 +157,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return correct value for page docs
      */
     @Test
-    public void isHasImages_shouldReturnCorrectValueForPageDocs() throws Exception {
+    void isHasImages_shouldReturnCorrectValueForPageDocs() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.FILENAME, "foo.jpg");
         Assertions.assertTrue(SolrTools.isHasImages(doc));
@@ -170,14 +170,14 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return correct value for iiif manifests in file name
      */
     @Test
-    public void isHasImages_shouldReturnCorrectValueForIiifManifestsInFileName() throws Exception {
+    void isHasImages_shouldReturnCorrectValueForIiifManifestsInFileName() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.THUMBNAIL, "https://example.com/iiif/2/foo.jpg/info.json");
         Assertions.assertTrue(SolrTools.isHasImages(doc));
     }
 
     @Test
-    public void testGetMetadataValuesForLanguage() {
+    void testGetMetadataValuesForLanguage() {
         SolrDocument doc = new SolrDocument();
         doc.addField("field_A", "value_A");
         doc.addField("field_B_LANG_EN", "field_B_en");
@@ -199,7 +199,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void testGetMultiLanguageFieldValueMap() {
+    void testGetMultiLanguageFieldValueMap() {
         SolrDocument doc = new SolrDocument();
         doc.addField("field_A", "value_A");
         doc.addField("field_B", "value_B");
@@ -223,13 +223,13 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return all existing values for the given field
      */
     @Test
-    public void getAvailableValuesForField_shouldReturnAllExistingValuesForTheGivenField() throws Exception {
+    void getAvailableValuesForField_shouldReturnAllExistingValuesForTheGivenField() throws Exception {
         List<String> values = SolrTools.getAvailableValuesForField("MD_YEARPUBLISH", SolrConstants.ISWORK + ":true");
         Assertions.assertFalse(values.isEmpty());
     }
 
     @Test
-    public void getAvailableValuesForField_shouldReturnAllEntireValues() throws Exception {
+    void getAvailableValuesForField_shouldReturnAllEntireValues() throws Exception {
         List<String> values = SolrTools.getAvailableValuesForField("MD_PLACEPUBLISH", SolrConstants.ISWORK + ":true");
         Assertions.assertFalse(values.isEmpty());
         //values.forEach(System.out::println);
@@ -241,7 +241,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return correct values
      */
     @Test
-    public void getExistingSubthemes_shouldReturnCorrectValues() throws Exception {
+    void getExistingSubthemes_shouldReturnCorrectValues() throws Exception {
         List<String> result = SolrTools.getExistingSubthemes();
         assertEquals(2, result.size());
         Assertions.assertTrue(result.contains("subtheme1"));
@@ -253,7 +253,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return empty string if exceptionMessage empty
      */
     @Test
-    public void extractExceptionMessageHtmlTitle_shouldReturnEmptyStringIfExceptionMessageEmpty() throws Exception {
+    void extractExceptionMessageHtmlTitle_shouldReturnEmptyStringIfExceptionMessageEmpty() throws Exception {
         assertEquals("", SolrTools.extractExceptionMessageHtmlTitle(null));
     }
 
@@ -262,7 +262,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return exceptionMessage if no pattern match found
      */
     @Test
-    public void extractExceptionMessageHtmlTitle_shouldReturnExceptionMessageIfNoPatternMatchFound() throws Exception {
+    void extractExceptionMessageHtmlTitle_shouldReturnExceptionMessageIfNoPatternMatchFound() throws Exception {
         String html = "<html><head></head><body><h1>foo</h1></body</html>";
         assertEquals(html, SolrTools.extractExceptionMessageHtmlTitle(html));
     }
@@ -272,13 +272,13 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return title content correctly
      */
     @Test
-    public void extractExceptionMessageHtmlTitle_shouldReturnTitleContentCorrectly() throws Exception {
+    void extractExceptionMessageHtmlTitle_shouldReturnTitleContentCorrectly() throws Exception {
         String html = "<html><head><title>foo bar</title></head><body><h1>foo</h1></body</html>";
         assertEquals("foo bar", SolrTools.extractExceptionMessageHtmlTitle(html));
     }
 
     @Test
-    public void test_escapeSpecialCharacters() {
+    void test_escapeSpecialCharacters() {
         assertEquals("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>",
                 SolrTools.escapeSpecialCharacters("x\"><svG onLoad=alert(\"Hello_XSS_World\")>"));
         assertEquals("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>",
@@ -288,7 +288,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_unescapeSpecialCharacters() {
+    void test_unescapeSpecialCharacters() {
         assertEquals("x\"><svG onLoad=alert(\"Hello_XSS_World\")>",
                 SolrTools.unescapeSpecialCharacters("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>"));
         assertEquals("x\"><svG onLoad=alert(\"Hello_XSS_World\")>",
@@ -302,7 +302,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies remove brace pairs
      */
     @Test
-    public void cleanUpQuery_shouldRemoveBracePairs() throws Exception {
+    void cleanUpQuery_shouldRemoveBracePairs() throws Exception {
         assertEquals("foo:bar", SolrTools.cleanUpQuery("{foo:bar}"));
     }
 
@@ -311,7 +311,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies keep join parameter
      */
     @Test
-    public void cleanUpQuery_shouldKeepJoinParameter() throws Exception {
+    void cleanUpQuery_shouldKeepJoinParameter() throws Exception {
         assertEquals("{!join from=PI_TOPSTRUCT to=PI}foo:bar", SolrTools.cleanUpQuery("{!join from=PI_TOPSTRUCT to=PI}foo:bar"));
     }
 
@@ -320,7 +320,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies keep single braces
      */
     @Test
-    public void cleanUpQuery_shouldKeepSingleBraces() throws Exception {
+    void cleanUpQuery_shouldKeepSingleBraces() throws Exception {
         assertEquals("\\{u.a.", SolrTools.cleanUpQuery("\\{u.a."));
     }
 }

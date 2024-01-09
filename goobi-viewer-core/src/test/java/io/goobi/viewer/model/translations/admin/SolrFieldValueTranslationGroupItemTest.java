@@ -38,7 +38,7 @@ public class SolrFieldValueTranslationGroupItemTest extends AbstractSolrEnabledT
      * @verifies load hierarchical entries correctly
      */
     @Test
-    public void loadEntries_shouldLoadHierarchicalEntriesCorrectly() throws Exception {
+    void loadEntries_shouldLoadHierarchicalEntriesCorrectly() throws Exception {
         TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_VALUES, SolrConstants.DC, false);
         item.loadEntries();
         Assertions.assertFalse(item.getEntries().isEmpty());

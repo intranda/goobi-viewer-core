@@ -34,7 +34,7 @@ public class OEmbedServletTest extends AbstractSolrEnabledTest {
      * @verifies parse url with page number correctly
      */
     @Test
-    public void parseUrl_shouldParseUrlWithPageNumberCorrectly() throws Exception {
+    void parseUrl_shouldParseUrlWithPageNumberCorrectly() throws Exception {
         OEmbedRecord rec = OEmbedServlet.parseUrl("/image/PPN517154005/2/");
         Assertions.assertNotNull(rec);
         Assertions.assertNotNull(rec.getPhysicalElement());
@@ -48,7 +48,7 @@ public class OEmbedServletTest extends AbstractSolrEnabledTest {
      * @verifies parse url without page number correctly
      */
     @Test
-    public void parseUrl_shouldParseUrlWithoutPageNumberCorrectly() throws Exception {
+    void parseUrl_shouldParseUrlWithoutPageNumberCorrectly() throws Exception {
         OEmbedRecord rec = OEmbedServlet.parseUrl("/image/PPN517154005/");
         Assertions.assertNotNull(rec);
         Assertions.assertNotNull(rec.getPhysicalElement());
@@ -60,7 +60,7 @@ public class OEmbedServletTest extends AbstractSolrEnabledTest {
      * @verifies return null if url contains no pi
      */
     @Test
-    public void parseUrl_shouldReturnNullIfUrlContainsNoPi() throws Exception {
+    void parseUrl_shouldReturnNullIfUrlContainsNoPi() throws Exception {
         Assertions.assertNull(OEmbedServlet.parseUrl("/image/"));
     }
 }

@@ -41,7 +41,7 @@ public class MetadataToolsTest extends AbstractSolrEnabledTest {
      * @verifies apply rules correctly
      */
     @Test
-    public void applyReplaceRules_shouldApplyRulesCorrectly() throws Exception {
+    void applyReplaceRules_shouldApplyRulesCorrectly() throws Exception {
         List<MetadataReplaceRule> replaceRules = new ArrayList<>(3);
         replaceRules.add(new MetadataReplaceRule('<', "", MetadataReplaceRuleType.CHAR));
         replaceRules.add(new MetadataReplaceRule(">", "s", MetadataReplaceRuleType.STRING));
@@ -54,7 +54,7 @@ public class MetadataToolsTest extends AbstractSolrEnabledTest {
      * @verifies apply conditional rules correctly
      */
     @Test
-    public void applyReplaceRules_shouldApplyConditionalRulesCorrectly() throws Exception {
+    void applyReplaceRules_shouldApplyConditionalRulesCorrectly() throws Exception {
         List<MetadataReplaceRule> replaceRules = Collections.singletonList(
                 new MetadataReplaceRule("remove me", "", SolrConstants.PI_TOPSTRUCT + ":PPN517154005", MetadataReplaceRuleType.STRING));
         Assertions.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN517154005", replaceRules.get(0).getConditions());
@@ -71,7 +71,7 @@ public class MetadataToolsTest extends AbstractSolrEnabledTest {
      * @verifies map values correctly
      */
     @Test
-    public void findMetadataGroupType_shouldMapValuesCorrectly() throws Exception {
+    void findMetadataGroupType_shouldMapValuesCorrectly() throws Exception {
         Assertions.assertEquals(MetadataGroupType.CORPORATION.name(), MetadataTools.findMetadataGroupType("kiz"));
         Assertions.assertEquals(MetadataGroupType.PERSON.name(), MetadataTools.findMetadataGroupType("piz"));
         Assertions.assertEquals(MetadataGroupType.SUBJECT.name(), MetadataTools.findMetadataGroupType("saa"));
@@ -84,7 +84,7 @@ public class MetadataToolsTest extends AbstractSolrEnabledTest {
      * @verifies return original value if language not found
      */
     @Test
-    public void convertLanguageToIso2_shouldReturnOriginalValueIfLanguageNotFound() throws Exception {
+    void convertLanguageToIso2_shouldReturnOriginalValueIfLanguageNotFound() throws Exception {
         Assertions.assertEquals("###", MetadataTools.convertLanguageToIso2("###"));
     }
 }

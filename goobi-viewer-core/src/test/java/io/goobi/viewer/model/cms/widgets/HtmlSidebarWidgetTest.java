@@ -38,7 +38,7 @@ import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 public class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
 
     @Test
-    public void testPersist() throws DAOException {
+    void testPersist() throws DAOException {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -58,7 +58,7 @@ public class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
     }
 
     @Test
-    public void testClone() {
+    void testClone() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -83,7 +83,7 @@ public class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
     }
 
     @Test
-    public void testType() {
+    void testType() {
         assertEquals(CustomWidgetType.WIDGET_HTML, new HtmlSidebarWidget().getType());
     }
 

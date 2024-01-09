@@ -40,14 +40,14 @@ public class AbstractBuilderTest extends AbstractTest {
     AbstractBuilder builder;
 
     @BeforeEach
-    public void SetUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         builder = new AbstractBuilder(new ApiUrls("http://localhost:8080/viewer/rest")) {
         };
     }
 
     @Test
-    public void testGetEventFields() {
+    void testGetEventFields() {
         Map<String, List<String>> events = builder.getEventFields();
         Assertions.assertNotNull(events);
         Assertions.assertEquals(3, events.size());
@@ -59,7 +59,7 @@ public class AbstractBuilderTest extends AbstractTest {
     }
 
     @Test
-    public void testMetadataContained() {
+    void testMetadataContained() {
         List<String> fieldNames = List.of("MD_TEST", "MD_BLA*");
         
         Assertions.assertTrue(builder.contained("MD_TEST", fieldNames));

@@ -43,7 +43,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return language-specific version of a field
      */
     @Test
-    public void filterMetadata_shouldReturnLanguagespecificVersionOfAField() throws Exception {
+    void filterMetadata_shouldReturnLanguagespecificVersionOfAField() throws Exception {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "föö"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
@@ -58,7 +58,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return generic version if no language specific version is found
      */
     @Test
-    public void filterMetadata_shouldReturnGenericVersionIfNoLanguageSpecificVersionIsFound() throws Exception {
+    void filterMetadata_shouldReturnGenericVersionIfNoLanguageSpecificVersionIsFound() throws Exception {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE", "", "bar"));
@@ -72,7 +72,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies preserve metadata field order
      */
     @Test
-    public void filterMetadata_shouldPreserveMetadataFieldOrder() throws Exception {
+    void filterMetadata_shouldPreserveMetadataFieldOrder() throws Exception {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
@@ -90,7 +90,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies filter by desired field name correctly
      */
     @Test
-    public void filterMetadata_shouldFilterByDesiredFieldNameCorrectly() throws Exception {
+    void filterMetadata_shouldFilterByDesiredFieldNameCorrectly() throws Exception {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
@@ -106,7 +106,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies build value correctly
      */
     @Test
-    public void buildHierarchicalValue_shouldBuildValueCorrectly() throws Exception {
+    void buildHierarchicalValue_shouldBuildValueCorrectly() throws Exception {
         {
             String value = Metadata.buildHierarchicalValue("DC", "a.b", null, "http://localhost:8080/");
             Assertions.assertEquals(
@@ -125,7 +125,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies add configured collection sort field
      */
     @Test
-    public void buildHierarchicalValue_shouldAddConfiguredCollectionSortField() throws Exception {
+    void buildHierarchicalValue_shouldAddConfiguredCollectionSortField() throws Exception {
         String value = Metadata.buildHierarchicalValue("DC", "collection1", null, "http://localhost:8080/");
         Assertions.assertEquals("<a href=\"http://localhost:8080/browse/-/1/SORT_TITLE/DC:collection1/\">collection1</a>", value);
     }
@@ -135,7 +135,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return true if all paramValues are empty
      */
     @Test
-    public void isBlank_shouldReturnTrueIfAllParamValuesAreEmpty() throws Exception {
+    void isBlank_shouldReturnTrueIfAllParamValuesAreEmpty() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         Assertions.assertEquals(1, metadata.getValues().size());
         Assertions.assertTrue(metadata.isBlank(null));
@@ -146,7 +146,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return false if at least one paramValue is not empty
      */
     @Test
-    public void isBlank_shouldReturnFalseIfAtLeastOneParamValueIsNotEmpty() throws Exception {
+    void isBlank_shouldReturnFalseIfAtLeastOneParamValueIsNotEmpty() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "val");
         Assertions.assertEquals(1, metadata.getValues().size());
         Assertions.assertFalse(metadata.isBlank(null));
@@ -157,7 +157,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return true if all values have different ownerIddoc
      */
     @Test
-    public void isBlank_shouldReturnTrueIfAllValuesHaveDifferentOwnerIddoc() throws Exception {
+    void isBlank_shouldReturnTrueIfAllValuesHaveDifferentOwnerIddoc() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
@@ -175,7 +175,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return true if at least one value has same ownerIddoc
      */
     @Test
-    public void isBlank_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() throws Exception {
+    void isBlank_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
@@ -193,7 +193,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies add multivalued param values correctly
      */
     @Test
-    public void setParamValue_shouldAddMultivaluedParamValuesCorrectly() throws Exception {
+    void setParamValue_shouldAddMultivaluedParamValuesCorrectly() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
@@ -210,7 +210,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies set group type correctly
      */
     @Test
-    public void setParamValue_shouldSetGroupTypeCorrectly() throws Exception {
+    void setParamValue_shouldSetGroupTypeCorrectly() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
@@ -224,7 +224,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return all values if ownerIddoc null
      */
     @Test
-    public void getValuesForOwner_shouldReturnAllValuesIfOwnerIddocNull() throws Exception {
+    void getValuesForOwner_shouldReturnAllValuesIfOwnerIddocNull() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
@@ -242,7 +242,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return only values for the given ownerIddoc
      */
     @Test
-    public void getValuesForOwner_shouldReturnOnlyValuesForTheGivenOwnerIddoc() throws Exception {
+    void getValuesForOwner_shouldReturnOnlyValuesForTheGivenOwnerIddoc() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
@@ -262,7 +262,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return placeholders for every parameter for group metadata if masterValue empty
      */
     @Test
-    public void getMasterValue_shouldReturnPlaceholdersForEveryParameterForGroupMetadataIfMasterValueEmpty() throws Exception {
+    void getMasterValue_shouldReturnPlaceholdersForEveryParameterForGroupMetadataIfMasterValueEmpty() throws Exception {
         List<MetadataParameter> params = new ArrayList<>(3);
         params.add(new MetadataParameter());
         params.add(new MetadataParameter());
@@ -277,7 +277,7 @@ public class MetadataTest extends AbstractTest {
      * @verifies return single placeholder for non group metadata if masterValue empty
      */
     @Test
-    public void getMasterValue_shouldReturnSinglePlaceholderForNonGroupMetadataIfMasterValueEmpty() throws Exception {
+    void getMasterValue_shouldReturnSinglePlaceholderForNonGroupMetadataIfMasterValueEmpty() throws Exception {
         Assertions.assertEquals("{0}", new Metadata().getMasterValue());
 
     }

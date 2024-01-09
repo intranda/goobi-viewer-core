@@ -31,7 +31,7 @@ public class MovingWallAnnualStatisticsTest {
      * @verifies build query correctly
      */
     @Test
-    public void getQuery_shouldBuildQueryCorrectly() throws Exception {
+    void getQuery_shouldBuildQueryCorrectly() throws Exception {
         Assertions.assertEquals("+ISWORK:true +DATE_PUBLICRELEASEDATE:[2022-01-01T00:00:00.000Z TO 2022-12-31T23:59:59.999Z]",
                 new MovingWallAnnualStatistics(2022).getQuery());
     }

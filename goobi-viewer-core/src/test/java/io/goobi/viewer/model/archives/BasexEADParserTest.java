@@ -36,7 +36,7 @@ public class BasexEADParserTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies parse document correctly
      */
     @Test
-    public void parseEadFile_shouldParseDocumentCorrectly() throws Exception {
+    void parseEadFile_shouldParseDocumentCorrectly() throws Exception {
         // Make sure the XML file has a <collection> element around <ead> (as delivered by BaseX)
         Document doc = XmlTools.readXmlFile("src/test/resources/data/EAD_Export_Tektonik.XML");
         Assertions.assertNotNull(doc);

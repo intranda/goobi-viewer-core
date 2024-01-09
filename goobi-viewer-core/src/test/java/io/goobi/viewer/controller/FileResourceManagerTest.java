@@ -67,7 +67,7 @@ public class FileResourceManagerTest {
      * Test method for {@link io.goobi.viewer.controller.FileResourceManager#getCoreResourcePath(java.lang.String)}.
      */
     @Test
-    public void testGetCoreResourcePath() {
+    void testGetCoreResourcePath() {
         assertEquals(CORE_PATH + "resources/images/icon.png", manager.getCoreResourcePath("images/icon.png").toString());
     }
 
@@ -75,7 +75,7 @@ public class FileResourceManagerTest {
      * Test method for {@link io.goobi.viewer.controller.FileResourceManager#getThemeResourcePath(java.lang.String)}.
      */
     @Test
-    public void testGetThemeResourcePath() {
+    void testGetThemeResourcePath() {
         assertEquals(THEME_PATH + "resources/themes/reference/images/icon.png", manager.getThemeResourcePath("images/icon.png").toString());
     }
 
@@ -83,7 +83,7 @@ public class FileResourceManagerTest {
      * Test method for {@link io.goobi.viewer.controller.FileResourceManager#getCoreResourceURI(java.lang.String)}.
      */
     @Test
-    public void testGetCoreResourceURI() {
+    void testGetCoreResourceURI() {
         assertEquals("/resources/images/icon.png", manager.getCoreResourceURI("images/icon.png").toString());
     }
 
@@ -91,7 +91,7 @@ public class FileResourceManagerTest {
      * Test method for {@link io.goobi.viewer.controller.FileResourceManager#getThemeResourceURI(java.lang.String)}.
      */
     @Test
-    public void testGetThemeResourceURI() {
+    void testGetThemeResourceURI() {
         assertEquals("/resources/themes/reference/images/icon.png", manager.getThemeResourceURI("images/icon.png").toString());
     }
 

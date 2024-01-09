@@ -33,7 +33,7 @@ public class AbstractApiUrlManagerTest extends AbstractTest {
      * @verifies remove trailing slash if file name contains period
      */
     @Test
-    public void replaceApiPathParams_shouldRemoveTrailingSlashIfFileNameContainsPeriod() throws Exception {
+    void replaceApiPathParams_shouldRemoveTrailingSlashIfFileNameContainsPeriod() throws Exception {
         Assertions.assertEquals("http://example.com/with space/info.json",
                 AbstractApiUrlManager.replaceApiPathParams("http://example.com/with space/info.json/", new Object[] {}));
     }

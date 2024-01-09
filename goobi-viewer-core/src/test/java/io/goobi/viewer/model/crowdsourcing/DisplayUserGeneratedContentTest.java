@@ -42,7 +42,7 @@ public class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
      * @verifies construct content correctly
      */
     @Test
-    public void buildFromSolrDoc_shouldConstructContentCorrectly() throws Exception {
+    void buildFromSolrDoc_shouldConstructContentCorrectly() throws Exception {
         String coords = "1468.0, 2459.0, 1938.0, 2569.0";
 
         SolrDocument doc = new SolrDocument();

@@ -109,7 +109,7 @@ class TextBeanTest extends AbstractSolrEnabledTest {
     //     * @verifies return text correctly
     //     */
     //    @Test
-    //    public void getTeiText_shouldReturnTextCorrectly() throws Exception {
+    //    void getTeiText_shouldReturnTextCorrectly() throws Exception {
     //        StructElement se = new StructElement();
     //        se.setPi(PI_KLEIUNIV);
     //        se.getMetadataFields()

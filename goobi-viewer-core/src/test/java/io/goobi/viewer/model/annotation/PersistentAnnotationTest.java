@@ -135,7 +135,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testSerialize() throws JsonParseException, JsonMappingException, IOException {
+    void testSerialize() throws JsonParseException, JsonMappingException, IOException {
 
         String bodyString = daoAnno.getBody();
         Assertions.assertEquals("{\"type\":\"TextualBody\",\"format\":\"text/plain\",\"value\":\"annotation text\"}", bodyString);
@@ -155,7 +155,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testSave() throws DAOException, JsonParseException, JsonMappingException, IOException {
+    void testSave() throws DAOException, JsonParseException, JsonMappingException, IOException {
 
         JPADAO dao = (JPADAO) DataManager.getInstance().getDao();
 
@@ -182,7 +182,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testPersistAnnotation() throws DAOException {
+    void testPersistAnnotation() throws DAOException {
         boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno);
         Assertions.assertTrue(added);
         //        URI uri = URI.create(Long.toString(daoAnno.getId()));
@@ -202,7 +202,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetContent_fromOA() {
+    void testGetContent_fromOA() {
         String content = "{\n" +
                 "        \"@type\": \"cnt:ContentAsText\",\n" +
                 "        \"format\": \"text/plain\",\n" +
@@ -214,7 +214,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetContent_fromWA() {
+    void testGetContent_fromWA() {
         String content = "{\n" +
                 "        \"type\": \"TextualBody\",\n" +
                 "        \"format\": \"text/plain\",\n" +

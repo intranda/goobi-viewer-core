@@ -38,7 +38,7 @@ public class LicenseTest {
      * @verifies set user and userGroup to null if ipRange not null
      */
     @Test
-    public void setIpRange_shouldSetUserAndUserGroupToNullIfIpRangeNotNull() throws Exception {
+    void setIpRange_shouldSetUserAndUserGroupToNullIfIpRangeNotNull() throws Exception {
         {
             License lic = new License();
             lic.setUser(new User());
@@ -60,7 +60,7 @@ public class LicenseTest {
      * @verifies not set user and userGroup to null if ipRange null
      */
     @Test
-    public void setIpRange_shouldNotSetUserAndUserGroupToNullIfIpRangeNull() throws Exception {
+    void setIpRange_shouldNotSetUserAndUserGroupToNullIfIpRangeNull() throws Exception {
         {
             License lic = new License();
             lic.setUser(new User());
@@ -82,7 +82,7 @@ public class LicenseTest {
      * @verifies set userGroup and ipRange to null if user not null
      */
     @Test
-    public void setUser_shouldSetUserGroupAndIpRangeToNullIfUserNotNull() throws Exception {
+    void setUser_shouldSetUserGroupAndIpRangeToNullIfUserNotNull() throws Exception {
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
@@ -104,7 +104,7 @@ public class LicenseTest {
      * @verifies not set userGroup and ipRange to null if user null
      */
     @Test
-    public void setUser_shouldNotSetUserGroupAndIpRangeToNullIfUserNull() throws Exception {
+    void setUser_shouldNotSetUserGroupAndIpRangeToNullIfUserNull() throws Exception {
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
@@ -126,7 +126,7 @@ public class LicenseTest {
      * @verifies set user and ipRange to null if userGroup not null
      */
     @Test
-    public void setUserGroup_shouldSetUserAndIpRangeToNullIfUserGroupNotNull() throws Exception {
+    void setUserGroup_shouldSetUserAndIpRangeToNullIfUserGroupNotNull() throws Exception {
         {
             License lic = new License();
             lic.setUser(new User());
@@ -148,7 +148,7 @@ public class LicenseTest {
      * @verifies not set user and ipRange to null if userGroup null
      */
     @Test
-    public void setUserGroup_shouldNotSetUserAndIpRangeToNullIfUserGroupNull() throws Exception {
+    void setUserGroup_shouldNotSetUserAndIpRangeToNullIfUserGroupNull() throws Exception {
         {
             License lic = new License();
             lic.setUser(new User());
@@ -170,7 +170,7 @@ public class LicenseTest {
      * @verifies only return priv view ugc if licenseType ugc type
      */
     @Test
-    public void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfLicenseTypeUgcType() throws Exception {
+    void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfLicenseTypeUgcType() throws Exception {
         License lic = new License();
         lic.setLicenseType(new LicenseType());
         lic.getLicenseType().setUgcType(true);

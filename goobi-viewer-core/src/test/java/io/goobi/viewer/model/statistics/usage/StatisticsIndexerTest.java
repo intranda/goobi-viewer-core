@@ -43,7 +43,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class StatisticsIndexerTest {
 
     @Test
-    public void test() throws DAOException, IOException {
+    void test() throws DAOException, IOException {
         Path hotfolder = Paths.get("src/test/resources/hotfolder");
         Path hotfolderFile = hotfolder.resolve("statistics-usage-2022-07-04.json");
         if(Files.exists(hotfolderFile)) {
@@ -90,7 +90,7 @@ public class StatisticsIndexerTest {
     }
     
     @Test
-    public void testBuildQuery() {
+    void testBuildQuery() {
         LocalDate date = LocalDate.of(2022, 8, 30);
         String query1 = String.format("+%s:%s +%s:\"%s\"", 
                 SolrConstants.DOCTYPE, 

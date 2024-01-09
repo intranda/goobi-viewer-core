@@ -73,7 +73,7 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsFile()}.
      */
     @Test
-    public void testGetRISAsFile() {
+    void testGetRISAsFile() {
         try(Response response = target(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RIS_FILE).params(PI, DIVID).build())
                 .request()
                 .get()) {
@@ -91,7 +91,7 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsText()}.
      */
     @Test
-    public void testGetRISAsText() {
+    void testGetRISAsText() {
         try(Response response = target(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RIS_TEXT).params(PI, DIVID).build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
@@ -105,7 +105,7 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetRange() throws JsonMappingException, JsonProcessingException {
+    void testGetRange() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).params(PI, DIVID).build();
         try(Response response = target(url)
                 .request()

@@ -59,7 +59,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     private CMSMediaItem iconItem;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         logoItem = DataManager.getInstance().getDao().getCMSMediaItem(LOGO_ID);
         iconItem = DataManager.getInstance().getDao().getCMSMediaItem(ICON_ID);
@@ -67,7 +67,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testSaveTheme() throws DAOException {
+    void testSaveTheme() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
@@ -94,7 +94,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testUpdateTheme() throws DAOException {
+    void testUpdateTheme() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
@@ -133,7 +133,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testDeleteTheme() throws DAOException {
+    void testDeleteTheme() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
@@ -151,7 +151,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testListThemes() throws DAOException {
+    void testListThemes() throws DAOException {
 
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);

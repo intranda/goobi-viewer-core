@@ -58,7 +58,7 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
     Path schedulerDirectory;
     
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         this.dao = DataManager.getInstance().getDao();
         this.config = DataManager.getInstance().getConfiguration();
@@ -91,7 +91,7 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
     }
     
     @Test
-    public void testStartJobs() throws DAOException, SchedulerException, IOException {
+    void testStartJobs() throws DAOException, SchedulerException, IOException {
         ServletContext context = Mockito.mock(ServletContext.class);
         ServletContextEvent contextEvt = Mockito.mock(ServletContextEvent.class);
         Mockito.when(contextEvt.getServletContext()).thenReturn(context);

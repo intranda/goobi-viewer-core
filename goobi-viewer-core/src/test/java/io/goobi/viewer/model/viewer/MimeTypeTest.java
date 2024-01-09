@@ -31,7 +31,7 @@ public class MimeTypeTest {
      * @verifies find mime type by short name correctly
      */
     @Test
-    public void getByName_shouldFindMimeTypeByShortNameCorrectly() throws Exception {
+    void getByName_shouldFindMimeTypeByShortNameCorrectly() throws Exception {
         Assertions.assertEquals(BaseMimeType.APPLICATION, BaseMimeType.getByName("application"));
         Assertions.assertEquals(BaseMimeType.AUDIO, BaseMimeType.getByName("audio"));
         Assertions.assertEquals(BaseMimeType.IMAGE, BaseMimeType.getByName("image"));
@@ -43,7 +43,7 @@ public class MimeTypeTest {
      * @verifies find mime type by full name correctly
      */
     @Test
-    public void getByName_shouldFindMimeTypeByFullNameCorrectly() throws Exception {
+    void getByName_shouldFindMimeTypeByFullNameCorrectly() throws Exception {
         Assertions.assertEquals(BaseMimeType.APPLICATION, BaseMimeType.getByName("application/pdf"));
         Assertions.assertEquals(BaseMimeType.AUDIO, BaseMimeType.getByName("audio/mpeg3"));
         Assertions.assertEquals(BaseMimeType.IMAGE, BaseMimeType.getByName("image/jpeg"));

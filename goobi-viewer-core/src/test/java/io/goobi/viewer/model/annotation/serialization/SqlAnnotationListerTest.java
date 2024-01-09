@@ -43,7 +43,7 @@ public class SqlAnnotationListerTest {
     SqlAnnotationLister lister;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         CrowdsourcingAnnotation a1 = createAnnotation(1l, "OPENACCESS", "Text 1", 10l, 100l, "describing", "PI01", 5);
         CrowdsourcingAnnotation a2 = createAnnotation(2l, "OPENACCESS", "Text 2", 10l, 101l, "describing", "PI02", 10);
         CrowdsourcingAnnotation a3 = createAnnotation(3l, "OPENACCESS", "Text 3", 11l, 101l, "commenting", "PI03", 5);
@@ -59,12 +59,12 @@ public class SqlAnnotationListerTest {
     }
 
     @Test
-    public void testGetAllAnnotations() {
+    void testGetAllAnnotations() {
         assertEquals(7, lister.getAllAnnotations().size());
     }
 
     @Test
-    public void testGetAnnotationsWithCondition() {
+    void testGetAnnotationsWithCondition() {
         assertEquals(1, lister.getAnnotationCount("Text 1", null, null, null, null, null));
         assertEquals(7, lister.getAnnotationCount("Text", null, null, null, null, null));
         assertEquals(2, lister.getAnnotationCount(null, Arrays.asList("commenting"), null, null, null, null));
@@ -76,7 +76,7 @@ public class SqlAnnotationListerTest {
     }
 
     @Test
-    public void testGetAnnotationPage() {
+    void testGetAnnotationPage() {
         assertEquals(5, lister.getAnnotations(0, 5, null, null, null, null, null, null, "", false).size());
         assertEquals(2, lister.getAnnotations(5, 5, null, null, null, null, null, null, "", false).size());
     }

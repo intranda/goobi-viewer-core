@@ -45,7 +45,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
     Set<String> recordAccessConditions = new HashSet<>();
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         lt = new LicenseType();
         lt.setName("license type 1 name");
@@ -71,13 +71,13 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnFalseIfClientNotContainsLicense() throws Exception {
+    void checkAccessPermission_shouldReturnFalseIfClientNotContainsLicense() throws Exception {
         Assertions.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfClientContainsLicense() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfClientContainsLicense() throws Exception {
 
         client.addLicense(license);
 
@@ -86,7 +86,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfAllClientsContainsLicense() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfAllClientsContainsLicense() throws Exception {
 
         allClients.addLicense(license);
 
@@ -97,7 +97,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnFalseIfClientIsOutsiteIpRange() throws Exception {
+    void checkAccessPermission_shouldReturnFalseIfClientIsOutsiteIpRange() throws Exception {
 
         client.addLicense(license);
         allClients.addLicense(license);
@@ -108,7 +108,7 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfClientIsInsideIpRange() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfClientIsInsideIpRange() throws Exception {
 
         client.addLicense(license);
         allClients.addLicense(license);

@@ -37,7 +37,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
      * @verifies create request object correctly
      */
     @Test
-    public void buildProcessCreationRequest_shouldCreateRequestObjectCorrectly() throws Exception {
+    void buildProcessCreationRequest_shouldCreateRequestObjectCorrectly() throws Exception {
         UploadJob uj = new UploadJob();
         uj.setTemplateName("Sample_workflow");
         uj.setEmail("a@b.com");
@@ -64,7 +64,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
      * @verifies do nothing if response null
      */
     @Test
-    public void updateStatus_shouldDoNothingIfResponseNull() throws Exception {
+    void updateStatus_shouldDoNothingIfResponseNull() throws Exception {
         UploadJob uj = new UploadJob();
         Assertions.assertEquals(JobStatus.UNDEFINED, uj.getStatus());
         Assertions.assertFalse(uj.updateStatus(null));
@@ -76,7 +76,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
      * @verifies set status to error if process nonexistent
      */
     @Test
-    public void updateStatus_shouldSetStatusToErrorIfProcessNonexistent() throws Exception {
+    void updateStatus_shouldSetStatusToErrorIfProcessNonexistent() throws Exception {
         UploadJob uj = new UploadJob();
         ProcessStatusResponse psr = new ProcessStatusResponse();
         psr.setId(0);
@@ -91,7 +91,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
      * @verifies set status to error of process rejected
      */
     @Test
-    public void updateStatus_shouldSetStatusToErrorOfProcessRejected() throws Exception {
+    void updateStatus_shouldSetStatusToErrorOfProcessRejected() throws Exception {
         UploadJob uj = new UploadJob();
         ProcessStatusResponse psr = new ProcessStatusResponse();
         psr.setId(1);
@@ -112,7 +112,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
      * @verifies set status to ready if record in index
      */
     @Test
-    public void updateStatus_shouldSetStatusToReadyIfRecordInIndex() throws Exception {
+    void updateStatus_shouldSetStatusToReadyIfRecordInIndex() throws Exception {
         UploadJob uj = new UploadJob();
         uj.setPi(PI_KLEIUNIV);
         ProcessStatusResponse psr = new ProcessStatusResponse();
@@ -127,7 +127,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
     //     * @verifies set status to ready if process completed
     //     */
     //    @Test
-    //    public void updateStatus_shouldSetStatusToReadyIfProcessCompleted() throws Exception {
+    //    void updateStatus_shouldSetStatusToReadyIfProcessCompleted() throws Exception {
     //        UploadJob uj = new UploadJob();
     //        ProcessStatusResponse psr = new ProcessStatusResponse();
     //        psr.setId(1);
@@ -142,7 +142,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
     //     * @verifies set status to ready if export step done
     //     */
     //    @Test
-    //    public void updateStatus_shouldSetStatusToReadyIfExportStepDone() throws Exception {
+    //    void updateStatus_shouldSetStatusToReadyIfExportStepDone() throws Exception {
     //        UploadJob uj = new UploadJob();
     //        ProcessStatusResponse psr = new ProcessStatusResponse();
     //        psr.setId(1);

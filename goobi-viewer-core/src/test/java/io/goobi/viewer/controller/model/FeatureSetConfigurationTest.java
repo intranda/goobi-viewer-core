@@ -34,7 +34,7 @@ import io.goobi.viewer.controller.DataManager;
 public class FeatureSetConfigurationTest extends AbstractTest {
 
     @Test
-    public void testReadConfiguation() {
+    void testReadConfiguation() {
 
         Configuration config = DataManager.getInstance().getConfiguration();
         List<FeatureSetConfiguration> configs = config.getRecordGeomapFeatureSetConfigs("");

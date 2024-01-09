@@ -40,7 +40,7 @@ public class DataManagerTest {
      * @verifies not add module if it's already registered
      */
     @Test
-    public void registerModule_shouldNotAddModuleIfItsAlreadyRegistered() throws Exception {
+    void registerModule_shouldNotAddModuleIfItsAlreadyRegistered() throws Exception {
 
         class TestModule implements IModule {
 
@@ -139,6 +139,7 @@ public class DataManagerTest {
              */
             @Override
             public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws Exception {
+                //
             }
 
             /* (non-Javadoc)

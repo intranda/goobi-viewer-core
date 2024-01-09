@@ -34,7 +34,7 @@ public class CommentTest {
      * @verifies construct object correctly
      */
     @Test
-    public void Comment_shouldConstructObjectCorrectly() throws Exception {
+    void Comment_shouldConstructObjectCorrectly() throws Exception {
         User owner = new User();
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null, null);
         Assertions.assertEquals("PPN123", comment.getTargetPI());
@@ -48,7 +48,7 @@ public class CommentTest {
      * @verifies return true if use id equals owner id
      */
     @Test
-    public void mayEdit_shouldReturnTrueIfUseIdEqualsOwnerId() throws Exception {
+    void mayEdit_shouldReturnTrueIfUseIdEqualsOwnerId() throws Exception {
         User owner = new User();
         owner.setId(1L);
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null, null);
@@ -60,7 +60,7 @@ public class CommentTest {
      * @verifies return false if owner id is null
      */
     @Test
-    public void mayEdit_shouldReturnFalseIfOwnerIdIsNull() throws Exception {
+    void mayEdit_shouldReturnFalseIfOwnerIdIsNull() throws Exception {
         User owner = new User(); // no ID set
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null, null);
         Assertions.assertFalse(comment.mayEdit(owner));
@@ -72,7 +72,7 @@ public class CommentTest {
      * @verifies return false if user is null
      */
     @Test
-    public void mayEdit_shouldReturnFalseIfUserIsNull() throws Exception {
+    void mayEdit_shouldReturnFalseIfUserIsNull() throws Exception {
         User owner = new User();
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null, null);
         Assertions.assertFalse(comment.mayEdit(null));
@@ -83,7 +83,7 @@ public class CommentTest {
      * @verifies remove scripts correctly
      */
     @Test
-    public void checkAndCleanScripts_shouldRemoveScriptsCorrectly() throws Exception {
+    void checkAndCleanScripts_shouldRemoveScriptsCorrectly() throws Exception {
         User owner = new User();
         owner.setId(1L);
         Comment comment =

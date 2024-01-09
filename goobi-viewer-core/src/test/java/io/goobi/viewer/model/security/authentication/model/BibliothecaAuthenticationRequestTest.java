@@ -31,7 +31,7 @@ public class BibliothecaAuthenticationRequestTest {
      * @verifies normalize value correctly
      */
     @Test
-    public void normalizeUsername_shouldNormalizeValueCorrectly() throws Exception {
+    void normalizeUsername_shouldNormalizeValueCorrectly() throws Exception {
         Assertions.assertEquals("00001234567", BibliothecaAuthenticationRequest.normalizeUsername("1234567"));
     }
 }

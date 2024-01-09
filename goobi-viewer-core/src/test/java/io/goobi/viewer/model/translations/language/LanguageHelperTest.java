@@ -33,7 +33,7 @@ import io.goobi.viewer.AbstractTest;
 public class LanguageHelperTest extends AbstractTest {
 
     @Test
-    public void test() {
+    void test() {
         LanguageHelper helper = new LanguageHelper("src/test/resources/languages.xml");
         Assertions.assertNotNull(helper.getLanguage("fra"));
         Assertions.assertNotNull(helper.getLanguage("fre"));

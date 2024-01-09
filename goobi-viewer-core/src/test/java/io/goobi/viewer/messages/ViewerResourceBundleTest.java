@@ -49,12 +49,12 @@ import io.goobi.viewer.controller.StringTools;
 public class ViewerResourceBundleTest extends AbstractTest {
 
     @Test
-    public void testGetDefaultLocale() {
+    void testGetDefaultLocale() {
         Assertions.assertEquals(Locale.ENGLISH, ViewerResourceBundle.getDefaultLocale());
     }
 
     @Test
-    public void testGetAllLocales() {
+    void testGetAllLocales() {
         List<Locale> locales = ViewerResourceBundle.getAllLocales();
         Assertions.assertEquals(2, locales.size());
     }
@@ -64,7 +64,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return null if msg is null
      */
     @Test
-    public void replaceParameters_shouldReturnNullIfMsgIsNull() throws Exception {
+    void replaceParameters_shouldReturnNullIfMsgIsNull() throws Exception {
         Assertions.assertNull(ViewerResourceBundle.replaceParameters(null, false, "one", "two", "three"));
     }
 
@@ -73,7 +73,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies replace parameters correctly
      */
     @Test
-    public void replaceParameters_shouldReplaceParametersCorrectly() throws Exception {
+    void replaceParameters_shouldReplaceParametersCorrectly() throws Exception {
         Assertions.assertEquals("one two three", ViewerResourceBundle.replaceParameters("{0} {1} {2}", false, "one", "two", "three"));
     }
 
@@ -82,7 +82,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies remove remaining placeholders correctly
      */
     @Test
-    public void replaceParameters_shouldRemoveRemainingPlaceholdersCorrectly() throws Exception {
+    void replaceParameters_shouldRemoveRemainingPlaceholdersCorrectly() throws Exception {
         Assertions.assertEquals("one two three {3}", ViewerResourceBundle.replaceParameters("{0} {1} {2} {3}", false, "one", "two", "three"));
         Assertions.assertEquals("one two three", ViewerResourceBundle.replaceParameters("{0} {1} {2} {3}", true, "one", "two", "three"));
     }
@@ -92,7 +92,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return English if no other locales found
      */
     @Test
-    public void getAllLocales_shouldReturnEnglishForUnknownLanguages() throws Exception {
+    void getAllLocales_shouldReturnEnglishForUnknownLanguages() throws Exception {
 
         String germanTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.GERMAN);
         String englishTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.ENGLISH);
@@ -102,7 +102,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
     }
 
     @Test
-    public void testGetLocalesFromFile() throws FileNotFoundException, IOException, JDOMException {
+    void testGetLocalesFromFile() throws FileNotFoundException, IOException, JDOMException {
         Path configPath = Paths.get("src/test/resources/localConfig/faces-config.xml");
         assumeTrue(Files.isRegularFile(configPath));
         List<Locale> locales = ViewerResourceBundle.getLocalesFromFile(configPath);
@@ -112,13 +112,13 @@ public class ViewerResourceBundleTest extends AbstractTest {
     }
 
     @Test
-    public void testGetTranslation() {
+    void testGetTranslation() {
         String autor = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.GERMAN);
         Assertions.assertEquals("Autor", autor);
     }
 
     @Test
-    public void testGetTranslations() {
+    void testGetTranslations() {
         IMetadataValue translations = ViewerResourceBundle.getTranslations("MD_AUTHOR");
         Assertions.assertTrue(translations instanceof MultiLanguageMetadataValue);
         Assertions.assertEquals("Author", translations.getValue("en").orElse(""));
@@ -130,7 +130,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies create files correctly
      */
     @Test
-    public void createLocalMessageFiles_shouldCreateFilesCorrectly() throws Exception {
+    void createLocalMessageFiles_shouldCreateFilesCorrectly() throws Exception {
         List<Locale> locales = Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN });
         Assertions.assertEquals(2, locales.size());
 
@@ -170,7 +170,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return locale for configured fallback language
      */
     @Test
-    public void getFallbackLocale_shouldReturnLocaleForConfiguredFallbackLanguage() throws Exception {
+    void getFallbackLocale_shouldReturnLocaleForConfiguredFallbackLanguage() throws Exception {
         Assertions.assertEquals(Locale.GERMAN, ViewerResourceBundle.getFallbackLocale());
     }
 
@@ -179,7 +179,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return English if no fallback language configured
      */
     @Test
-    public void getFallbackLocale_shouldReturnEnglishIfNoFallbackLanguageConfigured() throws Exception {
+    void getFallbackLocale_shouldReturnEnglishIfNoFallbackLanguageConfigured() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("viewer.fallbackDefaultLanguage", null);
         Assertions.assertEquals(Locale.ENGLISH, ViewerResourceBundle.getFallbackLocale());
     }
@@ -189,7 +189,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies preserve spaces
      */
     @Test
-    public void updateLocalMessageKey_shouldPreserveSpaces() throws Exception {
+    void updateLocalMessageKey_shouldPreserveSpaces() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("configFolder", "target/temp");
 
         File tempDir = new File("target/temp");

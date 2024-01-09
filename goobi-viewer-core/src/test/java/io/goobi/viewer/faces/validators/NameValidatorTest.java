@@ -31,7 +31,7 @@ public class NameValidatorTest {
      * @verifies match correct name
      */
     @Test
-    public void validate_shouldMatchCorrectName() throws Exception {
+    void validate_shouldMatchCorrectName() throws Exception {
         Assertions.assertTrue(NameValidator.validate(""));
         Assertions.assertTrue(NameValidator.validate("John Doe"));
     }
@@ -41,7 +41,7 @@ public class NameValidatorTest {
      * @verifies not match invalid name
      */
     @Test
-    public void validate_shouldNotMatchInvalidName() throws Exception {
+    void validate_shouldNotMatchInvalidName() throws Exception {
         Assertions.assertFalse(NameValidator.validate("John Doe<script />"));
     }
 }

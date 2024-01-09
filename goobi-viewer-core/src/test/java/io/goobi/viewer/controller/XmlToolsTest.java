@@ -49,7 +49,7 @@ public class XmlToolsTest {
      * @verifies build document correctly
      */
     @Test
-    public void getDocumentFromString_shouldBuildDocumentCorrectly() throws Exception {
+    void getDocumentFromString_shouldBuildDocumentCorrectly() throws Exception {
         String xml = "<root><child>child1</child><child>child2</child></root>";
         Document doc = XmlTools.getDocumentFromString(xml, null);
         Assertions.assertNotNull(doc);
@@ -64,7 +64,7 @@ public class XmlToolsTest {
      * @verifies return XML string correctly for documents
      */
     @Test
-    public void getStringFromElement_shouldReturnXMLStringCorrectlyForDocuments() throws Exception {
+    void getStringFromElement_shouldReturnXMLStringCorrectlyForDocuments() throws Exception {
         Document doc = new Document();
         doc.setRootElement(new Element("root"));
         String xml = XmlTools.getStringFromElement(doc, null);
@@ -77,7 +77,7 @@ public class XmlToolsTest {
      * @verifies return XML string correctly for elements
      */
     @Test
-    public void getStringFromElement_shouldReturnXMLStringCorrectlyForElements() throws Exception {
+    void getStringFromElement_shouldReturnXMLStringCorrectlyForElements() throws Exception {
         String xml = XmlTools.getStringFromElement(new Element("root"), null);
         Assertions.assertNotNull(xml);
         Assertions.assertTrue(xml.contains("<root></root>"));
@@ -87,7 +87,7 @@ public class XmlToolsTest {
      * @see XmlTools#writeXmlFile(Document,String)
      * @verifies write file correctly
      */
-    public void writeXmlFile_shouldWriteFileCorrectly() throws Exception {
+    void writeXmlFile_shouldWriteFileCorrectly() throws Exception {
         String filePath = tempDir + "/test.xml";
         Document doc = new Document();
         doc.setRootElement(new Element("root"));
@@ -100,7 +100,7 @@ public class XmlToolsTest {
      * @verifies throw FileSystemException if file is directory
      */
     @Test
-    public void writeXmlFile_shouldThrowFileSystemExceptionIfFileIsDirectory() throws Exception {
+    void writeXmlFile_shouldThrowFileSystemExceptionIfFileIsDirectory() throws Exception {
         Document doc = new Document();
         doc.setRootElement(new Element("root"));
         Assertions.assertThrows(FileSystemException.class, () -> XmlTools.writeXmlFile(doc, "target"));
@@ -113,7 +113,7 @@ public class XmlToolsTest {
      * @verifies build document from path correctly
      */
     @Test
-    public void readXmlFile_shouldBuildDocumentFromPathCorrectly() throws Exception {
+    void readXmlFile_shouldBuildDocumentFromPathCorrectly() throws Exception {
         Document doc = XmlTools.readXmlFile(Paths.get("src/test/resources/config_viewer.test.xml"));
         Assertions.assertNotNull(doc);
         Assertions.assertNotNull(doc.getRootElement());
@@ -124,7 +124,7 @@ public class XmlToolsTest {
      * @verifies build document from string correctly
      */
     @Test
-    public void readXmlFile_shouldBuildDocumentFromStringCorrectly() throws Exception {
+    void readXmlFile_shouldBuildDocumentFromStringCorrectly() throws Exception {
         Document doc = XmlTools.readXmlFile("src/test/resources/config_viewer.test.xml");
         Assertions.assertNotNull(doc);
         Assertions.assertNotNull(doc.getRootElement());
@@ -135,7 +135,7 @@ public class XmlToolsTest {
      * @verifies build document from url correctly
      */
     @Test
-    public void readXmlFile_shouldBuildDocumentFromUrlCorrectly() throws Exception {
+    void readXmlFile_shouldBuildDocumentFromUrlCorrectly() throws Exception {
         Document doc = XmlTools.readXmlFile(Paths.get("src/test/resources/config_viewer.test.xml").toUri().toURL());
         Assertions.assertNotNull(doc);
         Assertions.assertNotNull(doc.getRootElement());
@@ -146,7 +146,7 @@ public class XmlToolsTest {
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
-    public void readXmlFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
+    void readXmlFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         Assertions.assertThrows(FileNotFoundException.class, () -> XmlTools.readXmlFile("notfound.xml"));
     }
 

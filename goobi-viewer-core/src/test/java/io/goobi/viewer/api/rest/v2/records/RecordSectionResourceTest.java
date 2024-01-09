@@ -68,7 +68,7 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetRange() throws JsonMappingException, JsonProcessingException {
+    void testGetRange() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).params(PI, DIVID).build();
         try(Response response = target(url)
                 .request()

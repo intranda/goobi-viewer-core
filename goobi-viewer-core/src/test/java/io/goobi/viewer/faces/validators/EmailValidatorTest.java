@@ -33,7 +33,7 @@ public class EmailValidatorTest {
      * @verifies match correct email addresses
      */
     @Test
-    public void validateEmailAddress_shouldMatchCorrectEmailAddresses() throws Exception {
+    void validateEmailAddress_shouldMatchCorrectEmailAddresses() throws Exception {
         Assertions.assertTrue(EmailValidator.validateEmailAddress("a@b.com"));
         Assertions.assertTrue(EmailValidator.validateEmailAddress("A@B.COM"));
         Assertions.assertTrue(EmailValidator.validateEmailAddress("lord.elsington.hallstingdingdingworth@royal.chamber.of.carpetbaggery.co.uk"));
@@ -44,7 +44,7 @@ public class EmailValidatorTest {
      * @verifies match entire email address only
      */
     @Test
-    public void validateEmailAddress_shouldMatchEntireEmailAddressOnly() throws Exception {
+    void validateEmailAddress_shouldMatchEntireEmailAddressOnly() throws Exception {
         Assertions.assertFalse(EmailValidator.validateEmailAddress("a@b.com###"));
     }
 
@@ -53,7 +53,7 @@ public class EmailValidatorTest {
      * @verifies not match invalid addresses
      */
     @Test
-    public void validateEmailAddress_shouldNotMatchInvalidAddresses() throws Exception {
+    void validateEmailAddress_shouldNotMatchInvalidAddresses() throws Exception {
         Assertions.assertFalse(EmailValidator.validateEmailAddress("blup"));
     }
 }

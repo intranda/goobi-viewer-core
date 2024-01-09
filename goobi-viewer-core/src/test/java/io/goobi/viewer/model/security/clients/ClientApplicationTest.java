@@ -37,13 +37,13 @@ public class ClientApplicationTest extends AbstractDatabaseEnabledTest {
     IDAO dao;
     
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
     }
     
     @Test
-    public void testSave() throws DAOException {
+    void testSave() throws DAOException {
         ClientApplication client = new ClientApplication();
         client.setClientIdentifier("abcd");
         dao.saveClientApplication(client);

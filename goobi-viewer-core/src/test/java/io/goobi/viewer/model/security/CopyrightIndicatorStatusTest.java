@@ -33,7 +33,7 @@ public class CopyrightIndicatorStatusTest {
      * @verifies return correct value
      */
     @Test
-    public void getByName_shouldReturnCorrectValue() throws Exception {
+    void getByName_shouldReturnCorrectValue() throws Exception {
         Assertions.assertEquals(Status.OPEN, Status.getByName("OPEN"));
         Assertions.assertEquals(Status.PARTIAL, Status.getByName("PARTIAL"));
         Assertions.assertEquals(Status.LOCKED, Status.getByName("LOCKED"));

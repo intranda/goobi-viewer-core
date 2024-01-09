@@ -38,7 +38,7 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies compare correctly
      */
     @Test
-    public void compare_shouldCompareCorrectly() throws Exception {
+    void compare_shouldCompareCorrectly() throws Exception {
         BrowseTermComparator comparator = new BrowseTermComparator(null);
         Assertions.assertEquals(1, comparator.compare(new BrowseTerm("foo", null, null), new BrowseTerm("bar", null, null)));
         Assertions.assertEquals(-1, comparator.compare(new BrowseTerm("A", null, null), new BrowseTerm("Á", null, null)));
@@ -53,7 +53,7 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies use sort term if provided
      */
     @Test
-    public void compare_shouldUseSortTermIfProvided() throws Exception {
+    void compare_shouldUseSortTermIfProvided() throws Exception {
         Assertions.assertEquals(-1, new BrowseTermComparator(null).compare(new BrowseTerm("foo", "1", null), new BrowseTerm("bar", "2", null)));
     }
 
@@ -62,7 +62,7 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies use translated term if provided
      */
     @Test
-    public void compare_shouldUseTranslatedTermIfProvided() throws Exception {
+    void compare_shouldUseTranslatedTermIfProvided() throws Exception {
         Map<String, String> translations1 = new HashMap<>();
         translations1.put("de", "Deutsch");
         translations1.put("en", "German");
@@ -85,7 +85,7 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies sort accented vowels after plain vowels
      */
     @Test
-    public void compare_shouldSortAccentedVowelsAfterPlainVowels() throws Exception {
+    void compare_shouldSortAccentedVowelsAfterPlainVowels() throws Exception {
 //        Assertions.assertEquals(1, new BrowseTermComparator(null).compare(new BrowseTerm("Ávila", null, null), new BrowseTerm("Azcárate", null, null)));
         Assertions.assertEquals(-1, new BrowseTermComparator(null).compare(new BrowseTerm("arm", null, null), new BrowseTerm("árm", null, null)));
     }
@@ -95,7 +95,7 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies use ignoreChars if provided
      */
     @Test
-    public void normalizeString_shouldUseIgnoreCharsIfProvided() throws Exception {
+    void normalizeString_shouldUseIgnoreCharsIfProvided() throws Exception {
         Assertions.assertEquals("#.foo", BrowseTermComparator.normalizeString("[.]#.foo", ".[]"));
     }
 
@@ -104,7 +104,7 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies remove first char if non alphanum if ignoreChars not provided
      */
     @Test
-    public void normalizeString_shouldRemoveFirstCharIfNonAlphanumIfIgnoreCharsNotProvided() throws Exception {
+    void normalizeString_shouldRemoveFirstCharIfNonAlphanumIfIgnoreCharsNotProvided() throws Exception {
         Assertions.assertEquals(".]#.foo", BrowseTermComparator.normalizeString("[.]#.foo", null));
     }
 }

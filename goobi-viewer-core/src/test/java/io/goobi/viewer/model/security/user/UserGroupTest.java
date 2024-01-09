@@ -36,7 +36,7 @@ public class UserGroupTest extends AbstractDatabaseEnabledTest {
      * @verifies count correctly
      */
     @Test
-    public void getMemberCount_shouldCountCorrectly() throws Exception {
+    void getMemberCount_shouldCountCorrectly() throws Exception {
         {   //owner + user
             UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
             Assertions.assertNotNull(ug);
@@ -59,7 +59,7 @@ public class UserGroupTest extends AbstractDatabaseEnabledTest {
      * @verifies return all members
      */
     @Test
-    public void getMembers_shouldReturnAllMembers() throws Exception {
+    void getMembers_shouldReturnAllMembers() throws Exception {
         UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
         Assertions.assertNotNull(ug);
         Set<User> members = ug.getMembers();
@@ -72,7 +72,7 @@ public class UserGroupTest extends AbstractDatabaseEnabledTest {
      * @verifies return all members and owner
      */
     @Test
-    public void getMembersAndOwner_shouldReturnAllMembersAndOwner() throws Exception {
+    void getMembersAndOwner_shouldReturnAllMembersAndOwner() throws Exception {
         {
         UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
         Assertions.assertNotNull(ug);

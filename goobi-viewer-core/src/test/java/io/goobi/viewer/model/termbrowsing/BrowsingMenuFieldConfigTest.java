@@ -35,7 +35,7 @@ public class BrowsingMenuFieldConfigTest {
      * @verifies create filter query correctly
      */
     @Test
-    public void setDocstructFilterString_shouldCreateFilterQueryCorrectly() throws Exception {
+    void setDocstructFilterString_shouldCreateFilterQueryCorrectly() throws Exception {
         BrowsingMenuFieldConfig bmfc =
                 new BrowsingMenuFieldConfig("MD_TITLE", "SORT_TITLE", "+(DOCSTRCT:monograph DOCSTRCT:manuscript)", false, false, false);
         Assertions.assertEquals(2, bmfc.getFilterQueries().size());
@@ -47,7 +47,7 @@ public class BrowsingMenuFieldConfigTest {
      * @verifies create filter query correctly
      */
     @Test
-    public void setRecordsAndAnchorsOnly_shouldCreateFilterQueryCorrectly() throws Exception {
+    void setRecordsAndAnchorsOnly_shouldCreateFilterQueryCorrectly() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_TITLE", "SORT_TITLE", null, false, true, false);
         Assertions.assertEquals(2, bmfc.getFilterQueries().size());
         Assertions.assertEquals(SearchHelper.ALL_RECORDS_QUERY, bmfc.getFilterQueries().get(0));
@@ -58,7 +58,7 @@ public class BrowsingMenuFieldConfigTest {
      * @verifies add doctype filter if field MD or MD2
      */
     @Test
-    public void addDoctypeFilterQuery_shouldAddDoctypeFilterIfFieldMDOrMD2() throws Exception {
+    void addDoctypeFilterQuery_shouldAddDoctypeFilterIfFieldMDOrMD2() throws Exception {
         {
             BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_FOO", null, null, false, false, false);
             Assertions.assertEquals(1, bmfc.getFilterQueries().size());
@@ -76,7 +76,7 @@ public class BrowsingMenuFieldConfigTest {
      * @verifies add doctype filter if field DC
      */
     @Test
-    public void addDoctypeFilterQuery_shouldAddDoctypeFilterIfFieldDC() throws Exception {
+    void addDoctypeFilterQuery_shouldAddDoctypeFilterIfFieldDC() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig(SolrConstants.DC, null, null, false, false, false);
         Assertions.assertEquals(1, bmfc.getFilterQueries().size());
         Assertions.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
@@ -87,7 +87,7 @@ public class BrowsingMenuFieldConfigTest {
      * @verifies add doctype filter if field DOCSTRCT
      */
     @Test
-    public void addDoctypeFilterQuery_shouldAddDoctypeFilterIfFieldDOCSTRCT() throws Exception {
+    void addDoctypeFilterQuery_shouldAddDoctypeFilterIfFieldDOCSTRCT() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig(SolrConstants.DOCSTRCT, null, null, false, false, false);
         Assertions.assertEquals(1, bmfc.getFilterQueries().size());
         Assertions.assertEquals("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name(), bmfc.getFilterQueries().get(0));
@@ -98,7 +98,7 @@ public class BrowsingMenuFieldConfigTest {
      * @verifies not add doctype filter if field NE
      */
     @Test
-    public void addDoctypeFilterQuery_shouldNotAddDoctypeFilterIfFieldNE() throws Exception {
+    void addDoctypeFilterQuery_shouldNotAddDoctypeFilterIfFieldNE() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("NE_FOO", null, null, false, false, false);
         Assertions.assertEquals(0, bmfc.getFilterQueries().size());
     }

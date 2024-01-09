@@ -47,7 +47,7 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add all metadata
      */
     @Test
-    public void getRecordJsonObject_shouldAddAllMetadata() throws Exception {
+    void getRecordJsonObject_shouldAddAllMetadata() throws Exception {
         String rootUrl = "http://localhost:8080/viewer";
         QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + PI, 0, 1, null, null, null);
         Assertions.assertFalse(response.getResults().isEmpty(), "Required Solr document not found in index: " + PI);
@@ -78,7 +78,7 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies format string correctly
      */
     @Test
-    public void formatVersionString_shouldFormatStringCorrectly() throws Exception {
+    void formatVersionString_shouldFormatStringCorrectly() throws Exception {
         Assertions.assertEquals("goobi-viewer-core 1337 2020-06-30 abcdefg",
                 JsonTools.formatVersionString(
                         "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
@@ -89,7 +89,7 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return notAvailableKey if json invalid
      */
     @Test
-    public void formatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() throws Exception {
+    void formatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() throws Exception {
         Assertions.assertEquals("admin__dashboard_versions_not_available", JsonTools.formatVersionString("not json"));
     }
 
@@ -98,7 +98,7 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies format string correctly
      */
     @Test
-    public void shortFormatVersionString_shouldFormatStringCorrectly() throws Exception {
+    void shortFormatVersionString_shouldFormatStringCorrectly() throws Exception {
         Assertions.assertEquals("1337 (abcdefg)",
                 JsonTools.shortFormatVersionString(
                         "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
@@ -109,7 +109,7 @@ public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return notAvailableKey if json invalid
      */
     @Test
-    public void shortFormatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() throws Exception {
+    void shortFormatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() throws Exception {
         Assertions.assertEquals("admin__dashboard_versions_not_available", JsonTools.shortFormatVersionString("not json"));
     }
 }

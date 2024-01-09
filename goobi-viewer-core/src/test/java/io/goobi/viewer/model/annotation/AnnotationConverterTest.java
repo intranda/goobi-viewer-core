@@ -86,7 +86,7 @@ public class AnnotationConverterTest {
     }
 
     @Test
-    public void testConvertAnnotation() throws JsonMappingException, JsonProcessingException {
+    void testConvertAnnotation() throws JsonMappingException, JsonProcessingException {
         WebAnnotation webAnno = mapper.readValue(campaignAnnotation, WebAnnotation.class);
         assertEquals("https://viewer.goobi.io/api/v1/annotations/annotation_2/", webAnno.getId().toString());
     }

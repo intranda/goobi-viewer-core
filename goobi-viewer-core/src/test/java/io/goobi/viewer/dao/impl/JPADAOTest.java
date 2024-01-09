@@ -2273,8 +2273,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(page).stream().findFirst();
             if (page.getId().equals(1l)) {
                 Assertions.assertTrue(staticPage.isPresent());
-                Assertions.assertTrue(staticPage.get().getPageName().equals("index"));
-                Assertions.assertTrue(staticPage.get().getCmsPage().equals(page));
+                Assertions.assertEquals("index", staticPage.get().getPageName());
+                Assertions.assertEquals(page, staticPage.get().getCmsPage());
             } else {
                 Assertions.assertFalse(staticPage.isPresent());
             }

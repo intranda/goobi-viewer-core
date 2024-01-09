@@ -43,7 +43,7 @@ public class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies produce feed correctly
      */
     @Test
-    public void createRss_shouldProduceFeedCorrectly() throws Exception {
+    void createRss_shouldProduceFeedCorrectly() throws Exception {
         SyndFeed feed = RSSFeed.createRss("https://example.com", "PI:*", null, "en", 10, null, true);
         Assertions.assertNotNull(feed);
         Assertions.assertEquals(10, feed.getEntries().size());
@@ -55,7 +55,7 @@ public class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies produce feed correctly
      */
     @Test
-    public void createRssFeed_shouldProduceFeedCorrectly() throws Exception {
+    void createRssFeed_shouldProduceFeedCorrectly() throws Exception {
         Channel channel = RSSFeed.createRssFeed("https://example.com", "PI:*", null, 10, "en", null, true);
         Assertions.assertNotNull(channel);
         Assertions.assertEquals(10, channel.getItems().size());

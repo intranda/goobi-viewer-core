@@ -40,7 +40,7 @@ public class MessageEntryTest extends AbstractTest {
      * @verifies create MessageEntry correctly
      */
     @Test
-    public void create_shouldCreateMessageEntryCorrectly() throws Exception {
+    void create_shouldCreateMessageEntryCorrectly() throws Exception {
         MessageEntry entry = MessageEntry.create(null, "foo", Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN }));
         Assertions.assertNotNull(entry);
         Assertions.assertEquals("foo", entry.getKey());
@@ -54,7 +54,7 @@ public class MessageEntryTest extends AbstractTest {
      * @verifies compare correctly
      */
     @Test
-    public void compareTo_shouldCompareCorrectly() throws Exception {
+    void compareTo_shouldCompareCorrectly() throws Exception {
         MessageEntry entry1 = new MessageEntry("one", Collections.emptyList());
         MessageEntry entry2 = new MessageEntry("two", Collections.emptyList());
         Assertions.assertTrue(entry1.compareTo(entry2) < 0);
@@ -67,7 +67,7 @@ public class MessageEntryTest extends AbstractTest {
      * @verifies return none status correctly
      */
     @Test
-    public void getTranslationStatus_shouldReturnNoneStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnNoneStatusCorrectly() throws Exception {
         List<MessageValue> values = new ArrayList<>(2);
         values.add(new MessageValue("en", null, "value"));
         values.add(new MessageValue("de", null, "value"));
@@ -81,7 +81,7 @@ public class MessageEntryTest extends AbstractTest {
      * @verifies return partial status correctly
      */
     @Test
-    public void getTranslationStatus_shouldReturnPartialStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnPartialStatusCorrectly() throws Exception {
         {
             List<MessageValue> values = new ArrayList<>(2);
             values.add(new MessageValue("en", "value", "value"));
@@ -105,7 +105,7 @@ public class MessageEntryTest extends AbstractTest {
      * @verifies return full status correctly
      */
     @Test
-    public void getTranslationStatus_shouldReturnFullStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnFullStatusCorrectly() throws Exception {
         List<MessageValue> values = new ArrayList<>(2);
         values.add(new MessageValue("en", "value", "value"));
         values.add(new MessageValue("de", "wert", "wert"));
@@ -119,7 +119,7 @@ public class MessageEntryTest extends AbstractTest {
      * @verifies return correct status for language
      */
     @Test
-    public void getTranslationStatusForLanguage_shouldRetutrnCorrectStatusForLanguage() throws Exception {
+    void getTranslationStatusForLanguage_shouldRetutrnCorrectStatusForLanguage() throws Exception {
         List<MessageValue> values = new ArrayList<>(2);
         values.add(new MessageValue("en", "value", "value"));
         values.add(new MessageValue("de", "wert zzz", "wert"));
@@ -136,7 +136,7 @@ public class MessageEntryTest extends AbstractTest {
      * @verifies trim suffix
      */
     @Test
-    public void getKey_shouldTrimSuffix() throws Exception {
+    void getKey_shouldTrimSuffix() throws Exception {
         MessageEntry entry = new MessageEntry("foo", "bar   ", Collections.emptyList());
         Assertions.assertEquals("foo", entry.getKeyPrefix());
         Assertions.assertEquals("bar   ", entry.getKeySuffix());

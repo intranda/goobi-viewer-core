@@ -61,7 +61,7 @@ public class CmsPageEditBeanTest {
     CmsPageEditBean bean;
 
     @BeforeEach
-    public void setup() throws DAOException {
+    public void setUp() throws DAOException {
 
         CMSSidebarWidgetsBean widgetsBean = Mockito.mock(CMSSidebarWidgetsBean.class);
         Mockito.when(widgetsBean.getAllWidgets()).thenReturn(Collections.emptyList());
@@ -116,7 +116,7 @@ public class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    public void testNewPage() throws DAOException {
+    void testNewPage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of());
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -132,7 +132,7 @@ public class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    public void testNewPageFromTemplate() throws DAOException {
+    void testNewPageFromTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -148,7 +148,7 @@ public class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    public void testNewPageFromTemplateWithTitleAndPi() throws DAOException {
+    void testNewPageFromTemplateWithTitleAndPi() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString(), "title", PAGE_NAME, "relatedPi", RELATED_PI));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -166,7 +166,7 @@ public class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    public void testEditPage() throws DAOException {
+    void testEditPage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -182,7 +182,7 @@ public class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    public void testSavePage() throws DAOException {
+    void testSavePage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -197,7 +197,7 @@ public class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    public void testSaveAsTemplate() throws DAOException {
+    void testSaveAsTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -216,7 +216,7 @@ public class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    public void testSavePageNoAdmin() throws DAOException {
+    void testSavePageNoAdmin() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setUserBean(mockUserBean(false));
         bean.setFacesContext(facesContext);
@@ -231,7 +231,7 @@ public class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    public void testDeletePage() throws DAOException {
+    void testDeletePage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -242,7 +242,7 @@ public class CmsPageEditBeanTest {
     }
 
     @Test
-    public void testAddComponent() {
+    void testAddComponent() {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setTemplateManager(createTemplateManager());
@@ -255,7 +255,7 @@ public class CmsPageEditBeanTest {
     }
 
     @Test
-    public void testDeleteComponent() {
+    void testDeleteComponent() {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setTemplateManager(createTemplateManager());

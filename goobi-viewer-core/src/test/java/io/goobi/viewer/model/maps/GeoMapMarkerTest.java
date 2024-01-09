@@ -54,13 +54,13 @@ public class GeoMapMarkerTest {
     }
 
     @Test
-    public void testToJSONString() throws JsonProcessingException {
+    void testToJSONString() throws JsonProcessingException {
         String s = testObject.toJSONString();
         Assertions.assertEquals(testString, s);
     }
 
     @Test
-    public void testDeserialize() throws JsonMappingException, JsonProcessingException {
+    void testDeserialize() throws JsonMappingException, JsonProcessingException {
         GeoMapMarker m = GeoMapMarker.fromJSONString(testString);
         Assertions.assertEquals(testObject.getName(), m.getName());
         Assertions.assertEquals(testObject.getIconRotate(), m.getIconRotate());

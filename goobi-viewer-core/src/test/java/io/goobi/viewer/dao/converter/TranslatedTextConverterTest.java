@@ -61,7 +61,7 @@ public class TranslatedTextConverterTest {
     }
 
     @Test
-    public void testCorrectlyConvertToString() {
+    void testCorrectlyConvertToString() {
         TranslatedText value = new TranslatedText(locales, Locale.GERMAN);
         value.setText(GERMANVALUE, Locale.GERMAN);
         value.setText(ENGLISHVALUE, Locale.ENGLISH);
@@ -72,7 +72,7 @@ public class TranslatedTextConverterTest {
     }
 
     @Test
-    public void testCorrectlConvertFromString() {
+    void testCorrectlConvertFromString() {
 
         TranslatedText value = converter.convertToEntityAttribute(JSON);
 
@@ -85,7 +85,7 @@ public class TranslatedTextConverterTest {
     }
 
     @Test
-    public void testConvertSingleValueCurrectly() {
+    void testConvertSingleValueCurrectly() {
         TranslatedText value = new TranslatedText(locales, Locale.GERMAN);
         value.setText(GERMANVALUE, Locale.GERMAN);
 

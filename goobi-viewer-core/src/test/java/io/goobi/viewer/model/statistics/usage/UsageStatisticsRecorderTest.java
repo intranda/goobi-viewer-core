@@ -44,14 +44,14 @@ public class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
     volatile IDAO dao;
     
     @BeforeEach
-    public void before() throws Exception  {
+    void before() throws Exception  {
         super.setUp();
         dao = DataManager.getInstance().getDao();
     }
 
 
     @Test
-    public void test_recordRequests() throws DAOException, InterruptedException {
+    void test_recordRequests() throws DAOException, InterruptedException {
 
 
         String pi1 = "PI_1";

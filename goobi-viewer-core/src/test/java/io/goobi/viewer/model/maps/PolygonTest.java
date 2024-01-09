@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 public class PolygonTest {
 
     @Test
-    public void test() {
+    void test() {
         Polygon p1 = new Polygon(Arrays.asList(new Point(Double.parseDouble("1"), 2)));
         Polygon p2 = new Polygon(Arrays.asList(new Point(Double.parseDouble("1"), 2)));
         Polygon p3 = new Polygon(Arrays.asList(new Point(2, 2)));

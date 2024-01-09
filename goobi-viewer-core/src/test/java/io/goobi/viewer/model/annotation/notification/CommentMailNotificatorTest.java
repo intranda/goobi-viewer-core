@@ -35,7 +35,7 @@ public class CommentMailNotificatorTest extends AbstractTest {
      * @verifies build element correctly
      */
     @Test
-    public void buildRecordUrlElement_shouldBuildElementCorrectly() throws Exception {
+    void buildRecordUrlElement_shouldBuildElementCorrectly() throws Exception {
         Comment comment = new Comment();
         comment.setTargetPI("PPN123");
         comment.setTargetPageOrder(3);

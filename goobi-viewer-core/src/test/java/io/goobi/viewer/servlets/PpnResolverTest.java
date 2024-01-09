@@ -92,7 +92,7 @@ class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     //     * @verifies forward to relative url
     //     */
     //    @Test
-    //    public void doGet_shouldForwardToRelativeUrl() throws Exception {
+    //    void doGet_shouldForwardToRelativeUrl() throws Exception {
     //        PpnResolver resolver = new PpnResolver();
     //        String page = "/object/PPN517154005/1/LOG_0000/";
     //        HttpServletRequest request = TestUtils.mockHttpRequest(page);
@@ -109,7 +109,7 @@ class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     //     * @verifies redirect to full url
     //     */
     //    @Test
-    //    public void doGet_shouldRedirectToFullUrl() throws Exception {
+    //    void doGet_shouldRedirectToFullUrl() throws Exception {
     //        DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
     //        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
     //

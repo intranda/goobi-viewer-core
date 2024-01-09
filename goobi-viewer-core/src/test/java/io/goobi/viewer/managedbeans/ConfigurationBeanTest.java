@@ -47,12 +47,12 @@ public class ConfigurationBeanTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySearchRssLinks_shouldReturnCorrectValue() throws Exception {
+    void isDisplaySearchRssLinks_shouldReturnCorrectValue() throws Exception {
         Assertions.assertFalse(bean.isDisplaySearchRssLinks());
     }
 
     @Test
-    public void testPageBrowseConfiguration() throws Exception {
+    void testPageBrowseConfiguration() throws Exception {
         Assertions.assertTrue(bean.isPagePdfEnabled());
         Assertions.assertFalse(bean.isPageBrowseStep1Visible());
         Assertions.assertTrue(bean.isPageBrowseStep2Visible());
@@ -67,7 +67,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void isSidebarPageLinkVisible_shouldReturnCorrectValue() throws Exception {
+    void isSidebarPageLinkVisible_shouldReturnCorrectValue() throws Exception {
         Assertions.assertEquals(false, bean.isSidebarPageLinkVisible());
     }
 
@@ -76,7 +76,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() throws Exception {
+    void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() throws Exception {
         Assertions.assertEquals(false, bean.isSidebarCalendarLinkVisible());
     }
 
@@ -85,7 +85,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void isSidebarThumbsLinkVisible_shouldReturnCorrectValue() throws Exception {
+    void isSidebarThumbsLinkVisible_shouldReturnCorrectValue() throws Exception {
         Assertions.assertEquals(false, bean.isSidebarThumbsLinkVisible());
     }
 
@@ -94,7 +94,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() throws Exception {
+    void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() throws Exception {
         Assertions.assertEquals(false, bean.isSidebarMetadataLinkVisible());
     }
 
@@ -103,7 +103,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void isSidebarFulltextLinkVisible_shouldReturnCorrectValue() throws Exception {
+    void isSidebarFulltextLinkVisible_shouldReturnCorrectValue() throws Exception {
         Assertions.assertEquals(false, bean.isSidebarFulltextLinkVisible());
     }
 
@@ -112,7 +112,7 @@ public class ConfigurationBeanTest extends AbstractTest {
      * @verifies return all values
      */
     @Test
-    public void getSearchResultGroupNames_shouldReturnAllValues() throws Exception {
+    void getSearchResultGroupNames_shouldReturnAllValues() throws Exception {
         Assertions.assertEquals(3, bean.getSearchResultGroupNames().size());
     }
 }

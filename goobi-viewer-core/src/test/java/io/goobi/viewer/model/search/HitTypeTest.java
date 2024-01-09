@@ -31,7 +31,7 @@ public class HitTypeTest {
      * @verifies return all known types correctly
      */
     @Test
-    public void getByName_shouldReturnAllKnownTypesCorrectly() {
+    void getByName_shouldReturnAllKnownTypesCorrectly() {
         Assertions.assertEquals(HitType.CMS, HitType.getByName("OVERVIEWPAGE"));
         Assertions.assertEquals(HitType.CMS, HitType.getByName("CMS"));
         Assertions.assertEquals(HitType.PAGE, HitType.getByName("PAGE"));

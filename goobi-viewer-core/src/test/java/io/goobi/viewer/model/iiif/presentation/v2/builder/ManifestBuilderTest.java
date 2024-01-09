@@ -68,7 +68,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     public static final String PI = "74241";
 
     @Test
-    public void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException,
+    void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException,
             ContentNotFoundException, IOException {
 
         ManifestBuilder builder = new ManifestBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
@@ -109,7 +109,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testDeserializeCanvas() throws URISyntaxException, JsonProcessingException {
+    void testDeserializeCanvas() throws URISyntaxException, JsonProcessingException {
         Range2 range = new Range2("http://viewer/manifest/1/ranges/1");
         Canvas2 canvas = new Canvas2("http://viewer/manifest/1/canvas/1");
         range.addCanvas(canvas);
@@ -122,7 +122,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void getValidViewerRenderingUrl() {
+    void getValidViewerRenderingUrl() {
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
         Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
 

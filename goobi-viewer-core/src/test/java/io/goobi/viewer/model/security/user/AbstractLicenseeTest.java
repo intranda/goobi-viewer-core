@@ -35,7 +35,7 @@ public class AbstractLicenseeTest {
      * @verifies return denied if permissionMap empty
      */
     @Test
-    public void getAccessPermissionFromMap_shouldReturnDeniedIfPermissionMapEmpty() throws Exception {
+    void getAccessPermissionFromMap_shouldReturnDeniedIfPermissionMapEmpty() throws Exception {
         Assertions.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.emptyMap()).isGranted());
     }
 
@@ -44,7 +44,7 @@ public class AbstractLicenseeTest {
      * @verifies return denied if all permissions in map denied
      */
     @Test
-    public void getAccessPermissionFromMap_shouldReturnDeniedIfAllPermissionsInMapDenied() throws Exception {
+    void getAccessPermissionFromMap_shouldReturnDeniedIfAllPermissionsInMapDenied() throws Exception {
         Assertions.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.denied())).isGranted());
     }
 
@@ -53,7 +53,7 @@ public class AbstractLicenseeTest {
      * @verifies preserve ticketRequired
      */
     @Test
-    public void getAccessPermissionFromMap_shouldPreserveTicketRequired() throws Exception {
+    void getAccessPermissionFromMap_shouldPreserveTicketRequired() throws Exception {
         Assertions.assertTrue(
                 AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.granted().setTicketRequired(true)))
                         .isTicketRequired());
@@ -64,7 +64,7 @@ public class AbstractLicenseeTest {
      * @verifies preserve redirect metadata
      */
     @Test
-    public void getAccessPermissionFromMap_shouldPreserveRedirectMetadata() throws Exception {
+    void getAccessPermissionFromMap_shouldPreserveRedirectMetadata() throws Exception {
         AccessPermission access =
                 AbstractLicensee
                         .getAccessPermissionFromMap(Collections.singletonMap("",

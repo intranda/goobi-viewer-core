@@ -78,7 +78,6 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
 
     @AfterAll
     public static void tearDownClass() throws Exception {
-        AbstractSolrEnabledTest.tearDownClass();
         if (DataManager.getInstance().getDao() != null) {
             DataManager.getInstance().getDao().shutdown();
         }

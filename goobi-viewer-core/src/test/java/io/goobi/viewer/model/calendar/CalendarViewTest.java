@@ -35,7 +35,7 @@ public class CalendarViewTest extends AbstractSolrEnabledTest {
      * @verifies only return volume years that have YEARMONTHDAY field
      */
     @Test
-    public void getVolumeYears_shouldOnlyReturnVolumeYearsThatHaveYEARMONTHDAYField() throws Exception {
+    void getVolumeYears_shouldOnlyReturnVolumeYearsThatHaveYEARMONTHDAYField() throws Exception {
         CalendarView cv = new CalendarView("168714434_1805", "168714434", null);
         List<String> years = cv.getVolumeYears();
         Assertions.assertEquals(9, years.size());

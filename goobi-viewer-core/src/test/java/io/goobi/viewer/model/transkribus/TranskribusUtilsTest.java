@@ -29,7 +29,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
 
     @Test
-    public void dummy() throws Exception {
+    void dummy() throws Exception {
         Assertions.assertTrue(true);
     }
 
@@ -40,7 +40,7 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies auth correctly
     //     */
     //    @Test
-    //    public void auth_shouldAuthCorrectly() throws Exception {
+    //    void auth_shouldAuthCorrectly() throws Exception {
     //        Document doc = TranskribusUtils.auth(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance().getTranskribusUserName(),
     //                ConfigurationHelper.getInstance().getTranskribusPassword());
     //        Assertions.assertNotNull(doc);
@@ -54,7 +54,7 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies retrieve correct id
     //     */
     //    @Test
-    //    public void getCollectionId_shouldRetrieveCorrectId() throws Exception {
+    //    void getCollectionId_shouldRetrieveCorrectId() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        Assertions.assertNotNull(session);
@@ -66,7 +66,7 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies create collection and return numeric id
     //     */
     //    @Test
-    //    public void createCollection_shouldCreateCollectionAndReturnNumericId() throws Exception {
+    //    void createCollection_shouldCreateCollectionAndReturnNumericId() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        try {
@@ -82,7 +82,7 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies grant privs correctly
     //     */
     //    @Test
-    //    public void grantCollectionPrivsToViewer_shouldGrantPrivsCorrectly() throws Exception {
+    //    void grantCollectionPrivsToViewer_shouldGrantPrivsCorrectly() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        try {
@@ -98,7 +98,7 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies ingest record correctly
     //     */
     //    @Test
-    //    public void ingestRecordToCollections_shouldIngestRecordCorrectly() throws Exception {
+    //    void ingestRecordToCollections_shouldIngestRecordCorrectly() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        try {
@@ -120,7 +120,7 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies return correct status
     //     */
     //    @Test
-    //    public void checkJobStatus_shouldReturnCorrectStatus() throws Exception {
+    //    void checkJobStatus_shouldReturnCorrectStatus() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        try {

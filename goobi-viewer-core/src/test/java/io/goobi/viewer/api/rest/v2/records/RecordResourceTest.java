@@ -74,7 +74,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
 
 
     @Test
-    public void testGetManifest() throws JsonMappingException, JsonProcessingException {
+    void testGetManifest() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(PI).build();
         try(Response response = target(url)
                 .request()

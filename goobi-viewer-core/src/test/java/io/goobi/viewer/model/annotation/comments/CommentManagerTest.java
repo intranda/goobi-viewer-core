@@ -70,7 +70,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     private ChangeNotificator notificator;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
         AnnotationSaver saver = new SqlAnnotationSaver(dao);
@@ -82,7 +82,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testCreate() throws DAOException {
+    void testCreate() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -100,7 +100,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testModify() throws DAOException {
+    void testModify() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -128,7 +128,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testDelete() throws DAOException {
+    void testDelete() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -149,7 +149,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return user groups for matching comment views
      */
     @Test
-    public void getNotificationUserGroupsForRecord_shouldReturnUserGroupsForMatchingCommentViews() throws Exception {
+    void getNotificationUserGroupsForRecord_shouldReturnUserGroupsForMatchingCommentViews() throws Exception {
         Set<UserGroup> result = CommentManager.getNotificationUserGroupsForRecord("02008011811811");
         Assertions.assertNotNull(result);
         Assertions.assertEquals(2, result.size());
@@ -160,7 +160,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return false if user null
      */
     @Test
-    public void isUserHasAccessToCommentGroups_shouldReturnFalseIfUserNull() throws Exception {
+    void isUserHasAccessToCommentGroups_shouldReturnFalseIfUserNull() throws Exception {
         Assertions.assertFalse(CommentManager.isUserHasAccessToCommentGroups(null));
     }
 
@@ -169,7 +169,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return true if user admin
      */
     @Test
-    public void isUserHasAccessToCommentGroups_shouldReturnTrueIfUserAdmin() throws Exception {
+    void isUserHasAccessToCommentGroups_shouldReturnTrueIfUserAdmin() throws Exception {
         User admin = new User();
         admin.setSuperuser(true);
         Assertions.assertTrue(CommentManager.isUserHasAccessToCommentGroups(admin));
@@ -180,7 +180,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return true if user owner of user group linked to comment group
      */
     @Test
-    public void isUserHasAccessToCommentGroups_shouldReturnTrueIfUserOwnerOfUserGroupLinkedToCommentGroup() throws Exception {
+    void isUserHasAccessToCommentGroups_shouldReturnTrueIfUserOwnerOfUserGroupLinkedToCommentGroup() throws Exception {
         User owner = DataManager.getInstance().getDao().getUser(1);
         Assertions.assertNotNull(owner);
         Assertions.assertTrue(CommentManager.isUserHasAccessToCommentGroups(owner));
@@ -191,7 +191,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return true if user member of user group linked to comment group
      */
     @Test
-    public void isUserHasAccessToCommentGroups_shouldReturnTrueIfUserMemberOfUserGroupLinkedToCommentGroup() throws Exception {
+    void isUserHasAccessToCommentGroups_shouldReturnTrueIfUserMemberOfUserGroupLinkedToCommentGroup() throws Exception {
         User member = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(member);
         Assertions.assertTrue(CommentManager.isUserHasAccessToCommentGroups(member));

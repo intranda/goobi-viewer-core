@@ -35,7 +35,7 @@ import io.goobi.viewer.exceptions.DAOException;
 public class CookieBannerTest extends AbstractDatabaseEnabledTest {
 
     @Test
-    public void testPersistence() throws DAOException {
+    void testPersistence() throws DAOException {
         CookieBanner banner = new CookieBanner();
         banner.setActive(true);
         banner.setIgnoreList(Arrays.asList(1l,5l,10l));

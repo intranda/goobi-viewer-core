@@ -46,7 +46,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     Configuration config = DataManager.getInstance().getConfiguration();
 
     @Test
-    public void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
 
         Highlight object = new Highlight(new HighlightData(), thumbs, config);
@@ -62,7 +62,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_getCorrectImageURI_recordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void test_getCorrectImageURI_recordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
 
         Highlight object = new Highlight(new HighlightData(), thumbs, config);
@@ -75,7 +75,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_alwayActive() {
+    void test_alwayActive() {
         Highlight object = new Highlight(new HighlightData());
         object.getData().setDateStart(null);
         object.getData().setDateEnd(null);
@@ -85,7 +85,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_isPresent() {
+    void test_isPresent() {
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
         Highlight object = new Highlight(new HighlightData());
 
@@ -110,7 +110,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_isFuture() {
+    void test_isFuture() {
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         Highlight object = new Highlight(new HighlightData());
 
@@ -129,7 +129,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_isPast() {
+    void test_isPast() {
         LocalDateTime now = LocalDate.of(2023, 5, 15).atStartOfDay();
         Highlight object = new Highlight(new HighlightData());
 

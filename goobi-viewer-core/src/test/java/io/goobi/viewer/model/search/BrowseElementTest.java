@@ -49,7 +49,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add sort fields correctly
      */
     @Test
-    public void addSortFieldsToMetadata_shouldAddSortFieldsCorrectly() throws Exception {
+    void addSortFieldsToMetadata_shouldAddSortFieldsCorrectly() throws Exception {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
@@ -69,7 +69,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add fields on ignore list
      */
     @Test
-    public void addSortFieldsToMetadata_shouldNotAddFieldsOnIgnoreList() throws Exception {
+    void addSortFieldsToMetadata_shouldNotAddFieldsOnIgnoreList() throws Exception {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
@@ -84,7 +84,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add fields already in the list
      */
     @Test
-    public void addSortFieldsToMetadata_shouldNotAddFieldsAlreadyInTheList() throws Exception {
+    void addSortFieldsToMetadata_shouldNotAddFieldsAlreadyInTheList() throws Exception {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
@@ -107,7 +107,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies translate docstruct label
      */
     @Test
-    public void generateDefaultLabel_shouldTranslateDocstructLabel() throws Exception {
+    void generateDefaultLabel_shouldTranslateDocstructLabel() throws Exception {
         //        BrowseElement be = new BrowseElement("PPN123", 1, null, null, Locale.GERMAN, null, null);
         StructElement se = new StructElement();
         se.setDocStructType("Monograph");
@@ -120,7 +120,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove any line breaks
      */
     @Test
-    public void getFulltextForHtml_shouldRemoveAnyLineBreaks() throws Exception {
+    void getFulltextForHtml_shouldRemoveAnyLineBreaks() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", "foo\nbar", Locale.ENGLISH, null, null);
         Assertions.assertEquals("foo bar", be.getFulltextForHtml());
 
@@ -131,7 +131,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove any JS
      */
     @Test
-    public void getFulltextForHtml_shouldRemoveAnyJS() throws Exception {
+    void getFulltextForHtml_shouldRemoveAnyJS() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR",
                 "foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar", Locale.ENGLISH, null, null);
         Assertions.assertEquals("foo  bar", be.getFulltextForHtml());

@@ -49,7 +49,7 @@ public class AlphabetIteratorTest {
     }
 
     @Test
-    public void test() {
+    void test() {
         AlphabetIterator abc = new AlphabetIterator();
 
         String lastValue = "";

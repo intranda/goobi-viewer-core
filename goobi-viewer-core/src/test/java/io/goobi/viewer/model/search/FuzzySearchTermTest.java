@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class FuzzySearchTermTest {
 
     @Test
-    public void testSpecialCharacters() {
+    void testSpecialCharacters() {
         String search = "wissenschaftlichen";
         String text = "wisſenſchaftlichen";
         FuzzySearchTerm fuzzy = new FuzzySearchTerm(search);

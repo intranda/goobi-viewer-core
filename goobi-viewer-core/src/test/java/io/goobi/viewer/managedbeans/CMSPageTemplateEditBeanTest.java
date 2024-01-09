@@ -55,7 +55,7 @@ public class CMSPageTemplateEditBeanTest {
     CMSPageTemplateEditBean bean;
 
     @BeforeEach
-    public void setup() throws DAOException {
+    public void setUp() throws DAOException {
 
         CMSSidebarWidgetsBean widgetsBean = Mockito.mock(CMSSidebarWidgetsBean.class);
         Mockito.when(widgetsBean.getAllWidgets()).thenReturn(Collections.emptyList());
@@ -100,7 +100,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testEditTemplate() {
+    void testEditTemplate() {
         bean.setFacesContext(mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString())));
         bean.setTemplateManager(createTemplateManager());
 
@@ -110,7 +110,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testCreateTemplate() {
+    void testCreateTemplate() {
         bean.setFacesContext(mockFacesContext(Map.of()));
         bean.setTemplateManager(createTemplateManager());
 
@@ -120,7 +120,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testSaveTemplate() throws DAOException {
+    void testSaveTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -129,7 +129,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testDeleteTemplate() throws DAOException {
+    void testDeleteTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -140,7 +140,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testAddComponent() {
+    void testAddComponent() {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setTemplateManager(createTemplateManager());

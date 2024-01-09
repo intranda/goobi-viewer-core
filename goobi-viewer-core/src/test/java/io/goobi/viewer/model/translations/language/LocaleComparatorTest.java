@@ -54,7 +54,7 @@ public class LocaleComparatorTest {
     }
 
     @Test
-    public void test() {
+    void test() {
         List<Locale> locales = new ArrayList<>();
         locales.add(Locale.FRANCE);
         locales.add(Locale.ENGLISH);

@@ -58,52 +58,52 @@ public class IIIFPresentationAPIHandlerTest extends AbstractTest {
     }
 
     @Test
-    public void testGetManifestUrl() throws URISyntaxException {
+    void testGetManifestUrl() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/manifest/", handler.getManifestUrl("PI-SAMPLE"));
     }
 
     @Test
-    public void testGetCollectionUrl() throws URISyntaxException {
+    void testGetCollectionUrl() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/collections/DC/", handler.getCollectionUrl());
 
     }
 
     @Test
-    public void testGetCollectionUrlString() throws URISyntaxException {
+    void testGetCollectionUrlString() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/collections/DC/", handler.getCollectionUrl("DC"));
 
     }
 
     @Test
-    public void testGetCollectionUrlStringString() throws URISyntaxException {
+    void testGetCollectionUrlStringString() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/collections/DC/sonstige.ocr",
                 handler.getCollectionUrl("DC", "sonstige.ocr"));
 
     }
 
     @Test
-    public void testGetLayerUrl() throws URISyntaxException {
+    void testGetLayerUrl() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/layers/FULLTEXT/",
                 handler.getLayerUrl("PI-SAMPLE", "fulltext"));
 
     }
 
     @Test
-    public void testGetAnnotationsUrl() throws URISyntaxException {
+    void testGetAnnotationsUrl() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/pages/12/annotations/",
                 handler.getAnnotationsUrl("PI-SAMPLE", 12, "crowdsourcing"));
 
     }
 
     @Test
-    public void testGetCanvasUrl() throws URISyntaxException {
+    void testGetCanvasUrl() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/pages/12/canvas/",
                 handler.getCanvasUrl("PI-SAMPLE", 12));
 
     }
 
     @Test
-    public void testGetRangeUrl() throws URISyntaxException {
+    void testGetRangeUrl() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/sections/LOG_0007/range/",
                 handler.getRangeUrl("PI-SAMPLE", "LOG_0007"));
 

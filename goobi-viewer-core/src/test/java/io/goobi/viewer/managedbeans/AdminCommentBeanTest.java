@@ -39,7 +39,7 @@ public class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies sort lazyModelComments by dateCreated desc by default
      */
     @Test
-    public void init_shouldSortLazyModelCommentsByDateCreatedDescByDefault() throws Exception {
+    void init_shouldSortLazyModelCommentsByDateCreatedDescByDefault() throws Exception {
         AdminCommentBean bean = new AdminCommentBean();
         bean.setUserBean(new UserBean());
         User admin = new User();

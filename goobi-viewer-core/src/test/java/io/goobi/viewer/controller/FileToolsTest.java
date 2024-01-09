@@ -54,7 +54,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies read text file correctly
      */
     @Test
-    public void getStringFromFile_shouldReadTextFileCorrectly() throws Exception {
+    void getStringFromFile_shouldReadTextFileCorrectly() throws Exception {
         File file = new File("src/test/resources/stopwords.txt");
         Assertions.assertTrue(file.isFile());
         String contents = FileTools.getStringFromFile(file, null);
@@ -66,7 +66,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
-    public void getStringFromFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
+    void getStringFromFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         File file = new File("notfound.txt");
         Assertions.assertFalse(file.exists());
         Assertions.assertThrows(FileNotFoundException.class, () -> FileTools.getStringFromFile(file, null));
@@ -77,7 +77,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies read text file correctly
      */
     @Test
-    public void getStringFromFilePath_shouldReadTextFileCorrectly() throws Exception {
+    void getStringFromFilePath_shouldReadTextFileCorrectly() throws Exception {
         String contents = FileTools.getStringFromFilePath("src/test/resources/stopwords.txt");
         Assertions.assertTrue(StringUtils.isNotBlank(contents));
     }
@@ -87,7 +87,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
-    public void getStringFromFilePath_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
+    void getStringFromFilePath_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         File file = new File("notfound.txt");
         Assertions.assertFalse(file.exists());
         Assertions.assertThrows(FileNotFoundException.class, () -> FileTools.getStringFromFilePath(file.getPath()));
@@ -98,7 +98,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
-    public void compressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
+    void compressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         File file = new File("notfound.txt");
         Assertions.assertFalse(file.exists());
         Assertions.assertThrows(FileNotFoundException.class, () -> FileTools.compressGzipFile(file, new File("target/test.tar.gz")));
@@ -109,7 +109,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
-    public void decompressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
+    void decompressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         File gzipFile = new File("notfound.tar.gz");
         Assertions.assertFalse(gzipFile.exists());
         Assertions.assertThrows(FileNotFoundException.class, () -> FileTools.decompressGzipFile(gzipFile, new File("target/target.bla")));
@@ -120,7 +120,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies write file correctly
      */
     @Test
-    public void getFileFromString_shouldWriteFileCorrectly() throws Exception {
+    void getFileFromString_shouldWriteFileCorrectly() throws Exception {
         Assertions.assertTrue(tempDir.mkdirs());
         File file = new File(tempDir, "temp.txt");
         String text = "Lorem ipsum dolor sit amet";
@@ -133,7 +133,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies append to file correctly
      */
     @Test
-    public void getFileFromString_shouldAppendToFileCorrectly() throws Exception {
+    void getFileFromString_shouldAppendToFileCorrectly() throws Exception {
         Assertions.assertTrue(tempDir.mkdirs());
         File file = new File(tempDir, "temp.txt");
         String text = "XY";
@@ -149,7 +149,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies detect charset correctly
      */
     @Test
-    public void getCharset_shouldDetectCharsetCorrectly() throws Exception {
+    void getCharset_shouldDetectCharsetCorrectly() throws Exception {
         File file = new File("src/test/resources/stopwords.txt");
         try (FileInputStream fis = new FileInputStream(file)) {
             Assertions.assertEquals("UTF-8", FileTools.getCharset(fis));
@@ -162,7 +162,7 @@ class FileToolsTest extends AbstractTest {
      */
     @SuppressWarnings("resource")
     @Test
-    public void getCharset_shouldNotCloseStream() throws Exception {
+    void getCharset_shouldNotCloseStream() throws Exception {
         File file = new File("src/test/resources/stopwords.txt");
         FileInputStream fis = new FileInputStream(file);
         try {
@@ -178,7 +178,7 @@ class FileToolsTest extends AbstractTest {
     }
 
     @Test
-    public void testProbeContentType() throws FileNotFoundException, IOException {
+    void testProbeContentType() throws FileNotFoundException, IOException {
         Path resourceFolder = Paths.get("src/test/resources/data/viewer/fulltext");
 
         //        Assertions.assertEquals("text/plain",
@@ -211,7 +211,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies return folder name correctly
      */
     @Test
-    public void getBottomFolderFromPathString_shouldReturnFolderNameCorrectly() throws Exception {
+    void getBottomFolderFromPathString_shouldReturnFolderNameCorrectly() throws Exception {
         Assertions.assertEquals("PPN123", FileTools.getBottomFolderFromPathString("data/1/alto/PPN123/00000001.xml"));
     }
 
@@ -220,7 +220,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies return empty string if no folder in path
      */
     @Test
-    public void getBottomFolderFromPathString_shouldReturnEmptyStringIfNoFolderInPath() throws Exception {
+    void getBottomFolderFromPathString_shouldReturnEmptyStringIfNoFolderInPath() throws Exception {
         Assertions.assertEquals("", FileTools.getBottomFolderFromPathString("00000001.xml"));
     }
 
@@ -229,7 +229,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies return file name correctly
      */
     @Test
-    public void getFilenameFromPathString_shouldReturnFileNameCorrectly() throws Exception {
+    void getFilenameFromPathString_shouldReturnFileNameCorrectly() throws Exception {
         Assertions.assertEquals("00000001.xml", FileTools.getFilenameFromPathString("data/1/alto/PPN123/00000001.xml"));
     }
 }

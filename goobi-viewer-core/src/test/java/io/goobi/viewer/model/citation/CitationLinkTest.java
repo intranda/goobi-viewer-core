@@ -35,7 +35,7 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
      * @verifies construct internal record url correctly
      */
     @Test
-    public void getUrl_shouldConstructInternalRecordUrlCorrectly() throws Exception {
+    void getUrl_shouldConstructInternalRecordUrlCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
         Assertions.assertTrue(viewManager.getTopStructElementIddoc() == viewManager.getCurrentStructElementIddoc());
@@ -49,7 +49,7 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
      * @verifies construct internal docstruct url correctly
      */
     @Test
-    public void getUrl_shouldConstructInternalDocstructUrlCorrectly() throws Exception {
+    void getUrl_shouldConstructInternalDocstructUrlCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
@@ -64,7 +64,7 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
      * @verifies construct internal image url correctly
      */
     @Test
-    public void getUrl_shouldConstructInternalImageUrlCorrectly() throws Exception {
+    void getUrl_shouldConstructInternalImageUrlCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);
@@ -78,7 +78,7 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
      * @verifies construct external url correctly
      */
     @Test
-    public void getUrl_shouldConstructExternalUrlCorrectly() throws Exception {
+    void getUrl_shouldConstructExternalUrlCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);
@@ -93,7 +93,7 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
      * @verifies return correct value for record type
      */
     @Test
-    public void getValue_shouldReturnCorrectValueForRecordType() throws Exception {
+    void getValue_shouldReturnCorrectValueForRecordType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
 
@@ -106,7 +106,7 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
      * @verifies return correct value for docstruct type
      */
     @Test
-    public void getValue_shouldReturnCorrectValueForDocstructType() throws Exception {
+    void getValue_shouldReturnCorrectValueForDocstructType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
 
@@ -119,7 +119,7 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
      * @verifies return correct value for image type
      */
     @Test
-    public void getValue_shouldReturnCorrectValueForImageType() throws Exception {
+    void getValue_shouldReturnCorrectValueForImageType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
@@ -133,7 +133,7 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
      * @verifies fall back to topstruct value correctly
      */
     @Test
-    public void getValue_shouldFallBackToTopstructValueCorrectly() throws Exception {
+    void getValue_shouldFallBackToTopstructValueCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);

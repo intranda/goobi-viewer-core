@@ -67,7 +67,7 @@ public class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
      * @throws PresentationException
      */
     @Test
-    public void testcheckSearchUpdate() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    void testcheckSearchUpdate() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         DataManager.getInstance().getConfiguration().overrideValue("search.resultGroups[@enabled]", false);
         SearchHitsNotifier resource = new SearchHitsNotifier();
         Search search = new Search();

@@ -37,7 +37,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies format date correctly for the given language
      */
     @Test
-    public void getLocalDate_shouldFormatDateCorrectlyForTheGivenLanguage() throws Exception {
+    void getLocalDate_shouldFormatDateCorrectlyForTheGivenLanguage() throws Exception {
         LocalDateTime date = LocalDateTime.now()
                 .withYear(1980)
                 .withMonth(7)
@@ -54,7 +54,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies use English format for unknown languages
      */
     @Test
-    public void getLocalDate_shouldUseEnglishFormatForUnknownLanguages() throws Exception {
+    void getLocalDate_shouldUseEnglishFormatForUnknownLanguages() throws Exception {
         LocalDateTime date = LocalDateTime.now()
                 .withYear(1980)
                 .withMonth(7)
@@ -70,7 +70,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies parse iso date formats correctly
      */
     @Test
-    public void parseDateTimeFromString_shouldParseIsoDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseIsoDateFormatsCorrectly() throws Exception {
         {
             LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19 00:00:00", false);
             Assertions.assertNotNull(date);
@@ -120,7 +120,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies parse german date formats correctly
      */
     @Test
-    public void parseDateTimeFromString_shouldParseGermanDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseGermanDateFormatsCorrectly() throws Exception {
         {
             LocalDateTime date = DateTools.parseDateTimeFromString("19.12.2017", false);
             Assertions.assertNotNull(date);
@@ -145,7 +145,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies parse english date formats correctly
      */
     @Test
-    public void parseDateTimeFromString_shouldParseEnglishDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseEnglishDateFormatsCorrectly() throws Exception {
         {
             LocalDateTime date = DateTools.parseDateTimeFromString("12/20/2017", false);
             Assertions.assertNotNull(date);
@@ -170,7 +170,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies parse chinese date formats correctly
      */
     @Test
-    public void parseDateTimeFromString_shouldParseChineseDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseChineseDateFormatsCorrectly() throws Exception {
         LocalDateTime date = DateTools.parseDateTimeFromString("2017.12.19", false);
         Assertions.assertNotNull(date);
         Assertions.assertEquals(2017, date.getYear());
@@ -183,7 +183,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies parse japanese date formats correctly
      */
     @Test
-    public void parseDateTimeFromString_shouldParseJapaneseDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseJapaneseDateFormatsCorrectly() throws Exception {
         LocalDateTime date = DateTools.parseDateTimeFromString("2017/12/19", false);
         Assertions.assertNotNull(date);
         Assertions.assertEquals(2017, date.getYear());
@@ -196,7 +196,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies parse iso date as UTC correctly
      */
     @Test
-    public void parseDateTimeFromString_shouldParseIsoDateAsUTCCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseIsoDateAsUTCCorrectly() throws Exception {
         LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19T01:01:00+01:00", true, 1);
         Assertions.assertNotNull(date);
         Assertions.assertEquals(2017, date.getYear());
@@ -210,7 +210,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies return null if unsupported format
      */
     @Test
-    public void parseDateTimeFromString_shouldReturnNullIfUnsupportedFormat() throws Exception {
+    void parseDateTimeFromString_shouldReturnNullIfUnsupportedFormat() throws Exception {
         Assertions.assertNull(DateTools.parseDateTimeFromString("2017_12_20", false));
     }
 
@@ -229,7 +229,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies parse single date correctly
      */
     @Test
-    public void parseMultipleDatesFromString_shouldParseSingleDateCorrectly() throws Exception {
+    void parseMultipleDatesFromString_shouldParseSingleDateCorrectly() throws Exception {
         List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-20");
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals("2018-11-20", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
@@ -240,7 +240,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies parse multiple dates correctly
      */
     @Test
-    public void parseMultipleDatesFromString_shouldParseMultipleDatesCorrectly() throws Exception {
+    void parseMultipleDatesFromString_shouldParseMultipleDatesCorrectly() throws Exception {
         List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-19 / 2018-11-20");
         Assertions.assertEquals(2, result.size());
         Assertions.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
@@ -252,7 +252,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies parse dates in parentheses correctly
      */
     @Test
-    public void parseMultipleDatesFromString_shouldParseDatesInParenthesesCorrectly() throws Exception {
+    void parseMultipleDatesFromString_shouldParseDatesInParenthesesCorrectly() throws Exception {
         List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
         Assertions.assertEquals(2, result.size());
         Assertions.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
@@ -264,7 +264,7 @@ public class DateToolsTest extends AbstractTest {
      * @verifies create LocalDateTime correctly
      */
     @Test
-    public void getLocalDateTimeFromMillis_shouldCreateLocalDateTimeCorrectly() throws Exception {
+    void getLocalDateTimeFromMillis_shouldCreateLocalDateTimeCorrectly() throws Exception {
         LocalDateTime ldt = DateTools.getLocalDateTimeFromMillis(1603905300000L, true);
         Assertions.assertNotNull(ldt);
         Assertions.assertEquals(2020, ldt.getYear());

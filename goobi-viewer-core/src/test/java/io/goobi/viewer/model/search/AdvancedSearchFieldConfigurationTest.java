@@ -31,7 +31,7 @@ public class AdvancedSearchFieldConfigurationTest {
      * @verifies return field if label null
      */
     @Test
-    public void getLabel_shouldReturnFieldIfLabelNull() throws Exception {
+    void getLabel_shouldReturnFieldIfLabelNull() throws Exception {
         Assertions.assertEquals("field", new AdvancedSearchFieldConfiguration("field").getLabel());
     }
 }

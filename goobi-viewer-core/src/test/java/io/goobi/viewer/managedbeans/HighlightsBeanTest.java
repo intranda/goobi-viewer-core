@@ -42,14 +42,14 @@ public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     ImageDeliveryBean imaging = Mockito.mock(ImageDeliveryBean.class);
     
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         bean = new HighlightsBean(DataManager.getInstance().getDao(), navigationHelper, imaging);
         bean.init();
     }
     
     @Test
-    public void test_listObjecs() throws DAOException {
+    void test_listObjecs() throws DAOException {
         
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         bean.initProviders(now);
@@ -58,7 +58,7 @@ public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void test_filterList() {
+    void test_filterList() {
         
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
         bean.initProviders(now);
@@ -74,7 +74,7 @@ public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void test_HighlightUrl() throws DAOException {
+    void test_HighlightUrl() throws DAOException {
         
         Mockito.when(navigationHelper.getImageUrl()).thenReturn("localhost:8080/viewer/image");
         

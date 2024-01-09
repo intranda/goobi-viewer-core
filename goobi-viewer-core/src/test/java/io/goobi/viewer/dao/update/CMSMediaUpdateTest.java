@@ -55,12 +55,12 @@ public class CMSMediaUpdateTest {
     };
 
     @Test
-    public void testReadBlob() {
+    void testReadBlob() {
         assertEquals(expected, new CMSMediaUpdate().parseUrl(bytes));
     }
 
     @Test
-    public void testReadString() {
+    void testReadString() {
         for (int sample = 0; sample < stringSamples.length; sample++) {
             String blob = stringSamples[sample][0];
             String expected = stringSamples[sample][1];

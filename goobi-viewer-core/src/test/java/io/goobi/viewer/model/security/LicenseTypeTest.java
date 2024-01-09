@@ -43,7 +43,7 @@ public class LicenseTypeTest extends AbstractTest {
      * @verifies only return priv view ugc if ugc type
      */
     @Test
-    public void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfUgcType() throws Exception {
+    void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfUgcType() throws Exception {
         LicenseType type = new LicenseType();
         type.setUgcType(true);
         List<String> result = type.getAvailablePrivileges(Collections.emptySet());
@@ -52,7 +52,7 @@ public class LicenseTypeTest extends AbstractTest {
     }
 
     @Test
-    public void getAvailablePrivilegesHandleNonEmptyArgument() throws Exception {
+    void getAvailablePrivilegesHandleNonEmptyArgument() throws Exception {
         LicenseType type = new LicenseType();
         type.setUgcType(true);
         Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));

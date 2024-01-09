@@ -30,7 +30,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem.Priority;
 public class CMSMediaItemTest {
 
     @Test
-    public void testStImportant() {
+    void testStImportant() {
         CMSMediaItem media = new CMSMediaItem();
         Assertions.assertFalse(media.isImportant());
         Assertions.assertEquals(Priority.DEFAULT, media.getPriority());

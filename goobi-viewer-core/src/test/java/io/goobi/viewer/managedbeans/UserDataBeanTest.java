@@ -39,7 +39,7 @@ public class UserDataBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies return correct value
      */
     @Test
-    public void getAnnotationCount_shouldReturnCorrectValue() throws Exception {
+    void getAnnotationCount_shouldReturnCorrectValue() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assertions.assertNotNull(user);
         UserDataBean udb = new UserDataBean();
@@ -55,7 +55,7 @@ public class UserDataBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies return the latest comments
      */
     @Test
-    public void getLatestComments_shouldReturnTheLatestComments() throws Exception {
+    void getLatestComments_shouldReturnTheLatestComments() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assertions.assertNotNull(user);
         UserDataBean udb = new UserDataBean();

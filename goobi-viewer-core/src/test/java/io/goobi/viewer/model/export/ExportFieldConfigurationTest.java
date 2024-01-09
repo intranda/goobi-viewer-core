@@ -31,7 +31,7 @@ public class ExportFieldConfigurationTest {
      * @verifies return field if label null
      */
     @Test
-    public void getLabel_shouldReturnFieldIfLabelNull() throws Exception {
+    void getLabel_shouldReturnFieldIfLabelNull() throws Exception {
         ExportFieldConfiguration efc  = new ExportFieldConfiguration("MD_FOO");
         Assertions.assertEquals("MD_FOO", efc.getLabel());
     }

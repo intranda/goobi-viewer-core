@@ -41,7 +41,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
  * @author florian
  *
  */
-public class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest{
+class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest {
 
     private IIIFPresentation2ResourceBuilder testee;
 
@@ -63,9 +63,9 @@ public class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest
     }
 
     @Test
-    public void successfullyQueryManifests() throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
-       List<IPresentationModelElement> collection = testee.getManifestsForQuery("ISWORK:*", "", 0, 2);
-       Assertions.assertEquals(2, collection.size());
+    void successfullyQueryManifests()
+            throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+        List<IPresentationModelElement> collection = testee.getManifestsForQuery("ISWORK:*", "", 0, 2);
+        Assertions.assertEquals(2, collection.size());
     }
-
 }

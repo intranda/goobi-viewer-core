@@ -33,7 +33,7 @@ public class MessageValueTest {
      * @verifies return none status correctly
      */
     @Test
-    public void getTranslationStatus_shouldReturnNoneStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnNoneStatusCorrectly() throws Exception {
         Assertions.assertEquals(TranslationStatus.NONE, new MessageValue("en", "", "value").getTranslationStatus());
     }
 
@@ -42,7 +42,7 @@ public class MessageValueTest {
      * @verifies return partial status correctly
      */
     @Test
-    public void getTranslationStatus_shouldReturnPartialStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnPartialStatusCorrectly() throws Exception {
         Assertions.assertEquals(TranslationStatus.PARTIAL, new MessageValue("en", "value zzz", "value").getTranslationStatus());
     }
 
@@ -51,7 +51,7 @@ public class MessageValueTest {
      * @verifies return full status correctly
      */
     @Test
-    public void getTranslationStatus_shouldReturnFullStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnFullStatusCorrectly() throws Exception {
         Assertions.assertEquals(TranslationStatus.FULL, new MessageValue("en", "value", "value").getTranslationStatus());
     }
 
@@ -60,7 +60,7 @@ public class MessageValueTest {
      * @verifies return true if status none of partial
      */
     @Test
-    public void isDisplayHighlight_shouldReturnTrueIfStatusNoneOfPartial() throws Exception {
+    void isDisplayHighlight_shouldReturnTrueIfStatusNoneOfPartial() throws Exception {
         Assertions.assertTrue(new MessageValue("en", "", "value").isDisplayHighlight());
         Assertions.assertTrue(new MessageValue("en", "value zzz", "value").isDisplayHighlight());
     }
@@ -70,7 +70,7 @@ public class MessageValueTest {
      * @verifies return false if status full
      */
     @Test
-    public void isDisplayHighlight_shouldReturnFalseIfStatusFull() throws Exception {
+    void isDisplayHighlight_shouldReturnFalseIfStatusFull() throws Exception {
         Assertions.assertFalse(new MessageValue("en", "value", "value").isDisplayHighlight());
     }
 }

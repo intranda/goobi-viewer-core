@@ -41,7 +41,7 @@ public class EventElementTest extends AbstractTest {
      * @verifies fill in missing dateStart from displayDate
      */
     @Test
-    public void EventElement_shouldFillInMissingDateStartFromDisplayDate() throws Exception {
+    void EventElement_shouldFillInMissingDateStartFromDisplayDate() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTDATE, "2018-11-23");
         EventElement ee = new EventElement(doc, null, false);
@@ -54,7 +54,7 @@ public class EventElementTest extends AbstractTest {
      * @verifies fill in missing dateEnd from dateStart
      */
     @Test
-    public void EventElement_shouldFillInMissingDateEndFromDateStart() throws Exception {
+    void EventElement_shouldFillInMissingDateEndFromDateStart() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTDATESTART, "2018-11-23");
         EventElement ee = new EventElement(doc, null, false);
@@ -67,7 +67,7 @@ public class EventElementTest extends AbstractTest {
      * @verifies include type
      */
     @Test
-    public void getLabel_shouldIncludeType() throws Exception {
+    void getLabel_shouldIncludeType() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTTYPE, "Creation");
         EventElement ee = new EventElement(doc, null, false);
@@ -79,7 +79,7 @@ public class EventElementTest extends AbstractTest {
      * @verifies not include date
      */
     @Test
-    public void getLabel_shouldNotIncludeDate() throws Exception {
+    void getLabel_shouldNotIncludeDate() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTTYPE, "Creation");
         doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");
@@ -92,7 +92,7 @@ public class EventElementTest extends AbstractTest {
      * @verifies populate search hit metadata correctly
      */
     @Test
-    public void EventElement_shouldPopulateSearchHitMetadataCorrectly() throws Exception {
+    void EventElement_shouldPopulateSearchHitMetadataCorrectly() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTTYPE, "Creation");
         doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");
@@ -108,7 +108,7 @@ public class EventElementTest extends AbstractTest {
      * @verifies populate non search metadata correctly
      */
     @Test
-    public void EventElement_shouldPopulateNonSearchMetadataCorrectly() throws Exception {
+    void EventElement_shouldPopulateNonSearchMetadataCorrectly() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTTYPE, "Creation");
         doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");

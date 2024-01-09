@@ -36,27 +36,27 @@ public class ActiveMQConfigTest {
     ActiveMQConfig config;
     
     @BeforeEach
-    public void setup() throws IOException {
+    public void setUp() throws IOException {
         this.config = new ActiveMQConfig(Paths.get(activeMqConfigPath));
     }
     
     @Test
-    public void testReadURI() {
+    void testReadURI() {
         assertEquals("tcp://0.0.0.0:61618", config.getConnectorURI());
     }
     
     @Test
-    public void testReadUserName() {
+    void testReadUserName() {
         assertEquals("testadmin", config.getUsernameAdmin());
     }
     
     @Test
-    public void testReadPassword() {
+    void testReadPassword() {
         assertEquals("test", config.getPasswordAdmin());
     }
     
     @Test
-    public void testReadSchedulerDirectory() {
+    void testReadSchedulerDirectory() {
         assertEquals("src/test/resources/activemq/scheduler", config.getSchedulerDirectory());
     }
 

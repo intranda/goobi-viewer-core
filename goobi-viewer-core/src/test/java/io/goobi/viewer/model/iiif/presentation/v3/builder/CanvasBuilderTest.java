@@ -41,7 +41,7 @@ public class CanvasBuilderTest extends AbstractSolrEnabledTest {
     CanvasBuilder builder = new CanvasBuilder(urls);
     
     @Test
-    public void test_build_shouldIncludeImage() throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+    void test_build_shouldIncludeImage() throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
                
         PhysicalElement element = Mockito.mock(PhysicalElement.class);
         Mockito.when(element.getPi()).thenReturn("PI_01");

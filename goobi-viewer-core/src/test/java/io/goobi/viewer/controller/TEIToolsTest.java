@@ -38,7 +38,7 @@ public class TEIToolsTest extends AbstractTest {
      * @verifies extract fulltext correctly
      */
     @Test
-    public void getTeiFulltext_shouldExtractFulltextCorrectly() throws Exception {
+    void getTeiFulltext_shouldExtractFulltextCorrectly() throws Exception {
         Path path = Paths.get("src/test/resources/data/viewer/tei/DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
         Assertions.assertTrue(Files.isRegularFile(path));
         String tei = FileTools.getStringFromFile(path.toFile(), StringTools.DEFAULT_ENCODING);

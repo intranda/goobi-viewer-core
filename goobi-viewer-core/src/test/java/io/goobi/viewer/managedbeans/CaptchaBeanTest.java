@@ -33,7 +33,7 @@ public class CaptchaBeanTest {
      * @verifies not reset securityQuest if not yet answered
      */
     @Test
-    public void resetSecurityQuestion_shouldNotResetSecurityQuestIfNotYetAnswered() throws Exception {
+    void resetSecurityQuestion_shouldNotResetSecurityQuestIfNotYetAnswered() throws Exception {
         CaptchaBean bean = new CaptchaBean();
         Assertions.assertTrue(bean.resetSecurityQuestion());
         SecurityQuestion sq = bean.getSecurityQuestion();

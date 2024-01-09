@@ -31,7 +31,7 @@ public class SearchFilterTest {
      * @verifies set attributes correctly
      */
     @Test
-    public void SearchFilter_shouldSetAttributesCorrectly() throws Exception {
+    void SearchFilter_shouldSetAttributesCorrectly() throws Exception {
         SearchFilter searchFilter = new SearchFilter("label_value", "field_value", true);
         Assertions.assertEquals("label_value", searchFilter.getLabel());
         Assertions.assertEquals("field_value", searchFilter.getField());

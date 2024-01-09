@@ -33,7 +33,7 @@ public class PIValidatorTest {
      * @verifies return false if pi contains illegal characters
      */
     @Test
-    public void validatePi_shouldReturnFalseIfPiContainsIllegalCharacters() throws Exception {
+    void validatePi_shouldReturnFalseIfPiContainsIllegalCharacters() throws Exception {
         Assertions.assertFalse(PIValidator.validatePi("PPN!"));
         Assertions.assertFalse(PIValidator.validatePi("PPN?"));
         Assertions.assertFalse(PIValidator.validatePi("PPN/"));
@@ -46,7 +46,7 @@ public class PIValidatorTest {
      * @verifies return false if pi empty, blank or null
      */
     @Test
-    public void validatePi_shouldReturnFalseIfPiEmptyBlankOrNull() throws Exception {
+    void validatePi_shouldReturnFalseIfPiEmptyBlankOrNull() throws Exception {
         Assertions.assertFalse(PIValidator.validatePi(null));
         Assertions.assertFalse(PIValidator.validatePi(""));
         Assertions.assertFalse(PIValidator.validatePi("    "));
@@ -57,7 +57,7 @@ public class PIValidatorTest {
      * @verifies return true if pi good
      */
     @Test
-    public void validatePi_shouldReturnTrueIfPiGood() throws Exception {
+    void validatePi_shouldReturnTrueIfPiGood() throws Exception {
         Assertions.assertTrue(PIValidator.validatePi("PPN123456789"));
     }
 }

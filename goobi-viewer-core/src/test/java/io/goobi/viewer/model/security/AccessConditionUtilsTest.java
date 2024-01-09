@@ -61,7 +61,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return true if required access conditions empty
      */
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfRequiredAccessConditionsEmpty() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfRequiredAccessConditionsEmpty() throws Exception {
         Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(new ArrayList<LicenseType>(), new HashSet<String>(),
                 IPrivilegeHolder.PRIV_VIEW_IMAGES, null, null, Optional.empty(), null).isGranted());
     }
@@ -71,7 +71,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return true if ip range allows access
      */
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccess() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccess() throws Exception {
         Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(DataManager.getInstance().getDao().getAllLicenseTypes(),
                 new HashSet<>(Collections.singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", Optional.empty(),
                 null).isGranted());
@@ -82,7 +82,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return true if required access conditions contain only open access
      */
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfRequiredAccessConditionsContainOnlyOpenAccess() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfRequiredAccessConditionsContainOnlyOpenAccess() throws Exception {
         List<LicenseType> licenseTypes = new ArrayList<>();
         LicenseType lt = new LicenseType();
         licenseTypes.add(lt);
@@ -109,7 +109,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return true if all license types allow privilege by default
      */
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfAllLicenseTypesAllowPrivilegeByDefault() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfAllLicenseTypesAllowPrivilegeByDefault() throws Exception {
         List<LicenseType> licenseTypes = new ArrayList<>();
         LicenseType lt = new LicenseType();
         licenseTypes.add(lt);
@@ -134,7 +134,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return false if not all license types allow privilege by default
      */
     @Test
-    public void checkAccessPermission_shouldReturnFalseIfNotAllLicenseTypesAllowPrivilegeByDefault() throws Exception {
+    void checkAccessPermission_shouldReturnFalseIfNotAllLicenseTypesAllowPrivilegeByDefault() throws Exception {
         List<LicenseType> licenseTypes = new ArrayList<>();
         LicenseType lt = new LicenseType();
         licenseTypes.add(lt);
@@ -158,7 +158,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return true if ip range allows access to all conditions
      */
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccessToAllConditions() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccessToAllConditions() throws Exception {
         List<LicenseType> licenseTypes = new ArrayList<>();
         {
             // 'license type 1 name' doesn't allow anything by default
@@ -189,7 +189,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies not return true if no ip range matches
      */
     @Test
-    public void checkAccessPermission_shouldNotReturnTrueIfNoIpRangeMatches() throws Exception {
+    void checkAccessPermission_shouldNotReturnTrueIfNoIpRangeMatches() throws Exception {
         List<LicenseType> licenseTypes = new ArrayList<>();
         {
             // 'license type 1 name' doesn't allow anything by default
@@ -209,7 +209,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies remove license types whose names do not match access conditions
      */
     @Test
-    public void getRelevantLicenseTypesOnly_shouldRemoveLicenseTypesWhoseNamesDoNotMatchAccessConditions() throws Exception {
+    void getRelevantLicenseTypesOnly_shouldRemoveLicenseTypesWhoseNamesDoNotMatchAccessConditions() throws Exception {
         List<LicenseType> allLicenseTypes = new ArrayList<>();
 
         LicenseType lt = new LicenseType();
@@ -236,7 +236,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies not remove moving wall license types to open access if condition query excludes given pi
      */
     @Test
-    public void getRelevantLicenseTypesOnly_shouldNotRemoveMovingWallLicenseTypesToOpenAccessIfConditionQueryExcludesGivenPi() throws Exception {
+    void getRelevantLicenseTypesOnly_shouldNotRemoveMovingWallLicenseTypesToOpenAccessIfConditionQueryExcludesGivenPi() throws Exception {
         LicenseType lt = new LicenseType();
         lt.setName("type1");
         lt.setMovingWall(true);
@@ -257,7 +257,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies use correct field name for AV files
      */
     @Test
-    public void generateAccessCheckQuery_shouldUseCorrectFieldNameForAVFiles() throws Exception {
+    void generateAccessCheckQuery_shouldUseCorrectFieldNameForAVFiles() throws Exception {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
             Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.tif\"", result);
@@ -285,7 +285,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies use correct file name for text files
      */
     @Test
-    public void generateAccessCheckQuery_shouldUseCorrectFileNameForTextFiles() throws Exception {
+    void generateAccessCheckQuery_shouldUseCorrectFileNameForTextFiles() throws Exception {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "alto/PPN123456789/00000001.txt");
             Assertions.assertEquals(
@@ -307,7 +307,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies use correct file name for pdf files
      */
     @Test
-    public void generateAccessCheckQuery_shouldUseCorrectFileNameForPdfFiles() throws Exception {
+    void generateAccessCheckQuery_shouldUseCorrectFileNameForPdfFiles() throws Exception {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "12345.pdf");
         Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"12345.pdf\"", result);
     }
@@ -317,7 +317,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies adapt basic alto file name
      */
     @Test
-    public void generateAccessCheckQuery_shouldAdaptBasicAltoFileName() throws Exception {
+    void generateAccessCheckQuery_shouldAdaptBasicAltoFileName() throws Exception {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.xml");
         Assertions.assertEquals(
                 "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME_ALTO
@@ -330,13 +330,13 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies escape file name for wildcard search correctly
      */
     @Test
-    public void generateAccessCheckQuery_shouldEscapeFileNameForWildcardSearchCorrectly() throws Exception {
+    void generateAccessCheckQuery_shouldEscapeFileNameForWildcardSearchCorrectly() throws Exception {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
         Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result);
     }
 
     @Test
-    public void generateAccessCheckQuery_shouldUseFullNameForImageFormats() throws Exception {
+    void generateAccessCheckQuery_shouldUseFullNameForImageFormats() throws Exception {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
             Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.tif\"", result);
@@ -360,7 +360,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     }
 
     @Test
-    public void generateAccessCheckQuery_shouldUseFullNameFor3dObjectFormats() throws Exception {
+    void generateAccessCheckQuery_shouldUseFullNameFor3dObjectFormats() throws Exception {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.gltf");
             Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.gltf\"", result);
@@ -376,7 +376,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     }
 
     @Test
-    public void generateAccessCheckQuery_shouldUseBaseNameForFormatlessFiles() throws Exception {
+    void generateAccessCheckQuery_shouldUseBaseNameForFormatlessFiles() throws Exception {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001");
             Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result);
@@ -392,7 +392,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies work correctly with urls
      */
     @Test
-    public void generateAccessCheckQuery_shouldWorkCorrectlyWithUrls() throws Exception {
+    void generateAccessCheckQuery_shouldWorkCorrectlyWithUrls() throws Exception {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "file:///opt/digiverso/viewer/cms_media/bild4.png");
         Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"bild4.png\"", result);
     }
@@ -411,7 +411,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return 100 if record has no quota value
      */
     @Test
-    public void getPdfDownloadQuotaForRecord_shouldReturn100IfRecordHasNoQuotaValue() throws Exception {
+    void getPdfDownloadQuotaForRecord_shouldReturn100IfRecordHasNoQuotaValue() throws Exception {
         Assertions.assertEquals(100, AccessConditionUtils.getPdfDownloadQuotaForRecord("51419376X"));
     }
 
@@ -420,7 +420,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return 100 if record open access
      */
     @Test
-    public void getPdfDownloadQuotaForRecord_shouldReturn100IfRecordOpenAccess() throws Exception {
+    void getPdfDownloadQuotaForRecord_shouldReturn100IfRecordOpenAccess() throws Exception {
         Assertions.assertEquals(100, AccessConditionUtils.getPdfDownloadQuotaForRecord("PPN517154005"));
     }
 
@@ -429,7 +429,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return false if access conditions null or empty
      */
     @Test
-    public void isConcurrentViewsLimitEnabledForAnyAccessCondition_shouldReturnFalseIfAccessConditionsNullOrEmpty() throws Exception {
+    void isConcurrentViewsLimitEnabledForAnyAccessCondition_shouldReturnFalseIfAccessConditionsNullOrEmpty() throws Exception {
         Assertions.assertFalse(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(null));
         Assertions.assertFalse(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(Collections.emptyList()));
     }
@@ -439,13 +439,13 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies return true if any license type has limit enabled
      */
     @Test
-    public void isConcurrentViewsLimitEnabledForAnyAccessCondition_shouldReturnTrueIfAnyLicenseTypeHasLimitEnabled() throws Exception {
+    void isConcurrentViewsLimitEnabledForAnyAccessCondition_shouldReturnTrueIfAnyLicenseTypeHasLimitEnabled() throws Exception {
         String[] licenseTypes = new String[] { "license type 1 name", "license type 4 name" };
         Assertions.assertTrue(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(Arrays.asList(licenseTypes)));
     }
 
     @Test
-    public void test_getApplyingLicenses_byIp() throws DAOException {
+    void test_getApplyingLicenses_byIp() throws DAOException {
 
         LicenseType licenseType = new LicenseType();
 

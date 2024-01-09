@@ -34,7 +34,7 @@ public class CommentTest extends AbstractSolrEnabledTest {
     * @verifies return true if record exists
     */
     @Test
-    public void isTargetPiRecordIndexed_shouldReturnTrueIfRecordExists() throws Exception {
+    void isTargetPiRecordIndexed_shouldReturnTrueIfRecordExists() throws Exception {
         Comment comment = new Comment();
         comment.setTargetPI(AbstractSolrEnabledTest.PI_KLEIUNIV);
         Assertions.assertTrue(comment.isTargetPiRecordIndexed());
@@ -45,7 +45,7 @@ public class CommentTest extends AbstractSolrEnabledTest {
     * @verifies return false if record missing
     */
     @Test
-    public void isTargetPiRecordIndexed_shouldReturnFalseIfRecordMissing() throws Exception {
+    void isTargetPiRecordIndexed_shouldReturnFalseIfRecordMissing() throws Exception {
         Comment comment = new Comment();
         comment.setTargetPI("foobar");
         Assertions.assertFalse(comment.isTargetPiRecordIndexed());
@@ -56,7 +56,7 @@ public class CommentTest extends AbstractSolrEnabledTest {
     * @verifies return false if targetPI not set
     */
     @Test
-    public void isTargetPiRecordIndexed_shouldReturnFalseIfTargetPINotSet() throws Exception {
+    void isTargetPiRecordIndexed_shouldReturnFalseIfTargetPINotSet() throws Exception {
         Comment comment = new Comment();
         Assertions.assertFalse(comment.isTargetPiRecordIndexed());
     }

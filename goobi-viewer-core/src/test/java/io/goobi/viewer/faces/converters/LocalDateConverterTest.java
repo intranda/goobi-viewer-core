@@ -49,7 +49,7 @@ public class LocalDateConverterTest {
 
 
     @Test
-    public void testGerman() {
+    void testGerman() {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_GERMAN));
         LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_GERMAN);
@@ -57,7 +57,7 @@ public class LocalDateConverterTest {
     }
 
     @Test
-    public void testEnglish() {
+    void testEnglish() {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_ENGLISH));
         LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_ENGLISH);
@@ -65,7 +65,7 @@ public class LocalDateConverterTest {
     }
 
     @Test
-    public void testGeneric() {
+    void testGeneric() {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_GENERIC));
         LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_GENERIC);

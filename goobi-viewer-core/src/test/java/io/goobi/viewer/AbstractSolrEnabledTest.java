@@ -22,9 +22,8 @@
 package io.goobi.viewer;
 
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -63,9 +62,5 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
     @AfterEach
     public void tearDown() throws Exception {
         server.close();
-    }
-
-    @AfterAll
-    public static void tearDownClass() throws Exception {
     }
 }

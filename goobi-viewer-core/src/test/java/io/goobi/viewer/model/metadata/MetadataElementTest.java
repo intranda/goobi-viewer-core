@@ -35,7 +35,7 @@ public class MetadataElementTest {
      * @verifies return true if metadata list empty
      */
     @Test
-    public void isSkip_shouldReturnTrueIfMetadataListEmpty() throws Exception {
+    void isSkip_shouldReturnTrueIfMetadataListEmpty() throws Exception {
         MetadataElement me = new MetadataElement();
         Assertions.assertTrue(me.isSkip());
 
@@ -46,7 +46,7 @@ public class MetadataElementTest {
      * @verifies return true if all metadata fields blank
      */
     @Test
-    public void isSkip_shouldReturnTrueIfAllMetadataFieldsBlank() throws Exception {
+    void isSkip_shouldReturnTrueIfAllMetadataFieldsBlank() throws Exception {
         MetadataElement me = new MetadataElement();
         me.getMetadataList().add(new Metadata());
         Assertions.assertTrue(me.getMetadataList().get(0).isBlank());
@@ -59,7 +59,7 @@ public class MetadataElementTest {
      * @verifies return true if all metadata fields hidden
      */
     @Test
-    public void isSkip_shouldReturnTrueIfAllMetadataFieldsHidden() throws Exception {
+    void isSkip_shouldReturnTrueIfAllMetadataFieldsHidden() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
@@ -83,7 +83,7 @@ public class MetadataElementTest {
      * @verifies return false if non hidden metadata fields exist
      */
     @Test
-    public void isSkip_shouldReturnFalseIfNonHiddenMetadataFieldsExist() throws Exception {
+    void isSkip_shouldReturnFalseIfNonHiddenMetadataFieldsExist() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
@@ -107,7 +107,7 @@ public class MetadataElementTest {
      * @verifies return false if at least one metadata with same type not single string
      */
     @Test
-    public void isDisplayBoxed_shouldReturnFalseIfAtLeastOneMetadataWithSameTypeNotSingleString() throws Exception {
+    void isDisplayBoxed_shouldReturnFalseIfAtLeastOneMetadataWithSameTypeNotSingleString() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
@@ -133,7 +133,7 @@ public class MetadataElementTest {
      * @verifies return true if all metadata of same type single string
      */
     @Test
-    public void isDisplayBoxed_shouldReturnTrueIfAllMetadataOfSameTypeSingleString() throws Exception {
+    void isDisplayBoxed_shouldReturnTrueIfAllMetadataOfSameTypeSingleString() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
@@ -160,7 +160,7 @@ public class MetadataElementTest {
      * @verifies return docstruct type if record
      */
     @Test
-    public void getDocStructTypeLabel_shouldReturnDocstructTypeIfRecord() throws Exception {
+    void getDocStructTypeLabel_shouldReturnDocstructTypeIfRecord() throws Exception {
         MetadataElement me = new MetadataElement();
         me.setDocStructType("manuscript");
         Assertions.assertEquals("manuscript", me.getDocStructTypeLabel());
@@ -171,7 +171,7 @@ public class MetadataElementTest {
      * @verifies return group type if group
      */
     @Test
-    public void getDocStructTypeLabel_shouldReturnGroupTypeIfGroup() throws Exception {
+    void getDocStructTypeLabel_shouldReturnGroupTypeIfGroup() throws Exception {
         MetadataElement me = new MetadataElement();
         me.setDocStructType("_GROUPS");
         me.setGroupType("Series");

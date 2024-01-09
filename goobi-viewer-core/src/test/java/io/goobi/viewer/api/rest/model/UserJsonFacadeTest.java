@@ -21,8 +21,6 @@
  */
 package io.goobi.viewer.api.rest.model;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +37,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
-public class UserJsonFacadeTest {
+class UserJsonFacadeTest {
 
     /**
      * @throws java.lang.Exception
@@ -58,7 +56,7 @@ public class UserJsonFacadeTest {
     }
 
     @Test
-    public void testGetCorrectAvatarUrl() {
+    void testGetCorrectAvatarUrl() {
 
         User user = new User("nick");
 
@@ -77,5 +75,4 @@ public class UserJsonFacadeTest {
         Assertions.assertTrue(avatarUrl.startsWith("/viewer/resources"));
 
     }
-
 }

@@ -52,7 +52,7 @@ public class PrerenderPdfMessageHandlerTest {
     String pi = "PPN615391702";
 
     @Test
-    public void test() throws PresentationException, IndexUnreachableException, IOException {
+    void test() throws PresentationException, IndexUnreachableException, IOException {
 
         if (!Files.exists(pdfFolder)) {
             Files.createDirectories(pdfFolder);
@@ -79,7 +79,7 @@ public class PrerenderPdfMessageHandlerTest {
     }
 
     @AfterEach
-    public void cleanup() throws IOException {
+    void cleanup() throws IOException {
         FileUtils.deleteDirectory(pdfFolder.toFile());
     }
 

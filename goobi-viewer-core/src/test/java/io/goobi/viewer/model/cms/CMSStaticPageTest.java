@@ -39,17 +39,17 @@ public class CMSStaticPageTest {
     }
 
     @Test
-    public void testGetPageName() {
+    void testGetPageName() {
         Assertions.assertEquals("test", page.getPageName());
     }
 
     @Test
-    public void testIsLanguageComplete() {
+    void testIsLanguageComplete() {
         Assertions.assertFalse(page.isLanguageComplete(Locale.GERMANY));
     }
 
     @Test
-    public void testHasCmsPage() {
+    void testHasCmsPage() {
         Assertions.assertFalse(page.isHasCmsPage());
     }
 

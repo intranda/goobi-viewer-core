@@ -38,7 +38,7 @@ public class AbstractPageLoaderTest extends AbstractTest {
      * @verifies replace numpages currectly
      */
     @Test
-    public void buildPageLabelTemplate_shouldReplaceNumpagesCurrectly() throws Exception {
+    void buildPageLabelTemplate_shouldReplaceNumpagesCurrectly() throws Exception {
         StructElement se = new StructElement();
         EagerPageLoader loader = new EagerPageLoader(se);
         Assertions.assertEquals("foo 0 bar", loader.buildPageLabelTemplate("foo {numpages} bar", null));
@@ -49,7 +49,7 @@ public class AbstractPageLoaderTest extends AbstractTest {
      * @verifies replace message keys correctly
      */
     @Test
-    public void buildPageLabelTemplate_shouldReplaceMessageKeysCorrectly() throws Exception {
+    void buildPageLabelTemplate_shouldReplaceMessageKeysCorrectly() throws Exception {
         StructElement se = new StructElement();
         EagerPageLoader loader = new EagerPageLoader(se);
         Assertions.assertEquals("1 of 10", loader.buildPageLabelTemplate("1 {msg.of} 10", null));
@@ -60,7 +60,7 @@ public class AbstractPageLoaderTest extends AbstractTest {
      * @verifies construct single page item correctly
      */
     @Test
-    public void buildPageSelectItem_shouldConstructSinglePageItemCorrectly() throws Exception {
+    void buildPageSelectItem_shouldConstructSinglePageItemCorrectly() throws Exception {
         SelectItem si = AbstractPageLoader.buildPageSelectItem("{order}: {orderlabel}", 1, "one", null, null);
         Assertions.assertNotNull(si);
         Assertions.assertEquals("1: one", si.getLabel());
@@ -72,7 +72,7 @@ public class AbstractPageLoaderTest extends AbstractTest {
      * @verifies construct double page item correctly
      */
     @Test
-    public void buildPageSelectItem_shouldConstructDoublePageItemCorrectly() throws Exception {
+    void buildPageSelectItem_shouldConstructDoublePageItemCorrectly() throws Exception {
         SelectItem si = AbstractPageLoader.buildPageSelectItem("{order}: {orderlabel}", 1, "one", 2, "two");
         Assertions.assertNotNull(si);
         Assertions.assertEquals("1-2: one - two", si.getLabel());

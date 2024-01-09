@@ -38,7 +38,7 @@ public class CMSPageTemplateTest {
 
     
     @Test
-    public void testLoadLegacyThemeTemplate() {
+    void testLoadLegacyThemeTemplate() {
       CMSPageTemplate template = CMSPageTemplate.loadFromXML(themeComponentFile);
       CMSComponent component = template.createCMSComponent();
       JsfComponent jsf = component.getJsfComponent();

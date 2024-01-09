@@ -52,7 +52,7 @@ class DefaultQueueListenerTest extends AbstractDatabaseEnabledTest {
     Path schedulerDirectory;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         this.dao = Mockito.mock(IDAO.class);
         Mockito.when(dao.addViewerMessage(Mockito.any())).thenReturn(true);

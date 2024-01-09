@@ -33,7 +33,7 @@ public class NetToolsTest extends AbstractTest {
      * @verifies filter multiple addresses correctly
      */
     @Test
-    public void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
+    void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
         Assertions.assertEquals("3.3.3.3", NetTools.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
     }
 
@@ -42,7 +42,7 @@ public class NetToolsTest extends AbstractTest {
      * @verifies modify string correctly
      */
     @Test
-    public void scrambleEmailAddress_shouldModifyStringCorrectly() throws Exception {
+    void scrambleEmailAddress_shouldModifyStringCorrectly() throws Exception {
         Assertions.assertEquals("foo***com", NetTools.scrambleEmailAddress("foo@bar.com"));
         Assertions.assertEquals("foo***com", NetTools.scrambleEmailAddress("foofoofoo@barbarbar.com"));
     }
@@ -52,7 +52,7 @@ public class NetToolsTest extends AbstractTest {
      * @verifies modify string correctly
      */
     @Test
-    public void scrambleIpAddress_shouldModifyStringCorrectly() throws Exception {
+    void scrambleIpAddress_shouldModifyStringCorrectly() throws Exception {
         Assertions.assertEquals("192.168.X.X", NetTools.scrambleIpAddress("192.168.0.1"));
     }
 
@@ -61,7 +61,7 @@ public class NetToolsTest extends AbstractTest {
      * @verifies build url correctly
      */
     @Test
-    public void buildClearCacheUrl_shouldBuildUrlCorrectly() throws Exception {
+    void buildClearCacheUrl_shouldBuildUrlCorrectly() throws Exception {
         Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true&thumbs=true&pdf=true",
                 NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_ALL, "PPN123", "https://example.com/", "test"));
         Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true",

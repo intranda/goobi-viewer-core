@@ -34,7 +34,7 @@ public class BreadcrumbBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies create breadcrumbs correctly
      */
     @Test
-    public void addCollectionHierarchyToBreadcrumb_shouldCreateBreadcrumbsCorrectly() throws Exception {
+    void addCollectionHierarchyToBreadcrumb_shouldCreateBreadcrumbsCorrectly() throws Exception {
         BreadcrumbBean bb = new BreadcrumbBean();
         Assertions.assertEquals(0, bb.getBreadcrumbs().size());
         bb.addCollectionHierarchyToBreadcrumb("a.b.c.d", "FOO", ".");
@@ -58,7 +58,7 @@ public class BreadcrumbBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies always remove breadcrumbs coming after the proposed breadcrumb
      */
     @Test
-    public void updateBreadcrumbs_shouldAlwaysRemoveBreadcrumbsComingAfterTheProposedBreadcrumb() throws Exception {
+    void updateBreadcrumbs_shouldAlwaysRemoveBreadcrumbsComingAfterTheProposedBreadcrumb() throws Exception {
         BreadcrumbBean bb = new BreadcrumbBean();
         Assertions.assertEquals(0, bb.getBreadcrumbs().size());
         bb.updateBreadcrumbs(new LabeledLink("one", "https://example.com/one", 1));

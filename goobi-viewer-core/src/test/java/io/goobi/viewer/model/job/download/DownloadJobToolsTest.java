@@ -41,7 +41,7 @@ public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies delete all finished jobs for record
      */
     @Test
-    public void removeJobsForRecord_shouldDeleteAllFinishedJobsForRecord() throws Exception {
+    void removeJobsForRecord_shouldDeleteAllFinishedJobsForRecord() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("epub.downloadFolder", "target");
 
         Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
@@ -65,7 +65,7 @@ public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies delete expired jobs correctly
      */
     @Test
-    public void cleanupExpiredDownloads_shouldDeleteExpiredJobsCorrectly() throws Exception {
+    void cleanupExpiredDownloads_shouldDeleteExpiredJobsCorrectly() throws Exception {
         Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
         DownloadJob job = new PDFDownloadJob("PI_3", null, LocalDateTime.now(), 3000000);
@@ -85,7 +85,7 @@ public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies delete file correctly
      */
     @Test
-    public void cleanupExpiredDownloads_shouldDeleteFileCorrectly() throws Exception {
+    void cleanupExpiredDownloads_shouldDeleteFileCorrectly() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("pdf.downloadFolder", "target");
 
         Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());

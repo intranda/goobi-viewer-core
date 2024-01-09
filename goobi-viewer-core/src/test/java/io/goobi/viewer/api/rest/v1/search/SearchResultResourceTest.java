@@ -31,7 +31,7 @@ public class SearchResultResourceTest {
      * @verifies return null if searchHits null
      */
     @Test
-    public void getSearchHitChildren_shouldReturnNullIfSearchHitsNull() throws Exception {
+    void getSearchHitChildren_shouldReturnNullIfSearchHitsNull() throws Exception {
         Assertions.assertNull(SearchResultResource.getSearchHitChildren(null, "123", 1, null, null));
     }
 }
