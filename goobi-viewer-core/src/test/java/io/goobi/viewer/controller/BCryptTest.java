@@ -36,7 +36,7 @@ class BCryptTest extends AbstractTest {
      * @verifies hash password correctly
      */
     @Test
-    public void hashpw_shouldHashPasswordCorrectly() throws Exception {
+    void hashpw_shouldHashPasswordCorrectly() throws Exception {
         String salt = BCrypt.gensalt();
         Set<String> used = new HashSet<>();
 

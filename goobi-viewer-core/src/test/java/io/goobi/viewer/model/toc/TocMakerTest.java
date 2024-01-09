@@ -40,7 +40,7 @@ import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
+class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @BeforeAll
     public static void setUpClass() throws Exception {
@@ -52,7 +52,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return both static and configured fields
      */
     @Test
-    public void getSolrFieldsToFetch_shouldReturnBothStaticAndConfiguredFields() throws Exception {
+    void getSolrFieldsToFetch_shouldReturnBothStaticAndConfiguredFields() throws Exception {
         List<?> fields = TocMaker.getSolrFieldsToFetch("_DEFAULT");
         Assertions.assertNotNull(fields);
         Assertions.assertEquals(33, fields.size()); //The fields configured in getTocLabelConfiguration() are counted twice, once  suffixed with _LANG_...
@@ -63,7 +63,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate volume TOC with siblings correctly
      */
     @Test
-    public void generateToc_shouldGenerateVolumeTOCWithSiblingsCorrectly() throws Exception {
+    void generateToc_shouldGenerateVolumeTOCWithSiblingsCorrectly() throws Exception {
         long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assertions.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
@@ -92,7 +92,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate volume TOC without siblings correctly
      */
     @Test
-    public void generateToc_shouldGenerateVolumeTOCWithoutSiblingsCorrectly() throws Exception {
+    void generateToc_shouldGenerateVolumeTOCWithoutSiblingsCorrectly() throws Exception {
         long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assertions.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
@@ -114,7 +114,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate anchor TOC correctly
      */
     @Test
-    public void generateToc_shouldGenerateAnchorTOCCorrectly() throws Exception {
+    void generateToc_shouldGenerateAnchorTOCCorrectly() throws Exception {
         long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
         Assertions.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
@@ -135,7 +135,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies paginate anchor TOC correctly
      */
     @Test
-    public void generateToc_shouldPaginateAnchorTOCCorrectly() throws Exception {
+    void generateToc_shouldPaginateAnchorTOCCorrectly() throws Exception {
         long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
         Assertions.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
@@ -224,7 +224,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies fill remaining parameters correctly if docstruct fallback used
      */
     @Test
-    public void buildLabel_shouldFillRemainingParametersCorrectlyIfDocstructFallbackUsed() throws Exception {
+    void buildLabel_shouldFillRemainingParametersCorrectlyIfDocstructFallbackUsed() throws Exception {
 
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.CURRENTNO, "1");
@@ -239,7 +239,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies create correctly sorted map
      */
     @Test
-    public void createOrderedGroupDocMap_shouldCreateCorrectlySortedMap() throws Exception {
+    void createOrderedGroupDocMap_shouldCreateCorrectlySortedMap() throws Exception {
         String pi = "PPN123";
         List<SolrDocument> groupMemberDocs = new ArrayList<>(5);
         {
