@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -156,17 +155,13 @@ public class MetadataValue implements Serializable {
                 if (citationProcessor == null) {
                     return "No citation processor";
                 }
-                try {
-                    if (citationString == null) {
-                        citationString = new Citation(id, citationProcessor, citationItemDataProvider,
-                                CitationTools.getCSLTypeForDocstrct(docstrct, topstruct),
-                                citationValues).getCitationString("text");
-                    }
-                    return citationString;
-                } catch (IOException e) {
-                    logger.error(e.getMessage());
-                    return e.getMessage();
+
+                if (citationString == null) {
+                    citationString = new Citation(id, citationProcessor, citationItemDataProvider,
+                            CitationTools.getCSLTypeForDocstrct(docstrct, topstruct),
+                            citationValues).getCitationString("text");
                 }
+                return citationString;
             }
 
             boolean addPrefix = true;
@@ -496,8 +491,8 @@ public class MetadataValue implements Serializable {
             String v = getComboValueShort(ind);
             return includeLabels ? List.of(l, v) : List.of(v);
         })
-            .flatMap(List::stream)
-            .toArray(String[]::new);
+                .flatMap(List::stream)
+                .toArray(String[]::new);
 
         return ViewerResourceBundle.getTranslationWithParameters(getMasterValue(), locale, true, comboValues);
     }

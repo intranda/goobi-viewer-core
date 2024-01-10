@@ -49,7 +49,7 @@ public class CitationLink {
         /**
          *
          * @param name
-         * @return
+         * @return {@link CitationLinkType}; null if no matching type found
          */
         protected static CitationLinkType getByName(String name) {
             if (name == null) {
@@ -75,7 +75,7 @@ public class CitationLink {
         /**
          *
          * @param name
-         * @return
+         * @return {@link CitationLinkLevel}; null if no matching level found
          */
         public static CitationLinkLevel getByName(String name) {
             if (name == null) {
@@ -107,6 +107,7 @@ public class CitationLink {
      * @param type
      * @param level
      * @param label
+     * 
      */
     public CitationLink(String type, String level, String label) {
         this.type = CitationLinkType.getByName(type);
@@ -121,8 +122,9 @@ public class CitationLink {
     }
 
     /**
-     *
-     * @return
+     * 
+     * @param viewManager
+     * @return Appropriate URL
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
@@ -132,7 +134,7 @@ public class CitationLink {
      * @should construct external url correctly
      */
     public String getUrl(ViewManager viewManager) throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("getUrl: {}/{}", level, field);
+        // logger.trace("getUrl: {}/{}", level, field); //NOSONAR Debug
         if (viewManager == null) {
             return null;
         }
@@ -145,6 +147,8 @@ public class CitationLink {
                     return viewManager.getCiteLinkDocstruct();
                 case IMAGE:
                     return viewManager.getCiteLinkPage();
+                default:
+                    break;
             }
         }
 
@@ -180,6 +184,8 @@ public class CitationLink {
     }
 
     /**
+     * 
+     * @param viewManager
      * @return the value
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -194,7 +200,7 @@ public class CitationLink {
         }
 
         if (StringUtils.isEmpty(this.value)) {
-            // logger.trace("Loading value: {}/{}", level, field);
+            // logger.trace("Loading value: {}/{}", level, field); //NOSONAR Debug
             String query = null;
             switch (level) {
                 case RECORD:
@@ -207,6 +213,8 @@ public class CitationLink {
                     query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + viewManager.getPi() + " +" + SolrConstants.ORDER + ":"
                             + viewManager.getCurrentImageOrder() + " +" + SolrConstants.DOCTYPE
                             + ":" + DocType.PAGE.name();
+                    break;
+                default:
                     break;
             }
 

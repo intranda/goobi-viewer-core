@@ -23,7 +23,7 @@ package io.goobi.viewer.model.citation;
 
 import de.undercouch.citeproc.csl.CSLType;
 
-public class CitationTools {
+public final class CitationTools {
 
     private CitationTools() {
     }
@@ -65,5 +65,4 @@ public class CitationTools {
                 return CSLType.ARTICLE;
         }
     }
-
 }
