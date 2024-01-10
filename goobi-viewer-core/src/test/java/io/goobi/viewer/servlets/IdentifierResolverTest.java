@@ -32,34 +32,20 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpException;
-import com.meterware.httpunit.HttpInternalErrorException;
-import com.meterware.httpunit.HttpNotFoundException;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.servletunit.ServletRunner;
-import com.meterware.servletunit.ServletUnitClient;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final String RESOLVER_NAME = "identifierResolver";
-
-    private ServletRunner sr;
-
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-
-        sr = new ServletRunner();
-        sr.registerServlet(RESOLVER_NAME, IdentifierResolver.class.getName());
     }
 
     /**
@@ -68,9 +54,12 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void doGet_shouldReturn400IfRecordIdentifierMissing() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
-        Assertions.assertThrows(HttpException.class, () -> sc.getResponse(request));
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        IdentifierResolver resolver = new IdentifierResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     }
 
     /**
@@ -79,36 +68,47 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void doGet_shouldReturn404IfRecordNotFound() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("urn", "NOTFOUND");
-        Assertions.assertThrows(HttpNotFoundException.class, () -> sc.getResponse(request));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        IdentifierResolver resolver = new IdentifierResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
     }
 
     /**
      * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return 500 if record field name bad
+     * @verifies return 400 if record field name bad
      */
     @Test
-    void doGet_shouldReturn500IfRecordFieldNameBad() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
+    void doGet_shouldReturn400IfRecordFieldNameBad() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("field", "NOSUCHFIELD");
         request.setParameter("identifier", "PPN123");
-        Assertions.assertThrows(HttpInternalErrorException.class, () -> sc.getResponse(request));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        IdentifierResolver resolver = new IdentifierResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals("Undefined field name: NOSUCHFIELD", response.getErrorMessage());
     }
 
     /**
      * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return 500 if record field value bad
+     * @verifies return 400 if record field value bad
      */
     @Test
-    void doGet_shouldReturn500IfRecordFieldValueBad() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(TestUtils.APPLICATION_ROOT_URL + RESOLVER_NAME);
+    void doGet_shouldReturn400IfRecordFieldValueBad() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("field", SolrConstants.PI);
         request.setParameter("identifier", "a:b");
-        Assertions.assertThrows(HttpException.class, () -> sc.getResponse(request));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        IdentifierResolver resolver = new IdentifierResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals("Illegal identifier: a:b", response.getErrorMessage());
     }
 
     /**

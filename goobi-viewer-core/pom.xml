@@ -112,7 +112,6 @@
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
-		<httpunit.version>1.7.3</httpunit.version>
 		<icu.version>74.2</icu.version>
 		<inject.version>1</inject.version>
 		<jackson.version>2.16.1</jackson.version>
@@ -136,7 +135,6 @@
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20231013</json.version>
 		<jsoup.version>1.17.2</jsoup.version>
-		<junit4.version>4.13.2</junit4.version>
 		<junit.version>5.9.1</junit.version>
 		<mariadb-java-client.version>3.3.2</mariadb-java-client.version>
 		<mockito.version>5.8.0</mockito.version>
@@ -348,18 +346,6 @@
 			<version>${httpmime.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.httpunit</groupId>
-			<artifactId>httpunit</artifactId>
-			<version>${httpunit.version}</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>servlet-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>com.ibm.icu</groupId>
 			<artifactId>icu4j</artifactId>
 			<version>${icu.version}</version>
@@ -542,13 +528,6 @@
 			<artifactId>jaxb-runtime</artifactId>
 			<version>${jaxb-runtime.version}</version>
 		</dependency>
-		<!-- JUnit4 needed for httpunit -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit4.version}</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
@@ -695,6 +674,18 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>5.3.31</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.3.31</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.jboss.weld.servlet</groupId>
 			<artifactId>weld-servlet-shaded</artifactId>

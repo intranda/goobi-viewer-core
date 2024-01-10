@@ -25,32 +25,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpException;
-import com.meterware.httpunit.HttpNotFoundException;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.servletunit.ServletRunner;
-import com.meterware.servletunit.ServletUnitClient;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 
 class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
-
-    private static final String RESOLVER_NAME = "ppnResolver";
-
-    private ServletRunner sr;
-
-    @Override
-    @BeforeEach
-    public void setUp() throws Exception {
-        super.setUp();
-
-        sr = new ServletRunner();
-        sr.registerServlet(RESOLVER_NAME, PpnResolver.class.getName());
-    }
 
     /**
      * @see PpnResolver#doGet(HttpServletRequest,HttpServletResponse)
@@ -58,9 +39,14 @@ class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void doGet_shouldReturn400IfRecordIdentifierMissing() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-        Assertions.assertThrows(HttpException.class, () -> sc.getResponse(request));
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        PpnResolver resolver = new PpnResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(PpnResolver.ERRTXT_NO_ARGUMENT + PpnResolver.REQUEST_PARAM_NAME, response.getErrorMessage());
     }
 
     /**
@@ -69,22 +55,31 @@ class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void doGet_shouldReturn404IfRecordNotFound() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("id", "NOTFOUND");
-        Assertions.assertThrows(HttpNotFoundException.class, () -> sc.getResponse(request));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        PpnResolver resolver = new PpnResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(PpnResolver.ERRTXT_DOC_NOT_FOUND, response.getErrorMessage());
     }
 
     /**
      * @see PpnResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return 500 if record identifier bad
+     * @verifies return 400 if record identifier bad
      */
     @Test
-    void doGet_shouldReturn500IfRecordIdentifierBad() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+    void doGet_shouldReturn400IfRecordIdentifierBad() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("id", "a:b");
-        Assertions.assertThrows(HttpException.class, () -> sc.getResponse(request));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        MetsResolver resolver = new MetsResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(MetsResolver.ERRTXT_ILLEGAL_IDENTIFIER + ": a:b", response.getErrorMessage());
+
     }
 
     //    /**
