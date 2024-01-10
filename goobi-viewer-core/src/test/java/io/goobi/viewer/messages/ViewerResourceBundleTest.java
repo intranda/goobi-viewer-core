@@ -22,7 +22,6 @@
 package io.goobi.viewer.messages;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -104,7 +103,7 @@ class ViewerResourceBundleTest extends AbstractTest {
     @Test
     void testGetLocalesFromFile() throws FileNotFoundException, IOException, JDOMException {
         Path configPath = Paths.get("src/test/resources/localConfig/faces-config.xml");
-        assumeTrue(Files.isRegularFile(configPath));
+        Assertions.assertTrue(Files.isRegularFile(configPath));
         List<Locale> locales = ViewerResourceBundle.getLocalesFromFile(configPath);
         assertEquals(6, locales.size());
         assertEquals(Locale.ENGLISH, locales.get(1));

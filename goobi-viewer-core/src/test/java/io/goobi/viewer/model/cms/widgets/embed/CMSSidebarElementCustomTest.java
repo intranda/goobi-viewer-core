@@ -22,10 +22,10 @@
 package io.goobi.viewer.model.cms.widgets.embed;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.Assume.assumeNotNull;
 
 import java.util.Locale;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -45,7 +45,7 @@ class CMSSidebarElementCustomTest extends AbstractDatabaseEnabledTest {
         widget.setId(11l);
         widget.getTitle().setText("Titel", Locale.GERMAN);
         CMSPage owner = DataManager.getInstance().getDao().getCMSPage(1l);
-        assumeNotNull(owner);
+        Assertions.assertNotNull(owner);
 
         CMSSidebarElementCustom element = new CMSSidebarElementCustom(widget, owner);
         assertEquals(owner, element.getOwnerPage());
