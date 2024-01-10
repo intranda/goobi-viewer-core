@@ -929,6 +929,8 @@
                                 <!-- angus-mail is the implementation of the jakarta.mail specification and used for sending emails -->
                                 <ignoredUnusedDeclaredDependency>org.eclipse.angus:jakarta.mail</ignoredUnusedDeclaredDependency>
 
+                                <!-- spring-web: MediaType class needed for some unit test -->
+                                <ignoredUnusedDeclaredDependency>org.springframework:spring-web</ignoredUnusedDeclaredDependency>
 
 								<!-- activemq libs -->
 									<!-- KahaDB is the used file based persistence database and declared in the config file  -->
