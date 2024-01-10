@@ -43,7 +43,6 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return METS file correctly via pi
      */
     @Test
-    @Disabled("Make sure the actual METS file is located in the indexed data repo (/opt/digiverso/viewer/data/2)")
     void doGet_shouldReturnMETSFileCorrectlyViaPi() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("id", PI_KLEIUNIV);
@@ -62,7 +61,6 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return METS file correctly via urn
      */
     @Test
-    @Disabled("Make sure the actual METS file is located in the indexed data repo (/opt/digiverso/viewer/data/1)")
     void doGet_shouldReturnMETSFileCorrectlyViaUrn() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("urn", "urn:nbn:de:gbv:9-g-4882158");
@@ -81,7 +79,6 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return LIDO file correctly
      */
     @Test
-    @Disabled("Make sure the actual LIDO file is located in the indexed data repo (/opt/digiverso/viewer/data/2)")
     void doGet_shouldReturnLIDOFileCorrectly() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("id", "455820");
