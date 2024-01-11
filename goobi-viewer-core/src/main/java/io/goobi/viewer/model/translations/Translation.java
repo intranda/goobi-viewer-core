@@ -149,9 +149,9 @@ public class Translation {
         if (useFallback) {
             String defaultLanguage = Optional.of(BeanUtils.getDefaultLocale()).map(Locale::getLanguage).orElse("en");
             return getTranslation(translations, defaultLanguage, tag, false);
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     public static void setTranslation(List<Translation> translations, String lang, String value, String tag) {
@@ -275,9 +275,8 @@ public class Translation {
     public int hashCode() {
         if (this.language != null) {
             return this.language.hashCode();
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     /**
@@ -287,15 +286,12 @@ public class Translation {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             Translation other = (Translation) obj;
-            return StringUtils.equals(this.language, other.language) &&
-                    StringUtils.equals(this.tag, other.tag);
-        } else {
-            return false;
+            return StringUtils.equals(this.language, other.language) && StringUtils.equals(this.tag, other.tag);
         }
+        return false;
     }
 
     public boolean isEmpty() {
         return StringUtils.isBlank(getValue());
     }
-
 }

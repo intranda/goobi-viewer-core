@@ -47,7 +47,7 @@ public class LanguageHelper {
 
     private static final Logger logger = LogManager.getLogger(LanguageHelper.class);
 
-    ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
+    private ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
 
     /**
      * <p>
@@ -115,14 +115,15 @@ public class LanguageHelper {
     /**
      * Gets the language data for the given iso-code 639-1 or 639-2B
      *
-     * @param isoCode a {@link java.lang.String} object.
+     * @param inIsoCode a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
      */
-    public Language getLanguage(String isoCode) {
-        if (isoCode == null) {
+    public Language getLanguage(final String inIsoCode) {
+        if (inIsoCode == null) {
             return null;
         }
-        isoCode = isoCode.replaceAll("[\n\r]", "_");
+
+        String isoCode = inIsoCode.replaceAll("[\n\r]", "_");
         HierarchicalConfiguration<ImmutableNode> languageConfig = null;
         try {
             if (isoCode.length() == 3) {
@@ -140,7 +141,7 @@ public class LanguageHelper {
         } catch (IndexOutOfBoundsException e) {
             logger.warn("No matching language found for {}", isoCode);
             return null;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
         if (languageConfig == null) {
@@ -153,7 +154,7 @@ public class LanguageHelper {
 
     /**
      * @param languageConfig
-     * @return
+     * @return Created {@link Language}
      */
     public Language createLanguage(HierarchicalConfiguration<ImmutableNode> languageConfig) {
         Language language = new Language();
@@ -165,5 +166,4 @@ public class LanguageHelper {
         language.setFrenchName(languageConfig.getString("fre"));
         return language;
     }
-
 }

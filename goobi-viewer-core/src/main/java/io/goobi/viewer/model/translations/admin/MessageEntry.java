@@ -54,18 +54,19 @@ public class MessageEntry implements Comparable<MessageEntry> {
      * @return new <code>MessageEntry</code>
      * @should create MessageEntry correctly
      */
-    public static MessageEntry create(String keyPrefix, String keySuffix, List<Locale> allLocales) {
+    public static MessageEntry create(final String keyPrefix, String keySuffix, List<Locale> allLocales) {
         if (keySuffix == null) {
             throw new IllegalArgumentException("keySuffix may not be null");
         }
         if (allLocales == null) {
             throw new IllegalArgumentException("allLocales may not be null");
         }
-        if (keyPrefix == null) {
-            keyPrefix = "";
+        String useKeyPrefix = keyPrefix;
+        if (useKeyPrefix == null) {
+            useKeyPrefix = "";
         }
 
-        String key = keyPrefix + keySuffix.trim();
+        String key = useKeyPrefix + keySuffix.trim();
         List<MessageValue> values = new ArrayList<>(allLocales.size());
         for (Locale locale : allLocales) {
             String translation = ViewerResourceBundle.getTranslation(key, locale, false, false, false, false);
@@ -73,7 +74,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
             values.add(new MessageValue(locale.getLanguage(), translation, globalTranslation));
         }
 
-        return new MessageEntry(keyPrefix, keySuffix, values);
+        return new MessageEntry(useKeyPrefix, keySuffix, values);
     }
 
     /**
@@ -116,18 +117,24 @@ public class MessageEntry implements Comparable<MessageEntry> {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         MessageEntry other = (MessageEntry) obj;
         if (getKey() == null) {
-            if (other.getKey() != null)
+            if (other.getKey() != null) {
                 return false;
-        } else if (!getKey().equals(other.getKey()))
+            }
+        } else if (!getKey().equals(other.getKey())) {
             return false;
+        }
+
         return true;
     }
 
@@ -142,7 +149,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
-     * Returns the translation statusover all languages.
+     * Returns the translation status over all languages.
      *
      * @return appropriate {@link TranslationStatus}
      * @should return none status correctly
