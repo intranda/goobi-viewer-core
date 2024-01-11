@@ -189,7 +189,7 @@ public class MetadataElement implements Serializable {
      * @param se StructElement
      * @param metadataViewIndex Metadata view index
      * @param sessionLocale
-     * @return
+     * @return Constructed {@link MetadataElement}
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -274,8 +274,8 @@ public class MetadataElement implements Serializable {
     /**
      * Determines the mimetype from the structElement's metadata, or its first child if the structElement is an anchor
      *
-     * @param se
-     * @return
+     * @param se {@link StructElement}
+     * @return Mime type form metadata field
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -369,7 +369,7 @@ public class MetadataElement implements Serializable {
         Metadata fallbackEn = null;
         for (Metadata md : metadataList) {
             if (md.getLabel().equals(fullFieldName)) {
-                // logger.trace("{}: {}", fullFieldName, md.getValues().size());
+                // logger.trace("{}: {}", fullFieldName, md.getValues().size()); //NOSONAR Debug
                 return md;
             } else if (md.getLabel().equals(fullFieldNameDe)) {
                 fallbackDe = md;

@@ -58,20 +58,41 @@ public class MetadataContainer {
 
     private final Map<String, List<IMetadataValue>> metadata;
 
+    /**
+     * 
+     * @param solrId
+     * @param label
+     * @param metadata
+     */
     public MetadataContainer(String solrId, IMetadataValue label, Map<String, List<IMetadataValue>> metadata) {
         this.solrId = solrId;
         this.label = label;
         this.metadata = metadata;
     }
 
+    /**
+     * 
+     * @param solrId
+     * @param label
+     */
     public MetadataContainer(String solrId, IMetadataValue label) {
         this(solrId, label, new HashMap<>());
     }
 
+    /**
+     * 
+     * @param solrId
+     * @param label
+     */
     public MetadataContainer(String solrId, String label) {
         this(solrId, new SimpleMetadataValue(label));
     }
 
+    /**
+     * Cloning constructor.
+     * 
+     * @param orig
+     */
     public MetadataContainer(MetadataContainer orig) {
         this.solrId = orig.solrId;
         this.label = orig.label.copy();
@@ -104,7 +125,7 @@ public class MetadataContainer {
      * Get all metadata for the given key
      * 
      * @param key the field name for which to get the metadata value
-     * @return
+     * @return List<IMetadataValue>
      */
     public List<IMetadataValue> get(String key) {
         return this.metadata.getOrDefault(key, Collections.emptyList());
@@ -114,7 +135,7 @@ public class MetadataContainer {
      * get the first metadata value for the given key. If no such value exists, an empty {@link IMetadataValue} is returned
      * 
      * @param key the field name for which to get the metadata value
-     * @return
+     * @return {@link IMetadataValue}
      */
     public IMetadataValue getFirst(String key) {
         return this.metadata.getOrDefault(key, Collections.emptyList()).stream().findFirst().orElse(new SimpleMetadataValue(""));
@@ -124,7 +145,7 @@ public class MetadataContainer {
      * Get all values of the default language (or any value of no default langauge value exists) for the given field
      * 
      * @param key the field name for which to get the metadata value
-     * @return
+     * @return List<String>
      */
     public List<String> getValues(String key) {
         return this.get(key).stream().map(value -> value.getValueOrFallback(null)).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
@@ -134,7 +155,7 @@ public class MetadataContainer {
      * Get the first found value in the default language for the given key
      * 
      * @param key the field name for which to get the metadata value
-     * @return
+     * @return First value for the given key; empty string if not found
      */
     public String getFirstValue(String key) {
         return this.get(key).stream().findFirst().flatMap(IMetadataValue::getValue).orElse("");
@@ -146,7 +167,7 @@ public class MetadataContainer {
      * @param key the field name for which to get the metadata value
      * @param locale the language for which to find a value. If there is no translation in that langauge, use the default language and failing that
      *            any language entry
-     * @return
+     * @return List of values for the given key and locale
      */
     public List<String> getValues(String key, Locale locale) {
         return this.get(key).stream().map(value -> value.getValueOrFallback(locale)).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
@@ -158,28 +179,54 @@ public class MetadataContainer {
      * @param key the field name for which to get the metadata value
      * @param locale the language for which to find a value. If there is no translation in that langauge, use the default language and failing that
      *            any language entry
-     * @return
+     * @return First value for the given key and locale; empty string if not found
      */
     public String getFirstValue(String key, Locale locale) {
         return this.get(key).stream().filter(value -> !value.isEmpty()).findFirst().map(value -> value.getValueOrFallback(locale)).orElse("");
     }
 
+    /**
+     * 
+     * @param key
+     * @param values
+     */
     public void put(String key, List<IMetadataValue> values) {
         this.metadata.put(key, values);
     }
 
+    /**
+     * 
+     * @param key
+     * @param value
+     */
     public void add(String key, IMetadataValue value) {
         this.metadata.computeIfAbsent(key, a -> new ArrayList<>()).add(value);
     }
 
+    /**
+     * 
+     * @param key
+     * @param value
+     */
     public void add(String key, String value) {
         this.add(key, new SimpleMetadataValue(value));
     }
 
+    /**
+     * 
+     * @param key
+     * @param values
+     */
     public void addAll(String key, Collection<IMetadataValue> values) {
         this.addAll(key, values, false);
     }
 
+    /**
+     * 
+     * @param key
+     * @param values
+     * @param overwrite
+     */
     public void addAll(String key, Collection<IMetadataValue> values, boolean overwrite) {
         values.forEach(v -> {
             if (overwrite) {
@@ -190,6 +237,10 @@ public class MetadataContainer {
         });
     }
 
+    /**
+     * 
+     * @param key
+     */
     public void remove(String key) {
         this.metadata.remove(key);
     }

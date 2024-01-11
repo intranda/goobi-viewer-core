@@ -99,7 +99,7 @@ public class MetadataValue implements Serializable {
     /**
      *
      * @param index
-     * @return
+     * @return true if value at index blank; false otherwise
      */
     public boolean isParamValueBlank(int index) {
         return StringUtils.isBlank(getComboValueShort(index));
@@ -112,10 +112,11 @@ public class MetadataValue implements Serializable {
      * @should return false if any param value not blank
      */
     public boolean isAllParamValuesBlank() {
-        for (int i = 0; i < paramValues.size(); ++i)
+        for (int i = 0; i < paramValues.size(); ++i) {
             if (StringUtils.isNotBlank(getComboValueShort(i))) {
                 return false;
             }
+        }
 
         return true;
     }
@@ -148,10 +149,9 @@ public class MetadataValue implements Serializable {
                 continue;
             }
 
-            // logger.trace("param value: {}", paramValue);
-
+            // logger.trace("param value: {}", paramValue); //NOSONAR Debug
             if (MetadataParameterType.CITEPROC.getKey().equals(paramValue)) {
-                // logger.trace("CitePROC value: {}", index);
+                // logger.trace("CitePROC value: {}", index); //NOSONAR Debug
                 if (citationProcessor == null) {
                     return "No citation processor";
                 }
@@ -176,7 +176,7 @@ public class MetadataValue implements Serializable {
                 addPrefix = false;
                 addSuffix = false;
                 masterFragment = ViewerResourceBundle.getTranslation(paramMasterValueFragments.get(index), null);
-                // logger.trace("master fragment: {}", masterFragment);
+                // logger.trace("master fragment: {}", masterFragment); //NOSONAR Debug
             }
             // Only add prefix if the total parameter value lengths is > 0 so far
             if (addPrefix && paramPrefixes.size() > index && StringUtils.isNotEmpty(paramPrefixes.get(index))) {
@@ -210,9 +210,9 @@ public class MetadataValue implements Serializable {
      * @param index a int.
      */
     public String getParamLabelWithColon(int index) {
-        // logger.trace("getParamLabelWithColon: {}", index);
+        // logger.trace("getParamLabelWithColon: {}", index); //NOSONAR Debug
         if (paramLabels.size() > index && paramLabels.get(index) != null) {
-            // logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ");
+            // logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": "); //NOSONAR Debug
             return ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ";
         }
         return "";
@@ -307,7 +307,7 @@ public class MetadataValue implements Serializable {
             return new ArrayList<>(normDataUrls.keySet());
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     /**
@@ -363,10 +363,7 @@ public class MetadataValue implements Serializable {
      */
     public boolean hasParamValue(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
-        if (index > -1 && index < paramValues.size()) {
-            return true;
-        }
-        return false;
+        return index > -1 && index < paramValues.size();
     }
 
     /**
@@ -389,13 +386,14 @@ public class MetadataValue implements Serializable {
     /**
      * 
      * @param paramLabel
-     * @return
+     * @return List of parameter values for the given paramLabel
      */
     public List<String> getParamValues(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
         if (index > -1 && index < paramValues.size()) {
             return paramValues.get(index);
         }
+
         return Collections.emptyList();
     }
 
@@ -413,7 +411,7 @@ public class MetadataValue implements Serializable {
         if (searchTerms == null || searchTerms.isEmpty()) {
             return;
         }
-        logger.trace("applyHighlightingToParamValue: {}", paramIndex, searchTerms);
+        // logger.trace("applyHighlightingToParamValue: {} ({})", paramIndex, searchTerms); //NOSONAR Debug
 
         List<String> values = paramValues.get(paramIndex);
         for (int i = 0; i < values.size(); ++i) {
@@ -455,7 +453,7 @@ public class MetadataValue implements Serializable {
 
     /**
      * 
-     * @return
+     * @return Display value for the current locale
      */
     public String getDisplayValue() {
         return getDisplayValue(IPolyglott.getCurrentLocale());
@@ -464,7 +462,7 @@ public class MetadataValue implements Serializable {
     /**
      * 
      * @param includeLabels
-     * @return
+     * @return Display value for the current locale
      */
     public String getDisplayValue(boolean includeLabels) {
         return getDisplayValue(IPolyglott.getCurrentLocale(), includeLabels);
@@ -473,7 +471,7 @@ public class MetadataValue implements Serializable {
     /**
      * 
      * @param locale
-     * @return
+     * @return Display value for the given locale
      */
     public String getDisplayValue(Locale locale) {
         return getDisplayValue(locale, false);
@@ -483,7 +481,7 @@ public class MetadataValue implements Serializable {
      * 
      * @param locale
      * @param includeLabels
-     * @return
+     * @return Display value for the given locale
      */
     public String getDisplayValue(Locale locale, boolean includeLabels) {
         String[] comboValues = IntStream.range(0, paramValues.size()).mapToObj(ind -> {
@@ -597,7 +595,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @param citationStyle the citationStyle to set
+     * @param citationProcessor the citationProcessor to set
      * @return this
      */
     public MetadataValue setCitationProcessor(CSL citationProcessor) {

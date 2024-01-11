@@ -246,8 +246,8 @@ public final class SolrConstants {
     public static final String PI_TOPSTRUCT = "PI_TOPSTRUCT";
     /** Constant <code>PLACEPUBLISH="MD_PLACEPUBLISH"</code> */
     public static final String PLACEPUBLISH = "MD_PLACEPUBLISH";
-    /** Constant <code>PUBLISHER="PUBLISHER"</code> */
-    public static final String PUBLISHER = "PUBLISHER";
+    /** Constant <code>PUBLISHER="MD_PUBLISHER"</code> */
+    public static final String PUBLISHER = "MD_PUBLISHER";
     /** Constant <code>RESOURCE="RESOURCE"</code> */
     public static final String RESOURCE = "RESOURCE";
     /** Constant <code>SOURCEDOCFORMAT="SOURCEDOCFORMAT"</code> */
