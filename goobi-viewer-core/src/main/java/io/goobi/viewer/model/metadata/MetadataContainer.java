@@ -252,7 +252,8 @@ public class MetadataContainer {
      * 
      * @param doc The main DOCSTRUCT document
      * @param children METADATA type documents belonging to the main doc
-     * @param fieldNameFilter A function which should return true for all metadata field names to be included in the return value
+     * @param mainDocFieldNameFilter A function which should return true for all metadata field names to be included in the main doc
+     * @param childDocFieldNameFilter A function which should return true for all metadata field names to be included in child docs
      * @return a {@link MetadataContainer}
      */
     public static MetadataContainer createMetadataEntity(SolrDocument doc, List<SolrDocument> children, Predicate<String> mainDocFieldNameFilter,

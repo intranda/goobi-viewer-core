@@ -452,6 +452,7 @@ public class MetadataElement implements Serializable {
     /**
      * Checks whether all metadata fields for this element can be displayed in a single box (i.e. no table type grouped metadata are configured).
      *
+     * @param type
      * @return true if all metadata are not configured as single string; false otherwise
      * @should return false if at least one metadata with same type not single string
      * @should return true if all metadata of same type single string

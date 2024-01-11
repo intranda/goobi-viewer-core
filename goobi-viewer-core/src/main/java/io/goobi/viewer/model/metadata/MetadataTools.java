@@ -55,7 +55,7 @@ import io.goobi.viewer.solr.SolrTools;
  * MetadataTools class.
  * </p>
  */
-public class MetadataTools {
+public final class MetadataTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(MetadataTools.class);
@@ -427,7 +427,7 @@ public class MetadataTools {
     /**
      *
      * @param docstructType
-     * @return
+     * @return Mapped RIS type or default value "GEN"
      */
     static String getRISTypeMapping(String docstructType) {
         if (docstructType == null) {
