@@ -70,8 +70,11 @@ public class FuzzySearchTerm {
     public FuzzySearchTerm(String term) {
         this.fullTerm = term;
         if (isFuzzyTerm(term)) {
-            this.term = this.fullTerm.replaceAll("[*]{0,1}(" + WORD_PATTERN + ")[*]{0,1}~\\d", "$1").toLowerCase(); //NOSONAR   no catastrophic backtracking detected
-            this.maxDistance = Integer.parseInt(this.fullTerm.replaceAll("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~(\\d)", "$1")); //NOSONAR   no catastrophic backtracking detected
+            this.term =
+                    this.fullTerm.replaceAll("[*]{0,1}(" + WORD_PATTERN + ")[*]{0,1}~\\d", "$1")
+                            .toLowerCase(); //NOSONAR no catastrophic backtracking detected
+            this.maxDistance = Integer.parseInt(this.fullTerm
+                    .replaceAll("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~(\\d)", "$1")); //NOSONAR no catastrophic backtracking detected
             wildcardBack = this.fullTerm.endsWith("*~" + this.maxDistance);
         } else {
             this.term = term;
@@ -109,16 +112,16 @@ public class FuzzySearchTerm {
      * Test if a given text containing a single word
      * 
      * @param text
-     * @return
+     * @return boolean
      */
-    public boolean matches(String text) {
-        text = cleanup(text);
+    public boolean matches(final String text) {
+        String t = cleanup(text);
         String termToMatch = cleanup(this.term);
-        if ((wildcardFront || wildcardBack) && text.length() >= termToMatch.length() - this.maxDistance) {
-            for (int pos = 0; pos < text.length() - (termToMatch.length() - this.maxDistance); pos++) {
-                for (int length = termToMatch.length() - this.maxDistance; length <= Math.min(text.length() - pos,
+        if ((wildcardFront || wildcardBack) && t.length() >= termToMatch.length() - this.maxDistance) {
+            for (int pos = 0; pos < t.length() - (termToMatch.length() - this.maxDistance); pos++) {
+                for (int length = termToMatch.length() - this.maxDistance; length <= Math.min(t.length() - pos,
                         termToMatch.length() + maxDistance); length++) {
-                    String subString = text.substring(pos, pos + length);
+                    String subString = t.substring(pos, pos + length);
                     int distance = new DamerauLevenshtein(subString, termToMatch).getSimilarity();
                     if (distance <= maxDistance) {
                         return true;
@@ -126,26 +129,39 @@ public class FuzzySearchTerm {
                 }
             }
             return false;
-        } else if (Math.abs(text.length() - termToMatch.length()) <= this.maxDistance) {
-            int distance = new DamerauLevenshtein(text, termToMatch).getSimilarity();
+        } else if (Math.abs(t.length() - termToMatch.length()) <= this.maxDistance) {
+            int distance = new DamerauLevenshtein(t, termToMatch).getSimilarity();
             return distance <= maxDistance;
         } else {
             return false;
         }
     }
 
-    private String cleanup(String text) {
-        if (StringUtils.isNotBlank(text)) {
-            text = cleanHyphenations(text);
-            text = StringTools.removeDiacriticalMarks(text);
-            text = StringTools.replaceCharacterVariants(text);
-            text = text.toLowerCase();
-            text = text.replaceAll(WORD_SURROUNDED_BY_OTHER_CHARACTERS, "$1"); //NOSONAR  removes anything before and after the word, backtracking save
+    /**
+     * 
+     * @param text
+     * @return Cleaned-up text
+     */
+    private static String cleanup(final String text) {
+        String ret = text;
+        if (StringUtils.isNotBlank(ret)) {
+            ret = cleanHyphenations(ret);
+            ret = StringTools.removeDiacriticalMarks(ret);
+            ret = StringTools.replaceCharacterVariants(ret);
+            ret = ret.toLowerCase();
+            ret =
+                    ret.replaceAll(WORD_SURROUNDED_BY_OTHER_CHARACTERS, "$1"); //NOSONAR removes anything before and after the word, backtracking save
         }
-        return text;
+
+        return ret;
     }
 
-    private String cleanHyphenations(String text) {
+    /**
+     * 
+     * @param text
+     * @return Cleaned-up text
+     */
+    private static String cleanHyphenations(String text) {
         return text.replaceAll("[⸗¬-]", "");
     }
 

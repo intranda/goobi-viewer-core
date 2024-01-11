@@ -217,7 +217,7 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
     void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInAllFields() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
-        item.displaySelectItems = true;
+        item.setDisplaySelectItems(true);
         item.toggleDisplaySelectItems();
         Assertions.assertFalse(item.isDisplaySelectItems());
     }
@@ -230,7 +230,7 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
     void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInFulltext() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.FULLTEXT);
-        item.displaySelectItems = true;
+        item.setDisplaySelectItems(true);
         item.toggleDisplaySelectItems();
         Assertions.assertFalse(item.isDisplaySelectItems());
     }

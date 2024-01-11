@@ -128,7 +128,7 @@ class FacetItemTest extends AbstractTest {
         values.put("Volume", 3L);
         {
             // asc
-            List<IFacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, false, false, null);
+            List<IFacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, false, false);
             Assertions.assertEquals(3, items.size());
             Assertions.assertEquals("Article", items.get(0).getLabel());
             Assertions.assertEquals("Monograph", items.get(1).getLabel());
@@ -136,7 +136,7 @@ class FacetItemTest extends AbstractTest {
         }
         {
             // desc
-            List<IFacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, true, false, null);
+            List<IFacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, true, false);
             Assertions.assertEquals(3, items.size());
             Assertions.assertEquals("Article", items.get(2).getLabel());
             Assertions.assertEquals("Monograph", items.get(1).getLabel());

@@ -2920,7 +2920,7 @@ public class SearchBean implements SearchInterface, Serializable {
             locale = nh.getLocale();
         }
 
-        return FacetItem.generateFacetItems(useField, result, true, reverseOrder, hierarchicalFields.contains(useField), locale);
+        return FacetItem.generateFacetItems(useField, result, true, reverseOrder, hierarchicalFields.contains(useField));
     }
 
     /* (non-Javadoc)
