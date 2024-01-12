@@ -62,7 +62,7 @@ public class Sitemap {
 
     private static final Logger logger = LogManager.getLogger(Sitemap.class);
 
-    static Namespace nsSitemap = Namespace.getNamespace(null, "http://www.sitemaps.org/schemas/sitemap/0.9");
+    static final Namespace NS_SITEMAP = Namespace.getNamespace(null, "http://www.sitemaps.org/schemas/sitemap/0.9");
 
     private String viewerRootUrl = "http://localhost:8080/viewer";
     private Document docIndex = new Document();
@@ -98,7 +98,7 @@ public class Sitemap {
             this.viewerRootUrl += "/";
         }
         // Sitemap index root
-        docIndex.setRootElement(new Element("sitemapindex", nsSitemap));
+        docIndex.setRootElement(new Element("sitemapindex", NS_SITEMAP));
 
         index = -1;
         long timestampModified = 0;
@@ -127,7 +127,8 @@ public class Sitemap {
             logger.warn("Sitemap: unable to read DAO, cannot include cms pages in sitemap", e);
         }
 
-        // Create query that filters out blacklisted collections and any records that do not allow listing by default (ignore any individual agent's privileges for the sitemap).
+        // Create query that filters out blacklisted collections and any records that do not allow listing by default
+        // (ignore any individual agent's privileges for the sitemap).
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append(SolrConstants.PI)
                 .append(":* AND NOT(")
@@ -166,7 +167,7 @@ public class Sitemap {
                         DateTools.format(DateTools.getLocalDateTimeFromMillis(timestampModified, false), DateTools.formatterISO8601Date, false);
                 if (timestampModified > latestTimestampModified) {
                     latestTimestampModified = timestampModified;
-                    eleCurrectIndexSitemap.getChild("lastmod", nsSitemap).setText(dateModified);
+                    eleCurrectIndexSitemap.getChild("lastmod", NS_SITEMAP).setText(dateModified);
                     //                        logger.debug("Sitemap: set latest modified date: " + dateModified);
                 }
             }
@@ -188,26 +189,24 @@ public class Sitemap {
                 currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
                 increment(timestampModified);
             } else {
-                // Record
-                {
-                    //  Record object URL (representative page)
-                    int order = solrDoc.containsKey(SolrConstants.THUMBPAGENO) ? (int) solrDoc.getFieldValue(SolrConstants.THUMBPAGENO) : 1;
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, order, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
+                // RECORD
+                // Record object URL (representative page)
+                int recOrder = solrDoc.containsKey(SolrConstants.THUMBPAGENO) ? (int) solrDoc.getFieldValue(SolrConstants.THUMBPAGENO) : 1;
+                currentDocSitemap.getRootElement()
+                        .addContent(createUrlElement(pi, recOrder, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
+                increment(timestampModified);
 
-                    // Record metadata URL
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
+                // Record metadata URL
+                currentDocSitemap.getRootElement()
+                        .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
+                increment(timestampModified);
 
-                    // Record TOC URL
-                    currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
-                }
+                // Record TOC URL
+                currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
+                increment(timestampModified);
 
                 QueryResponse qrPages;
-                // Pages
+                // PAGES
                 StringBuilder sbPagesQuery = new StringBuilder();
                 sbPagesQuery.append(SolrConstants.PI_TOPSTRUCT)
                         .append(':')
@@ -219,7 +218,7 @@ public class Sitemap {
                         .append(" AND ")
                         .append(SolrConstants.FULLTEXTAVAILABLE)
                         .append(":true");
-                // logger.trace("Sitemap: pages query: {}", sbPagesQuery.toString());
+                // logger.trace("Sitemap: pages query: {}", sbPagesQuery.toString()); //NOSONAR Debug
                 qrPages = DataManager.getInstance()
                         .getSearchIndex()
                         .search(sbPagesQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
@@ -228,10 +227,10 @@ public class Sitemap {
                 if (!qrPages.getResults().isEmpty()) {
                     logger.debug("Sitemap: found {} pages with full-text for '{}'.", qrPages.getResults().size(), pi);
                     for (SolrDocument solrPageDoc : qrPages.getResults()) {
-                        int order = (int) solrPageDoc.getFieldValue(SolrConstants.ORDER);
+                        int pageOrder = (int) solrPageDoc.getFieldValue(SolrConstants.ORDER);
                         // Page full-text URL
                         currentDocSitemap.getRootElement()
-                                .addContent(createUrlElement(pi, order, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
+                                .addContent(createUrlElement(pi, pageOrder, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
                         increment(timestampModified);
                     }
                 }
@@ -260,29 +259,28 @@ public class Sitemap {
             // Create new sitemap doc
             currentDocSitemap = new Document();
             docListSitemap.add(currentDocSitemap);
-            Element eleUrlset = new Element("urlset", nsSitemap);
+            Element eleUrlset = new Element("urlset", NS_SITEMAP);
             currentDocSitemap.setRootElement(eleUrlset);
 
             // Add new element to the index doc
-            {
-                eleCurrectIndexSitemap = new Element("sitemap", nsSitemap);
-                docIndex.getRootElement().addContent(eleCurrectIndexSitemap);
 
-                // loc
-                Element eleLoc = new Element("loc", nsSitemap);
-                eleCurrectIndexSitemap.addContent(eleLoc);
-                eleLoc.setText(viewerRootUrl + "sitemap" + docListSitemap.size() + ".xml.gz");
+            eleCurrectIndexSitemap = new Element("sitemap", NS_SITEMAP);
+            docIndex.getRootElement().addContent(eleCurrectIndexSitemap);
 
-                // lastmod
-                Element eleLastmod = new Element("lastmod", nsSitemap);
-                eleCurrectIndexSitemap.addContent(eleLastmod);
-                if (timestamp > 0) {
-                    // If switching sitemap files within a record, use the current record's timestamp
-                    eleLastmod
-                            .setText(DateTools.format(DateTools.getLocalDateTimeFromMillis(timestamp, false), DateTools.formatterISO8601Date, false));
-                } else {
-                    eleLastmod.setText("");
-                }
+            // loc
+            Element eleLoc = new Element("loc", NS_SITEMAP);
+            eleCurrectIndexSitemap.addContent(eleLoc);
+            eleLoc.setText(viewerRootUrl + "sitemap" + docListSitemap.size() + ".xml.gz");
+
+            // lastmod
+            Element eleLastmod = new Element("lastmod", NS_SITEMAP);
+            eleCurrectIndexSitemap.addContent(eleLastmod);
+            if (timestamp > 0) {
+                // If switching sitemap files within a record, use the current record's timestamp
+                eleLastmod
+                        .setText(DateTools.format(DateTools.getLocalDateTimeFromMillis(timestamp, false), DateTools.formatterISO8601Date, false));
+            } else {
+                eleLastmod.setText("");
             }
 
             index = 0;
@@ -298,6 +296,7 @@ public class Sitemap {
      * @param type Target page type
      * @param changefreq
      * @param priority
+     * @return Created {@link Element}
      */
     private Element createUrlElement(String pi, int order, String dateModified, String type, String changefreq, String priority) {
         return createUrlElement(viewerRootUrl + '/' + type + '/' + pi + '/' + order + '/', dateModified, changefreq, priority);
@@ -312,19 +311,19 @@ public class Sitemap {
      * @param priority
      * @should create loc element correctly
      * @should create lastmod element correctly
-     * @return
+     * @return Created {@link Element}
      */
     Element createUrlElement(String url, String dateModified, String changefreq, String priority) {
-        Element eleUrl = new Element("url", nsSitemap);
+        Element eleUrl = new Element("url", NS_SITEMAP);
 
         // loc
-        Element eleLoc = new Element("loc", nsSitemap);
+        Element eleLoc = new Element("loc", NS_SITEMAP);
         eleUrl.addContent(eleLoc);
         eleLoc.setText(url);
 
         // lastmod
         if (dateModified != null) {
-            Element eleLastmod = new Element("lastmod", nsSitemap);
+            Element eleLastmod = new Element("lastmod", NS_SITEMAP);
             eleUrl.addContent(eleLastmod);
             eleLastmod.setText(dateModified);
         }
@@ -365,16 +364,16 @@ public class Sitemap {
             ret = new ArrayList<>(docListSitemap.size());
             ret.add(indexFile);
             for (Document docSitemap : docListSitemap) {
-                int index = docListSitemap.indexOf(docSitemap) + 1;
-                File file = new File(outputDirPath, "sitemap" + index + ".xml");
+                int i = docListSitemap.indexOf(docSitemap) + 1;
+                File file = new File(outputDirPath, "sitemap" + i + ".xml");
                 file = XmlTools.writeXmlFile(docSitemap, file.getAbsolutePath());
                 if (file.exists()) {
                     Map<File, String> fileMap = new HashMap<>();
                     fileMap.put(file, "/");
-                    File gzipFile = new File(outputDirPath, "sitemap" + index + ".xml.gz");
+                    File gzipFile = new File(outputDirPath, "sitemap" + i + ".xml.gz");
                     FileTools.compressGzipFile(file, gzipFile);
                     ret.add(gzipFile);
-                    logger.info("Sitemap: file {} written to '{}'", index, gzipFile.getAbsolutePath());
+                    logger.info("Sitemap: file {} written to '{}'", i, gzipFile.getAbsolutePath());
                     FileUtils.deleteQuietly(file);
                 }
 

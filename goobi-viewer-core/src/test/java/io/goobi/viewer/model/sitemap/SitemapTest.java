@@ -30,17 +30,16 @@ import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Element;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.sitemap.Sitemap;
 
 class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -55,7 +54,7 @@ class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
         Sitemap sitemap = new Sitemap();
         Element eleUrl = sitemap.createUrlElement("https://foo.bar", null, null, null);
         Assertions.assertNotNull(eleUrl);
-        Assertions.assertEquals("https://foo.bar", eleUrl.getChildText("loc", Sitemap.nsSitemap));
+        Assertions.assertEquals("https://foo.bar", eleUrl.getChildText("loc", Sitemap.NS_SITEMAP));
     }
 
     /**
@@ -67,7 +66,7 @@ class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
         Sitemap sitemap = new Sitemap();
         Element eleUrl = sitemap.createUrlElement("https://foo.bar", "2018-08-21", null, null);
         Assertions.assertNotNull(eleUrl);
-        Assertions.assertEquals("2018-08-21", eleUrl.getChildText("lastmod", Sitemap.nsSitemap));
+        Assertions.assertEquals("2018-08-21", eleUrl.getChildText("lastmod", Sitemap.NS_SITEMAP));
     }
 
     @Test
