@@ -179,7 +179,7 @@ public class QuartzListener implements ServletContextListener {
         } else if (storedTriggers.containsKey(TaskType.CACHE_GEOMAPS.name())) {
             dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.CACHE_GEOMAPS.name()).getId());
         }
-        if(StringUtils.isNotBlank(config.getThemeRootPath()) && Files.exists(Path.of(config.getThemeRootPath()))) {
+        if (StringUtils.isNotBlank(config.getThemeRootPath()) && Files.exists(Path.of(config.getThemeRootPath()))) {
             addTrigger(storedTriggers, triggers, TaskType.PULL_THEME, TaskTriggerStatus.PAUSED);
         } else if (storedTriggers.containsKey(TaskType.PULL_THEME.name())) {
             dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.PULL_THEME.name()).getId());
@@ -187,7 +187,8 @@ public class QuartzListener implements ServletContextListener {
         return triggers;
     }
 
-    public void addTrigger(Map<String, RecurringTaskTrigger> storedTriggers, List<RecurringTaskTrigger> triggers, TaskType taskType, TaskTriggerStatus defaultStatus)
+    public void addTrigger(Map<String, RecurringTaskTrigger> storedTriggers, List<RecurringTaskTrigger> triggers, TaskType taskType,
+            TaskTriggerStatus defaultStatus)
             throws DAOException {
         if (storedTriggers.containsKey(taskType.name())) {
             triggers.add(storedTriggers.get(taskType.name()));
@@ -202,6 +203,9 @@ public class QuartzListener implements ServletContextListener {
     /**
      * initializes given IViewerJob to run every minute
      *
+     * @param goobiJob
+     * @param sched
+     * @param minutes
      * @throws SchedulerException
      */
     public static void initializeMinutelyJob(IViewerJob goobiJob, Scheduler sched, int minutes) throws SchedulerException {
@@ -220,6 +224,9 @@ public class QuartzListener implements ServletContextListener {
     /**
      * initializes given IViewerJob to run every hour
      *
+     * @param goobiJob
+     * @param sched
+     * @param hours
      * @throws SchedulerException
      */
     public static void initializeHourlyJob(IViewerJob goobiJob, Scheduler sched, int hours) throws SchedulerException {
@@ -241,7 +248,9 @@ public class QuartzListener implements ServletContextListener {
 
     /**
      * initializes given IViewerJob to run every day at midnight
-     *
+     * 
+     * @param goobiJob
+     * @param sched
      * @throws SchedulerException
      */
     public static void initializeDailyJob(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
@@ -250,7 +259,7 @@ public class QuartzListener implements ServletContextListener {
 
         CronTrigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity(goobiJob.getJobName(), goobiJob.getJobName())
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?"))
+                .withSchedule(CronScheduleBuilder.cronSchedule(DEFAULT_SCHEDULER_EXPRESSION))
                 .build();
         sched.scheduleJob(jobDetail, trigger);
     }
@@ -258,6 +267,8 @@ public class QuartzListener implements ServletContextListener {
     /**
      * execute a given IViewerJob a single time
      * 
+     * @param goobiJob
+     * @param sched
      * @throws SchedulerException
      */
     public static void executeJobOnce(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
@@ -271,9 +282,9 @@ public class QuartzListener implements ServletContextListener {
     /**
      * initializes given IViewerJob to run at specified times
      * 
-     * @param cronConfiguration e.g. "0 0 10 ? * *" for 10 AM every day. The time is based on the server time <br/>
-     *            See {@link https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm}
-     * 
+     * @param goobiJob
+     * @param sched
+     * @return {@link JobDetail}
      * @throws SchedulerException
      */
     public static JobDetail initializeCronJob(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
@@ -301,8 +312,9 @@ public class QuartzListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent evt) {
         try {
             startTimedJobs(evt.getServletContext());
-            Optional.ofNullable(evt).map(ServletContextEvent::getServletContext)
-            .ifPresent(context -> context.setAttribute(QUARTZ_LISTENER_CONTEXT_ATTRIBUTE, this));
+            Optional.ofNullable(evt)
+                    .map(ServletContextEvent::getServletContext)
+                    .ifPresent(cntxt -> cntxt.setAttribute(QUARTZ_LISTENER_CONTEXT_ATTRIBUTE, this));
             log.info("Successfully started QuartzListener scheduler");
         } catch (SchedulerException e) {
             log.error("QuartzListener scheduler could not be started", e);

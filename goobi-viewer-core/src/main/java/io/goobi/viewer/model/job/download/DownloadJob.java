@@ -767,7 +767,7 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * @return
+     * @return {@link String}
      */
     protected abstract String getRestApiPath();
 
