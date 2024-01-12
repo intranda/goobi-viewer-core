@@ -166,7 +166,7 @@ public final class SearchHelper {
     /** Constant <code>PATTERN_PROXIMITY_SEARCH_TOKEN</code> */
     private static final Pattern PATTERN_PROXIMITY_SEARCH_TOKEN = Pattern.compile("(?<=\")~(\\d+)");
     /** Constant <code>PATTERN_YEAR_RANGE</code> */
-    private static final Pattern PATTERN_YEAR_RANGE = Pattern.compile("\\[\\d+ TO \\d+]\\]");
+    private static final Pattern PATTERN_YEAR_RANGE = Pattern.compile("\\[\\d+ TO \\d+\\]");
     /** Constant <code>PATTERN_HYPHEN_LINK</code> */
     private static final Pattern PATTERN_HYPHEN_LINK = Pattern.compile("(<a (?:(?!<\\/a>).)*<\\/a>)");
 
@@ -2106,7 +2106,7 @@ public final class SearchHelper {
         ret.put(TITLE_TERMS, new HashSet<>());
 
         // Drop proximity search tokens
-        q = q.replaceAll(PATTERN_PHRASE.pattern(), "");
+        q = q.replaceAll(PATTERN_PROXIMITY_SEARCH_TOKEN.pattern(), "");
 
         // Drop year ranges
         q = q.replaceAll(PATTERN_YEAR_RANGE.pattern(), "");
