@@ -21,25 +21,16 @@
  */
 package io.goobi.viewer.model.search;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.solr.common.SolrDocument;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import io.goobi.viewer.model.search.HitType;
 
 /**
- * Class to represent children of {@link SearchHit} which don't represent a complete record and thus need less
- * data. Currently unused 
+ * Class to represent children of {@link SearchHit} which don't represent a complete record and thus need less data. Currently unused
  */
 public class SearchChildHit {
 
     private static final String SEARCH_HIT_TYPE_PREFIX = "searchHitType_";
     private static final String SEARCH_HIT_TYPE_ICON_CLASS = "searchHitIconClass_";
-    
+
     private final HitType type;
     private final String label;
     private final String url;
@@ -51,23 +42,22 @@ public class SearchChildHit {
         this.label = getDisplayText(browseElement);
         this.children = children;
     }
-    
+
     public String getUrl() {
         return this.url;
     }
-    
+
     public String getLabel() {
         return this.label;
     }
-    
+
     public String getIconClass() {
-        return this.getIconClassForType(this.type);
+        return getIconClassForType(this.type);
     }
-    
+
     public String getTypeLabelKey() {
         return type != null ? SEARCH_HIT_TYPE_PREFIX + type.name() : "";
     }
-    
 
     /**
      * <p>
@@ -80,8 +70,6 @@ public class SearchChildHit {
         return type;
     }
 
-
-    
     private static String getIconClassForType(HitType type) {
         if (type != null) {
             switch (type) {
@@ -104,11 +92,11 @@ public class SearchChildHit {
                 default:
                     return "fa fa-file-text";
             }
-        } else {
-            return "";
         }
+
+        return "";
     }
-    
+
     private String getDisplayText(BrowseElement browseElement) {
         if (browseElement != null && this.type != null) {
             switch (this.type) {
@@ -120,8 +108,8 @@ public class SearchChildHit {
                     return browseElement.getLabelShort();
 
             }
-        } else {
-            return "";
         }
+
+        return "";
     }
 }

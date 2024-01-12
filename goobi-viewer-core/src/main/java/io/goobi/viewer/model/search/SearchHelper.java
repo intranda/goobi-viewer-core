@@ -810,6 +810,7 @@ public final class SearchHelper {
 
     /**
      * @param collectionName
+     * @param splittingChar
      * @param includeSelf
      * @return Collection<String>
      */
@@ -1595,7 +1596,7 @@ public final class SearchHelper {
      * @return Text fragment
      */
     @SuppressWarnings("unused")
-    private static String getTextFragmentStatic(String fulltext, int targetFragmentLength, String fulltextFragment, String searchTerm,
+    private static String getTextFragmentStatic(String fulltext, int targetFragmentLength, final String fulltextFragment, String searchTerm,
             int indexOfTerm) {
         if (fulltextFragment.length() == 0) {
             int start = 0;
@@ -1608,7 +1609,7 @@ public final class SearchHelper {
             if (end - (indexOfTerm + searchTerm.length()) > halfLength) {
                 end = indexOfTerm + searchTerm.length() + halfLength;
             }
-            fulltextFragment = fulltext.substring(start, end);
+            return fulltext.substring(start, end);
         }
         return fulltextFragment;
     }
@@ -3289,7 +3290,7 @@ public final class SearchHelper {
     /**
      * Removes illegal characters from an individual search term. Do not use on whole queries!
      *
-     * @param s The term to clean up.
+     * @param term The term to clean up.
      * @return Cleaned up term.
      * @should remove illegal chars correctly
      * @should remove trailing punctuation

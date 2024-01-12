@@ -275,7 +275,7 @@ public class Search implements Serializable {
     /**
      * 
      * @param facets
-     * @return
+     * @return Generated Solr query
      * @throws IndexUnreachableException
      */
     public String generateFinalSolrQuery(SearchFacets facets) {
@@ -286,7 +286,7 @@ public class Search implements Serializable {
      * 
      * @param facets
      * @param aggregationType
-     * @return
+     * @return Generated Solr query
      * @throws IndexUnreachableException
      */
     public String generateFinalSolrQuery(SearchFacets facets, SearchAggregationType aggregationType) {
@@ -310,7 +310,6 @@ public class Search implements Serializable {
      * execute.
      * </p>
      *
-     * @param resultGdroups
      * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param hitsPerPage a int.
@@ -320,8 +319,8 @@ public class Search implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage,
-            Locale locale) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         execute(facets, searchTerms, hitsPerPage, locale, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
@@ -409,7 +408,7 @@ public class Search implements Serializable {
      */
     void searchResultGroup(SearchResultGroup resultGroup, String currentQuery, String finalQuery, String subElementQueryFilterSuffix,
             List<String> activeFacetFilterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, SearchFacets facets,
-            int hitsPerPage, Locale locale, boolean keepSolrDoc, SearchAggregationType aggregationType)
+            final int hitsPerPage, Locale locale, boolean keepSolrDoc, SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("Result group: {}", resultGroup.getName());
 
@@ -460,7 +459,7 @@ public class Search implements Serializable {
                             Collections.singletonList(SolrConstants.IDDOC),
                             allFilterQueries, params);
             if (resp != null && resp.getFacetFields() != null) {
-                // logger.trace("hits: {}", resp.getResults().getNumFound());
+                // logger.trace("hits: {}", resp.getResults().getNumFound()); //NOSONAR Debug
                 for (FacetField facetField : resp.getFacetFields()) {
                     Map<String, Long> facetResult = new TreeMap<>();
                     for (Count count : facetField.getValues()) {
@@ -559,11 +558,12 @@ public class Search implements Serializable {
         }
 
         // If this is a group preview, use the group's configured hit count instead of paginator hits per page
-        if (resultGroups.size() > 1 && resultGroup.getPreviewHitCount() > 0 && resultGroup.getPreviewHitCount() < hitsPerPage) {
-            hitsPerPage = resultGroup.getPreviewHitCount();
+        int useHitsPerPage = hitsPerPage;
+        if (resultGroups.size() > 1 && resultGroup.getPreviewHitCount() > 0 && resultGroup.getPreviewHitCount() < useHitsPerPage) {
+            useHitsPerPage = resultGroup.getPreviewHitCount();
         }
 
-        int lastPage = getLastPage(hitsPerPage);
+        int lastPage = getLastPage(useHitsPerPage);
         if (page <= 0) {
             page = 1;
         } else if (page > lastPage) {
@@ -571,7 +571,7 @@ public class Search implements Serializable {
         }
 
         // Hits for the current page
-        int from = (page - 1) * hitsPerPage;
+        int from = (page - 1) * useHitsPerPage;
 
         // Expand query (child hits)
         String useExpandQuery = "";
@@ -593,10 +593,10 @@ public class Search implements Serializable {
         // Actual hits for listing
         if (SearchAggregationType.AGGREGATE_TO_TOPSTRUCT.equals(aggregationType)) {
             foundHits = SearchHelper.searchWithAggregation(finalQuery, from,
-                    hitsPerPage, useSortFields, null, allFilterQueries, params,
+                    useHitsPerPage, useSortFields, null, allFilterQueries, params,
                     searchTerms, null, metadataListType, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
         } else if (SearchAggregationType.NO_AGGREGATION.equals(aggregationType)) {
-            foundHits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, allFilterQueries, params,
+            foundHits = SearchHelper.searchWithFulltext(finalQuery, from, useHitsPerPage, useSortFields, null, allFilterQueries, params,
                     searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc, proximitySearchDistance);
         }
 
@@ -726,7 +726,7 @@ public class Search implements Serializable {
      * 
      * @param solrField
      * @param results
-     * @return
+     * @return List<Location>
      */
     private static List<Location> getLocations(String solrField, SolrDocumentList results) {
         List<Location> locations = new ArrayList<>();
@@ -749,13 +749,14 @@ public class Search implements Serializable {
                 logger.error(e.toString(), e);
             }
         }
+
         return locations;
     }
 
     /**
      * 
      * @param o
-     * @return
+     * @return List<IArea>
      */
     protected static List<IArea> getLocations(Object o) {
         List<IArea> locs = new ArrayList<>();
@@ -786,7 +787,7 @@ public class Search implements Serializable {
     /**
      * 
      * @param value
-     * @return
+     * @return double[][]
      */
     protected static double[][] getPoints(String value) {
         List<double[]> points = new ArrayList<>();
@@ -801,7 +802,7 @@ public class Search implements Serializable {
      * 
      * @param x
      * @param y
-     * @return
+     * @return double[][]
      */
     protected static double[] parsePoint(Object x, Object y) {
         if (x instanceof Number) {
@@ -1102,7 +1103,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @return
+     * @return {@link SearchSortingOption}
      */
     public SearchSortingOption getSearchSortingOption() {
         logger.trace("getSearchSortingOption");
@@ -1377,7 +1378,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @return
+     * @return true if resultGroups larger than 1; false otherwise
      */
     public boolean isGroupPreviewMode() {
         return resultGroups.size() > 1;
