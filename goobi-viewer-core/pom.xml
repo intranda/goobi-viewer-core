@@ -141,7 +141,7 @@
 		<mockserver.version>5.15.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.4</omnifaces.version>
-		<openpdf.version>1.3.35</openpdf.version>
+		<openpdf.version>1.3.36</openpdf.version>
 		<poi.version>5.2.5</poi.version>
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
