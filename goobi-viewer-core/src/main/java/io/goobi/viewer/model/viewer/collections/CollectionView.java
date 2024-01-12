@@ -543,7 +543,7 @@ public class CollectionView implements Serializable {
             List<HierarchicalBrowseDcElement> unsortedSubCollections = new ArrayList<>();
             for (String s : sortCriteriaList.getCollections()) {
                 // logger.trace("sort: {}", s); //NOSONAR Debug
-                for (HierarchicalBrowseDcElement dc : inDcList) {
+                for (HierarchicalBrowseDcElement dc : ret) {
                     if (dc.getName().equals(s) && !sortedDcList.contains(dc)) {
                         sortedDcList.add(dc);
                         // logger.trace("adding dc: {}", dc.getName()); //NOSONAR Debug
@@ -554,7 +554,7 @@ public class CollectionView implements Serializable {
                     }
                 }
             }
-            List<HierarchicalBrowseDcElement> unsortedRest = ListUtils.subtract(inDcList, sortedDcList);
+            List<HierarchicalBrowseDcElement> unsortedRest = ListUtils.subtract(ret, sortedDcList);
             unsortedRest = ListUtils.subtract(unsortedRest, unsortedSubCollections);
             int firstLevel = getLevelOfFirstElement(sortCriteriaList.getCollections(), splittingChar);
             int index = getIndexOfElementWithName(unsortedRest, sortCriteriaList.getSortAfter(), firstLevel, splittingChar);
