@@ -937,6 +937,9 @@
 
                                 <!-- spring-web: MediaType class needed for some unit test -->
                                 <ignoredUnusedDeclaredDependency>org.springframework:spring-web</ignoredUnusedDeclaredDependency>
+                                
+                                <!-- junit-jupiter is used to run the tests, otherwise it will fail in maven -->
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter</ignoredUnusedDeclaredDependency>
 
 								<!-- activemq libs -->
 									<!-- KahaDB is the used file based persistence database and declared in the config file  -->
