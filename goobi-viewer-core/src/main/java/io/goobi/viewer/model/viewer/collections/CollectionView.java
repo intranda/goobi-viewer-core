@@ -75,7 +75,7 @@ public class CollectionView implements Serializable {
     private boolean showAllHierarchyLevels = false;
     private boolean displayParentCollections = true;
     private String searchUrl = "";
-    boolean ignoreHierarchy = false;
+    private boolean ignoreHierarchy = false;
     private final int displayNumberOfVolumesLevel;
 
     private List<String> ignoreList = new ArrayList<>();
@@ -125,7 +125,8 @@ public class CollectionView implements Serializable {
                 logger.trace("populateCollectionList");
                 Map<String, CollectionResult> dcStrings = dataProvider.getData();
                 logger.trace("Creating browse elements...");
-                completeCollectionList = new ArrayList<>(); // this has to be null and not empty at first; make sure it is initialized after the call to Solr
+                // this has to be null and not empty at first; make sure it is initialized after the call to Solr
+                completeCollectionList = new ArrayList<>();
                 HierarchicalBrowseDcElement lastElement = null;
                 List<String> list = new ArrayList<>(dcStrings.keySet());
                 Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(field);
@@ -179,7 +180,7 @@ public class CollectionView implements Serializable {
 
     /**
      * @param collectionName
-     * @return
+     * @return boolean
      */
     private boolean shouldOpenInOwnWindow(String collectionName) {
         if (StringUtils.isNotBlank(collectionName) && collectionName.equals(getTopVisibleElement())) {
@@ -193,7 +194,8 @@ public class CollectionView implements Serializable {
             return true;
         } else if (collectionName.startsWith(getBaseElementName() + splittingChar)
                 && calculateLevel(collectionName) - calculateLevel(getBaseElementName()) <= getBaseLevels()) {
-            //If this is a subcollection of the base element and less than base levels beneath the base element, open in collection view (same as second 'if' but for views with a base element
+            // If this is a subcollection of the base element and less than base levels beneath the base element,
+            // open in collection view (same as second 'if' but for views with a base element
             return true;
         }
 
@@ -274,7 +276,7 @@ public class CollectionView implements Serializable {
      * 
      * @param elementName
      * @param includeSelf
-     * @return
+     * @return List<HierarchicalBrowseDcElement>
      */
     public List<HierarchicalBrowseDcElement> getAncestors(String elementName, boolean includeSelf) {
         List<HierarchicalBrowseDcElement> elements = new ArrayList<>();
@@ -350,13 +352,14 @@ public class CollectionView implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<HierarchicalBrowseDcElement> getVisibleDcElements() {
-        // logger.trace("getVisibleDcElements");
+        // logger.trace("getVisibleDcElements"); //NOSONAR Debug
         return visibleCollectionList;
     }
 
     /**
-     * @param topVisibleElement2
-     * @return
+     * @param elementName
+     * @param collections
+     * @return {@link HierarchicalBrowseDcElement}
      */
     private HierarchicalBrowseDcElement getElement(String elementName, List<HierarchicalBrowseDcElement> collections) {
         if (elementName == null) {
@@ -477,7 +480,7 @@ public class CollectionView implements Serializable {
             visibleCollectionList.removeAll(element.getAllVisibleDescendents(true));
             element.setShowSubElements(false);
         }
-        //        this.visibleCollectionList = sortDcList(visibleCollectionList, DataManager.getInstance().getConfiguration().getCollectionSorting());
+        // this.visibleCollectionList = sortDcList(visibleCollectionList, DataManager.getInstance().getConfiguration().getCollectionSorting());
     }
 
     /**
@@ -512,13 +515,14 @@ public class CollectionView implements Serializable {
      * @param splittingChar a {@link java.lang.String} object.
      * @return A sorted list.
      */
-    protected static List<HierarchicalBrowseDcElement> sortDcList(List<HierarchicalBrowseDcElement> inDcList,
+    protected static List<HierarchicalBrowseDcElement> sortDcList(final List<HierarchicalBrowseDcElement> inDcList,
             List<DcSortingList> sortCriteriaSuperList, String topElement, String splittingChar) {
         if (sortCriteriaSuperList == null) {
             return inDcList;
         }
 
         //iterate over all sorting lists
+        List<HierarchicalBrowseDcElement> ret = inDcList;
         for (DcSortingList sortCriteriaList : sortCriteriaSuperList) {
 
             if (StringUtils.isNotBlank(topElement)) {
@@ -538,15 +542,15 @@ public class CollectionView implements Serializable {
             List<HierarchicalBrowseDcElement> sortedDcList = new ArrayList<>();
             List<HierarchicalBrowseDcElement> unsortedSubCollections = new ArrayList<>();
             for (String s : sortCriteriaList.getCollections()) {
-                // logger.trace("sort: {}", s);
+                // logger.trace("sort: {}", s); //NOSONAR Debug
                 for (HierarchicalBrowseDcElement dc : inDcList) {
                     if (dc.getName().equals(s) && !sortedDcList.contains(dc)) {
                         sortedDcList.add(dc);
-                        //                            logger.trace("adding dc: {}", dc.getName());
+                        // logger.trace("adding dc: {}", dc.getName()); //NOSONAR Debug
                     } else if (dc.getName().startsWith(s + splittingChar) && !sortCriteriaList.getCollections().contains(dc.getName())
                             && !unsortedSubCollections.contains(dc)) {
                         unsortedSubCollections.add(dc);
-                        //                            logger.trace("adding dc to unsorted subcollections: {}", dc.getName());
+                        // logger.trace("adding dc to unsorted subcollections: {}", dc.getName()); //NOSONAR Debug
                     }
                 }
             }
@@ -555,10 +559,10 @@ public class CollectionView implements Serializable {
             int firstLevel = getLevelOfFirstElement(sortCriteriaList.getCollections(), splittingChar);
             int index = getIndexOfElementWithName(unsortedRest, sortCriteriaList.getSortAfter(), firstLevel, splittingChar);
             unsortedRest.addAll(index, sortedDcList);
-            inDcList = addUnsortedSubcollections(unsortedRest, unsortedSubCollections, splittingChar);
+            ret = addUnsortedSubcollections(unsortedRest, unsortedSubCollections, splittingChar);
         }
 
-        return inDcList;
+        return ret;
     }
 
     /**
@@ -587,6 +591,7 @@ public class CollectionView implements Serializable {
 
     /**
      * @param collections
+     * @param splittingChar
      * @return The hierarchy level of the first collection within collections (1-based), or 0 if the list is empty
      */
     private static int getLevelOfFirstElement(List<String> collections, String splittingChar) {
@@ -600,7 +605,8 @@ public class CollectionView implements Serializable {
     /**
      *
      * @param collection
-     * @return
+     * @param splittingChar
+     * @return Level of the given collection
      */
     private static int getCollectionLevel(String collection, String splittingChar) {
         if (collection == null || collection.trim().isEmpty() || StringUtils.isEmpty(splittingChar)) {
@@ -622,7 +628,7 @@ public class CollectionView implements Serializable {
      * @param sortAfter
      * @param sortingLevel
      * @param splittingChar
-     * @return
+     * @return inz
      */
     private static int getIndexOfElementWithName(List<HierarchicalBrowseDcElement> elementList, String sortAfter, int sortingLevel,
             String splittingChar) {
@@ -646,7 +652,7 @@ public class CollectionView implements Serializable {
     public static interface BrowseDataProvider {
 
         /**
-         * @return
+         * @return Map<String, CollectionResult>
          * @throws IndexUnreachableException
          */
         Map<String, CollectionResult> getData() throws IndexUnreachableException;
@@ -666,7 +672,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Sets all descendents of this element to visible
+     * Sets all descendants of this element to visible
      *
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
@@ -675,7 +681,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Sets all descendents of this element to visible, but not beyond level 'depth'
+     * Sets all descendants of this element to visible, but not beyond level 'depth'
      *
      * @param depth a int.
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
@@ -929,7 +935,7 @@ public class CollectionView implements Serializable {
         return getCompleteList().stream()
                 .filter(element -> element.getName().equals(collection))
                 .findFirst()
-                .map(element -> getCollectionUrl(element))
+                .map(this::getCollectionUrl)
                 .orElse("");
     }
 
@@ -969,15 +975,16 @@ public class CollectionView implements Serializable {
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
+     * @param baseSearchUrl
      * @return a {@link java.lang.String} object.
      * @throws URISyntaxException
      * @should return identifier resolver url if single record and pi known
      * @should escape critical url chars in collection name
      */
-    public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, String baseSearchUrl) {
-
-        if (StringUtils.isBlank(baseSearchUrl)) {
-            baseSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
+    public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, final String baseSearchUrl) {
+        String searchUrl = baseSearchUrl;
+        if (StringUtils.isBlank(searchUrl)) {
+            searchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
         }
 
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
@@ -1012,7 +1019,7 @@ public class CollectionView implements Serializable {
         } else {
             String facetString = field + ":" + collection.getLuceneName();
             String encFacetString = StringTools.encodeUrl(facetString, true);
-            return new StringBuilder(baseSearchUrl)
+            return new StringBuilder(searchUrl)
                     .append("-/-/1/")
                     .append(collection.getSortField())
                     .append('/')
