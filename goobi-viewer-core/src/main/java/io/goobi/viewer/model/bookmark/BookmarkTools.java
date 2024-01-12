@@ -38,10 +38,15 @@ import io.goobi.viewer.model.security.user.UserGroup;
  * BookmarkTools class.
  * </p>
  */
-public class BookmarkTools {
+public final class BookmarkTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(BookmarkTools.class);
+
+    /** Private constructor */
+    private BookmarkTools() {
+        //
+    }
 
     /**
      * <p>
