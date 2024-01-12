@@ -91,7 +91,7 @@
 		<tei-conversion.version>1.3.0</tei-conversion.version>
 
 		<iiif-api-model.version>2.6.1</iiif-api-model.version>
-		<normdataimporter.version>1.10.5</normdataimporter.version>
+		<normdataimporter.version>1.10.6</normdataimporter.version>
 
         <!-- other libraries -->
         <angus-mail.version>2.0.2</angus-mail.version>
