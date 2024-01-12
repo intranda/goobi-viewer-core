@@ -105,14 +105,6 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * @deprecated Use resetActiveFacets()
-     */
-    @Deprecated(since = "22.12")
-    public void resetCurrentFacets() {
-        resetActiveFacets();
-    }
-
-    /**
      * <p>
      * resetSliderRange.
      * </p>
@@ -514,11 +506,12 @@ public class SearchFacets implements Serializable {
      * @should create multiple items from multiple instances of same field
      */
     static void parseFacetString(String facetString, final List<IFacetItem> facetItems, final Map<String, String> labelMap) {
-        if (StringUtils.isEmpty(facetString) || "-".equals(facetString)) {
-            return;
-        }
         if (facetItems == null) {
             throw new IllegalArgumentException("facetItems may not be null");
+        }
+        facetItems.clear();
+        if (StringUtils.isEmpty(facetString) || "-".equals(facetString)) {
+            return;
         }
 
         try {
@@ -529,7 +522,6 @@ public class SearchFacets implements Serializable {
             //
         }
 
-        facetItems.clear();
         String[] facetStringSplit = facetString.split(";;");
         for (final String fl : facetStringSplit) {
             if (StringUtils.isEmpty(fl)) {
