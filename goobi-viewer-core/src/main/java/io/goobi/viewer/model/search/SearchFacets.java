@@ -179,7 +179,7 @@ public class SearchFacets implements Serializable {
      * Generates a filter query for the selected non-hierarchical facets.
      *
      * @param includeRangeFacets
-     * @return
+     * @return List of generated Solr queries
      * @should generate queries correctly
      * @should return empty list if facet list empty
      * @should skip range facet fields if so requested
@@ -505,7 +505,7 @@ public class SearchFacets implements Serializable {
      * @should parse wildcard facets correctly
      * @should create multiple items from multiple instances of same field
      */
-    static void parseFacetString(String facetString, final List<IFacetItem> facetItems, final Map<String, String> labelMap) {
+    static void parseFacetString(final String facetString, final List<IFacetItem> facetItems, final Map<String, String> labelMap) {
         if (facetItems == null) {
             throw new IllegalArgumentException("facetItems may not be null");
         }
@@ -514,15 +514,16 @@ public class SearchFacets implements Serializable {
             return;
         }
 
+        String useFacetString = facetString;
         try {
-            facetString = URLDecoder.decode(facetString, StandardCharsets.UTF_8.name());
-            facetString = StringTools.unescapeCriticalUrlChracters(facetString);
-            facetString = URLDecoder.decode(facetString, StandardCharsets.UTF_8.name());
+            useFacetString = URLDecoder.decode(useFacetString, StandardCharsets.UTF_8.name());
+            useFacetString = StringTools.unescapeCriticalUrlChracters(useFacetString);
+            useFacetString = URLDecoder.decode(useFacetString, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             //
         }
 
-        String[] facetStringSplit = facetString.split(";;");
+        String[] facetStringSplit = useFacetString.split(";;");
         for (final String fl : facetStringSplit) {
             if (StringUtils.isEmpty(fl)) {
                 continue;

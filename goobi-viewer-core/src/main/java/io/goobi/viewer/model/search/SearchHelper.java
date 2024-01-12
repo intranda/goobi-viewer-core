@@ -3368,6 +3368,8 @@ public final class SearchHelper {
      * Adds a fuzzy search token to the given term. The maximal Damerau-Levenshtein is calculated from term length
      *
      * @param term the search term
+     * @param prefix
+     * @param suffix
      * @return the given term with a fuzzy search token appended
      */
     public static String addFuzzySearchToken(String term, String prefix, String suffix) {
