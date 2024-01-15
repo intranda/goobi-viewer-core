@@ -3122,7 +3122,7 @@ this.show = function() {
 riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
-    console.log("mapsearch ", this.opts);
+
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
     if(this.opts.area) {
@@ -3395,7 +3395,7 @@ this.initHitsLayer = function(map) {
     this.opts.hitsLayer.language = viewerJS.translator.language;
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
 	map.layers.push(hitsLayer);
-	console.log("init hits layer ", this.opts.hitsLayer, hitsLayer, this.opts.features);
+
 	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {
 		if(f.properties && f.properties.link) {
