@@ -51,7 +51,7 @@ public class NameValidator implements Validator<String> {
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
         if (!validate(value)) {
-            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("pi_errInvalid", null), "");
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("nickname_errInvalid", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }
