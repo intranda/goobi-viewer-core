@@ -21,25 +21,25 @@
  */
 package io.goobi.viewer.servlets;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.servlets.oembed.OEmbedRecord;
 
-public class OEmbedServletTest extends AbstractSolrEnabledTest {
+class OEmbedServletTest extends AbstractSolrEnabledTest {
 
     /**
      * @see OEmbedServlet#parseUrl(String)
      * @verifies parse url with page number correctly
      */
     @Test
-    public void parseUrl_shouldParseUrlWithPageNumberCorrectly() throws Exception {
+    void parseUrl_shouldParseUrlWithPageNumberCorrectly() throws Exception {
         OEmbedRecord rec = OEmbedServlet.parseUrl("/image/PPN517154005/2/");
-        Assert.assertNotNull(rec);
-        Assert.assertNotNull(rec.getPhysicalElement());
-        Assert.assertEquals("PPN517154005", rec.getPhysicalElement().getPi());
-        Assert.assertEquals(2, rec.getPhysicalElement().getOrder());
+        Assertions.assertNotNull(rec);
+        Assertions.assertNotNull(rec.getPhysicalElement());
+        Assertions.assertEquals("PPN517154005", rec.getPhysicalElement().getPi());
+        Assertions.assertEquals(2, rec.getPhysicalElement().getOrder());
 
     }
 
@@ -48,10 +48,19 @@ public class OEmbedServletTest extends AbstractSolrEnabledTest {
      * @verifies parse url without page number correctly
      */
     @Test
-    public void parseUrl_shouldParseUrlWithoutPageNumberCorrectly() throws Exception {
+    void parseUrl_shouldParseUrlWithoutPageNumberCorrectly() throws Exception {
         OEmbedRecord rec = OEmbedServlet.parseUrl("/image/PPN517154005/");
-        Assert.assertNotNull(rec);
-        Assert.assertNotNull(rec.getPhysicalElement());
-        Assert.assertEquals(1, rec.getPhysicalElement().getOrder());
+        Assertions.assertNotNull(rec);
+        Assertions.assertNotNull(rec.getPhysicalElement());
+        Assertions.assertEquals(1, rec.getPhysicalElement().getOrder());
+    }
+
+    /**
+     * @see OEmbedServlet#parseUrl(String)
+     * @verifies return null if url contains no pi
+     */
+    @Test
+    void parseUrl_shouldReturnNullIfUrlContainsNoPi() throws Exception {
+        Assertions.assertNull(OEmbedServlet.parseUrl("/image/"));
     }
 }

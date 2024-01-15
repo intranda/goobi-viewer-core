@@ -24,32 +24,32 @@ package io.goobi.viewer.model.search;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchQueryItemTest extends AbstractSolrEnabledTest {
+class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryItem#generateQuery(Set)
      * @verifies generate query correctly
      */
     @Test
-    public void generateQuery_shouldGenerateQueryCorrectly() throws Exception {
+    void generateQuery_shouldGenerateQueryCorrectly() throws Exception {
         {
             SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.OR);
             item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
             item.setValue("foo bar");
             Set<String> searchTerms = new HashSet<>(2);
-            Assert.assertEquals(
+            Assertions.assertEquals(
                     "(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar))",
                     item.generateQuery(searchTerms, true, false));
-            Assert.assertTrue(searchTerms.contains("foo"));
-            Assert.assertTrue(searchTerms.contains("bar"));
+            Assertions.assertTrue(searchTerms.contains("foo"));
+            Assertions.assertTrue(searchTerms.contains("bar"));
         }
         {
             SearchQueryItem item = new SearchQueryItem();
@@ -57,17 +57,17 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
             item.setField("MD_TITLE");
             item.setValue("bla \"blup\" -nein");
             Set<String> searchTerms = new HashSet<>(0);
-            Assert.assertEquals("+(MD_TITLE:(bla AND \\\"blup\\\" -nein))", item.generateQuery(searchTerms, true, false));
-            Assert.assertTrue(searchTerms.isEmpty());
+            Assertions.assertEquals("+(MD_TITLE:(bla AND \\\"blup\\\" -nein))", item.generateQuery(searchTerms, true, false));
+            Assertions.assertTrue(searchTerms.isEmpty());
         }
         {
             SearchQueryItem item = new SearchQueryItem();
             item.setField(SolrConstants.FULLTEXT);
             item.setValue("\"lorem ipsum dolor sit amet\"");
             Set<String> searchTerms = new HashSet<>(1);
-            Assert.assertEquals("+(SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" FULLTEXT:\"lorem ipsum dolor sit amet\")",
+            Assertions.assertEquals("+(SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" FULLTEXT:\"lorem ipsum dolor sit amet\")",
                     item.generateQuery(searchTerms, true, false));
-            Assert.assertTrue(searchTerms.contains("lorem ipsum dolor sit amet"));
+            Assertions.assertTrue(searchTerms.contains("lorem ipsum dolor sit amet"));
         }
         // Auto-tokenize phrase search field if so configured
         {
@@ -75,9 +75,9 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
             item.setField("MD_TITLE");
             item.setValue("\"lorem ipsum dolor sit amet\"");
             Set<String> searchTerms = new HashSet<>(0);
-            Assert.assertEquals("+(MD_TITLE" + SolrConstants.SUFFIX_UNTOKENIZED + ":\"lorem ipsum dolor sit amet\")",
+            Assertions.assertEquals("+(MD_TITLE" + SolrConstants.SUFFIX_UNTOKENIZED + ":\"lorem ipsum dolor sit amet\")",
                     item.generateQuery(searchTerms, true, false));
-            Assert.assertTrue(searchTerms.isEmpty());
+            Assertions.assertTrue(searchTerms.isEmpty());
         }
         // Multiple values
         {
@@ -86,8 +86,8 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
             item.getValues().add("foo bar");
             item.getValues().add("lorem ipsum");
             Set<String> searchTerms = new HashSet<>(0);
-            Assert.assertEquals("+(DOCSTRCT:\"foo bar\" DOCSTRCT:\"lorem ipsum\")", item.generateQuery(searchTerms, true, false));
-            Assert.assertTrue(searchTerms.isEmpty());
+            Assertions.assertEquals("+(DOCSTRCT:\"foo bar\" DOCSTRCT:\"lorem ipsum\")", item.generateQuery(searchTerms, true, false));
+            Assertions.assertTrue(searchTerms.isEmpty());
         }
     }
 
@@ -96,14 +96,14 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies escape reserved characters
      */
     @Test
-    public void generateQuery_shouldEscapeReservedCharacters() throws Exception {
+    void generateQuery_shouldEscapeReservedCharacters() throws Exception {
         {
             SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.OR);
             item.setField(SolrConstants.DEFAULT);
             item.setValue("[foo] :bar:");
             Set<String> searchTerms = new HashSet<>(2);
-            Assert.assertEquals("(SUPERDEFAULT:(\\[foo\\] AND \\:bar\\:) DEFAULT:(\\[foo\\] AND \\:bar\\:))",
+            Assertions.assertEquals("(SUPERDEFAULT:(\\[foo\\] AND \\:bar\\:) DEFAULT:(\\[foo\\] AND \\:bar\\:))",
                     item.generateQuery(searchTerms, true, false));
         }
         {
@@ -112,7 +112,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
             item.setField(SolrConstants.DEFAULT);
             item.setValue("\"[foo] :bar:\"");
             Set<String> searchTerms = new HashSet<>(2);
-            Assert.assertEquals("+(SUPERDEFAULT:\"[foo] :bar:\" DEFAULT:\"[foo] :bar:\")", item.generateQuery(searchTerms, true, false));
+            Assertions.assertEquals("+(SUPERDEFAULT:\"[foo] :bar:\" DEFAULT:\"[foo] :bar:\")", item.generateQuery(searchTerms, true, false));
         }
     }
 
@@ -121,13 +121,13 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies always use OR operator if searching in all fields
      */
     @Test
-    public void generateQuery_shouldAlwaysUseOROperatorIfSearchingInAllFields() throws Exception {
+    void generateQuery_shouldAlwaysUseOROperatorIfSearchingInAllFields() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
         item.setValue("foo bar");
         Set<String> searchTerms = new HashSet<>(2);
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 "+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar))",
                 item.generateQuery(searchTerms, true, false));
     }
@@ -137,35 +137,35 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies preserve truncation
      */
     @Test
-    public void generateQuery_shouldPreserveTruncation() throws Exception {
+    void generateQuery_shouldPreserveTruncation() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
         item.setValue("*foo*");
         Set<String> searchTerms = new HashSet<>(2);
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 "+(SUPERDEFAULT:(*foo*) SUPERFULLTEXT:(*foo*) SUPERUGCTERMS:(*foo*) DEFAULT:(*foo*) FULLTEXT:(*foo*) NORMDATATERMS:(*foo*) UGCTERMS:(*foo*) CMS_TEXT_ALL:(*foo*))",
                 item.generateQuery(searchTerms, true, false));
     }
 
     @Test
-    public void generateQuery_shouldAddFuzzySearchOperator() throws Exception {
+    void generateQuery_shouldAddFuzzySearchOperator() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField("MD_TITLE");
         item.setValue("fooo bar");
         Set<String> searchTerms = new HashSet<>(2);
-        Assert.assertEquals("+(MD_TITLE:((fooo fooo~1) AND (bar)))", item.generateQuery(searchTerms, true, true));
+        Assertions.assertEquals("+(MD_TITLE:((fooo fooo~1) AND (bar)))", item.generateQuery(searchTerms, true, true));
     }
 
     @Test
-    public void generateQuery_shouldAddFuzzySearchOperatorWithWildcards() throws Exception {
+    void generateQuery_shouldAddFuzzySearchOperatorWithWildcards() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField("MD_TITLE");
         item.setValue("*fooo* *bar*");
         Set<String> searchTerms = new HashSet<>(2);
-        Assert.assertEquals("+(MD_TITLE:((*fooo* fooo~1) AND (*bar*)))", item.generateQuery(searchTerms, true, true));
+        Assertions.assertEquals("+(MD_TITLE:((*fooo* fooo~1) AND (*bar*)))", item.generateQuery(searchTerms, true, true));
     }
 
     /**
@@ -173,13 +173,13 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies preserve truncation
      */
     @Test
-    public void generateQuery_shouldAddFuzzySearchOperatorWithHyphen() throws Exception {
+    void generateQuery_shouldAddFuzzySearchOperatorWithHyphen() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField("MD_TITLE");
         item.setValue("foo-bar");
         Set<String> searchTerms = new HashSet<>(2);
-        Assert.assertEquals("+(MD_TITLE:((foo\\-bar foo\\-bar~1)))", item.generateQuery(searchTerms, true, true));
+        Assertions.assertEquals("+(MD_TITLE:((foo\\-bar foo\\-bar~1)))", item.generateQuery(searchTerms, true, true));
     }
 
     /**
@@ -187,12 +187,12 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies generate range query correctly
      */
     @Test
-    public void generateQuery_shouldGenerateRangeQueryCorrectly() throws Exception {
+    void generateQuery_shouldGenerateRangeQueryCorrectly() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField("MD_YEARPUBLISH");
         item.setValue(" 1900 ");
         item.setValue2(" 2020 ");
-        Assert.assertEquals("+(MD_YEARPUBLISH:([1900 TO 2020]))", item.generateQuery(new HashSet<>(), true, false));
+        Assertions.assertEquals("+(MD_YEARPUBLISH:([1900 TO 2020]))", item.generateQuery(new HashSet<>(), true, false));
     }
 
     /**
@@ -200,12 +200,12 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies add proximity search token correctly
      */
     @Test
-    public void generateQuery_shouldAddProximitySearchTokenCorrectly() throws Exception {
+    void generateQuery_shouldAddProximitySearchTokenCorrectly() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.FULLTEXT);
         item.setValue("\"foo bar\"~10");
         Set<String> searchTerms = new HashSet<>(2);
-        Assert.assertEquals("+(" + SolrConstants.SUPERFULLTEXT + ":\"foo bar\"~10 " + SolrConstants.FULLTEXT + ":\"foo bar\"~10)",
+        Assertions.assertEquals("+(" + SolrConstants.SUPERFULLTEXT + ":\"foo bar\"~10 " + SolrConstants.FULLTEXT + ":\"foo bar\"~10)",
                 item.generateQuery(searchTerms, true, false));
     }
 
@@ -214,12 +214,12 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies set displaySelectItems false if searching in all fields
      */
     @Test
-    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInAllFields() throws Exception {
+    void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInAllFields() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
-        item.displaySelectItems = true;
+        item.setDisplaySelectItems(true);
         item.toggleDisplaySelectItems();
-        Assert.assertFalse(item.isDisplaySelectItems());
+        Assertions.assertFalse(item.isDisplaySelectItems());
     }
 
     /**
@@ -227,12 +227,12 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies set displaySelectItems false if searching in fulltext
      */
     @Test
-    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInFulltext() throws Exception {
+    void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInFulltext() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.FULLTEXT);
-        item.displaySelectItems = true;
+        item.setDisplaySelectItems(true);
         item.toggleDisplaySelectItems();
-        Assert.assertFalse(item.isDisplaySelectItems());
+        Assertions.assertFalse(item.isDisplaySelectItems());
     }
 
     /**
@@ -240,11 +240,11 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies set displaySelectItems true if value count below threshold
      */
     @Test
-    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsTrueIfValueCountBelowThreshold() throws Exception {
+    void toggleDisplaySelectItems_shouldSetDisplaySelectItemsTrueIfValueCountBelowThreshold() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.EVENTTYPE);
         item.toggleDisplaySelectItems();
-        Assert.assertTrue(item.isDisplaySelectItems());
+        Assertions.assertTrue(item.isDisplaySelectItems());
     }
 
     /**
@@ -252,11 +252,11 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies set displaySelectItems false if value count above threshold
      */
     @Test
-    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfValueCountAboveThreshold() throws Exception {
+    void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfValueCountAboveThreshold() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.PI);
         item.toggleDisplaySelectItems();
-        Assert.assertFalse(item.isDisplaySelectItems());
+        Assertions.assertFalse(item.isDisplaySelectItems());
     }
 
     /**
@@ -264,11 +264,11 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies set displaySelectItems false if value count zero
      */
     @Test
-    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfValueCountZero() throws Exception {
+    void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfValueCountZero() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField("MD_NO_SUCH_FIELD");
         item.toggleDisplaySelectItems();
-        Assert.assertFalse(item.isDisplaySelectItems());
+        Assertions.assertFalse(item.isDisplaySelectItems());
     }
 
     /**
@@ -276,9 +276,9 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      * @verifies return field if label empty
      */
     @Test
-    public void getLabel_shouldReturnFieldIfLabelEmpty() throws Exception {
+    void getLabel_shouldReturnFieldIfLabelEmpty() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setField("MD_FIELD");
-        Assert.assertEquals("MD_FIELD", item.getLabel());
+        Assertions.assertEquals("MD_FIELD", item.getLabel());
     }
 }

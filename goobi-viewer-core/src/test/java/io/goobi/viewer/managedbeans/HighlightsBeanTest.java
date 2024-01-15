@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -35,21 +35,21 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.Highlight;
 
-public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
+class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
 
     HighlightsBean bean;
     NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);
     ImageDeliveryBean imaging = Mockito.mock(ImageDeliveryBean.class);
     
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
         bean = new HighlightsBean(DataManager.getInstance().getDao(), navigationHelper, imaging);
         bean.init();
     }
     
     @Test
-    public void test_listObjecs() throws DAOException {
+    void test_listObjecs() throws DAOException {
         
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         bean.initProviders(now);
@@ -58,7 +58,7 @@ public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void test_filterList() {
+    void test_filterList() {
         
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
         bean.initProviders(now);
@@ -74,7 +74,7 @@ public class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void test_HighlightUrl() throws DAOException {
+    void test_HighlightUrl() throws DAOException {
         
         Mockito.when(navigationHelper.getImageUrl()).thenReturn("localhost:8080/viewer/image");
         

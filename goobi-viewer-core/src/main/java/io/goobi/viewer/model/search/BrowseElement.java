@@ -103,7 +103,6 @@ public class BrowseElement implements Serializable {
     private String docStructType;
     private long iddoc;
     private String thumbnailUrl;
-    //    private boolean thumbnailAccessDenied = false;
     private int imageNo;
     @JsonIgnore
     private String volumeNo = null;
@@ -251,7 +250,7 @@ public class BrowseElement implements Serializable {
         int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
         for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
             if (!entry.getValue().isEmpty()) {
-                // logger.trace("populating metadata list {}", entry.getKey());
+                // logger.trace("populating metadata list {}", entry.getKey()); //NOSONAR Debug
                 populateMetadataList(entry.getValue(), structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
             }
         }
@@ -269,7 +268,7 @@ public class BrowseElement implements Serializable {
             try {
                 navigationHelper = BeanUtils.getNavigationHelper();
             } catch (NullPointerException e) {
-                // logger.trace("No navigationHelper available");
+                // logger.trace("No navigationHelper available"); //NOSONAR Debug
             }
         }
 
@@ -373,7 +372,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     *
+     * 
+     * @param metadataList
      * @param structElement
      * @param topStructElement
      * @param anchorStructElement
@@ -385,8 +385,8 @@ public class BrowseElement implements Serializable {
      * @throws PresentationException
      */
     void populateMetadataList(List<Metadata> metadataList, StructElement structElement, StructElement topStructElement,
-            StructElement anchorStructElement,
-            Map<String, Set<String>> searchTerms, int length, int number, Locale locale) throws IndexUnreachableException, PresentationException {
+            StructElement anchorStructElement, Map<String, Set<String>> searchTerms, int length, int number, Locale locale)
+            throws IndexUnreachableException, PresentationException {
         if (metadataList == null) {
             throw new IllegalArgumentException("metadataList may not be null");
         }
@@ -423,17 +423,18 @@ public class BrowseElement implements Serializable {
                     if (topStructElement != null && !topStructElement.equals(elementToUse)
                             && !MetadataParameterType.ANCHORFIELD.equals(param.getType()) && param.isTopstructValueFallback()) {
                         metadataValues = topStructElement.getMetadataValues(param.getKey());
-                        // logger.debug("Checking topstruct metadata: " + topStructElement.getDocStruct());
+                        // logger.debug("Checking topstruct metadata: " + topStructElement.getDocStruct()); //NOSONAR Debug
                     } else {
                         md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
                         count++;
                     }
                 }
                 // Set actual values
-                for (String value : metadataValues) {
+                for (final String val : metadataValues) {
                     if (count >= md.getNumber() && md.getNumber() != -1 || count >= number) {
                         break;
                     }
+                    String value = val;
                     // Apply replace rules
                     if (!param.getReplaceRules().isEmpty()) {
                         value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), topStructElement.getPi());
@@ -512,9 +513,9 @@ public class BrowseElement implements Serializable {
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
-        for (Locale locale : ViewerResourceBundle.getAllLocales()) {
-            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, locale));
-            String subtitle = structElement.getMetadataValueForLanguage(SolrConstants.SUBTITLE, locale.getLanguage());
+        for (Locale loc : ViewerResourceBundle.getAllLocales()) {
+            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, loc));
+            String subtitle = structElement.getMetadataValueForLanguage(SolrConstants.SUBTITLE, loc.getLanguage());
             if (StringUtils.isNotEmpty(subtitle)) {
                 sbLabel.append(" : ").append(subtitle);
             }
@@ -589,7 +590,7 @@ public class BrowseElement implements Serializable {
 
     /**
      * @param filename
-     * @return
+     * @return Mime type for the given filename
      */
     private static String getMimeTypeFromExtension(String filename) {
         try {
@@ -605,7 +606,7 @@ public class BrowseElement implements Serializable {
      *
      * @param se
      * @param locale
-     * @return
+     * @return Generated label
      */
     private String generateLabel(StructElement se, Locale locale) {
         String ret = "";
@@ -687,7 +688,7 @@ public class BrowseElement implements Serializable {
      *
      * @param se
      * @param locale
-     * @return
+     * @return Generated label
      * @should translate docstruct label
      */
     static String generateDefaultLabel(StructElement se, Locale locale) {
@@ -825,7 +826,7 @@ public class BrowseElement implements Serializable {
      * @return the thumbnailUrl
      */
     public String getThumbnailUrl() {
-        //        logger.trace("thumbnailUrl {}", thumbnailUrl);
+        //        logger.trace("thumbnailUrl {}", thumbnailUrl); //NOSONAR Debug
         return thumbnailUrl;
     }
 
@@ -838,10 +839,9 @@ public class BrowseElement implements Serializable {
      */
     public String getThumbnailUrl(String width, String height) {
         synchronized (this) {
-            String url = getThumbnailUrl();
-            String urlNew = new IIIFUrlHandler().getModifiedIIIFFUrl(url, null,
+            String thumbUrl = getThumbnailUrl();
+            return new IIIFUrlHandler().getModifiedIIIFFUrl(thumbUrl, null,
                     new Scale.ScaleToBox(Integer.parseInt(width), Integer.parseInt(height)), null, null, null);
-            return urlNew;
         }
     }
 
@@ -880,7 +880,7 @@ public class BrowseElement implements Serializable {
      * @return last StructElementStub in the list
      */
     public StructElementStub getBottomStructElement() {
-        if (structElements == null || structElements.isEmpty()) {
+        if (structElements.isEmpty()) {
             return null;
         }
 
@@ -926,7 +926,7 @@ public class BrowseElement implements Serializable {
     public String getFulltextForHtml() {
         if (fulltextForHtml == null) {
             if (fulltext != null) {
-                fulltextForHtml = StringTools.stripJS(fulltext).replaceAll("\n", " ");
+                fulltextForHtml = StringTools.stripJS(fulltext).replace("\n", " ");
             } else {
                 fulltextForHtml = "";
             }
@@ -1131,7 +1131,7 @@ public class BrowseElement implements Serializable {
 
     /**
      *
-     * @return
+     * @return Generated URL
      */
     private String generateUrl() {
         return DataManager.getInstance().getUrlBuilder().generateURL(this);
@@ -1141,7 +1141,7 @@ public class BrowseElement implements Serializable {
      * Important: hits have to have 4 Pretty parameters (e.g. /image/nextHit/PPN123/1/LOG_0001/)
      *
      * @param type
-     * @return
+     * @return Generated URL
      */
     private String generateSidebarUrl(String type) {
         PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
@@ -1196,7 +1196,7 @@ public class BrowseElement implements Serializable {
                     .append(StringUtils.isNotEmpty(logId) ? logId : '-')
                     .append('/');
         } else if (configuredPageType != null) {
-            // logger.trace("Found configured page type: {}", configuredPageType.getName());
+            // logger.trace("Found configured page type: {}", configuredPageType.getName()); //NOSONAR Debug
             sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append('/')
                     .append(configuredPageType.getName())
@@ -1276,7 +1276,7 @@ public class BrowseElement implements Serializable {
     public List<String> getMetadataValues(String field) {
         return getMetadataListForLocale(field, BeanUtils.getLocale()).stream()
                 .flatMap(md -> md.getValues().stream())
-                .map(value -> value.getCombinedValue())
+                .map(MetadataValue::getCombinedValue)
                 .collect(Collectors.toList());
     }
 
@@ -1284,7 +1284,7 @@ public class BrowseElement implements Serializable {
         return getMetadataListForLocale(field, BeanUtils.getLocale()).stream()
                 .flatMap(md -> md.getValues().stream())
                 .findFirst()
-                .map(value -> value.getCombinedValue())
+                .map(MetadataValue::getCombinedValue)
                 .orElse("");
     }
 
@@ -1292,7 +1292,7 @@ public class BrowseElement implements Serializable {
      * 
      * @param field
      * @param locale
-     * @return
+     * @return List<Metadata>
      */
     public List<Metadata> getMetadataListForLocale(String field, Locale locale) {
         return Metadata.filterMetadata(this.metadataListMap.get(Configuration.METADATA_LIST_TYPE_SEARCH_HIT),
@@ -1304,7 +1304,7 @@ public class BrowseElement implements Serializable {
      * @param field Requested field name
      * @param locale Requested locale
      * @param metadataListType
-     * @return
+     * @return List<Metadata>
      */
     public List<Metadata> getMetadataListForLocale(String field, Locale locale, String metadataListType) {
         return Metadata.filterMetadata(this.metadataListMap.get(metadataListType), locale != null ? locale.getLanguage() : null, field);
@@ -1326,7 +1326,7 @@ public class BrowseElement implements Serializable {
      * 
      * @param locale
      * @param metadataListType
-     * @return
+     * @return List<Metadata>
      */
     public List<Metadata> getMetadataListForLocale(Locale locale, String metadataListType) {
         return Metadata.filterMetadata(this.metadataListMap.get(metadataListType), locale != null ? locale.getLanguage() : null, null);

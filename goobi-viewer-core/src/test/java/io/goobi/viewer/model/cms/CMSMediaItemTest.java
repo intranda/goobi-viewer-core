@@ -21,22 +21,22 @@
  */
 package io.goobi.viewer.model.cms;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItem.Priority;
 
-public class CMSMediaItemTest {
+class CMSMediaItemTest {
 
     @Test
-    public void testStImportant() {
+    void testStImportant() {
         CMSMediaItem media = new CMSMediaItem();
-        Assert.assertFalse(media.isImportant());
-        Assert.assertEquals(Priority.DEFAULT, media.getPriority());
+        Assertions.assertFalse(media.isImportant());
+        Assertions.assertEquals(Priority.DEFAULT, media.getPriority());
         media.setImportant(true);
-        Assert.assertTrue(media.isImportant());
-        Assert.assertEquals(Priority.IMPORTANT, media.getPriority());
+        Assertions.assertTrue(media.isImportant());
+        Assertions.assertEquals(Priority.IMPORTANT, media.getPriority());
     }
 
 }

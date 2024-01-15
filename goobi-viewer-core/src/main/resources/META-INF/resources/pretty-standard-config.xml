@@ -611,12 +611,14 @@
 		<action onPostback="false">#{activeDocumentBean.setLogid('')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
+    <!--
 	<url-mapping id="thumbs4">
 		<pattern value="/thumbs/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewThumbs.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.setLogid('')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
+    -->
 
 	<!-- TOC -->
     <url-mapping id="toc1">
@@ -1220,7 +1222,7 @@
     </url-mapping>
     <url-mapping id="cmsOpenPage6">
         <pattern
-            value="/cms/#{page:cmsBean.currentPageId}/#{activeResultGroupName:searchBean.activeResultGroupName}/#{query:searchBean.exactSearchString}/#{page:cmsBean.currentPage.listPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+            value="/cms/#{page:cmsBean.currentPageId}/#{activeResultGroupName:searchBean.activeResultGroupName}/#{query:searchBean.exactSearchString}/#{page:cmsBean.currentPage.listPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>

@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.model.cms;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -41,17 +41,17 @@ import io.goobi.viewer.solr.SolrConstants;
  * @author florian
  *
  */
-public class CMSMultiRecordNoteTest extends AbstractDatabaseAndSolrEnabledTest {
+class CMSMultiRecordNoteTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
-    public void testGetRecords() throws DAOException {
+    void testGetRecords() throws DAOException {
         CMSMultiRecordNote note = (CMSMultiRecordNote) DataManager.getInstance().getDao().getRecordNote(5l);
         assertNotNull(note);
         assertTrue(note.getRecords().size() > 0);
     }
 
     @Test
-    public void testMatchesRecord() throws DAOException, PresentationException, IndexUnreachableException {
+    void testMatchesRecord() throws DAOException, PresentationException, IndexUnreachableException {
         CMSMultiRecordNote note = (CMSMultiRecordNote) DataManager.getInstance().getDao().getRecordNote(5l);
         assertNotNull(note);
         String containedPI = note.getRecords().get(0);

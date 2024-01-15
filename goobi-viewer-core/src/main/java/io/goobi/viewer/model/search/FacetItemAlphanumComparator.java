@@ -26,16 +26,13 @@ import java.text.ParseException;
 import java.text.RuleBasedCollator;
 import java.util.Comparator;
 import java.util.Locale;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 
 /**
  * Custom string comparator for browsing terms (case-insensitive, ignores brackets, natural sorting).
@@ -47,7 +44,7 @@ public class FacetItemAlphanumComparator implements Comparator<IFacetItem>, Seri
     private static final Logger logger = LogManager.getLogger(FacetItemAlphanumComparator.class);
 
     private final Locale locale;
-    private AlphanumCollatorComparator comparator;
+    private transient AlphanumCollatorComparator comparator;
 
     public FacetItemAlphanumComparator(Locale locale) {
         if (locale != null) {
@@ -55,7 +52,6 @@ public class FacetItemAlphanumComparator implements Comparator<IFacetItem>, Seri
         } else {
             this.locale = ViewerResourceBundle.getDefaultLocale();
         }
-        // comparator = new AlphanumCollatorComparator(Collator.getInstance(this.locale));
         try {
             comparator = new AlphanumCollatorComparator(new RuleBasedCollator("< a< b< c< d"));
         } catch (ParseException e) {
@@ -74,12 +70,8 @@ public class FacetItemAlphanumComparator implements Comparator<IFacetItem>, Seri
     @Override
     public int compare(IFacetItem o1, IFacetItem o2) {
         String relevantString1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
-        //        relevantString1 = normalizeString(relevantString1, DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
-
         String relevantString2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
-        //        relevantString2 = normalizeString(relevantString2, DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
-
-        // logger.trace("Comparing '{}' to '{}' ({})", relevantString1, relevantString2, locale);
+        // logger.trace("Comparing '{}' to '{}' ({})", relevantString1, relevantString2, locale); //NOSONAR Debug
 
         // If one of the strings starts with a non-alphanumerical character and the other doesn't, always sort the alphanumerical string first
         boolean string1Alphanum = true;
@@ -115,23 +107,24 @@ public class FacetItemAlphanumComparator implements Comparator<IFacetItem>, Seri
      * @should use ignoreChars if provided
      * @should remove first char if non alphanum if ignoreChars not provided
      */
-    public static String normalizeString(String s, String ignoreChars) {
+    public static String normalizeString(final String s, String ignoreChars) {
         if (s == null) {
             return null;
         }
 
+        String ret = s;
         if (StringUtils.isNotEmpty(ignoreChars)) {
             // Remove leading chars if they are among ignored chars
-            while (s.length() > 1 && ignoreChars.contains(s.substring(0, 1))) {
-                s = s.substring(1);
+            while (ret.length() > 1 && ignoreChars.contains(ret.substring(0, 1))) {
+                ret = ret.substring(1);
             }
         } else {
             // Remove the first character, if not alphanumeric
-            if (s.length() > 1 && !StringUtils.isAlphanumeric(s.substring(0, 1))) {
-                s = s.substring(1);
+            if (ret.length() > 1 && !StringUtils.isAlphanumeric(ret.substring(0, 1))) {
+                ret = ret.substring(1);
             }
         }
 
-        return s;
+        return ret;
     }
 }

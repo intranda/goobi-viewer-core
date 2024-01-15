@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.model.cms.pages;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,8 +32,8 @@ import java.util.Locale;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -45,15 +45,15 @@ import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 
-public class CMSPageTest extends AbstractDatabaseEnabledTest {
+class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     Path componentTemplatesPath = Paths.get("src/test/resources/data/viewer/cms/component_templates");
     CMSTemplateManager templateManager;
     CMSPageContentManager contentManager;
     IDAO dao;
     
-    @Before
-    public void setup() throws Exception { 
+    @BeforeEach
+    public void setUp() throws Exception { 
         super.setUp();
         dao = DataManager.getInstance().getDao();
         templateManager = new CMSTemplateManager(componentTemplatesPath.toString(), null);
@@ -61,7 +61,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testPersistPage() throws DAOException {
+    void testPersistPage() throws DAOException {
                 
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
@@ -79,7 +79,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testPersistPageWithContent() throws DAOException {
+    void testPersistPageWithContent() throws DAOException {
                 
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
@@ -105,7 +105,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
      * @verifies create doc correctly
      */
     @Test
-    public void exportAsXml_shouldCreateDocCorrectly() throws Exception {
+    void exportAsXml_shouldCreateDocCorrectly() throws Exception {
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Title", Locale.ENGLISH);
         page.addCategory(new CMSCategory("foo"));

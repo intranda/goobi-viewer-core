@@ -21,21 +21,21 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class MimeTypeTest {
+class MimeTypeTest {
 
     /**
      * @see BaseMimeType#getByName(String)
      * @verifies find mime type by short name correctly
      */
     @Test
-    public void getByName_shouldFindMimeTypeByShortNameCorrectly() throws Exception {
-        Assert.assertEquals(BaseMimeType.APPLICATION, BaseMimeType.getByName("application"));
-        Assert.assertEquals(BaseMimeType.AUDIO, BaseMimeType.getByName("audio"));
-        Assert.assertEquals(BaseMimeType.IMAGE, BaseMimeType.getByName("image"));
-        Assert.assertEquals(BaseMimeType.SANDBOXED_HTML, BaseMimeType.getByName("text"));
+    void getByName_shouldFindMimeTypeByShortNameCorrectly() throws Exception {
+        Assertions.assertEquals(BaseMimeType.APPLICATION, BaseMimeType.getByName("application"));
+        Assertions.assertEquals(BaseMimeType.AUDIO, BaseMimeType.getByName("audio"));
+        Assertions.assertEquals(BaseMimeType.IMAGE, BaseMimeType.getByName("image"));
+        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML, BaseMimeType.getByName("text"));
     }
 
     /**
@@ -43,10 +43,10 @@ public class MimeTypeTest {
      * @verifies find mime type by full name correctly
      */
     @Test
-    public void getByName_shouldFindMimeTypeByFullNameCorrectly() throws Exception {
-        Assert.assertEquals(BaseMimeType.APPLICATION, BaseMimeType.getByName("application/pdf"));
-        Assert.assertEquals(BaseMimeType.AUDIO, BaseMimeType.getByName("audio/mpeg3"));
-        Assert.assertEquals(BaseMimeType.IMAGE, BaseMimeType.getByName("image/jpeg"));
-        Assert.assertEquals(BaseMimeType.SANDBOXED_HTML, BaseMimeType.getByName("text/sandboxed-html"));
+    void getByName_shouldFindMimeTypeByFullNameCorrectly() throws Exception {
+        Assertions.assertEquals(BaseMimeType.APPLICATION, BaseMimeType.getByName("application/pdf"));
+        Assertions.assertEquals(BaseMimeType.AUDIO, BaseMimeType.getByName("audio/mpeg3"));
+        Assertions.assertEquals(BaseMimeType.IMAGE, BaseMimeType.getByName("image/jpeg"));
+        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML, BaseMimeType.getByName("text/sandboxed-html"));
     }
 }

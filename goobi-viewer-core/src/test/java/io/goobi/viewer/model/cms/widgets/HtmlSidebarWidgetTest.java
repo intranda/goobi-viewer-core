@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.model.cms.widgets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -35,10 +35,10 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
-public class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
+class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
 
     @Test
-    public void testPersist() throws DAOException {
+    void testPersist() throws DAOException {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -58,7 +58,7 @@ public class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
     }
 
     @Test
-    public void testClone() {
+    void testClone() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -83,7 +83,7 @@ public class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
     }
 
     @Test
-    public void testType() {
+    void testType() {
         assertEquals(CustomWidgetType.WIDGET_HTML, new HtmlSidebarWidget().getType());
     }
 

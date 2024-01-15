@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.api.rest.model.jobs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -31,8 +31,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.Task.TaskStatus;
@@ -44,20 +44,20 @@ import io.goobi.viewer.model.job.TaskType;
  * @author florian
  *
  */
-public class JobManagerTest {
+class JobManagerTest {
 
     TaskManager manager;
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         manager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
     }
 
     @Test
-    public void testAddJob() throws InterruptedException {
+    void testAddJob() throws InterruptedException {
         Task job = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
         });
         manager.addTask(job);
@@ -72,7 +72,7 @@ public class JobManagerTest {
     }
 
     @Test
-    public void testListJobs() {
+    void testListJobs() {
         Task job1 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
         });
         Task job2 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
@@ -82,5 +82,4 @@ public class JobManagerTest {
 
         assertEquals(2, manager.getTasks(TaskType.NOTIFY_SEARCH_UPDATE).size());
     }
-
 }

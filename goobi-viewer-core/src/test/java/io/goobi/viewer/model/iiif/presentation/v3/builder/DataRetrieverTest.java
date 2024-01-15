@@ -21,17 +21,17 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.monitoring.timer.Timer;
 import de.intranda.monitoring.timer.TimerOutput;
@@ -48,27 +48,27 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  * @author florian
  *
  */
-public class DataRetrieverTest extends AbstractSolrEnabledTest{
+class DataRetrieverTest extends AbstractSolrEnabledTest{
 
     private DataRetriever dataRetriever = new DataRetriever();
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() throws Exception {
         AbstractSolrEnabledTest.setUpClass();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
        super.tearDown();
     }
 
     @Test
-    public void testGetTopCollections() throws IndexUnreachableException {
+    void testGetTopCollections() throws IndexUnreachableException {
         try (Timer timer = new Timer(TimerOutput.SIMPLE, (time -> {}))){
             List<CollectionResult> results = dataRetriever.getTopLevelCollections("DC");
             assertFalse(results.isEmpty());
@@ -81,7 +81,7 @@ public class DataRetrieverTest extends AbstractSolrEnabledTest{
     }
 
     @Test
-    public void testGetChildCollections() throws IndexUnreachableException {
+    void testGetChildCollections() throws IndexUnreachableException {
         try (Timer timer = new Timer(TimerOutput.SIMPLE, (time -> {}))){
             List<CollectionResult> results = dataRetriever.getChildCollections("DC", "dctext");
             assertFalse(results.isEmpty());
@@ -93,7 +93,7 @@ public class DataRetrieverTest extends AbstractSolrEnabledTest{
     }
 
     @Test
-    public void testGetContainedRecords() throws IndexUnreachableException, PresentationException {
+    void testGetContainedRecords() throws IndexUnreachableException, PresentationException {
         try (Timer timer = new Timer(TimerOutput.SIMPLE, (time -> {}))){
             List<StructElement> results = dataRetriever.getContainedRecords("DC", "dctext.ocr");
             assertFalse(results.isEmpty());

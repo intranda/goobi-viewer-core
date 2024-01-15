@@ -21,42 +21,42 @@
  */
 package io.goobi.viewer.controller.mq;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class ActiveMQConfigTest {
+class ActiveMQConfigTest {
 
     private static final String activeMqConfigPath = "src/test/resources/config_activemq.xml";
 
     ActiveMQConfig config;
     
-    @Before
-    public void setup() throws IOException {
+    @BeforeEach
+    public void setUp() throws IOException {
         this.config = new ActiveMQConfig(Paths.get(activeMqConfigPath));
     }
     
     @Test
-    public void testReadURI() {
+    void testReadURI() {
         assertEquals("tcp://0.0.0.0:61618", config.getConnectorURI());
     }
     
     @Test
-    public void testReadUserName() {
+    void testReadUserName() {
         assertEquals("testadmin", config.getUsernameAdmin());
     }
     
     @Test
-    public void testReadPassword() {
+    void testReadPassword() {
         assertEquals("test", config.getPasswordAdmin());
     }
     
     @Test
-    public void testReadSchedulerDirectory() {
+    void testReadSchedulerDirectory() {
         assertEquals("src/test/resources/activemq/scheduler", config.getSchedulerDirectory());
     }
 

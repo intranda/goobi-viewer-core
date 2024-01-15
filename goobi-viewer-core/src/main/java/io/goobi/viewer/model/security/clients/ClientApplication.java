@@ -88,7 +88,8 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * The IP under which the client first requested registration
      */
-    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13", //NOSONAR, the ip address here is an example for the documentation
+    @Schema(description = "The IP under which the client first requested registration",
+            example = "192.168.172.13", //NOSONAR, the ip address here is an example for the documentation
             accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "client_ip")
     private String clientIp;
@@ -110,7 +111,8 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access
      */
-    @Schema(description = "The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access",
+    @Schema(description = "The time at which the client was granted or denied access, or if not yet happened, "
+            + "the time at which it first requested access",
             example = "2022-05-19T11:55:16Z", type = "date", format = "ISO 8601", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_registered", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
@@ -128,7 +130,8 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * An IP Subnet mask. If present, the client may only log in if its current IP matches the mask
      */
-    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16", //NOSONAR, the ip address here is an example for the documentation
+    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask",
+            example = "192.168.0.1/16", //NOSONAR, the ip address here is an example for the documentation
             accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "subnet_mask")
     private String subnetMask;
@@ -156,7 +159,7 @@ public class ClientApplication implements ILicensee, Serializable {
      * @author florian
      *
      */
-    public static enum AccessStatus {
+    public enum AccessStatus {
         /**
          * only used for the "all clients" core ClientApplication instance
          */
@@ -419,6 +422,9 @@ public class ClientApplication implements ILicensee, Serializable {
 
     /**
      * Add a {@link License} to the {@link #licenses}
+     * 
+     * @param license
+     * @return true if added successfully; false otherwise
      */
     public boolean addLicense(License license) {
         return this.licenses.add(license);
@@ -492,7 +498,7 @@ public class ClientApplication implements ILicensee, Serializable {
     /** {@inheritDoc} */
     @Override
     public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
-        // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
+        // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi); //NOSONAR Debug
         if (StringUtils.isEmpty(privilegeName)) {
             return AccessPermission.granted();
         }
@@ -530,7 +536,7 @@ public class ClientApplication implements ILicensee, Serializable {
     }
 
     /**
-     * Check if the given ip matches the {@link #subnetMask} of this client
+     * Check if the given IP address matches the {@link #subnetMask} of this client
      *
      * @param inIp a {@link java.lang.String} object.
      * @return a boolean.
@@ -542,20 +548,21 @@ public class ClientApplication implements ILicensee, Serializable {
             return true;
         }
 
-        if (inIp.equals(NetTools.ADDRESS_LOCALHOST_IPV6)) {
-            inIp = NetTools.ADDRESS_LOCALHOST_IPV4;
+        String ip = inIp;
+        if (ip.equals(NetTools.ADDRESS_LOCALHOST_IPV6)) {
+            ip = NetTools.ADDRESS_LOCALHOST_IPV4;
         }
 
         // Workaround for single IP ranges (isInRange() doesn't seem to match these)
-        if (subnetMask.endsWith("/32") && subnetMask.substring(0, subnetMask.length() - 3).equals(inIp)) {
-            // logger.trace("Exact IP match: {}", inIp);
+        if (subnetMask.endsWith("/32") && subnetMask.substring(0, subnetMask.length() - 3).equals(ip)) {
+            // logger.trace("Exact IP match: {}", inIp); //NOSONAR Debug
             return true;
         }
 
         try {
             SubnetUtils subnetUtils = new SubnetUtils(subnetMask);
             subnetUtils.setInclusiveHostCount(true);
-            return subnetUtils.getInfo().isInRange(inIp);
+            return subnetUtils.getInfo().isInRange(ip);
         } catch (IllegalArgumentException e) {
             return false;
         }
@@ -578,7 +585,7 @@ public class ClientApplication implements ILicensee, Serializable {
 
     /**
      * @param remoteAddress
-     * @return
+     * @return true if remoteAddress may log in; false otherwise
      */
     public boolean mayLogIn(String remoteAddress) {
         return isAccessGranted() && matchIp(remoteAddress);

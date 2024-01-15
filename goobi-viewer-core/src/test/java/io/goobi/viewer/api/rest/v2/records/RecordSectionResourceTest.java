@@ -23,8 +23,8 @@ package io.goobi.viewer.api.rest.v2.records;
 
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS_RANGE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.URI;
 
@@ -32,9 +32,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -46,7 +46,7 @@ import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
  * @author florian
  *
  */
-public class RecordSectionResourceTest extends AbstractRestApiTest {
+class RecordSectionResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "74241";
     private static final String DIVID ="LOG_0004";
@@ -54,7 +54,7 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -62,20 +62,20 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testGetRange() throws JsonMappingException, JsonProcessingException {
+    void testGetRange() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).params(PI, DIVID).build();
         try(Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject range = new JSONObject(entity);

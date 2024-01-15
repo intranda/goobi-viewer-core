@@ -34,15 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import javax.servlet.http.Part;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -50,18 +41,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientProperties;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.omnifaces.util.Servlets;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -79,6 +69,15 @@ import io.goobi.viewer.exceptions.UploadException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.download.AbstractTaskManagerRequest;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * <p>
@@ -155,7 +154,7 @@ public class UploadJob implements Serializable {
                     .target(url)
                     .request(MediaType.APPLICATION_JSON)
                     .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new IOException("Error connecting to " + url, e);
         }
     }
@@ -231,9 +230,6 @@ public class UploadJob implements Serializable {
                 logger.error(e.getMessage());
                 throw new UploadException(e.getMessage());
             }
-        } catch (ClientProtocolException e) {
-            logger.error(e.getMessage());
-            throw new UploadException(e.getMessage());
         } catch (IOException e) {
             logger.error(e.getMessage());
             throw new UploadException(e.getMessage());
@@ -271,11 +267,9 @@ public class UploadJob implements Serializable {
     /**
      * 
      * @param file
-     * @throws HTTPException
      * @throws IOException
-     * @throws ClientProtocolException
      */
-    public void uploadFile(File file) throws ClientProtocolException, IOException, HTTPException {
+    public void uploadFile(File file) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("file may not be null");
         }
@@ -289,6 +283,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
+     * @return true if status changed; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
      * 
@@ -323,10 +318,6 @@ public class UploadJob implements Serializable {
             logger.trace("Process status JSON: {}", json);
             return new ObjectMapper().readValue(json, ProcessStatusResponse.class);
         } catch (JsonMappingException e) {
-            logger.error(e.getMessage());
-        } catch (JsonProcessingException e) {
-            logger.error(e.getMessage());
-        } catch (ClientProtocolException e) {
             logger.error(e.getMessage());
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -407,7 +398,7 @@ public class UploadJob implements Serializable {
 
     /**
      * 
-     * @return
+     * @return PI resolver URL for pi
      */
     public String getRecordUrl() {
         return "piresolver?id=" + pi;

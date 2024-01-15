@@ -22,16 +22,9 @@
 package io.goobi.viewer.model.search;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -101,6 +94,7 @@ public interface SearchInterface {
     /**
      * Return if search is performed only within a certain facet field
      *
+     * @param fieldName
      * @return a boolean.
      */
     public boolean isSearchInFacetFieldFlag(String fieldName);
@@ -201,7 +195,7 @@ public interface SearchInterface {
     /**
      * action to execute to change sort sort order of hits
      * 
-     * @return
+     * @return Navigation outcome
      * @throws IOException
      */
     public String changeSorting() throws IOException;

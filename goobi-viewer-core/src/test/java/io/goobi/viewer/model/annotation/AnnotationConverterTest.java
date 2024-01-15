@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.model.annotation;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -38,7 +38,7 @@ import io.goobi.viewer.model.annotation.comments.Comment;
  * @author florian
  *
  */
-public class AnnotationConverterTest {
+class AnnotationConverterTest {
 
     private static final String campaignAnnotation = "{\n"
             + "      \"id\": \"https://viewer.goobi.io/api/v1/annotations/annotation_2/\",\n"
@@ -86,7 +86,7 @@ public class AnnotationConverterTest {
     }
 
     @Test
-    public void testConvertAnnotation() throws JsonMappingException, JsonProcessingException {
+    void testConvertAnnotation() throws JsonMappingException, JsonProcessingException {
         WebAnnotation webAnno = mapper.readValue(campaignAnnotation, WebAnnotation.class);
         assertEquals("https://viewer.goobi.io/api/v1/annotations/annotation_2/", webAnno.getId().toString());
     }

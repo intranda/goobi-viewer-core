@@ -1154,10 +1154,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     *
-     * @return true if current record is anchor or group and its first child volume is of application mime type; false otherwise
-     * @throws IndexUnreachableException
-     */
+    *
+    * @return true if current record is anchor or group and its first child volume is of application mime type; false otherwise
+    * @throws IndexUnreachableException
+    */
     private boolean isChildFilesOnly() throws IndexUnreachableException {
         boolean childIsFilesOnly = false;
         if (currentStructElement != null && (currentStructElement.isAnchor() || currentStructElement.isGroup())) {

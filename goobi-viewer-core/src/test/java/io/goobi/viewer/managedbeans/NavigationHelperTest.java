@@ -21,29 +21,29 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
 
-public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
+class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getCurrentView()
      * @verifies return value correctly
      */
     @Test
-    public void getCurrentView_shouldReturnValueCorrectly() throws Exception {
+    void getCurrentView_shouldReturnValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.statusMap.put(NavigationHelper.KEY_CURRENT_VIEW, NavigationHelper.KEY_CURRENT_VIEW + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.getCurrentView());
+        Assertions.assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.getCurrentView());
     }
 
     /**
@@ -51,10 +51,10 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies return value correctly
      */
     @Test
-    public void getMenuPage_shouldReturnValueCorrectly() throws Exception {
+    void getMenuPage_shouldReturnValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.statusMap.put(NavigationHelper.KEY_MENU_PAGE, NavigationHelper.KEY_MENU_PAGE + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.getMenuPage());
+        Assertions.assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.getMenuPage());
     }
 
     /**
@@ -62,10 +62,10 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies return value correctly
      */
     @Test
-    public void getPreferredView_shouldReturnValueCorrectly() throws Exception {
+    void getPreferredView_shouldReturnValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.statusMap.put(NavigationHelper.KEY_PREFERRED_VIEW, NavigationHelper.KEY_PREFERRED_VIEW + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.getPreferredView());
+        Assertions.assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.getPreferredView());
     }
 
     /**
@@ -73,10 +73,10 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies return value correctly
      */
     @Test
-    public void getSelectedNewsArticle_shouldReturnValueCorrectly() throws Exception {
+    void getSelectedNewsArticle_shouldReturnValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.statusMap.put(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE, NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value", nh.getSelectedNewsArticle());
+        Assertions.assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value", nh.getSelectedNewsArticle());
     }
 
     /**
@@ -84,10 +84,10 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies return value correctly
      */
     @Test
-    public void getStatusMapValue_shouldReturnValueCorrectly() throws Exception {
+    void getStatusMapValue_shouldReturnValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.statusMap.put("new_key", "new_value");
-        Assert.assertEquals("new_value", nh.getStatusMapValue("new_key"));
+        Assertions.assertEquals("new_value", nh.getStatusMapValue("new_key"));
     }
 
     /**
@@ -95,10 +95,10 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies set value correctly
      */
     @Test
-    public void setCurrentView_shouldSetValueCorrectly() throws Exception {
+    void setCurrentView_shouldSetValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setCurrentView(NavigationHelper.KEY_CURRENT_VIEW + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.statusMap.get(NavigationHelper.KEY_CURRENT_VIEW));
+        Assertions.assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.statusMap.get(NavigationHelper.KEY_CURRENT_VIEW));
     }
 
     /**
@@ -106,10 +106,10 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies set value correctly
      */
     @Test
-    public void setMenuPage_shouldSetValueCorrectly() throws Exception {
+    void setMenuPage_shouldSetValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setMenuPage(NavigationHelper.KEY_MENU_PAGE + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.statusMap.get(NavigationHelper.KEY_MENU_PAGE));
+        Assertions.assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.statusMap.get(NavigationHelper.KEY_MENU_PAGE));
     }
 
     /**
@@ -117,10 +117,10 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies set value correctly
      */
     @Test
-    public void setPreferredView_shouldSetValueCorrectly() throws Exception {
+    void setPreferredView_shouldSetValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setPreferredView(NavigationHelper.KEY_PREFERRED_VIEW + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.statusMap.get(NavigationHelper.KEY_PREFERRED_VIEW));
+        Assertions.assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.statusMap.get(NavigationHelper.KEY_PREFERRED_VIEW));
     }
 
     /**
@@ -128,10 +128,10 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies set value correctly
      */
     @Test
-    public void setSelectedNewsArticle_shouldSetValueCorrectly() throws Exception {
+    void setSelectedNewsArticle_shouldSetValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setSelectedNewsArticle(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value", nh.statusMap.get(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE));
+        Assertions.assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value", nh.statusMap.get(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE));
     }
 
     /**
@@ -139,10 +139,10 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies set value correctly
      */
     @Test
-    public void setStatusMapValue_shouldSetValueCorrectly() throws Exception {
+    void setStatusMapValue_shouldSetValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setStatusMapValue("new_key", "new_value");
-        Assert.assertEquals("new_value", nh.statusMap.get("new_key"));
+        Assertions.assertEquals("new_value", nh.statusMap.get("new_key"));
     }
 
     /**
@@ -150,14 +150,14 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies set value correctly
      */
     @Test
-    public void setSubThemeDiscriminatorValue_shouldSetValueCorrectly() throws Exception {
+    void setSubThemeDiscriminatorValue_shouldSetValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setSubThemeDiscriminatorValue("dValue");
-        Assert.assertEquals("dValue", nh.getStatusMapValue(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
+        Assertions.assertEquals("dValue", nh.getStatusMapValue(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
     }
 
     @Test
-    public void test_createAdminBreadcrumbs() {
+    void test_createAdminBreadcrumbs() {
         NavigationHelper nh = new NavigationHelper();
         PageType pageType = PageType.getByName("adminTranslationsEdit");
         List<List<String>> labels = List.of(List.of("adminTranslationsEdit", "Sammlungsnamen"), List.of("foobar"));

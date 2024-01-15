@@ -28,15 +28,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.model.maps.GeoMap;
 
 /**
  * @author florian
@@ -50,7 +48,7 @@ public class DCRecordWriter {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(DCRecordWriter.class);
 
-    public static final Namespace namespaceDC = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
+    public static final Namespace NAMESPACE_DC = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
 
     private final Document doc;
 
@@ -59,9 +57,9 @@ public class DCRecordWriter {
      */
     public DCRecordWriter() {
         doc = new Document();
-        Element record = new Element("record");
-        record.addNamespaceDeclaration(namespaceDC);
-        doc.setRootElement(record);
+        Element rec = new Element("record");
+        rec.addNamespaceDeclaration(NAMESPACE_DC);
+        doc.setRootElement(rec);
     }
 
     /**
@@ -72,7 +70,7 @@ public class DCRecordWriter {
      */
     public void addDCMetadata(String name, String value) {
         if (StringUtils.isNotBlank(value)) {
-            Element md = new Element(name, namespaceDC);
+            Element md = new Element(name, NAMESPACE_DC);
             md.setText(value);
             doc.getRootElement().addContent(md);
         }
@@ -82,10 +80,10 @@ public class DCRecordWriter {
      * Reads the value of the given metadata from the jdom document
      *
      * @param name
-     * @return
+     * @return Metadata value from the XML tree; null if none found
      */
     public String getMetadataValue(String name) {
-        Element ele = doc.getRootElement().getChild(name, namespaceDC);
+        Element ele = doc.getRootElement().getChild(name, NAMESPACE_DC);
         if (ele != null) {
             return ele.getText();
         }

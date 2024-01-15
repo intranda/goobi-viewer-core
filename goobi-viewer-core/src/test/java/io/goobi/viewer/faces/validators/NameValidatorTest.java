@@ -21,19 +21,19 @@
  */
 package io.goobi.viewer.faces.validators;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class NameValidatorTest {
+class NameValidatorTest {
 
     /**
      * @see NameValidator#validate(String)
      * @verifies match correct name
      */
     @Test
-    public void validate_shouldMatchCorrectName() throws Exception {
-        Assert.assertTrue(NameValidator.validate(""));
-        Assert.assertTrue(NameValidator.validate("John Doe"));
+    void validate_shouldMatchCorrectName() throws Exception {
+        Assertions.assertTrue(NameValidator.validate(""));
+        Assertions.assertTrue(NameValidator.validate("John Doe"));
     }
 
     /**
@@ -41,7 +41,7 @@ public class NameValidatorTest {
      * @verifies not match invalid name
      */
     @Test
-    public void validate_shouldNotMatchInvalidName() throws Exception {
-        Assert.assertFalse(NameValidator.validate("John Doe<script />"));
+    void validate_shouldNotMatchInvalidName() throws Exception {
+        Assertions.assertFalse(NameValidator.validate("John Doe<script />"));
     }
 }

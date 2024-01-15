@@ -43,6 +43,9 @@ import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
 
 public class TestUtils {
+    
+    public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
+    public static final int NUM_ALL_SEARCH_SORTING_OPTIONS = 12;
 
     /**
      * Creates a Mockito-created FacesContext with an ExternalContext, ServletContext and session map. It can then be extended by tests to return

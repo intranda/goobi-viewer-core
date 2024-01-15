@@ -21,8 +21,6 @@
  */
 package io.goobi.viewer.model.job;
 
-import io.goobi.viewer.model.job.JobStatus;
-
 public enum JobStatus {
     WAITING,
     READY,
@@ -46,6 +44,8 @@ public enum JobStatus {
                     return JobStatus.INITIALIZED;
                 case "DELETED":
                     return JobStatus.DELETED;
+                default:
+                    break;
             }
         }
 

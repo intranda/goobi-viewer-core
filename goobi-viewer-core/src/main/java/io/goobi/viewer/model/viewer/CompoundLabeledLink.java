@@ -105,7 +105,8 @@ public class CompoundLabeledLink extends LabeledLink {
                 HierarchicalBrowseDcElement collectionElement =
                         new HierarchicalBrowseDcElement(col, 1, field, sortField, splittingChar, displayNumberOfVolumesLevel);
                 collectionElement.setInfo(new SimpleBrowseElementInfo(col, null, null));
-                // Actual collection size is expensive to determine at this point, so instead pretend it's larger than one so that no redirection to the first volume takes place for all collections
+                // Actual collection size is expensive to determine at this point, so instead pretend it's larger than one
+                // so that no redirection to the first volume takes place for all collections
                 collectionElement.addToNumber(1);
                 collectionElements.add(collectionElement);
             }
@@ -116,10 +117,10 @@ public class CompoundLabeledLink extends LabeledLink {
                 links.add(new LabeledLink(collectionElement.getLabel(), CollectionView.getCollectionUrl(collectionElement, field, null),
                         subLinkWeight));
             }
-        } catch (PresentationException e) {
-        } catch (DAOException e) {
+        } catch (DAOException | PresentationException e) {
+            logger.error(e.getMessage());
         }
-
+        
         return links;
     }
 

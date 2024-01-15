@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
@@ -36,27 +36,27 @@ import io.goobi.viewer.AbstractTest;
  * @author Florian Alpers
  *
  */
-public class LicenseTypeTest extends AbstractTest {
+class LicenseTypeTest extends AbstractTest {
 
     /**
      * @see LicenseType#getAvailablePrivileges(Set)
      * @verifies only return priv view ugc if ugc type
      */
     @Test
-    public void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfUgcType() throws Exception {
+    void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfUgcType() throws Exception {
         LicenseType type = new LicenseType();
-        type.ugcType = true;
+        type.setUgcType(true);
         List<String> result = type.getAvailablePrivileges(Collections.emptySet());
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
 
     @Test
-    public void getAvailablePrivilegesHandleNonEmptyArgument() throws Exception {
+    void getAvailablePrivilegesHandleNonEmptyArgument() throws Exception {
         LicenseType type = new LicenseType();
-        type.ugcType = true;
+        type.setUgcType(true);
         Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));
         List<String> result = type.getAvailablePrivileges(privileges);
-        Assert.assertEquals(0, result.size());
+        Assertions.assertEquals(0, result.size());
     }
 }

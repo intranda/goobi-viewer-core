@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,13 +55,13 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author Florian
  *
  */
-public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
+class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     public static final String PI = PI_KLEIUNIV;
     public static final int ORDER = 1;
 
     @Test
-    public void testAddOtherContent() throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+    void testAddOtherContent() throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, ContentNotFoundException, IOException {
 
         ManifestBuilder manifestBuilder = new ManifestBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
@@ -86,7 +86,7 @@ public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         ObjectWriter writer = mapper.writer().forType(AnnotationList.class);
         String json = writer.writeValueAsString(fulltext);
-        Assert.assertTrue(StringUtils.isNotBlank(json));
+        Assertions.assertTrue(StringUtils.isNotBlank(json));
     }
 
 }

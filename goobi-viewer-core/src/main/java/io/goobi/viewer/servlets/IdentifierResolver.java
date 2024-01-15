@@ -126,8 +126,8 @@ public class IdentifierResolver extends HttpServlet {
      *
      * @should return 400 if record identifier missing
      * @should return 404 if record not found
-     * @should return 500 if record field name bad
-     * @should return 500 if record field value bad
+     * @should return 400 if record field name bad
+     * @should return 400 if record field value bad
      * @should forward to relative url
      * @should redirect to full url
      */
@@ -334,11 +334,18 @@ public class IdentifierResolver extends HttpServlet {
                 }
             }
         } catch (PresentationException | IndexUnreachableException e) {
-            logger.debug(e.getMessage());
-            try {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-                logger.error(e1.getMessage());
+            if (e.getMessage().contains("undefined field")) {
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Undefined field name: " + fieldName);
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
+            } else {
+                try {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
             }
         }
     }
@@ -354,7 +361,7 @@ public class IdentifierResolver extends HttpServlet {
      * @throws ServletException
      */
     private void doPageSearch(String fieldValue, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        // logger.trace("doPageSearch {}", fieldValue);
+        // logger.trace("doPageSearch {}", fieldValue); //NOSONAR Debug
         // A.1 Search for documents, that contain the request param in their page field
 
         // A.2 Evaluate the search
@@ -513,6 +520,7 @@ public class IdentifierResolver extends HttpServlet {
     private static void redirectToError(int code, String identifier, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = "/error/";
+        response.setStatus(code);
         switch (code) {
             case HttpServletResponse.SC_NOT_FOUND:
                 request.setAttribute("type", "recordNotFound");

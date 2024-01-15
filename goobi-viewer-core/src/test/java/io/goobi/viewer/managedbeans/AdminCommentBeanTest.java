@@ -23,8 +23,8 @@ package io.goobi.viewer.managedbeans;
 
 import java.time.LocalDateTime;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DateTools;
@@ -32,14 +32,14 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.security.user.User;
 
-public class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
+class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminCommentBean#init()
      * @verifies sort lazyModelComments by dateCreated desc by default
      */
     @Test
-    public void init_shouldSortLazyModelCommentsByDateCreatedDescByDefault() throws Exception {
+    void init_shouldSortLazyModelCommentsByDateCreatedDescByDefault() throws Exception {
         AdminCommentBean bean = new AdminCommentBean();
         bean.setUserBean(new UserBean());
         User admin = new User();
@@ -48,12 +48,12 @@ public class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
         bean.setCurrentCommentGroup(CommentGroup.createCommentGroupAll());
 
         bean.init();
-        Assert.assertNotNull(bean.getLazyModelComments());
-        Assert.assertEquals(4, bean.getLazyModelComments().getSizeOfDataList());
+        Assertions.assertNotNull(bean.getLazyModelComments());
+        Assertions.assertEquals(4, bean.getLazyModelComments().getSizeOfDataList());
         LocalDateTime prevDate = null;
         for (Comment comment : bean.getLazyModelComments().getPaginatorList()) {
             if (prevDate != null && comment.getDateCreated() != null) {
-                Assert.assertTrue(DateTools.getMillisFromLocalDateTime(prevDate, false) >= DateTools
+                Assertions.assertTrue(DateTools.getMillisFromLocalDateTime(prevDate, false) >= DateTools
                         .getMillisFromLocalDateTime(comment.getDateCreated(), false));
             }
             prevDate = comment.getDateCreated();

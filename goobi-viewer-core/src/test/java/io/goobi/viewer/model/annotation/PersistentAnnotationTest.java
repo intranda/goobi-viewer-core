@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.model.annotation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Rectangle;
 import java.io.IOException;
@@ -29,11 +29,11 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -65,7 +65,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
-public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
+class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     private WebAnnotation annotation;
     private CrowdsourcingAnnotation daoAnno;
@@ -80,7 +80,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     private static ObjectMapper mapper;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseEnabledTest.setUpClass();
         urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
@@ -95,7 +95,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -129,33 +129,33 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testSerialize() throws JsonParseException, JsonMappingException, IOException {
+    void testSerialize() throws JsonParseException, JsonMappingException, IOException {
 
         String bodyString = daoAnno.getBody();
-        Assert.assertEquals("{\"type\":\"TextualBody\",\"format\":\"text/plain\",\"value\":\"annotation text\"}", bodyString);
+        Assertions.assertEquals("{\"type\":\"TextualBody\",\"format\":\"text/plain\",\"value\":\"annotation text\"}", bodyString);
 
         String targetString = daoAnno.getTarget();
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 "{\"type\":\"SpecificResource\",\"selector\":{\"value\":\"xywh=10,20,100,200\",\"type\":\"FragmentSelector\"},\"source\":\"http://www.example.com/manifest/7/canvas/10\"}"
                         + "",
                 targetString);
 
         IResource retrievedBody = converter.getBodyAsResource(daoAnno);
-        Assert.assertEquals(body, retrievedBody);
+        Assertions.assertEquals(body, retrievedBody);
 
         IResource retrievedTarget = converter.getTargetAsResource(daoAnno);
-        Assert.assertEquals(target, retrievedTarget);
+        Assertions.assertEquals(target, retrievedTarget);
 
     }
 
     @Test
-    public void testSave() throws DAOException, JsonParseException, JsonMappingException, IOException {
+    void testSave() throws DAOException, JsonParseException, JsonMappingException, IOException {
 
         JPADAO dao = (JPADAO) DataManager.getInstance().getDao();
 
@@ -164,11 +164,11 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         dao.addAnnotation(daoAnno);
 
         List<CrowdsourcingAnnotation> list = getAnnotations(dao);
-        Assert.assertEquals(existingAnnotations + 1, list.size());
+        Assertions.assertEquals(existingAnnotations + 1, list.size());
 
         CrowdsourcingAnnotation retrieved = list.get(list.size() - 1);
-        Assert.assertEquals(body, converter.getBodyAsResource(retrieved));
-        Assert.assertEquals(target, converter.getTargetAsResource(retrieved));
+        Assertions.assertEquals(body, converter.getBodyAsResource(retrieved));
+        Assertions.assertEquals(target, converter.getTargetAsResource(retrieved));
 
     }
 
@@ -182,27 +182,27 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testPersistAnnotation() throws DAOException {
+    void testPersistAnnotation() throws DAOException {
         boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno);
-        Assert.assertTrue(added);
+        Assertions.assertTrue(added);
         //        URI uri = URI.create(Long.toString(daoAnno.getId()));
         CrowdsourcingAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         WebAnnotation webAnno = converter.getAsWebAnnotation(daoAnno);
         WebAnnotation fromDAOWebAnno = converter.getAsWebAnnotation(daoAnno);
-        Assert.assertEquals(webAnno.getBody(), fromDAOWebAnno.getBody());
-        Assert.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
-        Assert.assertEquals(webAnno, fromDAOWebAnno);
+        Assertions.assertEquals(webAnno.getBody(), fromDAOWebAnno.getBody());
+        Assertions.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
+        Assertions.assertEquals(webAnno, fromDAOWebAnno);
 
         LocalDateTime changed = LocalDateTime.now();
         fromDAO.setDateModified(changed);
-        Assert.assertTrue(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
+        Assertions.assertTrue(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
 
         CrowdsourcingAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
-        Assert.assertEquals(fromDAO.getDateModified(), fromDAO2.getDateModified());
+        Assertions.assertEquals(fromDAO.getDateModified(), fromDAO2.getDateModified());
     }
 
     @Test
-    public void testGetContent_fromOA() {
+    void testGetContent_fromOA() {
         String content = "{\n" +
                 "        \"@type\": \"cnt:ContentAsText\",\n" +
                 "        \"format\": \"text/plain\",\n" +
@@ -214,7 +214,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetContent_fromWA() {
+    void testGetContent_fromWA() {
         String content = "{\n" +
                 "        \"type\": \"TextualBody\",\n" +
                 "        \"format\": \"text/plain\",\n" +

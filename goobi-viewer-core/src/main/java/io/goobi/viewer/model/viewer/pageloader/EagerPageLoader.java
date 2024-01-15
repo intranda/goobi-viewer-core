@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -113,8 +114,8 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /** {@inheritDoc} */
     @Override
     public PhysicalElement getPageForFileName(String fileName) {
-        for (int key : pages.keySet()) {
-            PhysicalElement page = pages.get(key);
+        for (Entry<Integer, PhysicalElement> entry : pages.entrySet()) {
+            PhysicalElement page = entry.getValue();
             if (fileName.equals(page.getFileName())) {
                 return page;
             }

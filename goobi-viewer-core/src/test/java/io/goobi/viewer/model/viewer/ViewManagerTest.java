@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Dimension;
 import java.io.IOException;
@@ -35,9 +35,9 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -58,10 +58,10 @@ import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
+class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -72,13 +72,13 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct page
      */
     @Test
-    public void getPage_shouldReturnCorrectPage() throws Exception {
+    void getPage_shouldReturnCorrectPage() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
         PhysicalElement pe = viewManager.getPage(3).orElse(null);
-        Assert.assertNotNull(pe);
-        Assert.assertEquals(3, pe.getOrder());
+        Assertions.assertNotNull(pe);
+        Assertions.assertEquals(3, pe.getOrder());
     }
 
     /**
@@ -86,12 +86,12 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return null if order less than zero
      */
     @Test
-    public void getPage_shouldReturnNullIfOrderLessThanZero() throws Exception {
+    void getPage_shouldReturnNullIfOrderLessThanZero() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
         PhysicalElement pe = viewManager.getPage(-1).orElse(null);
-        Assert.assertNull(pe);
+        Assertions.assertNull(pe);
     }
 
     /**
@@ -99,12 +99,12 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return null if order larger than number of pages
      */
     @Test
-    public void getPage_shouldReturnNullIfOrderLargerThanNumberOfPages() throws Exception {
+    void getPage_shouldReturnNullIfOrderLargerThanNumberOfPages() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
         PhysicalElement pe = viewManager.getPage(17).orElse(null);
-        Assert.assertNull(pe);
+        Assertions.assertNull(pe);
     }
 
     /**
@@ -112,12 +112,12 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return null if pageLoader is null
      */
     @Test
-    public void getPage_shouldReturnNullIfPageLoaderIsNull() throws Exception {
+    void getPage_shouldReturnNullIfPageLoaderIsNull() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, null, se.getLuceneId(), null, null, null);
         PhysicalElement pe = viewManager.getPage(0).orElse(null);
-        Assert.assertNull(pe);
+        Assertions.assertNull(pe);
     }
 
     /**
@@ -125,33 +125,33 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct PhysicalElements for a thumbnail page
      */
     @Test
-    public void getImagesSection_shouldReturnCorrectPhysicalElementsForAThumbnailPage() throws Exception {
+    void getImagesSection_shouldReturnCorrectPhysicalElementsForAThumbnailPage() throws Exception {
         int thumbnailsPerPage = 10;
 
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
-        Assert.assertEquals(16, viewManager.getImagesCount());
+        Assertions.assertEquals(16, viewManager.getImagesCount());
 
         viewManager.setCurrentThumbnailPage(1);
         List<PhysicalElement> pages = viewManager.getImagesSection(thumbnailsPerPage);
-        Assert.assertEquals(10, pages.size());
-        Assert.assertEquals(1, pages.get(0).getOrder());
-        Assert.assertEquals(10, pages.get(9).getOrder());
+        Assertions.assertEquals(10, pages.size());
+        Assertions.assertEquals(1, pages.get(0).getOrder());
+        Assertions.assertEquals(10, pages.get(9).getOrder());
 
         viewManager.setCurrentThumbnailPage(2);
         pages = viewManager.getImagesSection(thumbnailsPerPage);
-        Assert.assertEquals(6, pages.size());
-        Assert.assertEquals(11, pages.get(0).getOrder());
-        Assert.assertEquals(15, pages.get(4).getOrder());
+        Assertions.assertEquals(6, pages.size());
+        Assertions.assertEquals(11, pages.get(0).getOrder());
+        Assertions.assertEquals(15, pages.get(4).getOrder());
     }
 
     @Test
-    public void getImagesSection_shouldReturnCorrectPhysicalElementsForAThumbnailPageWithStartPageTwo() throws Exception {
+    void getImagesSection_shouldReturnCorrectPhysicalElementsForAThumbnailPageWithStartPageTwo() throws Exception {
         int thumbnailsPerPage = 30;
 
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
 
         IPageLoader pageLoader = Mockito.mock(IPageLoader.class);
         Mockito.when(pageLoader.getFirstPageOrder()).thenReturn(2);
@@ -164,25 +164,25 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         });
 
         ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, null, null);
-        Assert.assertEquals(180, viewManager.getImagesCount());
+        Assertions.assertEquals(180, viewManager.getImagesCount());
 
         viewManager.setCurrentThumbnailPage(1);
         List<PhysicalElement> pages = viewManager.getImagesSection(thumbnailsPerPage);
-        Assert.assertEquals(30, pages.size());
-        Assert.assertEquals(2, pages.get(0).getOrder());
-        Assert.assertEquals(31, pages.get(pages.size() - 1).getOrder());
+        Assertions.assertEquals(30, pages.size());
+        Assertions.assertEquals(2, pages.get(0).getOrder());
+        Assertions.assertEquals(31, pages.get(pages.size() - 1).getOrder());
 
         viewManager.setCurrentThumbnailPage(2);
         pages = viewManager.getImagesSection(thumbnailsPerPage);
-        Assert.assertEquals(30, pages.size());
-        Assert.assertEquals(32, pages.get(0).getOrder());
-        Assert.assertEquals(61, pages.get(pages.size() - 1).getOrder());
+        Assertions.assertEquals(30, pages.size());
+        Assertions.assertEquals(32, pages.get(0).getOrder());
+        Assertions.assertEquals(61, pages.get(pages.size() - 1).getOrder());
 
         viewManager.setCurrentThumbnailPage(6);
         pages = viewManager.getImagesSection(thumbnailsPerPage);
-        Assert.assertEquals(30, pages.size());
-        Assert.assertEquals(152, pages.get(0).getOrder());
-        Assert.assertEquals(181, pages.get(pages.size() - 1).getOrder());
+        Assertions.assertEquals(30, pages.size());
+        Assertions.assertEquals(152, pages.get(0).getOrder());
+        Assertions.assertEquals(181, pages.get(pages.size() - 1).getOrder());
     }
 
     /**
@@ -190,15 +190,15 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset rotation
      */
     @Test
-    public void resetImage_shouldResetRotation() throws Exception {
+    void resetImage_shouldResetRotation() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
-        Assert.assertEquals(0, viewManager.getCurrentRotate());
+        Assertions.assertEquals(0, viewManager.getCurrentRotate());
         viewManager.rotateRight();
-        Assert.assertEquals(90, viewManager.getCurrentRotate());
+        Assertions.assertEquals(90, viewManager.getCurrentRotate());
         viewManager.resetImage();
-        Assert.assertEquals(0, viewManager.getCurrentRotate());
+        Assertions.assertEquals(0, viewManager.getCurrentRotate());
     }
 
     /**
@@ -206,19 +206,19 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies rotate correctly
      */
     @Test
-    public void rotateLeft_shouldRotateCorrectly() throws Exception {
+    void rotateLeft_shouldRotateCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
-        Assert.assertEquals(0, viewManager.getCurrentRotate());
+        Assertions.assertEquals(0, viewManager.getCurrentRotate());
         viewManager.rotateLeft();
-        Assert.assertEquals(270, viewManager.getCurrentRotate());
+        Assertions.assertEquals(270, viewManager.getCurrentRotate());
         viewManager.rotateLeft();
-        Assert.assertEquals(180, viewManager.getCurrentRotate());
+        Assertions.assertEquals(180, viewManager.getCurrentRotate());
         viewManager.rotateLeft();
-        Assert.assertEquals(90, viewManager.getCurrentRotate());
+        Assertions.assertEquals(90, viewManager.getCurrentRotate());
         viewManager.rotateLeft();
-        Assert.assertEquals(0, viewManager.getCurrentRotate());
+        Assertions.assertEquals(0, viewManager.getCurrentRotate());
     }
 
     /**
@@ -226,19 +226,19 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies rotate correctly
      */
     @Test
-    public void rotateRight_shouldRotateCorrectly() throws Exception {
+    void rotateRight_shouldRotateCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
-        Assert.assertEquals(0, viewManager.getCurrentRotate());
+        Assertions.assertEquals(0, viewManager.getCurrentRotate());
         viewManager.rotateRight();
-        Assert.assertEquals(90, viewManager.getCurrentRotate());
+        Assertions.assertEquals(90, viewManager.getCurrentRotate());
         viewManager.rotateRight();
-        Assert.assertEquals(180, viewManager.getCurrentRotate());
+        Assertions.assertEquals(180, viewManager.getCurrentRotate());
         viewManager.rotateRight();
-        Assert.assertEquals(270, viewManager.getCurrentRotate());
+        Assertions.assertEquals(270, viewManager.getCurrentRotate());
         viewManager.rotateRight();
-        Assert.assertEquals(0, viewManager.getCurrentRotate());
+        Assertions.assertEquals(0, viewManager.getCurrentRotate());
     }
 
     /**
@@ -246,17 +246,17 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct url correctly
      */
     @Test
-    public void getPdfPartDownloadLink_shouldConstructUrlCorrectly() throws Exception {
+    void getPdfPartDownloadLink_shouldConstructUrlCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
-        Assert.assertEquals(16, viewManager.getImagesCount());
+        Assertions.assertEquals(16, viewManager.getImagesCount());
 
         viewManager.setFirstPdfPage("14");
         viewManager.setLastPdfPage("16");
         String url = viewManager.getPdfPartDownloadLink();
         String expect = "records/" + PI_KLEIUNIV + "/files/images/00000014.tif$00000015.tif$00000016.tif/full.pdf";
-        Assert.assertTrue("expeted url to contain " + expect + " but was " + url, url.contains(expect));
+        Assertions.assertTrue(url.contains(expect), "Expeted URL to contain '" + expect + "' but was: " + url);
     }
 
     /**
@@ -264,12 +264,12 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct url
      */
     @Test
-    public void getCiteLinkDocstruct_shouldReturnCorrectUrl() throws Exception {
+    void getCiteLinkDocstruct_shouldReturnCorrectUrl() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         viewManager.setCurrentImageOrder(10);
 
         String purl = viewManager.getCiteLinkDocstruct();
-        Assert.assertEquals("/object/" + PI_KLEIUNIV + "/5/LOG_0003/", purl);
+        Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/5/LOG_0003/", purl);
     }
 
     /**
@@ -277,12 +277,12 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct url
      */
     @Test
-    public void getCiteLinkPage_shouldReturnCorrectUrl() throws Exception {
+    void getCiteLinkPage_shouldReturnCorrectUrl() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         viewManager.setCurrentImageOrder(2);
 
         String purl = viewManager.getCiteLinkPage();
-        Assert.assertEquals("/object/" + PI_KLEIUNIV + "/2/", purl);
+        Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/2/", purl);
     }
 
     /**
@@ -290,7 +290,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct url
      */
     @Test
-    public void getCiteLinkWork_shouldReturnCorrectUrl() throws Exception {
+    void getCiteLinkWork_shouldReturnCorrectUrl() throws Exception {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
@@ -301,7 +301,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
 
         String purl = viewManager.getCiteLinkWork();
-        Assert.assertEquals("/object/" + PI_KLEIUNIV + "/1/", purl);
+        Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/1/", purl);
     }
 
     /**
@@ -309,7 +309,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return true if there are no pages
      */
     @Test
-    public void isBelowFulltextThreshold_shouldReturnTrueIfThereAreNoPages() throws Exception {
+    void isBelowFulltextThreshold_shouldReturnTrueIfThereAreNoPages() throws Exception {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
@@ -319,11 +319,11 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
-        Assert.assertTrue(viewManager.isBelowFulltextThreshold(0));
+        Assertions.assertTrue(viewManager.isBelowFulltextThreshold(0));
     }
 
     @Test
-    public void testDisplayDownloadWidget() throws IndexUnreachableException, PresentationException, DAOException {
+    void testDisplayDownloadWidget() throws IndexUnreachableException, PresentationException, DAOException {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
@@ -335,11 +335,11 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
         boolean display = viewManager.isDisplayContentDownloadMenu();
-        Assert.assertTrue(display);
+        Assertions.assertTrue(display);
     }
 
     @Test
-    public void testListDownloadLinksForWork()
+    void testListDownloadLinksForWork()
             throws IndexUnreachableException, PresentationException, DAOException, IOException {
         String pi = "PPN123";
         String docstructType = "Catalogue";
@@ -352,11 +352,11 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
         List<LabeledLink> links = viewManager.getContentDownloadLinksForWork();
-        Assert.assertEquals(2, links.size());
+        Assertions.assertEquals(2, links.size());
     }
 
     @Test
-    public void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException {
+    void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException {
 
         String pi = "PPN123";
         String docstructType = "Catalogue";
@@ -378,7 +378,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testGetDownloadOptionsForImage() {
+    void testGetDownloadOptionsForImage() {
 
         DownloadOption tooLarge = new DownloadOption("", "master", new Dimension(10000, 10000));
         DownloadOption master = new DownloadOption("", "master", DownloadOption.MAX);
@@ -404,10 +404,10 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void test_setCurrentImageOrderString()
+    void test_setCurrentImageOrderString()
             throws IndexUnreachableException, PresentationException, IDDOCNotFoundException, DAOException {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
         {
             viewManager.setCurrentImageOrderString(null);
@@ -461,7 +461,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void test_getElementsAroundPage() throws IndexUnreachableException, PresentationException, DAOException {
+    void test_getElementsAroundPage() throws IndexUnreachableException, PresentationException, DAOException {
         StructElement se = new StructElement(iddocKleiuniv);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
         assertEquals(16, viewManager.getAllPages().size());
@@ -526,17 +526,17 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return true if mime type application
      */
     @Test
-    public void isFilesOnly_shouldReturnTrueIfMimeTypeApplication() throws Exception {
+    void isFilesOnly_shouldReturnTrueIfMimeTypeApplication() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, "application/pdf", null);
-        Assert.assertTrue(viewManager.isFilesOnly());
+        Assertions.assertTrue(viewManager.isFilesOnly());
     }
 
     @Test
-    public void test_getPdfDownloadLink()
+    void test_getPdfDownloadLink()
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, URISyntaxException {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
         String test = String.format("%srecords/%s/pdf/", DataManager.getInstance().getConfiguration().getIIIFApiUrl(), se.getPi());
         String link = viewManager.getPdfDownloadLink();
@@ -544,10 +544,10 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void test_getPdfDownloadLink_queryParams()
+    void test_getPdfDownloadLink_queryParams()
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, URISyntaxException {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
         String test = String.format("%srecords/%s/pdf/?%s=%s",
@@ -565,12 +565,12 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct default url correctly
      */
     @Test
-    public void getLinkForDFGViewer_shouldConstructDefaultUrlCorrectly() throws Exception {
+    void getLinkForDFGViewer_shouldConstructDefaultUrlCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
-        Assert.assertEquals("dfg-viewer_valuesourcefile_valuePPN517154005&set[image]=-1", viewManager.getLinkForDFGViewer());
+        Assertions.assertEquals("dfg-viewer_valuesourcefile_valuePPN517154005&set[image]=-1", viewManager.getLinkForDFGViewer());
     }
 
     /**
@@ -578,13 +578,13 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct url from custom field correctly
      */
     @Test
-    public void getLinkForDFGViewer_shouldConstructUrlFromCustomFieldCorrectly() throws Exception {
+    void getLinkForDFGViewer_shouldConstructUrlFromCustomFieldCorrectly() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         se.metadataFields.put("MD2_DFGVIEWERURL", Collections.singletonList("https://foo.bar/PPN517154004.xml"));
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
-        Assert.assertEquals("dfg-viewer_valuehttps%3A%2F%2Ffoo.bar%2FPPN517154004.xml&set[image]=-1", viewManager.getLinkForDFGViewer());
+        Assertions.assertEquals("dfg-viewer_valuehttps%3A%2F%2Ffoo.bar%2FPPN517154004.xml&set[image]=-1", viewManager.getLinkForDFGViewer());
     }
 
     /**
@@ -592,14 +592,14 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct value
      */
     @Test
-    public void getExternalDownloadUrl_shouldReturnCorrectValue() throws Exception {
+    void getExternalDownloadUrl_shouldReturnCorrectValue() throws Exception {
         String url = "https://example.com/download";
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         se.metadataFields.put(SolrConstants.DOWNLOAD_URL_EXTERNAL, Collections.singletonList(url));
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
-        Assert.assertEquals(url, viewManager.getExternalDownloadUrl());
+        Assertions.assertEquals(url, viewManager.getExternalDownloadUrl());
     }
 
     /**
@@ -607,13 +607,13 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return locked status if locked most restrictive status found
      */
     @Test
-    public void getCopyrightIndicatorStatusName_shouldReturnLockedStatusIfLockedMostRestrictiveStatusFound() throws Exception {
+    void getCopyrightIndicatorStatusName_shouldReturnLockedStatusIfLockedMostRestrictiveStatusFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         se.metadataFields.put("MD_ACCESSCONDITION", Arrays.asList("Freier Zugang", "Eingeschränker Zugang", "Gesperrter Zugang"));
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
-        Assert.assertEquals(Status.LOCKED.name(), viewManager.getCopyrightIndicatorStatusName());
+        Assertions.assertEquals(Status.LOCKED.name(), viewManager.getCopyrightIndicatorStatusName());
     }
 
     /**
@@ -621,13 +621,13 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return partial status if partial most restrictive status found
      */
     @Test
-    public void getCopyrightIndicatorStatusName_shouldReturnPartialStatusIfPartialMostRestrictiveStatusFound() throws Exception {
+    void getCopyrightIndicatorStatusName_shouldReturnPartialStatusIfPartialMostRestrictiveStatusFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         se.metadataFields.put("MD_ACCESSCONDITION", Arrays.asList("Freier Zugang", "Eingeschränker Zugang"));
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
-        Assert.assertEquals(Status.PARTIAL.name(), viewManager.getCopyrightIndicatorStatusName());
+        Assertions.assertEquals(Status.PARTIAL.name(), viewManager.getCopyrightIndicatorStatusName());
     }
 
     /**
@@ -635,12 +635,12 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return open status if no restrictive statuses found
      */
     @Test
-    public void getCopyrightIndicatorStatusName_shouldReturnOpenStatusIfNoRestrictiveStatusesFound() throws Exception {
+    void getCopyrightIndicatorStatusName_shouldReturnOpenStatusIfNoRestrictiveStatusesFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
-        Assert.assertEquals(Status.OPEN.name(), viewManager.getCopyrightIndicatorStatusName());
+        Assertions.assertEquals(Status.OPEN.name(), viewManager.getCopyrightIndicatorStatusName());
     }
 
     /**
@@ -648,9 +648,9 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct statuses
      */
     @Test
-    public void getCopyrightIndicatorStatuses_shouldReturnCorrectStatuses() throws Exception {
+    void getCopyrightIndicatorStatuses_shouldReturnCorrectStatuses() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         se.metadataFields.put("MD_ACCESSCONDITION", Arrays.asList("Eingeschränker Zugang", "Gesperrter Zugang"));
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
@@ -663,9 +663,9 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return open status if no statuses found
      */
     @Test
-    public void getCopyrightIndicatorStatuses_shouldReturnOpenStatusIfNoStatusesFound() throws Exception {
+    void getCopyrightIndicatorStatuses_shouldReturnOpenStatusIfNoStatusesFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
         List<CopyrightIndicatorStatus> result = viewManager.getCopyrightIndicatorStatuses();
@@ -678,9 +678,9 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct license
      */
     @Test
-    public void getCopyrightIndicatorLicense_shouldReturnCorrectLicense() throws Exception {
+    void getCopyrightIndicatorLicense_shouldReturnCorrectLicense() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         se.metadataFields.put("MD_ACCESSCONDITIONCOPYRIGHT", Arrays.asList("VGWORT"));
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
@@ -694,9 +694,9 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return default license if no licenses found
      */
     @Test
-    public void getCopyrightIndicatorLicense_shouldReturnDefaultLicenseIfNoLicensesFound() throws Exception {
+    void getCopyrightIndicatorLicense_shouldReturnDefaultLicenseIfNoLicensesFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
-        Assert.assertNotNull(se);
+        Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
         CopyrightIndicatorLicense license = viewManager.getCopyrightIndicatorLicense();
@@ -705,16 +705,17 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void test_getLinkToDownloadFile() throws UnsupportedEncodingException, URISyntaxException, IndexUnreachableException, PresentationException, DAOException {
+    void test_getLinkToDownloadFile()
+            throws UnsupportedEncodingException, URISyntaxException, IndexUnreachableException, PresentationException, DAOException {
         String filename = "INN 2_Gutenzell.pdf";
         String filenameEncoded = "INN%202_Gutenzell.pdf";
-       
+
         StructElement se = new StructElement(iddocKleiuniv);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
-        
+
         LabeledLink link = viewManager.getLinkToDownloadFile(filename);
         assertTrue(link.getUrl().endsWith(filenameEncoded));
-        
+
     }
 
 }

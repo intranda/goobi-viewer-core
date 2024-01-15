@@ -57,17 +57,17 @@ public class PpnResolver extends HttpServlet implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(PpnResolver.class);
 
-    private static final String REQUEST_PARAM_NAME = "id";
+    static final String REQUEST_PARAM_NAME = "id";
 
     private static final String REQUEST_PAGE_PARAM_NAME = "page";
 
     // error messages
 
-    private static final String ERRTXT_DOC_NOT_FOUND = "No matching document could be found. ";
-    private static final String ERRTXT_NO_ARGUMENT =
+    static final String ERRTXT_DOC_NOT_FOUND = "No matching document could be found. ";
+    static final String ERRTXT_NO_ARGUMENT =
             "You didnt not specify a source field value for the mapping."
                     + " Append the value to the URL as a request parameter; expected param name is :";
-    private static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
+    static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
     private static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
     private static final String ERRTXT_ILLEGAL_PAGE_NUMBER = "Illegal page number";
 

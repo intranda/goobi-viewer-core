@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -39,23 +39,23 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 
-public class AdminBeanTest extends AbstractDatabaseEnabledTest {
+class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminBean#getAllUsersExcept(List)
      * @verifies return all users except given
      */
     @Test
-    public void getAllUsersExcept_shouldReturnAllUsersExceptGiven() throws Exception {
+    void getAllUsersExcept_shouldReturnAllUsersExceptGiven() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
 
         AdminBean bean = new AdminBean();
         bean.init();
 
-        Assert.assertEquals(3, bean.getAllUsers().size());
+        Assertions.assertEquals(3, bean.getAllUsers().size());
         List<User> result = bean.getAllUsersExcept(Collections.singleton(user));
-        Assert.assertEquals(2, result.size());
+        Assertions.assertEquals(2, result.size());
     }
 
     /**
@@ -63,22 +63,22 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies delete all user public content correctly
      */
     @Test
-    public void deleteUserAction_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
+    void deleteUserAction_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
         AdminBean bean = new AdminBean();
         bean.setEmailConfirmation(user.getEmail());
 
         bean.deleteUserAction(user, true);
 
         // Comments
-        Assert.assertNull(DataManager.getInstance().getDao().getComment(2));
+        Assertions.assertNull(DataManager.getInstance().getDao().getComment(2));
 
         // Campaign statistics
         List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", null);
-        Assert.assertEquals(1, statistics.size());
-        Assert.assertTrue(statistics.get(0).getReviewers().isEmpty());
-        Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
+        Assertions.assertEquals(1, statistics.size());
+        Assertions.assertTrue(statistics.get(0).getReviewers().isEmpty());
+        Assertions.assertFalse(statistics.get(0).getReviewers().contains(user));
     }
 
     /**
@@ -86,9 +86,9 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies anonymize all user public content correctly
      */
     @Test
-    public void deleteUserAction_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
+    void deleteUserAction_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
         AdminBean bean = new AdminBean();
         bean.setEmailConfirmation(user.getEmail());
 
@@ -96,14 +96,14 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
         // Comments
         Comment comment = DataManager.getInstance().getDao().getComment(2);
-        Assert.assertNotNull(comment);
-        Assert.assertNotEquals(user, comment.getCreator());
+        Assertions.assertNotNull(comment);
+        Assertions.assertNotEquals(user, comment.getCreator());
 
         // Campaign statistics
         List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", null);
-        Assert.assertEquals(1, statistics.size());
-        Assert.assertEquals(1, statistics.get(0).getReviewers().size());
-        Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
+        Assertions.assertEquals(1, statistics.size());
+        Assertions.assertEquals(1, statistics.get(0).getReviewers().size());
+        Assertions.assertFalse(statistics.get(0).getReviewers().contains(user));
     }
 
     /**
@@ -111,7 +111,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies add user if not yet in group
      */
     @Test
-    public void addUserRoleAction_shouldAddUserIfNotYetInGroup() throws Exception {
+    void addUserRoleAction_shouldAddUserIfNotYetInGroup() throws Exception {
         AdminBean bean = new AdminBean();
         bean.init();
 
@@ -124,10 +124,10 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
         bean.setCurrentUserGroup(group);
         bean.setCurrentUserRole(userRole);
-        Assert.assertFalse(group.getMembers().contains(user));
+        Assertions.assertFalse(group.getMembers().contains(user));
 
         bean.addUserRoleAction();
-        Assert.assertTrue(group.getMembers().contains(user));
+        Assertions.assertTrue(group.getMembers().contains(user));
     }
 
     /**
@@ -135,15 +135,15 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies persist UserRole correctly
      */
     @Test
-    public void updateUserRoles_shouldPersistUserRoleCorrectly() throws Exception {
+    void updateUserRoles_shouldPersistUserRoleCorrectly() throws Exception {
 
         UserGroup group = DataManager.getInstance().getDao().getUserGroup(1);
-        Assert.assertNotNull(group);
+        Assertions.assertNotNull(group);
 
         User user = DataManager.getInstance().getDao().getUser(3);
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
 
-        Assert.assertFalse(group.getMembers().contains(user));
+        Assertions.assertFalse(group.getMembers().contains(user));
 
         Role role = DataManager.getInstance().getDao().getRole("member");
         UserRole userRole = new UserRole(group, user, role);
@@ -153,18 +153,18 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         bean.setCurrentUserGroup(group);
         bean.setCurrentUserRole(userRole);
 
-        Assert.assertTrue(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
+        Assertions.assertTrue(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
 
         bean.addUserRoleAction();
-        Assert.assertTrue(group.getMembers().contains(user));
+        Assertions.assertTrue(group.getMembers().contains(user));
 
-        Assert.assertTrue(bean.getDirtyUserRoles().containsKey(userRole));
+        Assertions.assertTrue(bean.getDirtyUserRoles().containsKey(userRole));
         bean.updateUserRoles();
-        Assert.assertFalse(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
+        Assertions.assertFalse(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
     }
 
     @Test
-    public void updateUserRoles_multipleRolesAddedOnNewGroup() throws Exception {
+    void updateUserRoles_multipleRolesAddedOnNewGroup() throws Exception {
         AdminBean bean = new AdminBean();
         bean.init();
 

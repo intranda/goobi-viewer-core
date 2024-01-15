@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -36,8 +36,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -47,7 +47,7 @@ import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.user.User;
 import jakarta.mail.MessagingException;
 
-public class FeedbackBeanTest {
+class FeedbackBeanTest {
 
     private static final String USER_NAME = "Karla";
     private static final String SENDER_ADDRESS = "karla@mustermann.de";
@@ -59,8 +59,8 @@ public class FeedbackBeanTest {
 
     FeedbackBean bean;
 
-    @Before
-    public void setup() throws UnsupportedEncodingException, MessagingException {
+    @BeforeEach
+    public void setUp() throws UnsupportedEncodingException, MessagingException {
 
         NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);
         Mockito.when(navigationHelper.getCurrentPrettyUrl()).thenReturn(CURRENT_VIEWER_URL);
@@ -86,7 +86,7 @@ public class FeedbackBeanTest {
     }
 
     @Test
-    public void testNoUser() throws UnsupportedEncodingException, MessagingException {
+    void testNoUser() throws UnsupportedEncodingException, MessagingException {
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
         bean.getFeedback().setName(USER_NAME);
@@ -118,7 +118,7 @@ public class FeedbackBeanTest {
     }
 
     @Test
-    public void testUser() throws UnsupportedEncodingException, MessagingException {
+    void testUser() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
@@ -149,7 +149,7 @@ public class FeedbackBeanTest {
     }
 
     @Test
-    public void testWrongCaptcha() throws UnsupportedEncodingException, MessagingException {
+    void testWrongCaptcha() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
@@ -162,7 +162,7 @@ public class FeedbackBeanTest {
     }
 
     @Test
-    public void testFilledHoneypot() throws UnsupportedEncodingException, MessagingException {
+    void testFilledHoneypot() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);

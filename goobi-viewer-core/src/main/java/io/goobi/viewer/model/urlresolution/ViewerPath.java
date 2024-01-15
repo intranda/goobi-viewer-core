@@ -107,7 +107,7 @@ public class ViewerPath implements Serializable {
      * Creates a {@link ViewerPath} based on the given request properties. This should not be called directly. Instead a ViewerPath should be created
      * by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)} or {@link ViewerPathBuilder#createPath(String, String, String)}
      *
-     * @param applicationPath
+     * @param applicationUrl
      * @param applicationName
      * @param pagePath
      * @param parameterPath
@@ -235,8 +235,9 @@ public class ViewerPath implements Serializable {
                         .stream()
                         .findFirst()
                         .map(staticPage -> staticPage.getPageName().replaceAll("(^\\/)|(\\/$)", ""))
-                        .map(pageName -> URI.create(pageName));
+                        .map(URI::create);
             } catch (DAOException e) {
+                //
             }
             if (!path.isPresent() && StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
                 path = Optional.of(URI.create(getCmsPage().getPersistentUrl().replaceAll("(^\\/)|(\\/$)", "")));
@@ -265,8 +266,7 @@ public class ViewerPath implements Serializable {
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
      */
     public String getCombinedPrettyfiedUrl() {
-        String url = ("/" + getCombinedPrettyfiedPath().toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
-        return url;
+        return ("/" + getCombinedPrettyfiedPath().toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
     }
 
     /**
@@ -288,9 +288,7 @@ public class ViewerPath implements Serializable {
      * @return the entire request url <b>except</b> the application url
      */
     public String getCombinedUrl() {
-
-        String url = ("/" + getCombinedPath().toString()).replace("\\", "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
-        return url;
+        return ("/" + getCombinedPath().toString()).replace("\\", "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
     }
 
     /** {@inheritDoc} */

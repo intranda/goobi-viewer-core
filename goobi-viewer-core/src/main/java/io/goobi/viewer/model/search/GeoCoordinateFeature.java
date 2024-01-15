@@ -41,7 +41,8 @@ public class GeoCoordinateFeature {
 
     private static final Logger logger = LogManager.getLogger(GeoCoordinateFeature.class);
 
-    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(([\\s\\d\\-.,]+)\\)\\)\\)"; //NOSONAR    backtracking save
+    private static final String REGEX_GEOCOORDS_SEARCH_STRING =
+            "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(([\\s\\d\\-.,]+)\\)\\)\\)"; //NOSONAR backtracking save
 
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
@@ -67,7 +68,9 @@ public class GeoCoordinateFeature {
     /**
      * Initialize as a polygon feature with the given points as vertices
      * 
-     * @param vertices
+     * @param points
+     * @param predicate
+     * @param shape
      */
     public GeoCoordinateFeature(double[][] points, String predicate, String shape) {
         JSONObject json = new JSONObject();
@@ -109,11 +112,10 @@ public class GeoCoordinateFeature {
         String pointString = Arrays.stream(points).map(p -> Double.toString(p[1]) + " " + Double.toString(p[0])).collect(Collectors.joining(", "));
 
         String template = "$P($S(($V)))";
-        String searchString = template
+        return template
                 .replace("$P", this.predicate)
                 .replace("$S", this.shape)
                 .replace("$V", pointString);
-        return searchString;
 
     }
 
@@ -121,8 +123,7 @@ public class GeoCoordinateFeature {
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
 
         if (matcher.find()) {
-            String relation = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
-            return relation;
+            return matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
         }
         return RELATION_PREDICATE_ISWITHIN;
     }
@@ -131,8 +132,7 @@ public class GeoCoordinateFeature {
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
 
         if (matcher.find()) {
-            String shape = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
-            return shape;
+            return matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
         }
         return SHAPE_POLYGON;
     }
@@ -154,26 +154,29 @@ public class GeoCoordinateFeature {
                 }
             }
             return points;
-        } else {
-            return new double[0][2];
         }
-
+        return new double[0][2];
     }
 
     /**
-     * @return
+     * @return true if number of vertices larger than 0; false otherwise
      */
     public boolean hasVertices() {
         return getVertices().length > 0;
     }
 
     /**
-     *
+     * 
+     * @return the shape
      */
     public String getShape() {
         return this.shape;
     }
 
+    /**
+     * 
+     * @return the predicate
+     */
     public String getPredicate() {
         return this.predicate;
     }
@@ -185,12 +188,10 @@ public class GeoCoordinateFeature {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             GeoCoordinateFeature other = (GeoCoordinateFeature) obj;
-            return other.predicate.equals(this.predicate) &&
-                    other.shape.equals(this.shape) &&
-                    Arrays.deepEquals(other.getVertices(), this.getVertices());
-        } else {
-            return false;
+            return other.predicate.equals(this.predicate) && other.shape.equals(this.shape)
+                    && Arrays.deepEquals(other.getVertices(), this.getVertices());
         }
+        return false;
     }
 
     @Override
