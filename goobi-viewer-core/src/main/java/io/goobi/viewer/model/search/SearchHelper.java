@@ -186,12 +186,13 @@ public final class SearchHelper {
     //No danger of catastrophic backtracking: inner repetition has a separator and outer repetition is possessive
     private static final Pattern PATTERN_PHRASE_ITEMS = Pattern.compile("([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)");   //NOSONAR
     //No danger of catastrophic backtracking: separator (':\"') between the repetition
-    private static final Pattern PATTERN_PHRASE_PAIRS = Pattern.compile("(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")");
+    private static final Pattern PATTERN_PHRASE_PAIRS = Pattern.compile("(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")");                        //NOSONAR
     //No danger of catastrophic backtracking: inner repetition has a separator and outer repetition is possessive
     private static final Pattern PATTERN_RANGE_ITEMS =
             Pattern.compile("([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");                 //NOSONAR
+  //No danger of catastrophic backtracking: use possessive repetition
     private static final Pattern PATTERN_RANGE_PAIRS = 
-            Pattern.compile("(\\w++:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]++ TO [\\wäáàâöóòôüúùûëéèêßñ]++\\]\\))");                                
+            Pattern.compile("(\\w++:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]++ TO [\\wäáàâöóòôüúùûëéèêßñ]++\\]\\))");                             //NOSONAR
 
     /**
      * 
