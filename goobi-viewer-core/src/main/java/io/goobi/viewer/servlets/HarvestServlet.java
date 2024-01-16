@@ -314,7 +314,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             try {
                                 FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
                                 if (Files.isRegularFile(zipFile)) {
-                                    String now = LocalDateTime.now().format(DateTools.formatterISO8601BasicDateTime);
+                                    String now = LocalDateTime.now().format(DateTools.FORMATTERISO8601BASICDATETIME);
                                     response.setContentType("application/zip");
                                     response.setHeader("Content-Disposition",
                                             new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());

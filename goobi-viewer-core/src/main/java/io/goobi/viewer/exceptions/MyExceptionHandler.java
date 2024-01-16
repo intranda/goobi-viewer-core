@@ -174,7 +174,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     logger.error(t.getMessage(), t);
                     // Put the exception in the flash scope to be displayed in the error page if necessary ...
 
-                    String msg = LocalDateTime.now().format(DateTools.formatterISO8601DateTime) + ": " + t.getMessage();
+                    String msg = LocalDateTime.now().format(DateTools.FORMATTERISO8601DATETIME) + ": " + t.getMessage();
                     handleError(msg, "general");
                 }
             } finally {
@@ -205,12 +205,12 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         if (PhaseId.RENDER_RESPONSE == phase) {
             flash.putNow("ErrorPhase", phase.toString());
             flash.putNow("errorDetails", errorDetails);
-            flash.putNow("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601Full));
+            flash.putNow("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
             flash.putNow("errorType", errorType);
         } else {
             flash.put("ErrorPhase", phase.toString());
             flash.put("errorDetails", errorDetails);
-            flash.put("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601Full));
+            flash.put("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
             flash.put("errorType", errorType);
         }
 

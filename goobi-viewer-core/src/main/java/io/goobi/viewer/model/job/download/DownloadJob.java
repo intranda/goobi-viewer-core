@@ -424,8 +424,8 @@ public abstract class DownloadJob implements Serializable {
                     body = body.replace("{4}", getType().toUpperCase());
                     LocalDateTime exirationDate = lastRequested;
                     exirationDate = exirationDate.plus(ttl, ChronoUnit.MILLIS);
-                    body = body.replace("{2}", DateTools.format(exirationDate, DateTools.formatterISO8601Date, false));
-                    body = body.replace("{3}", DateTools.format(exirationDate, DateTools.formatterISO8601Date, false));
+                    body = body.replace("{2}", DateTools.format(exirationDate, DateTools.FORMATTERISO8601DATE, false));
+                    body = body.replace("{3}", DateTools.format(exirationDate, DateTools.FORMATTERISO8601DATE, false));
                 }
                 break;
             case ERROR:

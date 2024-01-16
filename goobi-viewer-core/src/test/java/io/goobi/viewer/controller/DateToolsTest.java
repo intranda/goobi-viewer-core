@@ -232,7 +232,7 @@ class DateToolsTest extends AbstractTest {
     void parseMultipleDatesFromString_shouldParseSingleDateCorrectly() throws Exception {
         List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-20");
         Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals("2018-11-20", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
+        Assertions.assertEquals("2018-11-20", DateTools.format(result.get(0), DateTools.FORMATTERISO8601DATE, false));
     }
 
     /**
@@ -243,8 +243,8 @@ class DateToolsTest extends AbstractTest {
     void parseMultipleDatesFromString_shouldParseMultipleDatesCorrectly() throws Exception {
         List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-19 / 2018-11-20");
         Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
-        Assertions.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));
+        Assertions.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.FORMATTERISO8601DATE, false));
+        Assertions.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.FORMATTERISO8601DATE, false));
     }
 
     /**
@@ -255,8 +255,8 @@ class DateToolsTest extends AbstractTest {
     void parseMultipleDatesFromString_shouldParseDatesInParenthesesCorrectly() throws Exception {
         List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
         Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
-        Assertions.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));
+        Assertions.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.FORMATTERISO8601DATE, false));
+        Assertions.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.FORMATTERISO8601DATE, false));
     }
 
     /**

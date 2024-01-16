@@ -261,7 +261,7 @@ public final class JsonTools {
             try {
                 Long dateCreatedTimestamp = (Long) jsonObject.get("dateCreated");
                 String dateString =
-                        DateTools.format(DateTools.getLocalDateTimeFromMillis(dateCreatedTimestamp, false), DateTools.formatterISO8601Date, false);
+                        DateTools.format(DateTools.getLocalDateTimeFromMillis(dateCreatedTimestamp, false), DateTools.FORMATTERISO8601DATE, false);
                 if (currentDateJsonObject == null || !dateString.equals(currentDateString)) {
                     currentDateString = dateString;
                     currentDateJsonObject = new JSONObject();

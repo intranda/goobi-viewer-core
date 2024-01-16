@@ -520,7 +520,7 @@ public class ConvertAbbyyToAlto {
 
         Element processingDateTime = new Element("processingDateTime", defaultNamespace);
         preProcessingStep.addContent(processingDateTime);
-        processingDateTime.setText(DateTools.format(creationtime, DateTools.formatterISO8601Full, false));
+        processingDateTime.setText(DateTools.format(creationtime, DateTools.FORMATTERISO8601FULL, false));
 
         Element processingAgency = new Element("processingAgency", defaultNamespace);
         processingAgency.setText("intranda GmbH, www.intranda.com");
