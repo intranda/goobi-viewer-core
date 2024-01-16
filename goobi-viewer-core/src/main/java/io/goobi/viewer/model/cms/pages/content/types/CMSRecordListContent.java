@@ -262,7 +262,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             //NOTE: Cannot sort by multivalued fields like DC.
             if (StringUtils.isNotBlank(this.getGroupingField())) {
                 String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
-                sortString = this.getGroupingField() + ";" + sortString;
+                sortString = SearchHelper.facetifyField(this.getGroupingField()) + ";" + sortString;
                 s.setSortString(sortString);
             } else {
                 String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
