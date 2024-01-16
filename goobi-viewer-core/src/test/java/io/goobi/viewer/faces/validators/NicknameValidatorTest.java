@@ -24,24 +24,24 @@ package io.goobi.viewer.faces.validators;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class NameValidatorTest {
+class NicknameValidatorTest {
 
     /**
-     * @see NameValidator#validate(String)
+     * @see NicknameValidator#validate(String)
      * @verifies match correct name
      */
     @Test
     void validate_shouldMatchCorrectName() throws Exception {
-        Assertions.assertTrue(NameValidator.validate(""));
-        Assertions.assertTrue(NameValidator.validate("John Doe"));
+        Assertions.assertTrue(NicknameValidator.validate(""));
+        Assertions.assertTrue(NicknameValidator.validate("John.Doe"));
     }
 
     /**
-     * @see NameValidator#validate(String)
+     * @see NicknameValidator#validate(String)
      * @verifies not match invalid name
      */
     @Test
     void validate_shouldNotMatchInvalidName() throws Exception {
-        Assertions.assertFalse(NameValidator.validate("John Doe<script />"));
+        Assertions.assertFalse(NicknameValidator.validate("John Doe<script />"));
     }
 }
