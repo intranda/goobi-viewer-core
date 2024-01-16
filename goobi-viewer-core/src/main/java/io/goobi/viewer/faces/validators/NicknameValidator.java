@@ -45,7 +45,7 @@ import io.goobi.viewer.model.security.user.User;
 @FacesValidator("nicknameValidator")
 public class NicknameValidator implements Validator<String> {
     
-    private static final String REGEX = "^[\\wäáàâöóòôüúùûëéèêßñ\\- ]+$"; //NOSONAR input size is limited
+    private static final String REGEX = "^[\\wäáàâöóòôüúùûëéèêßñ\\-. ]+$"; //NOSONAR input size is limited
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     /* (non-Javadoc)
