@@ -42,6 +42,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
+import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import jakarta.persistence.Column;
@@ -62,6 +63,9 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     @Column(name = "displayEmptySearchResults")
     private boolean displayEmptySearchResults = false;
+    
+    @Column(name = "view")
+    private HitListView view = HitListView.DETAILS;
 
     @Transient
     private SearchFunctionality search = null;
@@ -74,6 +78,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
         super(orig);
         this.searchPrefix = orig.searchPrefix;
         this.displayEmptySearchResults = orig.displayEmptySearchResults;
+        this.view = orig.view;
     }
 
     private SearchFunctionality initSearch() {
@@ -107,6 +112,15 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
         return search;
     }
 
+    
+    public HitListView getView() {
+        return view;
+    }
+    
+    public void setView(HitListView view) {
+        this.view = view;
+    }
+
     @Override
     public String getBackendComponentName() {
         return BACKEND_COMPONENT_NAME;
@@ -134,7 +148,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {
                 searchBean.getFacets().resetSliderRange();
-                                
+                
                 if (!component.getBooleanAttributeValue("useSearchGroups", true)) {
                     searchBean.setActiveResultGroup(SearchResultGroup.createDefaultGroup());
                 } else if (resetResults) {
