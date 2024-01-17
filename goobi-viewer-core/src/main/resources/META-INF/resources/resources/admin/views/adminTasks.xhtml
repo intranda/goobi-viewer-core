@@ -96,10 +96,18 @@
 								</a>
 							</ui:fragment>
 							
+							 
+							
 							<a jsf:id="restartListenerButton" jsf:action="#{messageQueueBean.restartAllListeners()}"
-								class="admin__tasks-button-restart" title="#{msg.action__restart_all_task_listeners}">
-								<i class="fa fa-refresh"></i>
-								<i class="fa fa-refresh"></i>
+									data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								class="ml-auto admin__tasks-icon-wrapper" title="#{msg.action__restart_all_task_listeners}">
+								<div class="admin__tasks-button-restart-queue"></div>
+								<div class="admin__tasks-icon">
+									<div class="admin__tasks-button-restart">
+										<i class="fa fa-refresh"></i>
+									</div>
+								</div>
+
 							</a>
 							
 						</div>
