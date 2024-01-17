@@ -9,69 +9,83 @@
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
 
 	<composite:interface>
-		<composite:attribute name="contentItem" required="true"/>
-			
+		<composite:attribute name="contentItem" required="true" />
+
 	</composite:interface>
 
 	<composite:implementation>
 
-    <div class="admin__content-component-input-group">
-    
-        <!-- LABEL -->
-		<ui:fragment rendered="#{not empty cc.attrs.contentItem.label}">
-			<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
-		</ui:fragment>
-        
-        <div class="admin__content-component-input-field">
-            <!-- AREA FOR AJAX REFRESH -->
-            <h:panelGroup id="emptySearchResultsGroup" layout="block" styleClass="cms-module__option-checkbox">
-                <!-- VALIDATION MESSAGE -->
-                <div class="cms-module__option-message">
-                    <h:messages for="emptySearchResults" 
-                        infoClass="cms-module__option-message-status success" 
-                        warnClass="cms-module__option-message-status warning"
-                        errorClass="cms-module__option-message-status danger" />
+		<div class="admin__content-component-input-group">
 
-                    <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-                    </div>
-                </div>
+			<!-- LABEL -->
+			<ui:fragment rendered="#{not empty cc.attrs.contentItem.label}">
+				<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
+			</ui:fragment>
 
-		        <div class="cms-module__option-control">
-		            <!-- AREA FOR AJAX REFRESH -->
-		            <h:panelGroup id="facettingGroup">
-		                <!-- VALIDATION MESSAGE -->
-		                <div class="cms-module__option-message">
-		                    <h:messages for="facetting" 
-		                        infoClass="cms-module__option-message-status success" 
-		                        warnClass="cms-module__option-message-status warning"
-		                        errorClass="cms-module__option-message-status danger" />
-		
-		                    <div class="cms-module__option-message-mark">
-		                        <i class="fa fa-check" aria-hidden="true"></i>
-		                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-		                    </div>
-		                </div>
-		                
-		                <!-- INPUT TEXT -->
-		                <h:inputText
-		                    id="facetting" 
-		                    styleClass="form-control" 
-		                    value="#{cc.attrs.contentItem.content.searchPrefix}">
-		                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_collectionDisplayParents}" />
-						</h:inputText>
-		            </h:panelGroup>
-		        </div>
-			</h:panelGroup>
+			<div class="admin__content-component-input-field">
+				<!-- AREA FOR AJAX REFRESH -->
+					<!-- VALIDATION MESSAGE -->
+					<div class="admin__content-component-input-label">
+						<h:messages for="emptySearchResults"
+							infoClass="cms-module__option-message-status success"
+							warnClass="cms-module__option-message-status warning"
+							errorClass="cms-module__option-message-status danger" />
 
-        </div>
-        
-    </div>
-    
-    <div class="admin__content-component-input-group">
-    
-    </div>
-    
+						<div class="cms-module__option-message-mark">
+							<i class="fa fa-check" aria-hidden="true"></i> <i
+								class="fa fa-exclamation" aria-hidden="true"></i>
+						</div>
+					</div>
+
+					<div class="cadmin__content-component-input-field">
+						<!-- AREA FOR AJAX REFRESH -->
+						<h:panelGroup id="facettingGroup">
+							<!-- VALIDATION MESSAGE -->
+							<div class="cms-module__option-message">
+								<h:messages for="facetting"
+									infoClass="cms-module__option-message-status success"
+									warnClass="cms-module__option-message-status warning"
+									errorClass="cms-module__option-message-status danger" />
+
+								<div class="cms-module__option-message-mark">
+									<i class="fa fa-check" aria-hidden="true"></i> <i
+										class="fa fa-exclamation" aria-hidden="true"></i>
+								</div>
+							</div>
+
+							<!-- INPUT TEXT -->
+							<h:inputText id="facetting" styleClass="form-control" 
+								value="#{cc.attrs.contentItem.content.searchPrefix}">
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.cms_collectionDisplayParents}" />
+							</h:inputText>
+						</h:panelGroup>
+					</div>
+
+			</div>
+
+		</div>
+
+		<!-- HIT LIST VIEW -->
+		<div class="admin__content-component-input-group">
+			<div class="admin__content-component-input-label">
+				<label for="hitListView">#{msg.cms__search_hit_list__select_view}:</label>
+			</div>
+			<div class="admin__content-component-input-field">
+				<div class="custom-control custom-control--select">
+					<h:selectOneMenu id="hitListView" styleClass="form-control"
+						value="#{cc.attrs.contentItem.content.view}">
+						<f:selectItems value="#{cmsBean.possibleHitListViews}" var="hitlistview"
+							itemValue="#{hitlistview}" itemLabel="#{msg[hitlistview.label]}" />
+						<f:passThroughAttribute name="aria-label"
+							value="#{msg.cms__search_hit_list__select_view}" />
+						<f:ajax event="change" render="metadataListTypeGroup" />
+					</h:selectOneMenu>
+				</div>
+			</div>
+		</div>
+
+		<div class="admin__content-component-input-group"></div>
+
 	</composite:implementation>
 </ui:composition>
