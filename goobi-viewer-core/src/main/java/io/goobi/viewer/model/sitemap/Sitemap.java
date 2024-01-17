@@ -114,9 +114,9 @@ public class Sitemap {
                     String url = viewerRootUrl + "/" + page.getRelativeUrlPath();
                     String dateUpdated = "";
                     if (page.getDateUpdated() != null) {
-                        dateUpdated = DateTools.format(page.getDateUpdated(), DateTools.formatterISO8601Date, false);
+                        dateUpdated = DateTools.format(page.getDateUpdated(), DateTools.FORMATTERISO8601DATE, false);
                     } else if (page.getDateCreated() != null) {
-                        DateTools.format(page.getDateCreated(), DateTools.formatterISO8601Date, false);
+                        DateTools.format(page.getDateCreated(), DateTools.FORMATTERISO8601DATE, false);
                     }
                     currentDocSitemap.getRootElement().addContent(createUrlElement(url, dateUpdated, "weekly", "0.5"));
                     increment(timestampModified);
@@ -164,7 +164,7 @@ public class Sitemap {
                     }
                 }
                 dateModified =
-                        DateTools.format(DateTools.getLocalDateTimeFromMillis(timestampModified, false), DateTools.formatterISO8601Date, false);
+                        DateTools.format(DateTools.getLocalDateTimeFromMillis(timestampModified, false), DateTools.FORMATTERISO8601DATE, false);
                 if (timestampModified > latestTimestampModified) {
                     latestTimestampModified = timestampModified;
                     eleCurrectIndexSitemap.getChild("lastmod", NS_SITEMAP).setText(dateModified);
@@ -278,7 +278,7 @@ public class Sitemap {
             if (timestamp > 0) {
                 // If switching sitemap files within a record, use the current record's timestamp
                 eleLastmod
-                        .setText(DateTools.format(DateTools.getLocalDateTimeFromMillis(timestamp, false), DateTools.formatterISO8601Date, false));
+                        .setText(DateTools.format(DateTools.getLocalDateTimeFromMillis(timestamp, false), DateTools.FORMATTERISO8601DATE, false));
             } else {
                 eleLastmod.setText("");
             }

@@ -153,7 +153,7 @@ public class CitationDataProvider implements ItemDataProvider {
                 case ISSUED:
                     // Use different method for year-only values (to avoid duplicates in APA6)
                     try {
-                        DateTools.formatterYearOnly.parse(entry.getValue().get(0));
+                        DateTools.FORMATTERYEARONLY.parse(entry.getValue().get(0));
                         builder.issued(Integer.valueOf(entry.getValue().get(0)));
                     } catch (DateTimeParseException e) {
                         builder.issued(new CSLDateBuilder().raw(entry.getValue().get(0)).build());

@@ -71,7 +71,7 @@ public class FuzzySearchTerm {
         this.fullTerm = term;
         if (isFuzzyTerm(term)) {
             this.term =
-                    this.fullTerm.replaceAll("[*]{0,1}([^\\p{L}=-_\\d⸗¬*]*)[*]{0,1}~\\d", "$1")
+                    this.fullTerm.replaceAll("[*]{0,1}([^\\p{L}=-_\\d⸗¬*]*)[*]{0,1}~\\d", "$1") //NOSONAR no catastrophic backtracking detected
                             .toLowerCase();
             this.maxDistance = Integer.parseInt(this.fullTerm
                     .replaceAll("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~(\\d)", "$1")); //NOSONAR no catastrophic backtracking detected

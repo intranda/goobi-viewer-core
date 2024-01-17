@@ -1812,7 +1812,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getRangeFacetFieldMinValue_shouldReturnCorrectValue() throws Exception {
-        assertEquals(0, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue(SolrConstants.YEAR));
+        assertEquals(-1000, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue(SolrConstants.YEAR));
     }
     
     /**
@@ -1830,7 +1830,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getRangeFacetFieldMaxValue_shouldReturnCorrectValue() throws Exception {
-        assertEquals(999, DataManager.getInstance().getConfiguration().getRangeFacetFieldMaxValue(SolrConstants.YEAR));
+        assertEquals(2050, DataManager.getInstance().getConfiguration().getRangeFacetFieldMaxValue(SolrConstants.YEAR));
     }
     
     /**

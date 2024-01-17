@@ -85,7 +85,7 @@ public class RisResourceBuilder {
     public StreamingOutput writeRIS(List<SearchHit> searchHits) throws ContentLibException {
 
         String fileName = "viewer_search_"
-                + LocalDateTime.now().format(DateTools.formatterFileName) + ".ris";
+                + LocalDateTime.now().format(DateTools.FORMATTERFILENAME) + ".ris";
         response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
 
         Path tempFile = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), fileName);

@@ -341,7 +341,7 @@ public class DisplayUserGeneratedContent {
      */
     public String getDateUpdatedAsString() {
         if (dateUpdated != null) {
-            return DateTools.format(dateUpdated, DateTools.formatterDEDate, false);
+            return DateTools.format(dateUpdated, DateTools.FORMATTERDEDATE, false);
         }
         return null;
     }
@@ -355,7 +355,7 @@ public class DisplayUserGeneratedContent {
      */
     public String getTimeUpdatedAsString() {
         if (dateUpdated != null) {
-            return DateTools.format(dateUpdated, DateTools.formatterISO8601Time, false);
+            return DateTools.format(dateUpdated, DateTools.FORMATTERISO8601TIME, false);
         }
         return null;
     }

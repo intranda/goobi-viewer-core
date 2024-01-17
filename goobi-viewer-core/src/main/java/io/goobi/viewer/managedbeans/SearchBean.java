@@ -423,7 +423,7 @@ public class SearchBean implements SearchInterface, Serializable {
         facets.resetActiveFacetString();
         generateSimpleSearchString(searchString);
 
-        searchStringInternal = SolrConstants.MONTHDAY + ":" + DateTools.formatterMonthDayOnly.format(LocalDateTime.now());
+        searchStringInternal = SolrConstants.MONTHDAY + ":" + DateTools.FORMATTERMONTHDAYONLY.format(LocalDateTime.now());
 
         return StringConstants.PRETTY_NEWSEARCH5;
     }
@@ -2629,7 +2629,7 @@ public class SearchBean implements SearchInterface, Serializable {
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext()
                     .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                            + LocalDateTime.now().format(DateTools.formatterFileName)
+                            + LocalDateTime.now().format(DateTools.FORMATTERFILENAME)
                             + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException | DAOException | PresentationException e) {

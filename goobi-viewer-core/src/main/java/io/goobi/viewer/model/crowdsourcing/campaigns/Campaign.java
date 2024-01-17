@@ -1111,7 +1111,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
             return null;
         }
 
-        return DateTools.format(dateStart, DateTools.formatterISO8601Date, false);
+        return DateTools.format(dateStart, DateTools.FORMATTERISO8601DATE, false);
     }
 
     /**
@@ -1191,7 +1191,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
             return null;
         }
 
-        return DateTools.format(dateEnd, DateTools.formatterISO8601Date, false);
+        return DateTools.format(dateEnd, DateTools.FORMATTERISO8601DATE, false);
     }
 
     /**

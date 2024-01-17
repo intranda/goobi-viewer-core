@@ -46,7 +46,7 @@ class EventElementTest extends AbstractTest {
         doc.setField(SolrConstants.EVENTDATE, "2018-11-23");
         EventElement ee = new EventElement(doc, null, false);
         Assertions.assertNotNull(ee.getDateStart());
-        Assertions.assertEquals("2018-11-23", DateTools.format(ee.getDateStart(), DateTools.formatterISO8601Date, false));
+        Assertions.assertEquals("2018-11-23", DateTools.format(ee.getDateStart(), DateTools.FORMATTERISO8601DATE, false));
     }
 
     /**
@@ -59,7 +59,7 @@ class EventElementTest extends AbstractTest {
         doc.setField(SolrConstants.EVENTDATESTART, "2018-11-23");
         EventElement ee = new EventElement(doc, null, false);
         Assertions.assertNotNull(ee.getDateEnd());
-        Assertions.assertEquals("2018-11-23", DateTools.format(ee.getDateEnd(), DateTools.formatterISO8601Date, false));
+        Assertions.assertEquals("2018-11-23", DateTools.format(ee.getDateEnd(), DateTools.FORMATTERISO8601DATE, false));
     }
 
     /**
