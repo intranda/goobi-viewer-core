@@ -2910,6 +2910,38 @@ public class Configuration extends AbstractConfiguration {
      * @param facetField
      * @return Configured value
      * @should return correct value
+     * @should return INT_MIN if no value configured
+     */
+    public int getRangeFacetFieldMinValue(String facetField) {
+        String val = getPropertyForFacetField(facetField, "[@minValue]", null);
+        if (StringUtils.isNotEmpty(val)) {
+            return Integer.parseInt(val);
+        }
+
+        return Integer.MIN_VALUE;
+    }
+
+    /**
+     * 
+     * @param facetField
+     * @return Configured value
+     * @should return correct value
+     * @should return INT_MAX if no value configured
+     */
+    public int getRangeFacetFieldMaxValue(String facetField) {
+        String val = getPropertyForFacetField(facetField, "[@maxValue]", null);
+        if (StringUtils.isNotEmpty(val)) {
+            return Integer.parseInt(val);
+        }
+
+        return Integer.MAX_VALUE;
+    }
+
+    /**
+     * 
+     * @param facetField
+     * @return Configured value
+     * @should return correct value
      */
     public String getFacetFieldStyle(String facetField) {
         return getPropertyForFacetField(facetField, "[@style]", "");

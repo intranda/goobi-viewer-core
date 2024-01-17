@@ -1805,6 +1805,42 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFields_shouldReturnAllValues() throws Exception {
         assertEquals(1, DataManager.getInstance().getConfiguration().getRangeFacetFields().size());
     }
+    
+    /**
+     * @see Configuration#getRangeFacetFieldMinValue()
+     * @verifies return correct value
+     */
+    @Test
+    void getRangeFacetFieldMinValue_shouldReturnCorrectValue() throws Exception {
+        assertEquals(0, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue(SolrConstants.YEAR));
+    }
+    
+    /**
+     * @see Configuration#getRangeFacetFieldMinValue()
+     * @verifies return INT_MIN if no value configured
+     */
+    @Test
+    void getRangeFacetFieldMinValue_shouldReturnINT_MINIfNoValueConfigured() throws Exception {
+        assertEquals(Integer.MIN_VALUE, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue("MD_NOSUCHFIELD"));
+    }
+    
+    /**
+     * @see Configuration#getRangeFacetFieldMaxValue()
+     * @verifies return correct value
+     */
+    @Test
+    void getRangeFacetFieldMaxValue_shouldReturnCorrectValue() throws Exception {
+        assertEquals(999, DataManager.getInstance().getConfiguration().getRangeFacetFieldMaxValue(SolrConstants.YEAR));
+    }
+    
+    /**
+     * @see Configuration#getRangeFacetFieldMaxValue()
+     * @verifies return INT_MAX if no value configured
+     */
+    @Test
+    void getRangeFacetFieldMaxValue_shouldReturnINT_MAXIfNoValueConfigured() throws Exception {
+        assertEquals(Integer.MAX_VALUE, DataManager.getInstance().getConfiguration().getRangeFacetFieldMaxValue("MD_NOSUCHFIELD"));
+    }
 
     /**
      * @see Configuration#getInitialFacetElementNumber()
