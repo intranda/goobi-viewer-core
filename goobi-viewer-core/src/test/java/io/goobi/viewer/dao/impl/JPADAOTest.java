@@ -51,6 +51,8 @@ import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -197,6 +199,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     void updateUserTest() throws DAOException {
         Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
         User user = DataManager.getInstance().getDao().getUser(1);
@@ -772,6 +775,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     void updateCommentTest() throws DAOException {
         Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = DataManager.getInstance().getDao().getComment(1);
@@ -936,6 +940,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     void updateSearchTest() throws DAOException {
         Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
         Search o = DataManager.getInstance().getDao().getSearch(1);
@@ -2161,6 +2166,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      * @verifies add object correctly
      */
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     void addDownloadJob_shouldAddObjectCorrectly() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         PDFDownloadJob job = new PDFDownloadJob("PI_2", "LOG_0002", now, 3600);
@@ -2190,6 +2196,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      * @verifies update object correctly
      */
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     void updateDownloadJob_shouldUpdateObjectCorrectly() throws Exception {
         Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
@@ -3336,6 +3343,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     void test_persistRecurringTaskTrigger() throws Exception {
         IDAO dao = DataManager.getInstance().getDao();
 

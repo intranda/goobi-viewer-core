@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.faces.validators;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -31,8 +31,8 @@ import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
@@ -73,7 +73,7 @@ public class PasswordValidator implements Validator<String> {
      */
     public static boolean validatePassword(String password) {
         /**
-         * Let the cery existance of a password be validated by a required="true" condition on the input element. When changing other properties of an
+         * Let the very existence of a password be validated by a required="true" condition on the input element. When changing other properties of an
          * existing user, it must be legal to keep the password input empty In this case, the password will not be updated anyway (see
          * AdminBean#saveUserAction(User user)
          */
@@ -85,16 +85,7 @@ public class PasswordValidator implements Validator<String> {
         }
 
         // Limit to 72 Bytes
-        try {
-            byte[] utf16Bytes = password.getBytes("UTF-8");
-            if (utf16Bytes.length > 72) {
-                return false;
-            }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-            return false;
-        }
-
-        return true;
+        byte[] utf16Bytes = password.getBytes(StandardCharsets.UTF_8);
+        return utf16Bytes.length <= 72;
     }
 }

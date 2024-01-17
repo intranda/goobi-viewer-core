@@ -1080,7 +1080,7 @@ public final class SearchHelper {
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
                 getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(),
-                        (User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request),
+                        (User) Optional.ofNullable(request).map(HttpServletRequest::getSession).map(session -> session.getAttribute("user")).orElse(null), NetTools.getIpAddress(request),
                         ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);

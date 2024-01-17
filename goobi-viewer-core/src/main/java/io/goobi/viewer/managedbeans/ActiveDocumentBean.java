@@ -777,6 +777,30 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * Sets imageToShow to the representative page found in the search index, or "1" if none found.
+     * 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException {
+        synchronized (lock) {
+            String image = "1";
+            if (StringUtils.isNotEmpty(lastReceivedIdentifier) && !"-".equals(lastReceivedIdentifier)) {
+                SolrDocument doc = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getFirstDoc(SolrConstants.PI + ":" + lastReceivedIdentifier, Collections.singletonList(SolrConstants.THUMBPAGENO));
+                if (doc != null && doc.getFieldValue(SolrConstants.THUMBPAGENO) != null) {
+                    this.imageToShow = String.valueOf(doc.getFieldValue(SolrConstants.THUMBPAGENO));
+                    logger.trace("{} found: {}", SolrConstants.THUMBPAGENO, this.imageToShow);
+                } else {
+                    logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, this.imageToShow);
+                }
+            }
+            setImageToShow(image);
+        }
+    }
+
+    /**
      * <p>
      * Getter for the field <code>imageToShow</code>.
      * </p>
