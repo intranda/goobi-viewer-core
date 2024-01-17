@@ -134,9 +134,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {
                 searchBean.getFacets().resetSliderRange();
-                
-                searchBean.getCurrentSearch().setSortString("FACET_CONTENTWARNING");
-                
+                                
                 if (!component.getBooleanAttributeValue("useSearchGroups", true)) {
                     searchBean.setActiveResultGroup(SearchResultGroup.createDefaultGroup());
                 } else if (resetResults) {
