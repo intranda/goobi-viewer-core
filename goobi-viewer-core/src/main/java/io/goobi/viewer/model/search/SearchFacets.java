@@ -73,7 +73,6 @@ public class SearchFacets implements Serializable {
     private final Map<String, Boolean> facetsExpanded = new HashMap<>();
 
     private final Map<String, String> minValues = new HashMap<>();
-
     private final Map<String, String> maxValues = new HashMap<>();
 
     private final Map<String, SortedMap<Integer, Long>> valueRanges = new HashMap<>();
@@ -796,6 +795,7 @@ public class SearchFacets implements Serializable {
      * @param counts
      * @should populate values correctly
      * @should add all values to list
+     * @should use configured min max values correctly
      */
     void populateAbsoluteMinMaxValuesForField(String field, SortedMap<String, Long> counts) {
         if (field == null) {
@@ -813,7 +813,11 @@ public class SearchFacets implements Serializable {
                 if (e.getKey() == null || e.getValue() == null) {
                     continue;
                 }
-                intValues.put(Integer.valueOf(e.getKey()), e.getValue());
+                // Only add values inside the min/max range for the field, if any configured
+                int keyValue = Integer.parseInt(e.getKey());
+                if (keyValue >= getRangeFacetMinValue(field) && keyValue <= getRangeFacetMaxValue(field)) {
+                    intValues.put(keyValue, e.getValue());
+                }
             }
         } else {
             logger.trace("No facets found for field {}", field);
@@ -822,7 +826,7 @@ public class SearchFacets implements Serializable {
             valueRanges.put(field, intValues);
             minValues.put(field, String.valueOf(intValues.firstKey()));
             maxValues.put(field, String.valueOf(intValues.lastKey()));
-            logger.trace("Absolute range for field {}: {} - {}", field, minValues.get(field), maxValues.get(field));
+            logger.trace("Absolute range for field {}: {} - {}", field, intValues.firstKey(), intValues.lastKey());
         }
     }
 
@@ -969,6 +973,24 @@ public class SearchFacets implements Serializable {
      */
     public String getRangeFacetStyle(String field) {
         return DataManager.getInstance().getConfiguration().getFacetFieldStyle(field);
+    }
+
+    /**
+     * 
+     * @param field
+     * @return Configured min value for the given field
+     */
+    public int getRangeFacetMinValue(String field) {
+        return DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue(field);
+    }
+
+    /**
+     * 
+     * @param field
+     * @return Configured max value for the given field
+     */
+    public int getRangeFacetMaxValue(String field) {
+        return DataManager.getInstance().getConfiguration().getRangeFacetFieldMaxValue(field);
     }
 
     /**
