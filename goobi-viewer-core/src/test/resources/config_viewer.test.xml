@@ -436,7 +436,8 @@
 		</sorting>
 		<facets>
 			<field type="hierarchical" initialElementNumber=" 4" priorityValues="collection2;collection1">DC</field>
-			<field type="range" labelField="MD_FIELDLABEL" sortOrder="numerical" translateLabels="false" style="graph">YEAR</field>
+			<field type="range" minValue="-1000" maxValue="2050" labelField="MD_FIELDLABEL" sortOrder="numerical"
+                translateLabels="false" style="graph">YEAR</field>
 			<field type="hierarchical" labelField="MD_FIRSTNAME" sortOrder="alphabetical" translateLabels="false">MD_CREATOR</field>
 			<field initialElementNumber="16" priorityValues="val1;val2;val3" displayValueFilter="false">MD_PLACEPUBLISH</field>
 			<field type="geo" predicate="ISWITHIN" displayResultsOnMap="false">WKT_COORDS</field>
