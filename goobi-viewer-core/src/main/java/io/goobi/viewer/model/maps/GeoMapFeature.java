@@ -128,14 +128,6 @@ public class GeoMapFeature {
         this.pageNo = pageNo;
     }
 
-    public Integer getPageNo() {
-        return pageNo;
-    }
-
-    public void setPageNo(Integer pageNo) {
-        this.pageNo = pageNo;
-    }
-
     /**
      * @return the json
      */
