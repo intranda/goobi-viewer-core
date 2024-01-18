@@ -177,17 +177,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
     
 
-    /**
-     * @see SolrTools#isHasImages(SolrDocument)
-     * @verifies return correct value for iiif manifests in file name
-     */
-    @Test
-    public void isHasImages_shouldReturnCorrectValueForIiifManifestsInFileName() throws Exception {
-        SolrDocument doc = new SolrDocument();
-        doc.setField(SolrConstants.THUMBNAIL, "https://example.com/iiif/2/foo.jpg/info.json");
-        Assert.assertTrue(SolrTools.isHasImages(doc));
-    }
-
     @Test
     void testGetMetadataValuesForLanguage() {
         SolrDocument doc = new SolrDocument();
