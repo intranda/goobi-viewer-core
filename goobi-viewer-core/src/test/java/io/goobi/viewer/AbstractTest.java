@@ -23,8 +23,8 @@ package io.goobi.viewer;
 
 import java.io.File;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
@@ -39,8 +39,7 @@ public abstract class AbstractTest {
     public static final String TEST_CONFIG_PATH = new File("src/test/resources/config_viewer.test.xml").getAbsolutePath();
     public static final String TEST_LOG_CONFIG_PATH = new File("src/test/resources/log4j2.test.xml").getAbsolutePath();
 
-
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         System.setProperty("log4j.configurationFile", TEST_LOG_CONFIG_PATH);
         DataManager.getInstance().injectConfiguration(new Configuration(TEST_CONFIG_PATH));
@@ -51,7 +50,7 @@ public abstract class AbstractTest {
         DataManager.getInstance().setRestApiManager(new RestApiManager());
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration(TEST_CONFIG_PATH));
     }

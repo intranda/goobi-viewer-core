@@ -81,7 +81,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
      * @param initalLocale
      */
     public TranslatedText(Collection<Locale> locales, Locale initalLocale) {
-        super(locales.stream().collect(Collectors.toMap(l -> l.getLanguage(), l -> "")));
+        super(locales.stream().collect(Collectors.toMap(Locale::getLanguage, l -> "")));
         this.selectedLocale = initalLocale;
     }
 
@@ -151,7 +151,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * return the {@link #selectedLocale}
+     * @return the {@link #selectedLocale}
      */
     public Locale getSelectedLocale() {
         return this.selectedLocale;
@@ -159,6 +159,8 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     /**
      * Set the {@link #selectedLocale}
+     * 
+     * @param locale
      */
     public void setSelectedLocale(Locale locale) {
         this.selectedLocale = locale;
@@ -168,7 +170,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
      * Get the text for the given locale. If that does not exist, get the value for the default language and if that doesn't exist, an empty string
      * 
      * @param locale
-     * @return
+     * @return Text for the given locale
      */
     public String getText(Locale locale) {
         return super.getValue(locale).orElse(getValue(DEFAULT_LANGUAGE).orElse(""));
@@ -178,7 +180,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
      * Get the text for {@link IPolyglott#getCurrentLocale()}, or, failing that, for {@link IPolyglott#getDefaultLocale()}, the internal default
      * language or finally an empty string
      * 
-     * @return
+     * @return {@link String}
      */
     public String getTextOrDefault() {
         return getTextOrDefault(IPolyglott.getCurrentLocale(), IPolyglott.getDefaultLocale());
@@ -189,7 +191,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
      * 
      * @param locale The locale to return the text for
      * @param defaultLocale The fallback locale to use if no text exists for the given locale
-     * @return
+     * @return {@link String}
      */
     public String getTextOrDefault(Locale locale, Locale defaultLocale) {
         return super.getValue(locale)
@@ -215,7 +217,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     /**
      * get the text for the current {@link #selectedLocale}
      * 
-     * @return
+     * @return Text for selected locale
      */
     public String getText() {
         return this.getText(this.selectedLocale);
@@ -224,7 +226,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     /**
      * set the text for the current {@link #selectedLocale}
      * 
-     * @return
+     * @param text
      */
     public void setText(String text) {
         this.setText(text, this.selectedLocale);
@@ -233,7 +235,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     /**
      * Get the values as a map of locales and associated texts. The default language text is never included since it does not have a locale
      * 
-     * @return
+     * @return Map<Locale, String>
      */
     public Map<Locale, String> toMap() {
         return super.getValues().stream()
@@ -325,14 +327,13 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
      * @param locale
      * @param defaultLocale
      * @param required
-     * @return
+     * @return true if completeness not required or text not empty; false otherwise
      */
     public boolean isComplete(Locale locale, Locale defaultLocale, boolean required) {
         if (required || isComplete(defaultLocale)) {
             return isComplete(locale);
-        } else {
-            return true;
         }
+        return true;
     }
 
     public String getAsJson() throws JsonProcessingException {

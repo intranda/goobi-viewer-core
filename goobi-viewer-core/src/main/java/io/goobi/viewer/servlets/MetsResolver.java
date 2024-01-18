@@ -58,13 +58,24 @@ public class MetsResolver extends HttpServlet {
 
     private static final Logger logger = LogManager.getLogger(MetsResolver.class);
 
-    private static final String ERRTXT_DOC_NOT_FOUND = "No matching document could be found. ";
-    private static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
-    private static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
+    static final String ERRTXT_DOC_NOT_FOUND = "No matching document could be found.";
+    static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
+    static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
+
     private static final String[] FIELDS =
             { SolrConstants.ACCESSCONDITION, SolrConstants.DATAREPOSITORY, SolrConstants.PI_TOPSTRUCT, SolrConstants.SOURCEDOCFORMAT };
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return METS file correctly via pi
+     * @should return METS file correctly via urn
+     * @should return LIDO file correctly
+     * @should return 404 if record not in index
+     * @should return 404 if file not found
+     * @should return 409 if more than one record matched
+     * @should return 400 if record identifier bad
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");

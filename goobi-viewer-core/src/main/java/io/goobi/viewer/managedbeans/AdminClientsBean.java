@@ -18,6 +18,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -189,7 +190,7 @@ public class AdminClientsBean implements Serializable {
      * Delete given client from database
      * 
      * @param client
-     * @return
+     * @return Navigation outcome
      */
     public String delete(ClientApplication client) {
         try {
@@ -206,7 +207,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     private TableDataProvider<ClientApplication> createDataTableProvider(int entriesPerPage) {
-        TableDataProvider<ClientApplication> provider = new TableDataProvider<ClientApplication>(new TableDataSource<ClientApplication>() {
+        TableDataProvider<ClientApplication> provider = new TableDataProvider<>(new TableDataSource<ClientApplication>() {
 
             private long totalNumberOfRecords = 0;
 
@@ -222,10 +223,10 @@ public class AdminClientsBean implements Serializable {
                             .filter(c -> AccessStatus.REQUESTED != c.getAccessStatus());
 
                     //filters
-                    for (String filterName : filters.keySet()) {
-                        String filterValue = filters.get(filterName);
+                    for (Entry<String, String> entry : filters.entrySet()) {
+                        String filterValue = entry.getValue();
                         if (StringUtils.isNotBlank(filterValue)) {
-                            stream = stream.filter(c -> matchesFilter(c, filterName, filterValue));
+                            stream = stream.filter(c -> matchesFilter(c, entry.getKey(), filterValue));
                         }
                     }
 
@@ -261,10 +262,10 @@ public class AdminClientsBean implements Serializable {
                         stream = dao.getAllClientApplications().stream();
 
                         //filters
-                        for (String filterName : filters.keySet()) {
-                            String filterValue = filters.get(filterName);
+                        for (Entry<String, String> entry : filters.entrySet()) {
+                            String filterValue = entry.getValue();
                             if (StringUtils.isNotBlank(filterValue)) {
-                                stream = stream.filter(c -> matchesFilter(c, filterName, filterValue));
+                                stream = stream.filter(c -> matchesFilter(c, entry.getKey(), filterValue));
                             }
                         }
 
@@ -283,9 +284,9 @@ public class AdminClientsBean implements Serializable {
 
             private boolean matchesFilter(ClientApplication client, String filterName, String filterValue) {
                 if (filterName.equals(DEFAULT_TABLE_FILTER)) {
-                    return Optional.ofNullable(client.getName()).map(value -> value.contains(filterValue)).orElse(false) ||
-                            Optional.ofNullable(client.getClientIp()).map(value -> value.contains(filterValue)).orElse(false) ||
-                            Optional.ofNullable(client.getClientIdentifier()).map(value -> value.contains(filterValue)).orElse(false);
+                    return Optional.ofNullable(client.getName()).map(value -> value.contains(filterValue)).orElse(false)
+                            || Optional.ofNullable(client.getClientIp()).map(value -> value.contains(filterValue)).orElse(false)
+                            || Optional.ofNullable(client.getClientIdentifier()).map(value -> value.contains(filterValue)).orElse(false);
                 }
                 return true;
             }
@@ -299,7 +300,7 @@ public class AdminClientsBean implements Serializable {
     /**
      * Get a list of all clients with {@link AccessStatus#REQUESTED}
      * 
-     * @return
+     * @return List of clients that are not configured
      * @throws DAOException
      */
     public List<ClientApplication> getNotConfiguredClients() throws DAOException {
@@ -312,7 +313,7 @@ public class AdminClientsBean implements Serializable {
     /**
      * Get a list of all clients with {@link AccessStatus#GRANTED}
      * 
-     * @return
+     * @return List of clients that have been granted
      * @throws DAOException
      */
     public List<ClientApplication> getAllAcceptedClients() throws DAOException {
@@ -325,7 +326,7 @@ public class AdminClientsBean implements Serializable {
     /**
      * Get a list of all clients with {@link AccessStatus#GRANTED} pr {@link AccessStatus#DENIED}
      * 
-     * @return
+     * @return List of clients that have been either granted or denied
      * @throws DAOException
      */
     public List<ClientApplication> getAllConfiguredClients() throws DAOException {
@@ -362,7 +363,7 @@ public class AdminClientsBean implements Serializable {
      */
     public boolean isLoggedInClientAccessGranted() {
         return ClientApplicationManager.getClientFromRequest(BeanUtils.getRequest())
-                .map(client -> client.isAccessGranted())
+                .map(ClientApplication::isAccessGranted)
                 .orElse(false);
     }
 

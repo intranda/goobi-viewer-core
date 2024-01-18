@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 
@@ -40,7 +40,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
  * @author Florian Alpers
  *
  */
-public class TableDataProviderTest {
+class TableDataProviderTest {
 
     List<Integer> sourceList;
     TableDataProvider<Integer> provider;
@@ -48,7 +48,7 @@ public class TableDataProviderTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         sourceList = IntStream.rangeClosed(1, 2005).boxed().collect(Collectors.toList());
         Collections.shuffle(sourceList);
@@ -94,128 +94,129 @@ public class TableDataProviderTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
+        //
     }
 
     @Test
-    public void testGetFirstPage() {
+    void testGetFirstPage() {
         provider.resetAll();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size());
-        Assert.assertEquals(1, list.get(0), 0);
-        Assert.assertEquals(10, list.get(9), 0);
+        Assertions.assertEquals(10, list.size());
+        Assertions.assertEquals(1, list.get(0), 0);
+        Assertions.assertEquals(10, list.get(9), 0);
     }
 
     @Test
-    public void testGetTotalSize() {
+    void testGetTotalSize() {
         provider.resetAll();
-        Assert.assertEquals(2005, provider.getSizeOfDataList());
+        Assertions.assertEquals(2005, provider.getSizeOfDataList());
     }
 
     @Test
-    public void testChangePageSize() {
+    void testChangePageSize() {
         provider.resetAll();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size());
+        Assertions.assertEquals(10, list.size());
         provider.setEntriesPerPage(5);
         list = provider.getPaginatorList();
-        Assert.assertEquals(5, list.size());
+        Assertions.assertEquals(5, list.size());
         provider.setEntriesPerPage(20);
         list = provider.getPaginatorList();
-        Assert.assertEquals(20, list.size());
+        Assertions.assertEquals(20, list.size());
     }
 
     @Test
-    public void testGotoLastPage() {
+    void testGotoLastPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(5, list.size(), 0);
-        Assert.assertEquals(2005, list.get(4), 0);
+        Assertions.assertEquals(5, list.size(), 0);
+        Assertions.assertEquals(2005, list.get(4), 0);
     }
 
     @Test
-    public void testGotoFirstPage() {
+    void testGotoFirstPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         provider.cmdMoveFirst();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size(), 0);
-        Assert.assertEquals(10, list.get(9), 0);
+        Assertions.assertEquals(10, list.size(), 0);
+        Assertions.assertEquals(10, list.get(9), 0);
     }
 
     @Test
-    public void testGotoNextPage() {
+    void testGotoNextPage() {
         provider.resetAll();
         provider.cmdMoveNext();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size(), 0);
-        Assert.assertEquals(11, list.get(0), 0);
+        Assertions.assertEquals(10, list.size(), 0);
+        Assertions.assertEquals(11, list.get(0), 0);
     }
 
     @Test
-    public void testGotoPreviousPage() {
+    void testGotoPreviousPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         provider.cmdMovePrevious();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size(), 0);
-        Assert.assertEquals(2000, list.get(9), 0);
+        Assertions.assertEquals(10, list.size(), 0);
+        Assertions.assertEquals(2000, list.get(9), 0);
     }
 
     @Test
-    public void testGotoPage() {
+    void testGotoPage() {
         provider.resetAll();
         provider.setTxtMoveTo(100);
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size(), 0);
-        Assert.assertEquals(1000, list.get(9), 0);
+        Assertions.assertEquals(10, list.size(), 0);
+        Assertions.assertEquals(1000, list.get(9), 0);
     }
 
     @Test
-    public void testFilter() {
+    void testFilter() {
         provider.resetAll();
         provider.getFilterIfPresent("MIN").ifPresent(filter -> filter.setValue("100"));
-        Assert.assertEquals("100", provider.getFilterIfPresent("MIN").map(filter -> filter.getValue()).orElse("x"));
+        Assertions.assertEquals("100", provider.getFilterIfPresent("MIN").map(filter -> filter.getValue()).orElse("x"));
         provider.update();
-        Assert.assertEquals(2005 - 99, provider.getSizeOfDataList());
+        Assertions.assertEquals(2005 - 99, provider.getSizeOfDataList());
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(100, list.get(0), 0);
+        Assertions.assertEquals(100, list.get(0), 0);
 
         provider.getFilterIfPresent("MAX").ifPresent(filter -> filter.setValue("200"));
-        Assert.assertEquals("200", provider.getFilterIfPresent("MAX").map(filter -> filter.getValue()).orElse("x"));
+        Assertions.assertEquals("200", provider.getFilterIfPresent("MAX").map(filter -> filter.getValue()).orElse("x"));
         provider.update();
-        Assert.assertEquals(101, provider.getSizeOfDataList());
+        Assertions.assertEquals(101, provider.getSizeOfDataList());
         list = provider.getPaginatorList();
         provider.cmdMoveLast();
         list = provider.getPaginatorList();
-        Assert.assertEquals(200, list.get(list.size() - 1), 0);
+        Assertions.assertEquals(200, list.get(list.size() - 1), 0);
         provider.cmdMoveFirst();
         list = provider.getPaginatorList();
-        Assert.assertEquals(100, list.get(0), 0);
+        Assertions.assertEquals(100, list.get(0), 0);
 
         provider.getFilterIfPresent("MIN").ifPresent(filter -> filter.setValue(""));
-        Assert.assertEquals("", provider.getFilterIfPresent("MIN").map(filter -> filter.getValue()).orElse("x"));
+        Assertions.assertEquals("", provider.getFilterIfPresent("MIN").map(filter -> filter.getValue()).orElse("x"));
         provider.update();
-        Assert.assertEquals(200, provider.getSizeOfDataList());
+        Assertions.assertEquals(200, provider.getSizeOfDataList());
         list = provider.getPaginatorList();
         provider.cmdMoveFirst();
         list = provider.getPaginatorList();
-        Assert.assertEquals(1, list.get(0), 0);
+        Assertions.assertEquals(1, list.get(0), 0);
         provider.cmdMoveLast();
         list = provider.getPaginatorList();
-        Assert.assertEquals(200, list.get(list.size() - 1), 0);
+        Assertions.assertEquals(200, list.get(list.size() - 1), 0);
 
     }
 
     @Test
-    public void testSorting() {
+    void testSorting() {
         provider.resetAll();
         provider.setSortOrder(SortOrder.DESCENDING);
-        Assert.assertEquals(2005, provider.getPaginatorList().get(0), 0);
+        Assertions.assertEquals(2005, provider.getPaginatorList().get(0), 0);
         provider.cmdMoveLast();
-        Assert.assertEquals(1, provider.getPaginatorList().get(provider.getPaginatorList().size() - 1), 0);
+        Assertions.assertEquals(1, provider.getPaginatorList().get(provider.getPaginatorList().size() - 1), 0);
     }
 
     /**

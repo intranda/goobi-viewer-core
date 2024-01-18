@@ -9,9 +9,7 @@
 /.project
 /target/
 /.settings/org.eclipse.wst.commons.component
-/.classpath
 /.project
 /src/META-INF/resources/resources/css/styleguide/
 /.settings/
 /package-lock.json
-/.settings/

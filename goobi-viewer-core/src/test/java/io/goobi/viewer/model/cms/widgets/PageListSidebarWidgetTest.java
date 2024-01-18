@@ -21,16 +21,16 @@
  */
 package io.goobi.viewer.model.cms.widgets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -38,10 +38,10 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
-public class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
+class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     @Test
-    public void testPersist() throws DAOException {
+    void testPersist() throws DAOException {
         PageListSidebarWidget widget = new PageListSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -59,7 +59,7 @@ public class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testClone() {
+    void testClone() {
         PageListSidebarWidget widget = new PageListSidebarWidget();
         widget.getTitle().setValue("Titel", Locale.GERMAN);
         widget.setPageIds(List.of(23l, 93l, 1023l, 2l));
@@ -70,7 +70,7 @@ public class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testType() {
+    void testType() {
         assertEquals(CustomWidgetType.WIDGET_CMSPAGES, new PageListSidebarWidget().getType());
     }
 }

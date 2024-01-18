@@ -26,12 +26,14 @@
                                     <h2 ><span>#{msg[field.concat('_DD')]}</span></h2>
                                     
                                     <!-- FILTER FACETS -->
+                                    <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field)}">
                                     <div class="widget-search-facets__filter">
                                         <input type="text" id="collectionFacetsFilter" tabindex="-1" class="widget-search-facets__filter-input -no-outline" placeholder="#{msg.placeholder__filter_search_results}" aria-label="#{msg.placeholder__filter_search_results}"/>
                                         <button type="button" class="btn btn--clean" data-toggle="filter-input" aria-label="#{msg.placeholder__filter_search_results}">
                                         	<i class="fa fa-search" aria-hidden="true"></i>
                                         </button>
                                     </div>
+                                    </ui:fragment>
                                         
                                     <ul>
                                         <!-- AVAILABLE FACETS -->

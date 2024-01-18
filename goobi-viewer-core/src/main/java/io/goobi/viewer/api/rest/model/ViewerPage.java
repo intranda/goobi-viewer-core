@@ -37,21 +37,23 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
  */
 public class ViewerPage {
 
-    public final URI link;
-    public final IContent image;
-    public final IMetadataValue label;
+    private final URI link;
+    private final IContent image;
+    private final IMetadataValue label;
+    private final long order;
 
     /**
      * @param link
      * @param image
-     * @param header
-     * @param description
+     * @param label
+     * @param order
      */
-    public ViewerPage(URI link, IContent image, IMetadataValue label, IMetadataValue description) {
+    public ViewerPage(URI link, IContent image, IMetadataValue label, long order) {
         super();
         this.link = link;
         this.image = image;
         this.label = label;
+        this.order = order;
     }
 
     /**
@@ -61,6 +63,7 @@ public class ViewerPage {
     public ViewerPage(CMSPage page) {
         this.label = page.getTitleTranslations();
         this.link = URI.create(page.getUrl());
+        this.order = page.getPageSortingOrElse(0);
         this.image = page.getPersistentComponents()
                 .stream()
                 .flatMap(c -> c.getContentItems().stream())
@@ -70,5 +73,33 @@ public class ViewerPage {
                 .map(item -> MediaItem.getMediaResource(item.getMediaItem()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * @return the link
+     */
+    public URI getLink() {
+        return link;
+    }
+
+    /**
+     * @return the image
+     */
+    public IContent getImage() {
+        return image;
+    }
+
+    /**
+     * @return the label
+     */
+    public IMetadataValue getLabel() {
+        return label;
+    }
+
+    /**
+     * @return the order
+     */
+    public long getOrder() {
+        return order;
     }
 }

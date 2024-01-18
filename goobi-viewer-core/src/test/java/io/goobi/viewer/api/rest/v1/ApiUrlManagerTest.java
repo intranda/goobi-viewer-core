@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
@@ -36,7 +36,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
  * @author florian
  *
  */
-public class ApiUrlManagerTest {
+class ApiUrlManagerTest {
 
     private final static String PI = "12345";
     private final static String DIVID = "LOG_0003";
@@ -56,7 +56,7 @@ public class ApiUrlManagerTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.manager = new ApiUrls(HOST_URL);
     }
@@ -64,18 +64,18 @@ public class ApiUrlManagerTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
-    public void testGetUrl() {
+    void testGetUrl() {
         String url = manager.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF).params(PI, DIVID).build();
         assertEquals(PATH_FINAL, url);
     }
 
     @Test
-    public void testGetUrlWithQuery() {
+    void testGetUrlWithQuery() {
         String url = manager.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF)
                 .params(PI, DIVID)
                 .query(QUERY_PARAM_MAX, QUERY_PARAM_MAX_VALUE)
@@ -86,7 +86,7 @@ public class ApiUrlManagerTest {
     }
 
     @Test
-    public void testParseParameter() {
+    void testParseParameter() {
         String pi = "PPN1234";
         String pageNo = "5";
         String id = "172";

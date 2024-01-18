@@ -21,19 +21,19 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
-public class ComplexMetadataTest {
+class ComplexMetadataTest {
 
     private static final String YEAR = "1972";
     private static final String TITLE_EN = "The title";
@@ -44,7 +44,7 @@ public class ComplexMetadataTest {
     private static final Long IDDOC_OWNER = 123l;
 
     @Test
-    public void testSingleDoc() {
+    void testSingleDoc() {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.PI_TOPSTRUCT, PI);
         doc.setField(SolrConstants.IDDOC, IDDOC.toString());
@@ -68,7 +68,7 @@ public class ComplexMetadataTest {
     }
 
     @Test
-    public void testMultiDoc() {
+    void testMultiDoc() {
         List<SolrDocument> docs = new ArrayList<>();
         {
             SolrDocument doc = new SolrDocument();
@@ -105,7 +105,7 @@ public class ComplexMetadataTest {
     }
 
     @Test
-    public void testMultiMetadata() {
+    void testMultiMetadata() {
         List<SolrDocument> docs = new ArrayList<>();
 
         {

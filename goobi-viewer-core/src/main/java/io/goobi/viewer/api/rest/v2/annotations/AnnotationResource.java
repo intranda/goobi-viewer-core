@@ -21,7 +21,13 @@
  */
 package io.goobi.viewer.api.rest.v2.annotations;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
 import java.io.IOException;
 
@@ -36,11 +42,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpStatus;
 
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
@@ -55,14 +58,12 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.model.ErrorMessage;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.NotImplementedException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
@@ -94,7 +95,7 @@ public class AnnotationResource {
 
     /**
      *
-     * @return
+     * @return {@link AnnotationCollection}
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -104,18 +105,15 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Get an annotation collection over all annotations")
     public AnnotationCollection getAnnotationCollection() throws PresentationException, IndexUnreachableException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-        AnnotationCollection collection = builder.getWebAnnotationCollection();
-        return collection;
+        return builder.getWebAnnotationCollection();
     }
 
     /**
      *
      * @param page
-     * @return
+     * @return {@link AnnotationPage}
      * @throws DAOException
      * @throws ContentLibException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
      */
     @GET
     @javax.ws.rs.Path("/{page}")
@@ -123,20 +121,17 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
     public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page)
-            throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
+            throws ContentLibException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-        AnnotationPage annoPage = builder.getWebAnnotationPage(page);
-        return annoPage;
+        return builder.getWebAnnotationPage(page);
     }
 
     /**
      *
      * @param id
-     * @return
+     * @return {@link IAnnotation}
      * @throws DAOException
      * @throws ContentLibException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
      */
     @GET
     @javax.ws.rs.Path(ANNOTATIONS_ANNOTATION)
@@ -144,21 +139,17 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
-            throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
+            throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-        WebAnnotation annotation =
-                builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
-        return annotation;
+        return builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
     }
 
     /**
      *
      * @param id
-     * @return
+     * @return {@link IAnnotation}
      * @throws DAOException
      * @throws ContentLibException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
      */
     @GET
     @javax.ws.rs.Path(ANNOTATIONS_COMMENT)
@@ -166,7 +157,7 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
-            throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
+            throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
     }
@@ -174,7 +165,7 @@ public class AnnotationResource {
     /**
      *
      * @param anno
-     * @return
+     * @return {@link IAnnotation}
      * @throws DAOException
      * @throws NotImplementedException
      */
@@ -183,7 +174,8 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
     @ApiResponse(responseCode = "501",
-            description = "Persisting this king of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
+            description = "Persisting this king of annotation or its target is not implemented."
+                    + " Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
     public IAnnotation addAnnotation(IAnnotation anno) throws DAOException, NotImplementedException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
@@ -197,10 +189,9 @@ public class AnnotationResource {
     /**
      *
      * @param id
-     * @return
+     * @return {@link IAnnotation}
      * @throws DAOException
      * @throws ContentLibException
-     * @throws ViewerConfigurationException
      */
     @DELETE
     @Path(ANNOTATIONS_ANNOTATION)
@@ -210,7 +201,7 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
     @ApiResponse(responseCode = "405", description = "May not delete the annotation because it was created by another user")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
-            throws DAOException, ContentLibException, ViewerConfigurationException {
+            throws DAOException, ContentLibException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = DataManager.getInstance().getDao().getAnnotation(id);
         if (pAnno == null) {
@@ -233,17 +224,15 @@ public class AnnotationResource {
                 }
             }
             return anno;
-        } else {
-            throw new ServiceNotAllowedException("Must be logged in to delete annotations");
         }
+        throw new ServiceNotAllowedException("Must be logged in to delete annotations");
 
     }
 
     /**
      *
      * @param anno
-     * @param builder
-     * @return
+     * @return {@link CrowdsourcingAnnotation}
      */
     public CrowdsourcingAnnotation createPersistentAnnotation(IAnnotation anno) {
         CrowdsourcingAnnotation pAnno = null;
@@ -259,7 +248,7 @@ public class AnnotationResource {
                 template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
             } else {
                 //TODO: implement handling IIIF 3 resources
-                return null;//not implemented
+                return null; //not implemented
             }
 
             String pi = urls.parseParameter(template, servletRequest.getRequestURI(), "pi");
@@ -279,13 +268,12 @@ public class AnnotationResource {
 
     /**
      *
-     * @return
+     * @return {@link User}
      */
     public User getUser() {
         UserBean userBean = BeanUtils.getUserBeanFromRequest(servletRequest);
         if (userBean != null) {
-            User user = userBean.getUser();
-            return user;
+            return userBean.getUser();
         }
         return null;
     }

@@ -31,16 +31,21 @@ import org.apache.logging.log4j.LogManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 
-public class DownloadJobTools {
+public final class DownloadJobTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(DownloadJobTools.class);
+    
+    /** Private constructor. */
+    private DownloadJobTools() {
+        //
+    }
 
     /**
      * Delete all jobs and associated files for the given record identifier.
      * 
      * @param pi Record identifier
-     * @return
+     * @return Number of removed jobs
      * @throws DAOException
      * @should delete all finished jobs for record
      */

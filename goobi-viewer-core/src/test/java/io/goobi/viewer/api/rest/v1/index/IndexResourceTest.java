@@ -24,10 +24,10 @@ package io.goobi.viewer.api.rest.v1.index;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_QUERY;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STATISTICS;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,9 +39,9 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -56,7 +56,7 @@ import io.goobi.viewer.solr.SolrConstants;
  * @author florian
  *
  */
-public class IndexResourceTest extends AbstractRestApiTest {
+class IndexResourceTest extends AbstractRestApiTest {
 
     RecordsRequestParameters params = new RecordsRequestParameters();
 
@@ -64,17 +64,17 @@ public class IndexResourceTest extends AbstractRestApiTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        params.offset = 10;
-        params.count = 5;
-        params.jsonFormat = "datecentric";
-        params.randomize = false;
-        params.sortFields = Stream.of(SolrConstants.SORTNUM_YEAR, SolrConstants.LABEL).collect(Collectors.toList());
-        params.sortOrder = "desc";
-        params.query = "DOCSTRCT:picture";
-        params.includeChildHits = false;
+        params.setOffset(10);
+        params.setCount(5);
+        params.setJsonFormat("datecentric");
+        params.setRandomize(false);
+        params.setSortFields(Stream.of(SolrConstants.SORTNUM_YEAR, SolrConstants.LABEL).collect(Collectors.toList()));
+        params.setSortOrder("desc");
+        params.setQuery("DOCSTRCT:picture");
+        params.setIncludeChildHits(false);
 
     }
 
@@ -82,20 +82,20 @@ public class IndexResourceTest extends AbstractRestApiTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testInvalidQuery() throws JsonMappingException, JsonProcessingException {
-        params.sortFields = Stream.of("BLA").collect(Collectors.toList());
+    void testInvalidQuery() throws JsonMappingException, JsonProcessingException {
+        params.setSortFields(Stream.of("BLA").collect(Collectors.toList()));
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
         try (Response response = target(urls.path(INDEX, INDEX_QUERY).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(entity)) {
-            assertEquals("Should return status 400", 400, response.getStatus());
+            assertEquals(400, response.getStatus(), "Should return status 400");
             String jsonString = response.readEntity(String.class);
             ErrorMessage error = mapper.readValue(jsonString, ErrorMessage.class);
             assertEquals(400, error.getStatus());
@@ -103,15 +103,15 @@ public class IndexResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testQuery() {
-        params.count = 4;
-        params.jsonFormat = "recordcentric";
+    void testQuery() {
+        params.setCount(4);
+        params.setJsonFormat("recordcentric");
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
         try (Response response = target(urls.path(INDEX, INDEX_QUERY).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(entity)) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals(200, response.getStatus(), "Should return status 200");
             String jsonString = response.readEntity(String.class);
             JSONObject answer = new JSONObject(jsonString);
             JSONArray array = answer.getJSONArray("docs");
@@ -122,13 +122,13 @@ public class IndexResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testStatistics() {
+    void testStatistics() {
         String url = urls.path(INDEX, INDEX_STATISTICS).build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals(200, response.getStatus(), "Should return status 200");
             String jsonString = response.readEntity(String.class);
             JSONObject json = new JSONObject(jsonString);
             Object count = json.get("count");
@@ -143,7 +143,7 @@ public class IndexResourceTest extends AbstractRestApiTest {
      * @verifies create list correctly
      */
     @Test
-    public void collectFieldInfo_shouldCreateListCorrectly() throws Exception {
+    void collectFieldInfo_shouldCreateListCorrectly() throws Exception {
         List<SolrFieldInfo> result = IndexResource.collectFieldInfo();
         assertFalse(result.isEmpty());
         SolrFieldInfo info = result.get(0);
@@ -151,5 +151,4 @@ public class IndexResourceTest extends AbstractRestApiTest {
         assertTrue(info.isIndexed());
         assertTrue(info.isStored());
     }
-
 }

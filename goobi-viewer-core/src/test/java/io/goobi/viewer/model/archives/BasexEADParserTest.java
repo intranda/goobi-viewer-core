@@ -22,32 +22,32 @@
 package io.goobi.viewer.model.archives;
 
 import org.jdom2.Document;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
 
-public class BasexEADParserTest extends AbstractDatabaseAndSolrEnabledTest {
+class BasexEADParserTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see BasexEADParser#parseEadFile(Document)
      * @verifies parse document correctly
      */
     @Test
-    public void parseEadFile_shouldParseDocumentCorrectly() throws Exception {
+    void parseEadFile_shouldParseDocumentCorrectly() throws Exception {
         // Make sure the XML file has a <collection> element around <ead> (as delivered by BaseX)
         Document doc = XmlTools.readXmlFile("src/test/resources/data/EAD_Export_Tektonik.XML");
-        Assert.assertNotNull(doc);
-        Assert.assertNotNull(doc.getRootElement());
+        Assertions.assertNotNull(doc);
+        Assertions.assertNotNull(doc.getRootElement());
         ArchiveEntry root =
                 new BasexEADParser(null, null)
                         .readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataConfig())
                         .parseEadFile(doc);
-        Assert.assertNotNull(root);
-        Assert.assertEquals(1, root.getSubEntryList().size());
+        Assertions.assertNotNull(root);
+        Assertions.assertEquals(1, root.getSubEntryList().size());
         ArchiveEntry topEntry = root.getSubEntryList().get(0);
-        Assert.assertEquals("1_Tektonik", topEntry.getId());
+        Assertions.assertEquals("1_Tektonik", topEntry.getId());
     }
 }

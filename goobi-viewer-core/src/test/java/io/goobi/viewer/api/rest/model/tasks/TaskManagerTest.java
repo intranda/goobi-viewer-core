@@ -21,22 +21,22 @@
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 
-public class TaskManagerTest extends AbstractDatabaseEnabledTest {
-    
+class TaskManagerTest extends AbstractDatabaseEnabledTest {
+
     /**
      * @see TaskManager#deleteExpiredDownloadTickets()
      * @verifies delete all expired tickets
      */
     @Test
-    public void deleteExpiredDownloadTickets_shouldDeleteAllExpiredTickets() throws Exception {
-        Assert.assertNotNull(DataManager.getInstance().getDao().getDownloadTicket(1L));
-        Assert.assertEquals(1, TaskManager.deleteExpiredDownloadTickets());
-        Assert.assertNull(DataManager.getInstance().getDao().getDownloadTicket(1L));
+    void deleteExpiredDownloadTickets_shouldDeleteAllExpiredTickets() throws Exception {
+        Assertions.assertNotNull(DataManager.getInstance().getDao().getDownloadTicket(1L));
+        Assertions.assertEquals(1, TaskManager.deleteExpiredDownloadTickets());
+        Assertions.assertNull(DataManager.getInstance().getDao().getDownloadTicket(1L));
     }
 }

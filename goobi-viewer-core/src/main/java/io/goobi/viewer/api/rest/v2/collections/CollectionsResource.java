@@ -53,7 +53,7 @@ public class CollectionsResource {
     private final String solrField;
 
     @Inject
-    ApiUrls urls;
+    private ApiUrls urls;
 
     public CollectionsResource(
             @Parameter(description = "Name of the SOLR field the collection is based on. Typically 'DC'") @PathParam("field") String solrField,
@@ -76,9 +76,9 @@ public class CollectionsResource {
     @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
     public Collection3 getCollection(
             @Parameter(
-                    description = "Name of the collection. Must be a value of the SOLR field the collection is based on") @PathParam("collection") String collectionName)
+                    description = "Name of the collection. Must be a value of the SOLR field the collection is based on")
+            @PathParam("collection") String collectionName)
             throws PresentationException, IndexUnreachableException {
         return new CollectionBuilder(urls).build(this.solrField, collectionName);
     }
-
 }

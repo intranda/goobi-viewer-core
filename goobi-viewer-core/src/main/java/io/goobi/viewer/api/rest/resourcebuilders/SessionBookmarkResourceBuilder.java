@@ -72,7 +72,9 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
 
     /**
      * Returns the session stored bookmark list, creating a new empty one if needed
-     *
+     * 
+     * @param id
+     * @param urls
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -93,6 +95,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     /**
      * Adds an item with the given pi to the session stored bookmark list, creating a new bookmark list if needed
      *
+     * @param id
      * @param pi a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -105,7 +108,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
 
     /**
      * Adds an item with the given pi, logid and page number to the session stored bookmark list, creating a new bookmark list if needed
-     *
+     * 
+     * @param id
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
      * @param pageString a {@link java.lang.String} object.
@@ -133,6 +137,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return object contains "success:
      * true"
      *
+     * @param id
      * @param pi a {@link java.lang.String} object.
      * @return an object containing the boolean property 'success', detailing wether the operation was successfull
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -148,6 +153,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * property "success: false" if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return
      * object contains "success: true"
      *
+     * @param id
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
      * @param pageString a {@link java.lang.String} object.
@@ -210,8 +216,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
             throws DAOException, IOException, RestApiException {
         try {
             Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), false);
-            boolean success = DataManager.getInstance().getBookmarkManager().isInBookmarkList(item, session);
-            return success;
+            return DataManager.getInstance().getBookmarkManager().isInBookmarkList(item, session);
         } catch (PresentationException e) {
             //no such document
             return false;
@@ -230,8 +235,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     public Integer countSessionBookmarks() throws RestApiException {
-        int count = DataManager.getInstance().getBookmarkManager().getBookmarkList(session).map(bs -> bs.getItems().size()).orElse(0);
-        return count;
+        return DataManager.getInstance().getBookmarkManager().getBookmarkList(session).map(bs -> bs.getItems().size()).orElse(0);
     }
 
     /**
@@ -248,7 +252,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
         BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(id);
 
         if (bookmarkList.isIsPublic()) {
-            logger.trace("Serving public bookmark list " + id);
+            logger.trace("Serving public bookmark list {}", id);
             return bookmarkList;
         }
         throw new RestApiException("Bookmark list " + id + " is not publicly accessible", HttpServletResponse.SC_FORBIDDEN);
@@ -256,7 +260,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
 
     /**
      * @param shareKey
-     * @return
+     * @return {@link BookmarkList} that match shareKey
      * @throws DAOException If an error occured talking to the database
      * @throws RestApiException If no user session exists or if the user has no access to the requested list
      * @throws ContentNotFoundException If no list with the given key was found
@@ -268,15 +272,12 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
             throw new ContentNotFoundException("No bookmarklist found for key " + shareKey);
         }
         if (bookmarkList.hasShareKey()) {
-            logger.trace("Serving shared bookmark list " + bookmarkList.getId());
+            logger.trace("Serving shared bookmark list {}", bookmarkList.getId());
             return bookmarkList;
         }
         throw new RestApiException("Bookmark list " + bookmarkList.getId() + " is not publicly accessible", HttpServletResponse.SC_FORBIDDEN);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#createCollection(io.goobi.viewer.model.bookmark.BookmarkList, io.goobi.viewer.api.rest.AbstractApiUrlManager)
-     */
     @Override
     public Collection2 createCollection(BookmarkList list, AbstractApiUrlManager urls) {
         String url = urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST_IIIF).params("-", list.getId()).build();
@@ -325,7 +326,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#getAsCollection(java.lang.Long, io.goobi.viewer.api.rest.AbstractApiUrlManager)
+     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#getAsCollection(java.lang.Long, AbstractApiUrlManager)
      */
     @Override
     public Collection2 getAsCollection(Long id, AbstractApiUrlManager urls) throws DAOException, RestApiException, IOException {

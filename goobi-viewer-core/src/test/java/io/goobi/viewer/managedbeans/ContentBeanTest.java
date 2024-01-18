@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -40,7 +40,7 @@ import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
  * @author florian
  *
  */
-public class ContentBeanTest extends AbstractDatabaseEnabledTest {
+class ContentBeanTest extends AbstractDatabaseEnabledTest {
 
     private static final String PI = "PI_1";
 
@@ -48,7 +48,7 @@ public class ContentBeanTest extends AbstractDatabaseEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -57,14 +57,14 @@ public class ContentBeanTest extends AbstractDatabaseEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     //Needs annotations in test system
     @Test
-    public void testLoadALlAnnotations() throws PresentationException, IndexUnreachableException, DAOException {
+    void testLoadALlAnnotations() throws PresentationException, IndexUnreachableException, DAOException {
         ContentBean bean = new ContentBean();
         List<DisplayUserGeneratedContent> ugcList = bean.getUserGeneratedContentsForDisplay(PI);
         assertEquals(2, ugcList.size());

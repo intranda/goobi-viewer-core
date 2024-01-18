@@ -21,17 +21,17 @@
  */
 package io.goobi.viewer.model.security.authentication.model;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class BibliothecaAuthenticationRequestTest {
+class BibliothecaAuthenticationRequestTest {
 
     /**
      * @see BibliothecaAuthenticationRequest#normalizeUsername(String)
      * @verifies normalize value correctly
      */
     @Test
-    public void normalizeUsername_shouldNormalizeValueCorrectly() throws Exception {
-        Assert.assertEquals("00001234567", BibliothecaAuthenticationRequest.normalizeUsername("1234567"));
+    void normalizeUsername_shouldNormalizeValueCorrectly() throws Exception {
+        Assertions.assertEquals("00001234567", BibliothecaAuthenticationRequest.normalizeUsername("1234567"));
     }
 }

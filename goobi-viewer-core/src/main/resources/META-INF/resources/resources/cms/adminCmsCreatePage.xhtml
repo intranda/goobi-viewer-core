@@ -350,6 +350,14 @@
 										<div class="admin__content-component-overlay-wrapper">
 											<div data-target="saveChangedPage"
 												class="admin__content-component-overlay-bar">
+												
+                                                <!-- CANCEL -->
+                                                <ui:fragment rendered="#{cmsPageEditBean.selectedPage.id != null}">
+                                                    <a id="cancelPageEdit" class="btn btn--cancel"
+                                                        href="#{navigationHelper.getPageUrl('adminCmsOverview')}">
+                                                        #{msg.cancel} </a>
+                                                </ui:fragment>
+												
 												<!-- SHOW -->
 												<ui:fragment rendered="#{cmsPageEditBean.selectedPage.id != null}">
 													<a id="showPageButton" class="btn btn--default"

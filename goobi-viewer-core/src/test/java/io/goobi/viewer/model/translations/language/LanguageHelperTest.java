@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.translations.language;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
@@ -30,14 +30,14 @@ import io.goobi.viewer.AbstractTest;
  * @author Florian Alpers
  *
  */
-public class LanguageHelperTest extends AbstractTest {
+class LanguageHelperTest extends AbstractTest {
 
     @Test
-    public void test() {
+    void test() {
         LanguageHelper helper = new LanguageHelper("src/test/resources/languages.xml");
-        Assert.assertNotNull(helper.getLanguage("fra"));
-        Assert.assertNotNull(helper.getLanguage("fre"));
-        Assert.assertNotNull(helper.getLanguage("fr"));
+        Assertions.assertNotNull(helper.getLanguage("fra"));
+        Assertions.assertNotNull(helper.getLanguage("fre"));
+        Assertions.assertNotNull(helper.getLanguage("fr"));
     }
 
 }

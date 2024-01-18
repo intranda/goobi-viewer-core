@@ -49,7 +49,7 @@ public class MessagesTranslation extends Translation {
      */
     public MessagesTranslation(String key, String value, String language) {
         super(language, key, value);
-        this.id = 0l; //just to prevent nullpointer
+        this.id = 0L; //just to prevent nullpointer
     }
 
     /**

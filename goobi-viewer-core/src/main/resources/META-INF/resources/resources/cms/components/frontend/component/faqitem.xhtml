@@ -35,10 +35,54 @@
 								#{cc.attrs.component.getContent('title').text}
 						</a> 
 						<a class="fa fa-link card-header__fragment-link"
-							href="#card-#{cc.attrs.component.order}"
-							data-collapse-show="#collapse-#{cc.attrs.component.order}"
-							aria-label="#{msg.aria__label_faq_direct_link}"> 
+							href="#card-#{cc.attrs.component.order}" data-copy="copyFAQanchor"
+							aria-label="#{msg.aria__label_faq_direct_link}" title="#{msg.copyUrlDone}"> 
 						</a>
+						<script>
+						$('[data-copy="copyFAQanchor"]').on('click', function(e) {
+							  e.preventDefault();
+							
+							  var $url = $(location).attr('href');
+							  var cardNo = $(this).attr('href');
+							  
+					    	  value = ($url + cardNo);
+					    	  
+					    	  var $temp = $("<textarea />");
+					    	  $("body").append($temp);
+					    	  $temp.val(value).select();
+					    	  document.execCommand("copy");
+					    	  $temp.remove();
+					    	  
+						});
+
+						
+						// COPY TO CLIPBOARD TOOLTIP
+						$('[data-copy="copyFAQanchor"]').tooltip({trigger: "manual", placement: "top"}); 
+					
+					    $('[data-copy="copyFAQanchor"]').click(function () {
+					    	// SHOW TOOLTIP
+					    	 $(this).tooltip('show');
+					    	
+							// HIDE TOOLTIP AFTER A SHORT TIME PERIOD
+					        setTimeout(function () {
+					            $('[data-copy="copyFAQanchor"]').tooltip('hide');
+					        }, 1700);
+					
+					    });
+					    
+					    
+					    
+					    	
+// 						    $('[data-copy="copyFAQanchor"]').tooltip({
+// 						      placement: 'top',
+// 						      title: "Click to copy to clipboard",
+// 						      trigger: 'hover'
+// 						    });
+						    
+
+
+	
+						</script>
 					</h2>
 				</div>
 				<div role="region" id="collapse-#{cc.attrs.component.order}"

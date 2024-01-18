@@ -50,7 +50,11 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  *
  * @author Florian Alpers
  */
-public class ViewerPathBuilder {
+public final class ViewerPathBuilder {
+
+    private ViewerPathBuilder() {
+        //
+    }
 
     /**
      * Returns the request path of the given {@code httpRequest} as a {@link io.goobi.viewer.model.urlresolution.ViewerPath}, including information on
@@ -104,37 +108,39 @@ public class ViewerPathBuilder {
      * @param applicationUrl The absolute url of the web-application including the application name ('viewer')
      * @param applicationName The name of the web-application. This is always the last part of the {@code hostUrl}. May be empty
      * @param serviceUrl The complete requested url, optionally including the hostUrl
+     * @param queryString
      * @return A {@link io.goobi.viewer.model.urlresolution.ViewerPath} containing the complete path information
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl, String queryString)
+    public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, final String serviceUrl, String queryString)
             throws DAOException {
-        serviceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", "");
+        String useServiceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", "");
         try {
-            serviceUrl = URLEncoder.encode(serviceUrl, "utf-8").replace("%2F", "/");
+            useServiceUrl = URLEncoder.encode(useServiceUrl, "utf-8").replace("%2F", "/");
         } catch (UnsupportedEncodingException e) {
+            //
         }
 
-        URI servicePath = URI.create(serviceUrl);
+        URI servicePath = URI.create(useServiceUrl);
 
         servicePath = cleanPath(servicePath);
-        String[] pathParts = serviceUrl.split("/");
+        String[] pathParts = useServiceUrl.split("/");
 
         ViewerPath currentPath = new ViewerPath();
         currentPath.setApplicationUrl(applicationUrl);
         currentPath.setApplicationName(applicationName);
         currentPath.setQueryString(queryString);
 
-        if (serviceUrl.matches("cms/\\d+/.*")) {
-            Long cmsPageId = Long.parseLong(pathParts[1].toString());
+        if (useServiceUrl.matches("cms/\\d+/.*")) {
+            Long cmsPageId = Long.parseLong(pathParts[1]);
             CMSPage page = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
             if (page != null) {
                 currentPath.setCmsPage(page);
             }
             currentPath.setPagePath(URI.create(pathParts[0] + "/" + pathParts[1]));
             currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
-        } else if (serviceUrl.matches("campaigns/\\d+/.*")) {
-            Long campaignId = Long.parseLong(pathParts[1].toString());
+        } else if (useServiceUrl.matches("campaigns/\\d+/.*")) {
+            Long campaignId = Long.parseLong(pathParts[1]);
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
             if (campaign != null) {
                 currentPath.setCampaign(campaign);
@@ -244,13 +250,14 @@ public class ViewerPathBuilder {
      * @param string a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public static boolean startsWith(URI uri, String string) {
-        if (uri != null) {
-            if (uri.toString().endsWith("/") && !string.endsWith("/")) {
-                string = string + "/";
+    public static boolean startsWith(URI uri, final String string) {
+        if (uri != null && string != null) {
+            String s = string;
+            if (uri.toString().endsWith("/") && !s.endsWith("/")) {
+                s = s + "/";
             }
             String[] uriParts = uri.toString().split("/");
-            String[] stringParts = string.toString().split("/");
+            String[] stringParts = s.split("/");
             if (uriParts.length < stringParts.length) {
                 //no match if the uri contains less path parts than the string to match
                 return false;
@@ -264,25 +271,30 @@ public class ViewerPathBuilder {
                 }
             }
             return match;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
      * @param uriPart
-     * @return
+     * @return {@link String}
      */
-    private static String cleanPathPart(String uriPart) {
-        if (uriPart.startsWith("!")) {
-            uriPart = uriPart.substring(1);
-        } else if (uriPart.startsWith("%21")) {
+    private static String cleanPathPart(final String uriPart) {
+        String ret = uriPart;
+        if (ret.startsWith("!")) {
+            ret = ret.substring(1);
+        } else if (ret.startsWith("%21")) {
             //escaped '!'
-            uriPart = uriPart.substring(3);
+            ret = ret.substring(3);
         }
-        return uriPart;
+        return ret;
     }
 
+    /**
+     * 
+     * @param uri
+     * @return {@link URI}
+     */
     private static URI cleanPath(URI uri) {
         String string = uri.toString();
         string = cleanPathPart(string);
@@ -296,12 +308,20 @@ public class ViewerPathBuilder {
      *
      * @param master a {@link java.net.URI} object.
      * @param slave a {@link java.net.URI} object.
+     * @param fragment
+     * @param query
      * @return a {@link java.net.URI} object.
      */
     public static URI resolve(URI master, URI slave, String fragment, String query) {
         return resolve(master, slave.toString(), fragment, query);
     }
 
+    /**
+     * 
+     * @param master
+     * @param slave
+     * @return a {@link java.net.URI} object
+     */
     public static URI resolve(URI master, String slave) {
         return resolve(master, slave, "", "");
     }
@@ -313,45 +333,41 @@ public class ViewerPathBuilder {
      *
      * @param master a {@link java.net.URI} object.
      * @param slave a {@link java.lang.String} object.
+     * @param fragment
+     * @param query
      * @return a {@link java.net.URI} object.
      */
-    public static URI resolve(URI master, String slave, String fragment, String query) {
+    public static URI resolve(URI master, final String slave, String fragment, String query) {
         String base = master.toString();
         if (base.endsWith("/")) {
             base = base.substring(0, base.length() - 1);
         }
-        if (StringUtils.isNotBlank(slave) && !slave.endsWith("/")) {
-            slave = slave + "/";
-        }
         if (StringUtils.isBlank(master.toString())) {
-            return URI.create(slave + getFragmentString(fragment) + getQueryString(query));
-        } else {
-            return URI.create(base + "/" + slave + getFragmentString(fragment) + getQueryString(query));
+            return URI.create(StringTools.appendTrailingSlash(slave) + getFragmentString(fragment) + getQueryString(query));
         }
+        return URI.create(base + "/" + slave + getFragmentString(fragment) + getQueryString(query));
     }
 
     /**
      * @param query
-     * @return
+     * @return query with a '?' prefix; empty string if query blank
      */
     private static String getQueryString(String query) {
         if (StringUtils.isBlank(query)) {
             return "";
-        } else {
-            return "?" + query;
         }
+        return "?" + query;
     }
 
     /**
      * @param fragment
-     * @return
+     * @return fragment with a '#' prefix; empty string if fragment blank
      */
     private static String getFragmentString(String fragment) {
         if (StringUtils.isBlank(fragment)) {
             return "";
-        } else {
-            return "#" + fragment;
         }
+        return "#" + fragment;
     }
 
 }

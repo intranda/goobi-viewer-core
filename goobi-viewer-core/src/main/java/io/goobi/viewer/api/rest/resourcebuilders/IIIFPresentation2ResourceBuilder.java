@@ -38,10 +38,10 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.iiif.IIIFUrlResolver;
@@ -79,7 +79,6 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -104,6 +103,18 @@ public class IIIFPresentation2ResourceBuilder {
         this.request = request;
     }
 
+    /**
+     * 
+     * @param pi
+     * @param mode
+     * @return {@link IPresentationModelElement}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     */
     public IPresentationModelElement getManifest(String pi, BuildMode mode) throws PresentationException, IndexUnreachableException,
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         getManifestBuilder().setBuildMode(mode);
@@ -135,6 +146,18 @@ public class IIIFPresentation2ResourceBuilder {
         return manifest;
     }
 
+    /**
+     * 
+     * @param pi
+     * @param logId
+     * @return {@link Range2}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     */
     public Range2 getRange(String pi, String logId) throws PresentationException, IndexUnreachableException,
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         List<StructElement> docs = getStructureBuilder().getDocumentWithChildren(pi);
@@ -147,6 +170,20 @@ public class IIIFPresentation2ResourceBuilder {
         return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
+    /**
+     * 
+     * @param pi
+     * @param buildMode
+     * @param preferedViewName
+     * @return {@link Sequence}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws IllegalRequestException
+     * @throws ContentNotFoundException
+     */
     public Sequence getBaseSequence(String pi, BuildMode buildMode, String preferedViewName)
             throws PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
@@ -169,13 +206,13 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * @param preferedViewName
-     * @return
+     * @param preferredViewName
+     * @return Preferred {@link PageType} for given preferredViewName
      */
-    public PageType getPreferedPageTypeForCanvas(String preferedViewName) {
+    public PageType getPreferedPageTypeForCanvas(String preferredViewName) {
         PageType preferedView = PageType.viewObject;
-        if (StringUtils.isNotBlank(preferedViewName)) {
-            preferedView = PageType.getByName(preferedViewName);
+        if (StringUtils.isNotBlank(preferredViewName)) {
+            preferedView = PageType.getByName(preferredViewName);
             if (preferedView == PageType.other) {
                 preferedView = PageType.viewObject;
             }
@@ -187,7 +224,7 @@ public class IIIFPresentation2ResourceBuilder {
      * 
      * @param pi
      * @param typeName
-     * @return
+     * @return {@link Layer}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws URISyntaxException
@@ -222,7 +259,7 @@ public class IIIFPresentation2ResourceBuilder {
     /**
      * @param pi
      * @param pageNo
-     * @return
+     * @return {@link IPresentationModelElement}
      * @throws ViewerConfigurationException
      * @throws URISyntaxException
      * @throws ContentNotFoundException
@@ -322,6 +359,7 @@ public class IIIFPresentation2ResourceBuilder {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param ignore
+     * @param groupingField
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -347,6 +385,7 @@ public class IIIFPresentation2ResourceBuilder {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
+     * @param ignore
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -360,6 +399,19 @@ public class IIIFPresentation2ResourceBuilder {
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField), ignore);
     }
 
+    /**
+     * 
+     * @param query
+     * @param sortFields
+     * @param first
+     * @param rows
+     * @return List<IPresentationModelElement>
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     */
     public List<IPresentationModelElement> getManifestsForQuery(String query, String sortFields, int first, int rows)
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
@@ -408,8 +460,8 @@ public class IIIFPresentation2ResourceBuilder {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
-     * @param groupingField a solr field by which the collections may be grouped. Included in the response for each {@link BrowseDcElement} to enable
-     *            grouping by client
+     * @param facetField
+     * @param ignore
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.

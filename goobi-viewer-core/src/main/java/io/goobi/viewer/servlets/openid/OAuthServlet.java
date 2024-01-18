@@ -78,7 +78,7 @@ public class OAuthServlet extends HttpServlet {
     /** Constant <code>URL="oauth"</code> */
     public static final String URL = "oauth";
 
-    private static final BCrypt bcrypt = new BCrypt();
+    private static final BCrypt BCRYPT = new BCrypt();
 
     /**
      * This future gets fulfilled once the {@link UserBean} has finished setting up the session and redirecting the request. Completing the request
@@ -145,7 +145,8 @@ public class OAuthServlet extends HttpServlet {
 
         if (redirected != null) {
             try {
-                redirected.get(1, TimeUnit.MINUTES); //redirected has an internal timeout, so this get() should never run into a timeout, but you never know
+                // redirected has an internal timeout, so this get() should never run into a timeout, but you never know
+                redirected.get(1, TimeUnit.MINUTES);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.warn("Waiting for redirect after login unterrupted unexpectedly");
@@ -163,7 +164,7 @@ public class OAuthServlet extends HttpServlet {
      * @param provider
      * @param request
      * @param response
-     * @return
+     * @return true if appropriate provider found in configuration; false otherwise
      * @throws OAuthProblemException
      * @throws OAuthSystemException
      * @throws AuthenticationProviderException
@@ -218,7 +219,6 @@ public class OAuthServlet extends HttpServlet {
         }
 
         return false;
-
     }
 
     /**
@@ -227,7 +227,7 @@ public class OAuthServlet extends HttpServlet {
      * @param oAuthTokenRequest
      * @param request
      * @param response
-     * @return
+     * @return true if authentication successful; false otherwise
      */
     static boolean doGoogle(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest, HttpServletRequest request, HttpServletResponse response) {
         OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
@@ -263,7 +263,7 @@ public class OAuthServlet extends HttpServlet {
      * @param oAuthTokenRequest
      * @param request
      * @param response
-     * @return
+     * @return true if authentication successful; false otherwise
      * @throws OAuthSystemException
      * @throws OAuthProblemException
      */
@@ -302,7 +302,7 @@ public class OAuthServlet extends HttpServlet {
      * 
      * @param email
      * @param password
-     * @return
+     * @return Optional<User>
      * @throws AuthenticationProviderException
      */
     private static Optional<User> loginUser(String email, String password) throws AuthenticationProviderException {
@@ -311,7 +311,7 @@ public class OAuthServlet extends HttpServlet {
                 User user = DataManager.getInstance().getDao().getUserByEmail(email);
                 boolean refused = true;
                 if (user != null && StringUtils.isNotBlank(password) && user.getPasswordHash() != null
-                        && bcrypt.checkpw(password, user.getPasswordHash())) {
+                        && BCRYPT.checkpw(password, user.getPasswordHash())) {
                     refused = false;
                 }
                 return refused ? Optional.empty() : Optional.ofNullable(user);

@@ -38,7 +38,6 @@
 		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
-		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 	</natures>
 	<linkedResources>
 		<link>

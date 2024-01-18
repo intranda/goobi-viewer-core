@@ -21,18 +21,18 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author florian
  *
  */
-public class RequestCountsTest {
+class RequestCountsTest {
 
     @Test
-    public void test_serialize() {
+    void test_serialize() {
         
         SessionRequestCounts counts = new SessionRequestCounts();
         counts.setCount(RequestType.FILE_DOWNLOAD, 4);
@@ -44,7 +44,7 @@ public class RequestCountsTest {
     }
 
     @Test
-    public void test_serialize_empty() {
+    void test_serialize_empty() {
         SessionRequestCounts counts = new SessionRequestCounts();
     
         String s = counts.toJsonArray();
@@ -52,7 +52,7 @@ public class RequestCountsTest {
     }
     
     @Test
-    public void test_serialize_partially_empty() {
+    void test_serialize_partially_empty() {
         SessionRequestCounts counts = new SessionRequestCounts();
         counts.setCount(RequestType.MEDIA_RESOURCE, 3);
 
@@ -61,7 +61,7 @@ public class RequestCountsTest {
     }
     
     @Test
-    public void test_deserialize() {
+    void test_deserialize() {
         String s = "[23,4,3]";
         SessionRequestCounts counts = new SessionRequestCounts(s);
         assertEquals(Long.valueOf(23), counts.getCount(RequestType.RECORD_VIEW));

@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -42,30 +43,45 @@ import io.goobi.viewer.model.viewer.ViewManager;
  */
 public class TocResourceBuilder {
 
-    HttpServletRequest request;
-    HttpServletResponse response;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
 
+    /**
+     * 
+     * @param request
+     * @param response
+     */
     public TocResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
     }
 
+    /**
+     * 
+     * @param pi
+     * @return TOC as {@link String}
+     * @throws ContentNotFoundException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
     public String getToc(String pi)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         try {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request)
                     .isGranted()) {
-                throw new ContentNotFoundException("Resource not found");
+                throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
             }
         } catch (RecordNotFoundException e1) {
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         ViewManager viewManager;
         try {
             viewManager = ViewManager.createViewManager(pi);
         } catch (RecordNotFoundException e) {
-            throw new ContentNotFoundException("Resource not found: " + pi);
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND + ": " + pi);
         }
         TOC toc = new TOC();
         toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(), 1);

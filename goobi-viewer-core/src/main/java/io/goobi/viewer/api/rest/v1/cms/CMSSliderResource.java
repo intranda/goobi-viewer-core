@@ -108,13 +108,16 @@ public class CMSSliderResource {
 
     /**
      * @param categories
-     * @return
+     * @return List<URI>
      */
     private List<URI> getPages(List<String> categories) {
         return categories.stream()
                 .map(this::getCategoryById)
                 .filter(Objects::nonNull)
                 .flatMap(category -> getPagesForCategory(category).stream())
+                .filter(CMSPage::isPublished)
+                //not needed. Slides are sorted in javascript
+                //                .sorted((page1, page2) -> Long.compare(page1.getPageSortingOrElse(0), page2.getPageSortingOrElse(0)))
                 .map(this::getApiUrl)
                 .collect(Collectors.toList());
     }
@@ -151,7 +154,7 @@ public class CMSSliderResource {
 
     /**
      * @param category
-     * @return
+     * @return List<CMSMediaItem>
      */
     private static List<CMSMediaItem> getMediaForCategory(CMSCategory category) {
         try {
@@ -180,14 +183,17 @@ public class CMSSliderResource {
 
     /**
      * @param solrQuery
-     * @return
+     * @param maxResults
+     * @param sortField
+     * @return List<URI>
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private static List<URI> getRecords(String solrQuery, int maxResults, String sortField) throws PresentationException, IndexUnreachableException {
+    private static List<URI> getRecords(final String solrQuery, int maxResults, String sortField)
+            throws PresentationException, IndexUnreachableException {
 
         //limit query to records only
-        solrQuery = "+(" + solrQuery + ") +(ISWORK:* ISANCHOR:*)";
+        String useQuery = "+(" + solrQuery + ") +(ISWORK:* ISANCHOR:*)";
 
         List<URI> manifests = new ArrayList<>();
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
@@ -198,7 +204,7 @@ public class CMSSliderResource {
         List<StringPair> sortFields = StringUtils.isBlank(sortField) ? null : SearchHelper.parseSortString(sortField, null);
         SolrDocumentList solrDocs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(solrQuery, 0, maxResults, sortFields, null, Arrays.asList(SolrConstants.PI))
+                .search(useQuery, 0, maxResults, sortFields, null, Arrays.asList(SolrConstants.PI))
                 .getResults();
         for (SolrDocument doc : solrDocs) {
             String pi = (String) SolrTools.getSingleFieldValue(doc, SolrConstants.PI);
@@ -210,8 +216,8 @@ public class CMSSliderResource {
     }
 
     /**
-     * @param collections
-     * @return
+     * @param collectionNames
+     * @return List<URI>
      */
     private static List<URI> getCollections(List<String> collectionNames) {
         List<URI> collections = new ArrayList<>();

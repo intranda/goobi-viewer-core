@@ -41,6 +41,13 @@ public class ArchiveResource implements Serializable {
     private final LocalDateTime modifiedDate;
     private final Long size;
 
+    /**
+     * 
+     * @param databaseName
+     * @param resourceName
+     * @param modifiedDate
+     * @param size
+     */
     public ArchiveResource(String databaseName, String resourceName, String modifiedDate, String size) {
         this.databaseName = databaseName;
         this.resourceName = resourceName;
@@ -77,7 +84,7 @@ public class ArchiveResource implements Serializable {
     }
 
     /**
-     * @return
+     * @return Combination of databaseName and resourceName
      */
     public String getCombinedName() {
         return databaseName + " - " + resourceName.replaceAll("(?i)\\.xml", "");
@@ -88,26 +95,15 @@ public class ArchiveResource implements Serializable {
     }
 
     public String getDatabaseId() {
-        return databaseName;
-        //        try {
-        //            return URLEncoder.encode(databaseName, "utf-8");
-        //        } catch (UnsupportedEncodingException e) {
-        //            throw new IllegalStateException("'utf-8' is unsupported encoding");
-        //        }
+        return getDatabaseName();
     }
 
     public String getResourceId() {
-        //        try {
-        String id = resourceName.replaceAll("(?i)\\.xml", "");
-        return id;
-        //        } catch (UnsupportedEncodingException e) {
-        //            throw new IllegalStateException("'utf-8' is unsupported encoding");
-        //        }
+        return resourceName.replaceAll("(?i)\\.xml", "");
     }
 
     @Override
     public String toString() {
         return getCombinedName();
     }
-
 }

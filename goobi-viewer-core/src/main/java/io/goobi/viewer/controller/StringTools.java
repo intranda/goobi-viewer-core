@@ -62,7 +62,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  * StringTools class.
  * </p>
  */
-public class StringTools {
+public final class StringTools {
 
     private static final Logger logger = LogManager.getLogger(StringTools.class);
 
@@ -100,7 +100,7 @@ public class StringTools {
     }
 
     /**
-     * Escpae url for submitted form data. A space is encoded as '+'.
+     * Escape url for submitted form data. A space is encoded as '+'.
      *
      * @param string String to encode
      * @return URL-encoded string
@@ -118,19 +118,20 @@ public class StringTools {
      * @param escapeCriticalUrlCharacters If true, slashes etc. will be manually escaped prior to URL encoding
      * @return URL-encoded string
      */
-    public static String encodeUrl(String string, boolean escapeCriticalUrlCharacters) {
+    public static String encodeUrl(final String string, boolean escapeCriticalUrlCharacters) {
         if (StringUtils.isEmpty(string)) {
             return string;
         }
 
+        String ret = string;
         if (escapeCriticalUrlCharacters) {
-            string = BeanUtils.escapeCriticalUrlChracters(string);
+            ret = BeanUtils.escapeCriticalUrlChracters(ret);
         }
         try {
-            return URLEncoder.encode(string, StringTools.DEFAULT_ENCODING);
+            return URLEncoder.encode(ret, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            logger.error("Unable to encode '{}' with {}", string, StringTools.DEFAULT_ENCODING);
-            return string;
+            logger.error("Unable to encode '{}' with {}", ret, StringTools.DEFAULT_ENCODING);
+            return ret;
         }
     }
 
@@ -142,21 +143,21 @@ public class StringTools {
      * @param string a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String decodeUrl(String string) {
+    public static String decodeUrl(final String string) {
         if (string == null) {
             return string;
         }
 
-        //    string = string.replace("%", "\\u");
         String encodedString = string;
+        String ret = null;
         try {
             do {
-                string = encodedString;
-                encodedString = URLDecoder.decode(string, "utf-8");
-            } while (!encodedString.equals(string));
-            return unescapeCriticalUrlChracters(string);
+                ret = encodedString;
+                encodedString = URLDecoder.decode(ret, "utf-8");
+            } while (!encodedString.equals(ret));
+            return unescapeCriticalUrlChracters(ret);
         } catch (NullPointerException | UnsupportedEncodingException e) {
-            return string;
+            return ret;
         }
     }
 
@@ -258,20 +259,21 @@ public class StringTools {
      * @should remove line breaks correctly
      * @should remove html line breaks correctly
      */
-    public static String removeLineBreaks(String s, String replaceWith) {
+    public static String removeLineBreaks(String s, final String replaceWith) {
         if (s == null) {
             throw new IllegalArgumentException("s may not be null");
         }
 
-        if (replaceWith == null) {
-            replaceWith = "";
+        String replacement = replaceWith;
+        if (replacement == null) {
+            replacement = "";
         }
 
-        return s.replace("\r\n", replaceWith)
-                .replace("\n", replaceWith)
-                .replace("\r", replaceWith)
-                .replace("<br>", replaceWith)
-                .replaceAll("<br\\s*/>", replaceWith);
+        return s.replace("\r\n", replacement)
+                .replace("\n", replacement)
+                .replace("\r", replacement)
+                .replace("<br>", replacement)
+                .replaceAll("<br\\s*/>", replacement);
     }
 
     /**
@@ -330,13 +332,14 @@ public class StringTools {
      * @param text the text to escape
      * @return the escaped string
      */
-    public static String escapeHtml(String text) {
+    public static String escapeHtml(final String text) {
         if (text == null) {
             return null;
         }
-        text = StringEscapeUtils.escapeHtml4(text);
-        text = text.replace("\r\n", "<br/>").replace("\r", "<br/>").replace("\n", "<br/>");
-        return text;
+
+        String ret = StringEscapeUtils.escapeHtml4(text);
+        ret = ret.replace("\r\n", StringConstants.HTML_BR).replace("\r", StringConstants.HTML_BR).replace("\n", StringConstants.HTML_BR);
+        return ret;
     }
 
     /**
@@ -347,18 +350,19 @@ public class StringTools {
      * @param s a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String escapeQuotes(String s) {
-        if (s != null) {
-            s = s.replaceAll("(?<!\\\\)'", "\\\\'");
-            s = s.replaceAll("(?<!\\\\)\"", "\\\\\"");
+    public static String escapeQuotes(final String s) {
+        String ret = s;
+        if (ret != null) {
+            ret = ret.replaceAll("(?<!\\\\)'", "\\\\'");
+            ret = ret.replaceAll("(?<!\\\\)\"", "\\\\\"");
         }
-        return s;
+        return ret;
     }
 
     /**
      *
      * @param input
-     * @return
+     * @return Charset of the given input
      */
     public static String getCharset(String input) {
         CharsetDetector cd = new CharsetDetector();
@@ -424,25 +428,25 @@ public class StringTools {
      * </p>
      *
      * @param value a {@link java.lang.String} object.
-     * @should replace characters correctly
      * @param escapePercentCharacters a boolean.
      * @return a {@link java.lang.String} object.
+     * @should replace characters correctly
      */
-    public static String escapeCriticalUrlChracters(String value, boolean escapePercentCharacters) {
+    public static String escapeCriticalUrlChracters(final String value, boolean escapePercentCharacters) {
         if (value == null) {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        value = value.replace("/", SLASH_REPLACEMENT)
+        String ret = value.replace("/", SLASH_REPLACEMENT)
                 .replace("\\", BACKSLASH_REPLACEMENT)
                 .replace("|", PIPE_REPLACEMENT)
                 .replace("%7C", PIPE_REPLACEMENT)
                 .replace("?", QUESTION_MARK_REPLACEMENT)
                 .replace("+", PLUS_REPLACEMENT);
         if (escapePercentCharacters) {
-            value = value.replace("%", PERCENT_REPLACEMENT);
+            ret = ret.replace("%", PERCENT_REPLACEMENT);
         }
-        return value;
+        return ret;
     }
 
     /**
@@ -507,12 +511,12 @@ public class StringTools {
      * @return Same HTML document but with Chrome-compatible CSS class names
      * @should rename classes correctly
      */
-    public static String renameIncompatibleCSSClasses(String html) {
+    public static String renameIncompatibleCSSClasses(final String html) {
         if (html == null) {
             return null;
         }
 
-        Pattern p = Pattern.compile("\\.([0-9]+[A-Za-z]+) \\{.*\\}");
+        Pattern p = Pattern.compile("\\.(\\d+[A-Za-z]+) \\{.*\\}");
         Matcher m = p.matcher(html);
         Map<String, String> replacements = new HashMap<>();
         // Collect bad class names
@@ -532,13 +536,14 @@ public class StringTools {
             }
         }
         // Replace in HTML
+        String ret = html;
         if (!replacements.isEmpty()) {
             for (Entry<String, String> entry : replacements.entrySet()) {
-                html = html.replace(entry.getKey(), entry.getValue());
+                ret = ret.replace(entry.getKey(), entry.getValue());
             }
         }
 
-        return html;
+        return ret;
     }
 
     /**
@@ -668,8 +673,8 @@ public class StringTools {
     }
 
     /**
-     * @param viewerHomePath
-     * @return
+     * @param path
+     * @return Given path with a trailing slash, if not yet present
      */
     public static String appendTrailingSlash(String path) {
         if (StringUtils.isBlank(path)) {
@@ -687,6 +692,13 @@ public class StringTools {
         } else {
             return path;
         }
+    }
+
+    public static String removeTrailingSlashes(String path) {
+        if (path != null && (path.endsWith("/") || path.endsWith("\\"))) {
+            return removeTrailingSlashes(path.substring(0, path.length() - 1));
+        }
+        return path;
     }
 
     /**
@@ -709,6 +721,7 @@ public class StringTools {
     /**
      *
      * @param values All values to check
+     * @param regex
      * @return List of values that match <code>regex</code>
      * @should return all matching values
      */
@@ -748,9 +761,10 @@ public class StringTools {
         }
     }
 
-    public static int[] getIntegerRange(String range) {
+    public static int[] getIntegerRange(final String inRange) {
         int page;
         int page2 = Integer.MAX_VALUE;
+        String range = inRange;
         if (range.contains("-")) {
             boolean firstMinus = false;
             boolean secondMinus = false;
@@ -810,16 +824,15 @@ public class StringTools {
             return v1.compareTo(v2);
         }
     }
-    
+
     public static String convertToSingleWord(String text, int maxLength, String whitespaceReplacement) {
         String replaced = text
                 .replaceAll("\\s", whitespaceReplacement)
                 .replaceAll("[^a-zA-Z0-9" + whitespaceReplacement + "]", "");
-        if(replaced.length() > maxLength) {            
+        if (replaced.length() > maxLength) {
             return replaced.substring(0, maxLength);
-        } else {
-            return replaced;
         }
+        return replaced;
     }
 
 }

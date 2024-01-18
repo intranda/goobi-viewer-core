@@ -23,21 +23,21 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
-public class MetadataElementTest {
+class MetadataElementTest {
 
     /**
      * @see MetadataElement#isSkip()
      * @verifies return true if metadata list empty
      */
     @Test
-    public void isSkip_shouldReturnTrueIfMetadataListEmpty() throws Exception {
+    void isSkip_shouldReturnTrueIfMetadataListEmpty() throws Exception {
         MetadataElement me = new MetadataElement();
-        Assert.assertTrue(me.isSkip());
+        Assertions.assertTrue(me.isSkip());
 
     }
 
@@ -46,12 +46,12 @@ public class MetadataElementTest {
      * @verifies return true if all metadata fields blank
      */
     @Test
-    public void isSkip_shouldReturnTrueIfAllMetadataFieldsBlank() throws Exception {
+    void isSkip_shouldReturnTrueIfAllMetadataFieldsBlank() throws Exception {
         MetadataElement me = new MetadataElement();
         me.getMetadataList().add(new Metadata());
-        Assert.assertTrue(me.getMetadataList().get(0).isBlank());
-        Assert.assertFalse(me.getMetadataList().get(0).isHideIfOnlyMetadataField());
-        Assert.assertTrue(me.isSkip());
+        Assertions.assertTrue(me.getMetadataList().get(0).isBlank());
+        Assertions.assertFalse(me.getMetadataList().get(0).isHideIfOnlyMetadataField());
+        Assertions.assertTrue(me.isSkip());
     }
 
     /**
@@ -59,23 +59,23 @@ public class MetadataElementTest {
      * @verifies return true if all metadata fields hidden
      */
     @Test
-    public void isSkip_shouldReturnTrueIfAllMetadataFieldsHidden() throws Exception {
+    void isSkip_shouldReturnTrueIfAllMetadataFieldsHidden() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
             md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
         {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
-        Assert.assertTrue(me.isSkip());
+        Assertions.assertTrue(me.isSkip());
     }
 
     /**
@@ -83,23 +83,23 @@ public class MetadataElementTest {
      * @verifies return false if non hidden metadata fields exist
      */
     @Test
-    public void isSkip_shouldReturnFalseIfNonHiddenMetadataFieldsExist() throws Exception {
+    void isSkip_shouldReturnFalseIfNonHiddenMetadataFieldsExist() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
             md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
         {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
-        Assert.assertFalse(me.isSkip());
+        Assertions.assertFalse(me.isSkip());
     }
 
     /**
@@ -107,13 +107,13 @@ public class MetadataElementTest {
      * @verifies return false if at least one metadata with same type not single string
      */
     @Test
-    public void isDisplayBoxed_shouldReturnFalseIfAtLeastOneMetadataWithSameTypeNotSingleString() throws Exception {
+    void isDisplayBoxed_shouldReturnFalseIfAtLeastOneMetadataWithSameTypeNotSingleString() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
             md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
             md.setSingleString(true);
         }
@@ -121,11 +121,11 @@ public class MetadataElementTest {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
             md.setSingleString(false); // single string false
         }
-        Assert.assertFalse(me.isDisplayBoxed(0));
+        Assertions.assertFalse(me.isDisplayBoxed(0));
     }
 
     /**
@@ -133,13 +133,13 @@ public class MetadataElementTest {
      * @verifies return true if all metadata of same type single string
      */
     @Test
-    public void isDisplayBoxed_shouldReturnTrueIfAllMetadataOfSameTypeSingleString() throws Exception {
+    void isDisplayBoxed_shouldReturnTrueIfAllMetadataOfSameTypeSingleString() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
             md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
             md.setSingleString(true);
         }
@@ -147,12 +147,12 @@ public class MetadataElementTest {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
-            Assert.assertFalse(md.isBlank());
+            Assertions.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
             md.setSingleString(false); // single string false
             md.setType(1); //different type
         }
-        Assert.assertTrue(me.isDisplayBoxed(0));
+        Assertions.assertTrue(me.isDisplayBoxed(0));
     }
 
     /**
@@ -160,10 +160,10 @@ public class MetadataElementTest {
      * @verifies return docstruct type if record
      */
     @Test
-    public void getDocStructTypeLabel_shouldReturnDocstructTypeIfRecord() throws Exception {
+    void getDocStructTypeLabel_shouldReturnDocstructTypeIfRecord() throws Exception {
         MetadataElement me = new MetadataElement();
         me.setDocStructType("manuscript");
-        Assert.assertEquals("manuscript", me.getDocStructTypeLabel());
+        Assertions.assertEquals("manuscript", me.getDocStructTypeLabel());
     }
 
     /**
@@ -171,10 +171,10 @@ public class MetadataElementTest {
      * @verifies return group type if group
      */
     @Test
-    public void getDocStructTypeLabel_shouldReturnGroupTypeIfGroup() throws Exception {
+    void getDocStructTypeLabel_shouldReturnGroupTypeIfGroup() throws Exception {
         MetadataElement me = new MetadataElement();
         me.setDocStructType("_GROUPS");
         me.setGroupType("Series");
-        Assert.assertEquals("Series", me.getDocStructTypeLabel());
+        Assertions.assertEquals("Series", me.getDocStructTypeLabel());
     }
 }

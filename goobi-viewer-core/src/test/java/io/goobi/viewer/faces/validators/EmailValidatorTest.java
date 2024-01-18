@@ -21,22 +21,22 @@
  */
 package io.goobi.viewer.faces.validators;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.faces.validators.EmailValidator;
 
-public class EmailValidatorTest {
+class EmailValidatorTest {
 
     /**
      * @see EmailValidator#validateEmailAddress(String)
      * @verifies match correct email addresses
      */
     @Test
-    public void validateEmailAddress_shouldMatchCorrectEmailAddresses() throws Exception {
-        Assert.assertTrue(EmailValidator.validateEmailAddress("a@b.com"));
-        Assert.assertTrue(EmailValidator.validateEmailAddress("A@B.COM"));
-        Assert.assertTrue(EmailValidator.validateEmailAddress("lord.elsington.hallstingdingdingworth@royal.chamber.of.carpetbaggery.co.uk"));
+    void validateEmailAddress_shouldMatchCorrectEmailAddresses() throws Exception {
+        Assertions.assertTrue(EmailValidator.validateEmailAddress("a@b.com"));
+        Assertions.assertTrue(EmailValidator.validateEmailAddress("A@B.COM"));
+        Assertions.assertTrue(EmailValidator.validateEmailAddress("lord.elsington.hallstingdingdingworth@royal.chamber.of.carpetbaggery.co.uk"));
     }
 
     /**
@@ -44,8 +44,8 @@ public class EmailValidatorTest {
      * @verifies match entire email address only
      */
     @Test
-    public void validateEmailAddress_shouldMatchEntireEmailAddressOnly() throws Exception {
-        Assert.assertFalse(EmailValidator.validateEmailAddress("a@b.com###"));
+    void validateEmailAddress_shouldMatchEntireEmailAddressOnly() throws Exception {
+        Assertions.assertFalse(EmailValidator.validateEmailAddress("a@b.com###"));
     }
 
     /**
@@ -53,7 +53,7 @@ public class EmailValidatorTest {
      * @verifies not match invalid addresses
      */
     @Test
-    public void validateEmailAddress_shouldNotMatchInvalidAddresses() throws Exception {
-        Assert.assertFalse(EmailValidator.validateEmailAddress("blup"));
+    void validateEmailAddress_shouldNotMatchInvalidAddresses() throws Exception {
+        Assertions.assertFalse(EmailValidator.validateEmailAddress("blup"));
     }
 }

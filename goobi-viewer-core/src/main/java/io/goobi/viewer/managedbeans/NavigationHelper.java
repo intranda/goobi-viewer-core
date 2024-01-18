@@ -247,7 +247,7 @@ public class NavigationHelper implements Serializable {
      * Produce an identifier string for a cms page to use for identifying the page in the navigation bar
      *
      * @param cmsPage
-     * @return
+     * @return {@link String}
      */
     public static String getCMSPageNavigationId(CMSPage cmsPage) {
         try {
@@ -256,10 +256,15 @@ public class NavigationHelper implements Serializable {
                 return staticPage.get().getPageName();
             }
         } catch (DAOException e) {
+            //
         }
         return "cms_" + String.format("%04d", cmsPage.getId());
     }
 
+    /**
+     * 
+     * @param cmsPage
+     */
     public void setCurrentPage(CMSPage cmsPage) {
         setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
     }
@@ -596,10 +601,9 @@ public class NavigationHelper implements Serializable {
      * Sets the currently selected content view name.
      *
      * @param currentView a {@link java.lang.String} object.
-     * @throws DAOException
      * @should set value correctly
      */
-    public void setCurrentView(String currentView) throws DAOException {
+    public void setCurrentView(String currentView) {
         logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
         statusMap.put(KEY_CURRENT_VIEW, currentView);
         setCurrentPage(currentView);
@@ -661,10 +665,10 @@ public class NavigationHelper implements Serializable {
     public List<String> getSupportedLanguages() {
         List<String> ret = new ArrayList<>();
 
-        Iterable<Locale> locales = () -> getSupportedLocales();
+        Iterable<Locale> locales = this::getSupportedLocales;
         StreamSupport.stream(locales.spliterator(), false)
                 //                .peek(language -> logger.trace("Adding sort field: {}", language))
-                .forEach(locale -> ret.add(locale.getLanguage()));
+                .forEach(loc -> ret.add(loc.getLanguage()));
 
         return ret;
     }
@@ -676,7 +680,7 @@ public class NavigationHelper implements Serializable {
      */
     public String getSupportedLanguagesAsJson() {
 
-        Iterable<Locale> locales = () -> getSupportedLocales();
+        Iterable<Locale> locales = this::getSupportedLocales;
         String ret = StreamSupport.stream(locales.spliterator(), false)
                 .map(lang -> "\"" + lang + "\"")
                 .collect(Collectors.joining(","));
@@ -703,9 +707,7 @@ public class NavigationHelper implements Serializable {
                 bb.resetTerms();
                 try {
                     bb.searchTerms();
-                } catch (PresentationException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (IndexUnreachableException e) {
+                } catch (IndexUnreachableException | PresentationException e) {
                     logger.error(e.getMessage(), e);
                 } catch (RedirectException e) {
                     // TODO
@@ -713,7 +715,8 @@ public class NavigationHelper implements Serializable {
             }
         }
 
-        // Also set ActiveDocumentBean.selectedRecordLanguage, so that multilingual metadata values etc. are displayed in the selected language as well
+        // Also set ActiveDocumentBean.selectedRecordLanguage, so that multilingual metadata
+        // values etc. are displayed in the selected language as well
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
             adb.setSelectedRecordLanguage(inLocale);
@@ -776,7 +779,7 @@ public class NavigationHelper implements Serializable {
 
     /**
      *
-     * @return
+     * @return Appropriate date/time pattern for the current locale
      */
     public String getDateTimePattern() {
         if (locale == null) {
@@ -936,15 +939,15 @@ public class NavigationHelper implements Serializable {
      */
     public String getCurrentPrettyUrl() {
         Optional<HttpServletRequest> request = Optional.ofNullable(FacesContext.getCurrentInstance())
-                .map(context -> context.getExternalContext())
+                .map(FacesContext::getExternalContext)
                 .map(ExternalContext::getRequest)
                 .map(o -> (HttpServletRequest) o);
 
         Optional<URL> requestUrl = request
-                .map(r -> PrettyContext.getCurrentInstance(r))
+                .map(PrettyContext::getCurrentInstance)
                 .map(PrettyContext::getRequestURL);
 
-        return request.map(r -> ServletUtils.getServletPathWithHostAsUrlFromRequest(r)).orElse("")
+        return request.map(ServletUtils::getServletPathWithHostAsUrlFromRequest).orElse("")
                 + requestUrl.map(URL::toURL).orElse("");
     }
 
@@ -968,7 +971,6 @@ public class NavigationHelper implements Serializable {
      * @should set value correctly
      */
     public void setMenuPage(String page) {
-        logger.debug("Menu Page ist: " + page);
         statusMap.put(KEY_MENU_PAGE, page);
     }
 
@@ -1004,10 +1006,7 @@ public class NavigationHelper implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getSubThemeDiscriminatorValue() throws IndexUnreachableException {
-
-        String ret = StringUtils.isNotEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)) ? statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) : "-";
-        //         logger.trace("getSubThemeDiscriminatorValue: {}", ret);
-        return ret;
+        return StringUtils.isNotEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)) ? statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) : "-";
     }
 
     /**
@@ -1136,6 +1135,7 @@ public class NavigationHelper implements Serializable {
      * @return the reading mode url
      * @deprecated renamed to fullscreen
      */
+    @Deprecated
     public String getReadingModeUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFullscreen.getName();
     }
@@ -1351,6 +1351,7 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @param activeSearchType a int.
+     * @param cmsPage
      * @return a {@link java.lang.String} object.
      */
     public String getSearchUrl(int activeSearchType, CMSPage cmsPage) {
@@ -1367,6 +1368,8 @@ public class NavigationHelper implements Serializable {
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
+            case SearchHelper.SEARCH_TYPE_TERMS:
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.term.getName();
             default:
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
         }
@@ -1419,24 +1422,26 @@ public class NavigationHelper implements Serializable {
      * Adds a link to the breadcrumbs using the given URL. Can be called from XHTML.
      *
      * @param linkName a {@link java.lang.String} object.
-     * @param linkWeight a int.
      * @param url a {@link java.lang.String} object.
+     * @param linkWeight a int.
      */
-    public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
+    public void addStaticLinkToBreadcrumb(String linkName, final String url, int linkWeight) {
         if (linkWeight < 0) {
             return;
         }
-        PageType page = PageType.getByName(url);
+
+        String useUrl = url;
+        PageType page = PageType.getByName(useUrl);
         if (page != null && !page.equals(PageType.other)) {
-            url = getUrl(page);
+            useUrl = getUrl(page);
         }
-        LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
+        LabeledLink newLink = new LabeledLink(linkName, useUrl, linkWeight);
         breadcrumbBean.updateBreadcrumbs(newLink);
     }
 
     /**
      * @param page
-     * @return
+     * @return Absolute URL for the given page type
      */
     private String getUrl(PageType page) {
         return getApplicationUrl() + page.getName();
@@ -1526,8 +1531,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getSessionIPAddress() {
-        String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
-        return ipAddress;
+        return NetTools.getIpAddress(BeanUtils.getRequest());
     }
 
     public Optional<String> getSessionId() {
@@ -1658,6 +1662,8 @@ public class NavigationHelper implements Serializable {
             case TAGS_PAGE:
             case SEARCH_TERM_LIST_PAGE:
                 return true;
+            default:
+                break;
         }
 
         return false;
@@ -1765,6 +1771,11 @@ public class NavigationHelper implements Serializable {
         return getExitUrl(getCurrentPageType());
     }
 
+    /**
+     * 
+     * @param pageType
+     * @return Appropriate exit URL
+     */
     public String getExitUrl(PageType pageType) {
         String exitView = DataManager.getInstance().getConfiguration().getPageTypeExitView(pageType);
         if (StringUtils.isNotBlank(exitView) && exitView.startsWith(StringConstants.PREFIX_PRETTY)) {
@@ -1776,20 +1787,26 @@ public class NavigationHelper implements Serializable {
         }
     }
 
-    public String resolvePrettyUrl(String prettyId, Object... parameters) {
-
-        if (parameters == null || parameters.length == 0) {
+    /**
+     * 
+     * @param prettyId
+     * @param parameters
+     * @return Resolved Pretty URL
+     */
+    public String resolvePrettyUrl(String prettyId, final Object... parameters) {
+        Object[] useParams = parameters;
+        if (useParams == null || useParams.length == 0) {
             List<PathParameter> pathParams =
                     PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getPathParameters();
-            parameters = new Object[pathParams.size()];
+            useParams = new Object[pathParams.size()];
             int index = 0;
             for (PathParameter param : pathParams) {
                 Object value = BeanUtils.getManagedBeanValue(param.getExpression().getELExpression());
-                parameters[index++] = (value != null && StringUtils.isNotBlank(value.toString())) ? value : "-";
+                useParams[index++] = (value != null && StringUtils.isNotBlank(value.toString())) ? value : "-";
             }
         }
 
-        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(parameters);
+        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(useParams);
         return mappedUrl.toString();
     }
 
@@ -1918,7 +1935,7 @@ public class NavigationHelper implements Serializable {
      * the resource exists neither in theme nor core. An Exception will be thrown
      *
      * @param path The resource path relative to the first "resources" directory
-     * @return
+     * @return Resource path
      */
     public String getResource(String path) {
         FileResourceManager manager = DataManager.getInstance().getFileResourceManager();
@@ -1930,8 +1947,7 @@ public class NavigationHelper implements Serializable {
                 return ret;
             }
             //            } else if(Files.exists(corePath)) {
-            String ret = manager.getCoreResourceURI(path).toString();
-            return ret;
+            return manager.getCoreResourceURI(path).toString();
             //            } else {
             //                return "";
         }
@@ -1974,7 +1990,7 @@ public class NavigationHelper implements Serializable {
      * 
      * @param path
      * @param language
-     * @return
+     * @return {@link ViewerPath}
      */
     private static ViewerPath setupRandomSearchSeed(ViewerPath path, String language) {
         String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(language);
@@ -2031,6 +2047,11 @@ public class NavigationHelper implements Serializable {
         return page;
     }
 
+    /**
+     * 
+     * @param keys
+     * @return JSON with translations for the given message keys
+     */
     public String getTranslationsAsJson(List<String> keys) {
         Locale locale = getLocale();
         JSONObject json = new JSONObject();
@@ -2048,5 +2069,4 @@ public class NavigationHelper implements Serializable {
     public String getAsId(String text) {
         return StringTools.convertToSingleWord(text, MAX_HTML_ID_LENGTH, "_");
     }
-    
 }

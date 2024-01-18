@@ -256,7 +256,7 @@ public abstract class AbstractConfiguration {
      * @param config
      * @param altConfig
      * @param inPath
-     * @return
+     * @return List<HierarchicalConfiguration<ImmutableNode>>
      */
     protected static List<HierarchicalConfiguration<ImmutableNode>> getLocalConfigurationsAt(HierarchicalConfiguration<ImmutableNode> config,
             HierarchicalConfiguration<ImmutableNode> altConfig, String inPath) {

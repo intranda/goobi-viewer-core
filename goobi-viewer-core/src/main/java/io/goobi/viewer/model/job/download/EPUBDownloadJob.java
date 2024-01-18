@@ -213,7 +213,6 @@ public class EPUBDownloadJob extends DownloadJob {
      *
      * @param pi a {@link java.lang.String} object.
      * @param downloadIdentifier a {@link java.lang.String} object.
-     * @param targetFolderPath a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
@@ -231,10 +230,10 @@ public class EPUBDownloadJob extends DownloadJob {
         Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pi + ".xml");
 
         TaskManagerEPUBRequest requestObject = new TaskManagerEPUBRequest();
-        requestObject.pi = pi;
-        requestObject.goobiId = downloadIdentifier;
-        requestObject.sourceDir = metsPath.toString();
-        requestObject.language = CmsBean.getCurrentLocale().getLanguage();
+        requestObject.setPi(pi);
+        requestObject.setGoobiId(downloadIdentifier);
+        requestObject.setSourceDir(metsPath.toString());
+        requestObject.setLanguage(CmsBean.getCurrentLocale().getLanguage());
 
         try {
             Response response = postJobRequest(taskManagerUrl, requestObject);

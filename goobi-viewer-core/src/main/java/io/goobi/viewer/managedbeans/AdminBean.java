@@ -97,11 +97,11 @@ public class AdminBean implements Serializable {
     private static String translationGroupsEditorSession = null;
 
     @Inject
-    UserBean userBean;
+    private UserBean userBean;
 
     @Inject
     @Push
-    PushContext hotfolderFileCount;
+    private PushContext hotfolderFileCount;
 
     private TableDataProvider<User> lazyModelUsers;
 
@@ -109,7 +109,7 @@ public class AdminBean implements Serializable {
     private UserGroup currentUserGroup = null;
     private Role currentRole = null;
     /** List of UserRoles to persist or delete */
-    Map<UserRole, String> dirtyUserRoles = new HashMap<>();
+    private Map<UserRole, String> dirtyUserRoles = new HashMap<>();
     private UserRole currentUserRole = null;
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
@@ -152,13 +152,15 @@ public class AdminBean implements Serializable {
         lazyModelUsers = new TableDataProvider<>(new TableDataSource<User>() {
 
             @Override
-            public List<User> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+            public List<User> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder, Map<String, String> filters) {
                 logger.trace("getEntries<User>, {}-{}", first, first + pageSize);
                 try {
-                    if (StringUtils.isEmpty(sortField)) {
-                        sortField = "id";
+                    String useSortField = sortField;
+                    SortOrder useSortOrder = sortOrder;
+                    if (StringUtils.isBlank(useSortField)) {
+                        useSortField = "id";
                     }
-                    return DataManager.getInstance().getDao().getUsers(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    return DataManager.getInstance().getDao().getUsers(first, pageSize, useSortField, useSortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }
@@ -228,9 +230,8 @@ public class AdminBean implements Serializable {
     public String saveUserAction(User user, String returnPage) throws DAOException {
         if (this.saveUserAction(user)) {
             return returnPage;
-        } else {
-            return "";
         }
+        return "";
     }
 
     public String resetUserAction(User user, String returnPage) {
@@ -240,9 +241,10 @@ public class AdminBean implements Serializable {
 
     /**
      * <p>
-     * saveUserAction.
+     * Saves the given use. Attention: Used by regular users editing their own profile as well.
      * </p>
-     *
+     * 
+     * @param user User to save
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -270,7 +272,10 @@ public class AdminBean implements Serializable {
         if (user.getId() != null) {
             // Existing user
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
-                if (currentPassword != null && !new BCrypt().checkpw(currentPassword, user.getPasswordHash())) {
+                // Only match current password if not an admin
+                // TODO Current logic will omit current password check for superuser accounts even when operating outside the admin backend
+                if (!activeUser.isSuperuser() && activeUser.getId().equals(user.getId()) && currentPassword != null
+                        && !new BCrypt().checkpw(currentPassword, user.getPasswordHash())) {
                     Messages.error("user_currentPasswordWrong");
                     return false;
                 }
@@ -333,6 +338,7 @@ public class AdminBean implements Serializable {
      *
      * @param user User to be deleted
      * @param deleteContributions If true, all content created by this user will also be deleted
+     * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should delete all user public content correctly
      * @should anonymize all user public content correctly
@@ -407,7 +413,8 @@ public class AdminBean implements Serializable {
 
     /**
      * Persists changes in <code>currentUserGroup</code>.
-     *
+     * 
+     * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveUserGroupAction() throws DAOException {
@@ -679,7 +686,8 @@ public class AdminBean implements Serializable {
      * <p>
      * saveIpRangeAction.
      * </p>
-     *
+     * 
+     * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveIpRangeAction() throws DAOException {
@@ -755,7 +763,7 @@ public class AdminBean implements Serializable {
     /**
      * Returns the user ID of <code>currentUser/code>.
      *
-     * return <code>currentUser.id</code> if loaded and has ID; null if not
+     * @return <code>currentUser.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentUserId() {
         if (currentUser != null && currentUser.getId() != null) {
@@ -800,7 +808,7 @@ public class AdminBean implements Serializable {
     /**
      * Returns the user ID of <code>currentUserGroup/code>.
      *
-     * return <code>currentUserGroup.id</code> if loaded and has ID; null if not
+     * @return <code>currentUserGroup.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentUserGroupId() {
         if (currentUserGroup != null && currentUserGroup.getId() != null) {
@@ -840,6 +848,15 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentRole(Role currentRole) {
         this.currentRole = currentRole;
+    }
+
+    /**
+     * Getter for unit tests.
+     * 
+     * @return the dirtyUserRoles
+     */
+    Map<UserRole, String> getDirtyUserRoles() {
+        return dirtyUserRoles;
     }
 
     /**
@@ -889,7 +906,7 @@ public class AdminBean implements Serializable {
     /**
      * Returns the user ID of <code>currentIpRange/code>.
      *
-     * return <code>currentIpRange.id</code> if loaded and has ID; null if not
+     * @return <code>currentIpRange.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentIpRangeId() {
         if (currentIpRange != null && currentIpRange.getId() != null) {
@@ -1183,7 +1200,7 @@ public class AdminBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return Number of configured translation grouns
      */
     public long getConfiguredTranslationGroupsCount() {
         return DataManager.getInstance()
@@ -1356,7 +1373,7 @@ public class AdminBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return Index of currentTranslationGroup in the list of configured groups
      */
     public int getCurrentTranslationGroupId() {
         synchronized (TRANSLATION_LOCK) {
@@ -1409,7 +1426,7 @@ public class AdminBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return true if translations are locked by a different user; false otherwise
      */
     public boolean isTranslationLocked() {
         return translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId());
@@ -1449,7 +1466,7 @@ public class AdminBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return Number of queued records in hotfolder
      */
     public int getHotfolderFileCount() {
         return DataManager.getInstance().getHotfolderFileCount();

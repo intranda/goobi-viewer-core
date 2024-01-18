@@ -21,18 +21,18 @@
  */
 package io.goobi.viewer.dao.update;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author florian
  *
  */
-public class CMSMediaUpdateTest {
+class CMSMediaUpdateTest {
 
     byte[] bytes = new byte[] {-84, -19, 0, 5, 115, 114, 0, 12, 106, 97, 118, 97, 46, 110, 101, 116, 46, 85, 82, 73, -84, 1, 120, 46, 67, -98, 73, -85, 3, 0, 1, 76, 0, 6, 115, 116, 114, 105, 110, 103, 116, 0, 18, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 59, 120, 112, 116, 0, 36, 104, 116, 116, 112, 58, 47, 47, 100, 105, 103, 105, 116, 97, 108, 46, 122, 108, 98, 46, 100, 101, 47, 118, 105, 101, 119, 101, 114, 47, 99, 109, 115, 47, 56, 57, 47, 120};
     String expected = "http://digital.zlb.de/viewer/cms/89/";
@@ -55,12 +55,12 @@ public class CMSMediaUpdateTest {
     };
 
     @Test
-    public void testReadBlob() {
+    void testReadBlob() {
         assertEquals(expected, new CMSMediaUpdate().parseUrl(bytes));
     }
 
     @Test
-    public void testReadString() {
+    void testReadString() {
         for (int sample = 0; sample < stringSamples.length; sample++) {
             String blob = stringSamples[sample][0];
             String expected = stringSamples[sample][1];

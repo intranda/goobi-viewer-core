@@ -29,10 +29,10 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,7 +56,7 @@ public abstract class AbstractRestApiTest extends JerseyTest {
     protected ObjectMapper mapper = new ObjectMapper();
     protected ApiUrls urls = new ApiUrls("");
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
@@ -65,7 +65,7 @@ public abstract class AbstractRestApiTest extends JerseyTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         DATA_FRAMEWORK.setUp();
@@ -78,13 +78,13 @@ public abstract class AbstractRestApiTest extends JerseyTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         DATA_FRAMEWORK.tearDown();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.tearDownClass();
     }

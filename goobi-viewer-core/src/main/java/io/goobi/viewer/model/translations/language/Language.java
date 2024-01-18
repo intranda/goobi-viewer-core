@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.translations.language;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 /**
@@ -28,7 +29,9 @@ import java.util.Locale;
  * Language class.
  * </p>
  */
-public class Language implements Comparable<Language> {
+public class Language implements Comparable<Language>, Serializable {
+
+    private static final long serialVersionUID = 688690972248321229L;
 
     /**
      * language code according to iso 639-2/B (based on English names)
@@ -120,7 +123,7 @@ public class Language implements Comparable<Language> {
      * @return the language code according to iso 639-2/B
      */
     public String getIsoCode() {
-        return isoCode_639_2_B;
+        return getIsoCode639_2B();
     }
 
     /**
@@ -142,7 +145,7 @@ public class Language implements Comparable<Language> {
      * @return the language code according to iso 639-1
      */
     public String getIsoCodeOld() {
-        return isoCode_639_1;
+        return getIsoCode639_1();
     }
 
     /**
@@ -259,18 +262,24 @@ public class Language implements Comparable<Language> {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Language other = (Language) obj;
         if (isoCode_639_2_B == null) {
-            if (other.isoCode_639_2_B != null)
+            if (other.isoCode_639_2_B != null) {
                 return false;
-        } else if (!isoCode_639_2_B.equals(other.isoCode_639_2_B))
+            }
+        } else if (!isoCode_639_2_B.equals(other.isoCode_639_2_B)) {
             return false;
+        }
+
         return true;
     }
 }

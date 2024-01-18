@@ -37,7 +37,9 @@ import org.apache.logging.log4j.LogManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.BaseXException;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.archives.ArchiveManager.DatabaseState;
@@ -83,16 +85,19 @@ public class ArchiveBean implements Serializable {
     public void initializeArchiveTree(String selectedEntryId) {
 
         if (getCurrentArchive() != null) {
-            this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
-            this.databaseLoaded = this.archiveTree != null;
-            this.searchString = "";
-            if (this.archiveTree != null) {
+            try {
+                this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
+                this.databaseLoaded = true;
+                this.searchString = "";
                 this.archiveTree.resetSearch();
+                if (StringUtils.isNotBlank(selectedEntryId)) {
+                    this.setSelectedEntryId(selectedEntryId);
+                }
+            } catch (ArchiveException e) {
+                logger.error("Error initializing archive tree: {}", e.getMessage());
+                Messages.error("Error initializing archive tree: " + e.getMessage());
+                this.databaseLoaded = false;
             }
-        }
-        //load selected entry
-        if (isDatabaseLoaded() && StringUtils.isNotBlank(selectedEntryId)) {
-            this.setSelectedEntryId(selectedEntryId);
         }
     }
 
@@ -110,7 +115,7 @@ public class ArchiveBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return the archiveTree
      * @throws BaseXException
      */
     public ArchiveTree getArchiveTree() {
@@ -164,7 +169,7 @@ public class ArchiveBean implements Serializable {
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
      *
      * @param identifier Entry identifier
-     * @param List of entries An empty list if the identified node has no ancestors or doesn't exist
+     * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {
         return archiveManager.getArchiveHierarchyForIdentifier(getCurrentArchive(), identifier);
@@ -173,7 +178,7 @@ public class ArchiveBean implements Serializable {
     /**
      *
      * @param entry
-     * @return
+     * @return empty string
      */
     public String selectEntryAction(ArchiveEntry entry) {
         if (entry == null || getArchiveTree() == null) {
@@ -187,10 +192,9 @@ public class ArchiveBean implements Serializable {
 
     /**
      *
-     * @return
-     * @throws BaseXException
+     * @return empty string
      */
-    public String searchAction() throws BaseXException {
+    public String searchAction() {
         logger.trace("searchAction: {}", searchString);
         search(true, true);
 
@@ -202,9 +206,8 @@ public class ArchiveBean implements Serializable {
      *
      * @param resetSelectedEntry If true, selected entry will be set to null
      * @param collapseAll If true, all elements will be collapsed before expanding path to search hits
-     * @throws BaseXException
      */
-    void search(boolean resetSelectedEntry, boolean collapseAll) throws BaseXException {
+    void search(boolean resetSelectedEntry, boolean collapseAll) {
 
         if (!isDatabaseLoaded()) {
             logger.warn("Archive not loaded, cannot search.");
@@ -256,7 +259,7 @@ public class ArchiveBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return ID of the selected entry
      */
     public String getSelectedEntryId() {
         if (getArchiveTree() == null || getArchiveTree().getSelectedEntry() == null) {
@@ -272,32 +275,33 @@ public class ArchiveBean implements Serializable {
      * @param id Entry ID
      * @throws BaseXException
      */
-    public void setSelectedEntryId(String id) {
+    public void setSelectedEntryId(final String id) {
         logger.trace("setSelectedEntryId: {}", id);
         if (!isDatabaseLoaded()) {
             return;
         }
 
+        String localId = id;
         // Select root element if no ID given
-        if (StringUtils.isBlank(id)) {
-            id = "";
+        if (StringUtils.isBlank(localId)) {
+            localId = "";
         }
-        if ("".equals(id)) {
+        if ("".equals(localId)) {
             getArchiveTree().setSelectedEntry(null);
             return;
         }
         // Requested entry is already selected
-        if (getArchiveTree().getSelectedEntry() != null && getArchiveTree().getSelectedEntry().getId().equals(id)) {
+        if (getArchiveTree().getSelectedEntry() != null && getArchiveTree().getSelectedEntry().getId().equals(localId)) {
             return;
         }
 
         // Find entry with given ID in the tree
-        ArchiveEntry result = getArchiveTree().getEntryById(id);
+        ArchiveEntry result = getArchiveTree().getEntryById(localId);
         if (result != null) {
             getArchiveTree().setSelectedEntry(result);
             result.expandUp();
         } else {
-            logger.debug("Entry not found: {}", id);
+            logger.debug("Entry not found: {}", localId);
             getArchiveTree().setSelectedEntry(getArchiveTree().getRootElement());
         }
 
@@ -324,7 +328,14 @@ public class ArchiveBean implements Serializable {
      * @return the databaseState
      */
     public DatabaseState getDatabaseState() {
-        return isDatabaseLoaded() ? DatabaseState.ARCHIVE_TREE_LOADED : archiveManager.getDatabaseState();
+        if (isDatabaseLoaded()) {
+            return DatabaseState.ARCHIVE_TREE_LOADED;
+        } else if (archiveManager.isInErrorState()) {
+            return archiveManager.getDatabaseState();
+        } else {
+            archiveManager.updateArchiveList();
+            return archiveManager.getDatabaseState();
+        }
     }
 
     public boolean isDatabaseLoaded() {

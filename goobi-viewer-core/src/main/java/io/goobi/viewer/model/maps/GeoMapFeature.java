@@ -24,7 +24,6 @@ package io.goobi.viewer.model.maps;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -35,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue.ValuePair;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 
@@ -128,6 +128,14 @@ public class GeoMapFeature {
         this.pageNo = pageNo;
     }
 
+    public Integer getPageNo() {
+        return pageNo;
+    }
+
+    public void setPageNo(Integer pageNo) {
+        this.pageNo = pageNo;
+    }
+
     /**
      * @return the json
      */
@@ -194,27 +202,31 @@ public class GeoMapFeature {
             properties.put("page", this.pageNo);
         }
         if (!this.entities.isEmpty()) {
-            JSONArray ents = new JSONArray();
-            properties.put("entities", ents);
-            for (MetadataContainer entity : this.entities) {
-                JSONObject jsonMetadata = new JSONObject();
-                jsonMetadata.put("title", JsonTools.getAsObjectForJson(entity.getLabel()));
-                ents.put(jsonMetadata);
-                for (Entry<String, List<IMetadataValue>> entry : entity.getMetadata().entrySet()) {
-                    String name = entry.getKey();
-                    if (name != null) {
-                        List<IMetadataValue> values = entry.getValue();
-                        JSONArray array = new JSONArray();
-                        for (IMetadataValue value : values) {
-                            array.put(JsonTools.getAsObjectForJson(value));
-                        }
-                        jsonMetadata.put(name, array);
-                    }
-                }
-            }
+            addEntities(properties);
         }
         properties.put("count", this.count);
         return object;
+    }
+
+    public void addEntities(JSONObject properties) {
+        JSONArray ents = new JSONArray();
+        properties.put("entities", ents);
+        for (MetadataContainer entity : this.entities) {
+            JSONObject jsonMetadata = new JSONObject();
+            jsonMetadata.put("title", JsonTools.getAsObjectForJson(entity.getLabel()));
+            ents.put(jsonMetadata);
+            for (Entry<String, List<IMetadataValue>> entry : entity.getMetadata().entrySet()) {
+                String name = entry.getKey();
+                if (name != null) {
+                    List<IMetadataValue> values = entry.getValue();
+                    JSONArray array = new JSONArray();
+                    for (IMetadataValue value : values) {
+                        array.put(JsonTools.getAsObjectForJson(value));
+                    }
+                    jsonMetadata.put(name, array);
+                }
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -255,6 +267,6 @@ public class GeoMapFeature {
     }
 
     private String getIndentifyingString(IMetadataValue md) {
-        return md.getValues().stream().map(pair -> pair.getValue()).distinct().collect(Collectors.joining());
+        return md.getValues().stream().map(ValuePair::getValue).distinct().collect(Collectors.joining());
     }
 }

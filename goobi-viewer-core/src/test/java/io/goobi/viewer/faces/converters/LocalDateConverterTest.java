@@ -21,21 +21,21 @@
  */
 package io.goobi.viewer.faces.converters;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.Collections;
 
 import javax.faces.component.UIComponent;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
  * @author florian
  *
  */
-public class LocalDateConverterTest {
+class LocalDateConverterTest {
 
     private static final LocalDate DATE = LocalDate.of(2021, 12, 24);
 
@@ -49,7 +49,7 @@ public class LocalDateConverterTest {
 
 
     @Test
-    public void testGerman() {
+    void testGerman() {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_GERMAN));
         LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_GERMAN);
@@ -57,7 +57,7 @@ public class LocalDateConverterTest {
     }
 
     @Test
-    public void testEnglish() {
+    void testEnglish() {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_ENGLISH));
         LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_ENGLISH);
@@ -65,7 +65,7 @@ public class LocalDateConverterTest {
     }
 
     @Test
-    public void testGeneric() {
+    void testGeneric() {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_GENERIC));
         LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_GENERIC);

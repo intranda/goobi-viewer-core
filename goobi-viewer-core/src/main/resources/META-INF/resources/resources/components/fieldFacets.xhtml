@@ -21,6 +21,7 @@
 						<h3><span>#{msg[cc.attrs.field.concat('_DD')]}</span></h3>
 
 						<!-- FILTER FACETS -->
+						<ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(cc.attrs.field)}">
 						<div class="field-facets__filter">
 							<input type="text" id="collectionFacetsFilter" tabindex="-1"
 								class="field-facets__filter-input -no-outline"
@@ -32,6 +33,7 @@
 								<i class="fa fa-search" aria-hidden="true"></i>
 							</button>
 						</div>
+						</ui:fragment>
 
 						<ul>
 							<!-- AVAILABLE FACETS -->

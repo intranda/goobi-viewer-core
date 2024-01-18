@@ -37,8 +37,11 @@ var adminJS = ( function() {
             console.log( 'adminJS.init' );
             console.log( '##############################' );
         }
-        //Initialize sticky elements for admin pages
+        // Initialize sticky elements for admin pages
         viewerJS.stickyElements.init({initAdmin:true});
+
+		// Initialize copy to clipboard scripts for admin pages
+		viewerJS.clipboard.init();
     };
 
     return admin;

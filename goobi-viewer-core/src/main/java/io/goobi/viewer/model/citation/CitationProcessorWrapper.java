@@ -41,6 +41,8 @@ public class CitationProcessorWrapper implements Serializable {
     private final CitationDataProvider citationItemDataProvider = new CitationDataProvider();
 
     /**
+     * 
+     * @param style
      * @return the citationProcessor
      * @throws IOException
      * @should create citation processor correctly

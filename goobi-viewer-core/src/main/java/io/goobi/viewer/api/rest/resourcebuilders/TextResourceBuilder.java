@@ -32,11 +32,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,13 +48,13 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.ocr.tei.TEIBuilder;
 import de.intranda.digiverso.ocr.tei.convert.AbstractTEIConvert;
@@ -68,6 +71,7 @@ import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -87,7 +91,6 @@ public class TextResourceBuilder {
 
     private static final Logger logger = LogManager.getLogger(TextResourceBuilder.class);
 
-    private static final String RESOURCE_NOT_FOUND = "Resource not found";
     private static final String EXCEPTION_NO_DOCUMENT_FOUND = "No document found with pi ";
 
     /**
@@ -110,7 +113,7 @@ public class TextResourceBuilder {
     /**
      * 
      * @param pi
-     * @return
+     * @return {@link StreamingOutput}
      * @throws IOException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -118,25 +121,27 @@ public class TextResourceBuilder {
      */
     public StreamingOutput getFulltextAsZip(String pi)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException {
+        logger.trace("getFulltextAsZip: {}", pi);
         String filename = pi + "_plaintext.zip";
-        String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
-        String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder();
-        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
-        if (files.isEmpty()) {
-            File tempFolder = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_fulltext_" + System.currentTimeMillis());
-            tempFolder.mkdir();
-            Map<Path, String> map = this.getFulltextMap(pi);
-            List<Path> tempFiles = new ArrayList<>();
-            for (Entry<Path, String> entry : map.entrySet()) {
-                String text = entry.getValue();
-                File tempFile = new File(tempFolder, FilenameUtils.getBaseName(entry.getKey().getFileName().toString()) + ".txt");
-                FileUtils.write(tempFile, text, StandardCharsets.UTF_8.name());
-                tempFiles.add(tempFile.toPath());
-            }
-            tempFiles.sort((f1, f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
-            return writeZipFile(tempFiles, filename);
+        //        String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
+        //        String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder();
+        //        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
+        //        if (files.isEmpty()) {
+        // Fallback if no plaintext files found
+        File tempFolder = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_fulltext_" + System.currentTimeMillis());
+        tempFolder.mkdir();
+        Map<Path, String> map = this.getFulltextMap(pi);
+        List<Path> tempFiles = new ArrayList<>();
+        for (Entry<Path, String> entry : map.entrySet()) {
+            String text = entry.getValue();
+            File tempFile = new File(tempFolder, FilenameUtils.getBaseName(entry.getKey().getFileName().toString()) + ".txt");
+            FileUtils.write(tempFile, text, StandardCharsets.UTF_8.name());
+            tempFiles.add(tempFile.toPath());
         }
-        return writeZipFile(files, filename);
+        tempFiles.sort((f1, f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
+        return writeZipFile(tempFiles, filename);
+        //        }
+        //        return writeZipFile(files, filename);
 
     }
 
@@ -180,7 +185,7 @@ public class TextResourceBuilder {
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
         if (file == null || !Files.isRegularFile(file)) {
-            throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         try {
@@ -190,7 +195,7 @@ public class TextResourceBuilder {
             return new StringPair(alto, charset);
         } catch (FileNotFoundException e) {
             logger.debug(e.getMessage());
-            throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new PresentationException("Error reading resource");
@@ -201,7 +206,7 @@ public class TextResourceBuilder {
      * 
      * @param pi
      * @param filename
-     * @return
+     * @return Plain text extracted from TEI
      * @throws PresentationException
      * @throws ContentLibException
      * @throws IndexUnreachableException
@@ -237,7 +242,7 @@ public class TextResourceBuilder {
      * 
      * @param pi
      * @param langCode
-     * @return
+     * @return TEI document as {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws IOException
@@ -269,7 +274,7 @@ public class TextResourceBuilder {
 
             Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
             if (fulltexts.isEmpty()) {
-                throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+                throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
             }
 
             TEIBuilder builder = new TEIBuilder();
@@ -292,14 +297,14 @@ public class TextResourceBuilder {
 
         }
 
-        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
     }
 
     /**
      * 
      * @param pi
      * @param langCode
-     * @return
+     * @return {@link StreamingOutput}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws IOException
@@ -327,7 +332,7 @@ public class TextResourceBuilder {
 
         Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
         if (fulltexts.isEmpty()) {
-            throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         TEIBuilder builder = new TEIBuilder();
@@ -360,7 +365,7 @@ public class TextResourceBuilder {
      *
      * @param pi
      * @param langCode
-     * @return
+     * @return CMDI document as {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws ContentNotFoundException
@@ -382,7 +387,7 @@ public class TextResourceBuilder {
             }
         }
 
-        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
     }
 
     public String getContentAsText(String contentFolder, String pi, String fileName)
@@ -399,7 +404,7 @@ public class TextResourceBuilder {
             }
         }
 
-        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
     }
 
     /**
@@ -439,51 +444,77 @@ public class TextResourceBuilder {
                 }
             }
         }
-        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
 
     }
 
     /**
-     * <p>
-     * getFulltext.
-     * </p>
+     * Collects full-text file paths and content in a map. Priority is given to files from plaintext resources, with missing files being stuffed with
+     * converted ALTO.
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should prioritize plaintext files over alto
      */
     public Map<java.nio.file.Path, String> getFulltextMap(String pi) throws IOException, PresentationException, IndexUnreachableException {
-        Map<java.nio.file.Path, String> fileMap;
+        Map<java.nio.file.Path, String> ret = new HashMap<>();
         List<java.nio.file.Path> fulltextFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt");
 
+        Map<java.nio.file.Path, String> fileMapFromPlaintext = null;
         if (!fulltextFiles.isEmpty()) {
-            fileMap = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
+            logger.debug("Collecting plaintext files from {}", fulltextFiles.get(0).getParent().toAbsolutePath());
+            fileMapFromPlaintext = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
                 try {
                     return FileTools.getStringFromFile(p.toFile(), StringTools.DEFAULT_ENCODING);
                 } catch (IOException e) {
-                    logger.error("Error reading file " + p, e);
+                    logger.error("Error reading file {}", p, e);
                     return "";
                 }
             }));
-        } else {
-            List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
-                    DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
-            fileMap = altoFiles.stream()
+        }
+
+        Map<java.nio.file.Path, String> fileMapFromAlto = null;
+        List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
+                DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
+        if (!altoFiles.isEmpty()) {
+            logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
+            fileMapFromAlto = altoFiles.stream()
                     .collect(Collectors.toMap(
                             p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")),
                             p -> {
                                 try {
                                     return ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
                                 } catch (IOException e) {
-                                    logger.error("Error reading file " + p, e);
+                                    logger.error("Error reading file {}", p, e);
                                     return "";
                                 }
                             }));
         }
-        return fileMap;
+
+        // Add collected plaintext files
+        final Set<String> fileNames = new HashSet<>();
+        if (fileMapFromPlaintext != null && !fileMapFromPlaintext.isEmpty()) {
+            for (Entry<Path, String> entry : fileMapFromPlaintext.entrySet()) {
+                ret.put(entry.getKey(), entry.getValue());
+                fileNames.add(entry.getKey().getFileName().toString());
+                logger.trace("Added {} from plain text", entry.getKey());
+            }
+        }
+
+        // Add text files converted from ALTO. Only add files whose name wasn't already collected from plain text resources.
+        if (fileMapFromAlto != null && !fileMapFromAlto.isEmpty()) {
+            for (Entry<Path, String> entry : fileMapFromAlto.entrySet()) {
+                if (!fileNames.contains(entry.getKey().getFileName().toString())) {
+                    ret.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -563,7 +594,7 @@ public class TextResourceBuilder {
         Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.LABEL))
                 .map(SolrTools::getAsString)
                 .map(Title::new)
-                .ifPresent(title -> header.setTitle(title));
+                .ifPresent(header::setTitle);
 
         List<String> authors = Optional.ofNullable(solrDoc.getFieldValues("MD_AUTHOR"))
                 .orElse(Collections.emptyList())
@@ -582,7 +613,7 @@ public class TextResourceBuilder {
         Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.PI))
                 .map(SolrTools::getAsString)
                 .map(Identifier::new)
-                .ifPresent(id -> header.addIdentifier(id));
+                .ifPresent(header::addIdentifier);
         return header;
     }
 
@@ -657,6 +688,7 @@ public class TextResourceBuilder {
      * </p>
      *
      * @param pi a {@link java.lang.String} object.
+     * @param langCode
      * @return a {@link java.util.List} object.
      */
     public List<java.nio.file.Path> getTEIFiles(String pi, String langCode) {
@@ -703,7 +735,7 @@ public class TextResourceBuilder {
     public java.nio.file.Path getCMDIFile(String pi, String langCode) throws IOException, PresentationException, IndexUnreachableException {
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = null;
-        logger.trace("CMDI: {}", cmdiPath.toAbsolutePath().toString());
+        logger.trace("CMDI: {}", cmdiPath.toAbsolutePath());
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
@@ -755,7 +787,7 @@ public class TextResourceBuilder {
      * 
      * @param contentMap
      * @param filename
-     * @return
+     * @return {@link StreamingOutput}
      * @throws ContentLibException
      */
     private static StreamingOutput writeZipFile(Map<Path, String> contentMap, String filename) throws ContentLibException {
@@ -791,7 +823,7 @@ public class TextResourceBuilder {
      * 
      * @param files
      * @param filename
-     * @return
+     * @return {@link StreamingOutput}
      * @throws ContentLibException
      */
     private static StreamingOutput writeZipFile(List<Path> files, String filename) throws ContentLibException {
@@ -828,7 +860,7 @@ public class TextResourceBuilder {
      * @param converter
      * @param input
      * @param identifier
-     * @return
+     * @return Converted input
      * @throws UncheckedPresentationException
      */
     private static String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {

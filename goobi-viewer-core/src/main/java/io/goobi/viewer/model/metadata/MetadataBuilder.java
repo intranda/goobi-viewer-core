@@ -57,14 +57,26 @@ public class MetadataBuilder {
         this(metadata.getMetadata());
     }
 
+    /**
+     * 
+     * @param doc
+     */
     public MetadataBuilder(SolrDocument doc) {
         this(MetadataContainer.createMetadataEntity(doc));
     }
 
+    /**
+     * 
+     * @param metadata
+     */
     public MetadataBuilder(ComplexMetadata metadata) {
         this(metadata.getMetadata());
     }
 
+    /**
+     * 
+     * @param values
+     */
     public MetadataBuilder(Map<String, List<IMetadataValue>> values) {
         this.values = values;
     }
@@ -77,7 +89,7 @@ public class MetadataBuilder {
      * 
      * @param config
      * @param metadata
-     * @return
+     * @return {@link IMetadataValue}
      */
     private static IMetadataValue createFromConfig(Metadata config, Map<String, List<IMetadataValue>> metadata) {
         IMetadataValue title = new MultiLanguageMetadataValue();
@@ -124,7 +136,7 @@ public class MetadataBuilder {
      * @param param
      * @param keyValue
      * @param altKeyValue
-     * @return
+     * @return {@link IMetadataValue}
      */
     public static IMetadataValue getDateFieldValue(MetadataParameter param, IMetadataValue keyValue, IMetadataValue altKeyValue) {
         IMetadataValue value = new MultiLanguageMetadataValue();

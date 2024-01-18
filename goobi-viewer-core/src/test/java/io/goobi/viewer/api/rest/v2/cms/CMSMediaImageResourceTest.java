@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.api.rest.v2.cms;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
@@ -37,12 +37,12 @@ import io.goobi.viewer.api.rest.v2.ApiUrls;
  * @author florian
  *
  */
-public class CMSMediaImageResourceTest extends AbstractRestApiTest {
+class CMSMediaImageResourceTest extends AbstractRestApiTest {
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -50,13 +50,13 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testCallImageUrlCapitalSuffix() {
+    void testCallImageUrlCapitalSuffix() {
         String filename = "image4.JPG";
         String url = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
         try (Response response = target(url)
@@ -65,8 +65,7 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
                 .get()) {
             String entity = response.readEntity(String.class);
             //since no file image4.JPG exists, 404 is returned. But that is ok as long as the method was called (otherwise 405 would be thrown)
-            assertEquals("Should return status 404; answer; " + entity, 404, response.getStatus());
+            assertEquals(404, response.getStatus(), "Should return status 404; answer; " + entity);
         }
     }
-
 }

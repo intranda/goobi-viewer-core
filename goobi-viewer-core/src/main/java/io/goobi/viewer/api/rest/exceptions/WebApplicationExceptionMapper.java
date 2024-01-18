@@ -61,14 +61,14 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     private static final Logger logger = LogManager.getLogger(WebApplicationExceptionMapper.class);
 
     @Context
-    HttpServletResponse response;
+    private HttpServletResponse response;
     @Context
-    HttpServletRequest request;
+    private HttpServletRequest request;
 
     /** {@inheritDoc} */
     @Override
     public Response toResponse(WebApplicationException eParent) {
-        Response.Status status = Status.INTERNAL_SERVER_ERROR;
+        Response.Status status = null;
         boolean printStackTrace = false;
         Throwable e = eParent.getCause();
         if (e == null) {
@@ -114,14 +114,13 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
      * @return a {@link java.lang.String} object.
      */
     public String getRequestHeaders() {
-        String headers = Collections.list(request.getHeaderNames())
+        return Collections.list(request.getHeaderNames())
                 .stream()
                 .collect(Collectors.toMap(headerName -> headerName, headerName -> request.getHeader(headerName)))
                 .entrySet()
                 .stream()
                 .map(entry -> entry.getKey() + ": " + entry.getValue())
                 .collect(Collectors.joining("; "));
-        return headers;
     }
 
 }

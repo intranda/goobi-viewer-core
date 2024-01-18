@@ -49,7 +49,7 @@ public abstract class TranslationGroupItem {
      * @param type
      * @param key
      * @param regex
-     * @return
+     * @return Created {@link TranslationGroupItem}
      * @should create correct class instance by type
      */
     public static TranslationGroupItem create(TranslationGroupType type, String key, boolean regex) {
@@ -84,9 +84,10 @@ public abstract class TranslationGroupItem {
      * Returns the translation status over all existing entries.
      *
      * @return <code>TranslationStatu</code>; FULL if all entries are FULL; NONE if all entries are NONE; PARTIAL otherwise
-     * @throws Exception
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
      */
-    public TranslationStatus getTranslationStatus() throws Exception {
+    public TranslationStatus getTranslationStatus() throws IndexUnreachableException, PresentationException {
         int full = 0;
         int none = 0;
         for (MessageEntry entry : getEntries()) {

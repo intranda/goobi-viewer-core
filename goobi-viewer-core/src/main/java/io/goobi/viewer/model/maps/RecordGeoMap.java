@@ -63,7 +63,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 public class RecordGeoMap {
 
     private static final Logger logger = LogManager.getLogger(RecordGeoMap.class);
-    
+
     private final StructElement mainStruct;
     private final List<MetadataContainer> relatedDocuments;
     private final GeoMap geoMap;
@@ -111,8 +111,8 @@ public class RecordGeoMap {
                 .filter(config -> "metadata".equals(config.getType()))
                 .forEach(config -> createMetadataFeatureSet(map, mainStruct, config));
         this.featureSetConfigs.stream()
-            .filter(config -> "annotations".equals(config.getType()))
-            .forEach(config -> createAnnotationFeatureSet(map, mainStruct.getPi(), config));
+                .filter(config -> "annotations".equals(config.getType()))
+                .forEach(config -> createAnnotationFeatureSet(map, mainStruct.getPi(), config));
 
         return map;
     }
@@ -189,27 +189,27 @@ public class RecordGeoMap {
         featureSet.setMarker(config.getMarker());
         geoMap.addFeatureSet(featureSet);
         try {
-        List<String> features = new ArrayList<>();
-        List<DisplayUserGeneratedContent> annos = dao
-                .getAnnotationsForWork(pi)
-                .stream()
-                .filter(a -> PublicationStatus.PUBLISHED.equals(a.getPublicationStatus()))
-                .filter(a -> StringUtils.isNotBlank(a.getBody()))
-                .map(DisplayUserGeneratedContent::new)
-                .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
-                .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
-                .collect(Collectors.toList());
-        for (DisplayUserGeneratedContent anno : annos) {
-            if (anno.getAnnotationBody() instanceof TypedResource) {
-                GeoMapFeature feature = new GeoMapFeature(((TypedResource) anno.getAnnotationBody()).asJson());
-                feature.setPageNo(anno.getPage());
-                feature.setDocumentId(anno.getId().toString());
-                features.add(feature.getJsonObject().toString());
+            List<String> features = new ArrayList<>();
+            List<DisplayUserGeneratedContent> annos = dao
+                    .getAnnotationsForWork(pi)
+                    .stream()
+                    .filter(a -> PublicationStatus.PUBLISHED.equals(a.getPublicationStatus()))
+                    .filter(a -> StringUtils.isNotBlank(a.getBody()))
+                    .map(DisplayUserGeneratedContent::new)
+                    .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
+                    .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
+                    .collect(Collectors.toList());
+            for (DisplayUserGeneratedContent anno : annos) {
+                if (anno.getAnnotationBody() instanceof TypedResource) {
+                    GeoMapFeature feature = new GeoMapFeature(((TypedResource) anno.getAnnotationBody()).asJson());
+                    feature.setPageNo(anno.getPage());
+                    feature.setDocumentId(anno.getId().toString());
+                    features.add(feature.getJsonObject().toString());
+                }
             }
-        }
-        featureSet.setFeatures(features);
-        } catch(DAOException e) {
-            logger.error("Error loading anntations for geomap of record {}: {}", pi, e.toString() );
+            featureSet.setFeatures(features);
+        } catch (DAOException e) {
+            logger.error("Error loading anntations for geomap of record {}: {}", pi, e.toString());
         }
     }
 
@@ -229,7 +229,6 @@ public class RecordGeoMap {
         }
         Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
         for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
-            //            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
             List<LabeledValue> translatedValues = entry.getValue()
                     .stream()
                     .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale), v.getStyleClass()))

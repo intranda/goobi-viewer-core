@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -44,9 +44,9 @@ import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
-public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
+class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
@@ -56,7 +56,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add field values pairs that match search terms
      */
     @Test
-    public void populateFoundMetadata_shouldAddFieldValuesPairsThatMatchSearchTerms() throws Exception {
+    void populateFoundMetadata_shouldAddFieldValuesPairsThatMatchSearchTerms() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -80,13 +80,13 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_3", "none of the above");
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(2, hit.getFoundMetadata().size());
-        Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertEquals("FROM <span class=\"search-list--highlight\">BAR</span> TO <span class=\"search-list--highlight\">FOO</span>",
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(2, hit.getFoundMetadata().size());
+        Assertions.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
+        Assertions.assertEquals("FROM <span class=\"search-list--highlight\">BAR</span> TO <span class=\"search-list--highlight\">FOO</span>",
                 hit.getFoundMetadata().get(0).getTwo());
-        Assert.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
-        Assert.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
+        Assertions.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
+        Assertions.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
     }
 
     /**
@@ -94,7 +94,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add MD fields that contain terms from DEFAULT
      */
     @Test
-    public void populateFoundMetadata_shouldAddMDFieldsThatContainTermsFromDEFAULT() throws Exception {
+    void populateFoundMetadata_shouldAddMDFieldsThatContainTermsFromDEFAULT() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -113,13 +113,13 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_2", "bla blup");
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(2, hit.getFoundMetadata().size());
-        Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>",
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(2, hit.getFoundMetadata().size());
+        Assertions.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
+        Assertions.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>",
                 hit.getFoundMetadata().get(0).getTwo());
-        Assert.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
-        Assert.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
+        Assertions.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
+        Assertions.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
     }
 
     /**
@@ -127,7 +127,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add duplicate values
      */
     @Test
-    public void populateFoundMetadata_shouldNotAddDuplicateValues() throws Exception {
+    void populateFoundMetadata_shouldNotAddDuplicateValues() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -144,10 +144,10 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_AUTHOR" + SolrConstants.SUFFIX_UNTOKENIZED, "Doe, John");
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(1, hit.getFoundMetadata().size());
-        Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertEquals("Doe, <span class=\"search-list--highlight\">John</span>", hit.getFoundMetadata().get(0).getTwo());
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(1, hit.getFoundMetadata().size());
+        Assertions.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
+        Assertions.assertEquals("Doe, <span class=\"search-list--highlight\">John</span>", hit.getFoundMetadata().get(0).getTwo());
     }
 
     /**
@@ -155,7 +155,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add ignored fields
      */
     @Test
-    public void populateFoundMetadata_shouldNotAddIgnoredFields() throws Exception {
+    void populateFoundMetadata_shouldNotAddIgnoredFields() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -176,10 +176,10 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         factory.getAdditionalMetadataIgnoreFields().add("T-1000");
         SearchHit hit = factory.createSearchHit(doc, null, null, null);
         new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(1, hit.getFoundMetadata().size());
-        Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertEquals("Doe, <span class=\"search-list--highlight\">John</span>", hit.getFoundMetadata().get(0).getTwo());
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(1, hit.getFoundMetadata().size());
+        Assertions.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
+        Assertions.assertEquals("Doe, <span class=\"search-list--highlight\">John</span>", hit.getFoundMetadata().get(0).getTwo());
     }
 
     /**
@@ -187,7 +187,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add field values that equal the label
      */
     @Test
-    public void populateFoundMetadata_shouldNotAddFieldValuesThatEqualTheLabel() throws Exception {
+    void populateFoundMetadata_shouldNotAddFieldValuesThatEqualTheLabel() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -205,9 +205,9 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_2", "bla blup");
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(1, hit.getFoundMetadata().size());
-        Assert.assertEquals("MD_2", hit.getFoundMetadata().get(0).getOne());
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(1, hit.getFoundMetadata().size());
+        Assertions.assertEquals("MD_2", hit.getFoundMetadata().get(0).getOne());
     }
 
     /**
@@ -215,7 +215,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies translate configured field values correctly
      */
     @Test
-    public void populateFoundMetadata_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
+    void populateFoundMetadata_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -240,12 +240,12 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
         factory.getAdditionalMetadataTranslateFields().addAll(Arrays.asList(translateFields));
         SearchHit hit = factory.createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(2, hit.getFoundMetadata().size());
-        Assert.assertEquals("Structure type", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertEquals("<span class=\"search-list--highlight\">Monograph</span>", hit.getFoundMetadata().get(0).getTwo());
-        Assert.assertEquals("Collection", hit.getFoundMetadata().get(1).getOne());
-        Assert.assertEquals("<span class=\"search-list--highlight\">Administration</span>", hit.getFoundMetadata().get(1).getTwo());
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(2, hit.getFoundMetadata().size());
+        Assertions.assertEquals("Structure type", hit.getFoundMetadata().get(0).getOne());
+        Assertions.assertEquals("<span class=\"search-list--highlight\">Monograph</span>", hit.getFoundMetadata().get(0).getTwo());
+        Assertions.assertEquals("Collection", hit.getFoundMetadata().get(1).getOne());
+        Assertions.assertEquals("<span class=\"search-list--highlight\">Administration</span>", hit.getFoundMetadata().get(1).getTwo());
     }
 
     /**
@@ -253,7 +253,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies write one line fields into a single string
      */
     @Test
-    public void populateFoundMetadata_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
+    void populateFoundMetadata_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "bat", "hiru" })));
         searchTerms.put("MD_COUNT_SE", new HashSet<>(Arrays.asList(new String[] { "ett", "två" })));
@@ -274,16 +274,16 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
         factory.getAdditionalMetadataOneLineFields().addAll(Arrays.asList(oneLineFields));
         SearchHit hit = factory.createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(2, hit.getFoundMetadata().size());
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(2, hit.getFoundMetadata().size());
 
         // Via explicit term field
-        Assert.assertEquals("MD_COUNT_SE", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertEquals("<span class=\"search-list--highlight\">ett</span>, <span class=\"search-list--highlight\">två</span>",
+        Assertions.assertEquals("MD_COUNT_SE", hit.getFoundMetadata().get(0).getOne());
+        Assertions.assertEquals("<span class=\"search-list--highlight\">ett</span>, <span class=\"search-list--highlight\">två</span>",
                 hit.getFoundMetadata().get(0).getTwo());
         // Via DEFAULT
-        Assert.assertEquals("MD_COUNT_EU", hit.getFoundMetadata().get(1).getOne());
-        Assert.assertEquals("<span class=\"search-list--highlight\">bat</span>, <span class=\"search-list--highlight\">hiru</span>",
+        Assertions.assertEquals("MD_COUNT_EU", hit.getFoundMetadata().get(1).getOne());
+        Assertions.assertEquals("<span class=\"search-list--highlight\">bat</span>, <span class=\"search-list--highlight\">hiru</span>",
                 hit.getFoundMetadata().get(1).getTwo());
     }
 
@@ -292,7 +292,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies truncate snippet fields correctly
      */
     @Test
-    public void populateFoundMetadata_shouldTruncateSnippetFieldsCorrectly() throws Exception {
+    void populateFoundMetadata_shouldTruncateSnippetFieldsCorrectly() throws Exception {
         int maxLength = 50;
         DataManager.getInstance().getConfiguration().overrideValue("search.fulltextFragmentLength", maxLength);
 
@@ -310,22 +310,22 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
         SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH);
         factory.getAdditionalMetadataSnippetFields().addAll(Collections.singletonList("MD_SOMETEXT"));
-        Assert.assertEquals(2, factory.getAdditionalMetadataSnippetFields().size());
+        Assertions.assertEquals(2, factory.getAdditionalMetadataSnippetFields().size());
         SearchHit hit = factory.createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(2, hit.getFoundMetadata().size());
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(2, hit.getFoundMetadata().size());
 
         // Via DEFAULT
-        Assert.assertEquals("MD_DESCRIPTION", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertTrue(hit.getFoundMetadata().get(0).getTwo().length() <= maxLength + 56);
+        Assertions.assertEquals("MD_DESCRIPTION", hit.getFoundMetadata().get(0).getOne());
+        Assertions.assertTrue(hit.getFoundMetadata().get(0).getTwo().length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
-        Assert.assertTrue(hit.getFoundMetadata().get(0).getTwo().contains("ut <span class=\"search-list--highlight\">labore</span> et"));
+        Assertions.assertTrue(hit.getFoundMetadata().get(0).getTwo().contains("ut <span class=\"search-list--highlight\">labore</span> et"));
 
         // Via explicit term field
-        Assert.assertEquals("MD_SOMETEXT", hit.getFoundMetadata().get(1).getOne());
-        Assert.assertTrue(hit.getFoundMetadata().get(1).getTwo().length() <= maxLength + 56);
+        Assertions.assertEquals("MD_SOMETEXT", hit.getFoundMetadata().get(1).getOne());
+        Assertions.assertTrue(hit.getFoundMetadata().get(1).getTwo().length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
-        Assert.assertTrue(hit.getFoundMetadata().get(1).getTwo().contains("<span class=\"search-list--highlight\">ipsum</span> dolor"));
+        Assertions.assertTrue(hit.getFoundMetadata().get(1).getTwo().contains("<span class=\"search-list--highlight\">ipsum</span> dolor"));
     }
 
     /**
@@ -333,7 +333,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies modify label correctly from default
      */
     @Test
-    public void addLabelHighlighting_shouldModifyLabelCorrectlyFromDefault() throws Exception {
+    void addLabelHighlighting_shouldModifyLabelCorrectlyFromDefault() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -348,12 +348,14 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
+        Assertions.assertNotNull(hit);
         hit.addLabelHighlighting();
-        Assert.assertTrue("label: " + hit.getBrowseElement().getLabelShort(), hit.getBrowseElement()
+        Assertions.assertTrue(hit.getBrowseElement()
                 .getLabelShort()
                 .startsWith(
-                        "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"));
+                        "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit,"
+                                + " sed do eiusmod tempor incididunt ut labore"),
+                "label: " + hit.getBrowseElement().getLabelShort());
     }
 
     /**
@@ -361,7 +363,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies modify label correctly from title
      */
     @Test
-    public void addLabelHighlighting_shouldModifyLabelCorrectlyFromTitle() throws Exception {
+    void addLabelHighlighting_shouldModifyLabelCorrectlyFromTitle() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -376,12 +378,14 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
+        Assertions.assertNotNull(hit);
         hit.addLabelHighlighting();
-        Assert.assertTrue("label: " + hit.getBrowseElement().getLabelShort(), hit.getBrowseElement()
+        Assertions.assertTrue(hit.getBrowseElement()
                 .getLabelShort()
                 .startsWith(
-                        "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"));
+                        "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit,"
+                                + " sed do eiusmod tempor incididunt ut labore"),
+                "label: " + hit.getBrowseElement().getLabelShort());
     }
 
     /**
@@ -389,7 +393,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies do nothing if searchTerms null
      */
     @Test
-    public void addLabelHighlighting_shouldDoNothingIfSearchTermsNull() throws Exception {
+    void addLabelHighlighting_shouldDoNothingIfSearchTermsNull() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
@@ -397,10 +401,10 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
+        Assertions.assertNotNull(hit);
         hit.addLabelHighlighting();
-        Assert.assertEquals("label: " + hit.getBrowseElement().getLabelShort(), StringConstants.LOREM_IPSUM, hit.getBrowseElement()
-                .getLabelShort());
+        Assertions.assertEquals(StringConstants.LOREM_IPSUM, hit.getBrowseElement().getLabelShort(),
+                "label: " + hit.getBrowseElement().getLabelShort());
     }
 
     /**
@@ -408,11 +412,11 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies do nothing if searchTerms do not contain key
      */
     @Test
-    public void addCMSPageChildren_shouldDoNothingIfSearchTermsDoNotContainKey() throws Exception {
+    void addCMSPageChildren_shouldDoNothingIfSearchTermsDoNotContainKey() throws Exception {
         SearchHit hit = new SearchHit(HitType.DOCSTRCT, null, null, null, null, null);
-        Assert.assertEquals(0, hit.getChildren().size());
+        Assertions.assertEquals(0, hit.getChildren().size());
         hit.addCMSPageChildren();
-        Assert.assertEquals(0, hit.getChildren().size());
+        Assertions.assertEquals(0, hit.getChildren().size());
     }
 
     /**
@@ -420,7 +424,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies do nothing if no cms pages for record found
      */
     @Test
-    public void addCMSPageChildren_shouldDoNothingIfNoCmsPagesForRecordFound() throws Exception {
+    void addCMSPageChildren_shouldDoNothingIfNoCmsPagesForRecordFound() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -429,29 +433,26 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         SearchHit hit =
                 new SearchHit(HitType.DOCSTRCT, new BrowseElement("PPN123", 1, "Hello World", null, null, null, null), null, searchTerms, null, null);
-        Assert.assertEquals(0, hit.getChildren().size());
+        Assertions.assertEquals(0, hit.getChildren().size());
         hit.addCMSPageChildren();
-        Assert.assertEquals(0, hit.getChildren().size());
+        Assertions.assertEquals(0, hit.getChildren().size());
     }
 
     /**
      * @see SearchHit#addFulltextChild(SolrDocument,String)
      * @verifies throw IllegalArgumentException if doc null
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void addFulltextChild_shouldThrowIllegalArgumentExceptionIfDocNull() throws Exception {
+    @Test
+    void addFulltextChild_shouldThrowIllegalArgumentExceptionIfDocNull() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
-        SearchHit hit =
-                //                SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, Collections.emptyMap(), null, null, null, null, null, null, 0, null);
-                new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-
-        hit.addFulltextChild(null, "en");
+        SearchHit hit = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
+        Assertions.assertNotNull(hit);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> hit.addFulltextChild(null, "en"));
     }
 
     /**
@@ -459,7 +460,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies do nothing if searchTerms does not contain fulltext
      */
     @Test
-    public void addFulltextChild_shouldDoNothingIfSearchTermsDoesNotContainFulltext() throws Exception {
+    void addFulltextChild_shouldDoNothingIfSearchTermsDoesNotContainFulltext() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -476,8 +477,8 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchHit hit =
                 // SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
                 new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(0, hit.getChildren().size());
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(0, hit.getChildren().size());
 
         SolrDocument pageDoc = new SolrDocument();
         pageDoc.addField(SolrConstants.IDDOC, "2");
@@ -485,7 +486,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
 
         hit.addFulltextChild(pageDoc, "en");
-        Assert.assertEquals(0, hit.getChildren().size());
+        Assertions.assertEquals(0, hit.getChildren().size());
     }
 
     /**
@@ -493,7 +494,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies do nothing if tei file name not found
      */
     @Test
-    public void addFulltextChild_shouldDoNothingIfTeiFileNameNotFound() throws Exception {
+    void addFulltextChild_shouldDoNothingIfTeiFileNameNotFound() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -508,8 +509,8 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.TITLE, StringConstants.LOREM_IPSUM);
 
         SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
-        Assert.assertEquals(0, hit.getChildren().size());
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals(0, hit.getChildren().size());
 
         SolrDocument pageDoc = new SolrDocument();
         pageDoc.addField(SolrConstants.IDDOC, "2");
@@ -517,7 +518,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
 
         hit.addFulltextChild(pageDoc, "en");
-        Assert.assertEquals(0, hit.getChildren().size());
+        Assertions.assertEquals(0, hit.getChildren().size());
     }
 
     /**
@@ -525,20 +526,20 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate fragment correctly
      */
     @Test
-    public void generateNotificationFragment_shouldGenerateFragmentCorrectly() throws Exception {
+    void generateNotificationFragment_shouldGenerateFragmentCorrectly() throws Exception {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + AbstractSolrEnabledTest.PI_KLEIUNIV, null);
-        Assert.assertNotNull(doc);
+        Assertions.assertNotNull(doc);
         String title = (String) doc.getFieldValue(SolrConstants.TITLE);
-        Assert.assertNotNull(title);
+        Assertions.assertNotNull(title);
 
         SearchHit hit =
                 new SearchHitFactory(null, null, null, 0, new ThumbnailHandler(new IIIFUrlHandler(new ApiUrls(ApiUrls.API)), "/foo/bar/"),
                         Locale.ENGLISH).createSearchHit(doc, null, null, null);
-        Assert.assertNotNull(hit);
+        Assertions.assertNotNull(hit);
 
         int count = 3;
         String fragment = hit.generateNotificationFragment(count);
-        Assert.assertEquals("<tr><td>" + count + ".</td><td><img src=\""
+        Assertions.assertEquals("<tr><td>" + count + ".</td><td><img src=\""
                 + "/api/v1/records/PPN517154005/files/images/00000001.tif/full/!10,11/0/default.jpg" + "\" alt=\"" + title
                 + "\" /></td><td>" + title
                 + "</td></tr>", fragment);

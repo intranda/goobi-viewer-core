@@ -21,19 +21,19 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MetadataContainerTest {
+class MetadataContainerTest {
 
     @Test
-    public void test_translatedFieldsFromSingleDocument() {
+    void test_translatedFieldsFromSingleDocument() {
 
         SolrDocument doc = new SolrDocument(Map.of(
                 "MD_ROLE_LANG_FR", "Curateur.rice",
@@ -50,7 +50,7 @@ public class MetadataContainerTest {
     }
 
     @Test
-    public void test_translatedFieldsFromMultipleDocuments() {
+    void test_translatedFieldsFromMultipleDocuments() {
 
         SolrDocument main = new SolrDocument(Map.of(
                 "PI", "1234"));

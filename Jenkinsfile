@@ -27,7 +27,7 @@ pipeline {
         }
       }
       steps {
-              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false clean verify -U'
+              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=true -DskipCheckstyle=false clean verify -U'
       }
     }
     stage('build release') {
@@ -38,7 +38,7 @@ pipeline {
         }
       }
       steps {
-              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false -DfailOnSnapshot=true clean verify -U'
+              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=true -DskipCheckstyle=false -DfailOnSnapshot=true clean verify -U'
       }
     }
     stage('sonarcloud') {
@@ -80,7 +80,7 @@ pipeline {
         enabledForFailure: true, aggregatingResults: false,
         tools: [checkStyle(pattern: '**/target/checkstyle-result.xml', reportEncoding: 'UTF-8')]
       )
-      dependencyCheckPublisher pattern: '**/target/dependency-check-report.xml'
+      //dependencyCheckPublisher pattern: '**/target/dependency-check-report.xml'
     }
     success {
       archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true

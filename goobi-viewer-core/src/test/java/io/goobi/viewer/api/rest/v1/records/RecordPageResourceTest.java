@@ -27,8 +27,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.URI;
 
@@ -36,15 +36,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
-import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.api.iiif.presentation.v2.Sequence;
@@ -54,7 +53,7 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  * @author florian
  *
  */
-public class RecordPageResourceTest extends AbstractRestApiTest {
+class RecordPageResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
     private static final String PAGENO = "10";
@@ -65,7 +64,7 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -74,20 +73,20 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testGetNER() {
+    void testGetNER() {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_NER_TAGS).params(PI, PAGENO).build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject doc = new JSONObject(entity);
@@ -98,14 +97,14 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetSequence() throws JsonMappingException, JsonProcessingException {
+    void testGetSequence() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_SEQUENCE).params(PI).build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             Sequence sequence = mapper.readValue(entity, Sequence.class);
@@ -115,14 +114,14 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetCanvas() throws JsonMappingException, JsonProcessingException {
+    void testGetCanvas() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI, PAGENO).build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             Canvas2 canvas = mapper.readValue(entity, Canvas2.class);
@@ -132,17 +131,18 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getAnnotationsForRecord(java.lang.String)}.
+     * 
      * @throws JsonProcessingException
      * @throws JsonMappingException
      */
     @Test
-    public void testGetAnnotationsForPage() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
+    void testGetAnnotationsForPage() throws JsonMappingException, JsonProcessingException {
+        try (Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             AnnotationCollection collection = mapper.readValue(entity, AnnotationCollection.class);
             assertNotNull(collection);
@@ -152,25 +152,22 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getCommentsForRecord(java.lang.String)}.
+     * 
      * @throws JsonProcessingException
      * @throws JsonMappingException
      */
     @Test
-    public void testGetCommentsForPage() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
+    void testGetCommentsForPage() throws JsonMappingException, JsonProcessingException {
+        try (Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             AnnotationList collection = mapper.readValue(entity, AnnotationList.class);
             assertNotNull(collection);
             assertEquals(3, collection.getResources().size());
         }
     }
-
-
-
-
 }

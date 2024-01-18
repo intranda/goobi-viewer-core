@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.model.search;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class FuzzySearchTermTest {
+class FuzzySearchTermTest {
 
     @Test
-    public void testSpecialCharacters() {
+    void testSpecialCharacters() {
         String search = "wissenschaftlichen";
         String text = "wisſenſchaftlichen";
         FuzzySearchTerm fuzzy = new FuzzySearchTerm(search);

@@ -25,32 +25,83 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    const _defaultSelector ="[data-copy]";
-        
-    viewer.clipboard = { 
-            init : function(selector) {
+    const _defaultSelector ="[data-copy-value]";
+
+
+
+    viewer.clipboard = {
+            init : function(selector, dataSelectorName) {
+
                 if(!selector) {
-                    selector = _defaultSelector;
+                	var tooltipValueSelector = _defaultSelector;
                 }
-                var clipboard = new ClipboardJS( selector );
-                $(selector + "[data-copy-done]").tooltip();
+				else {
+					var tooltipValueSelector = selector;
+				}
                 
-                clipboard.on("success", function(e) {
-                   var $trigger = $(e.trigger);
-                   var tooltipText = $trigger.attr('data-copy-done');
-                   if(tooltipText) {                       
-                       if(!$trigger.attr('data-original-original-title')) {
-                           $trigger.attr('data-original-original-title', $trigger.attr('data-original-title'));
-                       }
-                       $trigger
-                       .attr('data-original-title', tooltipText)
-                       .tooltip('_fixTitle')
-                       .tooltip('show')
-                       .attr('data-original-title', $trigger.attr('data-original-original-title'))
-                       .tooltip('_fixTitle');
-                   }
-        
-                })
+                // ACTIVATE TOOLTIP ONLY IF DATA COPY VALUE SELECTORS AVAILABLE
+                $(tooltipValueSelector).tooltip();
+                
+                // COPY BUTTON VAR
+                var copyClipboardButton = $(tooltipValueSelector);
+                
+                $(copyClipboardButton).click(function () {
+                	
+                	var thisCopyButton = $(this);
+                	
+					// GET VALUE OF DATA ATTRIBUTE COPY VALUE
+					// define dataSelectorName to get other data attribute value than data-copy-value of THIS Element
+	                if(!dataSelectorName) {
+	                	var copyValue = $(this).data('copy-value');
+	                }
+					else {
+						var copyValue = $(this).attr(dataSelectorName);
+						console.log('dataSelectorName is on ' + dataSelectorName);
+						console.log('value of special: ' + copyValue);
+					}
+					
+					// var copyValue = $(this).data('copy-value');
+					// console.log(copyValue);
+					
+					// CREATE TEMPORARY TEXTAREA TO COPY VALUE INTO CLIPBOARD
+					var $temp = $("<textarea />");
+					$("body").append($temp);
+					$temp.val(copyValue).select();
+					document.execCommand("copy");
+					$temp.remove();
+
+					// CHANGE TOOLTIP TO COPY DONE MESSAGE
+					var copyThisMessage = $(thisCopyButton).data('original-title');
+					
+					// IF NO COPY DONE MSG FOUND JUST USE STANDARD TEXT
+					if (!$(this).data('copy-done-msg')) {
+						// TO DO: TRANSLATE MSG KEY
+						var copyDoneMessage = 'Copied to clipboard';
+					}
+					else {
+						var copyDoneMessage = $(thisCopyButton).data('copy-done-msg');
+					}
+
+			    	 $(thisCopyButton).tooltip('hide');
+			    	 $(thisCopyButton).tooltip('dispose');
+					 $(thisCopyButton).tooltip({trigger: "manual", placement: "top", title: 'Copy'}); 
+			    	 $(thisCopyButton).attr('data-original-title', copyDoneMessage);
+			    	 $(thisCopyButton).tooltip('show');
+					
+			    	 // KEEP COPIED SUCCESS MSG FOR 2 SECONDS THEN REENABLE NORMAL TOOLTIP 
+					setTimeout(function () {
+					
+					   $(thisCopyButton).tooltip('hide');
+					   $(thisCopyButton).on('hidden.bs.tooltip', function () {
+					   $(thisCopyButton).tooltip('dispose');
+					   $(thisCopyButton).attr('data-original-title', copyThisMessage);
+					   $(thisCopyButton).tooltip({trigger: "hover", placement: "top", title: copyThisMessage}); 
+					    })
+					
+					}, 2000);
+
+                });
+
             }
     }
         

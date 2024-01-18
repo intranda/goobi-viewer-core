@@ -155,22 +155,21 @@
 	                           <button 
                                    id="iiifManifest"
                                    class="badge badge-dark widget-usage__work-download-iiif" 
-	                               data-copy="iiif-manifest" 
-	                               data-clipboard-text="#{imageDelivery.iiifManifest}" 
-	                               data-copy-done="#{msg.copyUrlDone}"
+	                               data-copy-value="#{imageDelivery.iiifManifest}" 
+	                               data-copy-done-msg="#{msg.copyUrlDone}"
                                    title="#{msg.copyUrl}"
                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
                                    tabindex="0"> 
 	                               #{msg.iiif}
-	                           </button> 
+	                           </button>
 	                       </ui:fragment>      
 	                    
                             <!-- MIRADOR -->
                             <ui:fragment
                                 rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
                                     <a
-                                        href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}" 
-                                        id="mirador"
+                                        href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
+                                        id="mirador" 
                                         class="badge badge-dark widget-usage__work-link-mirador-viewer" 
                                         title="#{msg.action__view_in_mirador__tooltip}"
 										data-toggle="tooltip"
@@ -179,7 +178,7 @@
                                         target="_blank" rel="nofollow noopener"
                                         aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}"> 
                                         #{msg.action__view_in_mirador}
-                                    </a>
+                                    </a> 
                             </ui:fragment>
                         
                         </ui:fragment>

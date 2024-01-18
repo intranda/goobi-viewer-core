@@ -275,6 +275,13 @@
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
     </url-mapping>
+    <url-mapping id="searchTerm5">
+        <pattern value="/term/-/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(4)}</action>
+        <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
 
 	<!-- SIMPLE SEARCH -->
     <url-mapping id="newSearch1">
@@ -364,8 +371,7 @@
     <url-mapping id="image1">
         <pattern value="/image/#{pi:activeDocumentBean.persistentIdentifier}/" />
 		<view-id value="/viewObject.xhtml" />
-        <!-- TODO set representative page, if available -->
-        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
+        <action onPostback="false">#{activeDocumentBean.setRepresentativeImage}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 	<url-mapping id="image2">
@@ -401,8 +407,7 @@
     <url-mapping id="object1">
         <pattern value="/object/#{pi:activeDocumentBean.persistentIdentifier}/" />
         <view-id value="/viewObject.xhtml" />
-        <!-- TODO set representative page, if available -->
-        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
+        <action onPostback="false">#{activeDocumentBean.setRepresentativeImage}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 	<url-mapping id="object2">
@@ -604,12 +609,14 @@
 		<action onPostback="false">#{activeDocumentBean.setLogid('')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
+    <!--
 	<url-mapping id="thumbs4">
 		<pattern value="/thumbs/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewThumbs.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.setLogid('')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
+    -->
 
 	<!-- TOC -->
     <url-mapping id="toc1">
@@ -928,6 +935,10 @@
         <pattern value="/admin/legal/disclaimer/" />
         <view-id value="/resources/admin/views/adminDisclaimer.xhtml" />
     </url-mapping>
+     <url-mapping id="adminDeveloper">
+        <pattern value="/admin/developer/" />
+        <view-id value="/resources/admin/views/adminDeveloper.xhtml" />
+    </url-mapping>
     
 
 	<!-- THEME CONFIGS -->
@@ -1209,7 +1220,7 @@
     </url-mapping>
     <url-mapping id="cmsOpenPage6">
         <pattern
-            value="/cms/#{page:cmsBean.currentPageId}/#{activeResultGroupName:searchBean.activeResultGroupName}/#{query:searchBean.exactSearchString}/#{page:cmsBean.currentPage.listPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+            value="/cms/#{page:cmsBean.currentPageId}/#{activeResultGroupName:searchBean.activeResultGroupName}/#{query:searchBean.exactSearchString}/#{page:cmsBean.currentPage.listPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>

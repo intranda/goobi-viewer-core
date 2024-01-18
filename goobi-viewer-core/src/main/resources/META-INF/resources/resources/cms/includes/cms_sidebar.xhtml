@@ -16,27 +16,25 @@
 	<composite:interface />
 
 	<composite:implementation>
-
+ 
 		<!-- CUSTOM SIDEBAR -->
 		<c:if test="#{!cmsPage.useDefaultSidebar}">
 			<h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}"></h:panelGroup>
 		</c:if>
 
 		<!-- DEFAULT SIDEBAR -->
-		<ui:fragment rendered="#{cmsPage.useDefaultSidebar}">
+		<c:if test="#{cmsPage.useDefaultSidebar}">
 			
 			<!-- GLOBAL -->
-			<ui:fragment
-				rendered="#{!cmsBean.relatedWorkLoaded}">
-				<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+			<c:if test="#{!cmsBean.relatedWorkLoaded}">
+				<c:if test="#{browseBean.browsingMenuEnabled}">
 					<widgetComponent:widget_browsing />
-				</h:panelGroup>
+				</c:if>
 	
-			</ui:fragment>
+			</c:if>
 			
 			<!-- WORK -->
-			<ui:fragment
-				rendered="#{cmsBean.relatedWorkLoaded}">
+			<c:if test="#{cmsBean.relatedWorkLoaded}">
 	
 				<widgetComponent:widget_views pageName="#{cmsPage.title}" />
 				
@@ -58,7 +56,7 @@
 	
 				<widgetComponent:widget_versionHistory />
 	
-			</ui:fragment>
+			</c:if>
 			
 			<!-- MODULES -->
 			<c:forEach var="module" items="#{configurationBean.modules}">
@@ -68,7 +66,7 @@
 			</c:forEach>
 	
 			
-		</ui:fragment>
+		</c:if>
 
 
 

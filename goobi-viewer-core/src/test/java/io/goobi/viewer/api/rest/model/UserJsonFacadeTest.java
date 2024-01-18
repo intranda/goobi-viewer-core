@@ -21,16 +21,14 @@
  */
 package io.goobi.viewer.api.rest.model;
 
-import static org.junit.Assert.*;
-
 import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.model.security.user.User;
@@ -39,41 +37,42 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
-public class UserJsonFacadeTest {
+class UserJsonFacadeTest {
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
+        //
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
+        //
     }
 
     @Test
-    public void testGetCorrectAvatarUrl() {
+    void testGetCorrectAvatarUrl() {
 
         User user = new User("nick");
 
         UserJsonFacade facade = new UserJsonFacade(user);
-        String avatarUrl = facade.avatar;
+        String avatarUrl = facade.getAvatar();
         URI avatarURI = URI.create(avatarUrl);
-        Assert.assertFalse(avatarURI.isAbsolute());
+        Assertions.assertFalse(avatarURI.isAbsolute());
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("https://viewer.goobi.io/"));
         Mockito.when(request.getContextPath()).thenReturn("/viewer");
 
         facade = new UserJsonFacade(user, request);
-        avatarUrl = facade.avatar;
+        avatarUrl = facade.getAvatar();
         avatarURI = URI.create(avatarUrl);
-        Assert.assertTrue(avatarUrl.startsWith("/viewer/resources"));
+        Assertions.assertTrue(avatarUrl.startsWith("/viewer/resources"));
 
     }
-
 }

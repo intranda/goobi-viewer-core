@@ -38,6 +38,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Collection tree element.
@@ -49,7 +50,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     /** Collection name */
     private final String name;
     private final String field;
-    public final String splittingChar;
+    private final String splittingChar;
     private long number;
     private String singleRecordUrl = null;
     private String sortField = "-";
@@ -74,6 +75,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @param field a {@link java.lang.String} object.
      * @param sortField a {@link java.lang.String} object.
      * @param splittingChar
+     * @param displayNumberOfVolumesLevel
      */
     public BrowseDcElement(String name, long number, String field, String sortField, String splittingChar, int displayNumberOfVolumesLevel) {
         this.name = name != null ? name.intern() : name;
@@ -200,7 +202,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * Returns the message key for the collection description for the given language.
      *
      * @param language Requested language (ISO 639-1)
-     * @return
+     * @return {@link String}
      */
     public String getDescription(String language) {
         if (getInfo() != null) {
@@ -416,17 +418,15 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
 
     /**
      *
-     * @param servletPath
      * @return RSS feed URL for this collection
-     * @throws ViewerConfigurationException
      */
-    private String buildRssUrl() throws ViewerConfigurationException {
+    private String buildRssUrl() {
         String query = new StringBuilder()
                 .append("(")
                 .append(field)
                 .append(':')
                 .append(name)
-                .append(" OR ")
+                .append(SolrConstants.SOLR_QUERY_OR)
                 .append(field)
                 .append(':')
                 .append(name)
@@ -496,7 +496,6 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         public int compare(BrowseDcElement o1, BrowseDcElement o2) {
             return ViewerResourceBundle.getTranslation(o1.getName(), null).compareTo(ViewerResourceBundle.getTranslation(o2.getName(), null));
         }
-
     }
 
     /**
@@ -537,14 +536,14 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * @return the groupingValues
+     * @return the facetValues
      */
     public List<String> getFacetValues() {
         return facetValues;
     }
 
     /**
-     * @param groupingValues the groupingValues to set
+     * @param facetValues the facetValues to set
      */
     public void setFacetValues(Collection<String> facetValues) {
         this.facetValues = new ArrayList<>(facetValues);

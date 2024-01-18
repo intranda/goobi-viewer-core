@@ -37,7 +37,7 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.modules.IModule;
 
-public class UserTools {
+public final class UserTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(UserTools.class);
@@ -74,8 +74,8 @@ public class UserTools {
 
     /**
      *
-     * @param user Owner of groups to delete
-     * @return
+     * @param owner Owner of groups to delete
+     * @return Number of deleted user groups
      * @throws DAOException
      * @should delete all user groups owned by user
      */
@@ -124,7 +124,7 @@ public class UserTools {
     /**
      *
      * @param owner
-     * @return
+     * @return Number of deleted bookmark lists
      * @throws DAOException
      * @should delete all bookmark lists owned by user
      */
@@ -147,7 +147,7 @@ public class UserTools {
     /**
      *
      * @param owner
-     * @return
+     * @return Number of deleted searches
      * @throws DAOException
      * @should delete all searches owned by user
      */
@@ -201,6 +201,7 @@ public class UserTools {
      * Moves all public content from the given user to an anonymous user.
      *
      * @param user
+     * @return true if successful; false otherwise
      * @throws DAOException
      * @should anonymize all user public content correctly
      */
@@ -231,7 +232,7 @@ public class UserTools {
 
     /**
      *
-     * @return
+     * @return Created {@link User}
      * @throws DAOException
      */
     public static User checkAndCreateAnonymousUser() throws DAOException {
@@ -262,7 +263,7 @@ public class UserTools {
      *
      * @param nickname
      * @param userId
-     * @return
+     * @return true if given nickname already in use by different user; false otherwise
      * @throws DAOException
      */
     public static boolean isNicknameInUse(String nickname, Long userId) throws DAOException {
