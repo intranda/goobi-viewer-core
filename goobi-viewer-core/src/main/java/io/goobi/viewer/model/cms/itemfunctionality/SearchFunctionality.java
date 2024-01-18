@@ -39,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -111,6 +112,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
                     }
                     final FacesContext context = FacesContext.getCurrentInstance();
                     String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
+                    redirectUrl = StringTools.appendTrailingSlash(redirectUrl);
                     try {
                         context.getExternalContext().redirect(redirectUrl);
                     } catch (IOException e) {
