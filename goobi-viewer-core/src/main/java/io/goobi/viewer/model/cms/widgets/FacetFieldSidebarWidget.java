@@ -21,7 +21,15 @@
  */
 package io.goobi.viewer.model.cms.widgets;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
@@ -93,6 +101,34 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
      */
     public String getFilterQuery() {
         return filterQuery;
+    }
+
+    public String getCombinedFilterQuery(CMSPage page) {
+        if (page != null && page.hasSearchFunctionality()) {
+            Optional<CMSContent> searchContent = page.getComponents()
+                    .stream()
+                    .flatMap(c -> c.getContentItems().stream())
+                    .map(c -> c.getContent())
+                    .filter(content -> content instanceof CMSSearchContent || content instanceof CMSRecordListContent)
+                    .findAny();
+            String searchPrefix = searchContent.map(content -> {
+                if (content instanceof CMSSearchContent) {
+                    return ((CMSSearchContent) content).getSearchPrefix();
+                } else {
+                    return ((CMSRecordListContent) content).getSolrQuery();
+                }
+            })
+                    .orElse("");
+            if(StringUtils.isNoneBlank(searchPrefix, this.filterQuery)) {
+                return String.format("+(%s) +(%s)", searchPrefix, this.filterQuery);
+            } else if(StringUtils.isNotBlank(searchPrefix)) {
+                return searchPrefix;
+            } else {
+                return filterQuery;
+            }
+        } else {
+            return filterQuery;
+        }
     }
 
     /**
