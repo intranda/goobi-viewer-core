@@ -607,12 +607,12 @@ public class Bookmark implements Serializable {
         if (this.browseElement == null) {
             try {
                 SolrDocument doc = retrieveSolrDocument();
+                if (doc != null) {
                 if (this.getOrder() != null) {
                     doc.setField(SolrConstants.ORDER, this.getOrder());
                 } else if (StringUtils.isNotBlank(this.getLogId())) {
                     doc.setField(SolrConstants.LOGID, this.getLogId());
                 }
-                if (doc != null) {
                     Locale locale = BeanUtils.getLocale();
                     SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, BeanUtils.getImageDeliveryBean().getThumbs(), locale);
                     SearchHit sh = factory.createSearchHit(doc, null, null, null);

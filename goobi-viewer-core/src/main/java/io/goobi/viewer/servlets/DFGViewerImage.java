@@ -32,10 +32,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
@@ -85,18 +87,7 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
         String widthString = path.getName(1).toString();
         String rotation = path.getName(2).toString();
 
-        int width;
-        try {
-            width = Integer.parseInt(widthString);
-        } catch (NullPointerException | NumberFormatException e) {
-            logger.error("Size parameter must be a number, but is {}", widthString);
-            try {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Size parameter must be a number, but is: " + widthString);
-            } catch (IOException e1) {
-                logger.error(e1.getMessage());
-            }
-            return;
-        }
+
 
         String baseUri = DataManager.getInstance()
                 .getRestApiManager()
@@ -105,18 +96,39 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
                 .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + id);
 
         try {
+            Scale scale = parseScale(widthString);
             String format = FilenameUtils.getExtension(path.getName(3).toString());
             String uri = BeanUtils.getImageDeliveryBean()
                     .getIiif()
-                    .getIIIFImageUrl(baseUri, RegionRequest.FULL, new Scale.ScaleToWidth(width), new Rotation(rotation), Colortype.DEFAULT,
+                    .getIIIFImageUrl(baseUri, RegionRequest.FULL, scale, new Rotation(rotation), Colortype.DEFAULT,
                             ImageFileFormat.getImageFileFormatFromFileExtension(format));
             response.sendRedirect(uri);
-        } catch (IllegalArgumentException | ViewerConfigurationException | IOException | IllegalRequestException e) {
+        } catch(IllegalRequestException e) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Size parameter must be a number, but is: " + widthString);
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
+        } catch (ViewerConfigurationException | ServiceNotImplementedException | IOException e) {
             try {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             } catch (IOException e1) {
                 logger.error(e1.getMessage());
             }
+        }
+    }
+
+    public Scale parseScale(String widthString) throws IllegalRequestException, ServiceNotImplementedException {
+        try {            
+            Scale scale;
+            if(StringUtils.isNumeric(widthString)) {
+                scale = new Scale.ScaleToWidth(Integer.parseInt(widthString));
+            } else {
+                scale = Scale.getScaleMethod(widthString);
+            }
+            return scale;
+        } catch(NumberFormatException | NullPointerException e) {
+            throw new IllegalRequestException(e);
         }
     }
 
