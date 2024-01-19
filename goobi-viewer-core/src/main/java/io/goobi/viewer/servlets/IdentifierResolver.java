@@ -485,7 +485,7 @@ public class IdentifierResolver extends HttpServlet {
                 .append(ClientUtils.escapeQueryChars(fieldName.toUpperCase()))
                 .append(':')
                 .append('"')
-                .append(fieldValue)
+                .append(ClientUtils.escapeQueryChars(fieldValue))
                 .append('"');
 
         // Add additional field/value pairs to the query
@@ -502,7 +502,7 @@ public class IdentifierResolver extends HttpServlet {
 
         sbQuery.append(SearchHelper.getAllSuffixes(request, false, false));
         String query = StringTools.stripPatternBreakingChars(sbQuery.toString());
-        // logger.trace("query: {}", query); //NOSONAR Sometimes needed for debugging
+        logger.trace("query: {}", query); //NOSONAR Sometimes needed for debugging
 
         // 3. evaluate the search
         return DataManager.getInstance().getSearchIndex().search(query);
