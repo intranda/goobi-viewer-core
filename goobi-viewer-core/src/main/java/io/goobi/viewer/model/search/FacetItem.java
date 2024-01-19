@@ -765,12 +765,11 @@ public class FacetItem implements Serializable, IFacetItem {
         public int compare(IFacetItem o1, IFacetItem o2) {
             String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
             String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
-            
 
             // Collator that ignores diacritics
             Collator col = Collator.getInstance();
             col.setStrength(Collator.PRIMARY);
-            return col.compare(o1.getLabel(), o2.getLabel());
+            return col.compare(label1, label2);
         }
 
     }
@@ -807,10 +806,13 @@ public class FacetItem implements Serializable, IFacetItem {
                 return 0;
             }
 
+            String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
+            String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
+
             // Collator that ignores diacritics
             Collator col = Collator.getInstance();
             col.setStrength(Collator.PRIMARY);
-            return col.compare(o1.getLabel(), o2.getLabel());
+            return col.compare(label1, label2);
         }
     }
 }
