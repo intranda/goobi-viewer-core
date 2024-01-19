@@ -29,25 +29,15 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.AbstractTest;
 
 class FileToolsTest extends AbstractTest {
-
-    private File tempDir = new File("target/temp");
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        if (tempDir.exists()) {
-            FileUtils.deleteQuietly(tempDir);
-        }
-    }
 
     /**
      * @see FileTools#getStringFromFile(File,String)
@@ -120,8 +110,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies write file correctly
      */
     @Test
-    void getFileFromString_shouldWriteFileCorrectly() throws Exception {
-        Assertions.assertTrue(tempDir.mkdirs());
+    void getFileFromString_shouldWriteFileCorrectly(@TempDir File tempDir) throws Exception {
         File file = new File(tempDir, "temp.txt");
         String text = "Lorem ipsum dolor sit amet";
         FileTools.getFileFromString(text, file.getAbsolutePath(), null, false);
@@ -133,8 +122,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies append to file correctly
      */
     @Test
-    void getFileFromString_shouldAppendToFileCorrectly() throws Exception {
-        Assertions.assertTrue(tempDir.mkdirs());
+    void getFileFromString_shouldAppendToFileCorrectly(@TempDir File tempDir) throws Exception {
         File file = new File(tempDir, "temp.txt");
         String text = "XY";
         String text2 = "Z";
