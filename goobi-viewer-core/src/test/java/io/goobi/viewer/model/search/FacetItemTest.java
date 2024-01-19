@@ -31,9 +31,12 @@ import java.util.TreeMap;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.model.search.FacetItem.AlphabeticComparator;
+import io.goobi.viewer.model.search.FacetItem.CountComparator;
 import io.goobi.viewer.solr.SolrConstants;
 
 class FacetItemTest extends AbstractTest {
@@ -339,5 +342,47 @@ class FacetItemTest extends AbstractTest {
         Assertions.assertEquals(2, facetItems.get(1).getCount());
         Assertions.assertEquals("Montana, Tony", facetItems.get(2).getValue());
     }
+    
+    @Nested
+    class AlphabeticComparatorTest extends AbstractTest {
 
+        /**
+         * @see CountComparator#compare(IFacetItem,IFacetItem)
+         * @verifies compare correctly
+         */
+        @Test
+        void compare_shouldCompareCorrectly() throws Exception {
+            Assertions.assertEquals(1, new AlphabeticComparator().compare(new FacetItem("MD_FOO:b", false).setLabel("b"),
+                    new FacetItem("MD_FOO:a", false).setLabel("a")));
+            Assertions.assertEquals(-1, new AlphabeticComparator().compare(new FacetItem("MD_FOO:a", false).setLabel("a"),
+                    new FacetItem("MD_FOO:b", false).setLabel("b")));
+            Assertions.assertEquals(0, new AlphabeticComparator().compare(new FacetItem("MD_FOO:ä", false).setLabel("ä"),
+                    new FacetItem("MD_FOO:a", false).setLabel("a")));
+        }
+    }
+
+    @Nested
+    class CountComparatorTest extends AbstractTest {
+
+        /**
+         * @see CountComparator#compare(IFacetItem,IFacetItem)
+         * @verifies compare correctly
+         */
+        @Test
+        void compare_shouldCompareCorrectly() throws Exception {
+            Assertions.assertEquals(-1, new CountComparator().compare(new FacetItem("MD_FOO:b", false).setCount(2L),
+                    new FacetItem("MD_FOO:a", false).setCount(1L)));
+            Assertions.assertEquals(1, new CountComparator().compare(new FacetItem("MD_FOO:b", false).setCount(1L),
+                    new FacetItem("MD_FOO:a", false).setCount(2L)));
+            Assertions.assertEquals(0, new CountComparator().compare(new FacetItem("MD_FOO:b", false).setCount(1L).setLabel(null),
+                    new FacetItem("MD_FOO:a", false).setCount(1L).setLabel(null)));
+
+            Assertions.assertEquals(1, new CountComparator().compare(new FacetItem("MD_FOO:b", false).setCount(1L).setLabel("b"),
+                    new FacetItem("MD_FOO:a", false).setCount(1L).setLabel("a")));
+            Assertions.assertEquals(-1, new CountComparator().compare(new FacetItem("MD_FOO:a", false).setCount(1L).setLabel("a"),
+                    new FacetItem("MD_FOO:b", false).setCount(1L).setLabel("b")));
+            Assertions.assertEquals(0, new CountComparator().compare(new FacetItem("MD_FOO:ä", false).setCount(1L).setLabel("ä"),
+                    new FacetItem("MD_FOO:a", false).setCount(1L).setLabel("a")));
+        }
+    }
 }
