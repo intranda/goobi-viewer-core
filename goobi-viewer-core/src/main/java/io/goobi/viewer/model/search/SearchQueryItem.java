@@ -83,6 +83,8 @@ public class SearchQueryItem implements Serializable {
     private SearchItemOperator operator = SearchItemOperator.AND;
     private List<String> values = new ArrayList<>();
     private volatile boolean displaySelectItems = false;
+    /** If >0, proximity search will be applied to phrase searches. */
+    private int proximitySearchDistance = 0;
 
     /**
      * Zero-argument constructor.
@@ -520,7 +522,7 @@ public class SearchQueryItem implements Serializable {
         if (values.isEmpty() || StringUtils.isBlank(getValue())) {
             return "";
         }
-
+        this.proximitySearchDistance  = 0;
         List<String> fields = new ArrayList<>();
         if (ADVANCED_SEARCH_ALL_FIELDS.equals(field)) {
             // Search everywhere
@@ -598,7 +600,7 @@ public class SearchQueryItem implements Serializable {
                         sbItem.append(' ');
                     }
                     String useValue = value.trim();
-                    int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
+                    this.proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
                     logger.trace("proximity distance: {}", proximitySearchDistance);
 
                     sbItem.append(useField).append(':');
@@ -748,6 +750,10 @@ public class SearchQueryItem implements Serializable {
     @Override
     public String toString() {
         return field + " " + operator + " " + getValue();
+    }
+    
+    public int getProximitySearchDistance() {
+        return proximitySearchDistance;
     }
 
 }

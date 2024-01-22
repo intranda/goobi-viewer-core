@@ -1344,7 +1344,7 @@ public final class SearchHelper {
         StringBuilder sbPattern = new StringBuilder("\\b(?:");
         for (int i = 0; i < searchTermSplit.length; ++i) {
             if (i > 0) {
-                sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
+                sbPattern.append("\\W+(?:\\p{L}+\\W+){0,").append(proximitySearchDistance).append("}?");
             }
             for (int j = 0; j < searchTermSplit[i].length(); ++j) {
                 // Allow space within term (remnant of line breaks)

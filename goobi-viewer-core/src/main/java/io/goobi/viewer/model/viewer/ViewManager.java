@@ -862,7 +862,8 @@ public class ViewManager implements Serializable {
                 || searchBean.getCurrentSearchFilterString().equals(SearchHelper.SEARCH_FILTER_ALL.getLabel())
                 || searchBean.getCurrentSearchFilterString().equals("filter_" + SolrConstants.FULLTEXT))) {
             logger.trace("Adding word coords to page {}: {}", currentImg.getOrder(), searchBean.getSearchTerms());
-            coords = currentImg.getWordCoords(searchBean.getSearchTerms().get(SolrConstants.FULLTEXT), rotate);
+            int proximitySearchDistance = searchBean.getProximitySearchDistance();
+            coords = currentImg.getWordCoords(searchBean.getSearchTerms().get(SolrConstants.FULLTEXT), proximitySearchDistance, rotate);
         }
 
         return coords;

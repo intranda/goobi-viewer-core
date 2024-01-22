@@ -43,6 +43,8 @@ import org.junit.jupiter.api.Test;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 
 class ALTOToolsTest extends AbstractTest {
 
@@ -210,5 +212,19 @@ class ALTOToolsTest extends AbstractTest {
             Word word = new Word("Ich war beim Steigbügel Häälter", new AltoCoords(10, 10, 12, 12));
             assertEquals(2, ALTOTools.getMatchALTOWord(word, searchTerms));
         }
+    }
+    
+    
+    @Test
+    void test_getWordCoordsWithWordProximity() throws ViewerConfigurationException, IOException {
+        
+        File testFile = new File("src/test/resources/data/sample_alto.xml");
+        String altoString = FileUtils.readFileToString(testFile, StringTools.DEFAULT_ENCODING);
+        
+        Set<String> words = Set.of("Büschel Früchten");
+        List<String> hits = ALTOTools.getWordCoords(altoString, "utf-8", words, 2, 0);
+        assertEquals(3, hits.size());
+        List<String> hits2 = ALTOTools.getWordCoords(altoString, "utf-8", words, 0, 0);
+        assertEquals(0, hits2.size());
     }
 }

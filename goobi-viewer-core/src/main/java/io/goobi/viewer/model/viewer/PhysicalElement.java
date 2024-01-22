@@ -986,7 +986,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getWordCoords(Set<String> searchTerms) throws ViewerConfigurationException {
-        return getWordCoords(searchTerms, 0);
+        return getWordCoords(searchTerms, 0, 0);
     }
 
     /**
@@ -998,7 +998,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public List<String> getWordCoords(Set<String> searchTerms, int rotation) throws ViewerConfigurationException {
+    public List<String> getWordCoords(Set<String> searchTerms, int proximitySearchDistance, int rotation) throws ViewerConfigurationException {
         if (searchTerms == null || searchTerms.isEmpty()) {
             return Collections.emptyList();
         }
@@ -1018,7 +1018,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         if (altoText != null) {
-            return ALTOTools.getWordCoords(altoText, altoCharset, searchTerms, rotation);
+            return ALTOTools.getWordCoords(altoText, altoCharset, searchTerms, proximitySearchDistance, rotation);
         }
         wordCoordsFormat = CoordsFormat.NONE;
 
