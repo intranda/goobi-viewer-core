@@ -181,6 +181,40 @@ public final class StringTools {
     }
 
     /**
+     * 
+     * @param s {@link String} to match
+     * @param candidates List of {@link String}s with possible matches
+     * @param language Language for scoring; English will be used, if no {@link Locale} can be matched for given language
+     * @return Best matching string; null if none found
+     * @should throw IllegalArgumentException if s is null
+     * @should throw IllegalArgumentException if candidates is null
+     * @should return best match
+     * @should return null if no matches found
+     */
+    public static String findBestMatch(String s, List<String> candidates, String language) {
+        if (s == null) {
+            throw new IllegalArgumentException("s may not be null");
+        }
+        if (candidates == null) {
+            throw new IllegalArgumentException("candidates may not be null");
+        }
+
+        FuzzyScore fs = new FuzzyScore(StringUtils.isNotEmpty(language) ? Locale.forLanguageTag(language) : Locale.ENGLISH);
+        String ret = null;
+        int topScore = 0;
+        for (String c : candidates) {
+            int score = fs.fuzzyScore(s, c);
+            if (score > topScore) {
+                topScore = score;
+                ret = c;
+            }
+        }
+        logger.trace("best match for {}: {}", s, ret);
+
+        return ret;
+    }
+
+    /**
      * Escapes special HTML characters in the given string.
      *
      * @param str a {@link java.lang.String} object.
@@ -827,39 +861,5 @@ public final class StringTools {
             return replaced.substring(0, maxLength);
         }
         return replaced;
-    }
-
-    /**
-     * 
-     * @param s {@link String} to match
-     * @param candidates List of {@link String}s with possible matches
-     * @param language Language for scoring; English will be used, if no {@link Locale} can be matched for given language
-     * @return Best matching string; null if none found
-     * @should throw IllegalArgumentException if s is null
-     * @should throw IllegalArgumentException if candidates is null
-     * @should return best match
-     * @should return null if no matches found
-     */
-    public static String findBestMatch(String s, List<String> candidates, String language) {
-        if (s == null) {
-            throw new IllegalArgumentException("s may not be null");
-        }
-        if (candidates == null) {
-            throw new IllegalArgumentException("candidates may not be null");
-        }
-
-        FuzzyScore fs = new FuzzyScore(StringUtils.isNotEmpty(language) ? Locale.forLanguageTag(language) : Locale.ENGLISH);
-        String ret = null;
-        int topScore = 0;
-        for (String c : candidates) {
-            int score = fs.fuzzyScore(s, c);
-            if (score > topScore) {
-                topScore = score;
-                ret = c;
-            }
-        }
-        logger.trace("best match for {}: {}", s, ret);
-
-        return ret;
     }
 }

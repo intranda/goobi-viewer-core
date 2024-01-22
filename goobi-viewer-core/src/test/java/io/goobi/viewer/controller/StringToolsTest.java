@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -304,17 +305,56 @@ class StringToolsTest {
         assertEquals("a", s1Sorted.get(2));
         assertEquals("b", s1Sorted.get(3));
     }
-    
+
     @Test
     void testCleanHtml() {
-        
-        String html = "<p><script>alert('SPAM')</script><span data-sheets-value=\"{\"1\":2,\"2\":\"Kremer, Boris, and Alex Reding. My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz] = from 1 June to 27 October 2006. Luxembourg: Dexia-BIL, 2006. Print.\"}\" data-sheets-userformat=\"{\"2\":15107,\"3\":{\"1\":0},\"4\":{\"1\":2,\"2\":16777215},\"11\":4,\"12\":0,\"14\":{\"1\":2,\"2\":3815994},\"15\":\"\\\"Source Sans Pro\\\", \\\"Helvetica Neue\\\", Helvetica, Arial, sans-serif\",\"16\":11}\">Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
-        String expectHtmlCleanted = "<p><span>Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
 
-            
+        String html =
+                "<p><script>alert('SPAM')</script><span data-sheets-value=\"{\"1\":2,\"2\":\"Kremer, Boris, and Alex Reding. My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz] = from 1 June to 27 October 2006. Luxembourg: Dexia-BIL, 2006. Print.\"}\" data-sheets-userformat=\"{\"2\":15107,\"3\":{\"1\":0},\"4\":{\"1\":2,\"2\":16777215},\"11\":4,\"12\":0,\"14\":{\"1\":2,\"2\":3815994},\"15\":\"\\\"Source Sans Pro\\\", \\\"Helvetica Neue\\\", Helvetica, Arial, sans-serif\",\"16\":11}\">Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
+        String expectHtmlCleanted =
+                "<p><span>Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
+
         String htmlCleaned = Jsoup.clean(html, Safelist.relaxed());
-        
+
         assertEquals(expectHtmlCleanted, htmlCleaned);
-        
+
+    }
+
+    /**
+     * @see StringTools#findBestMatch(String,List<String>,Locale)
+     * @verifies throw IllegalArgumentException if s is null
+     */
+    @Test
+    void findBestMatch_shouldThrowIllegalArgumentExceptionIfSIsNull() throws Exception {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class, () -> StringTools.findBestMatch(null, Collections.emptyList(), "en"));
+        assertEquals("s may not be null", e.getMessage());
+    }
+
+    /**
+     * @see StringTools#findBestMatch(String,List<String>,Locale)
+     * @verifies throw IllegalArgumentException if candidates is null
+     */
+    @Test
+    void findBestMatch_shouldThrowIllegalArgumentExceptionIfCandidatesIsNull() throws Exception {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class, () -> StringTools.findBestMatch("foo", null, "en"));
+        assertEquals("candidates may not be null", e.getMessage());
+    }
+
+    /**
+     * @see StringTools#findBestMatch(String,List<String>,Locale)
+     * @verifies return best match
+     */
+    @Test
+    void findBestMatch_shouldReturnBestMatch() throws Exception {
+        assertEquals("amet, sit, ipsum!", StringTools.findBestMatch("Lorem ipsum dolor sit amet", Arrays.asList("foo", "foo lorem", "amet, sit, ipsum!"), "en"));
+    }
+    
+    /**
+     * @see StringTools#findBestMatch(String,List<String>,Locale)
+     * @verifies return null if no matches found
+     */
+    @Test
+    void findBestMatch_shouldReturnNullIfNoMatchesFound() throws Exception {
+        Assertions.assertNull(StringTools.findBestMatch("Lorem ipsum dolor sit amet", Arrays.asList(";)", "", "zyx"), "en"));
     }
 }
