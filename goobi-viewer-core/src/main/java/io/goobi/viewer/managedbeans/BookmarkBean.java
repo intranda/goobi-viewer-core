@@ -222,20 +222,6 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * Shares currentBookmarkList with currentUserGroup.
-     *
-     * @deprecated not used anymore. Replaced by assigning share key
-     */
-    public void shareCurrentBookmarkListAction() {
-        if (userBean != null && userBean.getUser() != null && currentBookmarkList.addGroupShare(currentUserGroup)) {
-            Messages.info("bookmarkList_shareWin");
-            logger.debug("BookmarkList '{}' shared with user group '{}'.", currentBookmarkList.getName(), currentUserGroup.getName());
-            return;
-        }
-        Messages.error("bookmarkList_shareFail");
-    }
-
-    /**
      * Removes currentUserGroup from the shares list of currentBookmarkList.
      */
     public void unshareCurrentBookmarkListAction() {
