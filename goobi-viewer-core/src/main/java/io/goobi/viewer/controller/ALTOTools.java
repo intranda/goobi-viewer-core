@@ -457,12 +457,17 @@ public final class ALTOTools {
      * @param charset
      * @param searchTerms Set of search terms
      * @param rotation Image rotation in degrees
+     * @param rotation2 
      * @return a {@link java.util.List} object.
      * @should match hyphenated words
      * @should match phrases
      * @should match diacritics via base letter
      */
     public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int rotation) {
+        return getWordCoords(altoString, charset, searchTerms, 0, rotation);
+    }
+    
+    public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int proximitySearchDistance, int rotation) {
         if (altoString == null) {
             throw new IllegalArgumentException("altoDoc may not be null");
         }
@@ -506,14 +511,21 @@ public final class ALTOTools {
                     }
                     // Match next words if search term has more than one word
                     if (totalHits < searchWords.length) {
+                        int remainingProximityReach = proximitySearchDistance;
                         while (totalHits < searchWords.length && words.size() > wordIndex + 1) {
                             wordIndex++;
                             Word nextWord = words.get(wordIndex);
                             int hits = ALTOTools.getMatchALTOWord(nextWord, Arrays.copyOfRange(searchWords, totalHits, searchWords.length));
                             if (hits == 0) {
-                                wordIndex--;
-                                match = false;
-                                break;
+                                if(remainingProximityReach < 1) {
+                                    wordIndex--;
+                                    match = false;
+                                    break;
+                                } else {                                    
+                                    remainingProximityReach--;
+                                }
+                            } else {
+                                remainingProximityReach = proximitySearchDistance;
                             }
                             totalHits += hits;
                             addWordCoords(rotation, pageSize, nextWord, tempList);

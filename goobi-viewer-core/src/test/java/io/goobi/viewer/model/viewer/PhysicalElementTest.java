@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
+
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -30,9 +34,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.apache.logging.log4j.Logger;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ContextMocker;
 
 class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -139,4 +146,5 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     void getBaseMimeType_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
         Assertions.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
     }
+
 }

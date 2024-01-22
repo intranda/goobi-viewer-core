@@ -26,14 +26,14 @@
             <div id="privacy" class="view-privacy">
                 <h1 >#{msg.privacy}</h1>
 
-                <ui:fragment rendered="#{configurationBean.piwikTrackingEnabled}">
+                <ui:fragment rendered="#{configurationBean.MatomoTrackingEnabled}">
                     <h2>Statistische Daten für den Betreiber der Website</h2>
-                    <p>Diese Website nutzt die Open-Source-Software Piwik für die statistische Auswertung von Besucherzugriffen. Piwik ist
+                    <p>Diese Website nutzt die Open-Source-Software Matomo für die statistische Auswertung von Besucherzugriffen. Matomo ist
                         datenschutzkonform konfiguriert, Daten werden anonymisiert gespeichert. Die zu diesem Zweck verwendeten „Sitzungs-Cookies” sind
                         Textdateien, die auf Ihrem Computer gespeichert werden und die eine Analyse der Benutzung der Webseite durch Sie ermöglichen. Die
                         durch den Cookie erzeugten Informationen über Ihre Benutzung dieses Internetangebotes werden auf unserem Server gespeichert. Die
-                        IP-Adresse wird sofort nach der Verarbeitung und vor deren Speicherung anonymisiert. Die von Piwik erfassten Daten werden in
-                        anonymisierter Form dazu verwendet, unser Angebot zu verbessern. IP-Adressen werden in Piwik ohne das letzte Tupel gespeichert.
+                        IP-Adresse wird sofort nach der Verarbeitung und vor deren Speicherung anonymisiert. Die von Matomo erfassten Daten werden in
+                        anonymisierter Form dazu verwendet, unser Angebot zu verbessern. IP-Adressen werden in Matomo ohne das letzte Tupel gespeichert.
                         Wir wissen aus welchem Netz eine Anfrage kam, nicht jedoch von welchem Rechner.</p>
                     <p>Diese „Sitzungs-Cookies“ beinhalten keine personenbezogenen Daten und verfallen nach Ablauf der Sitzung. Techniken, wie zum
                         Beispiel Java-Applets oder Active-X-Controls, die es ermöglichen, das Zugriffsverhalten der Nutzer nachzuvollziehen, werden nicht
@@ -51,9 +51,9 @@
 
                     <p>Sie können sich hier entscheiden, ob in Ihrem Browser ein eindeutiger Webanalyse-Cookie abgelegt werden darf, um dem Betreiber
                         der Webseite die Erfassung und Analyse verschiedener statistischer Daten zu ermöglichen.</p>
-                    <p>Durch die Nutzung dieser Website erklären Sie sich mit der Bearbeitung der über Sie erhobenen Daten durch Piwik in der zuvor
+                    <p>Durch die Nutzung dieser Website erklären Sie sich mit der Bearbeitung der über Sie erhobenen Daten durch Matomo in der zuvor
                         beschriebenen Art und Weise und zu dem zuvor benannten Zweck einverstanden.</p>
-                    <p>Wenn Sie sich dagegen entscheiden möchten, klicken Sie den folgenden Link, um den Piwik-Deaktivierungs-Cookie in Ihrem Browser
+                    <p>Wenn Sie sich dagegen entscheiden möchten, klicken Sie den folgenden Link, um den Matomo-Deaktivierungs-Cookie in Ihrem Browser
                         abzulegen.</p>
 
                     <iframe src="//#{configurationBean.piwikBaseURL}index.php?module=CoreAdminHome&amp;action=optOut&amp;language=#{navigationHelper.localeString}"></iframe>
