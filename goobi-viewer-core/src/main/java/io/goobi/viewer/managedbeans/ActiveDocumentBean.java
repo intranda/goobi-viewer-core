@@ -1460,19 +1460,6 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * <p>
-     * getReadingModeUrl.
-     * </p>
-     *
-     * @deprecated renamed to fullscreen
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public String getReadingModeUrl() throws IndexUnreachableException {
-        return getFullscreenImageUrl();
-    }
-
-    /**
-     * <p>
      * getFulltextUrl.
      * </p>
      *
