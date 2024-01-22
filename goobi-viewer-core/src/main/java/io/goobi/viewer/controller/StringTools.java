@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -49,6 +50,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.similarity.FuzzyScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -827,4 +829,37 @@ public final class StringTools {
         return replaced;
     }
 
+    /**
+     * 
+     * @param s {@link String} to match
+     * @param candidates List of {@link String}s with possible matches
+     * @param language Language for scoring; English will be used, if no {@link Locale} can be matched for given language
+     * @return Best matching string; null if none found
+     * @should throw IllegalArgumentException if s is null
+     * @should throw IllegalArgumentException if candidates is null
+     * @should return best match
+     * @should return null if no matches found
+     */
+    public static String findBestMatch(String s, List<String> candidates, String language) {
+        if (s == null) {
+            throw new IllegalArgumentException("s may not be null");
+        }
+        if (candidates == null) {
+            throw new IllegalArgumentException("candidates may not be null");
+        }
+
+        FuzzyScore fs = new FuzzyScore(StringUtils.isNotEmpty(language) ? Locale.forLanguageTag(language) : Locale.ENGLISH);
+        String ret = null;
+        int topScore = 0;
+        for (String c : candidates) {
+            int score = fs.fuzzyScore(s, c);
+            if (score > topScore) {
+                topScore = score;
+                ret = c;
+            }
+        }
+        logger.trace("best match for {}: {}", s, ret);
+
+        return ret;
+    }
 }
