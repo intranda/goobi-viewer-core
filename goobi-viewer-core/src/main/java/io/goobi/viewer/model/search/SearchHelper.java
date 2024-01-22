@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.FuzzyScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -1824,7 +1825,7 @@ public final class SearchHelper {
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
         QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, returnRows, language);
-        // logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
+        logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
         if ("0-9".equals(startsWith)) {
             // TODO Is this still necessary?
             // Numerical filtering
@@ -1963,7 +1964,7 @@ public final class SearchHelper {
             filterQueries.addAll(bmfc.getFilterQueries());
         }
 
-        // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
+        // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith); //NOSONAR Debug
         String query = buildFinalQuery(sbQuery.toString(), false, SearchAggregationType.NO_AGGREGATION);
         logger.trace("getFilteredTermsFromIndex query: {}", query);
         if (logger.isTraceEnabled()) {
@@ -2016,6 +2017,7 @@ public final class SearchHelper {
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
         int count = -1;
+        //        Collections.sort(termList);
         for (String term : termList) {
             count++;
             if (StringUtils.isEmpty(term)) {
@@ -2033,12 +2035,12 @@ public final class SearchHelper {
             if (StringUtils.isNotEmpty(sortTerm)) {
                 compareTerm = sortTerm;
             } else if (bmfc.getSortField() != null) {
-                // Only the first term will have a matching sort field, so attempt a fallback to a facetified variant (make sure to match the order)
+                // Only the first term will have a matching sort field, so attempt a fallback to a facetified variant
                 List<String> facetifiedSortTermValues = SolrTools.getMetadataValues(doc, SearchHelper.facetifyField(bmfc.getSortField()));
-                String facetifiedSortTerm = facetifiedSortTermValues.size() > count ? facetifiedSortTermValues.get(count) : null;
-                if (StringUtils.isNotEmpty(facetifiedSortTerm)) {
-                    compareTerm = facetifiedSortTerm;
-                    sortTerm = facetifiedSortTerm;
+                String bestMatch = StringTools.findBestMatch(startsWith, facetifiedSortTermValues, language);
+                if (StringUtils.isNotEmpty(bestMatch)) {
+                    compareTerm = bestMatch;
+                    sortTerm = bestMatch;
                 }
             }
             if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
@@ -2047,8 +2049,8 @@ public final class SearchHelper {
                         DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars()).trim();
             }
             if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
-                // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {},
-                // translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
+                // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}",
+                // term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
                 continue;
             }
 
@@ -2057,8 +2059,8 @@ public final class SearchHelper {
                 synchronized (LOCK) {
                     // Another thread may have added this term by now
                     if (!terms.containsKey(term)) {
-                        //                        logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, 
-                        // translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
+                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}",
+                        // term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
                         terms.put(term, new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null));
                     }
                 }
