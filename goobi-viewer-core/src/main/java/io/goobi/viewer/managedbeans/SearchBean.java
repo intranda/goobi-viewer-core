@@ -3229,7 +3229,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         facets.getActiveFacetString());
             case SearchHelper.SEARCH_TYPE_TERMS:
                 return PrettyUrlTools.getAbsolutePageUrl(
-                        "pretty:searchTerms5",
+                        StringConstants.PRETTY_SEARCHTERM5,
                         getActiveResultGroupName(),
                         getExactSearchString(),
                         getCurrentPage(),
