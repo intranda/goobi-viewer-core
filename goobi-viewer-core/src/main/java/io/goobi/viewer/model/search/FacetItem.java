@@ -24,6 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -325,7 +326,7 @@ public class FacetItem implements Serializable, IFacetItem {
             case "alphanumerical":
                 Collections.sort(retList, new FacetItemAlphanumComparator(locale));
                 break;
-            case "alphanumerica_desc":
+            case "alphanumerical_desc":
                 Collections.sort(retList, new FacetItemAlphanumComparator(locale));
                 Collections.reverse(retList);
                 break;
@@ -764,7 +765,11 @@ public class FacetItem implements Serializable, IFacetItem {
         public int compare(IFacetItem o1, IFacetItem o2) {
             String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
             String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
-            return label1.compareTo(label2);
+
+            // Collator that ignores diacritics
+            Collator col = Collator.getInstance();
+            col.setStrength(Collator.PRIMARY);
+            return col.compare(label1, label2);
         }
 
     }
@@ -786,11 +791,28 @@ public class FacetItem implements Serializable, IFacetItem {
 
     public static class CountComparator implements Comparator<IFacetItem> {
 
+        /**
+         * @should compare correctly
+         */
         @Override
         public int compare(IFacetItem o1, IFacetItem o2) {
-            return o1.getCount() > o2.getCount() ? -1
-                    : o1.getCount() < o2.getCount() ? +1 : (o1.getLabel() != null ? o1.getLabel().compareTo(o2.getLabel()) : 0);
+            if (o1.getCount() > o2.getCount()) {
+                return -1;
+            }
+            if (o1.getCount() < o2.getCount()) {
+                return 1;
+            }
+            if (o1.getLabel() == null && o2.getLabel() == null) {
+                return 0;
+            }
 
+            String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
+            String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
+
+            // Collator that ignores diacritics
+            Collator col = Collator.getInstance();
+            col.setStrength(Collator.PRIMARY);
+            return col.compare(label1, label2);
         }
     }
 }

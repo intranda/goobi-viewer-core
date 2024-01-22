@@ -276,7 +276,8 @@
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
     </url-mapping>
     <url-mapping id="searchTerm5">
-        <pattern value="/term/-/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
+        <!-- PrettyFacets URLPAtternParser.getParameterCount() doesn't count "-" parameters and throws and exception, if "-" is used here. -->
+        <pattern value="/term/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.setActiveSearchType(4)}</action>
         <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
