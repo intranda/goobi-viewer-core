@@ -620,7 +620,7 @@ public class SearchBean implements SearchInterface, Serializable {
         StringBuilder sbCurrentCollection = new StringBuilder();
         Set<String> usedHierarchicalFields = new HashSet<>();
         Set<String> usedFieldValuePairs = new HashSet<>();
-
+        this.proximitySearchDistance = 0;
         for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
             // logger.trace("Query item: {}", queryItem.toString()); //NOSONAR Logging sometimes needed for debugging
             if (StringUtils.isEmpty(queryItem.getField()) || StringUtils.isBlank(queryItem.getValue())) {
@@ -745,6 +745,7 @@ public class SearchBean implements SearchInterface, Serializable {
             } else {
                 // Generate item query
                 itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, fuzzySearchEnabled);
+                this.proximitySearchDistance = Math.max(this.proximitySearchDistance, queryItem.getProximitySearchDistance());
             }
 
             logger.trace("Item query: {}", itemQuery);
@@ -3024,6 +3025,10 @@ public class SearchBean implements SearchInterface, Serializable {
         return value.replace(PREFIX_KEY, "");
     }
 
+    public int getProximitySearchDistance() {
+        return proximitySearchDistance;
+    }
+    
     /**
      * 
      * @param queryField
@@ -3245,7 +3250,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         facets.getActiveFacetString());
         }
     }
-
+    
     @Override
     public String changeSorting() throws IOException {
         logger.trace("changeSorting");
