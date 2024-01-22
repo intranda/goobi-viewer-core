@@ -1703,7 +1703,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     ret = StringConstants.PRETTY_SEARCHADVANCED5;
                     break;
                 case SearchHelper.SEARCH_TYPE_TERMS:
-                    ret = "pretty:searchTerm5";
+                    ret = StringConstants.PRETTY_SEARCHTERM5;
                     break;
                 default:
                     break;
@@ -3253,7 +3253,7 @@ public class SearchBean implements SearchInterface, Serializable {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return StringConstants.PRETTY_SEARCHADVANCED5;
             case SearchHelper.SEARCH_TYPE_TERMS:
-                return "pretty:searchTerm5";
+                return StringConstants.PRETTY_SEARCHTERM5;
             default:
                 return StringConstants.PRETTY_NEWSEARCH5;
         }
