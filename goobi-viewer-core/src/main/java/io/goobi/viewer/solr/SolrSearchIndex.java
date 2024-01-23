@@ -382,7 +382,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList,
             List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
-        //        logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
+        logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
         return search(query, first, rows, sortFields, facetFields, null, fieldList, filterQueries, params);
     }
 
@@ -975,7 +975,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             String facetPrefix, Map<String, String> params, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
-        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Sometimes needed for debugging
+        logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Sometimes needed for debugging
         SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query));
         solrQuery.setStart(0);
         solrQuery.setRows(0);
