@@ -1360,7 +1360,7 @@ public final class SearchHelper {
         // Reverser order
         for (int i = searchTermSplit.length - 1; i >= 0; --i) {
             if (i < searchTermSplit.length - 1) {
-                sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
+                sbPattern.append("\\W+(?:\\p{L}+\\W+){0,").append(proximitySearchDistance).append("}?");
             }
             for (int j = 0; j < searchTermSplit[i].length(); ++j) {
                 if (j > 0) {
