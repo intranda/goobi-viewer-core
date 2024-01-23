@@ -1642,9 +1642,9 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void buildProximitySearchRegexPattern_shouldBuildRegexCorrectly() throws Exception {
         Assertions.assertEquals("\\b"
-                + "(?:o(| )n(| )e\\W+(?:\\w+\\W+){0,10}?t(| )w(| )o\\W+(?:\\w+\\W+){0,10}?t(| )h(| )r(| )e(| )e"
+                + "(?:o(| )n(| )e\\W+(?:\\p{L}+\\W+){0,10}?t(| )w(| )o\\W+(?:\\p{L}+\\W+){0,10}?t(| )h(| )r(| )e(| )e"
                 + "|"
-                + "t(| )h(| )r(| )e(| )e\\W+(?:\\w+\\W+){0,10}?t(| )w(| )o\\W+(?:\\w+\\W+){0,10}?o(| )n(| )e)"
+                + "t(| )h(| )r(| )e(| )e\\W+(?:\\p{L}+\\W+){0,10}?t(| )w(| )o\\W+(?:\\p{L}+\\W+){0,10}?o(| )n(| )e)"
                 + "\\b",
                 SearchHelper.buildProximitySearchRegexPattern("one two three", 10));
     }
