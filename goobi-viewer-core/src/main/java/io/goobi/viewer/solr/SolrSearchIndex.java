@@ -382,7 +382,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList,
             List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
-        logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
+        // logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
         return search(query, first, rows, sortFields, facetFields, null, fieldList, filterQueries, params);
     }
 

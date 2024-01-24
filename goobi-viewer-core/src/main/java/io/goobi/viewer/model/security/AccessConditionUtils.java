@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -531,14 +532,16 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
-
+        // logger.trace("checkContentFileAccessPermission: {}", identifier); //NOSONAR Debugging
         AccessPermission ret = null;
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
+        // logger.trace("Attribute name: {}", attributeName); //NOSONAR Debugging
         if (request != null && request.getSession() != null) {
             try {
                 ret = (AccessPermission) request.getSession().getAttribute(attributeName);
                 if (ret != null) {
                     // Permission already saved in session
+                    // logger.trace("Permission for '{}' already in session: {}", attributeName, ret.isGranted()); //NOSONAR Debugging
                     return ret;
                 }
             } catch (ClassCastException e) {
@@ -546,7 +549,6 @@ public final class AccessConditionUtils {
             }
         }
 
-        // logger.trace("checkContentFileAccessPermission({})", identifier); //NOSONAR Debugging
         if (StringUtils.isNotEmpty(identifier)) {
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
@@ -567,6 +569,7 @@ public final class AccessConditionUtils {
                 }
 
                 ret = checkAccessPermission(requiredAccessConditions, IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, query, request);
+                logger.trace("Permission found for '{}': {}", identifier, ret.isGranted());
 
             } catch (PresentationException e) {
                 logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
@@ -1234,5 +1237,37 @@ public final class AccessConditionUtils {
         String attributeName = IPrivilegeHolder.PREFIX_TICKET + pi;
         session.setAttribute(attributeName, true);
         return true;
+    }
+
+    /**
+     * Removes privileges saved in the user session.
+     * 
+     * @param session
+     * @return Number of removed session attributes
+     */
+    public static int removeSessionPermissions(HttpSession session) {
+        if (session == null) {
+            return 0;
+        }
+
+        Enumeration<String> attributeNames = session.getAttributeNames();
+        Set<String> attributesToRemove = new HashSet<>();
+        while (attributeNames.hasMoreElements()) {
+            String attribute = attributeNames.nextElement();
+            if (attribute.startsWith(IPrivilegeHolder.PREFIX_PRIV)) {
+                attributesToRemove.add(attribute);
+            }
+        }
+
+        int ret = 0;
+        if (!attributesToRemove.isEmpty()) {
+            for (String attribute : attributesToRemove) {
+                session.removeAttribute(attribute);
+                ret++;
+                logger.trace("Removed session attribute: {}", attribute);
+            }
+        }
+
+        return ret;
     }
 }
