@@ -50,7 +50,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.similarity.FuzzyScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -1016,9 +1015,8 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
-     * generateCollectionBlacklistFilterSuffix.
-     * </p>
+     * Generates a Solr query suffix that filters out values for the given field that are configured as blacklisted. This isn't an expensive method,
+     * so the suffix is generated anew upon every call and not persisted.
      *
      * @param field a {@link java.lang.String} object.
      * @should construct suffix correctly
@@ -2037,7 +2035,18 @@ public final class SearchHelper {
             } else if (bmfc.getSortField() != null) {
                 // Only the first term will have a matching sort field, so attempt a fallback to a facetified variant
                 List<String> facetifiedSortTermValues = SolrTools.getMetadataValues(doc, SearchHelper.facetifyField(bmfc.getSortField()));
-                String bestMatch = StringTools.findBestMatch(startsWith, facetifiedSortTermValues, language);
+                String bestMatch = null;
+                // Look for exact match
+                for (String val : facetifiedSortTermValues) {
+                    if (StringUtils.equalsIgnoreCase(val, term)) {
+                        bestMatch = val;
+                        break;
+                    }
+                }
+                // Look for most similar value
+                if (StringUtils.isEmpty(bestMatch)) {
+                    bestMatch = StringTools.findBestMatch(term, facetifiedSortTermValues, language);
+                }
                 if (StringUtils.isNotEmpty(bestMatch)) {
                     compareTerm = bestMatch;
                     sortTerm = bestMatch;
