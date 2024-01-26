@@ -132,6 +132,7 @@ public class RisResourceBuilder {
      */
     public StreamingOutput writeRIS(StructElement se)
             throws IndexUnreachableException, DAOException, ContentLibException {
+        // logger.trace("writeRIS: {}", se); //NOSONAR Debug
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
         response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
 
@@ -182,6 +183,7 @@ public class RisResourceBuilder {
      * @throws IndexUnreachableException
      */
     public String getRIS(StructElement se) throws ContentNotFoundException, IndexUnreachableException, DAOException {
+        // logger.trace("getRis: {}", se); //NOSONAR Debug
         try {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)
                     .isGranted()) {

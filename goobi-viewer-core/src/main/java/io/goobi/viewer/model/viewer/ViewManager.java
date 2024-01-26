@@ -2279,6 +2279,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
+        // logger.trace("isAccessPermission: {}", privilege); //NOSONAR Debug
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
             return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, privilege, request).isGranted();
@@ -3913,7 +3914,7 @@ public class ViewManager implements Serializable {
 
     /**
      * @param levelName
-     * @return List of configured citation links
+     * @return List of configured citation links for the given levelName, populated with values
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -3925,10 +3926,10 @@ public class ViewManager implements Serializable {
             return Collections.emptyList();
         }
 
+        // Populate values
         if (this.citationLinks.get(level) == null) {
             this.citationLinks.put(level, CitationTools
                     .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks(), level, this));
-
         }
 
         return this.citationLinks.get(level);

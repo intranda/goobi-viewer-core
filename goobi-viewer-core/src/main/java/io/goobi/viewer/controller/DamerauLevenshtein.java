@@ -42,7 +42,7 @@ public class DamerauLevenshtein {
     /**
      * Calculate distance according to the actual Damerau-Levenshtein distance
      * 
-     * @return Calculated disstance
+     * @return Calculated distance
      */
     public int getDHSimilarity() {
         int inf = compOne.length() + compTwo.length();

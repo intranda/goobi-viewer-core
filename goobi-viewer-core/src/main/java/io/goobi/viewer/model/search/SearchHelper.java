@@ -605,6 +605,7 @@ public final class SearchHelper {
      */
     public static StringPair getFirstRecordPiAndPageType(String luceneField, String value, boolean filterForWhitelist,
             boolean filterForBlacklist, final String splittingChar) throws IndexUnreachableException, PresentationException {
+        // logger.trace("getFirstRecordPiAndPageType: {}:{}", luceneField, value); //NOSONAR Debug
         if (luceneField == null || value == null) {
             return null;
         }
@@ -637,7 +638,7 @@ public final class SearchHelper {
         List<String> fields =
                 Arrays.asList(SolrConstants.PI, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT, SolrConstants.THUMBNAIL, SolrConstants.ISANCHOR,
                         SolrConstants.ISWORK, SolrConstants.LOGID);
-        //        logger.trace("first record query: {}", sbQuery.toString());
+        logger.trace("first record query: {}", sbQuery);
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 1, null, null, fields);
 
         if (resp.getResults().isEmpty()) {

@@ -783,6 +783,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public void setRepresentativeImage() throws PresentationException, IndexUnreachableException {
+        // logger.trace("setRepresentativeImage"); //NOSONAR Debug
         synchronized (lock) {
             String image = "1";
             if (StringUtils.isNotEmpty(lastReceivedIdentifier) && !"-".equals(lastReceivedIdentifier)) {
@@ -2717,5 +2718,4 @@ public class ActiveDocumentBean implements Serializable {
     public List<String> getGeomapFilters() {
         return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }
-
 }

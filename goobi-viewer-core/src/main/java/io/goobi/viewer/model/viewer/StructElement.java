@@ -726,6 +726,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws RecordNotFoundException
      */
     public boolean isAccessPermissionDownloadMetadata() throws IndexUnreachableException, DAOException {
+        // logger.trace("isAccessPermissionDownloadMetadata"); //NOSONAR Debug
         return isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
     }
 
@@ -737,6 +738,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws RecordNotFoundException
      */
     public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException {
+        // logger.trace("isAccessPermissionGenerateIiifManifest"); //NOSONAR Debug
         return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
     }
 
@@ -748,6 +750,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws DAOException
      */
     boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
+        // logger.trace("isAccessPermission: {}", privilege); //NOSONAR Debug
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
             return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, request).isGranted();
