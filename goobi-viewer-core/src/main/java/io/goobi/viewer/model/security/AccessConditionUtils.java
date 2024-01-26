@@ -537,9 +537,8 @@ public final class AccessConditionUtils {
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkContentFileAccessPermission: {}", identifier); //NOSONAR Debugging
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
-        AccessPermission ret = (AccessPermission) request.getSession().getAttribute(attributeName);
+        AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request);
         if (ret != null) {
-            // Permission already saved in session
             // logger.trace("Permission for '{}' already in session: {}", attributeName, ret.isGranted()); //NOSONAR Debugging
             return ret;
         }
