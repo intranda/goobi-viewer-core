@@ -1075,7 +1075,7 @@ public class NavigationHelper implements Serializable {
                 }
             }
             // Reset access permissions in session (user might not have the same permissions for a different subtheme)
-            logger.trace("{} access premissions removed from user session.", AccessConditionUtils.removeSessionPermissions(BeanUtils.getSession()));
+            logger.trace("{} access premissions removed from user session.", AccessConditionUtils.clearSessionPermissions(BeanUtils.getSession()));
         }
     }
 
