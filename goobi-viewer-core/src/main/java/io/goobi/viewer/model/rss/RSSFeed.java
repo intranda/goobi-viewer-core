@@ -66,7 +66,6 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
-import io.netty.channel.ChannelException;
 
 /**
  * <p>
