@@ -69,15 +69,15 @@
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
 		<failOnSnapshot>false</failOnSnapshot>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.target>11</maven.compiler.target>
 
         <!-- Sonar -->
-        <sonar.scanner.force-deprecated-java-version>true</sonar.scanner.force-deprecated-java-version>
-
 		<sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
 		<sonar.organization>intranda</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.java.source>11</sonar.java.source>
-		<sonar.java.target>11</sonar.java.target>
+		<sonar.java.source>17</sonar.java.source>
+		<sonar.java.target>17</sonar.java.target>
 
 		<!-- Checkstyle -->
 		<checkstyle.max.violations>750</checkstyle.max.violations>
@@ -973,7 +973,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
 				<configuration>
-					<release>11</release>
 					<compilerArgs>
 						<arg>-Xlint:deprecation</arg>
 						<arg>-Xlint:unchecked</arg>
