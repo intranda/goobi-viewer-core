@@ -87,7 +87,7 @@ public class CommentGroup implements Serializable {
     private final Set<String> identifiers = new HashSet<>();
 
     @Transient
-    boolean identifiersQueried = false;
+    private boolean identifiersQueried = false;
 
     /**
      * Creates a {@link CommentGroup} instance representing unfiltered listing.
