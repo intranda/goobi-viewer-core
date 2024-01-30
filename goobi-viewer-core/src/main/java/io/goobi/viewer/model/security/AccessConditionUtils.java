@@ -52,6 +52,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.imaging.IIIFPresentationAPIHandler;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -168,6 +170,11 @@ public final class AccessConditionUtils {
         String simpleFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
         String baseFileName = FilenameUtils.getBaseName(simpleFileName);
         sbQuery.append('+').append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
+        //if fileName is an absolute http(s) url, assume that the filename is exactly the entire url
+        if(fileName.matches("https?:\\/\\/.*")) {
+            sbQuery.append(" +").append(useFileField).append(":\"").append(fileName).append('"');
+            return sbQuery.toString();
+        }
         // Different media types have the file name in different fields
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         switch (extension) {
