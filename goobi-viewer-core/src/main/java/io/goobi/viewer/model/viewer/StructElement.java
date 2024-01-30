@@ -382,7 +382,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      *
-     * @return
+     * @return IDDOC value of the parent document as a {@link Long}
      */
     public Long getParentLuceneId() {
         String parentIddoc = getMetadataValue(SolrConstants.IDDOC_PARENT);
@@ -720,7 +720,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      *
-     * @return
+     * @return true if permission granted; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws RecordNotFoundException
@@ -732,7 +732,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      *
-     * @return
+     * @return true if permission granted; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws RecordNotFoundException
@@ -778,11 +778,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * 
      * @param language
-     * @return
+     * @return true if a TEI file name is indexed for the given language; false otherwise
      */
     public boolean isHasTeiForLanguage(String language) {
         if (StringUtils.isNotEmpty(language)) {
-            logger.trace("isHasTeiForLanguage:" + SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
+            logger.trace("isHasTeiForLanguage: {}", SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
             return getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
         }
 
@@ -986,7 +986,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * 
      * @param order Page order
-     * @return
+     * @return List<ShapeMetadata>
      */
     public List<ShapeMetadata> getShapeMetadataForPage(int order) {
         List<ShapeMetadata> ret = new ArrayList<>();
@@ -1050,6 +1050,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
          * @param label
          * @param shape
          * @param coords
+         * @param pi
+         * @param pageNo
+         * @param logId
          */
         public ShapeMetadata(String label, String shape, String coords, String pi, int pageNo, String logId) {
             this.label = label;
@@ -1093,7 +1096,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         /**
          * 
          * @param pageType
-         * @return
+         * @return Constructed URL
          */
         public String getUrl(PageType pageType) {
             StringBuilder sbUrl = new StringBuilder();

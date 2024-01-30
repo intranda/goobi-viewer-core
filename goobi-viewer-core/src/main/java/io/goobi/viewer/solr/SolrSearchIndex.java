@@ -111,7 +111,6 @@ public class SolrSearchIndex {
      */
     private List<String> booleanSolrFields = null;
 
-
     /**
      * <p>
      * Constructor for SolrSearchIndex.
@@ -1053,7 +1052,7 @@ public class SolrSearchIndex {
         }
         return this.solrFields;
     }
-    
+
     public List<String> getAllBooleanFieldNames() throws IndexUnreachableException {
         try {
             if (this.booleanSolrFields == null) {
@@ -1078,7 +1077,7 @@ public class SolrSearchIndex {
             if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
                     || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
                 list.add(entry.getKey());
-            } else if(info != null && info.getType().toLowerCase().contains("bool")) {
+            } else if (info != null && info.getType().toLowerCase().contains("bool")) {
                 boolList.add(entry.getKey());
             }
         }
