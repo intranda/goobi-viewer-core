@@ -67,7 +67,12 @@ public class LocalUserAvatar implements UserAvatar {
         try {
             String sizeString = "!" + size + "," + size;
             String format = UserAvatarResource.getAvatarFileSuffix(userId);
-            String displayFormat = ImageFileFormat.getMatchingTargetFormat(ImageFileFormat.getImageFileFormatFromFileExtension(format)).getFileExtension();
+            String displayFormat = format;
+            ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(format);
+            if(fileFormat != null) {
+                displayFormat = ImageFileFormat.getMatchingTargetFormat(fileFormat).getFileExtension();                
+            }
+            
             return urls.path(USERS_USER_AVATAR_IMAGE, USERS_USER_AVATAR_IMAGE_IIIF)
                     .params(userId, Region.FULL_IMAGE, sizeString, 0, "default", displayFormat)
                     .query("updated", this.updated)
