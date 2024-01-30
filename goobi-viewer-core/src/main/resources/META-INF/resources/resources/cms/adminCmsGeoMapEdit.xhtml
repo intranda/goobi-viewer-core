@@ -469,10 +469,9 @@
 						</h:panelGroup>
 						<br />
 						<div class="admin__content-inner-content__controls">
-							<h:commandLink styleClass="btn btn--default" value="#{msg.reset}"
-								action="#{geoMapBean.resetCurrentMap}">
-								<f:ajax execute="@none" render="@all" />
-							</h:commandLink>
+                            <a id="cancelMapEdit" class="btn btn--cancel"
+                                href="#{navigationHelper.getPageUrl('adminCmsGeoMaps')}">
+                                #{msg.cancel} </a>
 							<h:commandButton styleClass="btn btn--success"
 								value="#{msg.save}" action="#{geoMapBean.saveCurrentMap}">
 								<f:ajax execute="@all" render=":messages" />
