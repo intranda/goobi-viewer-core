@@ -742,8 +742,7 @@ public class ThumbnailHandler {
             case "image":
                 thumbnailUrl = page.getFilepath();
                 break;
-            case "video":
-            case "text":
+            case "video", "text":
                 thumbnailUrl = page.getFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
@@ -767,7 +766,7 @@ public class ThumbnailHandler {
                         break;
                 }
                 break;
-            case "object":
+            case "model":
                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                 break;
             default:
@@ -852,8 +851,7 @@ public class ThumbnailHandler {
                         thumbnailUrl = getThumbnailPath(PERSON_THUMB).toString();
                     }
                     break;
-                case DOCSTRCT:
-                case PAGE:
+                case DOCSTRCT, PAGE:
                 default:
                     String mimeType = getMimeType(doc).orElse("unknown");
                     BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
@@ -862,8 +860,7 @@ public class ThumbnailHandler {
                             case "image":
                                 thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
                                 break;
-                            case "video":
-                            case "text":
+                            case "video", "text":
                                 thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
                                 if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
                                     thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
@@ -990,12 +987,8 @@ public class ThumbnailHandler {
                 String filename = item.getFileName();
                 String imageApiUrl = getCMSMediaImageApiUrl(filename);
                 switch (contentType) {
-                    case CMSMediaItem.CONTENT_TYPE_VIDEO:
-                    case CMSMediaItem.CONTENT_TYPE_AUDIO:
-                    case CMSMediaItem.CONTENT_TYPE_PDF:
-                    case CMSMediaItem.CONTENT_TYPE_XML:
-                    case CMSMediaItem.CONTENT_TYPE_SVG:
-                    case CMSMediaItem.CONTENT_TYPE_ICO:
+                    case CMSMediaItem.CONTENT_TYPE_VIDEO, CMSMediaItem.CONTENT_TYPE_AUDIO, CMSMediaItem.CONTENT_TYPE_PDF:
+                    case CMSMediaItem.CONTENT_TYPE_XML, CMSMediaItem.CONTENT_TYPE_SVG, CMSMediaItem.CONTENT_TYPE_ICO:
                         return imageApiUrl;
                     case CMSMediaItem.CONTENT_TYPE_GIF:
                         return imageApiUrl + "/full.gif";
