@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
@@ -62,7 +63,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "cms_content_media")
 @DiscriminatorValue("media")
-public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
+public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Comparable<CMSMediaContent> {
 
     private static final Logger logger = LogManager.getLogger(CMSMediaContent.class);
 
@@ -254,7 +255,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     @Override
     public String getData(Integer w, Integer h) {
         try {
-            return getUrl(Optional.ofNullable(w).map(i -> i.toString()).orElse(null), Optional.ofNullable(h).map(i -> i.toString()).orElse(null));
+            return getUrl(Optional.ofNullable(w).map(Object::toString).orElse(null), Optional.ofNullable(h).map(i -> i.toString()).orElse(null));
         } catch (UnsupportedEncodingException e) {
             logger.error("Error loading media item url for media item {}. Reason: {}", this.mediaItem, e.toString());
             return "";
@@ -264,6 +265,29 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     @Override
     public boolean isEmpty() {
         return Optional.ofNullable(mediaItem).map(media -> StringUtils.isBlank(media.getFileName())).orElse(true);
+    }
+    
+    @Override
+    public int hashCode() {
+        if(this.getId() == null) {
+            return 0;
+        } else {            
+            return this.getId().intValue();
+        }
+    }
+    
+    @Override
+    public boolean equals(Object arg0) {
+        if(arg0 != null && this.getClass().equals(arg0.getClass())) {            
+            return Objects.equals(this.getId(), ((CMSMediaContent)arg0).getId());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int compareTo(CMSMediaContent arg0) {
+        return Integer.compare(this.getMediaItem().getDisplayOrder(), arg0.getMediaItem().getDisplayOrder());
     }
 
 }

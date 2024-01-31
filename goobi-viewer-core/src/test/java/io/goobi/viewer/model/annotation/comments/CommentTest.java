@@ -22,22 +22,22 @@
 package io.goobi.viewer.model.annotation.comments;
 
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 
-public class CommentTest extends AbstractSolrEnabledTest {
+class CommentTest extends AbstractSolrEnabledTest {
 
     /**
     * @see Comment#isTargetPiRecordIndexed()
     * @verifies return true if record exists
     */
     @Test
-    public void isTargetPiRecordIndexed_shouldReturnTrueIfRecordExists() throws Exception {
+    void isTargetPiRecordIndexed_shouldReturnTrueIfRecordExists() throws Exception {
         Comment comment = new Comment();
         comment.setTargetPI(AbstractSolrEnabledTest.PI_KLEIUNIV);
-        Assert.assertTrue(comment.isTargetPiRecordIndexed());
+        Assertions.assertTrue(comment.isTargetPiRecordIndexed());
     }
 
     /**
@@ -45,10 +45,10 @@ public class CommentTest extends AbstractSolrEnabledTest {
     * @verifies return false if record missing
     */
     @Test
-    public void isTargetPiRecordIndexed_shouldReturnFalseIfRecordMissing() throws Exception {
+    void isTargetPiRecordIndexed_shouldReturnFalseIfRecordMissing() throws Exception {
         Comment comment = new Comment();
         comment.setTargetPI("foobar");
-        Assert.assertFalse(comment.isTargetPiRecordIndexed());
+        Assertions.assertFalse(comment.isTargetPiRecordIndexed());
     }
 
     /**
@@ -56,8 +56,8 @@ public class CommentTest extends AbstractSolrEnabledTest {
     * @verifies return false if targetPI not set
     */
     @Test
-    public void isTargetPiRecordIndexed_shouldReturnFalseIfTargetPINotSet() throws Exception {
+    void isTargetPiRecordIndexed_shouldReturnFalseIfTargetPINotSet() throws Exception {
         Comment comment = new Comment();
-        Assert.assertFalse(comment.isTargetPiRecordIndexed());
+        Assertions.assertFalse(comment.isTargetPiRecordIndexed());
     }
 }

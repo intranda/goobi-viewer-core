@@ -27,8 +27,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
@@ -38,19 +38,19 @@ import io.goobi.viewer.controller.DataManager;
  * @author florian
  *
  */
-public class DFGViewerImageTest extends AbstractTest {
+class DFGViewerImageTest extends AbstractTest {
 
     DFGViewerImage servlet;
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         servlet = new DFGViewerImage();
     }
 
     @Test
-    public void testForwardToImageApiUrl() throws ServletException, IOException {
+    void testForwardToImageApiUrl() throws ServletException, IOException {
 
         String requestUrl = "/1574750503285_37/800/0/1575272395963.jpg";
         String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "records/1574750503285_37/files/images/1575272395963/full/800,/0/default.jpg";

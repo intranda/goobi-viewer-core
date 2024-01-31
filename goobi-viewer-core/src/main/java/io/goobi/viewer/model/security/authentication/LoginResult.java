@@ -59,7 +59,7 @@ public class LoginResult {
      * @param loginRefused true if the login has been refused even if the user may exist and be valid. Typically true for wrong password
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, Optional<User> user, boolean loginRefused) {
-        this(request, response, user, loginRefused, 0l);
+        this(request, response, user, loginRefused, 0L);
     }
 
     /**
@@ -201,7 +201,7 @@ public class LoginResult {
 
     /**
      * 
-     * @return
+     * @return the delay
      */
     public long getDelay() {
         return delay;

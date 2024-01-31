@@ -14,7 +14,7 @@
 <script>
 
 this.on("mount", function() {
-    console.log("mapsearch ", this.opts);
+   // console.log("mapsearch ", this.opts);
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
     if(this.opts.area) {
@@ -288,7 +288,7 @@ initHitsLayer(map) {
     this.opts.hitsLayer.language = viewerJS.translator.language;
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
 	map.layers.push(hitsLayer);
-	console.log("init hits layer ", this.opts.hitsLayer, hitsLayer, this.opts.features);
+	// console.log("init hits layer ", this.opts.hitsLayer, hitsLayer, this.opts.features);
 	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {
 		if(f.properties && f.properties.link) {

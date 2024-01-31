@@ -142,10 +142,9 @@ public class PDFDownloadJob extends DownloadJob {
      * @param downloadIdentifier a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public static void triggerCreation(String pi, String logId, String downloadIdentifier)
-            throws PresentationException, IndexUnreachableException, DownloadException {
+            throws PresentationException, IndexUnreachableException {
 
         File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
@@ -167,10 +166,10 @@ public class PDFDownloadJob extends DownloadJob {
         logger.debug("Calling taskManager at {}", taskManagerUrl);
 
         TaskManagerPDFRequest requestObject = new TaskManagerPDFRequest();
-        requestObject.pi = cleanedPi;
-        requestObject.logId = cleanedLogId;
-        requestObject.goobiId = downloadIdentifier;
-        requestObject.sourceDir = metsPath.toString();
+        requestObject.setPi(cleanedPi);
+        requestObject.setLogId(cleanedLogId);
+        requestObject.setGoobiId(downloadIdentifier);
+        requestObject.setSourceDir(metsPath.toString());
         try {
             Response response = postJobRequest(taskManagerUrl, requestObject);
             String entity = response.readEntity(String.class);

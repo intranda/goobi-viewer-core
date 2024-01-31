@@ -24,6 +24,7 @@ package io.goobi.viewer.model.security.recordlock;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -72,11 +73,7 @@ public class RecordLockManager {
         if (limit == null) {
             return;
         }
-        Set<RecordLock> recordLocks = loadedRecordMap.get(pi);
-        if (recordLocks == null) {
-            recordLocks = new HashSet<>(limit);
-            loadedRecordMap.put(pi, recordLocks);
-        }
+        Set<RecordLock> recordLocks = loadedRecordMap.computeIfAbsent(pi, k -> new HashSet<>(limit));
         RecordLock newLock = new RecordLock(pi, sessionId);
         logger.trace("{} is currently locked {} times", pi, recordLocks.size());
         if (recordLocks.size() == limit) {
@@ -120,7 +117,7 @@ public class RecordLockManager {
      *
      * @param pi
      * @param sessionId
-     * @return
+     * @return true if lock removed successfully; false otherwise
      */
     public synchronized boolean removeLockForPiAndSessionId(String pi, String sessionId) {
         if (pi == null || sessionId == null) {
@@ -147,7 +144,7 @@ public class RecordLockManager {
      * missed by the web socket mechanism.
      *
      * @param maxAge
-     * @return
+     * @return Number of removed locks
      * @should remove locks older than maxAge
      */
     public synchronized int removeOldLocks(long maxAge) {
@@ -158,21 +155,21 @@ public class RecordLockManager {
         long now = System.currentTimeMillis();
         int count = 0;
         Set<String> emptyPIs = new HashSet<>(loadedRecordMap.size());
-        for (String pi : loadedRecordMap.keySet()) {
-            if (loadedRecordMap.get(pi) == null) {
+        for (Entry<String, Set<RecordLock>> entry : loadedRecordMap.entrySet()) {
+            if (entry.getValue() == null) {
                 continue;
             }
             Set<RecordLock> toRemove = new HashSet<>();
-            for (RecordLock lock : loadedRecordMap.get(pi)) {
+            for (RecordLock lock : entry.getValue()) {
                 if (now - lock.getTimeCreated() > maxAge) {
                     toRemove.add(lock);
                 }
             }
-            if (!toRemove.isEmpty() && loadedRecordMap.get(pi).removeAll(toRemove)) {
+            if (!toRemove.isEmpty() && entry.getValue().removeAll(toRemove)) {
                 count += toRemove.size();
             }
-            if (loadedRecordMap.get(pi).isEmpty()) {
-                emptyPIs.add(pi);
+            if (entry.getValue().isEmpty()) {
+                emptyPIs.add(entry.getKey());
             }
         }
 

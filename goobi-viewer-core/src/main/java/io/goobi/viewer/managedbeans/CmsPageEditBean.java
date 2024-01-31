@@ -85,21 +85,21 @@ public class CmsPageEditBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(CmsPageEditBean.class);
 
     @Inject
-    transient IDAO dao;
+    private transient IDAO dao;
     @Inject
-    transient CMSTemplateManager templateManager;
+    private transient CMSTemplateManager templateManager;
     @Inject
-    transient UserBean userBean;
+    private transient UserBean userBean;
     @Inject
-    transient CmsBean cmsBean;
+    private transient CmsBean cmsBean;
     @Inject
-    transient CmsNavigationBean navigationBean;
+    private transient CmsNavigationBean navigationBean;
     @Inject
-    transient CMSSidebarWidgetsBean widgetsBean;
+    private transient CMSSidebarWidgetsBean widgetsBean;
     @Inject
-    transient CollectionViewBean collectionViewBean;
+    private transient CollectionViewBean collectionViewBean;
     @Inject
-    transient FacesContext facesContext;
+    private transient FacesContext facesContext;
 
     private CMSPage selectedPage = null;
     private boolean editMode = false;
@@ -352,7 +352,7 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return ID of selectedPage
      */
     public String getSelectedPageId() {
         if (selectedPage == null) {
@@ -380,7 +380,6 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Create a new CMSPage based on the given template. title and relatedPI are set on the page if given Opens the view to create/edit the cmsPage
      *
-     * @param templateId The id of the template to base the page on
      * @param title The title to be used for the current locale, optional
      * @param relatedPI The PI of a related work, optional
      * @return a {@link java.lang.String} object.
@@ -446,7 +445,9 @@ public class CmsPageEditBean implements Serializable {
         Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components,
                 component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
         return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, CMSComponent::getTemplateFilename,
-                c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale), c -> (hidePagedComponents && c.isPaged()) );
+                c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale),
+                c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale),
+                c -> (hidePagedComponents && c.isPaged()));
     }
 
     /**
@@ -628,4 +629,75 @@ public class CmsPageEditBean implements Serializable {
         this.templateLockComponents = templateLockComponents;
     }
 
+    /**
+     * Getter for unit tests.
+     * 
+     * @return the dao
+     */
+    IDAO getDao() {
+        return dao;
+    }
+
+    /**
+     * Setter for unit tests.
+     * 
+     * @param dao the dao to set
+     */
+    void setDao(IDAO dao) {
+        this.dao = dao;
+    }
+
+    /**
+     * Setter for unit tests.
+     * 
+     * @param templateManager the templateManager to set
+     */
+    void setTemplateManager(CMSTemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
+
+    /**
+     * Setter for unit tests.
+     * 
+     * @param userBean the userBean to set
+     */
+    void setUserBean(UserBean userBean) {
+        this.userBean = userBean;
+    }
+
+    /**
+     * Setter for unit tests.
+     * 
+     * @param widgetsBean the widgetsBean to set
+     */
+    void setWidgetsBean(CMSSidebarWidgetsBean widgetsBean) {
+        this.widgetsBean = widgetsBean;
+    }
+
+    /**
+     * Getter for unit tests.
+     * 
+     * @return the collectionViewBean
+     */
+    CollectionViewBean getCollectionViewBean() {
+        return collectionViewBean;
+    }
+
+    /**
+     * Setter for unit tests.
+     * 
+     * @param collectionViewBean the collectionViewBean to set
+     */
+    void setCollectionViewBean(CollectionViewBean collectionViewBean) {
+        this.collectionViewBean = collectionViewBean;
+    }
+
+    /**
+     * Setter for unit tests.
+     * 
+     * @param facesContext the facesContext to set
+     */
+    void setFacesContext(FacesContext facesContext) {
+        this.facesContext = facesContext;
+    }
 }

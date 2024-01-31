@@ -69,7 +69,7 @@ public class SearchResultGroup implements Serializable {
 
     /**
      * 
-     * @return
+     * @return Created {@link SearchResultGroup}
      */
     public static SearchResultGroup createDefaultGroup() {
         return createDefaultGroup("");
@@ -77,7 +77,7 @@ public class SearchResultGroup implements Serializable {
 
     /**
      * @param query
-     * @return
+     * @return Created {@link SearchResultGroup}
      */
     public static SearchResultGroup createDefaultGroup(String query) {
         return new SearchResultGroup(StringConstants.DEFAULT_NAME, query, -1, false);
@@ -86,7 +86,7 @@ public class SearchResultGroup implements Serializable {
     /**
      * Returns a list of configured result groups or a default group if none are configured.
      * 
-     * @return
+     * @return List<SearchResultGroup>
      * @should return correct groups
      * @should return default group if none are configured
      * @should return default group if groups disabled
@@ -103,7 +103,7 @@ public class SearchResultGroup implements Serializable {
 
     /**
      * 
-     * @return
+     * @return true if not default group and hitsCount larger than previewHitCount; false otherwise
      * @should return false if default group
      * @should return false if hitsCount not higher than previewHitCount
      * @should return true if hitsCount higher than previewHitCount

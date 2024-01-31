@@ -59,9 +59,9 @@ public class CmsNavigationBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(CmsNavigationBean.class);
 
     @Inject
-    CmsBean cmsBean;
+    private CmsBean cmsBean;
     @Inject
-    UserBean userBean;
+    private UserBean userBean;
 
     private String menuItemList = null;
     private CMSNavigationItem selectedNavigationItem = null;
@@ -124,8 +124,8 @@ public class CmsNavigationBean implements Serializable {
                 continue;
             }
             int level = Integer.parseInt(id.substring(id.indexOf('?') + 1));
-            id = id.substring(0, id.indexOf('?'));
-            Optional<CMSNavigationItem> oItem = getItemManager().getItem(id);
+            String localId = id.substring(0, id.indexOf('?'));
+            Optional<CMSNavigationItem> oItem = getItemManager().getItem(localId);
             if (oItem.isPresent()) {
                 CMSNavigationItem item = oItem.get();
                 item.setAssociatedTheme(getSelectedTheme());

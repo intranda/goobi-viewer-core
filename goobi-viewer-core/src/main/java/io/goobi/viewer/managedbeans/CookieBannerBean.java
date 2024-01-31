@@ -139,7 +139,7 @@ public class CookieBannerBean implements Serializable {
      * To use when selecting CMS-Pages on which to ignore the cookie-banner. Pages mapped to "true" are stored in {@link CookieBanner#getIgnoreList()}
      * when calling {@link #save()}
      * 
-     * @return
+     * @return Map
      */
     public Map<CMSPage, Boolean> getCmsPageMap() {
         return cmsPageMap;

@@ -165,6 +165,7 @@ public class Metadata implements Serializable {
      * Constructor for Metadata.
      * </p>
      *
+     * @param ownerIddoc
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
      * @param param a {@link io.goobi.viewer.model.metadata.MetadataParameter} object.
@@ -302,7 +303,7 @@ public class Metadata implements Serializable {
 
     /**
      *
-     * @return
+     * @return List<StringPair>
      */
     public List<StringPair> getSortFields() {
         if (StringUtils.isEmpty(sortField)) {
@@ -379,7 +380,7 @@ public class Metadata implements Serializable {
      */
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String paramLabel, String url, Map<String, String> options,
             String groupType, Locale locale) {
-        // logger.trace("setParamValue: {}", label);
+        // logger.trace("setParamValue: {}", label); //NOSONAR Debug
         if (inValues == null || inValues.isEmpty()) {
             return;
         }
@@ -407,11 +408,11 @@ public class Metadata implements Serializable {
         }
 
         MetadataParameter param = params.get(paramIndex);
-        for (String value : inValues) {
+        for (final String val : inValues) {
             if (param.getType() == null) {
                 continue;
             }
-            value = value.trim();
+            String value = val.trim();
             switch (param.getType()) {
                 case WIKIFIELD:
                 case WIKIPERSONFIELD:
@@ -426,7 +427,7 @@ public class Metadata implements Serializable {
                         }
                         // Revert the name around the comma (persons only)
                         if (param.getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
-                            String[] valueSplit = value.split("[,]");
+                            String[] valueSplit = value.split(",");
                             if (valueSplit.length > 1) {
                                 value = valueSplit[1].trim() + "_" + valueSplit[0].trim();
                             }
@@ -472,11 +473,9 @@ public class Metadata implements Serializable {
                     value = BeanUtils.escapeCriticalUrlChracters(value);
                     break;
                 case HIERARCHICALFIELD:
-                // create a link for reach hierarchy level
-                {
-                    NavigationHelper nh = BeanUtils.getNavigationHelper();
-                    value = buildHierarchicalValue(paramLabel, value, locale, nh != null ? nh.getApplicationUrl() : null);
-                }
+                    // create a link for reach hierarchy level
+                    NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+                    value = buildHierarchicalValue(paramLabel, value, locale, navigationHelper != null ? navigationHelper.getApplicationUrl() : null);
                     break;
                 case MILLISFIELD:
                     // Create formatted date-time from millis
@@ -501,8 +500,8 @@ public class Metadata implements Serializable {
                                     if (marcRecord != null && !marcRecord.getNormDataList().isEmpty()) {
                                         for (NormData normData : marcRecord.getNormDataList()) {
                                             if (FIELD_NORM_TYPE.equals(normData.getKey())) {
-                                                String val = normData.getValues().get(0).getText();
-                                                normDataType = MetadataTools.findMetadataGroupType(val);
+                                                String normVal = normData.getValues().get(0).getText();
+                                                normDataType = MetadataTools.findMetadataGroupType(normVal);
                                                 break;
                                             }
                                         }
@@ -599,7 +598,9 @@ public class Metadata implements Serializable {
                 mdValue.setLabel(value);
                 // Remove value from the actual metadata value list if null master value is set
                 if (MetadataValue.MASTERVALUE_NULL.equals(param.getMasterValueFragment())) {
-                    logger.trace("clearing {}", mdValue.getParamValues().get(paramIndex).get(0));
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("clearing {}", mdValue.getParamValues().get(paramIndex).get(0));
+                    }
                     mdValue.getParamValues().get(paramIndex).clear();
                 }
             }
@@ -612,7 +613,7 @@ public class Metadata implements Serializable {
      * @param value Field value
      * @param locale Optional locale for value translation
      * @param applicationUrl Application root URL for hyperlinks; only the values will be included if url is null
-     * @return
+     * @return Built hierarchical value
      * @should build value correctly
      * @should add configured collection sort field
      */
@@ -716,7 +717,7 @@ public class Metadata implements Serializable {
     /**
      *
      * @param ownerIddoc
-     * @return
+     * @return true if this metadata contains no non-blank values; false otherwise
      * @should return true if all paramValues are empty
      * @should return false if at least one paramValue is not empty
      * @should return true if all values have different ownerIddoc
@@ -799,7 +800,7 @@ public class Metadata implements Serializable {
 
             int count = 0;
             int indexOfParam = params.indexOf(param);
-            // logger.trace("{} ({})", param.toString(), indexOfParam);
+            // logger.trace("{} ({})", param.toString(), indexOfParam); //NOSONAR Debug
             List<String> values = null;
             if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
                 // Topstruct values as the first choice
@@ -814,7 +815,7 @@ public class Metadata implements Serializable {
             }
             if (values != null) {
                 if (MetadataParameterType.CITEPROC.equals(param.getType())) {
-                    // logger.trace(param.getKey() + ":" + values.get(0));
+                    // logger.trace(param.getKey() + ":" + values.get(0)); //NOSONAR Debug
                     // Use all available values for citation
                     found = true;
                     // Apply replace rules
@@ -827,12 +828,13 @@ public class Metadata implements Serializable {
                     }
                     setParamValue(0, indexOfParam, values, param.getKey(), null, null, null, locale);
                 } else {
-                    for (String value : values) {
-                        // logger.trace("{}: {}", param.getKey(), mdValue);
+                    for (String val : values) {
+                        // logger.trace("{}: {}", param.getKey(), mdValue); //NOSONAR Debug
                         if (count >= number && number != -1) {
                             break;
                         }
                         found = true;
+                        String value = val;
                         // Apply replace rules
                         if (!param.getReplaceRules().isEmpty()) {
                             value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
@@ -850,7 +852,8 @@ public class Metadata implements Serializable {
                 }
             }
             if (values == null && param.getDefaultValue() != null) {
-                // logger.trace("No value found for {} (index {}), using default value '{}'", param.getKey(), indexOfParam, param.getDefaultValue());
+                // logger.trace("No value found for {} (index {}), using default value '{}'",
+                // param.getKey(), indexOfParam, param.getDefaultValue()); //NOSONAR Debug
                 setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
                 found = true;
                 count++;
@@ -867,9 +870,9 @@ public class Metadata implements Serializable {
                     }
                 }
 
-                // logger.debug("populate theme: type="+param.getType() + " key=" +param.getKey() + "  count="+count );
+                // logger.debug("populate theme: type="+param.getType() + " key=" +param.getKey() + "  count="+count ); //NOSONAR Debug
                 found = true;
-                // setParamValue(count, getParams().indexOf(param), param.getKey());
+                // setParamValue(count, getParams().indexOf(param), param.getKey()); //NOSONAR Debug
                 count++;
             }
         }
@@ -883,7 +886,7 @@ public class Metadata implements Serializable {
      * @param ownerIddoc Owner IDDOC (either docstruct or parent metadata)
      * @param sortFields Optional field/order pairs for sorting
      * @param locale
-     * @return
+     * @return true if successful; false otherwise
      * @throws IndexUnreachableException
      */
     boolean populateGroup(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale) throws IndexUnreachableException {
@@ -908,7 +911,7 @@ public class Metadata implements Serializable {
                         values = new ArrayList<>();
                         groupFieldMap.put(fieldName, values);
                     }
-                    // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString());
+                    // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString()); //NOSONAR Debug
                     if (doc.getFieldValue(fieldName) instanceof String) {
                         String value = (String) doc.getFieldValue(fieldName);
                         values.add(value);
@@ -927,7 +930,7 @@ public class Metadata implements Serializable {
                 // Populate params for which metadata values have been found
                 for (int i = 0; i < params.size(); ++i) {
                     MetadataParameter param = params.get(i);
-                    // logger.trace("param: {}", param.getKey());
+                    // logger.trace("param: {}", param.getKey()); //NOSONAR Debug
 
                     if (groupFieldMap.get(param.getKey()) != null) {
                         found = true;
@@ -964,7 +967,7 @@ public class Metadata implements Serializable {
 
                     if (!getChildMetadata().isEmpty()) {
                         for (Metadata child : getChildMetadata()) {
-                            // logger.trace("populating child metadata: {}", child.getLabel());
+                            // logger.trace("populating child metadata: {}", child.getLabel()); //NOSONAR Debug
                             child.populate(se, metadataDocIddoc, sortFields, locale);
                         }
                     }
@@ -972,7 +975,7 @@ public class Metadata implements Serializable {
 
                 count++;
             }
-            // logger.trace("GROUP QUERY END");
+            // logger.trace("GROUP QUERY END"); //NOSONAR Debug
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
@@ -987,7 +990,7 @@ public class Metadata implements Serializable {
      * @param metadataMap
      * @param key
      * @param locale
-     * @return
+     * @return List<String>
      */
     private static List<String> getMetadata(Map<String, List<String>> metadataMap, String key, Locale locale) {
         List<String> mdValues = null;
@@ -1209,7 +1212,7 @@ public class Metadata implements Serializable {
 
     /**
      *
-     * @return
+     * @return true if childMetadata not empty; false otherwise
      */
     public boolean isHasChildren() {
         return !childMetadata.isEmpty();
@@ -1253,7 +1256,7 @@ public class Metadata implements Serializable {
      * @should filter by desired field name correctly
      */
     public static List<Metadata> filterMetadata(List<Metadata> metadataList, String language, String field) {
-        // logger.trace("filterMetadataByLanguage: {}", recordLanguage);
+        // logger.trace("filterMetadataByLanguage: {}", recordLanguage); //NOSONAR Debug
         if (language == null || metadataList == null || metadataList.isEmpty()) {
             return metadataList;
         }

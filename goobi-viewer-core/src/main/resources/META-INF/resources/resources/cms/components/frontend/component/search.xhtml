@@ -15,7 +15,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-
+   
 		<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
 
 			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
@@ -44,8 +44,7 @@
 					<ui:include src="/resources/includes/search/searchHitList.xhtml">
 						<ui:param name="searchParam"
 							value="#{sessionBean.get('cmsSearch')}" />
-						<ui:param name="listStyle"
-							value="#{cc.attrs.listStyle}" />
+						<ui:param name="listStyle" value="#{cc.attrs.component.getContent('search').view.cssClass}"></ui:param>
 					</ui:include>
 				</div>
 

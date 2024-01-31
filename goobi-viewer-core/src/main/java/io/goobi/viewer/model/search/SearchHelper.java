@@ -128,6 +128,8 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_TIMELINE = 2;
     /** Constant <code>SEARCH_TYPE_CALENDAR=3</code> */
     public static final int SEARCH_TYPE_CALENDAR = 3;
+    /** Constant <code>SEARCH_TYPE_TERMS=4</code> */
+    public static final int SEARCH_TYPE_TERMS = 4;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL", false);
     public static final String TITLE_TERMS = "_TITLE_TERMS";
@@ -149,39 +151,48 @@ public final class SearchHelper {
      */
     public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{t}~{d}";
 
-    private static final Object lock = new Object();
+    private static final Object LOCK = new Object();
 
-    private static final Random random = new SecureRandom();
+    private static final Random RANDOM = new SecureRandom();
 
     /** Regex pattern for negations in brackets */
-    public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");
+    private static final Pattern PATTERN_NOT_BRACKETS = Pattern.compile("NOT\\([^()]*\\)");
     /** Regex pattern for negations not followed by brackets */
-    public static Pattern patternNot = Pattern.compile("NOT[ ][a-zA-Z_]+[:][a-zA-Z0-9\\*]+");
-    /** Constant <code>patternFieldPhrase</code> */
-    public static Pattern patternFieldPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
-    /** Constant <code>patternPhrase</code> */
-    public static Pattern patternPhrase = Pattern.compile("^" + StringTools.REGEX_QUOTATION_MARKS + "(~[0-9]+)?$");
-    /** Constant <code>patternProximitySearchToken</code> */
-    public static Pattern patternProximitySearchToken = Pattern.compile("(?<=\")~([0-9]+)");
-    /** Constant <code>patternYearRange</code> */
-    public static Pattern patternYearRange = Pattern.compile("\\[[0-9]+ TO [0-9]+\\]");
-    /** Constant <code>patternHyperlink</code> */
-    public static Pattern patternHyperlink = Pattern.compile("(<a (?:(?!<\\/a>).)*<\\/a>)");
+    private static final Pattern PATTERN_NOT = Pattern.compile("NOT [a-zA-Z_]+:[a-zA-Z0-9\\*]+");
+    /** Constant <code>PATTERN_FIELD_PHRASE</code> */
+    private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
+    /** Constant <code>PATTERN_PHRASE</code> */
+    private static final Pattern PATTERN_PHRASE = Pattern.compile("^" + StringTools.REGEX_QUOTATION_MARKS + "(~[0-9]+)?$");
+    /** Constant <code>PATTERN_PROXIMITY_SEARCH_TOKEN</code> */
+    private static final Pattern PATTERN_PROXIMITY_SEARCH_TOKEN = Pattern.compile("(?<=\")~(\\d+)");
+    /** Constant <code>PATTERN_YEAR_RANGE</code> */
+    private static final Pattern PATTERN_YEAR_RANGE = Pattern.compile("\\[\\d+ TO \\d+\\]");
+    /** Constant <code>PATTERN_HYPHEN_LINK</code> */
+    private static final Pattern PATTERN_HYPHEN_LINK = Pattern.compile("(<a (?:(?!<\\/a>).)*<\\/a>)");
 
-    public static final Pattern patternAllItems = Pattern.compile(
-            "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");
+    //No danger of catastrophic backtracking, because the ':' separator is not matched by \w
+    private static final Pattern PATTERN_FACET_STRING = Pattern.compile("(\\w+:\\w+);;"); //NOSONAR
 
-    public static final Pattern patternRegularItems = Pattern.compile("([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)");
-    public static final Pattern patternRegularPairs = Pattern.compile("(\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ()]+\\))");
+    // Regex patterns for parsing advanced query items from query
 
-    public static final Pattern patternPhraseItems = Pattern.compile("([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)");
-    public static final Pattern patternPhrasePairs = Pattern.compile("(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")");
+    public static final Pattern PATTERN_ALL_ITEMS = Pattern.compile(
+            "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)"
+                    + "|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");
 
-    public static final Pattern patternRangeItems =
-            Pattern.compile("([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *)\\)");
-    public static final Pattern patternRangePairs = Pattern.compile("(\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\))");
-
-    public static final Pattern patternFacetString = Pattern.compile("(\\w+:\\w+);;");
+    //No danger of catastrophic backtracking: the repetitions are separated by other characters and the overal repetition is possessive ('++') 
+    private static final Pattern PATTERN_REGULAR_ITEMS = Pattern.compile("([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)"); //NOSONAR
+    //No danger of catastrophic backtracking: separator (':') between the repetition
+    private static final Pattern PATTERN_REGULAR_PAIRS = Pattern.compile("(\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ()]+\\))"); //NOSONAR
+    //No danger of catastrophic backtracking: inner repetition has a separator and outer repetition is possessive
+    private static final Pattern PATTERN_PHRASE_ITEMS = Pattern.compile("([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)"); //NOSONAR
+    //No danger of catastrophic backtracking: separator (':\"') between the repetition
+    private static final Pattern PATTERN_PHRASE_PAIRS = Pattern.compile("(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")"); //NOSONAR
+    //No danger of catastrophic backtracking: inner repetition has a separator and outer repetition is possessive
+    private static final Pattern PATTERN_RANGE_ITEMS =
+            Pattern.compile("([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)"); //NOSONAR
+    //No danger of catastrophic backtracking: use possessive repetition
+    private static final Pattern PATTERN_RANGE_PAIRS =
+            Pattern.compile("(\\w++:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]++ TO [\\wäáàâöóòôüúùûëéèêßñ]++\\]\\))"); //NOSONAR
 
     /**
      * 
@@ -194,8 +205,8 @@ public final class SearchHelper {
      * Main search method for flat search.
      *
      * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link java.lang.Integer} von
-     * @param rows {@link java.lang.Integer} bis
+     * @param first {@link java.lang.Integer} First row index
+     * @param rows {@link java.lang.Integer} Number of rows to return
      * @param sortFields a {@link java.util.List} object.
      * @param resultFields a {@link java.util.List} object.
      * @param filterQueries a {@link java.util.List} object.
@@ -204,6 +215,7 @@ public final class SearchHelper {
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -232,16 +244,17 @@ public final class SearchHelper {
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param keepSolrDoc
+     * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
             HttpServletRequest request, boolean keepSolrDoc, int proximitySearchDistance)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -451,8 +464,8 @@ public final class SearchHelper {
      * Return the {@link HitType} matching the {@link SolrConstants#DocType} of the given document. In case the document is of type 'UGC', return the
      * type matching {@link SolrConstants#UGCTYPE} instead
      * 
-     * @param childDoc
-     * @return
+     * @param doc
+     * @return {@link HitType} for doc
      */
     public static HitType getHitType(SolrDocument doc) {
         String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
@@ -475,12 +488,11 @@ public final class SearchHelper {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
-     * @param addDiscriminatorValueSuffix a boolean.
+     * @return a {@link java.lang.String} object.
      * @should add static suffix
      * @should not add static suffix if not requested
      * @should add collection blacklist suffix
      * @should add discriminator value suffix
-     * @return a {@link java.lang.String} object.
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
         return getAllSuffixes(request, addStaticQuerySuffix, addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
@@ -492,7 +504,6 @@ public final class SearchHelper {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
-     * @param addDiscriminatorValueSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @should add static suffix
      * @should not add static suffix if not requested
@@ -525,7 +536,6 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param addDiscriminatorValueSuffix a boolean.
      * @return a {@link java.lang.String} object.
      */
     public static String getAllSuffixes() {
@@ -535,7 +545,6 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param addDiscriminatorValueSuffix a boolean.
      * @return a {@link java.lang.String} object.
      */
     public static String getAllSuffixesExceptCollectionBlacklist() {
@@ -552,12 +561,10 @@ public final class SearchHelper {
      * @param params a {@link java.util.Map} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param locale a {@link java.util.Locale} object.
-     * @param aggregateHits a boolean.
      * @param proximitySearchDistance
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
      * @param filterQueries a {@link java.util.List} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link io.goobi.viewer.model.search.BrowseElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -597,13 +604,15 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public static StringPair getFirstRecordPiAndPageType(String luceneField, String value, boolean filterForWhitelist,
-            boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException, PresentationException {
+            boolean filterForBlacklist, final String splittingChar) throws IndexUnreachableException, PresentationException {
+        // logger.trace("getFirstRecordPiAndPageType: {}:{}", luceneField, value); //NOSONAR Debug
         if (luceneField == null || value == null) {
             return null;
         }
 
-        if (StringUtils.isEmpty(splittingChar)) {
-            splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
+        String useSplittingChar = splittingChar;
+        if (StringUtils.isEmpty(useSplittingChar)) {
+            useSplittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
         }
 
         StringBuilder sbQuery = new StringBuilder(SolrConstants.PI).append(":*");
@@ -621,7 +630,7 @@ public final class SearchHelper {
                 .append(SolrConstants.SOLR_QUERY_OR)
                 .append(luceneField)
                 .append(":")
-                .append(value + splittingChar + "*)");
+                .append(value + useSplittingChar + "*)");
         if (filterForBlacklist) {
             sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
         }
@@ -629,7 +638,7 @@ public final class SearchHelper {
         List<String> fields =
                 Arrays.asList(SolrConstants.PI, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT, SolrConstants.THUMBNAIL, SolrConstants.ISANCHOR,
                         SolrConstants.ISWORK, SolrConstants.LOGID);
-        //        logger.trace("first record query: {}", sbQuery.toString());
+        logger.trace("first record query: {}", sbQuery);
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 1, null, null, fields);
 
         if (resp.getResults().isEmpty()) {
@@ -654,7 +663,7 @@ public final class SearchHelper {
             return new StringPair(pi, pageType.name());
         } catch (RecordNotFoundException e) {
             //
-        } catch (Exception e) {
+        } catch (DAOException e) {
             logger.error("Failed to retrieve record", e);
         }
 
@@ -666,15 +675,14 @@ public final class SearchHelper {
      * available for current HttpRequest
      *
      * @param luceneField the SOLR field over which to build the collections (typically "DC")
-     * @param facetField a SOLR field which values should be recorded for each collection. Values are written into
-     *            {@link CollectionResult#getFacetValues()}. Used for grouping service of IIIF collections
+     * @param groupingField
      * @param filterQuery An addition solr-query to filer collections by.
      * @param filterForWhitelist a boolean.
      * @param filterForBlacklist a boolean.
      * @param splittingChar Character used for separating collection hierarchy levels within a collection name (typically ".")
-     * @should find all collections
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should find all collections
      */
     public static Map<String, CollectionResult> findAllCollectionsFromField(String luceneField, String groupingField, String filterQuery,
             boolean filterForWhitelist, boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
@@ -731,7 +739,7 @@ public final class SearchHelper {
      *
      * @param facetResults
      * @param splittingChar
-     * @return
+     * @return Map<String, CollectionResult>
      */
     private static Map<String, CollectionResult> createCollectionResults(FacetField facetResults, String splittingChar) {
         Map<String, CollectionResult> ret = new HashMap<>();
@@ -794,7 +802,7 @@ public final class SearchHelper {
                                         || collectionName.startsWith("\u0001")) {
                                     continue;
                                 }
-                                getAllParentCollections(collectionName, true).stream()
+                                getAllParentCollections(collectionName, ".", true).stream()
                                         .forEach(col -> {
                                             CollectionResult collectionResult = ret.get(col);
                                             collectionResult.addFacetValues(Collections.singletonList(name));
@@ -809,18 +817,21 @@ public final class SearchHelper {
 
     /**
      * @param collectionName
-     * @param b
+     * @param splittingChar
+     * @param includeSelf
+     * @return Collection<String>
      */
-    private static Collection<String> getAllParentCollections(String collectionName, boolean includeSelf) {
+    private static Collection<String> getAllParentCollections(final String collectionName, String splittingChar, boolean includeSelf) {
         List<String> collections = new ArrayList<>();
         if (includeSelf) {
             collections.add(collectionName);
         }
-        while (StringUtils.isNotBlank(collectionName)) {
-            int dotIndex = collectionName.lastIndexOf(".");
+        String colName = collectionName;
+        while (StringUtils.isNotBlank(colName)) {
+            int dotIndex = colName.lastIndexOf(splittingChar);
             if (dotIndex > -1) {
-                collectionName = collectionName.substring(0, dotIndex);
-                collections.add(collectionName);
+                colName = colName.substring(0, dotIndex);
+                collections.add(colName);
             } else {
                 break;
             }
@@ -1005,9 +1016,8 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
-     * generateCollectionBlacklistFilterSuffix.
-     * </p>
+     * Generates a Solr query suffix that filters out values for the given field that are configured as blacklisted. This isn't an expensive method,
+     * so the suffix is generated anew upon every call and not persisted.
      *
      * @param field a {@link java.lang.String} object.
      * @should construct suffix correctly
@@ -1070,10 +1080,18 @@ public final class SearchHelper {
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
                 getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(),
-                        (User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request),
+                        (User) Optional.ofNullable(request)
+                                .map(HttpServletRequest::getSession)
+                                .map(session -> session.getAttribute("user"))
+                                .orElse(null),
+                        NetTools.getIpAddress(request),
                         ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
-        request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
+        if (request != null) {
+            request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
+        } else {
+            logger.warn("No HttpServletRequest found, cannot set filter query.");
+        }
     }
 
     /**
@@ -1164,7 +1182,7 @@ public final class SearchHelper {
 
     /**
      * 
-     * @return
+     * @return Solr query for the moving wall date range
      */
     public static String getMovingWallQuery() {
         return SolrConstants.DATE_PUBLICRELEASEDATE + ":[* TO NOW/DATE]";
@@ -1174,7 +1192,7 @@ public final class SearchHelper {
      * TODO This method might be quite expensive.
      *
      * @param searchTerms a {@link java.util.Set} object.
-     * @param fulltext a {@link java.lang.String} object.
+     * @param inFulltext a {@link java.lang.String} object.
      * @param targetFragmentLength Desired (approximate) length of the text fragment.
      * @param firstMatchOnly If true, only the fragment for the first match will be returned
      * @param addFragmentIfNoMatches If true, a fragment will be added even if no term was matched
@@ -1190,22 +1208,22 @@ public final class SearchHelper {
      * @should add fragment if no term was matched only if so requested
      * @should highlight multi word terms while removing stopwords
      */
-    public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly,
+    public static List<String> truncateFulltext(Set<String> searchTerms, final String inFulltext, int targetFragmentLength, boolean firstMatchOnly,
             boolean addFragmentIfNoMatches, int proximitySearchDistance) {
-        // logger.trace("truncateFulltext");
-        if (fulltext == null) {
+        // logger.trace("truncateFulltext"); //NOSONAR Debug
+        if (inFulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
         // Remove HTML breaks
-        fulltext = Jsoup.parse(fulltext).text();
+        String fulltext = Jsoup.parse(inFulltext).text();
         List<String> ret = new ArrayList<>();
         if (searchTerms != null && !searchTerms.isEmpty()) {
-            for (String searchTerm : searchTerms) {
-                if (searchTerm.length() == 0) {
+            for (final String term : searchTerms) {
+                if (term.length() == 0) {
                     continue;
                 }
-                searchTerm = SearchHelper.removeTruncation(searchTerm);
-                //                logger.trace("term: {}", searchTerm);
+                String searchTerm = SearchHelper.removeTruncation(term);
+                // logger.trace("term: {}", searchTerm); //NOSONAR Debug
                 // Stopwords do not get pre-filtered out when doing a phrase search
                 if (searchTerm.contains(" ")) {
                     for (String stopword : DataManager.getInstance().getConfiguration().getStopwords()) {
@@ -1315,7 +1333,7 @@ public final class SearchHelper {
      *
      * @param searchTerm Search term containing multiple words
      * @param proximitySearchDistance Maximum distance between word
-     * @return
+     * @return Regex pattern for given term and distance
      * @should build regex correctly
      */
     static String buildProximitySearchRegexPattern(String searchTerm, int proximitySearchDistance) {
@@ -1326,7 +1344,7 @@ public final class SearchHelper {
         StringBuilder sbPattern = new StringBuilder("\\b(?:");
         for (int i = 0; i < searchTermSplit.length; ++i) {
             if (i > 0) {
-                sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
+                sbPattern.append("\\W+(?:\\p{L}+\\W+){0,").append(proximitySearchDistance).append("}?");
             }
             for (int j = 0; j < searchTermSplit[i].length(); ++j) {
                 // Allow space within term (remnant of line breaks)
@@ -1342,7 +1360,7 @@ public final class SearchHelper {
         // Reverser order
         for (int i = searchTermSplit.length - 1; i >= 0; --i) {
             if (i < searchTermSplit.length - 1) {
-                sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
+                sbPattern.append("\\W+(?:\\p{L}+\\W+){0,").append(proximitySearchDistance).append("}?");
             }
             for (int j = 0; j < searchTermSplit[i].length(); ++j) {
                 if (j > 0) {
@@ -1364,7 +1382,7 @@ public final class SearchHelper {
      * @param searchTerm
      * @param targetFragmentLength
      * @param ret
-     * @return
+     * @return Last index of text fragment
      */
     private static int createFulltextFragment(Matcher m, String fulltext, String searchTerm, int targetFragmentLength, List<String> ret) {
         int indexOfTerm = m.start();
@@ -1424,10 +1442,10 @@ public final class SearchHelper {
         }
 
         String highlightedValue = phrase;
-        for (String term : terms) {
+        for (final String t : terms) {
             //remove fuzzy search suffix
-            FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(term);
-            term = fuzzyTerm.getTerm();
+            FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(t);
+            String term = fuzzyTerm.getTerm();
             // Highlighting single-character terms can take a long time, so skip them
             if (term.length() < 2) {
                 continue;
@@ -1448,10 +1466,10 @@ public final class SearchHelper {
      * if maxDistance <= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the phrase
      * contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
      *
-     * @param normalizedPhrase
-     * @param normalizedTerm
+     * @param phrase
+     * @param term
      * @param maxDistance
-     * @return
+     * @return true if phrase contains term within maxDistance; false otherwise
      */
     public static boolean contains(String phrase, String term, int maxDistance) {
         if (maxDistance > 0 && StringUtils.isNoneBlank(phrase, term)) {
@@ -1476,7 +1494,7 @@ public final class SearchHelper {
      *
      * @param phrase
      * @param term
-     * @return
+     * @return phrase with highlighting markup around term
      * @should apply highlighting to all occurrences of term
      * @should ignore special characters
      * @should skip single character terms
@@ -1515,42 +1533,44 @@ public final class SearchHelper {
      * Remove any diacritic characters and replace any non.letter and non-digit characters with space
      *
      * @param string
-     * @return
+     * @return Normalized string
      * @should preserve digits
      * @should preserve latin chars
      * @should preserve hebrew chars
      * @should remove hyperlink html elements including terms
      */
-    static String normalizeString(String string) {
+    static String normalizeString(final String string) {
         if (string == null) {
             return null;
         }
 
+        String ret = string;
+
         // Replace entire hyperink elements with spaces
-        Matcher m = patternHyperlink.matcher(string);
+        Matcher m = PATTERN_HYPHEN_LINK.matcher(ret);
         while (m.find()) {
             StringBuilder sb = new StringBuilder();
-            sb.append(string.substring(0, m.start()));
+            sb.append(ret.substring(0, m.start()));
             for (int i = m.start(); i < m.end(); ++i) {
                 sb.append(' ');
             }
-            sb.append(string.substring(m.end()));
-            string = sb.toString();
+            sb.append(ret.substring(m.end()));
+            ret = sb.toString();
         }
 
-        string = Normalizer.normalize(string, Normalizer.Form.NFD);
+        ret = Normalizer.normalize(ret, Normalizer.Form.NFD);
 
         // string = string.replaceAll(patternHyperlink.pattern(), " ");
-        string = string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
-        string = Normalizer.normalize(string, Normalizer.Form.NFC);
-        return string;
+        ret = ret.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
+        ret = Normalizer.normalize(ret, Normalizer.Form.NFC);
+
+        return ret;
     }
 
     /**
      *
      * @param term
-     * @param substitute
-     * @return
+     * @return term with highlighting markup
      * @should add span correctly
      */
     static String applyHighlightingToTerm(String term) {
@@ -1574,7 +1594,7 @@ public final class SearchHelper {
     /**
      * 
      * @param phrase
-     * @return
+     * @return phrase without highlighting placeholders
      * @should replace placeholders with empty strings
      */
     public static String removeHighlightingPlaceholders(String phrase) {
@@ -1587,10 +1607,10 @@ public final class SearchHelper {
      * @param fulltextFragment
      * @param searchTerm
      * @param indexOfTerm
-     * @return
+     * @return Text fragment
      */
     @SuppressWarnings("unused")
-    private static String getTextFragmentStatic(String fulltext, int targetFragmentLength, String fulltextFragment, String searchTerm,
+    private static String getTextFragmentStatic(String fulltext, int targetFragmentLength, final String fulltextFragment, String searchTerm,
             int indexOfTerm) {
         if (fulltextFragment.length() == 0) {
             int start = 0;
@@ -1603,7 +1623,7 @@ public final class SearchHelper {
             if (end - (indexOfTerm + searchTerm.length()) > halfLength) {
                 end = indexOfTerm + searchTerm.length() + halfLength;
             }
-            fulltextFragment = fulltext.substring(start, end);
+            return fulltext.substring(start, end);
         }
         return fulltextFragment;
     }
@@ -1612,8 +1632,8 @@ public final class SearchHelper {
      * @param fulltext
      * @param searchTerm
      * @param indexOfTerm
-     * @param halfLength
-     * @return
+     * @param fragmentLength
+     * @return Text fragment
      */
     private static String getTextFragmentRandomized(String fulltext, String searchTerm, int indexOfTerm, int fragmentLength) {
 
@@ -1622,7 +1642,7 @@ public final class SearchHelper {
         int fragmentStartIndexFloor = Math.max(0, indexOfTerm + minDistanceFromEdge - (fragmentLength - searchTerm.length()));
         int fragmentStartIndexCeil = Math.max(0, indexOfTerm - minDistanceFromEdge);
 
-        int fragmentStartIndex = fragmentStartIndexFloor + random.nextInt(Math.max(1, fragmentStartIndexCeil - fragmentStartIndexFloor));
+        int fragmentStartIndex = fragmentStartIndexFloor + RANDOM.nextInt(Math.max(1, fragmentStartIndexCeil - fragmentStartIndexFloor));
         int fragmentEndIndex = Math.min(fulltext.length(), fragmentStartIndex + fragmentLength);
 
         return fulltext.substring(fragmentStartIndex, fragmentEndIndex);
@@ -1632,8 +1652,8 @@ public final class SearchHelper {
      * @param fulltext
      * @param searchTerm
      * @param indexOfTerm
-     * @param halfLength
-     * @return
+     * @param fragmentLength
+     * @return Text fragment
      */
     @SuppressWarnings("unused")
     private static String getTextFragmentFromLine(String fulltext, String searchTerm, int indexOfTerm, int fragmentLength) {
@@ -1670,15 +1690,16 @@ public final class SearchHelper {
      *
      * @param query a {@link java.lang.String} object.
      * @param facetFieldName a {@link java.lang.String} object.
-     * @param facetMinCount a int.
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
+     * @param facetMinCount a int.
+     * @param params
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return correct values via json response
      */
-    public static List<String> getFacetValues(String query, String facetFieldName, String facetPrefix, int facetMinCount, Map<String, String> params)
-            throws PresentationException, IndexUnreachableException {
+    public static List<String> getFacetValues(String query, final String facetFieldName, String facetPrefix, int facetMinCount,
+            Map<String, String> params) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(query)) {
             throw new IllegalArgumentException("query may not be null or empty");
         }
@@ -1686,21 +1707,22 @@ public final class SearchHelper {
             throw new IllegalArgumentException("facetFieldName may not be null or empty");
         }
 
+        String useFacetFieldName = facetFieldName;
         boolean json = false;
         List<String> facetFieldNames = new ArrayList<>(1);
-        if (facetFieldName.startsWith("json:")) {
+        if (useFacetFieldName.startsWith("json:")) {
             json = true;
-            facetFieldName = facetFieldName.substring(5);
+            useFacetFieldName = useFacetFieldName.substring(5);
         } else {
-            facetFieldNames.add(facetFieldName);
+            facetFieldNames.add(useFacetFieldName);
         }
 
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics(query, null, facetFieldNames, facetMinCount, facetPrefix, params, false);
-        FacetField facetField = resp.getFacetField(facetFieldName);
-        if (json && resp.getJsonFacetingResponse() != null && resp.getJsonFacetingResponse().getStatValue(facetFieldName) != null) {
-            return Collections.singletonList(String.valueOf(resp.getJsonFacetingResponse().getStatValue(facetFieldName)));
+        FacetField facetField = resp.getFacetField(useFacetFieldName);
+        if (json && resp.getJsonFacetingResponse() != null && resp.getJsonFacetingResponse().getStatValue(useFacetFieldName) != null) {
+            return Collections.singletonList(String.valueOf(resp.getJsonFacetingResponse().getStatValue(useFacetFieldName)));
         }
 
         if (facetField == null) {
@@ -1710,7 +1732,7 @@ public final class SearchHelper {
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
             if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
-                if (count.getName().startsWith("")) {
+                if (count.getName().startsWith("\\u0001")) {
                     continue;
                 }
                 ret.add(count.getName());
@@ -1726,7 +1748,7 @@ public final class SearchHelper {
      * @param startsWith
      * @param filterQuery
      * @param language
-     * @return
+     * @return Number of found terms
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -1781,7 +1803,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should be thread safe when counting terms
      */
-    public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, int start, int rows,
+    public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, int start, final int rows,
             Comparator<BrowseTerm> comparator, String language) throws PresentationException, IndexUnreachableException {
         if (bmfc == null) {
             throw new IllegalArgumentException("bmfc may not be null");
@@ -1794,14 +1816,15 @@ public final class SearchHelper {
         ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
 
         // If only browsing top level documents, use faceting for faster performance
+        int returnRows = rows;
         if (bmfc.isRecordsAndAnchorsOnly()) {
-            rows = 0;
+            returnRows = 0;
         }
 
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
-        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows, language);
-        // logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
+        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, returnRows, language);
+        logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
         if ("0-9".equals(startsWith)) {
             // TODO Is this still necessary?
             // Numerical filtering
@@ -1858,7 +1881,8 @@ public final class SearchHelper {
                     for (Count count : resp.getFacetField(useField).getValues()) {
                         if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
                                 && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
-                            // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
+                            // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}",
+                            // term, compareTerm, sortTerm, bmfc.isTranslate());
                             continue;
                         }
                         terms.put(count.getName(),
@@ -1899,7 +1923,8 @@ public final class SearchHelper {
      * @param sortFields
      * @param start
      * @param rows
-     * @return
+     * @param language
+     * @return {@link QueryResponse}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should contain facets for the main field
@@ -1938,7 +1963,7 @@ public final class SearchHelper {
             filterQueries.addAll(bmfc.getFilterQueries());
         }
 
-        // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
+        // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith); //NOSONAR Debug
         String query = buildFinalQuery(sbQuery.toString(), false, SearchAggregationType.NO_AGGREGATION);
         logger.trace("getFilteredTermsFromIndex query: {}", query);
         if (logger.isTraceEnabled()) {
@@ -1991,6 +2016,7 @@ public final class SearchHelper {
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
         int count = -1;
+        //        Collections.sort(termList);
         for (String term : termList) {
             count++;
             if (StringUtils.isEmpty(term)) {
@@ -2002,17 +2028,29 @@ public final class SearchHelper {
                 continue;
             }
 
-            String sortTerm = count == 0 ? SolrTools.getSingleFieldStringValue(doc, bmfc.getSortField()) : null; // Sort field value should only represent the first term instance
+            // Sort field value should only represent the first term instance
+            String sortTerm = count == 0 ? SolrTools.getSingleFieldStringValue(doc, bmfc.getSortField()) : null;
             String compareTerm = term;
             if (StringUtils.isNotEmpty(sortTerm)) {
                 compareTerm = sortTerm;
             } else if (bmfc.getSortField() != null) {
-                // Only the first term will have a matching sort field, so attempt a fallback to a facetified variant (make sure to match the order)
+                // Only the first term will have a matching sort field, so attempt a fallback to a facetified variant
                 List<String> facetifiedSortTermValues = SolrTools.getMetadataValues(doc, SearchHelper.facetifyField(bmfc.getSortField()));
-                String facetifiedSortTerm = facetifiedSortTermValues.size() > count ? facetifiedSortTermValues.get(count) : null;
-                if (StringUtils.isNotEmpty(facetifiedSortTerm)) {
-                    compareTerm = facetifiedSortTerm;
-                    sortTerm = facetifiedSortTerm;
+                String bestMatch = null;
+                // Look for exact match
+                for (String val : facetifiedSortTermValues) {
+                    if (StringUtils.equalsIgnoreCase(val, term)) {
+                        bestMatch = val;
+                        break;
+                    }
+                }
+                // Look for most similar value
+                if (StringUtils.isEmpty(bestMatch)) {
+                    bestMatch = StringTools.findBestMatch(term, facetifiedSortTermValues, language);
+                }
+                if (StringUtils.isNotEmpty(bestMatch)) {
+                    compareTerm = bestMatch;
+                    sortTerm = bestMatch;
                 }
             }
             if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
@@ -2021,17 +2059,18 @@ public final class SearchHelper {
                         DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars()).trim();
             }
             if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
-                // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
+                // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}",
+                // term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
                 continue;
             }
 
             BrowseTerm browseTerm = terms.get(term);
             if (browseTerm == null) {
-                synchronized (lock) {
+                synchronized (LOCK) {
                     // Another thread may have added this term by now
                     if (!terms.containsKey(term)) {
-                        //                        logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm,
-                        //                                bmfc.isTranslate());
+                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}",
+                        // term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
                         terms.put(term, new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null));
                     }
                 }
@@ -2065,75 +2104,75 @@ public final class SearchHelper {
      * @should remove range values
      * @should remove operators from field names
      */
-    public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
+    public static Map<String, Set<String>> extractSearchTermsFromQuery(final String query, String discriminatorValue) {
         logger.trace("extractSearchTermsFromQuery:{}", query);
         if (query == null) {
             throw new IllegalArgumentException("query may not be null");
         }
 
+        String q = query;
         Set<String> stopwords = DataManager.getInstance().getConfiguration().getStopwords();
         // Do not extract a currently set discriminator value
         if (StringUtils.isNotEmpty(discriminatorValue)) {
             stopwords.add(discriminatorValue);
         }
         // Remove all NOT(*) parts
-        Matcher mNot = patternNotBrackets.matcher(query);
+        Matcher mNot = PATTERN_NOT_BRACKETS.matcher(q);
         while (mNot.find()) {
-            query = query.replace(query.substring(mNot.start(), mNot.end()), "");
+            q = q.replace(q.substring(mNot.start(), mNot.end()), "");
         }
-        mNot = patternNot.matcher(query);
+        mNot = PATTERN_NOT.matcher(q);
         while (mNot.find()) {
-            query = query.replace(query.substring(mNot.start(), mNot.end()), "");
+            q = q.replace(q.substring(mNot.start(), mNot.end()), "");
         }
 
         // Remove parentheses, ANDs and ORs
-        query = query.replace("(", "").replace(")", "").replace(SolrConstants.SOLR_QUERY_AND, " ").replace(SolrConstants.SOLR_QUERY_OR, " ");
+        q = q.replace("(", "").replace(")", "").replace(SolrConstants.SOLR_QUERY_AND, " ").replace(SolrConstants.SOLR_QUERY_OR, " ");
 
         Map<String, Set<String>> ret = new HashMap<>();
         ret.put(TITLE_TERMS, new HashSet<>());
 
         // Drop proximity search tokens
-        query = query.replaceAll(patternProximitySearchToken.pattern(), "");
+        q = q.replaceAll(PATTERN_PROXIMITY_SEARCH_TOKEN.pattern(), "");
 
         // Drop year ranges
-        query = query.replaceAll(patternYearRange.pattern(), "");
+        q = q.replaceAll(PATTERN_YEAR_RANGE.pattern(), "");
 
         // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE eventually
-        String queryCopy = query;
-        {
-            // Extract phrases and add them directly
-            Matcher mPhrases = patternFieldPhrase.matcher(queryCopy);
-            while (mPhrases.find()) {
-                String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
-                String[] phraseSplit = phrase.split(":");
-                String field = phraseSplit[0];
-                if (SolrConstants.SUPERDEFAULT.equals(field)) {
-                    field = SolrConstants.DEFAULT;
-                } else if (SolrConstants.SUPERFULLTEXT.equals(field)) {
-                    field = SolrConstants.FULLTEXT;
-                } else if (SolrConstants.SUPERUGCTERMS.equals(field)) {
-                    field = SolrConstants.UGCTERMS;
-                } else if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
-                    field = field.substring(0, field.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
-                }
-                String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
-                if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
-                    if (ret.get(field) == null) {
-                        ret.put(field, new HashSet<>());
-                    }
-                    // logger.trace("term: {}:{}", field, phraseWithoutQuotation);
-                    ret.get(field).add(phraseWithoutQuotation);
-                }
-                query = query.replace(phrase, "");
-                ret.get(TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
+        String queryCopy = q;
+
+        // Extract phrases and add them directly
+        Matcher mPhrases = PATTERN_FIELD_PHRASE.matcher(queryCopy);
+        while (mPhrases.find()) {
+            String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
+            String[] phraseSplit = phrase.split(":");
+            String field = phraseSplit[0];
+            if (SolrConstants.SUPERDEFAULT.equals(field)) {
+                field = SolrConstants.DEFAULT;
+            } else if (SolrConstants.SUPERFULLTEXT.equals(field)) {
+                field = SolrConstants.FULLTEXT;
+            } else if (SolrConstants.SUPERUGCTERMS.equals(field)) {
+                field = SolrConstants.UGCTERMS;
+            } else if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                field = field.substring(0, field.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
             }
+            String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
+            if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
+                if (ret.get(field) == null) {
+                    ret.put(field, new HashSet<>());
+                }
+                // logger.trace("term: {}:{}", field, phraseWithoutQuotation);
+                ret.get(field).add(phraseWithoutQuotation);
+            }
+            q = q.replace(phrase, "");
+            ret.get(TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
         }
 
         // Split into FIELD:value pairs
-        String[] querySplit = query.split(SEARCH_TERM_SPLIT_REGEX);
+        String[] querySplit = q.split(SEARCH_TERM_SPLIT_REGEX);
         String currentField = null;
-        for (String s : querySplit) {
-            s = s.trim();
+        for (final String queryPart : querySplit) {
+            String s = queryPart.trim();
             // logger.trace("term: {}", s);
             // Extract the value part
             if (s.contains(":") && !s.startsWith(":")) {
@@ -2213,7 +2252,7 @@ public final class SearchHelper {
      * @param facetString
      * @param template Advanced search fields template
      * @param language
-     * @return
+     * @return Parsed {@link SearchQueryGroup}
      * @should parse phrase search query correctly
      * @should parse regular search query correctly
      * @should parse drop down items correctly
@@ -2221,7 +2260,7 @@ public final class SearchHelper {
      * @should parse items from facet string correctly
      * @should parse mixed search query correctly
      */
-    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString, String template, String language) {
+    public static SearchQueryGroup parseSearchQueryGroupFromQuery(final String query, String facetString, String template, String language) {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
         SearchQueryGroup ret =
                 new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, true, language), template);
@@ -2229,24 +2268,25 @@ public final class SearchHelper {
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
         List<SearchItemOperator> operators = new ArrayList<>();
+        String q = query;
 
         // Remove outer parentheses
-        if (query.startsWith("((") && query.endsWith("))")) {
-            query = query.substring(1, query.length() - 1);
+        if (q.startsWith("((") && q.endsWith("))")) {
+            q = q.substring(1, q.length() - 1);
         }
 
-        String queryRemainder = query;
-        Matcher mAllItems = patternAllItems.matcher(query);
+        String queryRemainder = q;
+        Matcher mAllItems = PATTERN_ALL_ITEMS.matcher(q);
         while (mAllItems.find()) {
             String itemQuery = mAllItems.group();
             logger.trace("item query: {}", itemQuery);
             queryRemainder = queryRemainder.replace(itemQuery, "");
 
-            Matcher mPhraseItem = patternPhraseItems.matcher(itemQuery);
+            Matcher mPhraseItem = PATTERN_PHRASE_ITEMS.matcher(itemQuery);
 
-            Matcher mRegularItem = patternRegularItems.matcher(itemQuery);
+            Matcher mRegularItem = PATTERN_REGULAR_ITEMS.matcher(itemQuery);
 
-            Matcher mRangeItem = patternRangeItems.matcher(itemQuery);
+            Matcher mRangeItem = PATTERN_RANGE_ITEMS.matcher(itemQuery);
 
             if (mPhraseItem.find()) {
                 // Phrase search
@@ -2266,7 +2306,7 @@ public final class SearchHelper {
                     }
                 }
 
-                Matcher mPairs = patternPhrasePairs.matcher(itemQuery);
+                Matcher mPairs = PATTERN_PHRASE_PAIRS.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
                 while (mPairs.find()) {
@@ -2301,7 +2341,7 @@ public final class SearchHelper {
                     }
                 }
 
-                Matcher mPairs = patternRangePairs.matcher(itemQuery);
+                Matcher mPairs = PATTERN_RANGE_PAIRS.matcher(itemQuery);
 
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2338,7 +2378,7 @@ public final class SearchHelper {
                     }
                 }
 
-                Matcher mPairs = patternRegularPairs.matcher(itemQuery);
+                Matcher mPairs = PATTERN_REGULAR_PAIRS.matcher(itemQuery);
 
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2368,7 +2408,7 @@ public final class SearchHelper {
         // Parse facet string
         if (StringUtils.isNotEmpty(facetString)) {
 
-            Matcher mFacetString = patternFacetString.matcher(facetString);
+            Matcher mFacetString = PATTERN_FACET_STRING.matcher(facetString);
 
             Set<String> fieldNames = new HashSet<>();
             while (mFacetString.find()) {
@@ -2436,23 +2476,25 @@ public final class SearchHelper {
      * Remove '*' at the start or end of the given value
      *
      * @param value
-     * @return
+     * @return value without truncation
      */
-    public static String removeTruncation(String value) {
+    public static String removeTruncation(final String value) {
         if (StringUtils.isEmpty(value)) {
             return value;
         }
 
+        String ret = value;
+
         // Remove left truncation
-        if (value.charAt(0) == '*' && value.length() > 1) {
-            value = value.substring(1);
+        if (ret.charAt(0) == '*' && ret.length() > 1) {
+            ret = ret.substring(1);
         }
         // Remove right truncation
-        if (value.charAt(value.length() - 1) == '*' && value.length() > 1) {
-            value = value.substring(0, value.length() - 1);
+        if (ret.charAt(ret.length() - 1) == '*' && ret.length() > 1) {
+            ret = ret.substring(0, ret.length() - 1);
         }
 
-        return value;
+        return ret;
     }
 
     /**
@@ -2517,9 +2559,9 @@ public final class SearchHelper {
             throw new IllegalArgumentException("fieldNamemae not be null");
         }
 
-        if (fieldName.startsWith(SolrConstants.PREFIX_BOOL) || fieldName.startsWith(SolrConstants.PREFIX_MDNUM) ||
-                fieldName.equals(SolrConstants.CALENDAR_YEAR)
-                || fieldName.equals(SolrConstants.CALENDAR_MONTH) || fieldName.equals(SolrConstants.CALENDAR_DAY)) {
+        if (fieldName.startsWith(SolrConstants.PREFIX_BOOL) || fieldName.startsWith(SolrConstants.PREFIX_MDNUM)
+                || fieldName.equals(SolrConstants.CALENDAR_YEAR) || fieldName.equals(SolrConstants.CALENDAR_MONTH)
+                || fieldName.equals(SolrConstants.CALENDAR_DAY)) {
             return fieldName;
         }
         return adaptField(fieldName, SolrConstants.PREFIX_FACET);
@@ -2553,7 +2595,7 @@ public final class SearchHelper {
     /**
      *
      * @param fieldName
-     * @return
+     * @return Normalized fieldName
      */
     public static String normalizeField(String fieldName) {
         return adaptField(fieldName, null);
@@ -2569,12 +2611,14 @@ public final class SearchHelper {
      * @should not apply facet prefix to calendar fields
      * @should remove untokenized correctly
      */
-    static String adaptField(String fieldName, String prefix) {
+    static String adaptField(final String fieldName, final String prefix) {
         if (fieldName == null) {
             return null;
         }
-        if (prefix == null) {
-            prefix = "";
+
+        String usePrefix = prefix;
+        if (usePrefix == null) {
+            usePrefix = "";
         }
 
         switch (fieldName) {
@@ -2582,20 +2626,20 @@ public final class SearchHelper {
             case SolrConstants.DOCSTRCT:
             case SolrConstants.DOCSTRCT_SUB:
             case SolrConstants.DOCSTRCT_TOP:
-                return prefix + fieldName;
+                return usePrefix + fieldName;
             case SolrConstants.CALENDAR_YEAR:
             case SolrConstants.CALENDAR_MONTH:
             case SolrConstants.CALENDAR_DAY:
-                if (SolrConstants.PREFIX_SORT.equals(prefix)) {
+                if (SolrConstants.PREFIX_SORT.equals(usePrefix)) {
                     return "SORTNUM_" + fieldName;
                 }
-                fieldName = applyPrefix(fieldName, prefix);
-                fieldName = fieldName.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
-                return fieldName;
+                String ret = applyPrefix(fieldName, usePrefix);
+                ret = ret.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
+                return ret;
             default:
-                fieldName = applyPrefix(fieldName, prefix);
-                fieldName = fieldName.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
-                return fieldName;
+                ret = applyPrefix(fieldName, usePrefix);
+                ret = ret.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
+                return ret;
         }
     }
 
@@ -2603,10 +2647,10 @@ public final class SearchHelper {
      * 
      * @param fieldName
      * @param prefix
-     * @return
+     * @return fieldName with prefix
      * @should apply prefix correctly
      */
-    static String applyPrefix(String fieldName, String prefix) {
+    static String applyPrefix(final String fieldName, String prefix) {
         if (StringUtils.isEmpty(fieldName)) {
             return fieldName;
         }
@@ -2614,35 +2658,36 @@ public final class SearchHelper {
             return fieldName;
         }
 
-        if (fieldName.startsWith("MD_")) {
-            fieldName = fieldName.replace("MD_", prefix);
-        } else if (fieldName.startsWith("MD2_")) {
+        String ret = fieldName;
+        if (ret.startsWith("MD_")) {
+            ret = ret.replace("MD_", prefix);
+        } else if (ret.startsWith("MD2_")) {
             if (SolrConstants.PREFIX_FACET.equals(prefix)) {
-                fieldName = SolrConstants.PREFIX_FACET + fieldName;
+                ret = SolrConstants.PREFIX_FACET + ret;
             } else {
-                fieldName = fieldName.replace("MD2_", prefix);
+                ret = ret.replace("MD2_", prefix);
             }
-        } else if (fieldName.startsWith(SolrConstants.PREFIX_MDNUM)) {
+        } else if (ret.startsWith(SolrConstants.PREFIX_MDNUM)) {
             if (SolrConstants.PREFIX_SORT.equals(prefix)) {
-                fieldName = fieldName.replace(SolrConstants.PREFIX_MDNUM, "SORTNUM_");
+                ret = ret.replace(SolrConstants.PREFIX_MDNUM, "SORTNUM_");
             } else if (SolrConstants.PREFIX_FACET.equals(prefix)) {
-                fieldName = SolrConstants.PREFIX_FACET + fieldName;
+                ret = SolrConstants.PREFIX_FACET + ret;
             } else {
-                fieldName = fieldName.replace(SolrConstants.PREFIX_MDNUM, prefix);
+                ret = ret.replace(SolrConstants.PREFIX_MDNUM, prefix);
             }
-        } else if (fieldName.startsWith("NE_")) {
+        } else if (ret.startsWith("NE_")) {
             if (SolrConstants.PREFIX_FACET.equals(prefix)) {
-                fieldName = SolrConstants.PREFIX_FACET + fieldName;
+                ret = SolrConstants.PREFIX_FACET + ret;
             } else {
-                fieldName = fieldName.replace("NE_", prefix);
+                ret = ret.replace("NE_", prefix);
             }
-        } else if (fieldName.startsWith(SolrConstants.PREFIX_BOOL)) {
-            fieldName = fieldName.replace(SolrConstants.PREFIX_BOOL, prefix);
-        } else if (fieldName.startsWith(SolrConstants.PREFIX_SORT)) {
-            fieldName = fieldName.replace(SolrConstants.PREFIX_SORT, prefix);
+        } else if (ret.startsWith(SolrConstants.PREFIX_BOOL)) {
+            ret = ret.replace(SolrConstants.PREFIX_BOOL, prefix);
+        } else if (ret.startsWith(SolrConstants.PREFIX_SORT)) {
+            ret = ret.replace(SolrConstants.PREFIX_SORT, prefix);
         }
 
-        return fieldName;
+        return ret;
     }
 
     /**
@@ -2718,7 +2763,7 @@ public final class SearchHelper {
         logger.trace("fields: {}", fields);
         logger.trace("searchTerms: {}", searchTerms);
         boolean moreThanOne = false;
-        for (String field : fields) {
+        for (final String field : fields) {
             // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
             switch (field) {
                 case SolrConstants.PI_TOPSTRUCT:
@@ -2743,11 +2788,12 @@ public final class SearchHelper {
             }
             StringBuilder sbInner = new StringBuilder();
             boolean multipleTerms = false;
-            for (String term : terms) {
+            for (final String t : terms) {
                 if (sbInner.length() > 0) {
                     sbInner.append(SolrConstants.SOLR_QUERY_OR);
                     multipleTerms = true;
                 }
+                String term = t;
                 if (!"*".equals(term)) {
                     boolean quotationMarksApplied = false;
                     if ((term.startsWith("\"") && term.endsWith("\""))) {
@@ -2790,7 +2836,7 @@ public final class SearchHelper {
     /**
      * Creates a Solr expand query string out of advanced search query item groups.
      *
-     * @param groups a {@link java.util.List} object.
+     * @param group
      * @param allowFuzzySearch
      * @return a {@link java.lang.String} object.
      * @should generate query correctly
@@ -2996,7 +3042,7 @@ public final class SearchHelper {
     /**
      *
      * @param searchTerms
-     * @return
+     * @return Term query from searchTerms
      */
     public static String buildTermQuery(Collection<String> searchTerms) {
         return buildTermQuery(searchTerms, true);
@@ -3006,7 +3052,7 @@ public final class SearchHelper {
      *
      * @param searchTerms
      * @param addOperators
-     * @return
+     * @return Term query from searchTerms
      */
     public static String buildTermQuery(Collection<String> searchTerms, boolean addOperators) {
         if (searchTerms == null || searchTerms.isEmpty()) {
@@ -3062,7 +3108,7 @@ public final class SearchHelper {
      * @should not add join statement if aggregateHits false
      * @should remove existing join statement
      */
-    public static String buildFinalQuery(String rawQuery, boolean boostTopLevelDocstructs, HttpServletRequest request,
+    public static String buildFinalQuery(final String rawQuery, boolean boostTopLevelDocstructs, HttpServletRequest request,
             SearchAggregationType aggregationType) {
         if (rawQuery == null) {
             throw new IllegalArgumentException("rawQuery may not be null");
@@ -3070,16 +3116,13 @@ public final class SearchHelper {
 
         // logger.trace("rawQuery: {}", rawQuery);
         StringBuilder sbQuery = new StringBuilder();
-        if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
-            rawQuery = rawQuery.replace(AGGREGATION_QUERY_PREFIX, "");
-        }
         if (SearchAggregationType.AGGREGATE_TO_TOPSTRUCT.equals(aggregationType)) {
             sbQuery.append(AGGREGATION_QUERY_PREFIX);
             // https://wiki.apache.org/solr/FieldCollapsing
             // https://wiki.apache.org/solr/Join
         }
         if (StringUtils.isNotBlank(rawQuery)) {
-            sbQuery.append("+(").append(rawQuery).append(")");
+            sbQuery.append("+(").append(rawQuery.replace(AGGREGATION_QUERY_PREFIX, "")).append(")");
         }
 
         // Boosting
@@ -3102,14 +3145,15 @@ public final class SearchHelper {
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @return Filter query suffix string from the HTTP session
      */
-    static String getFilterQuerySuffix(HttpServletRequest request, String privilege) {
-        if (request == null) {
-            request = BeanUtils.getRequest();
+    static String getFilterQuerySuffix(final HttpServletRequest request, String privilege) {
+        HttpServletRequest req = request;
+        if (req == null) {
+            req = BeanUtils.getRequest();
         }
-        if (request == null) {
+        if (req == null) {
             return "";
         }
-        HttpSession session = request.getSession(false);
+        HttpSession session = req.getSession(false);
         if (session == null) {
             return null;
         }
@@ -3143,6 +3187,7 @@ public final class SearchHelper {
      * @param params a {@link java.util.Map} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param locale a {@link java.util.Locale} object.
+     * @param proximitySearchDistance
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -3167,15 +3212,13 @@ public final class SearchHelper {
         int currentCellIndex = 0;
 
         // Query row
-        {
-            SXSSFRow row = currentSheet.createRow(currentRowIndex++);
-            SXSSFCell cell = row.createCell(currentCellIndex++);
-            cell.setCellStyle(styleBold);
-            cell.setCellValue(new XSSFRichTextString("Query:"));
-            cell = row.createCell(currentCellIndex);
-            cell.setCellValue(new XSSFRichTextString(exportQuery));
-            currentCellIndex = 0;
-        }
+        SXSSFRow qRow = currentSheet.createRow(currentRowIndex++);
+        SXSSFCell qCell = qRow.createCell(currentCellIndex++);
+        qCell.setCellStyle(styleBold);
+        qCell.setCellValue(new XSSFRichTextString("Query:"));
+        qCell = qRow.createCell(currentCellIndex);
+        qCell.setCellValue(new XSSFRichTextString(exportQuery));
+        currentCellIndex = 0;
 
         // Title row
         SXSSFRow row = currentSheet.createRow(currentRowIndex++);
@@ -3256,8 +3299,8 @@ public final class SearchHelper {
     }
 
     /**
-     * @param params
-     * @param useExpandQuery
+     * @param expandQuery
+     * @return Map<String, String>
      */
     public static Map<String, String> getExpandQueryParams(String expandQuery) {
         Map<String, String> params = new HashMap<>();
@@ -3273,14 +3316,15 @@ public final class SearchHelper {
     /**
      * Removes illegal characters from an individual search term. Do not use on whole queries!
      *
-     * @param s The term to clean up.
+     * @param term The term to clean up.
      * @return Cleaned up term.
      * @should remove illegal chars correctly
      * @should remove trailing punctuation
      * @should preserve truncation
      * @should preserve negation
      */
-    public static String cleanUpSearchTerm(String s) {
+    public static String cleanUpSearchTerm(final String term) {
+        String s = term;
         if (StringUtils.isNotEmpty(s)) {
             boolean addNegation = false;
             boolean addLeftTruncation = false;
@@ -3337,32 +3381,34 @@ public final class SearchHelper {
      *
      * @param accessCondition
      * @param escapeAccessCondition
-     * @return
+     * @return Constructed Solr query
      * @should build escaped query correctly
      * @should build not escaped query correctly
      */
-    public static String getQueryForAccessCondition(String accessCondition, boolean escapeAccessCondition) {
-        if (escapeAccessCondition) {
-            accessCondition = BeanUtils.escapeCriticalUrlChracters(accessCondition);
-        }
-        return "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
+    public static String getQueryForAccessCondition(final String accessCondition, boolean escapeAccessCondition) {
+        String ac = escapeAccessCondition ? BeanUtils.escapeCriticalUrlChracters(accessCondition) : accessCondition;
+        return "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
     }
 
     /**
      * Adds a fuzzy search token to the given term. The maximal Damerau-Levenshtein is calculated from term length
      *
      * @param term the search term
+     * @param prefix
+     * @param suffix
      * @return the given term with a fuzzy search token appended
      */
     public static String addFuzzySearchToken(String term, String prefix, String suffix) {
-        int distance = FuzzySearchTerm.calculateOptimalDistance(term);// DataManager.getInstance().getConfiguration().getFuzzySearchDistance();
+        int distance = FuzzySearchTerm.calculateOptimalDistance(term);
         return addFuzzySearchToken(term, distance, prefix, suffix);
     }
 
     /**
      * @param term the search term. Must be a single word
      * @param distance the maximum Damerau-Levenshtein distance to a matching word. Must be from 0 to 2, where 0 means no fuzzy search
-     * @return
+     * @param prefix
+     * @param suffix
+     * @return term with fuzzy search token
      */
     public static String addFuzzySearchToken(String term, int distance, String prefix, String suffix) {
         if (distance < 0 || distance > 2) {
@@ -3385,8 +3431,8 @@ public final class SearchHelper {
      *
      * @param term
      * @param distance
-     * @return
-     * @should add token correctly
+     * @return {@link String}
+     * @should term with proximity search token
      */
     public static String addProximitySearchToken(String term, int distance) {
         if (StringUtils.isEmpty(term)) {
@@ -3415,7 +3461,7 @@ public final class SearchHelper {
     /**
      *
      * @param term Search term containing proximity search token
-     * @return
+     * @return term without proximity search token
      * @should remove token correctly
      * @should return unmodified term if no token found
      */
@@ -3424,7 +3470,7 @@ public final class SearchHelper {
             return term;
         }
 
-        Matcher m = SearchHelper.patternProximitySearchToken.matcher(term);
+        Matcher m = SearchHelper.PATTERN_PROXIMITY_SEARCH_TOKEN.matcher(term);
         if (m.find()) {
             String num = m.group(1);
             if (StringUtils.isNotBlank(num)) {
@@ -3438,7 +3484,7 @@ public final class SearchHelper {
     /**
      *
      * @param query
-     * @return
+     * @return Extracted search distance
      * @should return 0 if query empty
      * @should return 0 if query does not contain token
      * @should return 0 if query not phrase search
@@ -3450,7 +3496,7 @@ public final class SearchHelper {
         }
 
         int ret = 0;
-        Matcher m = patternProximitySearchToken.matcher(query);
+        Matcher m = PATTERN_PROXIMITY_SEARCH_TOKEN.matcher(query);
         if (m.find()) {
             String num = m.group(1);
             if (StringUtils.isNotBlank(num)) {
@@ -3479,7 +3525,7 @@ public final class SearchHelper {
             return false;
         }
 
-        Matcher m = patternPhrase.matcher(s.trim());
+        Matcher m = PATTERN_PHRASE.matcher(s.trim());
         return m.find();
     }
 
@@ -3500,7 +3546,6 @@ public final class SearchHelper {
     /**
      * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
      * 
-     * @param facetQueries List of individual facet queries
      * @param allFacetQueries
      * @param allowedFacetQueryRegexes Optional list containing regexes for allowed facet queries
      * @return Expand query

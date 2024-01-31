@@ -174,7 +174,7 @@ public class HighlightsBean implements Serializable {
     /**
      * Get the URL to the highlighted object. Either the record page URL of the URL given in highlight creation
      * 
-     * @param the highlight object
+     * @param object the highlight object
      * @return the URL
      */
     public String getUrl(Highlight object) {
@@ -192,6 +192,9 @@ public class HighlightsBean implements Serializable {
                     } catch (URISyntaxException e) {
                         logger.error("Highlight target url {} is not a valid url", object.getData().getTargetUrl());
                     }
+                    break;
+                default:
+                    break;
             }
         }
         return "";

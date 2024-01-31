@@ -37,7 +37,7 @@ public class CopyrightIndicatorLicense implements Serializable {
     /**
      * 
      * @param description
-     * @param icon
+     * @param icons
      */
     public CopyrightIndicatorLicense(String description, List<String> icons) {
         this.description = description;

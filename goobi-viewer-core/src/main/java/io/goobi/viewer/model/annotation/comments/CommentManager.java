@@ -32,9 +32,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.weld.exceptions.IllegalArgumentException;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import de.intranda.api.annotation.wa.Motivation;
 import io.goobi.viewer.controller.DataManager;
@@ -63,7 +63,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class CommentManager implements AnnotationLister<Comment> {
 
-    private final static Logger logger = LogManager.getLogger(CommentManager.class);
+    private static final Logger logger = LogManager.getLogger(CommentManager.class);
 
     private final AnnotationSaver saver;
     private final AnnotationDeleter deleter;
@@ -115,11 +115,7 @@ public class CommentManager implements AnnotationLister<Comment> {
                                     populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
                                     n.notifyCreation(comment, BeanUtils.getLocale(), viewerRootUrl);
                                 }
-                            } catch (DAOException e) {
-                                logger.error(e.getMessage());
-                            } catch (PresentationException e) {
-                                logger.error(e.getMessage());
-                            } catch (IndexUnreachableException e) {
+                            } catch (DAOException | IndexUnreachableException | PresentationException e) {
                                 logger.error(e.getMessage());
                             }
                         }
@@ -165,11 +161,7 @@ public class CommentManager implements AnnotationLister<Comment> {
                                     populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
                                     n.notifyEdit(comment, editedComment, BeanUtils.getLocale(), viewerRootUrl);
                                 }
-                            } catch (DAOException e) {
-                                logger.error(e.getMessage());
-                            } catch (PresentationException e) {
-                                logger.error(e.getMessage());
-                            } catch (IndexUnreachableException e) {
+                            } catch (DAOException | IndexUnreachableException | PresentationException e) {
                                 logger.error(e.getMessage());
                             }
                         }
@@ -187,15 +179,13 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      * Populates recipient and BCC lists for given from given user group owner and members.
      *
-     * @param pi
+     * @param group
      * @param notificator
+     * @param usedAddresses
      * @throws DAOException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
      * @should not add addresses included in usedAddresses
      */
-    static void populateRecipientsForGroup(UserGroup group, CommentMailNotificator notificator, Set<String> usedAddresses)
-            throws DAOException, PresentationException, IndexUnreachableException {
+    static void populateRecipientsForGroup(UserGroup group, CommentMailNotificator notificator, Set<String> usedAddresses) throws DAOException {
         if (group == null) {
             throw new IllegalArgumentException("group may not be null");
         }
@@ -208,14 +198,14 @@ public class CommentManager implements AnnotationLister<Comment> {
 
         notificator.setRecipients(Collections.singletonList(group.getOwner().getEmail()));
         usedAddresses.add(group.getOwner().getEmail());
-        // logger.trace("Added owner for group '{}': '{}'", group.getName(), group.getOwner().getEmail());
+        // logger.trace("Added owner for group '{}': '{}'", group.getName(), group.getOwner().getEmail()); //NOSONAR Debug
         Set<User> members = group.getMembers();
         List<String> bcc = new ArrayList<>(members.size());
         for (User member : members) {
             if (!usedAddresses.contains(member.getEmail())) {
                 bcc.add(member.getEmail());
                 usedAddresses.add(member.getEmail());
-                // logger.trace("Added member for group '{}': '{}'", group.getName(), member.getEmail());
+                // logger.trace("Added member for group '{}': '{}'", group.getName(), member.getEmail()); //NOSONAR Debug
             }
         }
         notificator.setBcc(bcc);
@@ -251,7 +241,8 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List, 
+     * java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
      */
     @Override
     public List<Comment> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
@@ -266,7 +257,8 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List,
+     * java.util.List, java.lang.String, java.lang.Integer)
      */
     @Override
     public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi,
@@ -285,15 +277,14 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @param editor
      * @param pi
      * @param page
-     * @return
+     * @return text stripped of any JS
      */
-    public static String checkAndCleanScripts(String text, User editor, String pi, Integer page) {
+    public static String checkAndCleanScripts(final String text, User editor, String pi, Integer page) {
         if (text != null) {
             String cleanText = StringTools.stripJS(text);
             if (cleanText.length() < text.length()) {
                 logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}",
                         Optional.ofNullable(editor).map(User::getId).orElse(null), pi, page, text);
-                text = cleanText;
             }
             return cleanText;
         }
@@ -352,7 +343,7 @@ public class CommentManager implements AnnotationLister<Comment> {
      * Returns {@link UserGroup}s linked to {@link CommentGroup}s (non-core only) whose Solr query matches the given <code>pi</code>.
      *
      * @param pi
-     * @return
+     * @return Set<CommentGroup>
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -381,7 +372,7 @@ public class CommentManager implements AnnotationLister<Comment> {
      *
      *
      * @param commentGroup
-     * @return
+     * @return true if commentGroup query has matching identifiers in the index; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
      */

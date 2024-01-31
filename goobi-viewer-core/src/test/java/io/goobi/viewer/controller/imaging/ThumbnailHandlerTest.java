@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.controller.imaging;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -32,9 +32,9 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.AbstractTest;
@@ -55,7 +55,7 @@ import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
  * @author Florian Alpers
  *
  */
-public class ThumbnailHandlerTest extends AbstractTest {
+class ThumbnailHandlerTest extends AbstractTest {
 
     private static final String STATIC_IMAGES_PATH = "http://localhost:8080/viewer/resources/images";
     private ThumbnailHandler handler;
@@ -64,7 +64,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         IIIFUrlHandler iiifHandler = new IIIFUrlHandler(new ApiUrls(ApiUrls.API));
@@ -72,7 +72,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
     }
 
     @Test
-    public void testPage() {
+    void testPage() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("00000001.tif")
@@ -85,11 +85,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
                 .build();
 
         String url = handler.getThumbnailUrl(page, 200, 300);
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
+        Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test
-    public void testExternalIIIFImageUrl() {
+    void testExternalIIIFImageUrl() {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -104,11 +104,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
 
         String url = handler.getThumbnailUrl(page, 200, 300);
         String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/native.jpg";
-        Assert.assertEquals(refrenceUrl, url);
+        Assertions.assertEquals(refrenceUrl, url);
     }
 
     @Test
-    public void testExternalIIIFImageInfoUrl() {
+    void testExternalIIIFImageInfoUrl() {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/info.json";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -123,11 +123,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
 
         String url = handler.getThumbnailUrl(page, 200, 300);
         String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/default.jpg";
-        Assert.assertEquals(refrenceUrl, url);
+        Assertions.assertEquals(refrenceUrl, url);
     }
 
     @Test
-    public void testGetFullImageUrl() {
+    void testGetFullImageUrl() {
         String fileUrl = "00000001.tif";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -141,20 +141,20 @@ public class ThumbnailHandlerTest extends AbstractTest {
                 .build();
 
         String urlMax = handler.getFullImageUrl(page, Scale.MAX);
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.tif",
+        Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.tif",
                 urlMax);
 
         String urlBox = handler.getFullImageUrl(page, new Scale.ScaleToBox(1500, 1500));
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!1500,1500/0/default.tif",
+        Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!1500,1500/0/default.tif",
                 urlBox);
 
         String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5));
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct:50/0/default.tif",
+        Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct:50/0/default.tif",
                 urlFraction);
     }
 
     @Test
-    public void testThumbnailUrl() {
+    void testThumbnailUrl() {
         String fileUrl = "00000001.tif";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -168,17 +168,17 @@ public class ThumbnailHandlerTest extends AbstractTest {
                 .build();
 
         String urlMax = handler.getThumbnailUrl(page, 0, 0);
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.jpg",
+        Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.jpg",
                 urlMax);
 
         String urlBox = handler.getThumbnailUrl(page, 1500, 1500);
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!1500,1500/0/default.jpg",
+        Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!1500,1500/0/default.jpg",
                 urlBox);
 
     }
 
     @Test
-    public void testDocLocal() throws IndexUnreachableException {
+    void testDocLocal() throws IndexUnreachableException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
@@ -191,7 +191,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
+        Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     /**
@@ -199,7 +199,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * set up the test data ({@link io.goobi.viewer.solr.SolrSearchIndex#getFirstDoc(String, List, List) SolrSearchIndex#getFirstDoc} is used)
      */
     //    @Test
-    public void testAnchorLocal() throws IndexUnreachableException {
+    void testAnchorLocal() throws IndexUnreachableException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
@@ -221,11 +221,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234_1/00000001.tif/full/!200,300/0/default.jpg", url);
+        Assertions.assertEquals("http://localhost:8080/viewer/rest/image/1234_1/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test
-    public void testDocExternal() throws IndexUnreachableException {
+    void testDocExternal() throws IndexUnreachableException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
@@ -238,11 +238,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assert.assertEquals("/api/v1/images/external/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
+        Assertions.assertEquals("/api/v1/images/external/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test
-    public void testDocExternalIIIF() throws IndexUnreachableException {
+    void testDocExternalIIIF() throws IndexUnreachableException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
@@ -255,11 +255,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assert.assertEquals("http://external/iiif/image/00000001.tif/full/!200,300/0/default.jpg", url);
+        Assertions.assertEquals("http://external/iiif/image/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test
-    public void testGetCMSMediaImageApiUrl_legacy() throws UnsupportedEncodingException {
+    void testGetCMSMediaImageApiUrl_legacy() throws UnsupportedEncodingException {
 
         String legacyApiUrl = "https://viewer.goobi.io/rest/";
 
@@ -278,7 +278,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
     }
 
     @Test
-    public void testGetCMSMediaImageApiUrl() {
+    void testGetCMSMediaImageApiUrl() {
 
         String currentApiUrl = "https://viewer.goobi.io/api/v1";
 
@@ -289,7 +289,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
     }
 
     @Test
-    public void testGetCMSMediaImageApiUrl_withSpaces() {
+    void testGetCMSMediaImageApiUrl_withSpaces() {
 
         String currentApiUrl = "https://viewer.goobi.io/api/v1";
 
@@ -302,7 +302,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
     }
 
     @Test
-    public void testCMSMediaThumbnailUrl() {
+    void testCMSMediaThumbnailUrl() {
 
         String currentApiUrl = "https://viewer.goobi.io/api/v1";
 
@@ -329,9 +329,9 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @verifies use width only if height null or zero
      */
     @Test
-    public void getSize_shouldUseWidthOnlyIfHeightNullOrZero() throws Exception {
-        Assert.assertEquals("1,", ThumbnailHandler.getSize(1, null));
-        Assert.assertEquals("1,", ThumbnailHandler.getSize(1, 0));
+    void getSize_shouldUseWidthOnlyIfHeightNullOrZero() throws Exception {
+        Assertions.assertEquals("1,", ThumbnailHandler.getSize(1, null));
+        Assertions.assertEquals("1,", ThumbnailHandler.getSize(1, 0));
     }
 
     /**
@@ -339,9 +339,9 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @verifies use height only if width null or zero
      */
     @Test
-    public void getSize_shouldUseHeightOnlyIfWidthNullOrZero() throws Exception {
-        Assert.assertEquals(",1", ThumbnailHandler.getSize(null, 1));
-        Assert.assertEquals(",1", ThumbnailHandler.getSize(0, 1));
+    void getSize_shouldUseHeightOnlyIfWidthNullOrZero() throws Exception {
+        Assertions.assertEquals(",1", ThumbnailHandler.getSize(null, 1));
+        Assertions.assertEquals(",1", ThumbnailHandler.getSize(0, 1));
     }
 
     /**
@@ -349,8 +349,8 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @verifies use width and height if both non zero
      */
     @Test
-    public void getSize_shouldUseWidthAndHeightIfBothNonZero() throws Exception {
-        Assert.assertEquals("!1,1", ThumbnailHandler.getSize(1, 1));
+    void getSize_shouldUseWidthAndHeightIfBothNonZero() throws Exception {
+        Assertions.assertEquals("!1,1", ThumbnailHandler.getSize(1, 1));
     }
 
     /**
@@ -358,8 +358,13 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return max if both zero
      */
     @Test
-    public void getSize_shouldReturnMaxIfBothZero() throws Exception {
-        Assert.assertEquals("max", ThumbnailHandler.getSize(0, 0));
+    void getSize_shouldReturnMaxIfBothZero() throws Exception {
+        Assertions.assertEquals("max", ThumbnailHandler.getSize(0, 0));
+    }
+    
+    @Test
+    void getSize_shouldReturnMaxIfBothNull() throws Exception {
+        Assertions.assertEquals("max", ThumbnailHandler.getSize(null, null));
     }
 
     /**
@@ -367,8 +372,8 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return image thumbnail path correctly
      */
     @Test
-    public void getImagePath_shouldReturnImageThumbnailPathCorrectly() throws Exception {
-        Assert.assertEquals("00000001.tif",
+    void getImagePath_shouldReturnImageThumbnailPathCorrectly() throws Exception {
+        Assertions.assertEquals("00000001.tif",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("image/tiff").build()));
     }
@@ -378,13 +383,13 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return audio thumbnail path correctly
      */
     @Test
-    public void getImagePath_shouldReturnAudioThumbnailPathCorrectly() throws Exception {
+    void getImagePath_shouldReturnAudioThumbnailPathCorrectly() throws Exception {
         // Page thumbnail
-        Assert.assertEquals("00000001.tif",
+        Assertions.assertEquals("00000001.tif",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("audio/mpeg3").build()));
         // Default thumbnail
-        Assert.assertEquals("https://example/com/viewer/thumbnail_audio.jpg",
+        Assertions.assertEquals("https://example/com/viewer/thumbnail_audio.jpg",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setMimeType("audio").build()));
     }
@@ -394,13 +399,13 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return video thumbnail path correctly
      */
     @Test
-    public void getImagePath_shouldReturnVideoThumbnailPathCorrectly() throws Exception {
+    void getImagePath_shouldReturnVideoThumbnailPathCorrectly() throws Exception {
         // Page thumbnail
-        Assert.assertEquals("00000001.tif",
+        Assertions.assertEquals("00000001.tif",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("video").build()));
         // Default thumbnail
-        Assert.assertEquals("https://example/com/viewer/thumbnail_video.jpg",
+        Assertions.assertEquals("https://example/com/viewer/thumbnail_video.jpg",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setMimeType("video/webm").build()));
     }
@@ -410,8 +415,8 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return pdf thumbnail path correctly
      */
     @Test
-    public void getImagePath_shouldReturnPdfThumbnailPathCorrectly() throws Exception {
-        Assert.assertEquals("https://example/com/viewer/thumbnail_epub.jpg",
+    void getImagePath_shouldReturnPdfThumbnailPathCorrectly() throws Exception {
+        Assertions.assertEquals("https://example/com/viewer/thumbnail_epub.jpg",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/pdf").build()));
     }
@@ -421,11 +426,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return 3d object thumbnail path correctly
      */
     @Test
-    public void getImagePath_shouldReturn3dObjectThumbnailPathCorrectly() throws Exception {
-        Assert.assertEquals("https://example/com/viewer/thumbnail_3d.png",
+    void getImagePath_shouldReturn3dObjectThumbnailPathCorrectly() throws Exception {
+        Assertions.assertEquals("https://example/com/viewer/thumbnail_3d.png",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/object").build()));
-        Assert.assertEquals("https://example/com/viewer/thumbnail_3d.png",
+        Assertions.assertEquals("https://example/com/viewer/thumbnail_3d.png",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("object").build()));
     }

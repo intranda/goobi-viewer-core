@@ -38,7 +38,7 @@ public class CopyrightIndicatorStatus implements Serializable {
         /**
          * 
          * @param name Status name to match
-         * @return
+         * @return {@link Status}
          * @should return correct value
          */
         public static Status getByName(String name) {

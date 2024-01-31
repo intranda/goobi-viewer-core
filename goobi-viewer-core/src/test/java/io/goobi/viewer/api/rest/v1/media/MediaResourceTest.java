@@ -22,12 +22,12 @@
 package io.goobi.viewer.api.rest.v1.media;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 
@@ -35,68 +35,67 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  * @author florian
  *
  */
-public class MediaResourceTest extends AbstractRestApiTest {
+class MediaResourceTest extends AbstractRestApiTest {
 
     private static final Object PI = "02008070428708";
     private static final String FILENAME = "00000032";
     private static final Object MIMETYPE = "mpeg3";
 
     @Test
-    public void testLoadAudio() {
+    void testLoadAudio() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp3").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals(200, response.getStatus(), "Should return status 200");
         }
     }
 
     @Test
-    public void testLoadMissingAudio() {
+    void testLoadMissingAudio() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp4").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
+            assertEquals(404, response.getStatus(), "Should return status 404");
         }
     }
 
     @Test
-    public void testLoadAudioRange() {
+    void testLoadAudioRange() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp3").build();
         try (Response response = target(url)
                 .request()
                 .header("Range", "bytes=0-")
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 206", 206, response.getStatus());
+            assertEquals(206, response.getStatus(), "Should return status 206");
         }
     }
 
     @Test
-    public void testLoadAudioMultiRange() {
+    void testLoadAudioMultiRange() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp3").build();
         try (Response response = target(url)
                 .request()
                 .header("Range", "bytes=0-4,12-32,100-2000")
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 206", 206, response.getStatus());
+            assertEquals(206, response.getStatus(), "Should return status 206");
         }
     }
 
     @Test
-    public void testLoadAudioIllegalRange() {
+    void testLoadAudioIllegalRange() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp3").build();
         try (Response response = target(url)
                 .request()
                 .header("Range", "bytes2342345243645")
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 416", 416, response.getStatus());
+            assertEquals(416, response.getStatus(), "Should return status 416");
         }
     }
-
 }

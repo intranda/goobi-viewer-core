@@ -23,34 +23,34 @@ package io.goobi.viewer.model.cms;
 
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.cms.CMSStaticPage;
 
-public class CMSStaticPageTest {
+class CMSStaticPageTest {
 
     private CMSStaticPage page = new CMSStaticPage("test");
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
     }
 
     @Test
-    public void testGetPageName() {
-        Assert.assertEquals("test", page.getPageName());
+    void testGetPageName() {
+        Assertions.assertEquals("test", page.getPageName());
     }
 
     @Test
-    public void testIsLanguageComplete() {
-        Assert.assertFalse(page.isLanguageComplete(Locale.GERMANY));
+    void testIsLanguageComplete() {
+        Assertions.assertFalse(page.isLanguageComplete(Locale.GERMANY));
     }
 
     @Test
-    public void testHasCmsPage() {
-        Assert.assertFalse(page.isHasCmsPage());
+    void testHasCmsPage() {
+        Assertions.assertFalse(page.isHasCmsPage());
     }
 
 }

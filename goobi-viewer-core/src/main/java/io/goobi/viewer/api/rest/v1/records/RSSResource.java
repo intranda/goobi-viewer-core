@@ -59,17 +59,18 @@ public class RSSResource {
             tags = { "records", "rss" },
             summary = "Get an rss feed of the most recent records")
     public String getRssFeed(
-            @Parameter(
-                    description = "Subtheme: Results are filtered to values within the given subtheme (optional)") @QueryParam("subtheme") String subtheme,
-            @Parameter(description = "Language of the returned metadata labels and values (optional)") @QueryParam("lang") String language,
+            @Parameter(description = "Subtheme: Results are filtered to values within the given subtheme (optional)") 
+            @QueryParam("subtheme") String subtheme,
+            @Parameter(description = "Language of the returned metadata labels and values (optional)") 
+            @QueryParam("lang") String language,
             @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
-            @Parameter(
-                    description = "Facet query. Several queries may be entered as ';;' separated list (optional)") @QueryParam("facets") String facets,
-            @Parameter(
-                    description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)") @QueryParam("sortField") String sortField,
-            @Parameter(
-                    description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)") @QueryParam("sortDescending") Boolean sortDescending)
+            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)") 
+            @QueryParam("facets") String facets,
+            @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)") 
+            @QueryParam("sortField") String sortField,
+            @Parameter(description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)") 
+            @QueryParam("sortDescending") Boolean sortDescending)
             throws ContentLibException {
 
         return RSSFeed.createRssFeed(language, maxHits, subtheme, query, facets, servletRequest, sortField, sortDescending == null || sortDescending);
@@ -82,17 +83,17 @@ public class RSSResource {
             tags = { "records", "rss" },
             summary = "Get an a json representation of an RSS feed of the most recent records")
     public Channel getRssJsonFeed(
-            @Parameter(
-                    description = "Subtheme: Results are filtered to values within the given subtheme (optional)") @QueryParam("subtheme") String subtheme,
+            @Parameter(description = "Subtheme: Results are filtered to values within the given subtheme (optional)") 
+            @QueryParam("subtheme") String subtheme,
             @Parameter(description = "Language of the returned metadata labels and values (optional)") @QueryParam("lang") String language,
             @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
-            @Parameter(
-                    description = "Facet query. Several queries may be entered as ';;' separated list (optional)") @QueryParam("facets") String facets,
-            @Parameter(
-                    description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)") @QueryParam("sortField") String sortField,
-            @Parameter(
-                    description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)") @QueryParam("sortDescending") Boolean sortDescending)
+            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)") 
+            @QueryParam("facets") String facets,
+            @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)") 
+            @QueryParam("sortField") String sortField,
+            @Parameter(description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)") 
+            @QueryParam("sortDescending") Boolean sortDescending)
             throws ContentLibException {
 
         return RSSFeed.createRssResponse(language, maxHits, subtheme, query, facets, servletRequest, sortField,

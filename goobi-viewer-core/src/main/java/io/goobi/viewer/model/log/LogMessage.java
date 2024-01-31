@@ -78,6 +78,12 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     @Transient
     private UserJsonFacade creator = UNASSIGNED;
 
+    /**
+     * 
+     * @param message
+     * @param creatorId
+     * @param request
+     */
     public LogMessage(String message, Long creatorId, HttpServletRequest request) {
         this.message = message;
         this.creatorId = creatorId;
@@ -85,11 +91,23 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         this.loadCreator(request);
     }
 
+    /**
+     * 
+     * @param message
+     * @param creatorId
+     * @param dateCreated
+     * @param request
+     */
     public LogMessage(String message, Long creatorId, LocalDateTime dateCreated, HttpServletRequest request) {
         this(message, creatorId, request);
         this.dateCreated = dateCreated;
     }
 
+    /**
+     * 
+     * @param source
+     * @param request
+     */
     public LogMessage(LogMessage source, HttpServletRequest request) {
         this.message = source.message;
         this.creatorId = source.creatorId;
@@ -98,12 +116,16 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         if (creator == UNASSIGNED) {
             this.loadCreator(request);
         }
-        if (this.creatorId == null && this.creator.userId != null) {
-            this.creatorId = this.creator.userId;
+        if (this.creatorId == null && this.creator.getUserId() != null) {
+            this.creatorId = this.creator.getUserId();
         }
         this.id = source.id;
     }
 
+    /**
+     * 
+     * @param source
+     */
     public LogMessage(LogMessage source) {
         this(source, null);
     }
@@ -151,7 +173,9 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     /**
      * Set the value of {@link #creator} from the value of {@link #creatorId}. If creatorId is null or an exception occurs while retrieving the user
      * data, the creator is set to {@link #UNASSIGNED}. If no creator could be found by the given id, the creator is set to {@link #ANONYMOUS} A
-     * {@link HttpServletRequest request} may be passed to create an absolute URL for the creator avatar
+     * {@link HttpServletRequest request} may be passed to create an absolute URL for the creator avatar.
+     * 
+     * @param request
      */
     private void loadCreator(HttpServletRequest request) {
         if (this.creatorId == null) {
@@ -165,7 +189,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
                     this.creator = new UserJsonFacade(user, request);
                 }
             } catch (DAOException e) {
-                logger.error("Error loading user with id " + this.creatorId, e);
+                logger.error("Error loading user with id {}", this.creatorId, e);
                 this.creator = UNASSIGNED;
             }
         }
@@ -184,7 +208,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
      */
     @Override
     public String toString() {
-        return this.message + " (" + (this.creator == null ? ("ID:" + this.creatorId) : this.creator.name) + " - " + this.dateCreated;
+        return this.message + " (" + (this.creator == null ? ("ID:" + this.creatorId) : this.creator.getName()) + " - " + this.dateCreated;
     }
 
 }

@@ -41,7 +41,7 @@ import io.goobi.viewer.controller.DataManager;
 @CORSBinding
 public class CORSHeaderFilter implements ContainerResponseFilter {
 
-    private static final Configuration config = DataManager.getInstance().getConfiguration();
+    private static Configuration config = DataManager.getInstance().getConfiguration();
 
     /** {@inheritDoc} */
     @Override

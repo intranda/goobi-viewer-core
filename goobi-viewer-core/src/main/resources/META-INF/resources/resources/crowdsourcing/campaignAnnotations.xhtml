@@ -112,9 +112,11 @@
 										</div>
 										<!-- CAMPAIGN -->
 										<div class="col-3 d-none d-lg-flex" role="gridcell">
-											#{annotation.creator.displayNameEscaped}
+										    <h:outputText>
+											    #{annotation.creator.displayName}
+											</h:outputText>
 											<h:outputText rendered="#{annotation.reviewer != null}">
-											    <br />#{annotation.reviewer.displayNameEscaped}
+											    <br />#{annotation.reviewer.displayName}
 											</h:outputText>
 											</div>
 										<!-- DATE -->

@@ -95,7 +95,7 @@
                 </h:panelGroup>
 
                 <!-- VIEW 3D OBJECT -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'object'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType == 'model'}">
                     <ui:insert name="viewObject3d">
                         <ui:include src="/resources/includes/object/object3d.xhtml" />
                     </ui:insert>
@@ -172,7 +172,7 @@
 
                 viewerJS.downloadModal.init( downloadModalConfig );
 
-                viewerJS.clipboard.init( '[data-copy]' );
+                // viewerJS.clipboard.init( '[data-copy]' );
             </script>
 		</f:view>
     </ui:define>
@@ -206,6 +206,7 @@
 		        popoverOnHover="true"
 		        popoverClass="record_geomap_popover"
 		        highlightDocumentId="#{activeDocumentBean.logid}"
+		        currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
 		        featureClickHandling="openSearch"/>
         </ui:fragment>
 

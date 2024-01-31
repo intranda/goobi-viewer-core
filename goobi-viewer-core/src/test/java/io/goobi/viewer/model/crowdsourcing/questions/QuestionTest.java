@@ -24,10 +24,10 @@ package io.goobi.viewer.model.crowdsourcing.questions;
 import java.net.URI;
 import java.util.Locale;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -38,13 +38,13 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
  * @author florian
  *
  */
-public class QuestionTest extends AbstractDatabaseEnabledTest {
+class QuestionTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -53,35 +53,35 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void loadTranslation() throws DAOException {
+    void loadTranslation() throws DAOException {
         Question question1 =
                 DataManager.getInstance().getDao().getCampaign(1l).getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
-        Assert.assertNotNull(question1);
+        Assertions.assertNotNull(question1);
         String trEnglish = question1.getText().getText(Locale.ENGLISH);
-        Assert.assertNotNull(trEnglish);
-        Assert.assertEquals("English text", trEnglish);
+        Assertions.assertNotNull(trEnglish);
+        Assertions.assertEquals("English text", trEnglish);
     }
 
     @Test
-    public void addTranslation() throws DAOException {
+    void addTranslation() throws DAOException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
         Question question1 = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
-        Assert.assertNotNull(question1);
-        Assert.assertEquals("", question1.getText().getText(Locale.GERMAN));
-        Assert.assertEquals(1, question1.getText().toMap().size());
+        Assertions.assertNotNull(question1);
+        Assertions.assertEquals("", question1.getText().getText(Locale.GERMAN));
+        Assertions.assertEquals(1, question1.getText().toMap().size());
         question1.getText().setText("deutscher Text", Locale.GERMAN);
-        Assert.assertEquals("deutscher Text", question1.getText().getText(Locale.GERMAN));
-        Assert.assertEquals(2, question1.getText().toMap().size());
+        Assertions.assertEquals("deutscher Text", question1.getText().getText(Locale.GERMAN));
+        Assertions.assertEquals(2, question1.getText().toMap().size());
     }
 
     @Test
-    public void persistTranslation() {
+    void persistTranslation() {
         try {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
             Question question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
@@ -90,10 +90,10 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
 
             campaign = DataManager.getInstance().getDao().getCampaign(1l);
             question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
-            Assert.assertEquals("TEST", question.getText().getText(Locale.GERMAN));
+            Assertions.assertEquals("TEST", question.getText().getText(Locale.GERMAN));
         } catch (Throwable e) {
             e.printStackTrace();
-            Assert.fail(e.toString());
+            Assertions.fail(e.toString());
         }
     }
 
@@ -102,8 +102,8 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
      * @verifies extract id correctly
      */
     @Test
-    public void getCampaignId_shouldExtractIdCorrectly() throws Exception {
-        Assert.assertEquals(Long.valueOf(1234567890L),
+    void getCampaignId_shouldExtractIdCorrectly() throws Exception {
+        Assertions.assertEquals(Long.valueOf(1234567890L),
                 Question.getCampaignId(new URI("https://example.com/viewer/crowdsourcing/campaigns/1234567890/questions/9876543210/")));
     }
 
@@ -112,9 +112,8 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
      * @verifies extract id correctly
      */
     @Test
-    public void getQuestionId_shouldExtractIdCorrectly() throws Exception {
-        Assert.assertEquals(Long.valueOf(9876543210L),
+    void getQuestionId_shouldExtractIdCorrectly() throws Exception {
+        Assertions.assertEquals(Long.valueOf(9876543210L),
                 Question.getQuestionId(new URI("https://example.com/viewer/crowdsourcing/campaigns/1234567890/questions/9876543210/")));
     }
-
 }

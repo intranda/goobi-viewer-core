@@ -21,21 +21,21 @@
  */
 package io.goobi.viewer.model.security;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 
-public class CopyrightIndicatorStatusTest {
+class CopyrightIndicatorStatusTest {
 
     /**
      * @see CopyrightIndicatorStatus#getByName(String)
      * @verifies return correct value
      */
     @Test
-    public void getByName_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(Status.OPEN, Status.getByName("OPEN"));
-        Assert.assertEquals(Status.PARTIAL, Status.getByName("PARTIAL"));
-        Assert.assertEquals(Status.LOCKED, Status.getByName("LOCKED"));
+    void getByName_shouldReturnCorrectValue() throws Exception {
+        Assertions.assertEquals(Status.OPEN, Status.getByName("OPEN"));
+        Assertions.assertEquals(Status.PARTIAL, Status.getByName("PARTIAL"));
+        Assertions.assertEquals(Status.LOCKED, Status.getByName("LOCKED"));
     }
 }

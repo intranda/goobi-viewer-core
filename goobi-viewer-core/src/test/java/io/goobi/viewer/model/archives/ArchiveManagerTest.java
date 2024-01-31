@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.model.archives;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.time.ZoneOffset;
@@ -36,24 +36,25 @@ import java.util.List;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
-public class ArchiveManagerTest extends AbstractTest{
+class ArchiveManagerTest extends AbstractTest{
 
     BasexEADParser eadParser;
     List<ArchiveResource> possibleDatabases;
 
-    @Before
-    public void before() {
+    @BeforeEach
+    void before() {
         try {
             Document doc = XmlTools.readXmlFile("src/test/resources/data/EAD_Export_Tektonik.XML");
             BasexEADParser tempParser = new BasexEADParser(null, null);
@@ -80,13 +81,13 @@ public class ArchiveManagerTest extends AbstractTest{
     }
 
     @Test
-    public void testGetDatabases() {
+    void testGetDatabases() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
         assertEquals(2, archiveManager.getDatabases().size());
     }
 
     @Test
-    public void testGetDatabase() {
+    void testGetDatabase() throws ArchiveException {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
             ArchiveTree tree = archiveManager.getArchiveTree("database 1", "resource 1");
@@ -105,7 +106,7 @@ public class ArchiveManagerTest extends AbstractTest{
     }
 
     @Test
-    public void testUpdateDatabase() throws IllegalStateException, ConfigurationException, IOException, HTTPException, JDOMException {
+    void testUpdateDatabase() throws IllegalStateException, ConfigurationException, IOException, HTTPException, JDOMException, ArchiveException {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
             archiveManager.getArchiveTree("database 1", "resource 1");
@@ -121,7 +122,7 @@ public class ArchiveManagerTest extends AbstractTest{
     }
 
     @Test
-    public void testAddNewArchive() {
+    void testAddNewArchive() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
 
         ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3", ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
@@ -133,7 +134,7 @@ public class ArchiveManagerTest extends AbstractTest{
     }
 
     @Test
-    public void testRemoveArchive() {
+    void testRemoveArchive() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
         possibleDatabases.remove(1);
         assertNotNull(archiveManager.getArchive("database 1", "resource 2"));

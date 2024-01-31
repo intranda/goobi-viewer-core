@@ -28,6 +28,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 /**
  * Save WebAnnotations to a persistence contex
  *
+ * @param <T>
  * @author florian
  *
  */
@@ -36,7 +37,7 @@ public interface AnnotationSaver {
     /**
      * Save the annotation. Overwrites an existing annotation if it has the same id
      *
-     * @param annotation The annotation to save
+     * @param annotations The annotation to save
      * @throws IOException If saving the annotation fails
      */
     public void save(PersistentAnnotation... annotations) throws IOException;

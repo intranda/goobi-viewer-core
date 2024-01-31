@@ -28,6 +28,7 @@ import java.util.Map;
 
 /**
  * @author florian
+ * @param <T>
  *
  */
 public class RandomComparator<T> implements Comparator<T> {

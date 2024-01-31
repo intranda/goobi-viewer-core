@@ -22,6 +22,8 @@
 
 package io.goobi.viewer.controller.mq;
 
+import java.time.LocalDateTime;
+
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -45,14 +47,25 @@ public class DefaultQueueListener {
     private static final Logger log = LogManager.getLogger(DefaultQueueListener.class);
 
     private final MessageQueueManager messageBroker;
-    private Thread thread;
+    private Thread thread = null;
     private volatile boolean shouldStop = false;
+    private volatile LocalDateTime lastLoopCircle = LocalDateTime.now();
+    private final String queueType;
 
-    public DefaultQueueListener(MessageQueueManager messageBroker) {
+    /**
+     * 
+     * @param messageBroker
+     * @param queueType
+     */
+    public DefaultQueueListener(MessageQueueManager messageBroker, String queueType) {
         this.messageBroker = messageBroker;
+        this.queueType = queueType;
     }
 
-    public void register(String queueType) throws JMSException {
+    public void register() throws JMSException {
+        if (this.thread != null) {
+            throw new IllegalStateException("Listener is already registered");
+        }
         ActiveMQConnection conn = this.messageBroker.getConnection();
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
         prefetchPolicy.setAll(0);
@@ -64,6 +77,11 @@ public class DefaultQueueListener {
         thread.start();
     }
 
+    /**
+     * 
+     * @param queueType
+     * @param conn
+     */
     void startMessageLoop(String queueType, ActiveMQConnection conn) {
         try {
             conn.start();
@@ -74,10 +92,17 @@ public class DefaultQueueListener {
         }
     }
 
+    /**
+     * 
+     * @param queueType
+     * @param conn
+     * @throws JMSException
+     */
     void startListener(String queueType, ActiveMQConnection conn) throws JMSException {
         try (Session sess = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
                 MessageConsumer consumer = sess.createConsumer(sess.createQueue(queueType));) {
             while (!shouldStop) {
+                lastLoopCircle = LocalDateTime.now();
                 waitForMessage(sess, consumer);
                 if (Thread.interrupted()) {
                     log.info("Queue listener for queue {} interrupted: exiting listener", queueType);
@@ -87,6 +112,11 @@ public class DefaultQueueListener {
         }
     }
 
+    /**
+     * 
+     * @param sess
+     * @param consumer
+     */
     void waitForMessage(Session sess, MessageConsumer consumer) {
         try {
             Message message = consumer.receive();
@@ -120,8 +150,35 @@ public class DefaultQueueListener {
         }
     }
 
-    void handleTicket(final Session sess, Message message, ViewerMessage ticket) throws JMSException {
-        log.debug("Handling ticket {}", ticket);
+    public boolean isShouldStop() {
+        return this.shouldStop;
+    }
+
+    public LocalDateTime getLastLoopCircle() {
+        return this.lastLoopCircle;
+    }
+
+    public void restartLoop() throws JMSException {
+        close();
+        this.thread = null;
+        this.shouldStop = false;
+        this.register();
+    }
+
+    public String getQueueType() {
+        return queueType;
+    }
+
+    /**
+     * 
+     * @param sess
+     * @param message
+     * @param inTicket
+     * @throws JMSException
+     */
+    void handleTicket(final Session sess, Message message, final ViewerMessage inTicket) throws JMSException {
+        log.debug("Handling ticket {}", inTicket);
+        ViewerMessage ticket = inTicket;
         try {
             ViewerMessage retry = DataManager.getInstance().getDao().getViewerMessageByMessageID(message.getJMSMessageID());
             if (retry != null) {
@@ -158,7 +215,6 @@ public class DefaultQueueListener {
         try {
             this.thread.join(1000);
         } catch (InterruptedException e) {
-            log.error(e);
             Thread.currentThread().interrupt();
         }
     }

@@ -45,7 +45,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -54,7 +53,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
@@ -117,7 +115,7 @@ public class IndexResource {
 
     /**
      * 
-     * @return
+     * @return Solr schema version
      * @deprecated Use /api/v1/monitoring/
      */
     @Deprecated(since = "23.02")
@@ -138,7 +136,7 @@ public class IndexResource {
     /**
      *
      * @param query
-     * @return
+     * @return Indexed records statistics as JSON
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -149,17 +147,18 @@ public class IndexResource {
             tags = { "index" },
             summary = "Statistics about indexed records")
     public String getStatistics(
-            @Parameter(description = "SOLR Query to filter results (optional)") @QueryParam("query") String query)
+            @Parameter(description = "SOLR Query to filter results (optional)") @QueryParam("query") final String query)
             throws IndexUnreachableException, PresentationException {
 
-        if (query == null) {
-            query = "+(ISWORK:*) ";
+        String useQuery = query;
+        if (useQuery == null) {
+            useQuery = "+(ISWORK:*) ";
         } else {
-            query = String.format("+(%s)", query);
+            useQuery = String.format("+(%s)", useQuery);
         }
 
         String finalQuery =
-                new StringBuilder().append(query).append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+                new StringBuilder().append(useQuery).append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
         long count = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 0, null, null, null).getResults().getNumFound();
         JSONObject json = new JSONObject();
         json.put("count", count);
@@ -169,7 +168,7 @@ public class IndexResource {
     /**
      *
      * @param params
-     * @return
+     * @return Records as JSON
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
      * @throws DAOException
@@ -187,43 +186,43 @@ public class IndexResource {
     public String getRecordsForQuery(RecordsRequestParameters params)
             throws IndexUnreachableException, ViewerConfigurationException, DAOException, IllegalRequestException {
         JSONObject ret = new JSONObject();
-        if (params == null || params.query == null) {
+        if (params == null || params.getQuery() == null) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
             return ret.toString();
         }
 
-        String query = SearchHelper.buildFinalQuery(params.query, params.boostTopLevelDocstructs,
-                params.includeChildHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
+        String query = SearchHelper.buildFinalQuery(params.getQuery(), params.isBoostTopLevelDocstructs(),
+                params.isIncludeChildHits() ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
 
         logger.trace("query: {}", query);
 
-        int count = params.count;
+        int count = params.getCount();
         if (count < 0) {
             count = SolrSearchIndex.MAX_HITS;
         }
 
         List<StringPair> sortFieldList = new ArrayList<>();
-        for (String sortField : params.sortFields) {
+        for (String sortField : params.getSortFields()) {
             if (StringUtils.isNotEmpty(sortField)) {
-                sortFieldList.add(new StringPair(sortField, params.sortOrder));
+                sortFieldList.add(new StringPair(sortField, params.getSortOrder()));
             }
         }
-        if (params.randomize) {
+        if (params.isRandomize()) {
             sortFieldList.clear();
-            sortFieldList.add(new StringPair(SolrTools.generateRandomSortField(), ("desc".equals(params.sortOrder) ? "desc" : "asc")));
+            sortFieldList.add(new StringPair(SolrTools.generateRandomSortField(), ("desc".equals(params.getSortOrder()) ? "desc" : "asc")));
         }
         try {
-            List<String> fieldList = params.resultFields;
+            List<String> fieldList = params.getResultFields();
 
             Map<String, String> paramMap = null;
-            if (params.includeChildHits) {
-                paramMap = SearchHelper.getExpandQueryParams(params.query);
+            if (params.isIncludeChildHits()) {
+                paramMap = SearchHelper.getExpandQueryParams(params.getQuery());
             }
             QueryResponse response =
                     DataManager.getInstance()
                             .getSearchIndex()
-                            .search(query, params.offset, count, sortFieldList, params.facetFields, fieldList, null, paramMap);
+                            .search(query, params.getOffset(), count, sortFieldList, params.getFacetFields(), fieldList, null, paramMap);
 
             JSONObject object = new JSONObject();
             object.put("numFound", response.getResults().getNumFound());
@@ -239,7 +238,7 @@ public class IndexResource {
     /**
      *
      * @param expression
-     * @return
+     * @return {@link StreamingOutput}
      */
     @POST
     @Path(INDEX_STREAM)
@@ -261,7 +260,7 @@ public class IndexResource {
 
     /**
      *
-     * @return
+     * @return List<SolrFieldInfo>
      * @throws IOException
      */
     @GET
@@ -282,8 +281,12 @@ public class IndexResource {
     }
 
     /**
-     *
-     * @return
+     * @param solrField
+     * @param wktRegion
+     * @param filterQuery
+     * @param facetQuery
+     * @param gridLevel
+     * @return Heatmap as {@link String}
      * @throws IOException
      * @throws IndexUnreachableException
      */
@@ -293,8 +296,8 @@ public class IndexResource {
     @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" })
     public String getHeatmap(
             @Parameter(description = "SOLR field containing spatial coordinates") @PathParam("solrField") String solrField,
-            @Parameter(
-                    description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
+            @Parameter(description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
+                    + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
@@ -331,7 +334,8 @@ public class IndexResource {
     public String getGeoJsonResuls(
             @Parameter(description = "SOLR field containing spatial coordinates") @PathParam("solrField") String solrField,
             @Parameter(
-                    description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
+                    description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
+                            + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The SOLR field to be used as label for each feature") @QueryParam("labelField") String labelField)
@@ -398,7 +402,7 @@ public class IndexResource {
      * 
      * @param params
      * @param response
-     * @return
+     * @return {@link JSONArray} with query results
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
@@ -410,14 +414,14 @@ public class IndexResource {
         Map<String, SolrDocumentList> expanded = response.getExpandedResults();
         logger.trace("hits: {}", result.size());
         JSONArray jsonArray = null;
-        if (params.jsonFormat != null) {
-            if ("datecentric".equals(params.jsonFormat)) {
+        if (params.getJsonFormat() != null) {
+            if ("datecentric".equals(params.getJsonFormat())) {
                 jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
             } else {
-                jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
+                jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.getLanguage());
             }
         } else {
-            jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
+            jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.getLanguage());
         }
         if (jsonArray == null) {
             jsonArray = new JSONArray();
@@ -427,7 +431,7 @@ public class IndexResource {
 
     /**
      *
-     * @return
+     * @return List<SolrFieldInfo>
      * @throws DAOException
      * @should create list correctly
      */
@@ -478,7 +482,7 @@ public class IndexResource {
      *
      * @param expr
      * @param solrUrl
-     * @return
+     * @return {@link StreamingOutput}
      */
     private static StreamingOutput executeStreamingExpression(String expr, String solrUrl) {
         return out -> {

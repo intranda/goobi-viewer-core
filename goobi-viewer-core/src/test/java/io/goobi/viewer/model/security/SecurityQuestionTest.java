@@ -23,19 +23,19 @@ package io.goobi.viewer.model.security;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class SecurityQuestionTest {
+class SecurityQuestionTest {
 
     /**
      * @see SecurityQuestion#isAnswerCorrect(String)
      * @verifies return true on correct answer
      */
     @Test
-    public void isAnswerCorrect_shouldReturnTrueOnCorrectAnswer() throws Exception {
+    void isAnswerCorrect_shouldReturnTrueOnCorrectAnswer() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
-        Assert.assertTrue(q.isAnswerCorrect("answer"));
+        Assertions.assertTrue(q.isAnswerCorrect("answer"));
     }
 
     /**
@@ -43,9 +43,9 @@ public class SecurityQuestionTest {
      * @verifies return true on correct answer and ignore case
      */
     @Test
-    public void isAnswerCorrect_shouldReturnTrueOnCorrectAnswerAndIgnoreCase() throws Exception {
+    void isAnswerCorrect_shouldReturnTrueOnCorrectAnswerAndIgnoreCase() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
-        Assert.assertTrue(q.isAnswerCorrect("ANSWER"));
+        Assertions.assertTrue(q.isAnswerCorrect("ANSWER"));
     }
 
     /**
@@ -53,9 +53,9 @@ public class SecurityQuestionTest {
      * @verifies return false on incorrect answer
      */
     @Test
-    public void isAnswerCorrect_shouldReturnFalseOnIncorrectAnswer() throws Exception {
+    void isAnswerCorrect_shouldReturnFalseOnIncorrectAnswer() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
-        Assert.assertFalse(q.isAnswerCorrect("wronganswer"));
+        Assertions.assertFalse(q.isAnswerCorrect("wronganswer"));
     }
 
     /**
@@ -63,11 +63,11 @@ public class SecurityQuestionTest {
      * @verifies return false empty answer
      */
     @Test
-    public void isAnswerCorrect_shouldReturnFalseEmptyAnswer() throws Exception {
+    void isAnswerCorrect_shouldReturnFalseEmptyAnswer() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
-        Assert.assertFalse(q.isAnswerCorrect(null));
-        Assert.assertFalse(q.isAnswerCorrect(""));
-        Assert.assertFalse(q.isAnswerCorrect("   "));
+        Assertions.assertFalse(q.isAnswerCorrect(null));
+        Assertions.assertFalse(q.isAnswerCorrect(""));
+        Assertions.assertFalse(q.isAnswerCorrect("   "));
     }
 
     /**
@@ -75,10 +75,10 @@ public class SecurityQuestionTest {
      * @verifies mark question as answered
      */
     @Test
-    public void isAnswerCorrect_shouldMarkQuestionAsAnswered() throws Exception {
+    void isAnswerCorrect_shouldMarkQuestionAsAnswered() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
-        Assert.assertFalse(q.isAnswered());
+        Assertions.assertFalse(q.isAnswered());
         q.isAnswerCorrect("wrong");
-        Assert.assertTrue(q.isAnswered());
+        Assertions.assertTrue(q.isAnswered());
     }
 }

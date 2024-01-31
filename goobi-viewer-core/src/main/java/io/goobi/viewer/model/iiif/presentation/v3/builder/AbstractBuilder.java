@@ -141,6 +141,7 @@ public abstract class AbstractBuilder {
 
         AbstractApiUrlManager v1Urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
         v1Builder = new io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder(v1Urls) {
+            //
         };
     }
 
@@ -330,7 +331,7 @@ public abstract class AbstractBuilder {
         return displayFields.stream().anyMatch(displayField -> matches(field, displayField));
     }
 
-    private boolean matches(String field, String template) {
+    private static boolean matches(String field, String template) {
 
         String cleanedTemplate = template.replace("*", "");
         String cleanedField = field.replaceAll("_LANG_\\w{2,3}", "");
@@ -718,24 +719,25 @@ public abstract class AbstractBuilder {
      * @return
      */
     protected IIIFAgent getProvider(ProviderConfiguration providerConfig) {
-        IIIFAgent provider = new IIIFAgent(providerConfig.uri, ViewerResourceBundle.getTranslations(providerConfig.label, false));
+        IIIFAgent provider = new IIIFAgent(providerConfig.getUri(), ViewerResourceBundle.getTranslations(providerConfig.getLabel(), false));
 
-        providerConfig.homepages.forEach(homepageConfig -> {
-            IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.label, false);
-            provider.addHomepage(new LabeledResource(homepageConfig.uri, "Text", Format.TEXT_HTML.getLabel(), label));
+        providerConfig.getHomepages().forEach(homepageConfig -> {
+            IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.getLabel(), false);
+            provider.addHomepage(new LabeledResource(homepageConfig.getUri(), "Text", Format.TEXT_HTML.getLabel(), label));
         });
 
-        providerConfig.logos.forEach(uri -> {
-            provider.addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType()));
-        });
+        providerConfig.getLogos()
+                .forEach(
+                        uri -> provider
+                                .addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType())));
 
         return provider;
     }
 
     protected ImageResource getThumbnail(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ImageResource thumb;
-        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
-        if (urls != null) {
+        AbstractApiUrlManager um = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
+        if (um != null) {
             thumb = new ImageResource(urls.path(RECORDS_RECORD, RECORDS_IMAGE).params(pi).build(), thumbWidth, thumbHeight);
         } else {
             thumb = new ImageResource(URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(pi)));

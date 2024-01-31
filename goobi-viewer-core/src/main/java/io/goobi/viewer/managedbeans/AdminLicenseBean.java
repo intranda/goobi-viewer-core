@@ -113,13 +113,18 @@ public class AdminLicenseBean implements Serializable {
         lazyModelDownloadTickets = new TableDataProvider<>(new TableDataSource<DownloadTicket>() {
 
             @Override
-            public List<DownloadTicket> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+            public List<DownloadTicket> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
+                    Map<String, String> filters) {
                 logger.trace("getEntries<DownloadTicket>, {}-{}", first, first + pageSize);
                 try {
-                    if (StringUtils.isEmpty(sortField)) {
-                        sortField = "id";
+                    String useSortField = sortField;
+                    SortOrder useSortOrder = sortOrder;
+                    if (StringUtils.isBlank(useSortField)) {
+                        useSortField = "id";
                     }
-                    return DataManager.getInstance().getDao().getActiveDownloadTickets(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getActiveDownloadTickets(first, pageSize, useSortField, useSortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }
@@ -318,6 +323,7 @@ public class AdminLicenseBean implements Serializable {
      * </p>
      *
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
+     * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteLicenseTypeAction(LicenseType licenseType) throws DAOException {
@@ -339,6 +345,8 @@ public class AdminLicenseBean implements Serializable {
      * <p>
      * newCurrentLicenseTypeAction.
      * </p>
+     * 
+     * @param name
      */
     public void newCurrentLicenseTypeAction(String name) {
         logger.trace("newCurrentLicenseTypeAction({})", name);
@@ -378,7 +386,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      *
      * @param licenseTypeName
-     * @return
+     * @return Number of records with the given licenseTypeName that have the ACCESSCONDITION_CONCURRENTUSE field
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -392,7 +400,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      *
      * @param licenseTypeName
-     * @return
+     * @return Number of records with the given licenseTypeName that have the ACCESSCONDITION_PDF_PERCENTAGE_QUOTA field
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -406,7 +414,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      *
      * @param licenseType
-     * @return
+     * @return Number of licenses with of given {@link LicenseType}
      * @throws DAOException
      */
     public List<License> getLicenses(LicenseType licenseType) throws DAOException {
@@ -427,8 +435,7 @@ public class AdminLicenseBean implements Serializable {
      * Adds the current License to the licensee (User, UserGroup or IpRange). It is imperative that the licensee object is refreshed after updating so
      * that a new license object is an ID attached. Otherwise the list of licenses will throw an NPE!
      *
-     * @param license a {@link io.goobi.viewer.model.security.License} object.
-     * @return a {@link java.lang.String} object.
+     * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -591,7 +598,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return List of existing download tickets that are in request status
      * @throws DAOException
      */
     public List<DownloadTicket> getDownloadTicketRequests() throws DAOException {
@@ -623,7 +630,7 @@ public class AdminLicenseBean implements Serializable {
      * @param emailSubjectKey
      * @param emailBodyKey
      * @param emailBodyParams
-     * @return
+     * @return Navigation outcome
      */
     private static String notifyOwner(DownloadTicket ticket, String emailSubjectKey, String emailBodyKey, List<String> emailBodyParams) {
         if (ticket == null) {
@@ -661,7 +668,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * 
      * @param ticket
-     * @return
+     * @return Navigation outcome
      * @throws DAOException
      */
     public String activateDownloadTicketAction(DownloadTicket ticket) throws DAOException {
@@ -677,13 +684,13 @@ public class AdminLicenseBean implements Serializable {
 
         // Notify owner
         return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_activation",
-                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
+                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.FORMATTERDEDATETIMENOSECONDS.format(ticket.getExpirationDate())));
     }
 
     /**
      * 
      * @param ticket
-     * @return
+     * @return Navigation outcome
      * @throws DAOException
      */
     public String extendDownloadTicketAction(DownloadTicket ticket) throws DAOException {
@@ -698,13 +705,13 @@ public class AdminLicenseBean implements Serializable {
         saveTicket(ticket);
 
         return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_extention",
-                Arrays.asList(ticket.getPi(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
+                Arrays.asList(ticket.getPi(), DateTools.FORMATTERDEDATETIMENOSECONDS.format(ticket.getExpirationDate())));
     }
 
     /**
      * 
      * @param ticket
-     * @return
+     * @return Navigation outcome
      * @throws DAOException
      */
     public String renewDownloadTicketAction(DownloadTicket ticket) throws DAOException {
@@ -720,13 +727,13 @@ public class AdminLicenseBean implements Serializable {
 
         // Notify owner
         return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_renewal",
-                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
+                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.FORMATTERDEDATETIMENOSECONDS.format(ticket.getExpirationDate())));
     }
 
     /**
      * 
      * @param ticket
-     * @return
+     * @return Navigation outcome
      * @throws DAOException
      */
     public String rejectDownloadTicketAction(DownloadTicket ticket) throws DAOException {
@@ -748,8 +755,8 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      * 
-     * @param downloadTicket
-     * @return
+     * @param ticket
+     * @return Navigation outcome
      * @throws DAOException
      */
     public String deleteDownloadTicketAction(DownloadTicket ticket) throws DAOException {
@@ -823,7 +830,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Returns the user ID of <code>currentLicenseType</code>.
      *
-     * return <code>currentLicenseType.id</code> if loaded and has ID; null if not
+     * @return <code>currentLicenseType.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentLicenseTypeId() {
         if (currentLicenseType != null && currentLicenseType.getId() != null) {
@@ -876,7 +883,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Returns the user ID of <code>currentLicense</code>.
      *
-     * return <code>currentLicense.id</code> if loaded and has ID; null if not
+     * @return <code>currentLicense.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentLicenseId() {
         if (currentLicense != null && currentLicense.getId() != null) {
@@ -975,7 +982,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      *
      * @param accessCondition
-     * @return
+     * @return Generated query for given accessCondition
      */
     public String getUrlQueryForAccessCondition(String accessCondition) {
         String query = SearchHelper.getQueryForAccessCondition(accessCondition, true);
@@ -993,7 +1000,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      *
      * @param privilege
-     * @return
+     * @return Composite message key for the given privilege name
      */
     public String getMessageKeyForPrivilege(String privilege) {
         return "license_priv_" + privilege.toLowerCase();

@@ -41,7 +41,7 @@ public class FileResourceManager {
     /**
      *
      * @param servletContex The servletContext of the application
-     * @param themeRootPath A file system path containing the root path of a theme repository. May be null to use the internal resource path for theme
+     * @param theme A file system path containing the root path of a theme repository. May be null to use the internal resource path for theme
      *            resources
      */
     public FileResourceManager(ServletContext servletContex, String theme) {
@@ -57,17 +57,14 @@ public class FileResourceManager {
     }
 
     public Path getThemeResourcePath(String resource) {
-        Path path = this.themResourcesPath.resolve(resource);
-        return path;
+        return this.themResourcesPath.resolve(resource);
     }
 
     public URI getCoreResourceURI(String resource) {
-        URI uri = URI.create("/resources/" + resource);
-        return uri;
+        return URI.create("/resources/" + resource);
     }
 
     public URI getThemeResourceURI(String resource) {
-        URI uri = URI.create("/resources/themes/" + this.theme + "/" + resource);
-        return uri;
+        return URI.create("/resources/themes/" + this.theme + "/" + resource);
     }
 }

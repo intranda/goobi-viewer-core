@@ -25,9 +25,9 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_IIIF;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_INFO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Collections;
@@ -36,9 +36,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.controller.Configuration;
@@ -50,7 +50,7 @@ import io.goobi.viewer.model.security.LicenseType;
  * @author florian
  *
  */
-public class ViewerImageResourceTest extends AbstractRestApiTest {
+class ViewerImageResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
     private static final String FILENAME = "00000010";
@@ -66,31 +66,32 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        DataManager.getInstance().injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath()));
+        DataManager.getInstance()
+                .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath()));
     }
 
     /**
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testGetImageInformation() {
+    void testGetImageInformation() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
             assertTrue(info.getString("@id").endsWith(id));
@@ -98,31 +99,31 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetImageInformationFromBaseUrl() {
+    void testGetImageInformationFromBaseUrl() {
         String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
-            assertTrue("@id should end with '" + id + " but was: " + info.getString("@id"), info.getString("@id").endsWith(id));
+            assertTrue(info.getString("@id").endsWith(id), "@id should end with '" + id + " but was: " + info.getString("@id"));
         }
     }
 
     @Test
-    public void testGetImageInformationSpecialCharacters() {
+    void testGetImageInformationSpecialCharacters() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
             assertTrue(info.getString("@id").endsWith(id.replace(" ", "+")));
@@ -130,7 +131,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetImageSpecialCharacters() {
+    void testGetImageSpecialCharacters() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS, REGION, SIZE, ROTATION, QUALITY, FORMAT)
                 .build();
@@ -141,7 +142,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             int status = response.getStatus();
             String contentLocation = response.getHeaderString("Content-Location");
             byte[] entity = response.readEntity(byte[].class);
-            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+            assertEquals(200, status, "Should return status 200. Error message: " + new String(entity));
             assertEquals("file:///opt/digiverso/viewer/data/3/media/" + PI_SPECIAL_CHARACTERS.replace("+", "%20") + "/"
                     + FILENAME_SPECIAL_CHARACTERS.replace("+", "%20"), contentLocation);
             assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
@@ -149,7 +150,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetImage() {
+    void testGetImage() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params(PI, FILENAME + ".tif", REGION, SIZE, ROTATION, QUALITY, FORMAT)
                 .build();
@@ -160,32 +161,30 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             int status = response.getStatus();
             String contentLocation = response.getHeaderString("Content-Location");
             byte[] entity = response.readEntity(byte[].class);
-            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+            assertEquals(200, status, "Should return status 200. Error message: " + new String(entity));
             assertEquals("file:///opt/digiverso/viewer/data/1/media/" + PI + "/" + FILENAME + ".tif", contentLocation);
             assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
     }
 
     @Test
-    public void testGetPdf() {
+    void testGetPdf() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(PI, FILENAME).build();
         try (Response response = target(url)
                 .request()
                 .accept("application/pdf")
                 .get()) {
             byte[] entity = response.readEntity(byte[].class);
-            assertEquals("Should return status 200. Response body was" + new String(entity), 200, response.getStatus());
-            assertNotNull("Should return user object as json", entity);
+            assertEquals(200, response.getStatus(), "Should return status 200. Response body was" + new String(entity));
+            assertNotNull(entity, "Should return user object as JSON");
             String contentDisposition = response.getHeaderString("Content-Disposition");
             assertEquals("attachment; filename=\"" + PI + "_" + FILENAME + ".pdf" + "\"", contentDisposition);
             assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
-
     }
 
     @Test
-    public void testGetImageClosedLicense() throws DAOException {
-
+    void testGetImageClosedLicense() throws DAOException {
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(false);
         licenseType.setPrivileges(Collections.emptySet());
@@ -204,9 +203,8 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .get()) {
             int status = response.getStatus();
             byte[] entity = response.readEntity(byte[].class);
-            assertEquals("Should return status 403. Error message: " + new String(entity), 403, status);
+            assertEquals(403, status, "Should return status 403. Error message: " + new String(entity));
         }
-
 
         try (Response response = target(urlImage)
                 .request()
@@ -214,16 +212,14 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .get()) {
             int status = response.getStatus();
             byte[] entity = response.readEntity(byte[].class);
-            assertEquals("Should return status 403. Error message: " + new String(entity), 403, status);
+            assertEquals(403, status, "Should return status 403. Error message: " + new String(entity));
         }
 
         DataManager.getInstance().getDao().deleteLicenseType(licenseType);
-
     }
 
     @Test
-    public void testGetImageOpenLicense() throws DAOException {
-
+    void testGetImageOpenLicense() throws DAOException {
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(true);
         DataManager.getInstance().getDao().addLicenseType(licenseType);
@@ -241,9 +237,8 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .get()) {
             int status = response.getStatus();
             byte[] entity = response.readEntity(byte[].class);
-            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+            assertEquals(200, status, "Should return status 200. Error message: " + new String(entity));
         }
-
 
         try (Response response = target(urlImage)
                 .request()
@@ -251,15 +246,14 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .get()) {
             int status = response.getStatus();
             byte[] entity = response.readEntity(byte[].class);
-            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+            assertEquals(200, status, "Should return status 200. Error message: " + new String(entity));
         }
 
         DataManager.getInstance().getDao().deleteLicenseType(licenseType);
     }
 
     @Test
-    public void testGetImageThumbnailLicense() throws DAOException {
-
+    void testGetImageThumbnailLicense() throws DAOException {
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(false);
         licenseType.setPrivileges(Collections.singleton(LicenseType.PRIV_VIEW_THUMBNAILS));
@@ -278,9 +272,8 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .get()) {
             int status = response.getStatus();
             byte[] entity = response.readEntity(byte[].class);
-            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+            assertEquals(200, status, "Should return status 200. Error message: " + new String(entity));
         }
-
 
         try (Response response = target(urlImage)
                 .request()
@@ -288,7 +281,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .get()) {
             int status = response.getStatus();
             byte[] entity = response.readEntity(byte[].class);
-            assertEquals("Should return status 403. Error message: " + new String(entity), 403, status);
+            assertEquals(403, status, "Should return status 403. Error message: " + new String(entity));
         }
 
         DataManager.getInstance().getDao().deleteLicenseType(licenseType);

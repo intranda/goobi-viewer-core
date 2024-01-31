@@ -117,6 +117,7 @@ public class AbstractAnnotationBuilder {
 
     public List<SolrDocument> getAnnotationDocuments(String query, int first, int rows, List<StringPair> sortFields, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {
+        // logger.trace("getAnnotationDocuments: {}", query); //NOSONAR Debug
         if (sortFields == null) {
             sortFields = getDefaultSortFields();
         }

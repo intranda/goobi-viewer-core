@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.api.rest.model;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MediaDeliveryServiceTest {
+class MediaDeliveryServiceTest {
 
     @Test
-    public void test_matchRangeHeader() {
+    void test_matchRangeHeader() {
         {
             String range = "n-n";
             assertFalse(MediaDeliveryService.matchesRangeHeaderPattern(range));
@@ -84,5 +84,4 @@ public class MediaDeliveryServiceTest {
             assertFalse(MediaDeliveryService.matchesRangeHeaderPattern(range));
         }
     }
-
 }

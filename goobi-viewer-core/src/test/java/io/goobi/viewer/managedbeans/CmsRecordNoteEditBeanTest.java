@@ -21,15 +21,15 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -45,18 +45,17 @@ import io.goobi.viewer.model.translations.TranslatedText;
  * @author florian
  *
  */
-public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
-
+class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
 
     CmsRecordNoteEditBean bean;
 
-
     String englishText = "ENGLISH";
     String germanText = "GERMAN";
+
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         bean = new CmsRecordNoteEditBean();
@@ -66,13 +65,13 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testChangeLanguage() {
+    void testChangeLanguage() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -93,7 +92,7 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testMustFillDefaultLanguageFirst() {
+    void testMustFillDefaultLanguageFirst() {
 
         //default language is en
         assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
@@ -127,7 +126,7 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testCreateTitleLabelMultiLanguage() {
+    void testCreateTitleLabelMultiLanguage() {
         IMetadataValue md = new MultiLanguageMetadataValue();
         md.setValue("deutsch", "de");
         md.setValue("english", "en");
@@ -137,14 +136,14 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         TranslatedText text = bean.createRecordTitle(md);
 
         String data = new TranslatedTextConverter().convertToDatabaseColumn(text);
-        String[] expected = {"\"en\":[\"english\"]", "\"de\":[\"deutsch\"]", "\"fr\":[\"francais\"]"};
-        assertTrue("data String is " + data, data.contains(expected[0]));
-        assertTrue("data String is " + data, data.contains(expected[1]));
-        assertTrue("data String is " + data, data.contains(expected[2]));
+        String[] expected = { "\"en\":[\"english\"]", "\"de\":[\"deutsch\"]", "\"fr\":[\"francais\"]" };
+        assertTrue(data.contains(expected[0]), "data String is " + data);
+        assertTrue(data.contains(expected[1]), "data String is " + data);
+        assertTrue(data.contains(expected[2]), "data String is " + data);
     }
 
     @Test
-    public void testCreateTitleLabelSingleValue() {
+    void testCreateTitleLabelSingleValue() {
         IMetadataValue md = new SimpleMetadataValue("default");
 
         TranslatedText text = bean.createRecordTitle(md);
@@ -154,13 +153,13 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testTranslationEmpyIfNoFieldsFilled() {
+    void testTranslationEmpyIfNoFieldsFilled() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         TranslatedText title = note.getNoteTitle();
         TranslatedText text = note.getNoteText();
         bean.setNote(note);
 
-      //default language is en
+        //default language is en
         assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
         title.setText(englishText, Locale.ENGLISH);
         text.setText(englishText, Locale.ENGLISH);
@@ -171,13 +170,13 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testTranslationNotCompleteIfNotAllFieldsFilled() {
+    void testTranslationNotCompleteIfNotAllFieldsFilled() {
         CMSRecordNote note = new CMSSingleRecordNote("PI1");
         TranslatedText title = note.getNoteTitle();
         TranslatedText text = note.getNoteText();
         bean.setNote(note);
 
-      //default language is en
+        //default language is en
         assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
 
         title.setText(englishText, Locale.ENGLISH);
@@ -189,13 +188,13 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testTranslationCompleteIfSameFieldsFillesAsInDefaultLanguage() {
+    void testTranslationCompleteIfSameFieldsFillesAsInDefaultLanguage() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         TranslatedText title = note.getNoteTitle();
         TranslatedText text = note.getNoteText();
         bean.setNote(note);
 
-      //default language is en
+        //default language is en
         assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
 
         text.setText(englishText, Locale.ENGLISH);
@@ -206,13 +205,13 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testTranslationCompleteIfAllFieldsFilled() {
+    void testTranslationCompleteIfAllFieldsFilled() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         TranslatedText title = note.getNoteTitle();
         TranslatedText text = note.getNoteText();
         bean.setNote(note);
 
-      //default language is en
+        //default language is en
         assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
 
         title.setText(englishText, Locale.ENGLISH);
@@ -223,5 +222,4 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         assertTrue(bean.isComplete(Locale.GERMAN));
         assertFalse(bean.isEmpty(Locale.GERMAN));
     }
-
 }

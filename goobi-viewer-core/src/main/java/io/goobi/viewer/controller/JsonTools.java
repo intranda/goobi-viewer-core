@@ -30,20 +30,18 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -65,11 +63,21 @@ import io.goobi.viewer.solr.SolrTools;
  * JsonTools class.
  * </p>
  */
-public class JsonTools {
+public final class JsonTools {
 
     private static final Logger logger = LogManager.getLogger(JsonTools.class);
 
     private static ObjectMapper mapper = new ObjectMapper();
+
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_STATUS = "status";
+
+    /**
+     * Private constructor.
+     */
+    private JsonTools() {
+        //
+    }
 
     /**
      * Returns a <code>JSONArray</code> containing JSON objects for every <code>SolrDocument</code> in the given result. Order remains the same as in
@@ -78,6 +86,7 @@ public class JsonTools {
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
      * @param expanded
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param languageToTranslate
      * @return a {@link org.json.JSONArray} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -85,8 +94,7 @@ public class JsonTools {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static JSONArray getRecordJsonArray(SolrDocumentList result, Map<String, SolrDocumentList> expanded, HttpServletRequest request,
-            String languageToTranslate)
-            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+            String languageToTranslate) throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
         Locale locale = StringUtils.isBlank(languageToTranslate) ? null : Locale.forLanguageTag(languageToTranslate);
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
@@ -134,10 +142,9 @@ public class JsonTools {
     }
 
     /**
-     * @param mapper
-     * @param locale
      * @param doc
-     * @return
+     * @param locale
+     * @return Given Solr doc as {@link JSONObject}
      * @throws JsonProcessingException
      */
     public static JSONObject getAsJson(SolrDocument doc, Locale locale) throws JsonProcessingException {
@@ -186,9 +193,9 @@ public class JsonTools {
     /**
      * @param locale
      * @param object
-     * @return
+     * @return object translated to locale
      */
-    public static JSONObject translateJSONObject(Locale locale, JSONObject object) {
+    public static JSONObject translateJSONObject(Locale locale, final JSONObject object) {
         JSONObject trObject = new JSONObject();
         String[] names = JSONObject.getNames(object);
         for (String name : names) {
@@ -202,8 +209,8 @@ public class JsonTools {
             }
             trObject.put(trName, trValue);
         }
-        object = trObject;
-        return object;
+
+        return trObject;
     }
 
     /**
@@ -254,7 +261,7 @@ public class JsonTools {
             try {
                 Long dateCreatedTimestamp = (Long) jsonObject.get("dateCreated");
                 String dateString =
-                        DateTools.format(DateTools.getLocalDateTimeFromMillis(dateCreatedTimestamp, false), DateTools.formatterISO8601Date, false);
+                        DateTools.format(DateTools.getLocalDateTimeFromMillis(dateCreatedTimestamp, false), DateTools.FORMATTERISO8601DATE, false);
                 if (currentDateJsonObject == null || !dateString.equals(currentDateString)) {
                     currentDateString = dateString;
                     currentDateJsonObject = new JSONObject();
@@ -263,8 +270,7 @@ public class JsonTools {
                 }
                 currentDateJsonObject.put("entry" + i, jsonObject);
             } catch (JSONException e) {
-                logger.warn(jsonObject.get("id") + " has no " + SolrConstants.DATECREATED + " value.");
-                continue;
+                logger.warn("{} has no {} value.", jsonObject.get("id"), SolrConstants.DATECREATED);
             }
         }
 
@@ -412,12 +418,17 @@ public class JsonTools {
     /**
      * 
      * @param json
-     * @return
+     * @return {@link String} containing value of "version" from json
      */
     public static String getVersion(String json) {
         return getValue(json, "version");
     }
 
+    /**
+     * 
+     * @param json
+     * @return {@link String} containing value of "git-revision" from json
+     */
     public static String getGitRevision(String json) {
         return getValue(json, "git-revision");
     }
@@ -426,7 +437,7 @@ public class JsonTools {
      * 
      * @param json
      * @param field
-     * @return
+     * @return {@link String} containg value of field form json
      */
     static String getValue(String json, String field) {
         final String notAvailableKey = "admin__dashboard_versions_not_available";

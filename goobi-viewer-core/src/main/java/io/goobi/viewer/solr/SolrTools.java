@@ -72,7 +72,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 /**
  * Static utility methods for Solr.
  */
-public class SolrTools {
+public final class SolrTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrTools.class);
@@ -153,7 +153,7 @@ public class SolrTools {
     /**
      * 
      * @param fieldValue
-     * @return
+     * @return Boolean
      */
     public static Boolean getAsBoolean(Object fieldValue) {
         if (fieldValue instanceof Boolean) {
@@ -169,7 +169,7 @@ public class SolrTools {
      * 
      * @param fieldValue
      * @param separator
-     * @return
+     * @return String
      */
     @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue, String separator) {
@@ -287,8 +287,8 @@ public class SolrTools {
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param fieldName a {@link java.lang.String} object.
-     * @should return all values for the given field
      * @return a {@link java.util.List} object.
+     * @should return all values for the given field
      */
     public static List<String> getMetadataValues(SolrDocument doc, String fieldName) {
         if (doc == null) {
@@ -317,8 +317,8 @@ public class SolrTools {
      * and can get quite large.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @should return all fields in the given doc except page urns
      * @return a {@link java.util.Map} object.
+     * @should return all fields in the given doc except page urns
      */
     public static Map<String, List<String>> getFieldValueMap(SolrDocument doc) {
         Map<String, List<String>> ret = new HashMap<>();
@@ -343,8 +343,8 @@ public class SolrTools {
      * and can get quite large.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @should return all fields in the given doc except page urns
      * @return a {@link java.util.Map} object.
+     * @should return all fields in the given doc except page urns
      */
     public static Map<String, List<IMetadataValue>> getMultiLanguageFieldValueMap(SolrDocument doc) {
         Map<String, List<IMetadataValue>> ret = new HashMap<>();
@@ -470,7 +470,7 @@ public class SolrTools {
     /**
      *
      * @param doc
-     * @return
+     * @return true if doc contains DOCTYPE:GROUP; false otherwise
      */
     public static boolean isGroup(SolrDocument doc) {
         if (doc == null) {
@@ -483,7 +483,7 @@ public class SolrTools {
     /**
      *
      * @param doc
-     * @return
+     * @return true if doc contains ISANCHOR:true; false otherwise
      */
     public static boolean isAnchor(SolrDocument doc) {
         if (doc == null) {
@@ -496,7 +496,7 @@ public class SolrTools {
     /**
      *
      * @param doc
-     * @return
+     * @return true if doc contains ISWORK:true; false otherwise
      */
     public static boolean isWork(SolrDocument doc) {
         if (doc == null) {
@@ -508,7 +508,7 @@ public class SolrTools {
 
     /**
      * @param fieldName
-     * @return
+     * @return true if fieldName contains _LANG_; false otherwise
      */
     public static boolean isLanguageCodedField(String fieldName) {
         return StringUtils.isNotBlank(fieldName) && fieldName.matches(MULTILANGUAGE_FIELD_REGEX);
@@ -554,7 +554,7 @@ public class SolrTools {
     /**
      * 
      * @param exceptionMessage
-     * @return
+     * @return Extracted message
      * @should return empty string if exceptionMessage empty
      * @should return exceptionMessage if no pattern match found
      * @should return title content correctly
@@ -635,6 +635,7 @@ public class SolrTools {
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param translationLocales
      * @param combiner a {@link java.util.function.BinaryOperator} object.
      * @return a {@link java.util.Optional} object.
      */
@@ -686,19 +687,20 @@ public class SolrTools {
     /**
      *
      * @param conditions
-     * @return
+     * @return conditions with NOW/YEAR replaced by current year
      */
-    public static String getProcessedConditions(String conditions) {
+    public static String getProcessedConditions(final String conditions) {
         if (conditions == null) {
             return null;
         }
 
-        if (conditions.contains("NOW/YEAR") && !conditions.contains("DATE_")) {
+        String c = conditions;
+        if (c.contains("NOW/YEAR") && !c.contains("DATE_")) {
             // Hack for getting the current year as a number for non-date Solr fields
-            conditions = conditions.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+            c = c.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
         }
 
-        return conditions.trim();
+        return c.trim();
     }
 
     /**
@@ -713,19 +715,39 @@ public class SolrTools {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return all existing values for the given field
      */
-    public static List<String> getAvailableValuesForField(String field, String filterQuery) throws PresentationException, IndexUnreachableException {
+    public static List<String> getAvailableValuesForField(final String field, final String filterQuery)
+            throws PresentationException, IndexUnreachableException {
+        return getAvailableValuesForField(field, filterQuery, true);
+    }
+        
+        
+        /**
+         * <p>
+         * getAvailableValuesForField.
+         * </p>
+         *
+         * @param field a {@link java.lang.String} object.
+         * @param filterQuery a {@link java.lang.String} object.
+         * @param useFacetField If true, "FACET_" field variant is used for the actual search; Only use false for single-token values
+         * @return List of facet values for the given field and query
+         * @throws io.goobi.viewer.exceptions.PresentationException if any.
+         * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+         * @should return all existing values for the given field
+         */
+        public static List<String> getAvailableValuesForField(final String field, final String filterQuery, boolean useFacetField)
+                throws PresentationException, IndexUnreachableException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
         if (filterQuery == null) {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
-        String facettifiedField = SearchHelper.facetifyField(field);
-        filterQuery = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
+        String facettifiedField = useFacetField ? SearchHelper.facetifyField(field) : field;
+        String fq = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
                 DataManager.getInstance()
                         .getSearchIndex()
-                        .searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(facettifiedField), 1, false);
+                        .searchFacetsAndStatistics(fq, null, Collections.singletonList(facettifiedField), 1, false);
         if (qr != null) {
             FacetField facet = qr.getFacetField(facettifiedField);
             if (facet != null) {
@@ -757,7 +779,7 @@ public class SolrTools {
             return Collections.emptyList();
         }
 
-        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*");
+        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*", false);
     }
 
     /**
@@ -814,7 +836,7 @@ public class SolrTools {
 
     /**
      * 
-     * @return
+     * @return JDOM2 Document containing the Solr schema XML
      */
     private static Document getSolrSchemaDocument() {
         try {
@@ -839,7 +861,7 @@ public class SolrTools {
      * https://solr.apache.org/guide/7_3/the-standard-query-parser.html#escaping-special-characters) as well as the characters '<' and '>' by adding a
      * '\' before them. Special characters which already are escaped by '\' are not escaped any further making this method idempotent
      * 
-     * @param the string to escape
+     * @param string the string to escape
      * @return the escaped string. if the original string is null, null is also returned
      */
     public static String escapeSpecialCharacters(String string) {
@@ -881,7 +903,7 @@ public class SolrTools {
     /**
      * 
      * @param fieldName
-     * @return
+     * @return fieldName without language suffix
      */
     public static String getBaseFieldName(String fieldName) {
         if (StringUtils.isNotBlank(fieldName)) {
@@ -893,7 +915,7 @@ public class SolrTools {
     /**
      * 
      * @param fieldName
-     * @return
+     * @return language part of fieldName
      */
     public static String getLanguage(String fieldName) {
         if (StringUtils.isNotBlank(fieldName)) {
@@ -909,7 +931,7 @@ public class SolrTools {
     /**
      * 
      * @param fieldName
-     * @return
+     * @return Locale based on the language part of fieldName
      */
     public static Locale getLocale(String fieldName) {
         String language = getLanguage(fieldName);
@@ -923,7 +945,7 @@ public class SolrTools {
      * 
      * @param doc
      * @param fieldNameFilter
-     * @return
+     * @return Map
      */
     public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Function<String, Boolean> fieldNameFilter) {
         return getTranslatedMetadata(doc, new HashMap<>(), null, fieldNameFilter);
@@ -935,7 +957,7 @@ public class SolrTools {
      * @param metadata
      * @param documentLocale
      * @param fieldNameFilter
-     * @return
+     * @return Map
      */
     public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata,
             Locale documentLocale, Function<String, Boolean> fieldNameFilter) {
@@ -984,7 +1006,7 @@ public class SolrTools {
     /**
      * 
      * @param doc
-     * @return
+     * @return Value of MD_REFID in doc, if available
      */
     public static final String getReferenceId(SolrDocument doc) {
         String refId = getSingleFieldStringValue(doc, "MD_REFID");

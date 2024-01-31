@@ -24,7 +24,6 @@ package io.goobi.viewer.model.security;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +32,17 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -46,18 +56,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
@@ -134,7 +132,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private Map<String, Boolean> restrictionsExpired = new HashMap<>();
 
     @Transient
-    Boolean ugcType = null;
+    private Boolean ugcType = null;
 
     /**
      * Empty constructor.
@@ -871,7 +869,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Returns list of {@link LicenseType}s that contain this object in their overridden LicenseTypes.
      * 
-     * @return
+     * @return List<LicenseType>
      * @throws DAOException
      */
     public List<LicenseType> getLicenseTypesOverridingThis() throws DAOException {
@@ -895,7 +893,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      *
      * @param query
-     * @return
+     * @return true if the configured restriction query is expired; false otherwise
      */
     public boolean isRestrictionsExpired(String query) {
         if (query == null) {
@@ -916,6 +914,15 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      */
     public void setRestrictionsExpired(Map<String, Boolean> restrictionsExpired) {
         this.restrictionsExpired = restrictionsExpired;
+    }
+
+    /**
+     * For unit tests.
+     * 
+     * @param ugcType the ugcType to set
+     */
+    void setUgcType(Boolean ugcType) {
+        this.ugcType = ugcType;
     }
 
     /**
@@ -941,7 +948,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      *
      * @param licenseTypeName
      * @param licenseTypeDesc
-     * @param privName
+     * @param privNames
      * @throws DAOException
      */
     private static void addCoreLicenseType(String licenseTypeName, String licenseTypeDesc, String... privNames) throws DAOException {
@@ -974,7 +981,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     /**
      *
-     * @return
+     * @return Solr query for the access condition name
      */
     public String getFilterQueryPart() {
         return new StringBuilder().append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(name).append('"').toString();
@@ -982,7 +989,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     /**
      * 
-     * @return
+     * @return Solr query for the moving wall
      */
     public String getMovingWallFilterQueryPart() {
         // Do not append empty sub-query

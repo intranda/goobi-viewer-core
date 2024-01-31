@@ -21,11 +21,11 @@
  */
 package io.goobi.viewer.model.administration.legal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -33,17 +33,17 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 
-public class DisclaimerTest extends AbstractDatabaseEnabledTest {
+class DisclaimerTest extends AbstractDatabaseEnabledTest {
 
     private IDAO dao;
 
-    @Before
-    public void setup() throws DAOException {
+    @BeforeEach
+    public void setUp() throws DAOException {
         this.dao = DataManager.getInstance().getDao();
     }
 
     @Test
-    public void test_persist() throws DAOException {
+    void test_persist() throws DAOException {
         Disclaimer disclaimer = new Disclaimer();
         disclaimer.setDisplayScope(new DisplayScope(PageScope.RECORD, "PI:X"));
         disclaimer.getAcceptanceScope().setDaysToLive(8);
@@ -56,7 +56,7 @@ public class DisclaimerTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testScope() {
+    void testScope() {
         Disclaimer disclaimer = new Disclaimer();
         assertEquals(14, disclaimer.getAcceptanceScope().getDaysToLive());
         assertEquals(ConsentScope.StorageMode.LOCAL, disclaimer.getAcceptanceScope().getStorageMode());

@@ -22,17 +22,17 @@
 package io.goobi.viewer.model.misc;
 
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
  * @author florian
  *
  */
-public class DCRecordWriterTest {
+class DCRecordWriterTest {
 
     private static final String RECORD_REFERENCE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<record xmlns:dc=\"http://purl.org/dc/elements/1.1/\">" +
@@ -43,25 +43,25 @@ public class DCRecordWriterTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
-    public void testWrite() {
+    void testWrite() {
         DCRecordWriter writer = new DCRecordWriter();
         writer.addDCMetadata("title", "Titel");
         writer.addDCMetadata("identifier", "ID");
 
         String xml = writer.getAsString().replaceAll("[\n\r]+",  "").replaceAll("\\s+", " ");
-        Assert.assertEquals(RECORD_REFERENCE, xml);
+        Assertions.assertEquals(RECORD_REFERENCE, xml);
     }
 
 }

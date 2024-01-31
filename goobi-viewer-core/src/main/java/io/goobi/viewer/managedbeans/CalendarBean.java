@@ -48,7 +48,6 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -74,8 +73,8 @@ public class CalendarBean implements Serializable {
 
     private static final long serialVersionUID = 1095535586988646463L;
 
-    private final static int MAX_ALLOWED_YEAR = LocalDateTime.now().getYear() + 1000;
-    private final static int MIN_ALLOWED_YEAR = -10_000;
+    private static final int MAX_ALLOWED_YEAR = LocalDateTime.now().getYear() + 1000;
+    private static final int MIN_ALLOWED_YEAR = -10_000;
 
     private static final Logger logger = LogManager.getLogger(CalendarBean.class);
 
@@ -424,8 +423,7 @@ public class CalendarBean implements Serializable {
         } else {
             builder.append(String.valueOf(day));
         }
-        String facetName = builder.toString();
-        return facetName;
+        return builder.toString();
     }
 
     /**
@@ -726,14 +724,14 @@ public class CalendarBean implements Serializable {
             }
             sbSearchString.append(SearchHelper.getAllSuffixes());
 
-            logger.trace("getAllActiveYears query: {}", sbSearchString.toString());
+            logger.trace("getAllActiveYears query: {}", sbSearchString);
             QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, 1, false);
 
             FacetField facetFieldDay = resp.getFacetField(SolrConstants.CALENDAR_DAY);
             List<Count> dayCounts = facetFieldDay.getValues() != null ? facetFieldDay.getValues() : new ArrayList<>();
             Map<Integer, Integer> yearCountMap = new HashMap<>();
             for (Count day : dayCounts) {
-                int year = Integer.valueOf(day.getName().substring(0, 4));
+                int year = Integer.parseInt(day.getName().substring(0, 4));
                 Integer count = yearCountMap.get(year);
                 if (count == null) {
                     count = 0;
@@ -907,7 +905,6 @@ public class CalendarBean implements Serializable {
                     break;
                 case 3:
                     mar.setHits((int) monthCount.getCount());
-                    //                    break;
                 case 4:
                     apr.setHits((int) monthCount.getCount());
                     break;
@@ -934,6 +931,8 @@ public class CalendarBean implements Serializable {
                     break;
                 case 12:
                     dec.setHits((int) monthCount.getCount());
+                    break;
+                default:
                     break;
             }
         }
@@ -1212,9 +1211,8 @@ public class CalendarBean implements Serializable {
      * This method generates a search string to search for data with a value in YEAR but without a value in YEARMONTHDAY.
      *
      * @param date
-     * @return
+     * @return Generated query
      */
-
     private String getQueryForIncompleteData(String date) {
         StringBuilder searchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
@@ -1261,7 +1259,7 @@ public class CalendarBean implements Serializable {
      */
     public String getActualYear() {
         String year = "";
-        if (searchBean.getActiveSearchType() == 2) {
+        if (searchBean.getActiveSearchType() == SearchHelper.SEARCH_TYPE_TIMELINE) {
             if (currentYear == null) {
                 return null;
             }
@@ -1286,7 +1284,7 @@ public class CalendarBean implements Serializable {
      */
     public String searchForIncompleteData() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String year = "";
-        if (searchBean.getActiveSearchType() == 2) {
+        if (searchBean.getActiveSearchType() == SearchHelper.SEARCH_TYPE_TIMELINE) {
             if (currentYear == null) {
                 return "";
             }

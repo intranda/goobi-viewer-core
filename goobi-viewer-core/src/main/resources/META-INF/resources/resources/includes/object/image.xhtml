@@ -28,14 +28,13 @@
 		<div>#{msg.help__share_image_area__share}</div> 
 			<ul>
 				<li>
-					<a data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}"
-						data-clipboard-text="image-region-page"
+					<a data-copy-done-msg="#{msg.copyUrlDone}"
+						data-copy-share-image="image-region-page"
 						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
 				</li> 
 				<li>
-					<a data-copy="image-region-image"
-						data-copy-done="#{msg.copyUrlDone}"
-						data-clipboard-text="image-region-image"
+					<a data-copy-share-image="image-region-image"
+						data-copy-done-msg="#{msg.copyUrlDone}"
 						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_image}</a>
 				</li>
 			</ul>
@@ -187,7 +186,6 @@
         	    }
         	}
         }
-        
 
        	// desktop object view
        	if ( access && configViewer) {
@@ -269,8 +267,9 @@
         	    })
 				
 				let activeAreas = config.areas.filter(a => a.logId === config.currentLogId);
+				console.log("active areas: ", activeAreas);
 				if(activeAreas.length > 0) {
-					//drawActiveAreas(activeAreas, imageView);
+					drawActiveAreas(activeAreas, imageView);
 					initAreaClick(imageView, activeAreas);
 				} else {
 					let inactiveAreas = config.areas.filter(a => a.logId !== config.currentLogId);
@@ -349,10 +348,35 @@
        	    		drawPageAreas(pageAreaConfig, viewImage);
        	 	    }
        			highlightUGC();
+       			enableGeoMapHighlighting();
 		    })
 		    
 		} else {
 		   //image not reachable or access denied
+		}
+		
+		function enableGeoMapHighlighting() {
+			let mapFeatureMap = new Map();
+			viewImage.overlays?.getOverlays().forEach(imageArea => {
+				let id = imageArea.id;
+				let mapMarker = viewerJS.GeoMap.maps.get('widget_geoMap_').layers.flatMap(l => l.markers)
+				.find(marker => marker.feature?.properties?.documentId == id);
+				//highlight image overlay on hover over map marker with same annotation id
+				if(mapMarker) {
+					mapMarker.on("mouseover", e => imageArea.element.focus(true));
+					mapMarker.on("mouseout", e => imageArea.element.focus(false));
+					mapFeatureMap.set(imageArea, mapMarker);
+				}
+			});
+			//highlight map marker when hovering over image overlay with same annotation id
+			viewImage.overlays?.onFocus((overlay, focus) => {
+				let marker = mapFeatureMap.get(overlay);
+				if(focus) {
+					marker?.feature?.layer?.highlightMarker(marker);					
+				} else {
+					marker?.feature?.layer?.highlightMarker();
+				}
+			})
 		}
 		
 		// Focus UGC
@@ -373,6 +397,10 @@
 			    }
 			}
 		}
+		
+        
+
+        
 		       	
       	//]]>
     </script>

@@ -73,6 +73,12 @@
 						<span>#{msg.error__archives_failed_to_read_database}</span>
 					</div>
 				</c:when>
+				<c:when
+					test="#{archiveBean.databaseState == 'ERROR_INVALID_CONFIGURATION'}">
+					<div class="archives__error">
+						<span>#{msg.error__archives_failed_to_read_archive_configuration}</span>
+					</div>
+				</c:when>
 				
 				<!-- CONDITION IF MORE THAN ONE ARCHIVE EXISTENT -->
 				<c:when test="#{archiveBean.databaseState == 'ARCHIVES_LOADED'}">

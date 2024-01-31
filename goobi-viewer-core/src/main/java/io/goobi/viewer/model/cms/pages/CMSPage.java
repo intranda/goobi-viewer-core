@@ -772,6 +772,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public Long getPageSorting() {
         return pageSorting;
     }
+    
+    public Long getPageSortingOrElse(long defaultOrder) {
+        return Optional.ofNullable(this.getPageSorting()).orElse(defaultOrder);
+    }
 
     /**
      * <p>
@@ -1382,7 +1386,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public boolean hasSearchFunctionality() {
         return this.persistentComponents.stream()
                 .flatMap(c -> c.getContentItems().stream())
-                .anyMatch(CMSSearchContent.class::isInstance);
+                .anyMatch(c -> c instanceof CMSSearchContent || c instanceof CMSRecordListContent);
     }
 
     public Optional<SearchFunctionality> getSearch() {

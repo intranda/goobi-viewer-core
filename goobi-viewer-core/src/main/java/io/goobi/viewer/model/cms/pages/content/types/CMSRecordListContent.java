@@ -233,7 +233,6 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 locale = Locale.ENGLISH;
             }
             SearchBean searchBean = BeanUtils.getSearchBean();
-
             List<SearchResultGroup> resultGroups;
             if (StringUtils.isNotBlank(resultGroupName)) {
                 // Set configured result group on SearchBean, if available (before initializing Search)
@@ -249,7 +248,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
             Search s =
                     new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups);
-            
+
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(getSortFieldForLanguage(locale.getLanguage()));
                 searchBean.setSortString(getSortFieldForLanguage(locale.getLanguage()));
@@ -262,7 +261,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             //NOTE: Cannot sort by multivalued fields like DC.
             if (StringUtils.isNotBlank(this.getGroupingField())) {
                 String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
-                sortString = this.getGroupingField() + ";" + sortString;
+                sortString = SearchHelper.facetifyField(this.getGroupingField()) + ";" + sortString;
                 s.setSortString(sortString);
             } else {
                 String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
@@ -273,6 +272,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 s.setMetadataListType(metadataListType);
             }
             SearchFacets facets = searchBean.getFacets();
+//            facets.resetActiveFacets();
+            facets.resetAvailableFacets();
             s.setPage(getCurrentListPage());
             searchBean.setHitsPerPage(this.getElementsPerPage());
             searchBean.setLastUsedSearchPage();
@@ -281,6 +282,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 s.setQuery("*:*");
             }
             s.setCustomFilterQuery(this.solrQuery);
+//            facets.getActiveFacets().forEach(f -> f.setCount(0));
+//            facets.getAvailableFacets().values().stream().flatMap(List::stream).forEach(f -> f.setCount(0));
             s.execute(facets, null, searchBean.getHitsPerPage(), locale, true,
                     this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(s);

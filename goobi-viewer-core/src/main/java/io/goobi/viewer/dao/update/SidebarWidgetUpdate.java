@@ -94,20 +94,20 @@ public class SidebarWidgetUpdate implements IModelUpdate {
                     .filter(i -> legacyWidget[i] != null)
                     .collect(Collectors.toMap(columnNames::get, i -> legacyWidget[i]));
 
-            Long cmsSidebaElementId = Optional.ofNullable(columns.get("cms_sidebar_element_id")).map(Long.class::cast).orElse(null);
-            String widgetType = Optional.ofNullable(columns.get("widget_type")).map(String.class::cast).orElse(null);
+            // Long cmsSidebaElementId = Optional.ofNullable(columns.get("cms_sidebar_element_id")).map(Long.class::cast).orElse(null);
+            // String widgetType = Optional.ofNullable(columns.get("widget_type")).map(String.class::cast).orElse(null);
             String cssClass = Optional.ofNullable(columns.get("css_class")).map(String.class::cast).orElse(null);
             Long geomapId = Optional.ofNullable(columns.get("geomap__id")).map(Long.class::cast).orElse(null);
             String innerHtml = Optional.ofNullable(columns.get("inner_html")).map(String.class::cast).orElse(null);
             String linkedPages = Optional.ofNullable(columns.get("linked_pages")).map(String.class::cast).orElse(null);
             Integer sortOrder = Optional.ofNullable(columns.get("sort_order")).map(Integer.class::cast).orElse(null);
             String type = Optional.ofNullable(columns.get("type")).map(String.class::cast).orElse(null);
-            String value = Optional.ofNullable(columns.get("value")).map(String.class::cast).orElse(null);
+            // String value = Optional.ofNullable(columns.get("value")).map(String.class::cast).orElse(null);
             String widgetMode = Optional.ofNullable(columns.get("widget_mode")).map(String.class::cast).orElse(null);
             String widgetTitle = Optional.ofNullable(columns.get("widget_title")).map(String.class::cast).orElse(null);
             Long ownerPageId = Optional.ofNullable(columns.get("owner_page_id")).map(Long.class::cast).orElse(null);
             String additionalQuery = Optional.ofNullable(columns.get("additional_query")).map(String.class::cast).orElse(null);
-            Boolean descendingOrder = Optional.ofNullable(columns.get("descending_order")).map(Boolean.class::cast).orElse(null);
+            // Boolean descendingOrder = Optional.ofNullable(columns.get("descending_order")).map(Boolean.class::cast).orElse(null);
             Integer resultDisplayLimit = Optional.ofNullable(columns.get("result_display_limit")).map(Integer.class::cast).orElse(null);
             String searchField = Optional.ofNullable(columns.get("search_field")).map(String.class::cast).orElse(null);
 
@@ -139,6 +139,9 @@ public class SidebarWidgetUpdate implements IModelUpdate {
                                 logger.error("CREATED NEW SIDEBAR WIDGET OF TYPE '{}' FOR USE IN CMS PAGE '{}'", contentType, ownerPage);
                                 element = new CMSSidebarElementCustom(widget, ownerPage);
                             }
+                            break;
+                        default:
+                            break;
                     }
                     if (element != null) {
                         element.setOrder(sortOrder);
@@ -163,7 +166,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
      * @param contentType
      * @param widgetMode
      * @param cssClass
-     * @return
+     * @return Created {@link CustomSidebarWidget}
      */
     private static CustomSidebarWidget createCustomWidget(String innerHtml, String linkedPages, String widgetTitle, String additionalQuery,
             Integer resultDisplayLimit, String searchField, WidgetContentType contentType, String widgetMode, String cssClass) {
@@ -204,6 +207,8 @@ public class SidebarWidgetUpdate implements IModelUpdate {
                 facetWidget.setFilterQuery(additionalQuery);
                 widget = facetWidget;
                 break;
+            default:
+                break;
         }
 
         widget.setCollapsed("FOLDOUT".equals(widgetMode));
@@ -229,7 +234,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
     /**
      * 
      * @param type
-     * @return
+     * @return {@link WidgetContentType}
      */
     private static WidgetContentType parseContentType(String type) {
         WidgetContentType contentType = null;
@@ -270,7 +275,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
      * 
      * @param string
      * @param separatorPattern
-     * @return
+     * @return IDs parsed from given string
      */
     private static List<Long> parseIds(String string, String separatorPattern) {
         return Arrays.stream(string.split(separatorPattern)).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());

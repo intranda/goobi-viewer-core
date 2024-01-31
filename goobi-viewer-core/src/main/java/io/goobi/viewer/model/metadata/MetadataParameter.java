@@ -447,7 +447,7 @@ public class MetadataParameter implements Serializable {
 
     /**
      * @param replaceRules the replaceRules to set
-     * @return tis
+     * @return {@link MetadataParameter}
      */
     public MetadataParameter setReplaceRules(List<MetadataReplaceRule> replaceRules) {
         this.replaceRules = replaceRules;
@@ -471,7 +471,7 @@ public class MetadataParameter implements Serializable {
      * 
      * @param config
      * @param topstructValueFallbackDefaultValue
-     * @return
+     * @return {@link MetadataParameter}
      */
     public static MetadataParameter createFromConfig(HierarchicalConfiguration<ImmutableNode> config, boolean topstructValueFallbackDefaultValue) {
         String fieldType = config.getString(XML_PATH_ATTRIBUTE_TYPE);

@@ -226,11 +226,10 @@ public class MediaDeliveryService {
 
     /**
      * @param request
-     * @param response
      * @param length
      * @param lastModified
      * @param eTag
-     * @return
+     * @return List<Section>
      * @throws IOException
      * @throws IllegalRequestException
      */
@@ -293,7 +292,7 @@ public class MediaDeliveryService {
     /**
      * 
      * @param range
-     * @return
+     * @return true if range matches pattern; false otherwise
      */
     protected static boolean matchesRangeHeaderPattern(String range) {
         if (range.matches("bytes=.+")) {
@@ -317,9 +316,9 @@ public class MediaDeliveryService {
      * needs to continue
      *
      * @param request
-     * @param response
      * @param lastModified
      * @param eTag
+     * @return Optional<Integer>
      * @throws IOException
      */
     private static Optional<Integer> getCachingResponse(HttpServletRequest request, long lastModified, String eTag) {
@@ -406,10 +405,10 @@ public class MediaDeliveryService {
      * A section within a byte array
      */
     private static class Section {
-        long start;
-        long end;
-        long length;
-        long total;
+        private long start;
+        private long end;
+        private long length;
+        private long total;
 
         /**
          * Construct a byte range.
@@ -441,6 +440,63 @@ public class MediaDeliveryService {
             return this.length == this.total;
         }
 
+        /**
+         * @return the start
+         */
+        public long getStart() {
+            return start;
+        }
+
+        /**
+         * @param start the start to set
+         */
+        public void setStart(long start) {
+            this.start = start;
+        }
+
+        /**
+         * @return the end
+         */
+        public long getEnd() {
+            return end;
+        }
+
+        /**
+         * @param end the end to set
+         */
+        public void setEnd(long end) {
+            this.end = end;
+        }
+
+        /**
+         * @return the length
+         */
+        public long getLength() {
+            return length;
+        }
+
+        /**
+         * @param length the length to set
+         */
+        public void setLength(long length) {
+            this.length = length;
+        }
+
+        /**
+         * @return the total
+         */
+        public long getTotal() {
+            return total;
+        }
+
+        /**
+         * @param total the total to set
+         */
+        public void setTotal(long total) {
+            this.total = total;
+        }
+
+        
     }
 
 }

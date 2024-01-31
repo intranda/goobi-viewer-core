@@ -37,8 +37,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 public class MultiLanguageValue implements IPolyglott {
 
-    private static final long serialVersionUID = -7620488755993671335L;
-
     private Locale selectedLocale = BeanUtils.getLocale();
 
     private final String label;
@@ -93,7 +91,7 @@ public class MultiLanguageValue implements IPolyglott {
 
     /**
      *
-     * @param language
+     * @param locale
      * @return the translation for the given language if one exists
      */
     public Translation getTranslation(Locale locale) {

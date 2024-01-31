@@ -71,23 +71,30 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         StringPair other = (StringPair) obj;
         if (one == null) {
-            if (other.one != null)
+            if (other.one != null) {
                 return false;
-        } else if (!one.equals(other.one))
+            }
+        } else if (!one.equals(other.one)) {
             return false;
+        }
         if (two == null) {
-            if (other.two != null)
+            if (other.two != null) {
                 return false;
-        } else if (!two.equals(other.two))
+            }
+        } else if (!two.equals(other.two)) {
             return false;
+        }
         return true;
     }
 

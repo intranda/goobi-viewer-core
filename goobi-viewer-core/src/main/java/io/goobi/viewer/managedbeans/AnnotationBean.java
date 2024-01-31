@@ -43,6 +43,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
@@ -89,16 +90,18 @@ public class AnnotationBean implements Serializable {
                 private Optional<Long> numCreatedPages = Optional.empty();
 
                 @Override
-                public List<CrowdsourcingAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+                public List<CrowdsourcingAnnotation> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
                         Map<String, String> filters) {
                     try {
-                        if (StringUtils.isBlank(sortField)) {
-                            sortField = "id";
-                            sortOrder = SortOrder.DESCENDING;
+                        String useSortField = sortField;
+                        SortOrder useSortOrder = sortOrder;
+                        if (StringUtils.isBlank(useSortField)) {
+                            useSortField = "id";
+                            useSortOrder = SortOrder.DESCENDING;
                         }
                         filters.putAll(getFilters());
                         List<CrowdsourcingAnnotation> ret =
-                                DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                                DataManager.getInstance().getDao().getAnnotations(first, pageSize, useSortField, useSortOrder.asBoolean(), filters);
                         exportSelection = new SelectionManager<>(ret.stream().map(CrowdsourcingAnnotation::getId).collect(Collectors.toList()));
                         return ret;
                     } catch (DAOException e) {
@@ -133,7 +136,7 @@ public class AnnotationBean implements Serializable {
                             logger.error("Unable to retrieve total number of campaigns", e);
                         }
                     }
-                    return numCreatedPages.orElse(0l);
+                    return numCreatedPages.orElse(0L);
                 }
 
                 @Override
@@ -173,14 +176,14 @@ public class AnnotationBean implements Serializable {
     }
 
     /**
-     * @return the ownerRecordPI
+     * @return the targetRecordPI
      */
     public String getTargetRecordPI() {
         return targetRecordPI;
     }
 
     /**
-     * @param ownerRecordPI the ownerRecordPI to set
+     * @param targetRecordPI the targetRecordPI to set
      */
     public void setTargetRecordPI(String targetRecordPI) {
         this.targetRecordPI = targetRecordPI;
@@ -246,7 +249,6 @@ public class AnnotationBean implements Serializable {
      * Getter for {@link SelectionManager#isSelectAll() exportSelection#isSelectAll()} is placed here to avoid jsf confusing it with getting a value
      * of the map
      *
-     * @param select
      * @return always false to deselect the select all button when loading the page
      */
     public boolean isSelectAll() {
@@ -274,21 +276,30 @@ public class AnnotationBean implements Serializable {
         downloadAnnotations(selectedAnnos);
     }
 
+    /**
+     * 
+     * @param annotations
+     * @throws IOException
+     */
     public void downloadAnnotations(List<CrowdsourcingAnnotation> annotations) throws IOException {
         try {
             String fileName = "annotations.xlsx";
 
             FacesContext fc = FacesContext.getCurrentInstance();
             ExternalContext ec = fc.getExternalContext();
-            ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+            // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
+            // We want to get rid of them, else it may collide.
+            ec.responseReset();
             ec.setResponseContentType("application/msexcel");
-            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             AnnotationSheetWriter writer = new AnnotationSheetWriter();
             writer.createExcelSheet(os, annotations);
-            fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+            fc.responseComplete();
+            // Important! Otherwise JSF will attempt to render the response which obviously
+            // will fail since it's already written with a file and closed.
         } finally {
-
+            //
         }
     }
 

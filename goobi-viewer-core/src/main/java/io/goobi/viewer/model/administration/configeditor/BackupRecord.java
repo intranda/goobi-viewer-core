@@ -50,12 +50,12 @@ public class BackupRecord implements Serializable {
      * @return <code>name</code> as a {@link LocalDateTime}
      */
     public LocalDateTime getDate() {
-        return LocalDateTime.parse(name, DateTools.formatterFileName);
+        return LocalDateTime.parse(name, DateTools.FORMATTERFILENAME);
     }
 
     /**
      * 
-     * @return
+     * @return the name
      */
     public String getName() {
         return name;
@@ -63,7 +63,7 @@ public class BackupRecord implements Serializable {
 
     /**
      * 
-     * @return
+     * @return the number
      */
     public int getNumber() {
         return number;

@@ -95,7 +95,8 @@
 										<div class="user-settings__upload-button-wrapper">
 										
 											<div class="btn btn--default">#{msg.admin__cms_collections_image_mode_upload}</div>
-											<o:inputFile styleClass="user-settings__upload-button-input" id="localFileUpload"
+											<o:inputFile styleClass="user-settings__upload-button-input" id="localFileUpload" 
+												accept="image/png,image/jpeg,image/tiff" maxsize="#{16*1024*1024}"
 												value="#{adminBean.uploadedAvatarFile}">
 												<f:ajax
 													listener="#{user.setAvatarFile(adminBean.uploadedAvatarFile)}"

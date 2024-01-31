@@ -20,7 +20,9 @@
 				source="#{request.contextPath}/api/v1/cms/slider/#{cc.attrs.slider.id}/slides/"
 				style="#{cc.attrs.slider.style}"
 				sourceelement="#{cc.attrs.sourceElement}"
-				linkTarget="#{cc.attrs.linkTarget}">
+				linkTarget="#{cc.attrs.linkTarget}"
+				language="#{navigationHelper.locale}"
+				defaultlanguage="#{navigationHelper.defaultLocale}">
 			</slider>
 		</ui:fragment>
 

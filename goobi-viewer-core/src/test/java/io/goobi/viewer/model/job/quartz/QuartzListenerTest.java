@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.model.job.quartz;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,9 +33,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.quartz.SchedulerException;
 
@@ -48,7 +48,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.QuartzBean;
 
-public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
+class QuartzListenerTest extends AbstractDatabaseEnabledTest{
 
     IDAO dao;
     Configuration config;
@@ -57,8 +57,8 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
     MessageQueueManager broker;
     Path schedulerDirectory;
     
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
         this.dao = DataManager.getInstance().getDao();
         this.config = DataManager.getInstance().getConfiguration();
@@ -73,7 +73,7 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         }
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         broker.closeMessageServer();
@@ -91,7 +91,7 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
     }
     
     @Test
-    public void testStartJobs() throws DAOException, SchedulerException, IOException {
+    void testStartJobs() throws DAOException, SchedulerException, IOException {
         ServletContext context = Mockito.mock(ServletContext.class);
         ServletContextEvent contextEvt = Mockito.mock(ServletContextEvent.class);
         Mockito.when(contextEvt.getServletContext()).thenReturn(context);

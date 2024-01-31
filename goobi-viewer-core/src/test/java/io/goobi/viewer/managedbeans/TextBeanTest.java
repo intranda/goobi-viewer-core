@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,21 +31,21 @@ import java.nio.file.Paths;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.viewer.StructElement;
 
-public class TextBeanTest extends AbstractSolrEnabledTest {
+class TextBeanTest extends AbstractSolrEnabledTest {
 
     private static String DATA_PATH_TEI = "src/test/resources/data/viewer/tei/";
 
     private TextBean bean;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -57,7 +57,7 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      * @verifies return abstract correctly
      */
     @Test
-    public void getAbstract_shouldReturnAbstractCorrectly() throws Exception {
+    void getAbstract_shouldReturnAbstractCorrectly() throws Exception {
         Path teiFile = Paths.get(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
         assertTrue(Files.isRegularFile(teiFile));
 
@@ -74,9 +74,9 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      * @see TextBean#getAbstract(StructElement,String,String)
      * @verifies throw IllegalArgumentException if language null
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void getAbstract_shouldThrowIllegalArgumentExceptionIfLanguageNull() throws Exception {
-        bean.getAbstract(null, "ProfileDescAbstractLong", null);
+    @Test
+    void getAbstract_shouldThrowIllegalArgumentExceptionIfLanguageNull() throws Exception {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> bean.getAbstract(null, "ProfileDescAbstractLong", null));
     }
 
     /**
@@ -84,7 +84,7 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      * @verifies return null if topDocument null
      */
     @Test
-    public void getAbstract_shouldReturnNullIfTopDocumentNull() throws Exception {
+    void getAbstract_shouldReturnNullIfTopDocumentNull() throws Exception {
         assertNull(bean.getAbstract(null, "ProfileDescAbstractLong", "en"));
     }
 
@@ -93,7 +93,7 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      * @verifies return null if topDocument has no tei for language
      */
     @Test
-    public void getAbstract_shouldReturnNullIfTopDocumentHasNoTeiForLanguage() throws Exception {
+    void getAbstract_shouldReturnNullIfTopDocumentHasNoTeiForLanguage() throws Exception {
         Path teiFile = Paths.get(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
         assertTrue(Files.isRegularFile(teiFile));
 
@@ -109,7 +109,7 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
     //     * @verifies return text correctly
     //     */
     //    @Test
-    //    public void getTeiText_shouldReturnTextCorrectly() throws Exception {
+    //    void getTeiText_shouldReturnTextCorrectly() throws Exception {
     //        StructElement se = new StructElement();
     //        se.setPi(PI_KLEIUNIV);
     //        se.getMetadataFields()
@@ -125,7 +125,7 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      * @verifies return null if topDocument null
      */
     @Test
-    public void getTeiText_shouldReturnNullIfTopDocumentNull() throws Exception {
+    void getTeiText_shouldReturnNullIfTopDocumentNull() throws Exception {
         assertNull(bean.getTeiText(null, "en"));
     }
 
@@ -134,7 +134,7 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      * @verifies return return all tei languages
      */
     @Test
-    public void getRecordLanguages_shouldReturnReturnAllTeiLanguages() throws Exception {
+    void getRecordLanguages_shouldReturnReturnAllTeiLanguages() throws Exception {
         StructElement se = new StructElement();
         se.getMetadataFields().put("FILENAME_TEI_LANG_DE", Collections.emptyList());
         se.getMetadataFields().put("FILENAME_TEI_LANG_EN", Collections.emptyList());
@@ -148,9 +148,9 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      * @verifies remove empty paragraph tags correctly
      */
     @Test
-    public void removeEmptyParagraphs_shouldRemoveEmptyParagraphTagsCorrectly() throws Exception {
+    void removeEmptyParagraphs_shouldRemoveEmptyParagraphTagsCorrectly() throws Exception {
         String tei = "<tei><p>Lorem ipsum</p><p></p><p/><p /><br/><p>foo bar</p></tei>";
-        Assert.assertEquals("<tei><p>Lorem ipsum</p><p>foo bar</p></tei>", TextBean.removeEmptyParagraphs(tei));
+        Assertions.assertEquals("<tei><p>Lorem ipsum</p><p>foo bar</p></tei>", TextBean.removeEmptyParagraphs(tei));
     }
 
     /**
@@ -158,7 +158,7 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      * @verifies load text correctly
      */
     @Test
-    public void loadTeiFulltext_shouldLoadTextCorrectly() throws Exception {
+    void loadTeiFulltext_shouldLoadTextCorrectly() throws Exception {
         Path teiFile = Paths.get(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
         assertTrue(Files.isRegularFile(teiFile));
         assertTrue(StringUtils.isNotEmpty(
@@ -170,7 +170,7 @@ public class TextBeanTest extends AbstractSolrEnabledTest {
      * @verifies return null if file not found
      */
     @Test
-    public void loadTeiFulltext_shouldReturnNullIfFileNotFound() throws Exception {
+    void loadTeiFulltext_shouldReturnNullIfFileNotFound() throws Exception {
         assertNull(
                 TextBean.loadTeiFulltext(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_xxx.xml"));
     }

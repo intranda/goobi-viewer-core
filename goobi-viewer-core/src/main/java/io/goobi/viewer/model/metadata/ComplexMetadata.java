@@ -36,8 +36,6 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
@@ -49,7 +47,7 @@ import io.goobi.viewer.solr.SolrTools;
  * @author florian
  *
  */
-public class ComplexMetadata {
+public final class ComplexMetadata {
 
     private static final String MD_REFID = "MD_REFID";
     private static final List<String> IGNORE_METADATA_FIELDS = List.of(SolrConstants.DOCTYPE, SolrConstants.LABEL, SolrConstants.METADATATYPE,

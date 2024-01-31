@@ -126,7 +126,7 @@ public class SearchResultResource {
      * @param hitId IDDOC of the main search hit
      * @param numChildren Number of child hits to load
      * @param resultGroupName Requested result group name
-     * @return
+     * @return {@link SearchHitChildList}
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -181,7 +181,7 @@ public class SearchResultResource {
      * @param numChildren
      * @param locale
      * @param servletRequest
-     * @return
+     * @return {@link SearchHitChildList}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException

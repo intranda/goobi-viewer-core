@@ -162,77 +162,78 @@
 			</ui:fragment>
 
 			<!-- SORTING MODE -->
-			<div class="admin__content-component-input-group">
-				<div class="admin__content-component-input-label">
-					<label for="groupByFieldCollection">#{msg.label__sorting_mode}:</label>
-				</div>
-				<div class="admin__content-component-input-field">
-					<!-- AREA FOR AJAX REFRESH -->
-					<h:panelGroup id="sortingSelectGroup">
-						<!-- VALIDATION MESSAGE -->
-						<div class="cms-module__option-message">
-							<h:messages for="sortingSelect"
-								infoClass="cms-module__option-message-status success"
-								warnClass="cms-module__option-message-status warning"
-								errorClass="cms-module__option-message-status danger" />
-
-							<div class="cms-module__option-message-mark">
-								<i class="fa fa-check" aria-hidden="true"></i> <i
-									class="fa fa-exclamation" aria-hidden="true"></i>
+				<div class="admin__content-component-input-group">
+					<div class="admin__content-component-input-label">
+						<label for="groupByFieldCollection">#{msg.label__sorting_mode}:</label>
+					</div>
+					<div class="admin__content-component-input-field">
+						<!-- AREA FOR AJAX REFRESH -->
+						<h:panelGroup id="sortingSelectGroup">
+							<!-- VALIDATION MESSAGE -->
+							<div class="cms-module__option-message">
+								<h:messages for="sortingSelect"
+									infoClass="cms-module__option-message-status success"
+									warnClass="cms-module__option-message-status warning"
+									errorClass="cms-module__option-message-status danger" />
+	
+								<div class="cms-module__option-message-mark">
+									<i class="fa fa-check" aria-hidden="true"></i> <i
+										class="fa fa-exclamation" aria-hidden="true"></i>
+								</div>
 							</div>
-						</div>
-
-						<!-- SELECT MENU -->
-						<div class="custom-control custom-control--select">
-							<h:selectOneMenu id="sortingSelect" styleClass="form-control"
-								value="#{cc.attrs.contentItem.content.sorting}">
-								<f:selectItems value="#{cmsBean.sortingModes}" var="mode"
-									itemValue="#{mode}" itemLabel="#{msg[mode.label]}" />
-								<f:passThroughAttribute name="aria-label"
-									value="#{msg.label__sorting_mode}" />
-							</h:selectOneMenu>
-						</div>
-					</h:panelGroup>
-
+	
+							<!-- SELECT MENU -->
+							<div class="custom-control custom-control--select">
+								<h:selectOneMenu id="sortingSelect" styleClass="form-control"
+									value="#{cc.attrs.contentItem.content.sorting}">
+									<f:selectItems value="#{cmsBean.sortingModes}" var="mode"
+										itemValue="#{mode}" itemLabel="#{msg[mode.label]}" />
+									<f:passThroughAttribute name="aria-label"
+										value="#{msg.label__sorting_mode}" />
+								</h:selectOneMenu>
+							</div>
+						</h:panelGroup>
+	
+					</div>
 				</div>
-			</div>
 
 			<!-- COLLECTION EXPANDED -->
-			<div class="admin__content-component-input-group">
-				<!-- LABEL -->
-				<div class="admin__content-component-input-label">
-					<label for="collectionExpanded">#{msg.cms_collectionOpenExpanded}:</label>
-				</div>
-
-				<div class="admin__content-component-input-field align-self-center">
-					<!-- AREA FOR AJAX REFRESH -->
-					<h:panelGroup id="collectionExpandedGroup" layout="block"
-						styleClass="cms-module__option-checkbox">
-						<!-- VALIDATION MESSAGE -->
-						<div class="cms-module__option-message">
-							<h:messages for="collectionExpanded"
-								infoClass="cms-module__option-message-status success"
-								warnClass="cms-module__option-message-status warning"
-								errorClass="cms-module__option-message-status danger" />
-
-							<div class="cms-module__option-message-mark">
-								<i class="fa fa-check" aria-hidden="true"></i> <i
-									class="fa fa-exclamation" aria-hidden="true"></i>
+			<ui:fragment rendered="#{cc.attrs.contentItem.owningComponent.getAttribute('allowOpenExpanded').getBooleanValue()}">
+				<div class="admin__content-component-input-group">
+					<!-- LABEL -->
+					<div class="admin__content-component-input-label">
+						<label for="collectionExpanded">#{msg.cms_collectionOpenExpanded}:</label>
+					</div>
+	
+					<div class="admin__content-component-input-field align-self-center">
+						<!-- AREA FOR AJAX REFRESH -->
+						<h:panelGroup id="collectionExpandedGroup" layout="block"
+							styleClass="cms-module__option-checkbox">
+							<!-- VALIDATION MESSAGE -->
+							<div class="cms-module__option-message">
+								<h:messages for="collectionExpanded"
+									infoClass="cms-module__option-message-status success"
+									warnClass="cms-module__option-message-status warning"
+									errorClass="cms-module__option-message-status danger" />
+	
+								<div class="cms-module__option-message-mark">
+									<i class="fa fa-check" aria-hidden="true"></i> <i
+										class="fa fa-exclamation" aria-hidden="true"></i>
+								</div>
 							</div>
-						</div>
-
-						<!-- CHECKBOX -->
-						<h:selectBooleanCheckbox id="collectionExpanded"
-							value="#{cc.attrs.contentItem.content.openExpanded}">
-							<f:ajax event="change" render="@this" />
-							<f:passThroughAttribute name="aria-label"
-								value="#{msg.cms_collectionOpenExpanded}" />
-						</h:selectBooleanCheckbox>
-					</h:panelGroup>
-
+	
+							<!-- CHECKBOX -->
+							<h:selectBooleanCheckbox id="collectionExpanded"
+								value="#{cc.attrs.contentItem.content.openExpanded}">
+								<f:ajax event="change" render="@this" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.cms_collectionOpenExpanded}" />
+							</h:selectBooleanCheckbox>
+						</h:panelGroup>
+	
+					</div>
 				</div>
-
-			</div>
+			</ui:fragment>
 
 			<!-- FILTER QUERY -->
 			<div class="admin__content-component-input-group">

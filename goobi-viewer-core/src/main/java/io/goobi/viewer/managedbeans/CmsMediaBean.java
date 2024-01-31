@@ -125,7 +125,7 @@ public class CmsMediaBean implements Serializable {
     }
 
     /**
-     *
+     * @return TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>>
      */
     private TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> initDataProvider() {
         TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dp =
@@ -244,38 +244,39 @@ public class CmsMediaBean implements Serializable {
      */
     public void deleteMedia(CMSMediaItem item) throws DAOException {
         IDAO dao = DataManager.getInstance().getDao();
-        if (dao != null) {
-            try {
-                boolean deleted = dao.deleteCMSMediaItem(item);
-                if (deleted && item.getFileName() != null) {
-                    try {
-                        Path mediaFile = item.getFilePath();
-                        Files.delete(mediaFile);
-                        if (Files.exists(mediaFile)) {
-                            throw new IOException("Cannot delete file " + mediaFile.toAbsolutePath());
-                        }
-                    } catch (IOException e) {
-                        logger.error("Failed to delete media file: {}", e.getMessage());
+        if (dao == null) {
+            return;
+        }
+
+        try {
+            boolean deleted = dao.deleteCMSMediaItem(item);
+            if (deleted && item.getFileName() != null) {
+                try {
+                    Path mediaFile = item.getFilePath();
+                    Files.delete(mediaFile);
+                    if (Files.exists(mediaFile)) {
+                        throw new IOException("Cannot delete file " + mediaFile.toAbsolutePath());
                     }
-                }
-                if (this.selectedMediaItem != null && this.selectedMediaItem.getValue() == item) {
-                    this.selectedMediaItem = null;
-                }
-                if (!deleted) {
-                    Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
-                } else {
-                    CMSMediaResource.removeFromImageCache(item);
-                }
-                reloadMediaList(false);
-            } catch (RollbackException e) {
-                if (e.getMessage() != null && e.getMessage().toLowerCase().contains("cannot delete or update a parent row")) {
-                    Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
-                } else {
-                    logger.error("Error deleting category ", e);
-                    Messages.error(null, "admin__media_delete_error", item.getFileName(), e.getMessage());
+                } catch (IOException e) {
+                    logger.error("Failed to delete media file: {}", e.getMessage());
                 }
             }
-
+            if (this.selectedMediaItem != null && this.selectedMediaItem.getValue() == item) {
+                this.selectedMediaItem = null;
+            }
+            if (!deleted) {
+                Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
+            } else {
+                CMSMediaResource.removeFromImageCache(item);
+            }
+            reloadMediaList(false);
+        } catch (RollbackException e) {
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("cannot delete or update a parent row")) {
+                Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
+            } else {
+                logger.error("Error deleting category ", e);
+                Messages.error(null, "admin__media_delete_error", item.getFileName(), e.getMessage());
+            }
         }
     }
 
@@ -444,7 +445,7 @@ public class CmsMediaBean implements Serializable {
      * 
      * @param width
      * @param height
-     * @return
+     * @return Dimension
      */
     private static Dimension getRequestImageSize(String width, String height) {
         Dimension imageSize;
@@ -624,18 +625,6 @@ public class CmsMediaBean implements Serializable {
      */
     public static String getFileName(Part filePart) {
         if (filePart != null) {
-            // String basename = filePart.getName();
-            // if (basename.startsWith(".")) {
-            // basename = basename.substring(1);
-            // }
-            // if (basename.contains("/")) {
-            // basename = basename.substring(basename.lastIndexOf("/") + 1);
-            // }
-            // if (basename.contains("\\")) {
-            // basename = basename.substring(basename.lastIndexOf("\\") + 1);
-            // }
-            //
-            // return basename;
             String header = filePart.getHeader("content-disposition");
             for (String headerPart : header.split(";")) {
                 if (headerPart.trim().startsWith("filename")) {

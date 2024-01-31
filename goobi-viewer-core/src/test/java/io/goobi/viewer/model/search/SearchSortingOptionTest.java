@@ -21,25 +21,25 @@
  */
 package io.goobi.viewer.model.search;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchSortingOptionTest extends AbstractTest {
+class SearchSortingOptionTest extends AbstractTest {
 
     /**
      * @see SearchSortingOption#SearchSortingOption(String)
      * @verifies set ascending field correctly
      */
     @Test
-    public void SearchSortingOption_shouldSetAscendingFieldCorrectly() throws Exception {
+    void SearchSortingOption_shouldSetAscendingFieldCorrectly() throws Exception {
         SearchSortingOption option = new SearchSortingOption("SORT_TITLE");
-        Assert.assertTrue(option.isAscending());
-        Assert.assertFalse(option.isDescending());
-        Assert.assertEquals("SORT_TITLE", option.getField());
+        Assertions.assertTrue(option.isAscending());
+        Assertions.assertFalse(option.isDescending());
+        Assertions.assertEquals("SORT_TITLE", option.getField());
     }
 
     /**
@@ -47,11 +47,11 @@ public class SearchSortingOptionTest extends AbstractTest {
      * @verifies set descending field correctly
      */
     @Test
-    public void SearchSortingOption_shouldSetDescendingFieldCorrectly() throws Exception {
+    void SearchSortingOption_shouldSetDescendingFieldCorrectly() throws Exception {
         SearchSortingOption option = new SearchSortingOption("!SORT_TITLE");
-        Assert.assertFalse(option.isAscending());
-        Assert.assertTrue(option.isDescending());
-        Assert.assertEquals("SORT_TITLE", option.getField());
+        Assertions.assertFalse(option.isAscending());
+        Assertions.assertTrue(option.isDescending());
+        Assertions.assertEquals("SORT_TITLE", option.getField());
     }
 
     /**
@@ -59,9 +59,9 @@ public class SearchSortingOptionTest extends AbstractTest {
      * @verifies return translation of RANDOM if field RANDOM
      */
     @Test
-    public void getLabel_shouldReturnTranslationOfRANDOMIfFieldRANDOM() throws Exception {
+    void getLabel_shouldReturnTranslationOfRANDOMIfFieldRANDOM() throws Exception {
         SearchSortingOption option = new SearchSortingOption(SolrConstants.SORT_RANDOM);
-        Assert.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.RANDOM_SORT_FIELD_LABEL, null), option.getLabel());
+        Assertions.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.RANDOM_SORT_FIELD_LABEL, null), option.getLabel());
     }
 
     /**
@@ -69,9 +69,9 @@ public class SearchSortingOptionTest extends AbstractTest {
      * @verifies return translation of RANDOM if field random seed
      */
     @Test
-    public void getLabel_shouldReturnTranslationOfRANDOMIfFieldRandomSeed() throws Exception {
+    void getLabel_shouldReturnTranslationOfRANDOMIfFieldRandomSeed() throws Exception {
         SearchSortingOption option = new SearchSortingOption("random_12345");
-        Assert.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.RANDOM_SORT_FIELD_LABEL, null), option.getLabel());
+        Assertions.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.RANDOM_SORT_FIELD_LABEL, null), option.getLabel());
     }
 
     /**
@@ -79,9 +79,9 @@ public class SearchSortingOptionTest extends AbstractTest {
      * @verifies return translation of DEFAULT_SORT_FIELD_LABEL if field RELEVANCE
      */
     @Test
-    public void getLabel_shouldReturnTranslationOfDEFAULT_SORT_FIELD_LABELIfFieldRELEVANCE() throws Exception {
+    void getLabel_shouldReturnTranslationOfDEFAULT_SORT_FIELD_LABELIfFieldRELEVANCE() throws Exception {
         SearchSortingOption option = new SearchSortingOption(SolrConstants.SORT_RELEVANCE);
-        Assert.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.RELEVANCE_SORT_FIELD_LABEL, null), option.getLabel());
+        Assertions.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.RELEVANCE_SORT_FIELD_LABEL, null), option.getLabel());
     }
 
     /**
@@ -89,9 +89,9 @@ public class SearchSortingOptionTest extends AbstractTest {
      * @verifies add exclamation mark prefix if descending
      */
     @Test
-    public void getSortString_shouldAddExclamationMarkPrefixIfDescending() throws Exception {
+    void getSortString_shouldAddExclamationMarkPrefixIfDescending() throws Exception {
         SearchSortingOption option = new SearchSortingOption("!SORT_TITLE");
-        Assert.assertEquals("!SORT_TITLE", option.getSortString());
+        Assertions.assertEquals("!SORT_TITLE", option.getSortString());
     }
 
     /**
@@ -99,14 +99,14 @@ public class SearchSortingOptionTest extends AbstractTest {
      * @verifies not add exclamation mark prefix is ascending
      */
     @Test
-    public void getSortString_shouldNotAddExclamationMarkPrefixIsAscending() throws Exception {
+    void getSortString_shouldNotAddExclamationMarkPrefixIsAscending() throws Exception {
         {
             SearchSortingOption option = new SearchSortingOption("SORT_TITLE");
-            Assert.assertEquals("SORT_TITLE", option.getSortString());
+            Assertions.assertEquals("SORT_TITLE", option.getSortString());
         }
         {
             SearchSortingOption option = new SearchSortingOption("random_12345");
-            Assert.assertEquals("random_12345", option.getSortString());
+            Assertions.assertEquals("random_12345", option.getSortString());
         }
     }
 
@@ -115,8 +115,8 @@ public class SearchSortingOptionTest extends AbstractTest {
      * @verifies return empty string if field blank
      */
     @Test
-    public void getSortString_shouldReturnEmptyStringIfFieldBlank() throws Exception {
+    void getSortString_shouldReturnEmptyStringIfFieldBlank() throws Exception {
         SearchSortingOption option = new SearchSortingOption("");
-        Assert.assertEquals("", option.getSortString());
+        Assertions.assertEquals("", option.getSortString());
     }
 }

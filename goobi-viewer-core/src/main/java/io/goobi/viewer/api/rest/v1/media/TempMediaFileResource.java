@@ -52,10 +52,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -65,7 +65,6 @@ import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -87,27 +86,25 @@ public class TempMediaFileResource {
     @Context
     protected HttpServletResponse servletResponse;
     @Inject
-    ApiUrls urls;
+    private ApiUrls urls;
 
     /**
      * Upload a file to the hotfolder
      *
-     * @param uuid
+     * @param foldername
      * @param enabled
      * @param filename
      * @param uploadedInputStream
      * @param fileDetail
      * @return a json response with a result message
-     * @throws DAOException
      */
     @POST
     @javax.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadMediaFiles(@PathParam("folder") String foldername, @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
-            @FormDataParam("filename") String filename,
-            @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
-            throws DAOException {
+            @FormDataParam("filename") String filename, @FormDataParam("file") InputStream uploadedInputStream,
+            @FormDataParam("file") FormDataContentDisposition fileDetail) {
 
         try {
 
@@ -134,9 +131,8 @@ public class TempMediaFileResource {
 
                 if (Files.exists(targetFile) && Files.size(targetFile) > 0) {
                     return Response.status(Status.OK).entity(message("Successfully uploaded " + targetFile)).build();
-                } else {
-                    throw new IOException("Uploaded file doesn't exist or is empty");
                 }
+                throw new IOException("Uploaded file doesn't exist or is empty");
             } catch (IOException e) {
                 String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), targetFile.getFileName().toString());
                 try {
@@ -144,20 +140,20 @@ public class TempMediaFileResource {
                         Files.delete(targetFile);
                     }
                 } catch (IOException e1) {
-                    logger.error("Error deleting failed upload file " + targetFile, e1);
+                    logger.error("Error deleting failed upload file {}", targetFile, e1);
                 }
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage(message)).build();
             }
-        } catch (Throwable e) {
+        } catch (IOException e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
     }
 
     /**
-     * Get a filename list of all uploaded files in the media directory of the given uuid
+     * Get a filename list of all uploaded files in the media directory of the given folder
      *
-     * @param uuid
-     * @return a filename list of all uploaded files in the media directory of the given uuid
+     * @param folder
+     * @return a filename list of all uploaded files in the media folder
      */
     @GET
     @javax.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
@@ -189,17 +185,17 @@ public class TempMediaFileResource {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error creating json object: " + e.toString())).build();
             }
 
-        } catch (Throwable e) {
-            logger.error("Error retgrieving uploaded files: " + e.toString(), e);
+        } catch (IOException e) {
+            logger.error("Error retgrieving uploaded files: {}", e.getMessage(), e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
     }
 
     /**
-     * Delete all files uploaded for the given uuid
+     * Delete all files uploaded for the given folder
      *
-     * @param uuid
-     * @return a 200 response if deletion was successfull, otherwise 500
+     * @param folder
+     * @return a 200 response if deletion was successful, otherwise 500
      */
     @DELETE
     @javax.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
@@ -226,7 +222,7 @@ public class TempMediaFileResource {
                 }
             }
             return Response.status(Status.OK).build();
-        } catch (Throwable e) {
+        } catch (IOException e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
     }
@@ -240,22 +236,21 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Get the appropriate media subfolder for the given uuid in the viewer hotfolder
+     * Get the appropriate media subfolder for foldername in the viewer hotfolder
      *
-     * @param uuid
+     * @param foldername
      * @return the folder for upload
      * @throws IOException
      */
     public static Path getTargetDir(String foldername) throws IOException {
-        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome())
+        return Paths.get(DataManager.getInstance().getConfiguration().getViewerHome())
                 .resolve(DataManager.getInstance().getConfiguration().getTempMediaFolder())
                 .resolve(Paths.get(foldername).getFileName());
-        return targetDir;
     }
 
     /**
      * @param file
-     * @return
+     * @return {@link URI}
      */
     private URI getIiifUri(Path file) {
         String filename = file.getFileName().toString();
@@ -265,11 +260,10 @@ public class TempMediaFileResource {
         return URI.create(iiifUri);
     }
 
-    private String getAsJson(List list) throws JsonProcessingException {
+    private static String getAsJson(List list) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        String json = mapper.writeValueAsString(list);
-        return json;
+        return mapper.writeValueAsString(list);
     }
 }

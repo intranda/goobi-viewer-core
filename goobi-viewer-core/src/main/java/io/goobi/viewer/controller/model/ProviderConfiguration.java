@@ -39,11 +39,17 @@ import io.goobi.viewer.exceptions.PresentationException;
  */
 public class ProviderConfiguration {
 
-    public final URI uri;
-    public final String label;
-    public final List<URI> logos = new ArrayList<>();
-    public final List<WebResourceConfiguration> homepages = new ArrayList<>();
+    private final URI uri;
+    private final String label;
+    private final List<URI> logos = new ArrayList<>();
+    private final List<WebResourceConfiguration> homepages = new ArrayList<>();
 
+    /**
+     * 
+     * @param uri
+     * @param label
+     * @throws PresentationException
+     */
     public ProviderConfiguration(String uri, String label) throws PresentationException {
         if (uri == null) {
             throw new PresentationException("URI must be provided");
@@ -55,6 +61,11 @@ public class ProviderConfiguration {
         this.label = label;
     }
 
+    /**
+     * 
+     * @param config
+     * @throws PresentationException
+     */
     public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
         this(config.getString("url", null), config.getString("label", null));
 
@@ -63,11 +74,38 @@ public class ProviderConfiguration {
             this.logos.add(URI.create(logo.toString()));
         });
 
-        List<HierarchicalConfiguration<ImmutableNode>> homepages = config.configurationsAt("homepage");
-        for (HierarchicalConfiguration<ImmutableNode> homepage : homepages) {
+        List<HierarchicalConfiguration<ImmutableNode>> hp = config.configurationsAt("homepage");
+        for (HierarchicalConfiguration<ImmutableNode> homepage : hp) {
             this.homepages.add(new WebResourceConfiguration(homepage));
         }
 
     }
 
+    /**
+     * @return the uri
+     */
+    public URI getUri() {
+        return uri;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @return the logos
+     */
+    public List<URI> getLogos() {
+        return logos;
+    }
+
+    /**
+     * @return the homepages
+     */
+    public List<WebResourceConfiguration> getHomepages() {
+        return homepages;
+    }
 }

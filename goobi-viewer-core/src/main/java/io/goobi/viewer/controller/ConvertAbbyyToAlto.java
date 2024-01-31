@@ -114,6 +114,9 @@ public class ConvertAbbyyToAlto {
 
     /**
      * Add ALTO Layout Element
+     * 
+     * @param alto
+     * @return {@link Element}
      */
     private Element addLayout(Element alto) {
         Element layout = new Element("Layout", defaultNamespace);
@@ -134,6 +137,11 @@ public class ConvertAbbyyToAlto {
 
     }
 
+    /**
+     * 
+     * @param abbyypage
+     * @param altopage
+     */
     private void addPrintSpace(Element abbyypage, Element altopage) {
         List<Element> abbyyPageBlocks = abbyypage.getChildren("block", abbyyNamespace);
 
@@ -200,14 +208,17 @@ public class ConvertAbbyyToAlto {
         altopage.addContent(printSpace);
     }
 
+    /**
+     * 
+     * @param altoTextBlock
+     * @param abbyyPageBlock
+     */
     private void addTextBlocks(Element altoTextBlock, Element abbyyPageBlock) {
         List<Element> abbyyPars = new ArrayList<>();
         for (Element text : abbyyPageBlock.getChildren("text", abbyyNamespace)) {
             List<Element> pairs = text.getChildren("par", abbyyNamespace);
-            {
-                for (Element pair : pairs) {
-                    abbyyPars.add(pair);
-                }
+            for (Element pair : pairs) {
+                abbyyPars.add(pair);
             }
         }
 
@@ -243,6 +254,11 @@ public class ConvertAbbyyToAlto {
         }
     }
 
+    /**
+     * 
+     * @param altoTextBlock
+     * @param abbyyPageBlock
+     */
     private void addTableBlocks(Element altoTextBlock, Element abbyyPageBlock) {
 
         List<Element> abbyyPars = new ArrayList<>();
@@ -253,10 +269,8 @@ public class ConvertAbbyyToAlto {
                 List<Element> abbyytexts = abbyyCell.getChildren("text", abbyyNamespace);
                 for (Element text : abbyytexts) {
                     List<Element> pairs = text.getChildren("par", abbyyNamespace);
-                    {
-                        for (Element pair : pairs) {
-                            abbyyPars.add(pair);
-                        }
+                    for (Element pair : pairs) {
+                        abbyyPars.add(pair);
                     }
                 }
             }
@@ -334,7 +348,10 @@ public class ConvertAbbyyToAlto {
                     b = Integer.valueOf(abbyyLine.getAttributeValue("b"));
                 } catch (NullPointerException e) {
                     logger.error("Unable to extract line coordinates from abbyy");
-                    l = t = r = b = 0;
+                    l = 0;
+                    t = 0;
+                    r = 0;
+                    b = 0;
                 }
             }
 
@@ -351,17 +368,20 @@ public class ConvertAbbyyToAlto {
             altoTextLine.setAttribute("HEIGHT", Integer.toString(height));
             altoTextLine.setAttribute("WIDTH", Integer.toString(width));
 
-            //				addLineText(altoTextLine, abbyyLine);
             addStrings(altoTextLine, abbyyLine);
-            //			}
         }
     }
 
+    /**
+     * 
+     * @param altoTextLine
+     * @param abbyyLine
+     */
     private void addStrings(Element altoTextLine, Element abbyyLine) {
         List<Element> abbyyCharParams = getLineChildren(abbyyLine);
 
         int charCount = abbyyCharParams.size();
-        String string = "";
+        StringBuilder sb = new StringBuilder();
 
         int l = Integer.MAX_VALUE;
         int t = Integer.MAX_VALUE;
@@ -387,7 +407,7 @@ public class ConvertAbbyyToAlto {
         }
 
         for (int c = 0; c < charCount; c++) {
-            if (string.isEmpty()) {
+            if (sb.length() == 0) {
                 // if first character of a new string, set hpos and vpos
                 l = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("l"));
                 t = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("t"));
@@ -398,7 +418,7 @@ public class ConvertAbbyyToAlto {
             if (Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("b")) > b || b == 0) {
                 b = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("b"));
             }
-            string += abbyyCharParams.get(c).getValue();
+            sb.append(abbyyCharParams.get(c).getValue());
             //            characterCount++;
             //            if (abbyyCharParams.get(c).getAttributeValue("charConfidence") != null
             //                    && abbyyCharParams.get(c).getAttributeValue("charConfidence").length() > 0) {
@@ -417,7 +437,7 @@ public class ConvertAbbyyToAlto {
                     Element altoString = new Element("String", defaultNamespace);
                     altoTextLine.addContent(altoString);
                     altoString.setAttribute("ID", "Word_" + stringCount);
-                    altoString.setAttribute("CONTENT", string);
+                    altoString.setAttribute("CONTENT", sb.toString());
                     altoString.setAttribute("HPOS", Integer.toString(hpos));
                     altoString.setAttribute("VPOS", Integer.toString(vpos));
                     altoString.setAttribute("HEIGHT", Integer.toString(height));
@@ -427,7 +447,7 @@ public class ConvertAbbyyToAlto {
                     t = Integer.MAX_VALUE;
                     r = 0;
                     b = 0;
-                    string = "";
+                    sb = new StringBuilder();
                     c++;
 
                 }
@@ -500,7 +520,7 @@ public class ConvertAbbyyToAlto {
 
         Element processingDateTime = new Element("processingDateTime", defaultNamespace);
         preProcessingStep.addContent(processingDateTime);
-        processingDateTime.setText(DateTools.format(creationtime, DateTools.formatterISO8601Full, false));
+        processingDateTime.setText(DateTools.format(creationtime, DateTools.FORMATTERISO8601FULL, false));
 
         Element processingAgency = new Element("processingAgency", defaultNamespace);
         processingAgency.setText("intranda GmbH, www.intranda.com");

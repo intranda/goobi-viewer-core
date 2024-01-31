@@ -81,7 +81,6 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.glossary.Glossary;
@@ -168,16 +167,19 @@ public class CmsBean implements Serializable {
                 private boolean initialized = false;
 
                 @Override
-                public List<CMSPage> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                public List<CMSPage> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
+                        Map<String, String> filters) {
                     try {
                         initialize();
-                        if (StringUtils.isBlank(sortField)) {
-                            sortField = "id";
+                        String useSortField = sortField;
+                        SortOrder useSortOrder = sortOrder;
+                        if (StringUtils.isBlank(useSortField)) {
+                            useSortField = "id";
                         }
 
                         return DataManager.getInstance()
                                 .getDao()
-                                .getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters, allowedTemplates, allowedSubthemes,
+                                .getCMSPages(first, pageSize, useSortField, useSortOrder.asBoolean(), filters, allowedTemplates, allowedSubthemes,
                                         allowedCategories);
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
@@ -244,7 +246,7 @@ public class CmsBean implements Serializable {
      * Returns the most recently edited CMS pages from the lazy model, which should include all restrictions placed upon the current user.
      *
      * @param number Number of requested rows
-     * @return
+     * @return List<CMSPage>
      */
     public List<CMSPage> getMostRecentlyEditedPages(int number) {
         try {
@@ -375,7 +377,7 @@ public class CmsBean implements Serializable {
     /**
      *
      * @param enabled
-     * @return
+     * @return All templates with the given enabled status
      * @throws DAOException
      */
     public List<CMSPageTemplate> getTemplates(boolean enabled) throws DAOException {
@@ -416,7 +418,7 @@ public class CmsBean implements Serializable {
     /**
      * Persists the enabled/disabled status of all CMS tempaltes in the DB.
      *
-     * @return
+     * @return Navigation outcome
      * @throws DAOException
      */
     public String saveTemplatesAction() throws DAOException {
@@ -513,7 +515,7 @@ public class CmsBean implements Serializable {
 
     /**
      * @param id
-     * @return
+     * @return CMS page matching id; null if none found
      * @throws DAOException
      */
     CMSPage findPage(String id) throws DAOException {
@@ -881,7 +883,7 @@ public class CmsBean implements Serializable {
      *
      * @param hits
      * @param groupingField
-     * @return
+     * @return List<Entry<String, List<SearchHit>>>
      */
     public List<Entry<String, List<SearchHit>>> getGroupedQueryResults(List<SearchHit> hits, String groupingField) {
 
@@ -911,7 +913,7 @@ public class CmsBean implements Serializable {
      *
      * @param hit
      * @param solrField
-     * @return
+     * @return Metadata values for the given Solr field from the given search hit
      */
     private static List<String> getMetadataValues(SearchHit hit, String solrField) {
 
@@ -1459,7 +1461,7 @@ public class CmsBean implements Serializable {
             throw new IllegalStateException("Item " + item + " does not define a solr query");
         }
         SolrDocument doc =
-                DataManager.getInstance().getSearchIndex().getFirstDoc(item.getSolrQuery(), Arrays.asList(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
+                DataManager.getInstance().getSearchIndex().getFirstDoc(item.getSolrQuery(), new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
         if (doc != null) {
             return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, width, height);
         }
@@ -1499,14 +1501,16 @@ public class CmsBean implements Serializable {
     public List<String> getPossibleGroupFields() throws IndexUnreachableException {
 
         if (this.solrGroupFields == null) {
-            this.solrGroupFields = DataManager.getInstance()
+            this.solrGroupFields = Stream.concat(
+                    DataManager.getInstance()
                     .getSearchIndex()
-                    .getAllFieldNames()
-                    .stream()
+                    .getAllFieldNames().stream(), 
+                    DataManager.getInstance()
+                    .getSearchIndex()
+                    .getAllBooleanFieldNames().stream())
                     .filter(field -> !field.startsWith("SORT_") && !field.startsWith("FACET_") && !field.endsWith("_UNTOKENIZED")
                             && !field.matches(".*_LANG_\\w{2,3}"))
                     .collect(Collectors.toList());
-            //                this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
             Collections.sort(solrGroupFields);
         }
         return this.solrGroupFields;
@@ -1515,7 +1519,7 @@ public class CmsBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return Configured search result group names; empty list if disabled
      */
     public List<String> getPossibleResultGroupNames() {
         List<SearchResultGroup> groups = DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
@@ -1532,7 +1536,7 @@ public class CmsBean implements Serializable {
     /**
      * Returns metadataList types from the configuration where the type value stars with "cms_".
      * 
-     * @return
+     * @return List of configured metadata lists where the type starts with "cms_"
      */
     public List<String> getCmsMetadataListTypes() {
         return DataManager.getInstance().getConfiguration().getMetadataListTypes("cms_");
@@ -1564,8 +1568,6 @@ public class CmsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Long getLastEditedTimestamp(long pageId) throws DAOException {
-        //        return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
-
         CMSPage page = getCMSPage(pageId);
         if (page == null || page.getDateUpdated() == null) {
             return null;
@@ -1715,7 +1717,7 @@ public class CmsBean implements Serializable {
     /**
      * @param user
      * @param page
-     * @return
+     * @return true if given use may edit given page; false otherwise
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -1738,10 +1740,10 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * For cms pages with {@link CMSPage#getWrapperElementClass()} return 'body_' followed by the wrapperElementClass. Otherwise return an empty
+     * For CMS pages with {@link CMSPage#getWrapperElementClass()} return 'body_' followed by the wrapperElementClass. Otherwise return an empty
      * String
      *
-     * @return
+     * @return Configured wrapper element class of the current page; otherwise empty string
      */
     public String getCmsBodyClass() {
         if (navigationHelper.isCmsPage() && getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getWrapperElementClass())) {
@@ -1754,7 +1756,7 @@ public class CmsBean implements Serializable {
     /**
      * getter for jsf
      *
-     * @return
+     * @return CMSPAGES_FILTER
      */
     public String getCmsPagesFilter() {
         return CMSPAGES_FILTER;

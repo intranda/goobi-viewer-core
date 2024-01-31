@@ -31,6 +31,26 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.intranda.api.annotation.AbstractAnnotation;
+import de.intranda.api.annotation.ITypedResource;
+import de.intranda.api.annotation.oa.TextualResource;
+import io.goobi.viewer.controller.DataFileTools;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.security.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -41,31 +61,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Transient;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.intranda.api.annotation.AbstractAnnotation;
-import de.intranda.api.annotation.ITypedResource;
-import de.intranda.api.annotation.oa.TextualResource;
-import de.intranda.api.annotation.wa.WebAnnotation;
-import io.goobi.viewer.controller.DataFileTools;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
-import io.goobi.viewer.model.crowdsourcing.questions.Question;
-import io.goobi.viewer.model.security.user.User;
 
 /**
  * @author florian
@@ -141,11 +136,15 @@ public abstract class PersistentAnnotation {
     /**
      * empty constructor
      */
-    public PersistentAnnotation() {
+    protected PersistentAnnotation() {
         this.dateCreated = LocalDateTime.now();
     }
 
-    public PersistentAnnotation(PersistentAnnotation source) {
+    /**
+     * 
+     * @param source
+     */
+    protected PersistentAnnotation(PersistentAnnotation source) {
         this.id = source.id;
         this.accessCondition = source.accessCondition;
         this.body = source.body;
@@ -165,8 +164,11 @@ public abstract class PersistentAnnotation {
      * creates a new PersistentAnnotation from a WebAnnotation
      *
      * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
+     * @param id
+     * @param targetPI
+     * @param targetPage
      */
-    public PersistentAnnotation(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
+    protected PersistentAnnotation(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         this.dateCreated = source.getCreated();
         this.dateModified = source.getModified();
         this.motivation = source.getMotivation();
@@ -182,7 +184,7 @@ public abstract class PersistentAnnotation {
                 }
             }
         } catch (NumberFormatException e) {
-            logger.error("Error getting creator of " + source, e);
+            logger.error("Error getting creator of {}", source, e);
         }
         try {
             if (source.getGenerator() != null && source.getGenerator().getId() != null) {
@@ -191,19 +193,19 @@ public abstract class PersistentAnnotation {
                 this.generatorId = questionId;
             }
         } catch (NumberFormatException e) {
-            logger.error("Error getting generator of " + source, e);
+            logger.error("Error getting generator of {}", source, e);
         }
 
         ObjectMapper mapper = new ObjectMapper();
         try {
             this.body = mapper.writeValueAsString(source.getBody());
         } catch (JsonProcessingException e) {
-            logger.error("Error writing body " + source.getBody() + " to string ", e);
+            logger.error("Error writing body {} to string.", source.getBody(), e);
         }
         try {
             this.target = mapper.writeValueAsString(source.getTarget());
         } catch (JsonProcessingException e) {
-            logger.error("Error writing body " + source.getBody() + " to string ", e);
+            logger.error("Error writing body {} to string.", source.getBody(), e);
         }
         this.targetPI = targetPI;
         this.targetPageOrder = targetPage;
@@ -564,18 +566,17 @@ public abstract class PersistentAnnotation {
                 return 0;
             }
 
-            {
-                Path file = Paths.get(annotationFolder.toAbsolutePath().toString(), targetPI + "_" + id + ".json");
-                if (Files.isRegularFile(file)) {
-                    filesToDelete.add(file);
-                }
+            Path file = Paths.get(annotationFolder.toAbsolutePath().toString(), targetPI + "_" + id + ".json");
+            if (Files.isRegularFile(file)) {
+                filesToDelete.add(file);
             }
+
             if (!filesToDelete.isEmpty()) {
-                for (Path file : filesToDelete) {
+                for (Path p : filesToDelete) {
                     try {
-                        Files.delete(file);
+                        Files.delete(p);
                         count++;
-                        logger.info("Annotation file deleted: {}", file.getFileName().toString());
+                        logger.info("Annotation file deleted: {}", p.getFileName().toString());
                     } catch (IOException e) {
                         logger.error(e.getMessage());
                     }
@@ -591,9 +592,7 @@ public abstract class PersistentAnnotation {
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
-        } catch (PresentationException e) {
-            logger.error(e.getMessage(), e);
-        } catch (IndexUnreachableException e) {
+        } catch (IndexUnreachableException | PresentationException e) {
             logger.error(e.getMessage(), e);
         }
 
@@ -625,7 +624,6 @@ public abstract class PersistentAnnotation {
             } catch (JsonProcessingException e) {
                 logger.trace("Error reading body as json value:'{}'. Error message is '{}'", body, e.toString());
                 return body;
-            } finally {
             }
         }
 
@@ -664,20 +662,6 @@ public abstract class PersistentAnnotation {
         this.accessCondition = accessCondition;
     }
 
-    /**
-     * @param c
-     * @param targetPI2
-     * @param targetPageOrder2
-     * @return
-     */
-    private CrowdsourcingStatus getStatus(Campaign campaign, String pi, Integer page) {
-        if (page == null || StatisticMode.RECORD == campaign.getStatisticMode()) {
-            return campaign.getRecordStatus(pi);
-        } else {
-            return campaign.getPageStatus(pi, page);
-        }
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -695,17 +679,17 @@ public abstract class PersistentAnnotation {
     }
 
     public String getDisplayDate(LocalDateTime date) {
-        return DateTools.format(date, DateTools.formatterDEDateTime, false);
+        return DateTools.format(date, DateTools.FORMATTERDEDATETIME, false);
     }
 
     /**
      * Checks whether the user with the given ID is allowed to edit this comment (i.e. the annotation belongs to this (proper) user.
      *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if allowed; false otherwise
      * @should return true if use id equals owner id
      * @should return false if owner id is null
      * @should return false if user is null
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
     public boolean mayEdit(User user) {
         return this.creatorId != null && user != null && this.creatorId.equals(user.getId());
@@ -729,9 +713,9 @@ public abstract class PersistentAnnotation {
     public int hashCode() {
         if (id == null) {
             return 0;
-        } else {
-            return id.hashCode();
         }
+        
+        return id.hashCode();
     }
 
     @Override
@@ -747,8 +731,8 @@ public abstract class PersistentAnnotation {
                     && Objects.equals(this.target, other.target)
                     && Objects.equals(this.targetPageOrder, other.targetPageOrder)
                     && Objects.equals(this.targetPI, other.targetPI);
-        } else {
-            return false;
         }
+        
+        return false;
     }
 }

@@ -21,16 +21,16 @@
  */
 package io.goobi.viewer.model.transkribus;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 
-public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
+class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
 
     @Test
-    public void dummy() throws Exception {
-        Assert.assertTrue(true);
+    void dummy() throws Exception {
+        Assertions.assertTrue(true);
     }
 
     //    /**
@@ -40,13 +40,13 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies auth correctly
     //     */
     //    @Test
-    //    public void auth_shouldAuthCorrectly() throws Exception {
+    //    void auth_shouldAuthCorrectly() throws Exception {
     //        Document doc = TranskribusUtils.auth(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance().getTranskribusUserName(),
     //                ConfigurationHelper.getInstance().getTranskribusPassword());
-    //        Assert.assertNotNull(doc);
-    //        Assert.assertNotNull(doc.getRootElement());
-    //        Assert.assertEquals(ConfigurationHelper.getInstance().getTranskribusUserName(), doc.getRootElement().getChildText("userName"));
-    //        Assert.assertFalse(StringUtils.isEmpty(doc.getRootElement().getChildText("sessionId")));
+    //        Assertions.assertNotNull(doc);
+    //        Assertions.assertNotNull(doc.getRootElement());
+    //        Assertions.assertEquals(ConfigurationHelper.getInstance().getTranskribusUserName(), doc.getRootElement().getChildText("userName"));
+    //        Assertions.assertFalse(StringUtils.isEmpty(doc.getRootElement().getChildText("sessionId")));
     //    }
     //
     //    /**
@@ -54,11 +54,11 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies retrieve correct id
     //     */
     //    @Test
-    //    public void getCollectionId_shouldRetrieveCorrectId() throws Exception {
+    //    void getCollectionId_shouldRetrieveCorrectId() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
-    //        Assert.assertNotNull(session);
-    //        Assert.assertEquals("475", TranskribusUtils.getCollectionId(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, session.getSessionId(), "test"));
+    //        Assertions.assertNotNull(session);
+    //        Assertions.assertEquals("475", TranskribusUtils.getCollectionId(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, session.getSessionId(), "test"));
     //    }
     //
     //    /**
@@ -66,14 +66,14 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies create collection and return numeric id
     //     */
     //    @Test
-    //    public void createCollection_shouldCreateCollectionAndReturnNumericId() throws Exception {
+    //    void createCollection_shouldCreateCollectionAndReturnNumericId() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        try {
     //            Integer.valueOf(TranskribusUtils.createCollection(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, session.getSessionId(), "test"));
     //        } catch (Exception e) {
     //            e.printStackTrace();
-    //            Assert.fail();
+    //            Assertions.fail();
     //        }
     //    }
     //
@@ -82,14 +82,14 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies grant privs correctly
     //     */
     //    @Test
-    //    public void grantCollectionPrivsToViewer_shouldGrantPrivsCorrectly() throws Exception {
+    //    void grantCollectionPrivsToViewer_shouldGrantPrivsCorrectly() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        try {
     //            TranskribusUtils.grantCollectionPrivsToViewer(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, session.getSessionId(), "475", "4847", true);
     //        } catch (Exception e) {
     //            e.printStackTrace();
-    //            Assert.fail();
+    //            Assertions.fail();
     //        }
     //    }
     //
@@ -98,20 +98,20 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies ingest record correctly
     //     */
     //    @Test
-    //    public void ingestRecordToCollections_shouldIngestRecordCorrectly() throws Exception {
+    //    void ingestRecordToCollections_shouldIngestRecordCorrectly() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        try {
     //            TranskribusJob job = TranskribusUtils.ingestRecordToCollections(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, session, PI_KLEIUNIV,
     //                    "http://viewer-demo01.intranda.com/viewer/metsresolver?id=PPN517154005", "475", "475");
-    //            Assert.assertNotNull(job);
-    //            Assert.assertEquals(PI_KLEIUNIV, job.getPi());
-    //            Assert.assertNotNull(job.getJobId());
-    //            Assert.assertNotNull(job.getDateCreated());
-    //            Assert.assertNotNull(job.getStatus());
+    //            Assertions.assertNotNull(job);
+    //            Assertions.assertEquals(PI_KLEIUNIV, job.getPi());
+    //            Assertions.assertNotNull(job.getJobId());
+    //            Assertions.assertNotNull(job.getDateCreated());
+    //            Assertions.assertNotNull(job.getStatus());
     //        } catch (Exception e) {
     //            e.printStackTrace();
-    //            Assert.fail();
+    //            Assertions.fail();
     //        }
     //    }
     //
@@ -120,15 +120,15 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //     * @verifies return correct status
     //     */
     //    @Test
-    //    public void checkJobStatus_shouldReturnCorrectStatus() throws Exception {
+    //    void checkJobStatus_shouldReturnCorrectStatus() throws Exception {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        try {
-    //            Assert.assertEquals(JobStatus.ERROR, TranskribusUtils.checkJobStatus(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, session.getSessionId(),
+    //            Assertions.assertEquals(JobStatus.ERROR, TranskribusUtils.checkJobStatus(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, session.getSessionId(),
     //                    "1810"));
     //        } catch (Exception e) {
     //            e.printStackTrace();
-    //            Assert.fail();
+    //            Assertions.fail();
     //        }
     //    }
 

@@ -21,12 +21,11 @@
  */
 package io.goobi.viewer.model.citation;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -80,18 +79,17 @@ public class Citation {
      *
      * @param outputFormat
      * @param items
-     * @return
-     * @throws IOException
+     * @return {@link Bibliography}
      */
-    Bibliography makeAdhocBibliography(String outputFormat, CSLItemData... items) throws IOException {
-        // logger.trace("makeAdhocBibliography");
+    Bibliography makeAdhocBibliography(String outputFormat, CSLItemData... items) {
+        // logger.trace("makeAdhocBibliography"); //NOSONAR Debug
         synchronized (processor) {
             processor.reset();
             processor.setOutputFormat(outputFormat);
             String[] ids = new String[items.length];
             for (int i = 0; i < items.length; ++i) {
                 ids[i] = items[i].getId();
-                // logger.trace("Item data id: {}", items[i].getId());
+                // logger.trace("Item data id: {}", items[i].getId()); //NOSONAR Debug
             }
             processor.registerCitationItems(ids);
 
@@ -102,17 +100,11 @@ public class Citation {
     /**
      * @param outputFormat
      * @return Citation string
-     * @throws IOException
      * @should return apa html citation correctly
      * @should return apa html plaintext correctly
      */
-    public String getCitationString(String outputFormat) throws IOException {
+    public String getCitationString(String outputFormat) {
         CSLItemData itemData = itemDataProvider.addItemData(id, fields, type);
-        try {
-            return makeAdhocBibliography(outputFormat, itemData).makeString().trim();
-        } catch (Exception e) {
-            logger.warn(e.getMessage());
-            return "";
-        }
+        return makeAdhocBibliography(outputFormat, itemData).makeString().trim();
     }
 }

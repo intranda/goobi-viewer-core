@@ -49,9 +49,9 @@ public class ProcessStatusResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "CET")
     private Date creationDate;
 
-    List<StepResponse> step = new ArrayList<>();
+    private List<StepResponse> step = new ArrayList<>();
 
-    List<PropertyResponse> properties = new ArrayList<>();
+    private List<PropertyResponse> properties = new ArrayList<>();
 
     /**
      * @return the result
