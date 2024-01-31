@@ -50,8 +50,8 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     private static final String ALREADY_UP_TO_DATE_REGEX = "Already[\\s-]+up[\\s-]+to[\\s-]+date.?\\s*";
 
     @Inject
-    AdminDeveloperBean developerBean;
-    
+    private AdminDeveloperBean developerBean;
+
     @Override
     public MessageStatus call(ViewerMessage ticket) {
         updateProgress(0.1f);
@@ -60,13 +60,12 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
             themeRootPath = Path.of("/").resolve(themeRootPath.subpath(0, themeRootPath.getNameCount() - 4));
             if (Files.exists(themeRootPath) && Files.exists(themeRootPath.resolve(".git"))) {
                 try {
-                    if(pullThemeRepository(themeRootPath)) {
+                    if (pullThemeRepository(themeRootPath)) {
                         updateProgress(1f);
-                        return MessageStatus.FINISH;                        
-                    } else {
-                        updateProgress(1f);
-                        return MessageStatus.IGNORE;       
+                        return MessageStatus.FINISH;
                     }
+                    updateProgress(1f);
+                    return MessageStatus.IGNORE;
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.error("Message handler thread interrupted while waiting for bash call to finish");
@@ -80,37 +79,43 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
                     sendProgressError("Error pulling theme: " + e.toString());
                     return MessageStatus.ERROR;
                 }
-            } else {
-                ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Theme root path is not accessible or is not a git repository");
-                sendProgressError("Theme root path is not accessible or is not a git repository");
-                return MessageStatus.ERROR;
             }
-        } else {
-            ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "No theme root path configured");
-            sendProgressError("No theme root path configured");
+            ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Theme root path is not accessible or is not a git repository");
+            sendProgressError("Theme root path is not accessible or is not a git repository");
             return MessageStatus.ERROR;
+        }
+        ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "No theme root path configured");
+        sendProgressError("No theme root path configured");
+        return MessageStatus.ERROR;
+    }
+
+    /**
+     * 
+     * @param message
+     */
+    private void sendProgressError(String message) {
+        developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);
+        if (developerBean != null) {
+            developerBean.sendPullThemeError(message);
         }
     }
 
-    private void sendProgressError(String message) {
-       developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);
-       if(developerBean != null) {
-           developerBean.sendPullThemeError(message);
-       }
-    }
-    
+    /**
+     * 
+     * @param f
+     */
     private void updateProgress(float f) {
-       developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);
-       if(developerBean != null) {
-           if(f < 1) {               
-               developerBean.sendPullThemeUpdate(f);
-           } else {
-               developerBean.sendPullThemeFinished();
-           }
-       }
+        developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);
+        if (developerBean != null) {
+            if (f < 1) {
+                developerBean.sendPullThemeUpdate(f);
+            } else {
+                developerBean.sendPullThemeFinished();
+            }
+        }
     }
 
-    private boolean pullThemeRepository(Path themePath) throws IOException, InterruptedException {
+    private static boolean pullThemeRepository(Path themePath) throws IOException, InterruptedException {
         String commandString = BASH_STATEMENT_PULL_THEME_REPOSITORY.replace("$VIEWERTHEMEPATH", themePath.toAbsolutePath().toString());
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec();
@@ -118,12 +123,10 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
         String error = command.getErrorOutput();
         if (ret > 0) {
             throw new IOException("Error executing command '" + commandString + "': " + command.getErrorOutput());
-        } else if(StringUtils.isNotBlank(error)) {
+        } else if (StringUtils.isNotBlank(error)) {
             throw new IOException("Error calling git pull: " + error);
-        } else if(output != null && output.matches(ALREADY_UP_TO_DATE_REGEX)) {
-            return false;
-        } else {
-            return true;
+        }  else {
+            return !(output != null && output.matches(ALREADY_UP_TO_DATE_REGEX));
         }
     }
 
@@ -131,5 +134,4 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     public String getMessageHandlerName() {
         return TaskType.PULL_THEME.name();
     }
-
 }

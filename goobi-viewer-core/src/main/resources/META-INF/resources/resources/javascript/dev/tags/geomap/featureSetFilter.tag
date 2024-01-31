@@ -1,6 +1,6 @@
 <featureSetFilter>
 
-<ul>
+<ul if="{filters.length > 0}">
 	<li each="{filter in filters}"  class="{filter.styleClass}">
 			<label>{filter.label}</label>
 			<div>

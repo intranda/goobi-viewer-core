@@ -50,7 +50,7 @@ public class BackupRecord implements Serializable {
      * @return <code>name</code> as a {@link LocalDateTime}
      */
     public LocalDateTime getDate() {
-        return LocalDateTime.parse(name, DateTools.formatterFileName);
+        return LocalDateTime.parse(name, DateTools.FORMATTERFILENAME);
     }
 
     /**

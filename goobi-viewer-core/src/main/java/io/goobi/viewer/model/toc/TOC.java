@@ -156,7 +156,7 @@ public class TOC implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<TOCElement> getFlatView() {
-        // logger.trace("getFlatView");
+        // logger.trace("getFlatView"); //NOSONAR Debug
         return getViewForGroup(StringConstants.DEFAULT_NAME);
     }
 
@@ -180,7 +180,7 @@ public class TOC implements Serializable {
      */
     @Deprecated
     public List<TOCElement> getTreeViewSidebar() {
-        // logger.trace("getTreeViewSidebar");
+        // logger.trace("getTreeViewSidebar"); //NOSONAR Debug
         return getTreeView();
     }
 
@@ -200,7 +200,7 @@ public class TOC implements Serializable {
 
         synchronized (this) {
             if (tocElementMap != null) {
-                //                long start = System.nanoTime();
+                // long start = System.nanoTime(); //NOSONAR Debug
                 int lastLevel = 0;
                 int lastParent = 0;
                 for (TOCElement tocElement : tocElementMap.get(group)) {
@@ -237,8 +237,8 @@ public class TOC implements Serializable {
                     lastParent = index;
                     lastLevel = tocElement.getLevel();
                 }
-                //                long end = System.nanoTime();
-                //                logger.trace("Time for initial collapse: {} ns", (end - start));
+                // long end = System.nanoTime(); //NOSONAR Debug
+                // logger.trace("Time for initial collapse: {} ns", (end - start)); //NOSONAR Debug
                 collapseTocForLength(collapseThreshold, lowestLevelToCollapse);
                 treeBuilt = true;
             }
@@ -259,7 +259,7 @@ public class TOC implements Serializable {
                 currentElement.setVisible(true);
                 int parentId = currentElement.getParentId();
                 TOCElement parent = getElement(list, parentId);
-                //recursivley expand all direct ancestors
+                // recursively expand all direct ancestors
                 while (parent != null) {
                     parent.setExpanded(true);
                     expandTree(parentId);
@@ -274,7 +274,7 @@ public class TOC implements Serializable {
      * 
      * @param list
      * @param iddoc
-     * @return
+     * @return {@link TOCElement}
      */
     private static TOCElement getElement(List<TOCElement> list, Long iddoc) {
         return list.stream().filter(ele -> ele.getIddoc().equals(iddoc.toString())).findAny().orElse(null);
@@ -284,7 +284,7 @@ public class TOC implements Serializable {
      * 
      * @param list
      * @param id
-     * @return
+     * @return {@link TOCElement}
      */
     private static TOCElement getElement(List<TOCElement> list, int id) {
         return list.stream().filter(ele -> ele.getID() == id).findAny().orElse(null);
@@ -300,7 +300,7 @@ public class TOC implements Serializable {
             return;
         }
 
-        //        long start = System.nanoTime();
+        // long start = System.nanoTime();s
         int index = 0;
         int hideLevel = -1;
         boolean hide = false;
@@ -343,8 +343,8 @@ public class TOC implements Serializable {
             }
         }
 
-        //        long end = System.nanoTime();
-        //          logger.trace("Time for length collapse: {} ns", (end - start))
+        // long end = System.nanoTime(); //NOSONAR Debug
+        // logger.trace("Time for length collapse: {} ns", (end - start)) //NOSONAR Debug
     }
 
     /**
@@ -400,7 +400,7 @@ public class TOC implements Serializable {
      * @param parentId
      */
     private void expandTree(int parentId) {
-        // logger.trace("expandTree: {}", parentId);
+        // logger.trace("expandTree: {}", parentId); //NOSONAR Debug
         if (tocElementMap != null) {
             int level = tocElementMap.get(StringConstants.DEFAULT_NAME).get(parentId).getLevel();
             for (int i = parentId + 1; i < tocElementMap.get(StringConstants.DEFAULT_NAME).size(); i++) {
@@ -513,7 +513,7 @@ public class TOC implements Serializable {
      * @return Index of the element with the matching IDDOC within the list of elements; -1 if none found
      */
     public int findTocElementIndexByIddoc(String iddoc) {
-        // logger.trace("findTocElementIndexByIddoc: {}", iddoc);
+        // logger.trace("findTocElementIndexByIddoc: {}", iddoc); //NOSONAR Debug
         if (StringUtils.isEmpty(iddoc)) {
             return -1;
         }
@@ -586,7 +586,7 @@ public class TOC implements Serializable {
             logger.trace("Building tree to determine the TOC depth");
             getTreeView();
         }
-        // logger.trace("getMaxTocDepth: {}", maxTocDepth);
+        // logger.trace("getMaxTocDepth: {}", maxTocDepth); //NOSONAR Debug
         return maxTocDepth;
     }
 
@@ -666,7 +666,7 @@ public class TOC implements Serializable {
     public int getNumPages() {
         int hitsPerPage = DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage();
         if (hitsPerPage > 0) {
-            // logger.trace("numPages: {}/{}={}", totalTocSize, hitsPerPage, totalTocSize / hitsPerPage);
+            // logger.trace("numPages: {}/{}={}", totalTocSize, hitsPerPage, totalTocSize / hitsPerPage); //NOSONAR Debug
             int num = totalTocSize / hitsPerPage;
             if (totalTocSize % hitsPerPage != 0 || num == 0) {
                 num++;

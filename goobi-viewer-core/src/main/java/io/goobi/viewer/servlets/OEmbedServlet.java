@@ -215,6 +215,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
      * @throws IndexUnreachableException
      * @should parse url with page number correctly
      * @should parse url without page number correctly
+     * @should return null if url contains no pi
      */
     static OEmbedRecord parseUrl(String origUrl) throws URISyntaxException, PresentationException, IndexUnreachableException {
         if (origUrl == null) {
@@ -233,6 +234,9 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
 
         if (urlSplit.length > 0 && "embed".equals(urlSplit[0])) {
             return new OEmbedRecord(origUrl);
+        }
+        if (urlSplit.length < 2) {
+            return null;
         }
         String pi = urlSplit[1];
         int page = urlSplit.length > 2 ? Integer.parseInt(urlSplit[2]) : 1;

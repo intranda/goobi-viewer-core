@@ -73,7 +73,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
             if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
                 throw new IOException("Download folder " + targetFolder + " not found");
             }
-            
+
             String cleanedPi = StringTools.cleanUserGeneratedData(pi);
             String id = DownloadJob.generateDownloadJobId("pdf", pi, logId);
             downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(id);
@@ -97,7 +97,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
             }
             DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
         } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException e) {
-            if(downloadJob != null && message.getRetryCount() > MAX_RETRIES) {
+            if (downloadJob != null && message.getRetryCount() > MAX_RETRIES) {
                 downloadJob.setStatus(JobStatus.ERROR);
                 downloadJob.setMessage("Error creating PDF. Please contact support if the problem persists");
                 try {
@@ -112,7 +112,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
         return MessageStatus.FINISH;
     }
 
-    private void createPdf(Dataset work, Optional<String> divId, Path pdfFile) throws IOException, ContentLibException {
+    private static void createPdf(Dataset work, Optional<String> divId, Path pdfFile) throws IOException, ContentLibException {
         try (FileOutputStream fos = new FileOutputStream(pdfFile.toFile())) {
             Map<String, String> params = new HashMap<>();
             params.put("metsFile", work.getMetadataFilePath().toString());

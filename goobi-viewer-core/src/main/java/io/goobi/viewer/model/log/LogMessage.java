@@ -78,6 +78,12 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     @Transient
     private UserJsonFacade creator = UNASSIGNED;
 
+    /**
+     * 
+     * @param message
+     * @param creatorId
+     * @param request
+     */
     public LogMessage(String message, Long creatorId, HttpServletRequest request) {
         this.message = message;
         this.creatorId = creatorId;
@@ -85,11 +91,23 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         this.loadCreator(request);
     }
 
+    /**
+     * 
+     * @param message
+     * @param creatorId
+     * @param dateCreated
+     * @param request
+     */
     public LogMessage(String message, Long creatorId, LocalDateTime dateCreated, HttpServletRequest request) {
         this(message, creatorId, request);
         this.dateCreated = dateCreated;
     }
 
+    /**
+     * 
+     * @param source
+     * @param request
+     */
     public LogMessage(LogMessage source, HttpServletRequest request) {
         this.message = source.message;
         this.creatorId = source.creatorId;
@@ -104,6 +122,10 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         this.id = source.id;
     }
 
+    /**
+     * 
+     * @param source
+     */
     public LogMessage(LogMessage source) {
         this(source, null);
     }
@@ -151,7 +173,9 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     /**
      * Set the value of {@link #creator} from the value of {@link #creatorId}. If creatorId is null or an exception occurs while retrieving the user
      * data, the creator is set to {@link #UNASSIGNED}. If no creator could be found by the given id, the creator is set to {@link #ANONYMOUS} A
-     * {@link HttpServletRequest request} may be passed to create an absolute URL for the creator avatar
+     * {@link HttpServletRequest request} may be passed to create an absolute URL for the creator avatar.
+     * 
+     * @param request
      */
     private void loadCreator(HttpServletRequest request) {
         if (this.creatorId == null) {

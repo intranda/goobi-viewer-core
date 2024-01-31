@@ -55,9 +55,11 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -1646,10 +1648,24 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                     uploadedFile.getInputStream(),
                     destFile,
                     StandardCopyOption.REPLACE_EXISTING);
-            this.localAvatarUpdated = System.currentTimeMillis();
+            if(!Files.exists(destFile)) {
+                throw new IOException("Uploaded file does not exist");
+            } else if(!isValidImageFile(destFile)) {
+                throw new IOException("Uploaded file is not a valid image file");
+            } else {                
+                this.localAvatarUpdated = System.currentTimeMillis();
+            }
         } catch (IOException e) {
             logger.error("Error uploaded avatar file: {}", e.toString());
+            deleteAvatarFile();
+            throw e;
         }
+    }
+
+    private boolean isValidImageFile(Path file) throws IOException {
+        String contentType1 = FileTools.probeContentType(PathConverter.toURI(file));
+        String contentType2 = FileTools.getMimeTypeFromFile(file);
+        return contentType1.startsWith("image/");
     }
 
     public void deleteAvatarFile() throws IOException {

@@ -1501,10 +1501,13 @@ public class CmsBean implements Serializable {
     public List<String> getPossibleGroupFields() throws IndexUnreachableException {
 
         if (this.solrGroupFields == null) {
-            this.solrGroupFields = DataManager.getInstance()
+            this.solrGroupFields = Stream.concat(
+                    DataManager.getInstance()
                     .getSearchIndex()
-                    .getAllFieldNames()
-                    .stream()
+                    .getAllFieldNames().stream(), 
+                    DataManager.getInstance()
+                    .getSearchIndex()
+                    .getAllBooleanFieldNames().stream())
                     .filter(field -> !field.startsWith("SORT_") && !field.startsWith("FACET_") && !field.endsWith("_UNTOKENIZED")
                             && !field.matches(".*_LANG_\\w{2,3}"))
                     .collect(Collectors.toList());

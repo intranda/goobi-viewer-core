@@ -21,16 +21,16 @@
  */
 package io.goobi.viewer.model.cms.pages;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -41,15 +41,15 @@ import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 
-public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
+class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
 
     IDAO dao;
     Path componentTemplatesPath = Paths.get("src/test/resources/data/viewer/cms/component_templates");
     CMSTemplateManager templateManager;
     CMSPageContentManager contentManager;
     
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
         templateManager = new CMSTemplateManager(componentTemplatesPath.toString(), null);
@@ -57,7 +57,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void test() throws DAOException {
+    void test() throws DAOException {
         CMSPage page = new CMSPage();
         
         page.initialiseCMSComponents(templateManager);
@@ -99,7 +99,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testNoContent() throws DAOException {
+    void testNoContent() throws DAOException {
         CMSPage page = new CMSPage();
         
         page.initialiseCMSComponents(templateManager);
@@ -133,7 +133,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testComponent() throws DAOException {
+    void testComponent() throws DAOException {
         
         CMSShortTextContent text = new CMSShortTextContent();
         text.getText().setText("text");

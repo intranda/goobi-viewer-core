@@ -21,26 +21,26 @@
  */
 package io.goobi.viewer.model.cms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentAttribute;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 
-public class CMSPageContentManagerTest {
+class CMSPageContentManagerTest {
 
     @Test
-    public void testReadFromTemplateFiles() throws IOException {
+    void testReadFromTemplateFiles() throws IOException {
         Path path = Paths.get("src/test/resources/data/viewer/cms/component_templates");
         
         CMSPageContentManager manager = new CMSPageContentManager(path);

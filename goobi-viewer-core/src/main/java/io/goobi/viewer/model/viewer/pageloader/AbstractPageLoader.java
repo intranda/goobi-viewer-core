@@ -60,6 +60,8 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public abstract class AbstractPageLoader implements IPageLoader {
 
+    private static final long serialVersionUID = 7546256768016555405L;
+
     private static final Logger logger = LogManager.getLogger(AbstractPageLoader.class);
 
     /** All fields to be fetched when loading page documents. Any new required fields must be added to this array. */

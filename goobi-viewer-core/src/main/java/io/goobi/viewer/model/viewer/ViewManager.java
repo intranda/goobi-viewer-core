@@ -43,8 +43,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -97,6 +99,8 @@ import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -185,6 +189,7 @@ public class ViewManager implements Serializable {
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
+    private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
 
     /**
      * <p>
@@ -862,7 +867,8 @@ public class ViewManager implements Serializable {
                 || searchBean.getCurrentSearchFilterString().equals(SearchHelper.SEARCH_FILTER_ALL.getLabel())
                 || searchBean.getCurrentSearchFilterString().equals("filter_" + SolrConstants.FULLTEXT))) {
             logger.trace("Adding word coords to page {}: {}", currentImg.getOrder(), searchBean.getSearchTerms());
-            coords = currentImg.getWordCoords(searchBean.getSearchTerms().get(SolrConstants.FULLTEXT), rotate);
+            int proximitySearchDistance = searchBean.getProximitySearchDistance();
+            coords = currentImg.getWordCoords(searchBean.getSearchTerms().get(SolrConstants.FULLTEXT), proximitySearchDistance, rotate);
         }
 
         return coords;
@@ -2273,6 +2279,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
+        // logger.trace("isAccessPermission: {}", privilege); //NOSONAR Debug
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
             return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, privilege, request).isGranted();
@@ -3206,6 +3213,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getVersionHistory() throws PresentationException, IndexUnreachableException {
+        logger.trace("getVersionHistory");
         if (versionHistory == null) {
             versionHistory = new ArrayList<>();
 
@@ -3902,6 +3910,29 @@ public class ViewManager implements Serializable {
      */
     public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
         this.citationProcessorWrapper = citationProcessorWrapper;
+    }
+
+    /**
+     * @param levelName
+     * @return List of configured citation links for the given levelName, populated with values
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public List<CitationLink> getSidebarWidgetUsageCitationLinksForLevel(String levelName) throws PresentationException, IndexUnreachableException {
+        // logger.trace("getSidebarWidgetUsageCitationLinksForLevel: {}", levelName); //NOSONAR Debug
+        CitationLinkLevel level = CitationLinkLevel.getByName(levelName);
+        if (level == null) {
+            logger.warn("Unknown citation link level: {}", levelName);
+            return Collections.emptyList();
+        }
+
+        // Populate values
+        if (this.citationLinks.get(level) == null) {
+            this.citationLinks.put(level, CitationTools
+                    .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks(), level, this));
+        }
+
+        return this.citationLinks.get(level);
     }
 
     /**

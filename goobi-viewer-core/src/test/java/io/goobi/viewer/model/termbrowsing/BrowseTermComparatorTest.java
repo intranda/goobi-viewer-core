@@ -25,27 +25,27 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.AbstractTest;
 
-public class BrowseTermComparatorTest extends AbstractTest {
+class BrowseTermComparatorTest extends AbstractTest {
 
     /**
      * @see BrowseTermComparator#compare(BrowseTerm,BrowseTerm)
      * @verifies compare correctly
      */
     @Test
-    public void compare_shouldCompareCorrectly() throws Exception {
+    void compare_shouldCompareCorrectly() throws Exception {
         BrowseTermComparator comparator = new BrowseTermComparator(null);
-        Assert.assertEquals(1, comparator.compare(new BrowseTerm("foo", null, null), new BrowseTerm("bar", null, null)));
-        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("A", null, null), new BrowseTerm("Á", null, null)));
-        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("Azcárate", null, null), new BrowseTerm("Ávila", null, null)));
-        Assert.assertEquals(0, comparator.compare(new BrowseTerm("foo123", null, null), new BrowseTerm("foo123", null, null)));
-        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("foo12", null, null), new BrowseTerm("foo123", null, null)));
-        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("12foo", null, null), new BrowseTerm("123foo", null, null)));
+        Assertions.assertEquals(1, comparator.compare(new BrowseTerm("foo", null, null), new BrowseTerm("bar", null, null)));
+        Assertions.assertEquals(-1, comparator.compare(new BrowseTerm("A", null, null), new BrowseTerm("Á", null, null)));
+        Assertions.assertEquals(-1, comparator.compare(new BrowseTerm("Azcárate", null, null), new BrowseTerm("Ávila", null, null)));
+        Assertions.assertEquals(0, comparator.compare(new BrowseTerm("foo123", null, null), new BrowseTerm("foo123", null, null)));
+        Assertions.assertEquals(-1, comparator.compare(new BrowseTerm("foo12", null, null), new BrowseTerm("foo123", null, null)));
+        Assertions.assertEquals(-1, comparator.compare(new BrowseTerm("12foo", null, null), new BrowseTerm("123foo", null, null)));
     }
 
     /**
@@ -53,8 +53,8 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies use sort term if provided
      */
     @Test
-    public void compare_shouldUseSortTermIfProvided() throws Exception {
-        Assert.assertEquals(-1, new BrowseTermComparator(null).compare(new BrowseTerm("foo", "1", null), new BrowseTerm("bar", "2", null)));
+    void compare_shouldUseSortTermIfProvided() throws Exception {
+        Assertions.assertEquals(-1, new BrowseTermComparator(null).compare(new BrowseTerm("foo", "1", null), new BrowseTerm("bar", "2", null)));
     }
 
     /**
@@ -62,7 +62,7 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies use translated term if provided
      */
     @Test
-    public void compare_shouldUseTranslatedTermIfProvided() throws Exception {
+    void compare_shouldUseTranslatedTermIfProvided() throws Exception {
         Map<String, String> translations1 = new HashMap<>();
         translations1.put("de", "Deutsch");
         translations1.put("en", "German");
@@ -70,11 +70,11 @@ public class BrowseTermComparatorTest extends AbstractTest {
         translations2.put("de", "Englisch");
         translations2.put("en", "English");
 
-        Assert.assertEquals(-1,
+        Assertions.assertEquals(-1,
                 new BrowseTermComparator(Locale.GERMAN).compare(new BrowseTerm("ger", null, new MultiLanguageMetadataValue(translations1)),
                         new BrowseTerm("eng", null, new MultiLanguageMetadataValue(translations2))));
 
-        Assert.assertEquals(1,
+        Assertions.assertEquals(1,
                 new BrowseTermComparator(Locale.ENGLISH).compare(new BrowseTerm("ger", null, new MultiLanguageMetadataValue(translations1)),
                         new BrowseTerm("eng", null, new MultiLanguageMetadataValue(translations2))));
     }
@@ -85,9 +85,9 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies sort accented vowels after plain vowels
      */
     @Test
-    public void compare_shouldSortAccentedVowelsAfterPlainVowels() throws Exception {
-//        Assert.assertEquals(1, new BrowseTermComparator(null).compare(new BrowseTerm("Ávila", null, null), new BrowseTerm("Azcárate", null, null)));
-        Assert.assertEquals(-1, new BrowseTermComparator(null).compare(new BrowseTerm("arm", null, null), new BrowseTerm("árm", null, null)));
+    void compare_shouldSortAccentedVowelsAfterPlainVowels() throws Exception {
+//        Assertions.assertEquals(1, new BrowseTermComparator(null).compare(new BrowseTerm("Ávila", null, null), new BrowseTerm("Azcárate", null, null)));
+        Assertions.assertEquals(-1, new BrowseTermComparator(null).compare(new BrowseTerm("arm", null, null), new BrowseTerm("árm", null, null)));
     }
 
     /**
@@ -95,8 +95,8 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies use ignoreChars if provided
      */
     @Test
-    public void normalizeString_shouldUseIgnoreCharsIfProvided() throws Exception {
-        Assert.assertEquals("#.foo", BrowseTermComparator.normalizeString("[.]#.foo", ".[]"));
+    void normalizeString_shouldUseIgnoreCharsIfProvided() throws Exception {
+        Assertions.assertEquals("#.foo", BrowseTermComparator.normalizeString("[.]#.foo", ".[]"));
     }
 
     /**
@@ -104,7 +104,7 @@ public class BrowseTermComparatorTest extends AbstractTest {
      * @verifies remove first char if non alphanum if ignoreChars not provided
      */
     @Test
-    public void normalizeString_shouldRemoveFirstCharIfNonAlphanumIfIgnoreCharsNotProvided() throws Exception {
-        Assert.assertEquals(".]#.foo", BrowseTermComparator.normalizeString("[.]#.foo", null));
+    void normalizeString_shouldRemoveFirstCharIfNonAlphanumIfIgnoreCharsNotProvided() throws Exception {
+        Assertions.assertEquals(".]#.foo", BrowseTermComparator.normalizeString("[.]#.foo", null));
     }
 }

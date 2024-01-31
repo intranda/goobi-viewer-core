@@ -22,13 +22,13 @@
 package io.goobi.viewer.api.rest.v1.annotations;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -40,16 +40,16 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  * @author florian
  *
  */
-public class AnnotationResourceTest extends AbstractRestApiTest {
+class AnnotationResourceTest extends AbstractRestApiTest {
 
     @Test
-    public void testGetAnnotation() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(1).build())
+    void testGetAnnotation() throws JsonMappingException, JsonProcessingException {
+        try (Response response = target(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(1).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as json");
             String entity = response.readEntity(String.class);
             WebAnnotation annotation = mapper.readValue(entity, WebAnnotation.class);
             assertNotNull(annotation);
@@ -57,17 +57,16 @@ public class AnnotationResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetComment() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(1).build())
+    void testGetComment() throws JsonMappingException, JsonProcessingException {
+        try (Response response = target(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(1).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as json");
             String entity = response.readEntity(String.class);
             WebAnnotation annotation = mapper.readValue(entity, WebAnnotation.class);
             assertNotNull(annotation);
         }
     }
-
 }

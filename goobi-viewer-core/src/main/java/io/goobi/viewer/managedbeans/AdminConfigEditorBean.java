@@ -442,7 +442,7 @@ public class AdminConfigEditorBean implements Serializable {
         }
 
         // Use a time stamp to distinguish the backups.
-        String timeStamp = DateTools.format(LocalDateTime.now(), DateTools.formatterFileName, false);
+        String timeStamp = DateTools.format(LocalDateTime.now(), DateTools.FORMATTERFILENAME, false);
         Path newBackupPath = Path.of(backupFolderPath, fileName + "." + timeStamp);
         // save the original content to backup files
         Files.writeString(newBackupPath, content, StandardCharsets.UTF_8);

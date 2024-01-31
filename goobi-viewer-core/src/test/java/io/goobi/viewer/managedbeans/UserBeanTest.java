@@ -27,9 +27,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -43,7 +43,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author Florian Alpers
  *
  */
-public class UserBeanTest extends AbstractDatabaseEnabledTest {
+class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     UserBean bean = new UserBean();
 
@@ -56,7 +56,7 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
     String userSuspended_pwHash = "abcdef3";
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -65,7 +65,8 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
             private User user = null;
 
             @Override
-            public void logout() throws AuthenticationProviderException {
+            public
+                    void logout() throws AuthenticationProviderException {
                 //
             }
 
@@ -116,7 +117,8 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
             }
 
             @Override
-            public void setAddUserToGroups(List<String> addUserToGroups) {
+            public
+                    void setAddUserToGroups(List<String> addUserToGroups) {
                 //
             }
 
@@ -126,53 +128,54 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
             }
 
             @Override
-            public void setRedirectUrl(String redirectUrl) {
+            public
+                    void setRedirectUrl(String redirectUrl) {
                 //
             }
         });
     }
 
     @Test
-    public void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userActive_email);
         bean.setPassword(userActive_pwHash);
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
         bean.login();
-        Assert.assertNotNull(bean.getUser());
-        Assert.assertTrue(bean.getUser().isActive());
-        Assert.assertFalse(bean.getUser().isSuspended());
+        Assertions.assertNotNull(bean.getUser());
+        Assertions.assertTrue(bean.getUser().isActive());
+        Assertions.assertFalse(bean.getUser().isSuspended());
     }
 
     @Test
-    public void testLogin_invalid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_invalid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userActive_email);
         bean.setPassword(userSuspended_pwHash);
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
         bean.login();
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
     }
 
     @Test
-    public void testLogin_unknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_unknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userActive_email + "test");
         bean.setPassword(userActive_pwHash);
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
         bean.login();
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
     }
 
     @Test
-    public void testLogin_suspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_suspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userSuspended_email);
         bean.setPassword(userSuspended_pwHash);
-        Assert.assertNull(bean.getUser());
+        Assertions.assertNull(bean.getUser());
         bean.login();
-        Assert.assertNull(bean.getUser());
-        //        Assert.assertTrue(bean.getUser().isActive());
-        //        Assert.assertTrue(bean.getUser().isSuspended());
+        Assertions.assertNull(bean.getUser());
+        //        Assertions.assertTrue(bean.getUser().isActive());
+        //        Assertions.assertTrue(bean.getUser().isSuspended());
     }
 }

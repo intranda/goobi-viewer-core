@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.viewer.pageloader;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,7 +35,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
  * IPageLoader interface.
  * </p>
  */
-public interface IPageLoader {
+public interface IPageLoader extends Serializable {
 
     /**
      * <p>

@@ -423,7 +423,7 @@ public class SearchBean implements SearchInterface, Serializable {
         facets.resetActiveFacetString();
         generateSimpleSearchString(searchString);
 
-        searchStringInternal = SolrConstants.MONTHDAY + ":" + DateTools.formatterMonthDayOnly.format(LocalDateTime.now());
+        searchStringInternal = SolrConstants.MONTHDAY + ":" + DateTools.FORMATTERMONTHDAYONLY.format(LocalDateTime.now());
 
         return StringConstants.PRETTY_NEWSEARCH5;
     }
@@ -620,7 +620,7 @@ public class SearchBean implements SearchInterface, Serializable {
         StringBuilder sbCurrentCollection = new StringBuilder();
         Set<String> usedHierarchicalFields = new HashSet<>();
         Set<String> usedFieldValuePairs = new HashSet<>();
-
+        this.proximitySearchDistance = 0;
         for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
             // logger.trace("Query item: {}", queryItem.toString()); //NOSONAR Logging sometimes needed for debugging
             if (StringUtils.isEmpty(queryItem.getField()) || StringUtils.isBlank(queryItem.getValue())) {
@@ -745,6 +745,7 @@ public class SearchBean implements SearchInterface, Serializable {
             } else {
                 // Generate item query
                 itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, fuzzySearchEnabled);
+                this.proximitySearchDistance = Math.max(this.proximitySearchDistance, queryItem.getProximitySearchDistance());
             }
 
             logger.trace("Item query: {}", itemQuery);
@@ -1703,7 +1704,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     ret = StringConstants.PRETTY_SEARCHADVANCED5;
                     break;
                 case SearchHelper.SEARCH_TYPE_TERMS:
-                    ret = "pretty:searchTerm5";
+                    ret = StringConstants.PRETTY_SEARCHTERM5;
                     break;
                 default:
                     break;
@@ -2629,7 +2630,7 @@ public class SearchBean implements SearchInterface, Serializable {
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext()
                     .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                            + LocalDateTime.now().format(DateTools.formatterFileName)
+                            + LocalDateTime.now().format(DateTools.FORMATTERFILENAME)
                             + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException | DAOException | PresentationException e) {
@@ -2920,7 +2921,7 @@ public class SearchBean implements SearchInterface, Serializable {
             locale = nh.getLocale();
         }
 
-        return FacetItem.generateFacetItems(useField, result, true, reverseOrder, hierarchicalFields.contains(useField), locale);
+        return FacetItem.generateFacetItems(useField, result, true, reverseOrder, hierarchicalFields.contains(useField));
     }
 
     /* (non-Javadoc)
@@ -3024,6 +3025,10 @@ public class SearchBean implements SearchInterface, Serializable {
         return value.replace(PREFIX_KEY, "");
     }
 
+    public int getProximitySearchDistance() {
+        return proximitySearchDistance;
+    }
+    
     /**
      * 
      * @param queryField
@@ -3229,7 +3234,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         facets.getActiveFacetString());
             case SearchHelper.SEARCH_TYPE_TERMS:
                 return PrettyUrlTools.getAbsolutePageUrl(
-                        "pretty:searchTerms5",
+                        StringConstants.PRETTY_SEARCHTERM5,
                         getActiveResultGroupName(),
                         getExactSearchString(),
                         getCurrentPage(),
@@ -3245,7 +3250,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         facets.getActiveFacetString());
         }
     }
-
+    
     @Override
     public String changeSorting() throws IOException {
         logger.trace("changeSorting");
@@ -3253,7 +3258,7 @@ public class SearchBean implements SearchInterface, Serializable {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return StringConstants.PRETTY_SEARCHADVANCED5;
             case SearchHelper.SEARCH_TYPE_TERMS:
-                return "pretty:searchTerm5";
+                return StringConstants.PRETTY_SEARCHTERM5;
             default:
                 return StringConstants.PRETTY_NEWSEARCH5;
         }

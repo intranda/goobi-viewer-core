@@ -247,7 +247,8 @@ public class DataRetriever {
         List<String> eventStrings = DataManager.getInstance().getConfiguration().getIIIFEventFields();
         Map<String, List<String>> events = new HashMap<>();
         for (String string : eventStrings) {
-            String event, field;
+            String event;
+            String field;
             int separatorIndex = string.indexOf("/");
             if (separatorIndex > -1) {
                 event = string.substring(0, separatorIndex);
@@ -277,8 +278,9 @@ public class DataRetriever {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
+        // logger.trace("getDocument: {}", pi); //NOSONAR Debug
         String query = "PI:" + pi;
-        List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
+        // List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
         if (doc != null) {
             StructElement ele = createStructElement(doc);

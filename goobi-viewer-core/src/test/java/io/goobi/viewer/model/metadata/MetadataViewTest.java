@@ -23,21 +23,21 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.viewer.StructElement;
 
-public class MetadataViewTest {
+class MetadataViewTest {
 
     /**
      * @see MetadataView#isVisible(StructElement)
      * @verifies return true if condition null or empty
      */
     @Test
-    public void isVisible_shouldReturnTrueIfConditionNullOrEmpty() throws Exception {
+    void isVisible_shouldReturnTrueIfConditionNullOrEmpty() throws Exception {
         MetadataView view = new MetadataView();
-        Assert.assertTrue(view.isVisible(new StructElement()));
+        Assertions.assertTrue(view.isVisible(new StructElement()));
     }
 
     /**
@@ -45,9 +45,9 @@ public class MetadataViewTest {
      * @verifies return false if struct element null
      */
     @Test
-    public void isVisible_shouldReturnFalseIfStructElementNull() throws Exception {
+    void isVisible_shouldReturnFalseIfStructElementNull() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo:bar");
-        Assert.assertFalse(view.isVisible(null));
+        Assertions.assertFalse(view.isVisible(null));
     }
 
     /**
@@ -55,11 +55,11 @@ public class MetadataViewTest {
      * @verifies return true if field value pair found
      */
     @Test
-    public void isVisible_shouldReturnTrueIfFieldValuePairFound() throws Exception {
+    void isVisible_shouldReturnTrueIfFieldValuePairFound() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo:bar");
         StructElement se = new StructElement();
         se.getMetadataFields().put("foo", Collections.singletonList("bar"));
-        Assert.assertTrue(view.isVisible(se));
+        Assertions.assertTrue(view.isVisible(se));
     }
 
     /**
@@ -67,11 +67,11 @@ public class MetadataViewTest {
      * @verifies return false if field value pair not found
      */
     @Test
-    public void isVisible_shouldReturnFalseIfFieldValuePairNotFound() throws Exception {
+    void isVisible_shouldReturnFalseIfFieldValuePairNotFound() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo:bar");
         StructElement se = new StructElement();
         se.getMetadataFields().put("foo", Collections.singletonList("other"));
-        Assert.assertFalse(view.isVisible(se));
+        Assertions.assertFalse(view.isVisible(se));
     }
 
     /**
@@ -79,11 +79,11 @@ public class MetadataViewTest {
      * @verifies return true if field name found
      */
     @Test
-    public void isVisible_shouldReturnTrueIfFieldNameFound() throws Exception {
+    void isVisible_shouldReturnTrueIfFieldNameFound() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo");
         StructElement se = new StructElement();
         se.getMetadataFields().put("foo", Collections.singletonList("bar"));
-        Assert.assertTrue(view.isVisible(se));
+        Assertions.assertTrue(view.isVisible(se));
     }
 
     /**
@@ -91,10 +91,10 @@ public class MetadataViewTest {
      * @verifies return false if field name not found
      */
     @Test
-    public void isVisible_shouldReturnFalseIfFieldNameNotFound() throws Exception {
+    void isVisible_shouldReturnFalseIfFieldNameNotFound() throws Exception {
         MetadataView view = new MetadataView().setCondition("foo");
         StructElement se = new StructElement();
         se.getMetadataFields().put("bar", Collections.singletonList("other"));
-        Assert.assertFalse(view.isVisible(se));
+        Assertions.assertFalse(view.isVisible(se));
     }
 }

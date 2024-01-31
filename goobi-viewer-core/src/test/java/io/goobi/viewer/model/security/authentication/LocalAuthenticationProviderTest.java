@@ -21,15 +21,15 @@
  */
 package io.goobi.viewer.model.security.authentication;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.BCrypt;
@@ -42,7 +42,7 @@ import io.goobi.viewer.model.security.authentication.LoginResult;
  * @author Florian Alpers
  *
  */
-public class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
+class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     LocalAuthenticationProvider provider;
 
@@ -57,7 +57,7 @@ public class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         provider = new LocalAuthenticationProvider("Goobi viewer");
@@ -72,40 +72,40 @@ public class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
-    public void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email, userActive_pwHash);
-        Assert.assertTrue(future.get().getUser().isPresent());
-        Assert.assertTrue(future.get().getUser().get().isActive());
-        Assert.assertFalse(future.get().getUser().get().isSuspended());
+        Assertions.assertTrue(future.get().getUser().isPresent());
+        Assertions.assertTrue(future.get().getUser().get().isActive());
+        Assertions.assertFalse(future.get().getUser().get().isSuspended());
     }
 
     @Test
-    public void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email, userSuspended_pwHash);
-        Assert.assertTrue(future.get().getUser().isPresent());
-        Assert.assertTrue(future.get().isRefused());
+        Assertions.assertTrue(future.get().getUser().isPresent());
+        Assertions.assertTrue(future.get().isRefused());
     }
 
     @Test
-    public void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email + "test", userActive_pwHash);
-        Assert.assertFalse(future.get().getUser().isPresent());
+        Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
     @Test
-    public void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userSuspended_email, userSuspended_pwHash);
-        Assert.assertTrue(future.get().getUser().isPresent());
-        Assert.assertTrue(future.get().getUser().get().isSuspended());
+        Assertions.assertTrue(future.get().getUser().isPresent());
+        Assertions.assertTrue(future.get().getUser().get().isSuspended());
     }
 
 }

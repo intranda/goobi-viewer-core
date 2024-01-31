@@ -82,7 +82,9 @@ public class SearchQueryItem implements Serializable {
     /** This operator now describes the relation of this item with the other items rather than between terms within this item's query! */
     private SearchItemOperator operator = SearchItemOperator.AND;
     private List<String> values = new ArrayList<>();
-    volatile boolean displaySelectItems = false;
+    private volatile boolean displaySelectItems = false;
+    /** If >0, proximity search will be applied to phrase searches. */
+    private int proximitySearchDistance = 0;
 
     /**
      * Zero-argument constructor.
@@ -111,12 +113,15 @@ public class SearchQueryItem implements Serializable {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         SearchQueryItem other = (SearchQueryItem) obj;
         return Objects.equals(field, other.field) && operator == other.operator && Objects.equals(template, other.template)
                 && Objects.equals(values, other.values);
@@ -166,7 +171,7 @@ public class SearchQueryItem implements Serializable {
      * 
      * @param language
      * @param additionalValues 0-n additional, manually added values
-     * @return
+     * @return List<CheckboxSelectable<String>>
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -247,7 +252,7 @@ public class SearchQueryItem implements Serializable {
 
     /**
      *
-     * @return
+     * @return Configured threshold for displayed select items
      */
     public int getDisplaySelectItemsThreshold() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDisplaySelectItemsThreshold(field, template, false);
@@ -360,16 +365,16 @@ public class SearchQueryItem implements Serializable {
      *
      * @param value the value to set
      */
-    public void setValue(String value) {
-        // logger.trace("setValue: {}", value);
-        value = StringTools.stripJS(value);
-        values.add(0, value);
+    public void setValue(final String value) {
+        // logger.trace("setValue: {}", value); //NOSONAR Debug
+        String val = StringTools.stripJS(value);
+        values.add(0, val);
     }
 
     /**
      * 
      * @param value
-     * @return
+     * @return true if values contains given value; false otherwise
      */
     public boolean isValueSet(String value) {
         return this.values.contains(value);
@@ -382,13 +387,13 @@ public class SearchQueryItem implements Serializable {
      * @should set values correctly
      * @should unset values correctly
      */
-    public void toggleValue(String value) {
-        value = StringTools.stripJS(value);
-        int index = this.values.indexOf(value);
+    public void toggleValue(final String value) {
+        String val = StringTools.stripJS(value);
+        int index = this.values.indexOf(val);
         if (index >= 0) {
             this.values.remove(index);
         } else {
-            this.values.add(value);
+            this.values.add(val);
         }
     }
 
@@ -406,13 +411,13 @@ public class SearchQueryItem implements Serializable {
     /**
      * @param value2 the value2 to set
      */
-    public void setValue2(String value2) {
+    public void setValue2(final String value2) {
         logger.trace("setValue2: {}", value2);
-        value2 = StringTools.stripJS(value2);
+        String val2 = StringTools.stripJS(value2);
         if (values.isEmpty()) {
             values.add(null);
         }
-        values.add(1, value2);
+        values.add(1, val2);
     }
 
     /**
@@ -424,6 +429,15 @@ public class SearchQueryItem implements Serializable {
      */
     public boolean isDisplaySelectItems() {
         return displaySelectItems;
+    }
+
+    /**
+     * Setter for unit tets.
+     * 
+     * @param displaySelectItems the displaySelectItems to set
+     */
+    void setDisplaySelectItems(boolean displaySelectItems) {
+        this.displaySelectItems = displaySelectItems;
     }
 
     /**
@@ -487,7 +501,7 @@ public class SearchQueryItem implements Serializable {
                     displaySelectItems = false;
                 }
         }
-        //            logger.trace("toggleDisplaySelectItems: {}:{}", field, displaySelectItems);
+        //            logger.trace("toggleDisplaySelectItems: {}:{}", field, displaySelectItems); //NOSONAR Debug
     }
 
     /**
@@ -508,7 +522,7 @@ public class SearchQueryItem implements Serializable {
         if (values.isEmpty() || StringUtils.isBlank(getValue())) {
             return "";
         }
-
+        this.proximitySearchDistance  = 0;
         List<String> fields = new ArrayList<>();
         if (ADVANCED_SEARCH_ALL_FIELDS.equals(field)) {
             // Search everywhere
@@ -565,7 +579,7 @@ public class SearchQueryItem implements Serializable {
         // Phrase search operator: just the whole value in quotation marks
         if (phrase || isDisplaySelectItems()) {
             boolean additionalField = false;
-            for (String f : fields) {
+            for (final String f : fields) {
                 if (additionalField) {
                     sbItem.append(" ");
                 }
@@ -573,7 +587,7 @@ public class SearchQueryItem implements Serializable {
                 // matches are possible; contained exact matches within a string won't be found (e.g. "foo bar" in DEFAULT:"bla foo bar blup")
                 String useField = f;
                 if (isUntokenizeForPhraseSearch() && !f.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
-                    useField = f += SolrConstants.SUFFIX_UNTOKENIZED;
+                    useField += SolrConstants.SUFFIX_UNTOKENIZED;
                 }
 
                 boolean additionalValue = false;
@@ -586,7 +600,7 @@ public class SearchQueryItem implements Serializable {
                         sbItem.append(' ');
                     }
                     String useValue = value.trim();
-                    int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
+                    this.proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
                     logger.trace("proximity distance: {}", proximitySearchDistance);
 
                     sbItem.append(useField).append(':');
@@ -597,7 +611,7 @@ public class SearchQueryItem implements Serializable {
                     if (useValue.charAt(useValue.length() - 1) != '"' && proximitySearchDistance == 0) {
                         sbItem.append('"');
                     }
-                    if (SolrConstants.FULLTEXT.equals(f) || SolrConstants.SUPERFULLTEXT.equals(f)) {
+                    if (SolrConstants.FULLTEXT.equals(useField) || SolrConstants.SUPERFULLTEXT.equals(useField)) {
                         // Remove quotation marks to add to search terms
                         String val = useValue.replace("\"", "");
                         if (val.length() > 0) {
@@ -614,7 +628,7 @@ public class SearchQueryItem implements Serializable {
             if (!values.get(0).trim().isEmpty()) {
                 String[] valueSplit = values.get(0).trim().split(SearchHelper.SEARCH_TERM_SPLIT_REGEX);
                 boolean moreThanOneField = false;
-                for (String f : fields) {
+                for (final String f : fields) {
                     if (moreThanOneField) {
                         sbItem.append(" ");
                     }
@@ -622,8 +636,8 @@ public class SearchQueryItem implements Serializable {
                     sbItem.append(useField).append(':');
                     sbItem.append('(');
                     boolean moreThanOneValue = false;
-                    for (String val : valueSplit) {
-                        val = val.trim();
+                    for (final String v : valueSplit) {
+                        String val = v.trim();
                         if (val.length() == 0) {
                             continue;
                         }
@@ -709,10 +723,10 @@ public class SearchQueryItem implements Serializable {
                                 }
                             }
                         }
-                        if (SolrConstants.FULLTEXT.equals(f) || SolrConstants.SUPERFULLTEXT.equals(f)) {
-                            String v = val.replace("\"", "");
-                            if (v.length() > 0) {
-                                searchTerms.add(v);
+                        if (SolrConstants.FULLTEXT.equals(useField) || SolrConstants.SUPERFULLTEXT.equals(useField)) {
+                            String v2 = val.replace("\"", "");
+                            if (v2.length() > 0) {
+                                searchTerms.add(v2);
                                 // TODO do not add negated terms
                             }
                         }
@@ -736,6 +750,10 @@ public class SearchQueryItem implements Serializable {
     @Override
     public String toString() {
         return field + " " + operator + " " + getValue();
+    }
+    
+    public int getProximitySearchDistance() {
+        return proximitySearchDistance;
     }
 
 }

@@ -152,9 +152,9 @@ public class TocWriter {
             table.setWidths(new int[] { 10, 1 });
             table.setHorizontalAlignment(Element.ALIGN_LEFT);
 
-            for (TOCElement TOCElement : elements) {
-                Paragraph contentParagraph = new Paragraph(TOCElement.getLabel());
-                contentParagraph.setIndentationLeft((float) getLevelIndent() * TOCElement.getLevel());
+            for (TOCElement element : elements) {
+                Paragraph contentParagraph = new Paragraph(element.getLabel());
+                contentParagraph.setIndentationLeft((float) getLevelIndent() * element.getLevel());
                 PdfPCell contentCell = new PdfPCell();
                 contentCell.setBorder(Rectangle.NO_BORDER);
                 contentCell.addElement(contentParagraph);
@@ -162,7 +162,7 @@ public class TocWriter {
 
                 PdfPCell locationCell = new PdfPCell();
                 locationCell.setBorder(Rectangle.NO_BORDER);
-                String location = TOCElement.getPageNoLabel();
+                String location = element.getPageNoLabel();
                 if (StringUtils.isNotBlank(location)) {
                     Paragraph locationParagraph = new Paragraph(location);
                     locationParagraph.setAlignment(Element.ALIGN_RIGHT);
@@ -182,7 +182,7 @@ public class TocWriter {
     /**
      *
      * @param elements TOC element list
-     * @return
+     * @return {@link String}
      */
     public String getAsText(List<TOCElement> elements) {
         StringBuilder sb = new StringBuilder();
@@ -231,14 +231,14 @@ public class TocWriter {
         }
     }
 
-    private static final Random random = new SecureRandom();
+    private static final Random RANDOM = new SecureRandom();
 
     private static TOCElement createRandomTOCElement() {
-        int level = random.nextInt(6);
-        int startIndex = random.nextInt(100);
-        int endIndex = startIndex + 1 + random.nextInt(199);
+        int level = RANDOM.nextInt(6);
+        int startIndex = RANDOM.nextInt(100);
+        int endIndex = startIndex + 1 + RANDOM.nextInt(199);
         String label = StringConstants.LOREM_IPSUM.substring(startIndex, endIndex).trim();
-        String pageNo = Integer.toString(random.nextInt(9000) + 1);
+        String pageNo = Integer.toString(RANDOM.nextInt(9000) + 1);
 
         return new TOCElement(new SimpleMetadataValue(label), pageNo, pageNo, "1234", "LOG_0003", level, "PPNq234", "", true, false, true, "", null,
                 null);

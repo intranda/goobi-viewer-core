@@ -21,15 +21,15 @@
  */
 package io.goobi.viewer.model.cms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
@@ -41,12 +41,12 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.HighlightData.ImageMode;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
-public class HighlightTest extends AbstractSolrEnabledTest {
+class HighlightTest extends AbstractSolrEnabledTest {
 
     Configuration config = DataManager.getInstance().getConfiguration();
 
     @Test
-    public void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
 
         Highlight object = new Highlight(new HighlightData(), thumbs, config);
@@ -62,7 +62,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_getCorrectImageURI_recordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void test_getCorrectImageURI_recordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
 
         Highlight object = new Highlight(new HighlightData(), thumbs, config);
@@ -75,7 +75,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_alwayActive() {
+    void test_alwayActive() {
         Highlight object = new Highlight(new HighlightData());
         object.getData().setDateStart(null);
         object.getData().setDateEnd(null);
@@ -85,7 +85,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_isPresent() {
+    void test_isPresent() {
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
         Highlight object = new Highlight(new HighlightData());
 
@@ -110,7 +110,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_isFuture() {
+    void test_isFuture() {
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         Highlight object = new Highlight(new HighlightData());
 
@@ -129,7 +129,7 @@ public class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void test_isPast() {
+    void test_isPast() {
         LocalDateTime now = LocalDate.of(2023, 5, 15).atStartOfDay();
         Highlight object = new Highlight(new HighlightData());
 

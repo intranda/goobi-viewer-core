@@ -25,12 +25,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
@@ -52,7 +51,7 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
     }
 
     /**
-     * @param dao2
+     * @param dao
      */
     public SqlCommentLister(IDAO dao) {
         this.dao = dao;
@@ -87,7 +86,8 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List,
+     * java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
      */
     @Override
     public List<Comment> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
@@ -115,7 +115,7 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
             if (targetPage != null) {
                 stream = stream.filter(a -> targetPage.equals(a.getTargetPageOrder()));
             }
-            return stream.skip(firstIndex).limit(items).collect(Collectors.toList());
+            return stream.skip(firstIndex).limit(items).toList();
         } catch (DAOException e) {
             logger.error("Error retrieving annotations: {}", e.toString());
             return Collections.emptyList();
@@ -123,7 +123,8 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List,
+     * java.util.List, java.lang.String, java.lang.Integer)
      */
     @Override
     public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi,
@@ -137,7 +138,7 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
         try {
             return Optional.ofNullable(dao.getComment(id));
         } catch (DAOException e) {
-            logger.error("Error loading comment with id " + id, e);
+            logger.error("Error loading comment with id {}", id, e);
             return Optional.empty();
         }
     }

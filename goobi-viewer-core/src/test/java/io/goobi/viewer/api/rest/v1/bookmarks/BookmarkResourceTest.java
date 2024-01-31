@@ -21,11 +21,11 @@
  */
 package io.goobi.viewer.api.rest.v1.bookmarks;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -37,24 +37,24 @@ import io.goobi.viewer.model.bookmark.Bookmark;
  * @author florian
  *
  */
-public class BookmarkResourceTest {
+class BookmarkResourceTest {
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
-    public void testDeserializeBookmark() throws JsonMappingException, JsonProcessingException {
+    void testDeserializeBookmark() throws JsonMappingException, JsonProcessingException {
         String jsonString = "{\"name\": \"Test Bookmark\", \"description\": \"some testing...\", \"pi\": \"PPN743674162\"}";
         ObjectMapper mapper = new ObjectMapper();
         Bookmark bookmark = mapper.readValue(jsonString, Bookmark.class);

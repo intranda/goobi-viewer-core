@@ -679,7 +679,7 @@ public abstract class PersistentAnnotation {
     }
 
     public String getDisplayDate(LocalDateTime date) {
-        return DateTools.format(date, DateTools.formatterDEDateTime, false);
+        return DateTools.format(date, DateTools.FORMATTERDEDATETIME, false);
     }
 
     /**

@@ -45,8 +45,10 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.IncomingAnnotation;
 import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
@@ -57,6 +59,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
@@ -90,7 +93,7 @@ public class AnnotationResource {
     private final AbstractApiUrlManager urls;
 
     public AnnotationResource() {
-        this.urls = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
+        this.urls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
     }
 
     /**
@@ -176,7 +179,7 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "501",
             description = "Persisting this king of annotation or its target is not implemented."
                     + " Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
-    public IAnnotation addAnnotation(IAnnotation anno) throws DAOException, NotImplementedException {
+    public IAnnotation addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
         if (pAnno != null) {
@@ -236,7 +239,6 @@ public class AnnotationResource {
      */
     public CrowdsourcingAnnotation createPersistentAnnotation(IAnnotation anno) {
         CrowdsourcingAnnotation pAnno = null;
-        if (anno instanceof WebAnnotation) {
             IResource target = anno.getTarget();
             String template;
             if (target instanceof Manifest2) {
@@ -251,18 +253,17 @@ public class AnnotationResource {
                 return null; //not implemented
             }
 
-            String pi = urls.parseParameter(template, servletRequest.getRequestURI(), "pi");
-            String pageNoString = urls.parseParameter(template, servletRequest.getRequestURI(), "pageNo");
+            String pi = urls.parseParameter(template, target.getId().toString(), "pi");
+            String pageNoString = urls.parseParameter(template, target.getId().toString(), "pageNo");
             Integer pageNo = null;
             if (StringUtils.isNotBlank(pageNoString) && pageNoString.matches("\\d+")) {
                 pageNo = Integer.parseInt(pageNoString);
             }
-            pAnno = new CrowdsourcingAnnotation((WebAnnotation) anno, null, pi, pageNo);
+            pAnno = new CrowdsourcingAnnotation((AbstractAnnotation) anno, null, pi, pageNo);
             User user = getUser();
             if (user != null) {
                 pAnno.setCreator(user);
             }
-        }
         return pAnno;
     }
 

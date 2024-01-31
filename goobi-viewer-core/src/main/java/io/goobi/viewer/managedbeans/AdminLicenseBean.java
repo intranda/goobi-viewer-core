@@ -684,7 +684,7 @@ public class AdminLicenseBean implements Serializable {
 
         // Notify owner
         return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_activation",
-                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
+                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.FORMATTERDEDATETIMENOSECONDS.format(ticket.getExpirationDate())));
     }
 
     /**
@@ -705,7 +705,7 @@ public class AdminLicenseBean implements Serializable {
         saveTicket(ticket);
 
         return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_extention",
-                Arrays.asList(ticket.getPi(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
+                Arrays.asList(ticket.getPi(), DateTools.FORMATTERDEDATETIMENOSECONDS.format(ticket.getExpirationDate())));
     }
 
     /**
@@ -727,7 +727,7 @@ public class AdminLicenseBean implements Serializable {
 
         // Notify owner
         return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_renewal",
-                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
+                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.FORMATTERDEDATETIMENOSECONDS.format(ticket.getExpirationDate())));
     }
 
     /**

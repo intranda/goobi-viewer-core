@@ -19,17 +19,29 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer;
+package io.goobi.viewer.faces.validators;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.api.rest.v1.records.media.ViewerImageResourceTest;
-import io.goobi.viewer.api.rest.v1.records.media.ViewerRecordPDFResourceTest;
+class NicknameValidatorTest {
 
-@RunWith(Suite.class)
-@SuiteClasses({ ViewerRecordPDFResourceTest.class, ViewerImageResourceTest.class })
-public class ResourceTests {
+    /**
+     * @see NicknameValidator#validate(String)
+     * @verifies match correct name
+     */
+    @Test
+    void validate_shouldMatchCorrectName() throws Exception {
+        Assertions.assertTrue(NicknameValidator.validate(""));
+        Assertions.assertTrue(NicknameValidator.validate("John.Doe"));
+    }
 
+    /**
+     * @see NicknameValidator#validate(String)
+     * @verifies not match invalid name
+     */
+    @Test
+    void validate_shouldNotMatchInvalidName() throws Exception {
+        Assertions.assertFalse(NicknameValidator.validate("John Doe<script />"));
+    }
 }

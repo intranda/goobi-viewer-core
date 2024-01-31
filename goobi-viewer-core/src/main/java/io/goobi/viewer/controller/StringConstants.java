@@ -59,6 +59,7 @@ public final class StringConstants {
     public static final String PREFIX_PRETTY = "pretty:";
     public static final String PRETTY_NEWSEARCH5 = "pretty:newSearch5";
     public static final String PRETTY_SEARCHADVANCED5 = "pretty:searchAdvanced5";
+    public static final String PRETTY_SEARCHTERM5 = "pretty:searchTerm5";
 
     private StringConstants() {
 

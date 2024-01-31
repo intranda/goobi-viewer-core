@@ -457,17 +457,18 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getUrl(PageType pageType) {
+    public String getUrl(final PageType pageType) {
         // Only viewToc and viewMetadata are allowed for anchors
-        if (anchor && pageType != PageType.viewMetadata) {
-            pageType = PageType.viewToc;
+        PageType usePageType = pageType;
+        if (anchor && usePageType != PageType.viewMetadata) {
+            usePageType = PageType.viewToc;
         }
 
         StringBuilder sbUrl = new StringBuilder();
         boolean topstruct = isWork() || isAnchor() || isGroup();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
-                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, imageNumber, logid, pageType, topstruct));
+                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, imageNumber, logid, usePageType, topstruct));
 
         return sbUrl.toString();
     }

@@ -291,7 +291,8 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should do nothing if searchTerms does not contain fulltext
      * @should do nothing if tei file name not found
      */
-    public void addFulltextChild(SolrDocument doc, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public void addFulltextChild(SolrDocument doc, final String language)
+            throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
@@ -300,12 +301,13 @@ public class SearchHit implements Comparable<SearchHit> {
             return;
         }
 
-        if (language == null) {
-            language = "en";
+        String lang = language;
+        if (lang == null) {
+            lang = "en";
         }
 
         // Check whether TEI is available at all
-        String teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
+        String teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + lang.toUpperCase());
         if (StringUtils.isEmpty(teiFilename)) {
             teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI);
         }
@@ -317,7 +319,7 @@ public class SearchHit implements Comparable<SearchHit> {
             String fulltext = null;
             if (BeanUtils.getRequest() != null
                     && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false).isGranted()) {
-                fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
+                fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), lang);
             }
             if (fulltext != null) {
                 fulltext = TEITools.getTeiFulltext(fulltext);
@@ -364,7 +366,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void populateChildren(int number, int skip, Locale locale, HttpServletRequest request)
+    public void populateChildren(final int number, int skip, Locale locale, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("populateChildren START");
 
@@ -376,12 +378,13 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         logger.trace("{} child hit(s) found for {}", childDocs.size(), pi);
-        if (number + skip > childDocs.size()) {
-            number = childDocs.size() - skip;
+        int num = number;
+        if (num + skip > childDocs.size()) {
+            num = childDocs.size() - skip;
         }
         int childDocIndex = skip;
         int hitCount = getHitCount();
-        while (childDocIndex < childDocs.size() && hitsPopulated < Math.min(hitCount, number + skip)) {
+        while (childDocIndex < childDocs.size() && hitsPopulated < Math.min(hitCount, num + skip)) {
             SolrDocument childDoc = childDocs.get(childDocIndex);
             childDocIndex++;
             String fulltext = null;
@@ -403,9 +406,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         }
                     case METADATA:
                     case UGC:
-                    case EVENT: {
+                    case EVENT:
                         handleMetadataHit(childDoc, fulltext, docType, acccessDeniedType);
-                    }
                         break;
                     case DOCSTRCT:
                         // Docstruct hits are immediate children of the main hit
@@ -454,7 +456,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 ownerHit = newOwnerHit;
                 ownerHits.put(ownerIddoc, newOwnerHit);
             }
-            // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
+            // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC),
+            // ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
 
             SearchHit childHit =
                     factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), fulltext,
@@ -483,7 +486,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param request
      * @param pi
      * @param childDoc
-     * @return
+     * @return Full-text for this search hit
      * @throws FileNotFoundException If the fulltext resource is not found or not accessible
      * @throws AccessDeniedException If the request is missing access rights to the fulltext resource
      * @throws PresentationException I an internal error occurs when trying to retrieve access rights or the fulltext resource
@@ -563,9 +566,9 @@ public class SearchHit implements Comparable<SearchHit> {
                 default:
                     return "fa fa-file-text";
             }
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     /**
@@ -613,7 +616,7 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public int getHitsPopulated() {
         return hitsPopulated;
-    };
+    }
 
     /**
      * <p>
@@ -861,9 +864,9 @@ public class SearchHit implements Comparable<SearchHit> {
         String docStructType = this.getBrowseElement().getDocStructType();
         if (StringUtils.isNotBlank(docStructType)) {
             return "docstructtype__" + docStructType;
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     /* (non-Javadoc)
@@ -893,9 +896,9 @@ public class SearchHit implements Comparable<SearchHit> {
                     return this.getBrowseElement().getLabelShort();
 
             }
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     public boolean includeMetadata() {
@@ -919,9 +922,9 @@ public class SearchHit implements Comparable<SearchHit> {
                     return false;
 
             }
-        } else {
-            return false;
         }
+
+        return false;
     }
 
 }

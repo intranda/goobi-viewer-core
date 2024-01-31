@@ -25,18 +25,18 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RIS_FILE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RIS_TEXT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -48,7 +48,7 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  * @author florian
  *
  */
-public class RecordSectionResourceTest extends AbstractRestApiTest {
+class RecordSectionResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "74241";
     private static final String DIVID ="LOG_0004";
@@ -56,7 +56,7 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -64,7 +64,7 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -73,12 +73,12 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsFile()}.
      */
     @Test
-    public void testGetRISAsFile() {
+    void testGetRISAsFile() {
         try(Response response = target(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RIS_FILE).params(PI, DIVID).build())
                 .request()
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertTrue(entity.contains("TY  - FIGURE"));
             assertTrue(entity.contains("TI  - Wappen 1"));
@@ -91,13 +91,13 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsText()}.
      */
     @Test
-    public void testGetRISAsText() {
+    void testGetRISAsText() {
         try(Response response = target(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RIS_TEXT).params(PI, DIVID).build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertTrue(entity.contains("TY  - FIGURE"));
             assertTrue(entity.contains("TI  - Wappen 1"));
@@ -105,14 +105,14 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetRange() throws JsonMappingException, JsonProcessingException {
+    void testGetRange() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).params(PI, DIVID).build();
         try(Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             Range2 range = mapper.readValue(entity, Range2.class);

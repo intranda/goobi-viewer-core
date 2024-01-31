@@ -25,10 +25,10 @@ import java.io.FileInputStream;
 
 import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.impl.H2JdbcDatabaseTester;
@@ -46,7 +46,7 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
     //        return new XmlDataSet(new FileInputStream("resources/test_db_dataset.xml"));
     //    }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractSolrEnabledTest.setUpClass();
         DataManager.getInstance().injectDao(new JPADAO("intranda_viewer_test"));
@@ -58,7 +58,7 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         // databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(new FileInputStream("resources/test_db_dataset.xml")));
@@ -66,7 +66,7 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         databaseTester.onTearDown();
@@ -76,9 +76,8 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
         // .write(databaseTester.getConnection().createDataSet(), new FileOutputStream("resources/" + System.currentTimeMillis() + ".xml"));
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws Exception {
-        AbstractSolrEnabledTest.tearDownClass();
         if (DataManager.getInstance().getDao() != null) {
             DataManager.getInstance().getDao().shutdown();
         }

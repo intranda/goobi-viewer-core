@@ -22,9 +22,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -36,7 +36,7 @@ import io.goobi.viewer.model.security.clients.ClientApplicationManager;
  * @author florian
  *
  */
-public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
+class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
 
     LicenseType lt;
     License license;
@@ -44,8 +44,8 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
     ClientApplication allClients;
     Set<String> recordAccessConditions = new HashSet<>();
 
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
         lt = new LicenseType();
         lt.setName("license type 1 name");
@@ -71,50 +71,50 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnFalseIfClientNotContainsLicense() throws Exception {
-        Assert.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+    void checkAccessPermission_shouldReturnFalseIfClientNotContainsLicense() throws Exception {
+        Assertions.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfClientContainsLicense() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfClientContainsLicense() throws Exception {
 
         client.addLicense(license);
 
-        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfAllClientsContainsLicense() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfAllClientsContainsLicense() throws Exception {
 
         allClients.addLicense(license);
 
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add(lt.getName());
-        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnFalseIfClientIsOutsiteIpRange() throws Exception {
+    void checkAccessPermission_shouldReturnFalseIfClientIsOutsiteIpRange() throws Exception {
 
         client.addLicense(license);
         allClients.addLicense(license);
         client.setSubnetMask("11.22.33.45/32");
 
-        Assert.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        Assertions.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
     @Test
-    public void checkAccessPermission_shouldReturnTrueIfClientIsInsideIpRange() throws Exception {
+    void checkAccessPermission_shouldReturnTrueIfClientIsInsideIpRange() throws Exception {
 
         client.addLicense(license);
         allClients.addLicense(license);
         client.setSubnetMask("11.22.33.45/31");
 
-        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 }

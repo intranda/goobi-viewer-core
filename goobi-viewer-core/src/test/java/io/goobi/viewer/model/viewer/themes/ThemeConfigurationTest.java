@@ -21,12 +21,12 @@
  */
 package io.goobi.viewer.model.viewer.themes;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -40,7 +40,7 @@ import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
  * @author florian
  *
  */
-public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
+class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
 
     private static final Long LOGO_ID = 1l;
     private static final String STYLESHEET = "div {color:green;}\n a {color:blue};";
@@ -58,8 +58,8 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     private CMSMediaItem logoItem;
     private CMSMediaItem iconItem;
 
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
         logoItem = DataManager.getInstance().getDao().getCMSMediaItem(LOGO_ID);
         iconItem = DataManager.getInstance().getDao().getCMSMediaItem(ICON_ID);
@@ -67,7 +67,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testSaveTheme() throws DAOException {
+    void testSaveTheme() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
@@ -94,7 +94,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testUpdateTheme() throws DAOException {
+    void testUpdateTheme() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
@@ -133,7 +133,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testDeleteTheme() throws DAOException {
+    void testDeleteTheme() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
@@ -151,7 +151,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testListThemes() throws DAOException {
+    void testListThemes() throws DAOException {
 
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
