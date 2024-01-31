@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.model.sitemap;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,19 +30,18 @@ import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.jdom2.Element;
-import org.junit.Assert;
-import org.junit.Test;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jdom2.Element;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.sitemap.Sitemap;
 
-public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
+class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final Logger logger = LogManager.getLogger(SitemapTest.class);
 
@@ -51,11 +50,11 @@ public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies create loc element correctly
      */
     @Test
-    public void createUrlElement_shouldCreateLocElementCorrectly() throws Exception {
+    void createUrlElement_shouldCreateLocElementCorrectly() throws Exception {
         Sitemap sitemap = new Sitemap();
         Element eleUrl = sitemap.createUrlElement("https://foo.bar", null, null, null);
-        Assert.assertNotNull(eleUrl);
-        Assert.assertEquals("https://foo.bar", eleUrl.getChildText("loc", Sitemap.nsSitemap));
+        Assertions.assertNotNull(eleUrl);
+        Assertions.assertEquals("https://foo.bar", eleUrl.getChildText("loc", Sitemap.NS_SITEMAP));
     }
 
     /**
@@ -63,15 +62,15 @@ public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies create lastmod element correctly
      */
     @Test
-    public void createUrlElement_shouldCreateLastmodElementCorrectly() throws Exception {
+    void createUrlElement_shouldCreateLastmodElementCorrectly() throws Exception {
         Sitemap sitemap = new Sitemap();
         Element eleUrl = sitemap.createUrlElement("https://foo.bar", "2018-08-21", null, null);
-        Assert.assertNotNull(eleUrl);
-        Assert.assertEquals("2018-08-21", eleUrl.getChildText("lastmod", Sitemap.nsSitemap));
+        Assertions.assertNotNull(eleUrl);
+        Assertions.assertEquals("2018-08-21", eleUrl.getChildText("lastmod", Sitemap.NS_SITEMAP));
     }
 
     @Test
-    public void testSitemap() throws IOException, InterruptedException {
+    void testSitemap() throws IOException, InterruptedException {
 
         int timeout = 20; //minutes
 

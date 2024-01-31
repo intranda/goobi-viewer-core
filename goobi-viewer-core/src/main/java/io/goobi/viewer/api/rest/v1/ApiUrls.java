@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * @author florian
@@ -101,6 +102,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PAGES = "/records/{pi}/pages";
     public static final String RECORDS_PAGES_SEQUENCE = "/sequence/base";
     public static final String RECORDS_PAGES_CANVAS = "/{pageNo}/canvas";
+    public static final String RECORDS_PAGES_MANIFEST = "/{pageNo}/manifest";
     public static final String RECORDS_PAGES_NER_TAGS = "/{pageNo}/ner/tags";
     public static final String RECORDS_PAGES_ANNOTATIONS = "/{pageNo}/annotations";
     public static final String RECORDS_PAGES_COMMENTS = "/{pageNo}/comments";
@@ -243,11 +245,12 @@ public class ApiUrls extends AbstractApiUrlManager {
         this(DataManager.getInstance().getConfiguration().getRestApiUrl());
     }
 
-    public ApiUrls(String apiUrl) {
-        if (StringUtils.isNotBlank(apiUrl) && apiUrl.endsWith("/")) {
-            apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
-        }
-        this.apiUrl = apiUrl;
+    /**
+     * 
+     * @param apiUrl
+     */
+    public ApiUrls(final String apiUrl) {
+        this.apiUrl = StringUtils.isNotBlank(apiUrl) ? StringTools.removeTrailingSlashes(apiUrl) : apiUrl;
     }
 
     @Override

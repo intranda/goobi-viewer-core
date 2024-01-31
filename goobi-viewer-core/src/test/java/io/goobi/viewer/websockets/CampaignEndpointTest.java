@@ -21,22 +21,17 @@
  */
 package io.goobi.viewer.websockets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.Collections;
 
 import javax.servlet.http.HttpSession;
-import javax.websocket.EncodeException;
 import javax.websocket.EndpointConfig;
 import javax.websocket.RemoteEndpoint.Basic;
 import javax.websocket.Session;
 
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -47,7 +42,7 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian
  *
  */
-public class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
+class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
 
     private final Session session1 = Mockito.mock(Session.class);
     private final Session session2 = Mockito.mock(Session.class);
@@ -69,8 +64,8 @@ public class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
     private final CampaignEndpoint endpoint2 = new CampaignEndpoint();
     private final CampaignEndpoint endpoint3 = new CampaignEndpoint();
 
-     @Before
-     public void setup() throws Exception {
+     @BeforeEach
+     public void setUp() throws Exception {
          super.setUp();
          Mockito.when(httpSession1.getId()).thenReturn("http1");
          Mockito.when(httpSession2.getId()).thenReturn("http2");
@@ -87,7 +82,7 @@ public class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
      }
 
     @Test
-    public void test() throws IOException, EncodeException, DAOException {
+    void test() throws IOException, DAOException {
         endpoint1.onMessage(createMessage(1l, "PPN1234", 0));
         endpoint2.onMessage(createMessage(1l, "PPN1234", 2));
 

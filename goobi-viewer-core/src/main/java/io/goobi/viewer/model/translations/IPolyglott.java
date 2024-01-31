@@ -109,7 +109,7 @@ public interface IPolyglott {
     /**
      * Get a list of all locales configured in the faces-configuration file.
      *
-     * @return
+     * @return Collection<Locale>
      */
     public default Collection<Locale> getLocales() {
         return IPolyglott.getLocalesStatic();
@@ -118,7 +118,7 @@ public interface IPolyglott {
     /**
      * Get a list of all locales configured in the faces-configuration file
      *
-     * @return
+     * @return Collection<Locale>
      */
     public static Collection<Locale> getLocalesStatic() {
         return ViewerResourceBundle.getAllLocales();

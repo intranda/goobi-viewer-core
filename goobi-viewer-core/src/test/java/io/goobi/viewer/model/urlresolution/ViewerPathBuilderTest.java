@@ -21,15 +21,15 @@
  */
 package io.goobi.viewer.model.urlresolution;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -38,24 +38,24 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
  * @author Florian Alpers
  *
  */
-public class ViewerPathBuilderTest {
+class ViewerPathBuilderTest {
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
-    public void testStartsWith() {
+    void testStartsWith() {
         String url1 = "a";
         String url2 = "a/b";
         String url3 = "a/b/c";
@@ -65,17 +65,17 @@ public class ViewerPathBuilderTest {
 
         URI uri = URI.create("a/b/cdef");
 
-        Assert.assertTrue(ViewerPathBuilder.startsWith(uri, url1));
-        Assert.assertTrue(ViewerPathBuilder.startsWith(uri, url2));
-        Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url3));
-        Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url4));
-        Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url5));
-        Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url6));
+        Assertions.assertTrue(ViewerPathBuilder.startsWith(uri, url1));
+        Assertions.assertTrue(ViewerPathBuilder.startsWith(uri, url2));
+        Assertions.assertFalse(ViewerPathBuilder.startsWith(uri, url3));
+        Assertions.assertFalse(ViewerPathBuilder.startsWith(uri, url4));
+        Assertions.assertFalse(ViewerPathBuilder.startsWith(uri, url5));
+        Assertions.assertFalse(ViewerPathBuilder.startsWith(uri, url6));
 
     }
 
     @Test
-    public void testCreateCorrectPathWIthLeadingExcamationMark() throws DAOException {
+    void testCreateCorrectPathWIthLeadingExcamationMark() throws DAOException {
         String url = "http://localhost:8082/viewer/!fulltext/AC03343066/13/";
         String serverUrl = "http://localhost:8082/viewer";
         String applicationName ="/viewer";

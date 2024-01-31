@@ -35,8 +35,6 @@ public enum BaseMimeType {
     APPLICATION("application"),
     SANDBOXED_HTML("text"),
     MODEL("model"),
-    @Deprecated(since = "23.11")
-    OBJECT("object"),
     UNKNOWN("");
 
     /** Constant <code>logger</code> */
@@ -47,6 +45,7 @@ public enum BaseMimeType {
     /**
      * Constructor.
      *
+     * @param name
      * @should split full mime type names correctly
      */
     private BaseMimeType(String name) {
@@ -63,16 +62,21 @@ public enum BaseMimeType {
      * @should find mime type by short name correctly
      * @should find mime type by full name correctly
      */
-    public static BaseMimeType getByName(String name) {
+    public static BaseMimeType getByName(final String name) {
         if (name == null) {
             return UNKNOWN;
         }
 
-        if (name.contains("/")) {
-            name = name.substring(0, name.indexOf("/"));
+        String useName = name;
+        if (useName.contains("/")) {
+            useName = useName.substring(0, useName.indexOf("/"));
+        }
+        // "object" deprecated
+        if ("object".equals(useName)) {
+            return MODEL;
         }
         for (BaseMimeType o : BaseMimeType.values()) {
-            if (o.getName().equals(name)) {
+            if (o.getName().equals(useName)) {
                 return o;
             }
         }
@@ -100,10 +104,7 @@ public enum BaseMimeType {
      */
     public boolean isImageOrPdfDownloadAllowed() {
         switch (this) {
-            case AUDIO:
-            case VIDEO:
-            case OBJECT:
-            case MODEL:
+            case AUDIO, VIDEO, MODEL:
                 return false;
             default:
                 return true;
@@ -116,12 +117,7 @@ public enum BaseMimeType {
      */
     public boolean isMediaType() {
         switch (this) {
-            case AUDIO:
-            case IMAGE:
-            case VIDEO:
-            case SANDBOXED_HTML:
-            case MODEL:
-            case OBJECT:
+            case AUDIO, IMAGE, VIDEO, SANDBOXED_HTML, MODEL:
                 return true;
             default:
                 return false;
@@ -138,7 +134,7 @@ public enum BaseMimeType {
      */
     public static boolean isImageOrPdfDownloadAllowed(String mimeTypeName) {
         BaseMimeType mimeType = BaseMimeType.getByName(mimeTypeName);
-        if (mimeType == null) {
+        if (BaseMimeType.UNKNOWN.equals(mimeType)) {
             return false;
         }
 

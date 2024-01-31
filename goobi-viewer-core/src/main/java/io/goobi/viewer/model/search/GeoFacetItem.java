@@ -130,7 +130,7 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     /**
-     * @return
+     * @return {@link String}
      */
     public String getEscapedFacetQuery() {
         if (isActive() && feature != null && feature.hasVertices()) {

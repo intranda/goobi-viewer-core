@@ -42,14 +42,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerResource;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -76,9 +75,7 @@ public class RecordsImageResource {
     private final String pi;
 
     /**
-     * @param request
-     * @param directory
-     * @param filename
+     * @param pi
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -92,19 +89,17 @@ public class RecordsImageResource {
     @Path(RECORDS_IMAGE)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
     @Operation(
-            summary = "IIIF image identifier for the representative image of the process given by the identifier. Returns a IIIF 2.1.1 image information object",
+            summary = "IIIF image identifier for the representative image of the process given by the identifier."
+                    + " Returns a IIIF 2.1.1 image information object",
             tags = { "iiif", "records" })
     @ApiResponse(responseCode = "200", description = "Get the IIIF image information object as json")
     @ApiResponse(responseCode = "404", description = "Either the record or the file for the representative image doesn't exist")
     @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")
-    public Response getImageBase()
-            throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException, URISyntaxException {
+    public Response getImageBase() throws URISyntaxException {
         String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_INFO).params(pi).build();
-        Response resp =
-                Response.seeOther(PathConverter.toURI(servletRequest.getContextPath() + forwardUrl))
-                        .header("Content-Type", servletResponse.getContentType())
-                        .build();
-        return resp;
+        return Response.seeOther(PathConverter.toURI(servletRequest.getContextPath() + forwardUrl))
+                .header("Content-Type", servletResponse.getContentType())
+                .build();
     }
 
     @GET
@@ -137,7 +132,7 @@ public class RecordsImageResource {
 
     /**
      * @param pi
-     * @return
+     * @return Representative image file name for the given record pi
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws ContentNotFoundException
@@ -157,6 +152,7 @@ public class RecordsImageResource {
                 return (String) firstPage.getFieldValue(SolrConstants.FILENAME);
             }
         }
+        
         return "";
     }
 

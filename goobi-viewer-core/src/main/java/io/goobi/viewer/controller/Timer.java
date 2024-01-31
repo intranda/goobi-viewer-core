@@ -34,11 +34,11 @@ import org.apache.logging.log4j.LogManager;
  * Timer class.
  * </p>
  */
-public class Timer {
+public final class Timer {
 
     private static final Logger logger = LogManager.getLogger(Timer.class);
-    private static final NumberFormat format = new DecimalFormat("0.00");
-    private static final Timer instance = new Timer();
+    private static final NumberFormat FORMAT = new DecimalFormat("0.00");
+    private static final Timer INSTANCE = new Timer();
 
     private Long startDate = null;
     private Long measuredTime = null;
@@ -56,7 +56,7 @@ public class Timer {
      * @return a {@link io.goobi.viewer.controller.Timer} object.
      */
     public static Timer getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     /**
@@ -166,7 +166,7 @@ public class Timer {
      */
     public void debug(String message, String key, TimeScale scale) {
         String timeString = getTime(key, scale);
-        logger.debug(message + timeString);
+        logger.debug("{}{}", message, timeString);
     }
 
     /**
@@ -254,12 +254,12 @@ public class Timer {
      * @param time a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
      */
-    public String seconds(Long time) {
+    public static String seconds(Long time) {
         if (time == null) {
             throw new TimerException("No measure has yet been taken");
         }
         double seconds = time / 1000.0 / 1000.0 / 1000.0;
-        return format.format(seconds) + "s";
+        return FORMAT.format(seconds) + "s";
     }
 
     /**
@@ -281,12 +281,12 @@ public class Timer {
      * @param time a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
      */
-    public String millis(Long time) {
+    public static String millis(Long time) {
         if (time == null) {
             throw new TimerException("No mease has yet been taken");
         }
         double millis = time / 1000.0 / 1000.0;
-        return format.format(millis) + "ms";
+        return FORMAT.format(millis) + "ms";
     }
 
     /**
@@ -308,12 +308,12 @@ public class Timer {
      * @param time a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
      */
-    public String mikros(Long time) {
+    public static String mikros(Long time) {
         if (time == null) {
             throw new TimerException("No mease has yet been taken");
         }
         double mikros = time / 1000.0;
-        return format.format(mikros) + "\u00B5s";
+        return FORMAT.format(mikros) + "\u00B5s";
     }
 
     /**
@@ -335,7 +335,7 @@ public class Timer {
      * @param time a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
      */
-    public String nanos(Long time) {
+    public static String nanos(Long time) {
         if (time == null) {
             throw new TimerException("No mease has yet been taken");
         }

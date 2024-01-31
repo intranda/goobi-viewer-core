@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,10 +34,10 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -55,7 +55,7 @@ import io.goobi.viewer.model.search.SearchHitFactory;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final Logger logger = LogManager.getLogger(CmsBeanTest.class); //NOSONAR Sometimes used for debugging
 
@@ -66,7 +66,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
@@ -79,44 +79,44 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testPage() {
+    void testPage() {
         CMSPage page = new CMSPage();
         CmsBean bean = new CmsBean(templateManager, navigationHelper);
         bean.setCurrentPage(page);
-        Assert.assertEquals(page, bean.getCurrentPage());
+        Assertions.assertEquals(page, bean.getCurrentPage());
     }
 
     @Test
-    public void testGetLuceneFields() {
+    void testGetLuceneFields() {
         List<String> fields = new CmsBean().getLuceneFields();
-        Assert.assertTrue("Lucene field 'DC' is missing", fields.contains("DC"));
-        Assert.assertTrue("Lucene field 'LABEL' is missing", fields.contains("LABEL"));
-        Assert.assertTrue("Lucene field 'FILENAME' is missing", fields.contains("FILENAME"));
+        Assertions.assertTrue(fields.contains("DC"), "Lucene field 'DC' is missing");
+        Assertions.assertTrue(fields.contains("LABEL"), "Lucene field 'LABEL' is missing");
+        Assertions.assertTrue(fields.contains("FILENAME"), "Lucene field 'FILENAME' is missing");
     }
 
     @Test
-    public void testGetStaticPages() throws DAOException {
+    void testGetStaticPages() throws DAOException {
         CmsBean bean = new CmsBean();
         List<CMSStaticPage> staticPages = bean.getStaticPages();
-        Assert.assertFalse(staticPages.isEmpty());
+        Assertions.assertFalse(staticPages.isEmpty());
     }
 
     @Test
-    public void testGetAvailableCmsPages() throws DAOException {
+    void testGetAvailableCmsPages() throws DAOException {
         CmsBean bean = new CmsBean();
         List<CMSPage> allPages = DataManager.getInstance().getDao().getAllCMSPages();
         List<CMSPage> availablePages = bean.getAvailableCmsPages(null);
-        Assert.assertEquals(2, allPages.size() - availablePages.size());
+        Assertions.assertEquals(2, allPages.size() - availablePages.size());
     }
 
     @Test
-    public void testSaveCMSPages() throws DAOException {
+    void testSaveCMSPages() throws DAOException {
         CmsBean bean = new CmsBean();
 
         CMSPage page = new CMSPage();
@@ -124,24 +124,24 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         List<CMSStaticPage> staticPages = bean.getStaticPages();
         CMSStaticPage staticPage = staticPages.get(0);
-        //    	Assert.assertNull(staticPage.getCmsPage());
+        //    	Assertions.assertNull(staticPage.getCmsPage());
         staticPage.setCmsPage(page);
         bean.saveStaticPages();
 
         staticPages = bean.getStaticPages();
         staticPage = staticPages.get(0);
-        Assert.assertEquals(page.getId(), staticPage.getCmsPageOptional().map(p -> p.getId()).orElse(-1l));
+        Assertions.assertEquals(page.getId(), staticPage.getCmsPageOptional().map(p -> p.getId()).orElse(-1l));
 
         staticPage.setCmsPage(null);
         bean.saveStaticPages();
 
         staticPages = bean.getStaticPages();
         staticPage = staticPages.get(0);
-        Assert.assertNull(staticPage.getCmsPageOptional().orElse(null));
+        Assertions.assertNull(staticPage.getCmsPageOptional().orElse(null));
     }
 
     @Test
-    public void testGetGroupedQueryResults() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    void testGetGroupedQueryResults() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         CmsBean bean = new CmsBean();
 
         String groupField = "GROUPING";
@@ -155,15 +155,15 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         results.add(createSearchHit(groupField, value1, value3));
 
         List<Entry<String, List<SearchHit>>> hitMap = bean.getGroupedQueryResults(results, groupField);
-        Assert.assertEquals(3, hitMap.size());
-        Assert.assertEquals(3, hitMap.get(0).getValue().size());
-        Assert.assertEquals(2, hitMap.get(1).getValue().size());
-        Assert.assertEquals(1, hitMap.get(2).getValue().size());
+        Assertions.assertEquals(3, hitMap.size());
+        Assertions.assertEquals(3, hitMap.get(0).getValue().size());
+        Assertions.assertEquals(2, hitMap.get(1).getValue().size());
+        Assertions.assertEquals(1, hitMap.get(2).getValue().size());
 
         //Test for no valid grouping field
         hitMap = bean.getGroupedQueryResults(results, "bla");
-        Assert.assertEquals(1, hitMap.size());
-        Assert.assertEquals(3, hitMap.get(0).getValue().size());
+        Assertions.assertEquals(1, hitMap.size());
+        Assertions.assertEquals(3, hitMap.get(0).getValue().size());
     }
 
     /**
@@ -197,12 +197,12 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return pages in specified order
      */
     @Test
-    public void createStaticPageList_shouldReturnPagesInSpecifiedOrder() throws Exception {
+    void createStaticPageList_shouldReturnPagesInSpecifiedOrder() throws Exception {
         List<PageType> pageTypes = PageType.getTypesHandledByCms(); // Order specified in the enum
         List<CMSStaticPage> pages = CmsBean.createStaticPageList();
-        Assert.assertEquals(pageTypes.size(), pages.size());
+        Assertions.assertEquals(pageTypes.size(), pages.size());
         for (int i = 0; i < pageTypes.size(); ++i) {
-            Assert.assertEquals(pageTypes.get(i).getName(), pages.get(i).getPageName());
+            Assertions.assertEquals(pageTypes.get(i).getName(), pages.get(i).getPageName());
         }
     }
 
@@ -211,11 +211,11 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add relevance and random values at beginning
      */
     @Test
-    public void getPossibleSortFields_shouldAddRelevanceAndRandomValuesAtBeginning() throws Exception {
+    void getPossibleSortFields_shouldAddRelevanceAndRandomValuesAtBeginning() throws Exception {
         CmsBean bean = new CmsBean(templateManager, navigationHelper);
         List<String> fields = bean.getPossibleSortFields();
-        Assert.assertTrue(fields.size() > 2);
-        Assert.assertEquals(SolrConstants.SORT_RELEVANCE, fields.get(0));
-        Assert.assertEquals(SolrConstants.SORT_RANDOM, fields.get(1));
+        Assertions.assertTrue(fields.size() > 2);
+        Assertions.assertEquals(SolrConstants.SORT_RELEVANCE, fields.get(0));
+        Assertions.assertEquals(SolrConstants.SORT_RANDOM, fields.get(1));
     }
 }

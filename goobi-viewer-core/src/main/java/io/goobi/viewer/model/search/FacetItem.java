@@ -24,6 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,7 +46,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -119,10 +119,10 @@ public class FacetItem implements Serializable, IFacetItem {
 
     /**
      * Internal constructor.
-     *
+     * 
+     * @param field
      * @param link {@link String}
      * @param label {@link String}
-     * @param translatedLabel {@link String}
      * @param count {@link Integer}
      * @param hierarchical
      */
@@ -258,8 +258,6 @@ public class FacetItem implements Serializable, IFacetItem {
                 if (item instanceof FacetItem) {
                     retList.add(item);
                     existingItems.put(item.getLink(), (FacetItem) item);
-                    //                    if (item.getField().equals("MD_TITLE_LANG_FR"))
-                    //                        logger.trace("Existing item: {}", item.getLink());
                 }
             }
         }
@@ -281,8 +279,6 @@ public class FacetItem implements Serializable, IFacetItem {
 
             String key = field + ":" + useValue;
             if (existingItems.containsKey(key)) {
-                //                if (field.equals("MD_TITLE_LANG_FR"))
-                //                    logger.trace("Key already exists: {}", key);
                 existingItems.get(key).increaseCount(entry.getValue());
             } else {
                 if (labelMap != null && labelMap.containsKey(key)) {
@@ -305,8 +301,6 @@ public class FacetItem implements Serializable, IFacetItem {
                     priorityValueMap.put(useValue, facetItem);
                 } else {
                     retList.add(facetItem);
-                    //                    if (field.equals("MD_TITLE_LANG_FR"))
-                    //                        logger.trace("Adding new key: {}", key);
                 }
 
                 existingItems.put(key, facetItem);
@@ -332,7 +326,7 @@ public class FacetItem implements Serializable, IFacetItem {
             case "alphanumerical":
                 Collections.sort(retList, new FacetItemAlphanumComparator(locale));
                 break;
-            case "alphanumerica_desc":
+            case "alphanumerical_desc":
                 Collections.sort(retList, new FacetItemAlphanumComparator(locale));
                 Collections.reverse(retList);
                 break;
@@ -351,7 +345,7 @@ public class FacetItem implements Serializable, IFacetItem {
             }
             retList.addAll(regularValues);
         }
-        // logger.debug("filters: {}", retList.size());
+        // logger.debug("filters: {}", retList.size()); //NOSONAR Debug
         return retList;
     }
 
@@ -363,12 +357,11 @@ public class FacetItem implements Serializable, IFacetItem {
      * @param sort a boolean.
      * @param reverseOrder a boolean.
      * @param hierarchical a boolean.
-     * @param locale a {@link java.util.Locale} object.
-     * @should sort items correctly
      * @return a {@link java.util.List} object.
+     * @should sort items correctly
      */
     public static List<IFacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder,
-            boolean hierarchical, Locale locale) {
+            boolean hierarchical) {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
@@ -420,7 +413,6 @@ public class FacetItem implements Serializable, IFacetItem {
                     hierarchical));
         }
 
-        // logger.debug("filters: " + retList.size());
         return retList;
     }
 
@@ -458,35 +450,36 @@ public class FacetItem implements Serializable, IFacetItem {
 
     /**
      *
-     * @param value
-     * @return
+     * @param value Value to escape
+     * @return Escaped value
      * @should escape value correctly
      * @should add quotation marks if value contains space
      * @should preserve leading and trailing quotation marks
      * @should preserve wildcard
      */
-    static String getEscapedValue(String value) {
+    static String getEscapedValue(final String value) {
         if (StringUtils.isEmpty(value)) {
             return value;
         }
 
+        String val = value;
         boolean addLeftTruncation = false;
         boolean addRightTruncation = false;
-        if (value.charAt(0) == '*') {
+        if (val.charAt(0) == '*') {
             addLeftTruncation = true;
-            value = value.substring(1);
+            val = val.substring(1);
 
         }
-        if (value.endsWith("*")) {
+        if (val.endsWith("*")) {
             addRightTruncation = true;
-            value = value.substring(0, value.length() - 1);
+            val = val.substring(0, val.length() - 1);
         }
 
         String escapedValue = null;
-        if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"' && value.length() > 2) {
-            escapedValue = '"' + ClientUtils.escapeQueryChars(value.substring(1, value.length() - 1)) + '"';
+        if (val.charAt(0) == '"' && val.charAt(val.length() - 1) == '"' && val.length() > 2) {
+            escapedValue = '"' + ClientUtils.escapeQueryChars(val.substring(1, val.length() - 1)) + '"';
         } else {
-            escapedValue = ClientUtils.escapeQueryChars(value);
+            escapedValue = ClientUtils.escapeQueryChars(val);
         }
         // Add quotation marks if spaces are contained
         if (escapedValue.contains(" ") && !escapedValue.startsWith("\"") && !escapedValue.endsWith("\"")) {
@@ -772,7 +765,11 @@ public class FacetItem implements Serializable, IFacetItem {
         public int compare(IFacetItem o1, IFacetItem o2) {
             String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
             String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
-            return label1.compareTo(label2);
+
+            // Collator that ignores diacritics
+            Collator col = Collator.getInstance();
+            col.setStrength(Collator.PRIMARY);
+            return col.compare(label1, label2);
         }
 
     }
@@ -794,13 +791,28 @@ public class FacetItem implements Serializable, IFacetItem {
 
     public static class CountComparator implements Comparator<IFacetItem> {
 
+        /**
+         * @should compare correctly
+         */
         @Override
         public int compare(IFacetItem o1, IFacetItem o2) {
-            return o1.getCount() > o2.getCount() ? -1
-                    : o1.getCount() < o2.getCount() ? +1 : (o1.getLabel() != null ? o1.getLabel().compareTo(o2.getLabel()) : 0);
+            if (o1.getCount() > o2.getCount()) {
+                return -1;
+            }
+            if (o1.getCount() < o2.getCount()) {
+                return 1;
+            }
+            if (o1.getLabel() == null && o2.getLabel() == null) {
+                return 0;
+            }
 
+            String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
+            String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
+
+            // Collator that ignores diacritics
+            Collator col = Collator.getInstance();
+            col.setStrength(Collator.PRIMARY);
+            return col.compare(label1, label2);
         }
-
     }
-
 }

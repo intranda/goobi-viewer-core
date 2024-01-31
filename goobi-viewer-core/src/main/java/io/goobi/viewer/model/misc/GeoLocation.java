@@ -55,7 +55,7 @@ public class GeoLocation {
      * </p>
      */
     public GeoLocation() {
-        // TODO Auto-generated constructor stub
+        //
     }
 
     /**
@@ -84,13 +84,15 @@ public class GeoLocation {
         if (json.has(JSON_PROPERTYNAME_LATITUDE)) {
             try {
                 setLatitude(json.getDouble(JSON_PROPERTYNAME_LATITUDE));
-            } catch (Throwable e) {
+            } catch (Exception e) {
+                //
             }
         }
         if (json.has(JSON_PROPERTYNAME_LONGITUDE)) {
             try {
                 setLongitude(json.getDouble(JSON_PROPERTYNAME_LONGITUDE));
-            } catch (Throwable e) {
+            } catch (Exception e) {
+                //
             }
         }
         if (json.has(JSON_PROPERTYNAME_INFO)) {
@@ -103,12 +105,12 @@ public class GeoLocation {
 
     /**
      * @param string
-     * @return
+     * @return Formatted string
      */
-    private static String formatJson(String string) {
-        string = StringEscapeUtils.unescapeJava(string);
-        string = string.replaceAll("(\\r)?\\n", "<br/>");
-        return string;
+    private static String formatJson(final String string) {
+        String ret = StringEscapeUtils.unescapeJava(string);
+        ret = ret.replaceAll("(\\r)?\\n", "<br/>");
+        return ret;
     }
 
     /**
@@ -173,8 +175,7 @@ public class GeoLocation {
             map.put(JSON_PROPERTYNAME_LINK, getLink());
         }
 
-        JSONObject obj = new JSONObject(map);
-        return obj;
+        return new JSONObject(map);
     }
 
     /**

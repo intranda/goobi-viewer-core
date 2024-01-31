@@ -60,6 +60,8 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public abstract class AbstractPageLoader implements IPageLoader {
 
+    private static final long serialVersionUID = 7546256768016555405L;
+
     private static final Logger logger = LogManager.getLogger(AbstractPageLoader.class);
 
     /** All fields to be fetched when loading page documents. Any new required fields must be added to this array. */
@@ -74,7 +76,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * Creates and returns the appropriate loader instance for the given <code>StructElement</code>.
      *
      * @param topStructElement Top level <code>StructElement</code> of the record
-     * @return
+     * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
@@ -83,8 +85,13 @@ public abstract class AbstractPageLoader implements IPageLoader {
      */
     public static AbstractPageLoader create(StructElement topStructElement)
             throws IndexUnreachableException, PresentationException, DAOException {
+        return create(topStructElement, Collections.emptyList());
+    }
+    
+    public static AbstractPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad)
+            throws IndexUnreachableException, PresentationException, DAOException {
         int numPages = topStructElement.getNumPages();
-        if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
+        if (pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
             return new EagerPageLoader(topStructElement);
         }
         logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);

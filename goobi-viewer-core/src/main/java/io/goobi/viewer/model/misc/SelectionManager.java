@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * @param <T>
  * @author florian
  *
  */
@@ -41,7 +42,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     private boolean selectAll = false;
 
     /**
-     * @param collect
+     * @param allEntries
      */
     public SelectionManager(List<T> allEntries) {
         this.selectionMap = allEntries.stream().collect(Collectors.toMap(t -> t, t -> false));
@@ -101,13 +102,14 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     }
 
     /**
-     *
+     * @return List<T>
      */
     public List<T> getAllSelected() {
         if (isSelectAll()) {
             return new ArrayList<>(selectionMap.keySet());
         }
-        return selectionMap.entrySet().stream().filter(e -> Boolean.TRUE.equals(e.getValue())).map(e -> e.getKey()).collect(Collectors.toList());
+        
+        return selectionMap.entrySet().stream().filter(e -> Boolean.TRUE.equals(e.getValue())).map(Entry::getKey).collect(Collectors.toList());
     }
 
     /* (non-Javadoc)

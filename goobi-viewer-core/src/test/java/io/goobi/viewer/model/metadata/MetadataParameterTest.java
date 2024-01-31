@@ -21,23 +21,23 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.viewer.StructElement;
 
-public class MetadataParameterTest {
+class MetadataParameterTest {
 
     @Test
-    public void testReadMetadata() throws IndexUnreachableException, PresentationException {
+    void testReadMetadata() throws IndexUnreachableException, PresentationException {
         MetadataParameter param = new MetadataParameter();
         param.setKey("TEST_FIELD");
         param.setType(MetadataParameterType.FIELD);

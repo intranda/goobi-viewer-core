@@ -169,7 +169,8 @@ public class JPADAO implements IDAO {
     public JPADAO(String inPersistenceUnitName) throws DAOException {
         logger.trace("JPADAO({})", inPersistenceUnitName);
         //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
-        //        System.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, DataManager.getInstance().getConfiguration().getConfigLocalPath() + "persistence.xml");
+        //        System.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, 
+        //        DataManager.getInstance().getConfiguration().getConfigLocalPath() + "persistence.xml");
         //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
         String persistenceUnitName = inPersistenceUnitName;
         if (StringUtils.isEmpty(persistenceUnitName)) {
@@ -379,7 +380,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @param param
-     * @return
+     * @return Generated query
      */
     public String getUsersFilterQuery(String param) {
         String filterQuery;
@@ -399,13 +400,13 @@ public class JPADAO implements IDAO {
      * @param addWildCards if true, add '%' to the beginning and end of param
      * @return the sanitized parameter
      */
-    private static String sanitizeQueryParam(String param, boolean addWildCards) {
-        param = param.replaceAll("['\"\\(\\)]", "");
-        param = param.toUpperCase();
+    private static String sanitizeQueryParam(final String param, boolean addWildCards) {
+        String useParam = param.replaceAll("['\"\\(\\)]", "");
+        useParam = useParam.toUpperCase();
         if (addWildCards) {
-            param = "%" + param + "%";
+            useParam = "%" + useParam + "%";
         }
-        return param;
+        return useParam;
     }
 
     /** {@inheritDoc} */
@@ -3012,7 +3013,8 @@ public class JPADAO implements IDAO {
         try {
             Query q = em
                     .createQuery(
-                            "SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.publicationStatus = :publicationStatus")
+                            "SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true"
+                                    + " AND o.publicationStatus = :publicationStatus")
                     .setParameter("pi", pi)
                     .setParameter("publicationStatus", PublicationStatus.PUBLISHED)
                     .setMaxResults(1);
@@ -4097,7 +4099,8 @@ public class JPADAO implements IDAO {
      *
      * @param className
      * @param filter Filter query string
-     * @return
+     * @param params
+     * @return Number of rows matching given filters
      * @throws DAOException
      */
     private long getFilteredRowCount(String className, String filter, Map<String, Object> params) throws DAOException {
@@ -4120,7 +4123,7 @@ public class JPADAO implements IDAO {
      * @param className
      * @param staticFilterQuery Optional filter query in case the fuzzy filters aren't sufficient
      * @param filters
-     * @return
+     * @return Number of rows matching given filters
      * @throws DAOException
      */
     private long getRowCount(String className, String staticFilterQuery, Map<String, String> filters) throws DAOException {
@@ -4248,11 +4251,12 @@ public class JPADAO implements IDAO {
     /**
      * Helper method to get the only result of a query. In contrast to {@link jakarta.persistence.Query#getSingleResult()} this does not throw an
      * exception if no results are found. Instead, it returns an empty Optional
-     *
-     * @throws ClassCastException if the first result cannot be cast to the expected type
-     * @throws NonUniqueResultException if the query matches more than one result
+     * 
+     * @param <T>
      * @param q the query to perform
      * @return an Optional containing the query result, or an empty Optional if no results are present
+     * @throws ClassCastException if the first result cannot be cast to the expected type
+     * @throws NonUniqueResultException if the query matches more than one result
      */
     @SuppressWarnings("unchecked")
     private static <T> Optional<T> getSingleResult(Query q) throws ClassCastException, NonUniqueResultException {
@@ -4415,7 +4419,7 @@ public class JPADAO implements IDAO {
      *
      * @param params a {@link java.util.Map} object.
      * @param pageParameter a {@link java.lang.String} object.
-     * @param allowedTemplateIds a {@link java.util.List} object.
+     * @param allowedTemplates a {@link java.util.List} object.
      * @param allowedSubthemes a {@link java.util.List} object.
      * @param allowedCategoryIds a {@link java.util.List} object.
      * @return a {@link java.lang.String} object.
@@ -5103,8 +5107,8 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
-            String filterString, Map<String, Object> params) throws DAOException {
-        params = params == null ? new HashMap<>() : params;
+            String filterString, final Map<String, Object> params) throws DAOException {
+        final Map<String, Object> useParams = params == null ? new HashMap<>() : params;
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
@@ -5122,9 +5126,9 @@ public class JPADAO implements IDAO {
                 }
                 sbQuery.append(filterString).append(order);
 
-                logger.trace(sbQuery.toString());
+                logger.trace(sbQuery);
                 Query q = em.createQuery(sbQuery.toString());
-                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+                useParams.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
                 q.setFirstResult(first);
                 q.setMaxResults(pageSize);
@@ -6081,7 +6085,7 @@ public class JPADAO implements IDAO {
      * @param staticFilterQuery
      * @param filters
      * @param params
-     * @return
+     * @return Generated query
      */
     static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
         StringBuilder q = new StringBuilder(" ");
@@ -6111,12 +6115,13 @@ public class JPADAO implements IDAO {
 
             //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
             String[] subKeys = key.split(MULTIKEY_SEPARATOR);
-            for (String subKey : subKeys) {
-                if (StringUtils.isBlank(subKey)) {
+            for (final String subKey : subKeys) {
+                String sk = subKey;
+                if (StringUtils.isBlank(sk)) {
                     continue;
-                } else if (subKey.contains(KEY_FIELD_SEPARATOR)) {
-                    String table = subKey.substring(0, subKey.indexOf(KEY_FIELD_SEPARATOR));
-                    String field = subKey.substring(subKey.indexOf(KEY_FIELD_SEPARATOR) + 1);
+                } else if (sk.contains(KEY_FIELD_SEPARATOR)) {
+                    String table = sk.substring(0, sk.indexOf(KEY_FIELD_SEPARATOR));
+                    String field = sk.substring(sk.indexOf(KEY_FIELD_SEPARATOR) + 1);
                     String tableKey;
                     if (!tableKeys.containsKey(table)) {
                         tableKey = abc.next();
@@ -6126,16 +6131,16 @@ public class JPADAO implements IDAO {
                     } else {
                         tableKey = tableKeys.get(table);
                     }
-                    subKey = tableKey + "." + field;
+                    sk = tableKey + "." + field;
                 } else {
-                    subKey = mainTableKey + "." + subKey;
+                    sk = mainTableKey + "." + sk;
                 }
                 String where;
-                if ("campaign".equals(subKey)) {
-                    where = "generatorId IN (SELECT q.id WHERE Question q WHERE q.ownerId IN " +
-                            "(SELECT t.ownerId from CampaignTranslation t WHERE UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                if ("campaign".equals(sk)) {
+                    where = "generatorId IN (SELECT q.id WHERE Question q WHERE q.ownerId IN "
+                            + "(SELECT t.ownerId from CampaignTranslation t WHERE UPPER(" + sk + ") LIKE :" + keyValueParam;
                 } else {
-                    where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                    where = "UPPER(" + sk + ") LIKE :" + keyValueParam;
                 }
                 whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
             }
@@ -6154,7 +6159,7 @@ public class JPADAO implements IDAO {
      * @param staticFilterQuery
      * @param filters
      * @param params
-     * @return
+     * @return Generated query
      * @should create query correctly
      */
     static String createCampaignsFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
@@ -6185,13 +6190,13 @@ public class JPADAO implements IDAO {
 
             //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
             String[] subKeys = key.split(MULTIKEY_SEPARATOR);
-            for (String subKey : subKeys) {
+            for (final String subKey : subKeys) {
                 if (StringUtils.isBlank(subKey)) {
                     continue;
                 }
-                subKey = mainTableKey + "." + subKey;
+                String sk = mainTableKey + "." + subKey;
                 String where = null;
-                switch (subKey) {
+                switch (sk) {
                     case "a.groupOwner":
                         where = mainTableKey + ".userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:" + keyValueParam + ")";
                         break;
@@ -6200,7 +6205,7 @@ public class JPADAO implements IDAO {
                                 + keyValueParam + ")";
                         break;
                     default:
-                        where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                        where = "UPPER(" + sk + ") LIKE :" + keyValueParam;
                         break;
                 }
 
@@ -6239,7 +6244,7 @@ public class JPADAO implements IDAO {
      * @param staticFilterQuery
      * @param filters
      * @param params
-     * @return
+     * @return Generated query
      * @should create query correctly
      */
     static String createAnnotationsFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
@@ -6273,32 +6278,32 @@ public class JPADAO implements IDAO {
 
             //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
             String[] subKeys = key.split(MULTIKEY_SEPARATOR);
-            for (String subKey : subKeys) {
+            for (final String subKey : subKeys) {
                 if (StringUtils.isBlank(subKey)) {
                     continue;
                 }
-                subKey = mainTableKey + "." + subKey;
+                String sk = mainTableKey + "." + subKey;
                 String where = null;
-                switch (subKey) {
+                switch (sk) {
                     case "a.creatorId":
                     case "a.reviewerId":
                     case "a.motivation":
                         if ("NULL".equalsIgnoreCase(filterValue)) {
-                            where = subKey + " IS NULL";
+                            where = sk + " IS NULL";
                         } else {
-                            where = subKey + "=:" + keyValueParam;
+                            where = sk + "=:" + keyValueParam;
                         }
                         break;
                     case "a.generatorId":
-                        where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
-                                "(SELECT c FROM Campaign c WHERE c.id=:" + keyValueParam + "))";
+                        where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN "
+                                + "(SELECT c FROM Campaign c WHERE c.id=:" + keyValueParam + "))";
                         break;
                     case "a.campaign":
-                        where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
-                                "(SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :" + keyValueParam + "))";
+                        where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN "
+                                + "(SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :" + keyValueParam + "))";
                         break;
                     default:
-                        where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                        where = "UPPER(" + sk + ") LIKE :" + keyValueParam;
                         break;
                 }
 
@@ -6368,12 +6373,13 @@ public class JPADAO implements IDAO {
             filterKeys.addAll(filters.keySet());
             Collections.sort(filterKeys);
             int count = 0;
-            for (String key : filterKeys) {
+            for (final String k : filterKeys) {
                 String tableKey = pageKey;
-                String value = filters.get(key);
+                String value = filters.get(k);
                 if (StringUtils.isNotBlank(value)) {
                     //separate join table statement from key
                     String joinTable = "";
+                    String key = k;
                     if (key.contains("::")) {
                         joinTable = key.substring(0, key.indexOf("::"));
                         key = key.substring(key.indexOf("::") + 2);
@@ -6419,7 +6425,6 @@ public class JPADAO implements IDAO {
                         //                            }
                     } else if ("classifications".equals(joinTable)) {
                         join.append(QUERY_ELEMENT_JOIN).append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
-                        //                            .append(" ON ").append(" (").append(pageKey).append(".id = ").append(tableKey).append(".ownerPage.id)");
                     } else if ("groupOwner".equals(joinTable)) {
                         join.append(QUERY_ELEMENT_JOIN)
                                 .append(joinTable)
@@ -6880,23 +6885,39 @@ public class JPADAO implements IDAO {
     }
 
     String addViewerMessageFilterQuery(Map<String, String> filters, Map<String, Object> params) {
-        String filterValue = filters.values().stream().findFirst().orElse("");
-        String filterQuery = "";
-        if (StringUtils.isNotBlank(filterValue)) {
-            filterQuery += " WHERE (a.taskName LIKE :value OR a.messageId LIKE :value";
-            try {
-                params.put("valueStatus", MessageStatus.valueOf(filterValue.toUpperCase()));
-                filterQuery += " OR a.messageStatus = :valueStatus";
-            } catch (IllegalArgumentException e) {
-                //noop
-            }
-            filterQuery += " OR :valueProperty MEMBER OF (a.properties)";
-            params.put("valueProperty", filterValue);
+        String filterQuery = " WHERE (";
 
-            filterQuery += ")";
-            params.put("value", "%" + filterValue + "%");
+        for (Entry<String, String> entry : filters.entrySet()) {
+            String field = entry.getKey();
+            String value = entry.getValue();
+            if (StringUtils.isBlank(field) || "all".equalsIgnoreCase(field)) {
+                if (StringUtils.isNotBlank(value)) {
+                    if (filterQuery.endsWith(")")) {
+                        filterQuery += " AND";
+                    }
+                    filterQuery += " (a.taskName LIKE :$field OR a.messageId LIKE :$field".replace("$field", field);
+                    try {
+                        params.put("valueStatus", MessageStatus.valueOf(value.toUpperCase()));
+                        filterQuery += " OR a.messageStatus = :valueStatus";
+                    } catch (IllegalArgumentException e) {
+                        //noop
+                    }
+                    filterQuery += " OR :valueProperty MEMBER OF (a.properties)";
+                    params.put("valueProperty", value);
+
+                    filterQuery += ")";
+                    params.put(field, "%" + value.trim() + "%");
+                }
+            } else {
+                if (filterQuery.endsWith(")")) {
+                    filterQuery += " AND";
+                }
+                filterQuery += " (a.$field LIKE :$value)".replace("$field", field).replace("$value", field);
+                params.put(field, "%" + value.trim() + "%");
+            }
         }
-        return filterQuery;
+        filterQuery += ")";
+        return " WHERE ()".equals(filterQuery) ? "" : filterQuery;
     }
 
     /** {@inheritDoc} */
@@ -7168,7 +7189,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private <T> List<T> getEntities(Class<T> clazz, int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         return getEntities(clazz, first, pageSize, sortField, descending, filters, null, Collections.emptyMap());
@@ -7192,12 +7212,12 @@ public class JPADAO implements IDAO {
 
             if (StringUtils.isNotBlank(whereClause)) {
                 if (filters != null && !filters.isEmpty()) {
-                    sbQuery.append(" AND ");
+                    sbQuery.append(QUERY_ELEMENT_AND);
                 } else {
-                    sbQuery.append(" WHERE ");
+                    sbQuery.append(QUERY_ELEMENT_WHERE);
                 }
                 sbQuery.append("(").append(whereClause).append(")");
-                whereClauseParams.forEach((key, value) -> params.put(key, value));
+                whereClauseParams.forEach(params::put);
             }
 
             if (StringUtils.isNotEmpty(sortField)) {
@@ -7234,10 +7254,10 @@ public class JPADAO implements IDAO {
      * @param filterValue The value to search for
      * @param params a parameter
      * @param entityVariable
-     * @return
+     * @return Generated query
      */
     private String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {
-        if (filterValue != null && filterValue instanceof String) {
+        if (filterValue instanceof String) {
             String query = String.format("%c.%s LIKE :%s", entityVariable, filterField, filterField);
             params.put(filterField, "%" + filterValue + "%");
             return query;

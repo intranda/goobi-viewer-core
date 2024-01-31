@@ -68,7 +68,7 @@ import io.goobi.viewer.model.search.FuzzySearchTerm;
  * ALTOTools class.
  * </p>
  */
-public class ALTOTools {
+public final class ALTOTools {
 
     private static final Logger logger = LogManager.getLogger(ALTOTools.class);
 
@@ -88,16 +88,19 @@ public class ALTOTools {
             "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
 
     /**
-     * 
+     * Private constructor.
      */
     private ALTOTools() {
         //
     }
 
     /**
-     * Read the plain fulltext from an alto file. Don't merge linebreaks
+     * Read the plain full-text from an alto file. Don't merge line breaks.
      *
-     * @param path @return @throws IOException @throws
+     * @param path
+     * @param encoding
+     * @return {@link String} containing plain text from ALTO at the given path
+     * @throws IOException
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
@@ -113,8 +116,8 @@ public class ALTOTools {
      * @param charset
      * @param mergeLineBreakWords a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @should extract fulltext correctly
      * @return a {@link java.lang.String} object.
+     * @should extract fulltext correctly
      */
     public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords, HttpServletRequest request) {
         try {
@@ -132,11 +135,12 @@ public class ALTOTools {
      * </p>
      *
      * @param alto a {@link java.lang.String} object.
-     * @param charset
+     * @param inCharset
      * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
      * @return a {@link java.util.List} object.
      */
-    public static List<TagCount> getNERTags(String alto, String charset, NERTag.Type type) {
+    public static List<TagCount> getNERTags(String alto, final String inCharset, NERTag.Type type) {
+        String charset = inCharset;
         // Make sure an empty charset value is changed to null to avoid exceptions
         if (StringUtils.isBlank(charset)) {
             charset = null;
@@ -159,8 +163,8 @@ public class ALTOTools {
     }
 
     /**
-     * @param createNERTag
      * @param tags
+     * @param list
      */
     private static void addTags(List<TagCount> tags, List<TagCount> list) {
         for (TagCount tag : tags) {
@@ -175,13 +179,13 @@ public class ALTOTools {
 
     /**
      * @param tag
-     * @param solrDoc
-     * @return
+     * @return List<TagCount>
      */
     @SuppressWarnings("rawtypes")
     private static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
-        value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, ""); //NOSONAR   TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions which would cause catastrophic backtracking
+        value =
+                value.replaceAll(TAG_LABEL_IGNORE_REGEX, ""); //NOSONAR TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions which would cause catastrophic backtracking
         Type type = Type.getByLabel(tag.getType());
         if (type == null) {
             logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.MISC.name());
@@ -428,12 +432,13 @@ public class ALTOTools {
      * getRotatedCoordinates.
      * </p>
      *
-     * @param coords a {@link java.lang.String} object.
+     * @param inCoords a {@link java.lang.String} object.
      * @param rotation a int.
      * @param pageSize a {@link java.awt.Dimension} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String getRotatedCoordinates(String coords, int rotation, Dimension pageSize) {
+    public static String getRotatedCoordinates(final String inCoords, int rotation, Dimension pageSize) {
+        String coords = inCoords;
         if (rotation != 0) {
             try {
                 Rectangle wordRect = getRectangle(coords);
@@ -452,12 +457,17 @@ public class ALTOTools {
      * @param charset
      * @param searchTerms Set of search terms
      * @param rotation Image rotation in degrees
+     * @param rotation2 
      * @return a {@link java.util.List} object.
      * @should match hyphenated words
      * @should match phrases
      * @should match diacritics via base letter
      */
     public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int rotation) {
+        return getWordCoords(altoString, charset, searchTerms, 0, rotation);
+    }
+    
+    public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int proximitySearchDistance, int rotation) {
         if (altoString == null) {
             throw new IllegalArgumentException("altoDoc may not be null");
         }
@@ -501,14 +511,21 @@ public class ALTOTools {
                     }
                     // Match next words if search term has more than one word
                     if (totalHits < searchWords.length) {
+                        int remainingProximityReach = proximitySearchDistance;
                         while (totalHits < searchWords.length && words.size() > wordIndex + 1) {
                             wordIndex++;
                             Word nextWord = words.get(wordIndex);
                             int hits = ALTOTools.getMatchALTOWord(nextWord, Arrays.copyOfRange(searchWords, totalHits, searchWords.length));
                             if (hits == 0) {
-                                wordIndex--;
-                                match = false;
-                                break;
+                                if(remainingProximityReach < 1) {
+                                    wordIndex--;
+                                    match = false;
+                                    break;
+                                } else {                                    
+                                    remainingProximityReach--;
+                                }
+                            } else {
+                                remainingProximityReach = proximitySearchDistance;
                             }
                             totalHits += hits;
                             addWordCoords(rotation, pageSize, nextWord, tempList);
@@ -528,6 +545,14 @@ public class ALTOTools {
         return coordList;
     }
 
+    /**
+     * 
+     * @param rotation
+     * @param pageSize
+     * @param eleWord
+     * @param tempList
+     * @return ALTO word coordinates as a {@link String}
+     */
     private static String addWordCoords(int rotation, Dimension pageSize, Word eleWord, List<String> tempList) {
         String coords = ALTOTools.getALTOCoords(eleWord);
         if (coords != null && rotation != 0) {
@@ -541,15 +566,17 @@ public class ALTOTools {
         }
         if (coords != null) {
             tempList.add(coords);
-            logger.trace("ALTO word found: {} ({})", eleWord.getAttributeValue(CONTENT), coords);
+            if (logger.isTraceEnabled()) {
+                logger.trace("ALTO word found: {} ({})", eleWord.getAttributeValue(CONTENT), coords);
+            }
         }
 
         return coords;
     }
 
     /**
-     * @param wordRect
-     * @return
+     * @param rect
+     * @return ALTO word coordinates as a {@link String}
      */
     private static String getString(Rectangle rect) {
         StringBuilder sb = new StringBuilder();
@@ -600,10 +627,10 @@ public class ALTOTools {
                 y1r = h - y2;
                 x2r = w - x1;
                 y2r = h - y1;
-                ;
                 break;
             default:
                 // coordinates unchanged
+                break;
         }
 
         return new Rectangle((int) x1r, (int) y1r, (int) (x2r - x1r), (int) (y2r - y1r));
@@ -638,8 +665,8 @@ public class ALTOTools {
      * Reads rectangle coordinates from the given String. The String-coordinates are assumed to be int coordinates for left, top, right, bottom in
      * that order
      *
-     * @param coords
-     * @return
+     * @param string
+     * @return {@link Rectangle} from the given coordinates string
      */
     private static Rectangle getRectangle(String string) throws NumberFormatException {
         String[] parts = string.split(",\\s*");

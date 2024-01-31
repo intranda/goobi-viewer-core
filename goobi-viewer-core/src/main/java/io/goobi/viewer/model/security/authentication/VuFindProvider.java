@@ -98,33 +98,26 @@ public class VuFindProvider extends HttpAuthenticationProvider {
             return CompletableFuture.completedFuture(result);
         } catch (URISyntaxException e) {
             throw new AuthenticationProviderException("Cannot resolve authentication api url " + getUrl(), e);
-        } catch (WebApplicationException e) {
-            throw new AuthenticationProviderException("Error requesting authorizazion for user " + loginName, e);
-        } catch (JsonProcessingException e) {
-            throw new AuthenticationProviderException("Error requesting authorizazion for user " + loginName, e);
-        } catch (IOException e) {
+        } catch (IOException | WebApplicationException e) {
             throw new AuthenticationProviderException("Error requesting authorizazion for user " + loginName, e);
         }
     }
 
     private static String serialize(UserPasswordAuthenticationRequest object) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(object);
-        return json;
+        return mapper.writeValueAsString(object);
     }
 
     private static VuAuthenticationResponse deserialize(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        VuAuthenticationResponse response = mapper.readValue(json, VuAuthenticationResponse.class);
-        return response;
+        return mapper.readValue(json, VuAuthenticationResponse.class);
     }
 
     /**
      * @param request
-     * @param response
-     * @return
+     * @return Optional<User>
      * @throws AuthenticationProviderException
      */
     private Optional<User> getUser(UserPasswordAuthenticationRequest request) throws AuthenticationProviderException {
@@ -154,7 +147,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
                 user.setNickName(request.getUsername());
                 user.setActive(true);
                 user.setEmail(DEFAULT_EMAIL.replace("{username}", request.getUsername()));
-                logger.debug("Created new user with nickname " + request.getUsername());
+                logger.debug("Created new user with nickname {}", request.getUsername());
             }
 
             // set user status

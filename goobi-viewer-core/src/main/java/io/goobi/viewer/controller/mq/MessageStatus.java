@@ -27,7 +27,9 @@ public enum MessageStatus {
     ERROR("admin__tasks__status_error"),
     WAIT("admin__tasks__status_wait"),
     PROCESSING("admin__tasks__status_processing"),
-    NEW("admin__tasks__status_new");
+    NEW("admin__tasks__status_new"), 
+    IGNORE("admin__tasks__status_ignore"),
+    FATAL("admin__tasks__status_fatal");
 
     private final String label;
 

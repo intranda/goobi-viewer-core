@@ -173,6 +173,9 @@ public class CustomWidgetEditBean implements Serializable {
             case WIDGET_RSSFEED:
                 this.widget = new RssFeedSidebarWidget();
                 break;
+            default:
+                logger.warn("Type not yet supported: {}", type);
+                break;
         }
     }
 

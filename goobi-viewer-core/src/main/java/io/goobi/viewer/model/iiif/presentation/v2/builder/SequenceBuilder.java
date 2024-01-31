@@ -118,6 +118,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param manifest The manifest to include the sequence. May be null
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param manifestId a {@link java.lang.String} object.
+     * @param pagesToInclude
      * @return a {@link java.util.Map} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -126,7 +127,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest2 manifest, StructElement doc, String manifestId,
-            HttpServletRequest request)
+            List<Integer> pagesToInclude, HttpServletRequest request)
             throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
@@ -140,22 +141,24 @@ public class SequenceBuilder extends AbstractBuilder {
         }
 
         if (BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
-
-            IPageLoader pageLoader = AbstractPageLoader.create(doc);
+            IPageLoader pageLoader = AbstractPageLoader.create(doc, pagesToInclude);
+            
             Map<Integer, Canvas2> canvasMap = new HashMap<>();
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
-                PhysicalElement page = pageLoader.getPage(i);
+                if (pagesToInclude.isEmpty() || pagesToInclude.contains(i)) {
+                    PhysicalElement page = pageLoader.getPage(i);
 
-                Canvas2 canvas = generateCanvas(doc.getPi(), page);
-                if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
-                    addSeeAlsos(canvas, page);
-                    Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
+                    Canvas2 canvas = generateCanvas(doc.getPi(), page);
+                    if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
+                        addSeeAlsos(canvas, page);
+                        Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
 
-                    merge(annotationMap, content);
-                    canvasMap.put(i, canvas);
-                }
-                if (canvas != null) {
-                    sequence.addCanvas(canvas);
+                        merge(annotationMap, content);
+                        canvasMap.put(i, canvas);
+                    }
+                    if (canvas != null) {
+                        sequence.addCanvas(canvas);
+                    }
                 }
             }
 
@@ -303,7 +306,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws PresentationException
      */
     public PhysicalElement getPage(StructElement doc, int order) throws IndexUnreachableException, DAOException, PresentationException {
-        IPageLoader loader = AbstractPageLoader.create(doc);// new LeanPageLoader(doc, 1);
+        IPageLoader loader = AbstractPageLoader.create(doc, List.of(order));// new LeanPageLoader(doc, 1);
         return loader.getPage(order);
     }
 
@@ -468,8 +471,10 @@ public class SequenceBuilder extends AbstractBuilder {
                         TextualResource body = new TextualResource(fulltext);
                         anno.setBody(body);
                         annoList.addResource(anno);
-                    } catch (ContentNotFoundException | PresentationException e) {
-                        logger.error("Error loading fulltext from " + page.getFulltextFileName(), e);
+                    } catch (ContentNotFoundException e) {
+                        logger.error("Fulltext resource not found: {}", page.getFulltextFileName());
+                    } catch (PresentationException e) {
+                        logger.error("Error loading fulltext from {}", page.getFulltextFileName(), e);
 
                     }
                 }

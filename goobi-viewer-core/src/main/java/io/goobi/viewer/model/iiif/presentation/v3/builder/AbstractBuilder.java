@@ -85,6 +85,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -140,6 +141,7 @@ public abstract class AbstractBuilder {
 
         AbstractApiUrlManager v1Urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
         v1Builder = new io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder(v1Urls) {
+            //
         };
     }
 
@@ -329,7 +331,7 @@ public abstract class AbstractBuilder {
         return displayFields.stream().anyMatch(displayField -> matches(field, displayField));
     }
 
-    private boolean matches(String field, String template) {
+    private static boolean matches(String field, String template) {
 
         String cleanedTemplate = template.replace("*", "");
         String cleanedField = field.replaceAll("_LANG_\\w{2,3}", "");
@@ -717,24 +719,25 @@ public abstract class AbstractBuilder {
      * @return
      */
     protected IIIFAgent getProvider(ProviderConfiguration providerConfig) {
-        IIIFAgent provider = new IIIFAgent(providerConfig.uri, ViewerResourceBundle.getTranslations(providerConfig.label, false));
+        IIIFAgent provider = new IIIFAgent(providerConfig.getUri(), ViewerResourceBundle.getTranslations(providerConfig.getLabel(), false));
 
-        providerConfig.homepages.forEach(homepageConfig -> {
-            IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.label, false);
-            provider.addHomepage(new LabeledResource(homepageConfig.uri, "Text", Format.TEXT_HTML.getLabel(), label));
+        providerConfig.getHomepages().forEach(homepageConfig -> {
+            IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.getLabel(), false);
+            provider.addHomepage(new LabeledResource(homepageConfig.getUri(), "Text", Format.TEXT_HTML.getLabel(), label));
         });
 
-        providerConfig.logos.forEach(uri -> {
-            provider.addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType()));
-        });
+        providerConfig.getLogos()
+                .forEach(
+                        uri -> provider
+                                .addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType())));
 
         return provider;
     }
 
     protected ImageResource getThumbnail(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ImageResource thumb;
-        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
-        if (urls != null) {
+        AbstractApiUrlManager um = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
+        if (um != null) {
             thumb = new ImageResource(urls.path(RECORDS_RECORD, RECORDS_IMAGE).params(pi).build(), thumbWidth, thumbHeight);
         } else {
             thumb = new ImageResource(URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(pi)));
@@ -754,6 +757,23 @@ public abstract class AbstractBuilder {
                 return thumb;
             }
         } catch (URISyntaxException e) {
+            logger.warn("Unable to retrieve thumbnail url", e);
+        }
+        return null;
+    }
+    
+    protected ImageResource getThumbnail(StructElement ele, int pageNo) {
+        try {
+            String thumbUrl = this.thumbs.getThumbnailUrl(pageNo, ele.getPi());
+            if (StringUtils.isNotBlank(thumbUrl)) {
+                ImageResource thumb = new ImageResource(new URI(thumbUrl));
+                if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
+                    String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
+                    thumb.setService(new ImageInformation3(imageInfoURI));
+                }
+                return thumb;
+            }
+        } catch (URISyntaxException | IndexUnreachableException | PresentationException | DAOException | ViewerConfigurationException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
         return null;

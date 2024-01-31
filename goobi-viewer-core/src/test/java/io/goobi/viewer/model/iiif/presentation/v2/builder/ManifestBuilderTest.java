@@ -21,18 +21,20 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -62,13 +64,13 @@ import io.goobi.viewer.solr.SolrConstants;
  * @author Florian
  *
  */
-public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
+class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
 
     public static final String PI = "74241";
 
     @Test
-    public void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException,
+    void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException,
             ContentNotFoundException, IOException {
 
         ManifestBuilder builder = new ManifestBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
@@ -85,9 +87,9 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
             throw new ContentNotFoundException("No document found for pi " + PI);
         }
         StructElement mainDoc = docs.get(0);
-        IPresentationModelElement manifest = builder.generateManifest(mainDoc);
+        IPresentationModelElement manifest = builder.generateManifest(mainDoc, Collections.emptyList());
         ((Manifest2) manifest).setContext(IIIFPresentationResponseFilter.CONTEXT_PRESENTATION_2);
-        sequenceBuilder.addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), null);
+        sequenceBuilder.addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), Collections.emptyList(), null);
 
         String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
         if (StringUtils.isNotBlank(topLogId)) {
@@ -102,14 +104,14 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         ObjectWriter writer = mapper.writer().forType(Manifest2.class);
         String json = writer.writeValueAsString(manifest);
-        Assert.assertTrue(StringUtils.isNotBlank(json));
+        Assertions.assertTrue(StringUtils.isNotBlank(json));
         //            File jsonFile = new File("C:\\opt\\digiverso\\viewer\\manifest.json");
         //            FileUtils.write(jsonFile, json);
 
     }
 
     @Test
-    public void testDeserializeCanvas() throws URISyntaxException, JsonProcessingException {
+    void testDeserializeCanvas() throws URISyntaxException, JsonProcessingException {
         Range2 range = new Range2("http://viewer/manifest/1/ranges/1");
         Canvas2 canvas = new Canvas2("http://viewer/manifest/1/canvas/1");
         range.addCanvas(canvas);
@@ -118,13 +120,13 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         ObjectWriter writer = mapper.writer().forType(Range2.class);
         String json = writer.writeValueAsString(range);
-        Assert.assertTrue(StringUtils.isNotBlank(json));
+        Assertions.assertTrue(StringUtils.isNotBlank(json));
     }
 
     @Test
-    public void getValidViewerRenderingUrl() {
+    void getValidViewerRenderingUrl() {
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
+        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
 
         ApiUrls urls = new ApiUrls("https://viewer.goobi.io/api/v1/");
         ManifestBuilder builder = new ManifestBuilder(urls);
@@ -133,7 +135,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         ele.setPi(PI);
         ele.setImageNumber(1);
         ele.setLogid("LOG_0003");
-        builder.addRenderings(manifest, ele);
+        builder.addRenderings(manifest, ele, Optional.empty());
         LinkingContent viewerRendering = manifest.getRendering()
                 .stream()
                 .filter(rend -> rend.getType().equals(DcType.INTERACTIVE_RESOURCE.getLabel()))

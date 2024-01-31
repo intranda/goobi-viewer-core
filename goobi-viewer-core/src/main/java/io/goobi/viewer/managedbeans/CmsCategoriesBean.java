@@ -103,7 +103,8 @@ public class CmsCategoriesBean implements Serializable {
      * Otherwise, if {@link #isValid()} is true, create a new category based on {@link #getCategoryName()} and
      * {@link io.goobi.viewer.managedbeans.CmsCategoriesBean#getCategoryDescription()} and persist it. Also clear categoryName and
      * categoryDescription.
-     *
+     * 
+     * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveCategoryAction() {
@@ -142,6 +143,7 @@ public class CmsCategoriesBean implements Serializable {
      * Delete the given Category in DAO. Also clear categoryName and categoryDescription
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @return Navigation outcome
      */
     public String deleteCategoryAction(CMSCategory category) {
         if (getSelectedCategory() != null && getSelectedCategory().equals(category)) {
@@ -168,6 +170,8 @@ public class CmsCategoriesBean implements Serializable {
 
     /**
      * End the editing mode if active without persisting anything. Also clear categoryName and categoryDescription
+     * 
+     * @return Navigation outcome
      */
     public String cancelAction() {
         endEditing();
@@ -256,7 +260,7 @@ public class CmsCategoriesBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return ID of the selected category
      */
     public Long getSelectedCategoryId() {
         if (selectedCategory != null) {

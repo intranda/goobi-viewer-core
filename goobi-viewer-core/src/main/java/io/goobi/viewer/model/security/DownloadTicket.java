@@ -59,7 +59,7 @@ public class DownloadTicket implements Serializable {
     /** Static salt for password hashes. */
     public static final String SALT = "$2a$10$H580saN37o2P03A5myUCm.";
     /** Random object for password generation. */
-    private static final Random random = new SecureRandom();
+    private static final Random RANDOM = new SecureRandom();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,7 +102,7 @@ public class DownloadTicket implements Serializable {
 
     /**
      * 
-     * @return
+     * @return true if ticket granted and not expired; false otherwise
      * @should return true if ticket active
      */
     public boolean isActive() {
@@ -146,7 +146,7 @@ public class DownloadTicket implements Serializable {
      */
     public void activate() {
         if (passwordHash == null) {
-            password = StringTools.generateHash("xxx" + random.nextInt()).substring(0, 12);
+            password = StringTools.generateHash("xxx" + RANDOM.nextInt()).substring(0, 12);
             passwordHash = BCrypt.hashpw(password, SALT);
         }
         expirationDate = LocalDateTime.now().plusDays(VALIDITY_DAYS);

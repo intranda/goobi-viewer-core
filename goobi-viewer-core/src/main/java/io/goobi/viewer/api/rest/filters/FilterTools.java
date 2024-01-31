@@ -48,7 +48,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
-public class FilterTools {
+public final class FilterTools {
 
     private static final Logger logger = LogManager.getLogger(FilterTools.class);
 
@@ -60,6 +60,13 @@ public class FilterTools {
     public static final int PRIORITY_REDIRECT = 100;
 
     /**
+     * Private constructor.
+     */
+    private FilterTools() {
+        //
+    }
+
+    /**
      *
      *
      * @param pi
@@ -68,7 +75,7 @@ public class FilterTools {
      * @should throw exception if record not found
      */
     public static void filterForConcurrentViewLimit(String pi, HttpServletRequest request) throws ServiceNotAllowedException {
-        // logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId());
+        // logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId()); //NOSONAR Sometimes needed for debugging
         HttpSession session = request.getSession();
         // Release all locks for this session except the current record
         if (session != null) {
@@ -116,7 +123,7 @@ public class FilterTools {
      * full image not larger than {@link Configuration#getUnconditionalImageAccessMaxWidth()}.
      * </p>
      *
-     * @param request The servlet request for the resource
+     * @param servletRequest The servlet request for the resource
      * @return true if the request is for a IIIF image resource which is considered a thumbnail
      */
     public static boolean isThumbnail(HttpServletRequest servletRequest) {
@@ -136,8 +143,6 @@ public class FilterTools {
             //no image width, assume large image
         }
 
-        boolean isThumb =
-                "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth();
-        return isThumb;
+        return "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth();
     }
 }

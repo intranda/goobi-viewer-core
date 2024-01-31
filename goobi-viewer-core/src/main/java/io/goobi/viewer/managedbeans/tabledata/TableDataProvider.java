@@ -31,22 +31,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DAOSearchFunction;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
-import io.goobi.viewer.model.cms.Highlight;
-import io.goobi.viewer.model.cms.HighlightData;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>
  * TableDataProvider class.
  * </p>
+ * 
+ * @param <T>
  */
 public class TableDataProvider<T> implements Serializable {
 
@@ -62,7 +60,7 @@ public class TableDataProvider<T> implements Serializable {
     private List<TableDataFilter> filters = new ArrayList<>();
     private String lastFilterString = "";
 
-    public static enum SortOrder {
+    public enum SortOrder {
         ASCENDING,
         DESCENDING;
 
@@ -84,13 +82,14 @@ public class TableDataProvider<T> implements Serializable {
             private Optional<Long> numItems = Optional.empty();
 
             @Override
-            public List<T> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+            public List<T> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder, Map<String, String> filters) {
                 try {
-                    if (StringUtils.isBlank(sortField)) {
-                        sortField = defaultSortField;
+                    String useSortField = sortField;
+                    if (StringUtils.isBlank(useSortField)) {
+                        useSortField = defaultSortField;
                     }
 
-                    return search.apply(first, pageSize, sortField, sortOrder.asBoolean(), filters)
+                    return search.apply(first, pageSize, useSortField, sortOrder.asBoolean(), filters)
                             .stream()
                             .collect(Collectors.toList());
                 } catch (DAOException e) {
@@ -137,8 +136,9 @@ public class TableDataProvider<T> implements Serializable {
      * Constructor for TableDataProvider.
      * </p>
      *
-     * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
      * @param entriesPerPage the number of entries per page
+     * @param sortOrder
+     * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
      */
     public TableDataProvider(int entriesPerPage, SortOrder sortOrder, TableDataSource<T> source) {
         this.source = source;
@@ -175,8 +175,8 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * @param filters2
-     * @return
+     * @param filters
+     * @return {@link String}
      */
     private static String getFilterString(List<TableDataFilter> filters) {
         if (filters == null || filters.isEmpty()) {
@@ -212,6 +212,7 @@ public class TableDataProvider<T> implements Serializable {
      * Called ony any changes to the currently listed objects noop - may be implemented by inheriting classes
      */
     protected void resetCurrentList() {
+        //
     }
 
     /**
@@ -450,8 +451,9 @@ public class TableDataProvider<T> implements Serializable {
      * @param sortField a {@link java.lang.String} object.
      */
     public void setSortField(String sortField) {
-        if (!this.sortField.equals(sortField))
+        if (!this.sortField.equals(sortField)) {
             this.sortField = sortField;
+        }
         resetCurrentList();
     }
 

@@ -62,12 +62,17 @@ public class ExcelRenderer {
     private final AnnotationConverter annotationConverter;
 
     /**
-     * @param annotationBuilder
+     * @param annotationConverter
      */
     public ExcelRenderer(AnnotationConverter annotationConverter) {
         this.annotationConverter = annotationConverter;
     }
 
+    /**
+     * 
+     * @param annotationMap
+     * @return {@link XSSFWorkbook}
+     */
     public XSSFWorkbook render(Map<String, List<CrowdsourcingAnnotation>> annotationMap) {
         if (annotationMap == null) {
             throw new IllegalArgumentException("No annotations given");
@@ -122,7 +127,7 @@ public class ExcelRenderer {
         XSSFCell recordCell = row.createCell(1, CellType.STRING);
         recordCell.setCellValue(annotation.getTargetPI());
         XSSFCell pageCell = row.createCell(2, CellType.STRING);
-        String pageOrder = Optional.ofNullable(annotation.getTargetPageOrder()).map(i -> i.toString()).orElse("");
+        String pageOrder = Optional.ofNullable(annotation.getTargetPageOrder()).map(Object::toString).orElse("");
         pageCell.setCellValue(pageOrder);
         XSSFCell campaignCell = row.createCell(3, CellType.STRING);
         campaignCell.setCellValue(Optional.ofNullable(annotation.getGenerator()).map(Question::getOwner).map(Campaign::getTitle).orElse(""));
@@ -162,8 +167,8 @@ public class ExcelRenderer {
         try {
             IResource bodyResource = annotationConverter.getBodyAsResource(anno);
             String type = "unknown";
-            if (bodyResource instanceof TypedResource) {
-                type = ((TypedResource) bodyResource).getType();
+            if (bodyResource instanceof TypedResource typedBodyResource) {
+                type = typedBodyResource.getType();
             }
             switch (type) {
                 case "TextualBody":
@@ -191,7 +196,9 @@ public class ExcelRenderer {
     }
 
     /**
-     *
+     * 
+     * @param row
+     * @param style
      */
     private static void setCellStyles(Row row, CellStyle style) {
         Iterator<Cell> cells = row.cellIterator();
@@ -211,10 +218,10 @@ public class ExcelRenderer {
     }
 
     /**
-     * @param workbook
-     * @return
+     * @param wb
+     * @return {@link XSSFCellStyle}
      */
-    private XSSFCellStyle getDataCellStyle(XSSFWorkbook wb) {
+    private static XSSFCellStyle getDataCellStyle(XSSFWorkbook wb) {
         XSSFCellStyle style = wb.createCellStyle();
         //        style.setAlignment(HorizontalAlignment.RIGHT);
         XSSFFont font = wb.createFont();

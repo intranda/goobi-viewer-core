@@ -37,7 +37,7 @@ public class StartQueueBrokerListener implements ServletContextListener {
     private static final Logger log = LogManager.getLogger(StartQueueBrokerListener.class);
 
     @Inject
-    transient private MessageQueueManager messageBroker;
+    private transient MessageQueueManager messageBroker;
 
     public StartQueueBrokerListener() {
         //noop

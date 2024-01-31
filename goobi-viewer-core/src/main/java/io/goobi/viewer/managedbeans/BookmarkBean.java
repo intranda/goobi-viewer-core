@@ -147,7 +147,7 @@ public class BookmarkBean implements Serializable {
      * cases.
      *
      * @param bookmarkList
-     * @return
+     * @return true if bookmarkList saved successfully; false otherwise
      */
     static boolean saveBookmarkListAction(BookmarkList bookmarkList) {
         UserBean userBean = BeanUtils.getUserBean();
@@ -206,7 +206,7 @@ public class BookmarkBean implements Serializable {
         try {
             UserBean userBean = BeanUtils.getUserBean();
             if (userBean != null && userBean.getUser() != null && DataManager.getInstance().getDao().deleteBookmarkList(currentBookmarkList)) {
-                logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' deleted.");
+                logger.debug("BookmarkList '{}' deleted.", currentBookmarkList.getName());
                 String msg = ViewerResourceBundle.getTranslation("bookmarkList_deleteSuccess", null);
                 Messages.info(msg.replace("{0}", currentBookmarkList.getName()));
                 resetCurrentBookmarkListAction();
@@ -222,25 +222,9 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * Shares currentBookmarkList with currentUserGroup.
-     *
-     * @deprecated not used anymore. Replaced by assigning share key
-     */
-    public void shareCurrentBookmarkListAction() {
-        UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getUser() != null && currentBookmarkList.addGroupShare(currentUserGroup)) {
-            Messages.info("bookmarkList_shareWin");
-            logger.debug("BookmarkList '{}' shared with user group '{}'.", currentBookmarkList.getName(), currentUserGroup.getName());
-            return;
-        }
-        Messages.error("bookmarkList_shareFail");
-    }
-
-    /**
      * Removes currentUserGroup from the shares list of currentBookmarkList.
      */
     public void unshareCurrentBookmarkListAction() {
-        UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null && userBean.getUser() != null && currentBookmarkList.removeGroupShare(currentUserGroup)) {
             Messages.info("bookmarkList_unshareWin");
             logger.debug("BookmarkList '{}' unshared with user group '{}'.", currentBookmarkList.getName(), currentUserGroup.getName());
@@ -256,7 +240,6 @@ public class BookmarkBean implements Serializable {
         logger.trace("resetCurrentBookmarkListAction");
         currentBookmarkListSharedKey = null;
         currentBookmarkList = new BookmarkList();
-        UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
             currentBookmarkList.setOwner(userBean.getUser());
         }
@@ -863,7 +846,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * @param newBookmarkName the newBookmarkName to set
+     * @param newBookmarkListName the newBookmarkListName to set
      */
     public void setNewBookmarkListName(String newBookmarkListName) {
         this.newBookmarkListName = newBookmarkListName;
@@ -875,5 +858,4 @@ public class BookmarkBean implements Serializable {
         saveBookmarkListAction(list);
         setNewBookmarkListName("");
     }
-
 }

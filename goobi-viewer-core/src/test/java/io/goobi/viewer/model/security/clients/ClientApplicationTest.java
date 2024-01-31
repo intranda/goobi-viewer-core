@@ -15,13 +15,13 @@
  */
 package io.goobi.viewer.model.security.clients;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDateTime;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -32,18 +32,18 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian
  *
  */
-public class ClientApplicationTest extends AbstractDatabaseEnabledTest {
+class ClientApplicationTest extends AbstractDatabaseEnabledTest {
 
     IDAO dao;
     
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
     }
     
     @Test
-    public void testSave() throws DAOException {
+    void testSave() throws DAOException {
         ClientApplication client = new ClientApplication();
         client.setClientIdentifier("abcd");
         dao.saveClientApplication(client);

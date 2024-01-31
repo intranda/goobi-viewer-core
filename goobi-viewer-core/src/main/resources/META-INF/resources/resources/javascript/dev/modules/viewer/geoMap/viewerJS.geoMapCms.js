@@ -34,6 +34,7 @@
     		mapType: "MANUAL", // or "SOLR_QUERY",
     		openSearchOnMarkerClick: true,
     		documentIdToHighlight: undefined,
+    		pagesToShow: [],
             map: {
 	            mapId : "geomap",
 	            language: "en",
@@ -50,6 +51,10 @@
     		//console.log("highlight", highlightDocumentId);
     	    this.config.map.layers.map(layer => layer.features).flat().filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
     	}
+    	if(this.config.pagesToShow) {
+			this.config.map.layers.map(layer => layer.features).flat().filter(f => !this.config.pagesToShow.includes(f.properties.page) && f.properties.page !== undefined).forEach(f => f.properties.visible = false);
+
+		}
 		this.geoMap = new viewerJS.GeoMap(this.config.map);
    }
    

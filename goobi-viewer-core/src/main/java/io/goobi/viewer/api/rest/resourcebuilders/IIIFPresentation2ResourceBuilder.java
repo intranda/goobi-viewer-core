@@ -38,10 +38,10 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.iiif.IIIFUrlResolver;
@@ -79,7 +79,6 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -104,27 +103,39 @@ public class IIIFPresentation2ResourceBuilder {
         this.request = request;
     }
 
-    public IPresentationModelElement getManifest(String pi, BuildMode mode) throws PresentationException, IndexUnreachableException,
+    /**
+     * 
+     * @param pi
+     * @param mode
+     * @return {@link IPresentationModelElement}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     */
+public IPresentationModelElement getManifest(String pi, List<Integer> pagesToInclude, BuildMode mode) throws PresentationException, IndexUnreachableException,
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         getManifestBuilder().setBuildMode(mode);
         getSequenceBuilder().setBuildMode(mode);
-        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) ? getManifestBuilder().getDocumentWithChildren(pi)
-                : Arrays.asList(getManifestBuilder().getDocument(pi));
+        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) || !pagesToInclude.isEmpty() ? 
+                getManifestBuilder().getDocumentWithChildren(pi) : Arrays.asList(getManifestBuilder().getDocument(pi));
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + pi);
         }
         StructElement mainDoc = docs.get(0);
-        IPresentationModelElement manifest = getManifestBuilder().generateManifest(mainDoc);
+        IPresentationModelElement manifest = getManifestBuilder().generateManifest(mainDoc, pagesToInclude);
 
         if (manifest instanceof Collection2 && docs.size() > 1) {
             getManifestBuilder().addVolumes((Collection2) manifest, docs.subList(1, docs.size()));
         } else if (manifest instanceof Manifest2) {
             getManifestBuilder().addAnchor((Manifest2) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
 
-            getSequenceBuilder().addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), request);
+            getSequenceBuilder().addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), pagesToInclude, request);
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
-            if (StringUtils.isNotBlank(topLogId) && BuildMode.IIIF.equals(mode)) {
+            if (StringUtils.isNotBlank(topLogId) && BuildMode.IIIF.equals(mode) && pagesToInclude.isEmpty()) {
                 List<Range2> ranges = getStructureBuilder().generateStructure(docs, pi, false);
                 ranges.forEach(range -> {
                     ((Manifest2) manifest).addStructure(range);
@@ -135,6 +146,18 @@ public class IIIFPresentation2ResourceBuilder {
         return manifest;
     }
 
+    /**
+     * 
+     * @param pi
+     * @param logId
+     * @return {@link Range2}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     */
     public Range2 getRange(String pi, String logId) throws PresentationException, IndexUnreachableException,
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         List<StructElement> docs = getStructureBuilder().getDocumentWithChildren(pi);
@@ -147,6 +170,20 @@ public class IIIFPresentation2ResourceBuilder {
         return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
+    /**
+     * 
+     * @param pi
+     * @param buildMode
+     * @param preferedViewName
+     * @return {@link Sequence}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws IllegalRequestException
+     * @throws ContentNotFoundException
+     */
     public Sequence getBaseSequence(String pi, BuildMode buildMode, String preferedViewName)
             throws PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
@@ -154,14 +191,14 @@ public class IIIFPresentation2ResourceBuilder {
         StructElement doc = getManifestBuilder().getDocument(pi);
         PageType preferedView = getPreferedPageTypeForCanvas(preferedViewName);
 
-        IPresentationModelElement manifest = new ManifestBuilder(urls).setBuildMode(buildMode).generateManifest(doc);
+        IPresentationModelElement manifest = new ManifestBuilder(urls).setBuildMode(buildMode).generateManifest(doc, Collections.emptyList());
 
         if (manifest instanceof Collection2) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest2) {
             new SequenceBuilder(urls).setBuildMode(buildMode)
                     .setPreferedView(preferedView)
-                    .addBaseSequence((Manifest2) manifest, doc, manifest.getId().toString(), request);
+                    .addBaseSequence((Manifest2) manifest, doc, manifest.getId().toString(), Collections.emptyList(), request);
             return ((Manifest2) manifest).getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
@@ -169,13 +206,13 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * @param preferedViewName
-     * @return
+     * @param preferredViewName
+     * @return Preferred {@link PageType} for given preferredViewName
      */
-    public PageType getPreferedPageTypeForCanvas(String preferedViewName) {
+    public PageType getPreferedPageTypeForCanvas(String preferredViewName) {
         PageType preferedView = PageType.viewObject;
-        if (StringUtils.isNotBlank(preferedViewName)) {
-            preferedView = PageType.getByName(preferedViewName);
+        if (StringUtils.isNotBlank(preferredViewName)) {
+            preferedView = PageType.getByName(preferredViewName);
             if (preferedView == PageType.other) {
                 preferedView = PageType.viewObject;
             }
@@ -187,7 +224,7 @@ public class IIIFPresentation2ResourceBuilder {
      * 
      * @param pi
      * @param typeName
-     * @return
+     * @return {@link Layer}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws URISyntaxException
@@ -214,7 +251,7 @@ public class IIIFPresentation2ResourceBuilder {
                     (id, lang) -> urls.path(RECORDS_RECORD, RECORDS_CMDI_LANG).params(id, lang).buildURI());
 
         } else {
-            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", request);
+            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", Collections.emptyList(), request);
             return getLayerBuilder().generateLayer(pi, annoLists, type);
         }
     }
@@ -222,7 +259,7 @@ public class IIIFPresentation2ResourceBuilder {
     /**
      * @param pi
      * @param pageNo
-     * @return
+     * @return {@link IPresentationModelElement}
      * @throws ViewerConfigurationException
      * @throws URISyntaxException
      * @throws ContentNotFoundException
@@ -322,6 +359,7 @@ public class IIIFPresentation2ResourceBuilder {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param ignore
+     * @param groupingField
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -347,6 +385,7 @@ public class IIIFPresentation2ResourceBuilder {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
+     * @param ignore
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -360,6 +399,19 @@ public class IIIFPresentation2ResourceBuilder {
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField), ignore);
     }
 
+    /**
+     * 
+     * @param query
+     * @param sortFields
+     * @param first
+     * @param rows
+     * @return List<IPresentationModelElement>
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     */
     public List<IPresentationModelElement> getManifestsForQuery(String query, String sortFields, int first, int rows)
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
@@ -376,7 +428,7 @@ public class IIIFPresentation2ResourceBuilder {
         for (SolrDocument doc : queryResults) {
             long luceneId = Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString());
             StructElement ele = new StructElement(luceneId, doc);
-            AbstractPresentationModelElement2 manifest = builder.generateManifest(ele);
+            AbstractPresentationModelElement2 manifest = builder.generateManifest(ele, Collections.emptyList());
 
             if (this.urls != null && manifest.getThumbnails().isEmpty()) {
                 int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
@@ -408,8 +460,8 @@ public class IIIFPresentation2ResourceBuilder {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
-     * @param groupingField a solr field by which the collections may be grouped. Included in the response for each {@link BrowseDcElement} to enable
-     *            grouping by client
+     * @param facetField
+     * @param ignore
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.

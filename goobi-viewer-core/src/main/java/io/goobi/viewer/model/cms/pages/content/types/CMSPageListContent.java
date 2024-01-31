@@ -47,7 +47,6 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -78,15 +77,15 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     private boolean groupByCategory = false;
 
     @Transient
-    List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
+    private List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
 
     @Transient
-    List<CMSPage> nestedPages = null;
+    private List<CMSPage> nestedPages = null;
     @Transient
     private int nestedPagesCount = 0;
     @Transient
     @Inject
-    CMSTemplateManager templateManager;
+    private CMSTemplateManager templateManager;
 
     public CMSPageListContent() {
         super();
@@ -163,7 +162,10 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * <p>
      * Getter for the field <code>nestedPages</code>.
      * </p>
-     *
+     * 
+     * @param random
+     * @param paged
+     * @param templateManager
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -179,7 +181,10 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * Getter for the field <code>nestedPages</code>.
      * </p>
      *
+     * @param random
+     * @param paged
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param templateManager
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -205,10 +210,10 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
 
     /**
      * 
-     * @param pageNo
      * @param random
      * @param paged
-     * @return
+     * @param templateManager
+     * @return List<CMSPage>
      * @throws DAOException
      */
     private List<CMSPage> loadNestedPages(boolean random, boolean paged, CMSTemplateManager templateManager) throws DAOException {
@@ -264,7 +269,11 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * <p>
      * getSortedCategories.
      * </p>
-     *
+     * 
+     * @param pageNo
+     * @param random
+     * @param paged
+     * @param templateManager
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

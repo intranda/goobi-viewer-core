@@ -21,25 +21,22 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Instant;
+import java.nio.file.Path;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
@@ -72,8 +69,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.metadata.Metadata;
-import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -113,7 +110,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public AbstractPresentationModelElement2 generateManifest(StructElement ele)
+    public AbstractPresentationModelElement2 generateManifest(StructElement ele, List<Integer> pagesToInclude)
             throws URISyntaxException, PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
 
         final AbstractPresentationModelElement2 manifest;
@@ -130,9 +127,23 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest.addService(search);
         }
 
-        populate(ele, manifest);
+        List<PhysicalElement> pages = pagesToInclude.stream().map(pageNo -> getPhysicalElement(pageNo, ele)).collect(Collectors.toList());
+        populate(ele, manifest, pages);
 
         return manifest;
+    }
+
+    private PhysicalElement getPhysicalElement(Integer pageNo, StructElement struct) {
+        if (pageNo != null && struct != null) {
+            try {
+                return DataManager.getInstance().getSearchIndex().getPage(struct, pageNo);
+            } catch (IndexUnreachableException | PresentationException | DAOException e) {
+                logger.error("error loading page no {} in {}: {}", pageNo, struct.getPi(), e.toString());
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -142,12 +153,13 @@ public class ManifestBuilder extends AbstractBuilder {
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
+     * @param pages
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public void populate(StructElement ele, final AbstractPresentationModelElement2 manifest)
+    public void populate(StructElement ele, final AbstractPresentationModelElement2 manifest, List<PhysicalElement> pages)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
         this.getAttributions().forEach(attr -> manifest.addAttribution(attr));
         IMetadataValue label = getLabel(ele).orElse(new SimpleMetadataValue(ele.getLabel()));
@@ -156,22 +168,28 @@ public class ManifestBuilder extends AbstractBuilder {
 
         addMetadata(manifest, ele);
 
-        addThumbnail(ele, manifest);
+        addThumbnail(ele, manifest, pages.stream().findFirst());
 
         addLogo(ele, manifest);
         addLicences(manifest);
         addNavDate(ele, manifest);
         addSeeAlsos(manifest, ele);
-        addRenderings(manifest, ele);
+        if (pages.isEmpty()) {
+            addRenderings(manifest, ele, Optional.empty());
+        } else if (pages.size() == 1) {
+            addRenderings(manifest, ele, Optional.ofNullable(pages.get(0)));
+        }
 
         if (getBuildMode().equals(BuildMode.IIIF)) {
             addCmsPages(ele, manifest);
         }
     }
 
-    private void addThumbnail(StructElement ele, final AbstractPresentationModelElement2 manifest) {
+    private void addThumbnail(StructElement ele, final AbstractPresentationModelElement2 manifest, Optional<PhysicalElement> page) {
         try {
-            String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele);
+            String thumbUrl = page
+                    .map(p -> imageDelivery.getThumbs().getThumbnailUrl(p))
+                    .orElse(imageDelivery.getThumbs().getThumbnailUrl(ele));
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl));
                 manifest.addThumbnail(thumb);
@@ -298,15 +316,23 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
+     * @param pages
      * @param page
      * @param canvas
      * @throws URISyntaxException
      */
-    public void addRenderings(AbstractPresentationModelElement2 manifest, StructElement ele) {
+    public void addRenderings(AbstractPresentationModelElement2 manifest, StructElement ele, Optional<PhysicalElement> page) {
 
         this.getRenderings().forEach(link -> {
             try {
-                URI id = getLinkingPropertyUri(ele, link.target);
+                URI id = page.map(p -> {
+                    try {
+                        return getLinkingPropertyUri(p, link.target);
+                    } catch (IndexUnreachableException | ViewerConfigurationException e) {
+                        logger.error("Error getting link for page {} in {}: {}", p.getOrder(), p.getPi(), e.toString());
+                        return null;
+                    }
+                }).orElse(getLinkingPropertyUri(ele, link.target));
                 if (id != null) {
                     manifest.addRendering(link.getLinkingContent(id));
                 }
@@ -314,6 +340,26 @@ public class ManifestBuilder extends AbstractBuilder {
                 logger.error("Error building linking property url", e);
             }
         });
+    }
+
+    private URI getLinkingPropertyUri(PhysicalElement page, LinkingTarget target)
+            throws IndexUnreachableException, ViewerConfigurationException {
+
+        URI uri = null;
+        switch (target) {
+            case VIEWER:
+                uri = URI.create(getViewUrl(page, PageType.viewObject));
+                break;
+            case ALTO:
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), Path.of(Optional.ofNullable(page.getAltoFileName()).orElse("-")).getFileName()).buildURI();
+                break;
+            case PLAINTEXT:
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), Path.of(Optional.ofNullable(page.getFulltextFileName()).orElse(Optional.ofNullable(page.getAltoFileName()).orElse("-"))).getFileName()).buildURI();
+                break;
+            case PDF:
+                uri = URI.create(imageDelivery.getPdf().getPdfUrl(null, page));
+        }
+        return uri;
     }
 
     private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target)
@@ -376,9 +422,8 @@ public class ManifestBuilder extends AbstractBuilder {
     public void addVolumes(Collection2 anchor, List<StructElement> volumes) {
         for (StructElement volume : volumes) {
             try {
-                IPresentationModelElement child = generateManifest(volume);
+                IPresentationModelElement child = generateManifest(volume, Collections.emptyList());
                 if (child instanceof Manifest2) {
-                    //                    addBaseSequence((Manifest)child, volume, child.getId().toString());
                     anchor.addManifest((Manifest2) child);
                 }
             } catch (ViewerConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {

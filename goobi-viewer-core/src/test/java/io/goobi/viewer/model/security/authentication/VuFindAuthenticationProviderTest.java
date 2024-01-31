@@ -39,12 +39,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Header;
@@ -61,7 +61,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
  * @author Florian Alpers
  *
  */
-public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
+class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     VuFindProvider provider;
 
@@ -89,7 +89,7 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
     private static final String RESPONSE_USER_SUSPENDED = "{ " + "\"user\": {" + "\"isValid\": \"N\"," + "\"exists\": \"Y\"" + "}," + "\"expired\": {"
             + "\"isExpired\": \"Y\"" + "}," + "\"blocks\": {" + "\"isBlocked\": \"N\"" + "}" + "}";
 
-    @BeforeClass
+    @BeforeAll
     public static void startProxy() {
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
         String requestBody_valid = REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname).replace("{password}", userActive_pwHash);
@@ -120,7 +120,7 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopProxy() throws Exception {
         serverClient.stop();
         mockServer.stop();
@@ -133,7 +133,7 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -143,37 +143,37 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
-    public void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActive_nickname, userActive_pwHash);
-        Assert.assertTrue(future.get().getUser().isPresent());
-        Assert.assertTrue(future.get().getUser().get().isActive());
-        Assert.assertFalse(future.get().getUser().get().isSuspended());
+        Assertions.assertTrue(future.get().getUser().isPresent());
+        Assertions.assertTrue(future.get().getUser().get().isActive());
+        Assertions.assertFalse(future.get().getUser().get().isSuspended());
     }
 
     @Test
-    public void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActive_nickname, userSuspended_pwHash);
-        Assert.assertTrue(future.get().getUser().isPresent());
-        Assert.assertTrue(future.get().isRefused());
+        Assertions.assertTrue(future.get().getUser().isPresent());
+        Assertions.assertTrue(future.get().isRefused());
     }
 
     @Test
-    public void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActive_nickname + "test", userActive_pwHash);
-        Assert.assertFalse(future.get().getUser().isPresent());
+        Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
     @Test
-    public void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userSuspended_nickname, userSuspended_pwHash);
-        Assert.assertTrue(future.get().getUser().isPresent());
-        Assert.assertTrue(future.get().getUser().get().isActive());
-        Assert.assertTrue(future.get().getUser().get().isSuspended());
+        Assertions.assertTrue(future.get().getUser().isPresent());
+        Assertions.assertTrue(future.get().getUser().get().isActive());
+        Assertions.assertTrue(future.get().getUser().get().isSuspended());
     }
 
 }

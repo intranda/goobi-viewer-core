@@ -41,10 +41,11 @@ import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.LicenseType;
-import io.goobi.viewer.model.security.user.UserTools;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.user.UserTools;
 
 /**
  * <p>
@@ -92,53 +93,49 @@ public class ContextListener implements ServletContextListener {
             UserTools.checkAndCreateAnonymousUser();
             // add general clientapplication (representing all clients)
             DataManager.getInstance().getClientManager().addGeneralClientApplicationToDB();
-        } catch (Throwable e) {
+        } catch (DAOException e) {
             logger.error(e.getMessage(), e);
         }
         //        createResources();
 
         // Scan for all Pretty config files in module JARs
         // TODO This doesn't work if /WEB-INF/lib is mapped to a different folder in tomcat
-        try {
-            String libPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
-            if (libPath != null) {
-                logger.debug("Lib path: {}", libPath);
-                try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(libPath), "*viewer-module-*.jar")) {
-                    StringBuilder sbPrettyConfigFiles = new StringBuilder(prettyConfigFiles);
-                    for (Path path : stream) {
-                        logger.debug("Found module JAR: {}", path.getFileName());
-                        try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
-                            while (prettyConfigFiles.length() < PRETTY_CONFIG_FILES_STRING_THRESHOLD) {
-                                ZipEntry e = zip.getNextEntry(); //NOSONAR only viewer jars are scanned, which we control, and no data is written besides entry names
-                                if (e == null) {
-                                    break;
-                                }
-                                String[] nameSplit = e.getName().split("/");
-                                if (nameSplit.length > 0) {
-                                    String name = nameSplit[nameSplit.length - 1];
-                                    if (name.startsWith("pretty-config-")) {
-                                        sbPrettyConfigFiles.append(", ").append(name);
-                                    }
+        String libPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
+        if (libPath != null) {
+            logger.debug("Lib path: {}", libPath);
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(libPath), "*viewer-module-*.jar")) {
+                StringBuilder sbPrettyConfigFiles = new StringBuilder(prettyConfigFiles);
+                for (Path path : stream) {
+                    logger.debug("Found module JAR: {}", path.getFileName());
+                    try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
+                        while (prettyConfigFiles.length() < PRETTY_CONFIG_FILES_STRING_THRESHOLD) {
+                            ZipEntry e = zip.getNextEntry(); //NOSONAR only viewer jars are scanned, which we control; only entry names written
+                            if (e == null) {
+                                break;
+                            }
+                            String[] nameSplit = e.getName().split("/");
+                            if (nameSplit.length > 0) {
+                                String name = nameSplit[nameSplit.length - 1];
+                                if (name.startsWith("pretty-config-")) {
+                                    sbPrettyConfigFiles.append(", ").append(name);
                                 }
                             }
                         }
                     }
-                    prettyConfigFiles = sbPrettyConfigFiles.toString();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                    //                } catch (URISyntaxException e) {
-                    //                    logger.error(e.getMessage(), e);
-                } catch (FileSystemNotFoundException | ProviderNotFoundException e) {
-                    logger.error("Unable to scan theme-jar for pretty config files. Probably an older tomcat");
                 }
-            } else {
-                logger.error("Resource '/WEB-INF/lib' not found.");
+                prettyConfigFiles = sbPrettyConfigFiles.toString();
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+                //                } catch (URISyntaxException e) {
+                //                    logger.error(e.getMessage(), e);
+            } catch (FileSystemNotFoundException | ProviderNotFoundException e) {
+                logger.error("Unable to scan theme-jar for pretty config files. Probably an older tomcat");
             }
-            //        } catch (MalformedURLException e) {
-            //            logger.error(e.getMessage(), e);
-        } finally {
-            //
+        } else {
+            logger.error("Resource '/WEB-INF/lib' not found.");
         }
+        //        } catch (MalformedURLException e) {
+        //            logger.error(e.getMessage(), e);
 
         // Set Pretty config files parameter
         //        sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
@@ -157,7 +154,7 @@ public class ContextListener implements ServletContextListener {
         try {
             DataManager.getInstance().getDao().shutdown();
             logger.info("Successfully stopped DAO");
-        } catch (Exception e) {
+        } catch (DAOException e) {
             logger.error("Error stopping DAO", e);
         }
     }

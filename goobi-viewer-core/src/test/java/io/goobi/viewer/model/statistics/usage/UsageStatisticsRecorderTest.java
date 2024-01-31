@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.util.Random;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -39,19 +39,19 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian
  *
  */
-public class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
+class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
     
     volatile IDAO dao;
     
-    @Before
-    public void before() throws Exception  {
+    @BeforeEach
+    void before() throws Exception  {
         super.setUp();
         dao = DataManager.getInstance().getDao();
     }
 
 
     @Test
-    public void test_recordRequests() throws DAOException, InterruptedException {
+    void test_recordRequests() throws DAOException, InterruptedException {
 
 
         String pi1 = "PI_1";

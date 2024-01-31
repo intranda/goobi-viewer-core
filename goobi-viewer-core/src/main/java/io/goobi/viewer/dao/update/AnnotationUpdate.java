@@ -31,9 +31,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -58,7 +55,6 @@ import io.goobi.viewer.solr.SolrConstants;
  *
  */
 public class AnnotationUpdate implements IModelUpdate {
-
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
@@ -205,7 +201,7 @@ public class AnnotationUpdate implements IModelUpdate {
     /**
      * @param id
      * @param dao
-     * @return
+     * @return Optional<Question>
      */
     private static Optional<Question> getCampaignQuestion(Long id, IDAO dao) {
         try {
@@ -217,7 +213,7 @@ public class AnnotationUpdate implements IModelUpdate {
 
     /**
      * @param text
-     * @return
+     * @return JSON representation of the given text
      * @throws JsonProcessingException
      */
     private static String getAsJson(String text) throws JsonProcessingException {
@@ -229,7 +225,7 @@ public class AnnotationUpdate implements IModelUpdate {
      * 
      * @param id
      * @param dao
-     * @return
+     * @return Optional<User>
      */
     private static Optional<User> getUser(Long id, IDAO dao) {
         try {
@@ -242,7 +238,7 @@ public class AnnotationUpdate implements IModelUpdate {
     /**
      * 
      * @param generator
-     * @return
+     * @return Access condition for campaign; OPENACCESS if none set
      */
     private static String getAccessConditionForAnnotation(Question generator) {
         return Optional.ofNullable(generator)

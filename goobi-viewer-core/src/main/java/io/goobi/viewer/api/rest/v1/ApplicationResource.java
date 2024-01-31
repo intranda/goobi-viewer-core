@@ -44,13 +44,12 @@ import io.goobi.viewer.controller.DataManager;
 public class ApplicationResource {
 
     @Inject
-    ApiUrls urls;
+    private ApiUrls urls;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public ApiInfo getApiInfo() {
-        ApiInfo info = new ApiInfo("Goobi viewer REST API", "v1", urls.getApiUrl() + "/openapi.json");
-        return info;
+        return new ApiInfo("Goobi viewer REST API", "v1", urls.getApiUrl() + "/openapi.json");
     }
 
     @GET

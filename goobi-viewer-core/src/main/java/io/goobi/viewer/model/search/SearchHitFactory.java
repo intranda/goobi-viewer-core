@@ -41,7 +41,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -212,7 +211,7 @@ public class SearchHitFactory {
                 String metadataType = se.getMetadataValue(SolrConstants.METADATATYPE);
                 if (StringUtils.isNotEmpty(metadataType)) {
                     hitType = HitType.getByName(metadataType);
-                    if(hitType == null) {
+                    if (hitType == null) {
                         hitType = HitType.METADATA;
                     }
                 }
@@ -242,8 +241,8 @@ public class SearchHitFactory {
      * replaces any terms with a fuzzy search token with the matching strings found in the values of fields
      *
      * @param origTerms
-     * @param fields
-     * @return
+     * @param resultFields
+     * @return Map<String, Set<String>>
      */
     private static Map<String, Set<String>> getActualSearchTerms(Map<String, Set<String>> origTerms, Map<String, List<String>> resultFields) {
         Map<String, Set<String>> newFieldTerms = new HashMap<>();
@@ -255,8 +254,8 @@ public class SearchHitFactory {
         for (Entry<String, Set<String>> entry : origTerms.entrySet()) {
             Set<String> newTerms = new HashSet<>();
             Set<String> terms = entry.getValue();
-            for (String term : terms) {
-                term = term.replaceAll("(^\\()|(\\)$)", "");
+            for (final String t : terms) {
+                String term = t.replaceAll("(^\\()|(\\)$)", "");
                 term = StringTools.removeDiacriticalMarks(term);
                 if (FuzzySearchTerm.isFuzzyTerm(term)) {
                     FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
@@ -283,7 +282,7 @@ public class SearchHitFactory {
      * @param existingMetadataFields Metadata field names that are already added to the search hit and should be skipped
      * @param iddoc
      * @param searchHitLabel
-     * @return
+     * @return List<MetadataWrapper>
      * @should add metadata fields that match search terms
      * @should not add duplicates from default terms
      * @should not add duplicates from explicit terms

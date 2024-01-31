@@ -21,20 +21,20 @@
  */
 package io.goobi.viewer.controller.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 
-public class FeatureSetConfigurationTest extends AbstractTest {
+class FeatureSetConfigurationTest extends AbstractTest {
 
     @Test
-    public void testReadConfiguation() {
+    void testReadConfiguation() {
 
         Configuration config = DataManager.getInstance().getConfiguration();
         List<FeatureSetConfiguration> configs = config.getRecordGeomapFeatureSetConfigs("");

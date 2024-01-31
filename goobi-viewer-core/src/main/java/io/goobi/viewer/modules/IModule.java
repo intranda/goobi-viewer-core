@@ -148,7 +148,7 @@ public interface IModule extends IndexAugmenter {
      *
      * @param fromUser Source user
      * @param toUser Destination user
-     * @return
+     * @return Number of updated rows
      */
     public int moveUserContributions(User fromUser, User toUser);
 

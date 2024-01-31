@@ -44,7 +44,7 @@ import org.apache.commons.collections4.CollectionUtils;
  * @author florian
  *
  */
-public class SelectItemBuilder {
+public final class SelectItemBuilder {
 
     private SelectItemBuilder() {
     }
@@ -52,6 +52,7 @@ public class SelectItemBuilder {
     /**
      * Sort the given list of items into buckets for each starting letter
      * 
+     * @param <T>
      * @param items List of items that should be sorted
      * @param sortValueSupplier Function mapping an item to the sting according to which it should be sorted
      * @return Map with starting letters of sort values as keys
@@ -71,11 +72,12 @@ public class SelectItemBuilder {
     /**
      * Create a List of {@link SelectItem selectItems} from the given map, grouped into OptGroups for each map key
      * 
+     * @param <T>
      * @param map Map of items to include in selectItems
      * @param valueSupplier
      * @param labelSupplier
      * @param descriptionSupplier
-     * @return
+     * @return List<SelectItem>
      */
     public static <T> List<SelectItem> getAsGroupedSelectItems(Map<String, List<T>> map, Function<T, Object> valueSupplier,
             Function<T, String> labelSupplier, Function<T, String> descriptionSupplier, Predicate<T> disabledPredicate) {
@@ -95,6 +97,16 @@ public class SelectItemBuilder {
         return items;
     }
 
+    /**
+     * 
+     * @param <T>
+     * @param valueSupplier
+     * @param labelSupplier
+     * @param descriptionSupplier
+     * @param value
+     * @param disabledPredicate
+     * @return SelectItem
+     */
     public static <T> SelectItem createSelectItem(Function<T, Object> valueSupplier, Function<T, String> labelSupplier,
             Function<T, String> descriptionSupplier, T value, Predicate<T> disabledPredicate) {
         SelectItem item = new SelectItem(valueSupplier.apply(value), labelSupplier.apply(value), descriptionSupplier.apply(value));

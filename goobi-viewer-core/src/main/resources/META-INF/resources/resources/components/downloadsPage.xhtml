@@ -130,6 +130,43 @@
                                 <!-- PURL -->
 
 							</ui:fragment>
+							
+							                        <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest}">   
+                        
+                            <!-- IIIF MANIFEST -->
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
+	                           <button 
+                                   id="iiifManifest"
+                                   class="badge badge-dark widget-usage__page-download-iiif" 
+	                               data-copy-value="#{imageDelivery.iiifPageManifest}" 
+	                               data-copy-done-msg="#{msg.copyUrlDone}"
+                                   title="#{msg.copyUrl}"
+                                   aria-label="#{msg.image}: #{msg.iiif}"
+                                   tabindex="0"> 
+	                               #{msg.iiif}
+	                           </button> 
+	                       </ui:fragment>      
+	                    
+                            <!-- MIRADOR -->
+                            <ui:fragment
+                                rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
+                                    <a
+                                        href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}" 
+                                        id="mirador" 
+                                        class="badge badge-dark widget-usage__page-link-mirador-viewer" 
+                                        title="#{msg.action__view_in_mirador__tooltip}"
+										data-toggle="tooltip"
+										data-placement="top"
+										data-trigger="hover"
+                                        target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg.image}: #{msg.action__view_in_mirador}"> 
+                                        #{msg.action__view_in_mirador}
+                                    </a> 
+                            </ui:fragment>
+                        
+                        </ui:fragment>
+							
 						</div>
 						
 						<!-- POPOVER FOR IMAGE DOWNLOAD -->

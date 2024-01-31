@@ -33,33 +33,204 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class RecordsRequestParameters {
 
     @Schema(description = "Raw SOLR query", example = "+ISWORK:true +DOCSTRCT:monograph +(FACET_PLACEPUBLISH:Berlin FACET_PLACEPUBLISH:'New York')")
-    public String query;
+    private String query;
     @Schema(description = "A string list of SOLR field names which should be included in the response, allows wildcards",
             example = "[\"PI*\",\"IDDOC\",\"DOCTYPE\",\"DOCSTRCT\",\"LABEL\"]")
-    public List<String> resultFields = new ArrayList<>();
+    private List<String> resultFields = new ArrayList<>();
     @Schema(description = "A string list of SOLR fields used for sorting", example = "[\"SORTNUM_YEAR\",\"LABEL\"]")
-    public List<String> sortFields = new ArrayList<>();
+    private List<String> sortFields = new ArrayList<>();
     @Schema(description = "If this has the value 'desc', the results will be sorted by the given sortFields in descending order, otherwise ascending",
             example = "asc")
-    public String sortOrder = "asc";
+    private String sortOrder = "asc";
     @Schema(description = "If this has the value 'datecentric', the results will be grouped by their import date in their JSON representation",
             example = "recordcentric")
-    public String jsonFormat = "";
+    private String jsonFormat = "";
     @Schema(description = "The maximum number of results to return. Negative values don't set a limit", example = "10")
-    public int count = -1;
+    private int count = -1;
     @Schema(description = "The absolute index of the first result to return", example = "0")
-    public int offset = 0;
-    @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields, randomization only applies to results with identical values in the sortFields",
+    private int offset = 0;
+    @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields,"
+            + " randomization only applies to results with identical values in the sortFields",
             example = "false")
-    public boolean randomize = false;
-    @Schema(description = "If this field is set, all SOLR field names and values will be translated into this language if possible. If no language parameter is given, no fields will be translated",
+    private boolean randomize = false;
+    @Schema(description = "If this field is set, all SOLR field names and values will be translated into this language if possible."
+            + " If no language parameter is given, no fields will be translated",
             example = "en")
-    public String language = "";
-    @Schema(description = "Set to 'true' to include all child documents (sections, pages) that match the query. Child documents are appended in the 'children' property",
+    private String language = "";
+    @Schema(description = "Set to 'true' to include all child documents (sections, pages) that match the query."
+            + " Child documents are appended in the 'children' property",
             example = "false")
-    public boolean includeChildHits = false;
+    private boolean includeChildHits = false;
     @Schema(description = "Set to 'true' to place main record that contain the search terms in the title on top", example = "false")
-    public boolean boostTopLevelDocstructs = false;
+    private boolean boostTopLevelDocstructs = false;
     @Schema(description = "A list of SOLR field names to get facet results for", example = "[\"DC\",\"DOCSTRCT\"]")
-    public List<String> facetFields = new ArrayList<>();
+    private List<String> facetFields = new ArrayList<>();
+
+    /**
+     * @return the query
+     */
+    public String getQuery() {
+        return query;
+    }
+
+    /**
+     * @param query the query to set
+     */
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    /**
+     * @return the resultFields
+     */
+    public List<String> getResultFields() {
+        return resultFields;
+    }
+
+    /**
+     * @param resultFields the resultFields to set
+     */
+    public void setResultFields(List<String> resultFields) {
+        this.resultFields = resultFields;
+    }
+
+    /**
+     * @return the sortFields
+     */
+    public List<String> getSortFields() {
+        return sortFields;
+    }
+
+    /**
+     * @param sortFields the sortFields to set
+     */
+    public void setSortFields(List<String> sortFields) {
+        this.sortFields = sortFields;
+    }
+
+    /**
+     * @return the sortOrder
+     */
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    /**
+     * @param sortOrder the sortOrder to set
+     */
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    /**
+     * @return the jsonFormat
+     */
+    public String getJsonFormat() {
+        return jsonFormat;
+    }
+
+    /**
+     * @param jsonFormat the jsonFormat to set
+     */
+    public void setJsonFormat(String jsonFormat) {
+        this.jsonFormat = jsonFormat;
+    }
+
+    /**
+     * @return the count
+     */
+    public int getCount() {
+        return count;
+    }
+
+    /**
+     * @param count the count to set
+     */
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    /**
+     * @return the offset
+     */
+    public int getOffset() {
+        return offset;
+    }
+
+    /**
+     * @param offset the offset to set
+     */
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    /**
+     * @return the randomize
+     */
+    public boolean isRandomize() {
+        return randomize;
+    }
+
+    /**
+     * @param randomize the randomize to set
+     */
+    public void setRandomize(boolean randomize) {
+        this.randomize = randomize;
+    }
+
+    /**
+     * @return the language
+     */
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    /**
+     * @return the includeChildHits
+     */
+    public boolean isIncludeChildHits() {
+        return includeChildHits;
+    }
+
+    /**
+     * @param includeChildHits the includeChildHits to set
+     */
+    public void setIncludeChildHits(boolean includeChildHits) {
+        this.includeChildHits = includeChildHits;
+    }
+
+    /**
+     * @return the boostTopLevelDocstructs
+     */
+    public boolean isBoostTopLevelDocstructs() {
+        return boostTopLevelDocstructs;
+    }
+
+    /**
+     * @param boostTopLevelDocstructs the boostTopLevelDocstructs to set
+     */
+    public void setBoostTopLevelDocstructs(boolean boostTopLevelDocstructs) {
+        this.boostTopLevelDocstructs = boostTopLevelDocstructs;
+    }
+
+    /**
+     * @return the facetFields
+     */
+    public List<String> getFacetFields() {
+        return facetFields;
+    }
+
+    /**
+     * @param facetFields the facetFields to set
+     */
+    public void setFacetFields(List<String> facetFields) {
+        this.facetFields = facetFields;
+    }
 }

@@ -65,7 +65,7 @@ public class IndexerResource {
      * Used by the Solr indexer to submit its current version and hotfolder file count.
      * 
      * @param params
-     * @return
+     * @return {@link SuccessMessage}
      * @throws IllegalRequestException
      */
     @PUT
@@ -92,7 +92,7 @@ public class IndexerResource {
 
     /**
      * 
-     * @return
+     * @return Indexer version
      * @deprecated Use /api/v1/monitoring/
      */
     @Deprecated(since = "23.02")

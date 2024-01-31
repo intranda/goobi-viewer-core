@@ -70,6 +70,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @param doc Event Solr document
      * @param locale a {@link java.util.Locale} object.
+     * @param forSearchHit
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should fill in missing dateStart from displayDate
@@ -118,11 +119,11 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             // Search metadata
             searchHitMetadata = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(type);
             logger.trace("event search hit metadata: {}", searchHitMetadata.size());
-            populateMetadata(searchHitMetadata, type, doc, locale);
+            populateMetadata(searchHitMetadata, doc, locale);
         } else {
             // Main metadata
             metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, type);
-            populateMetadata(metadata, type, doc, locale);
+            populateMetadata(metadata, doc, locale);
 
             // Sidebar metadata
             sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
@@ -130,7 +131,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
                 // Use default if no elements are defined for the current event type
                 sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(StringConstants.DEFAULT_NAME);
             }
-            populateMetadata(sidebarMetadata, type, doc, locale);
+            populateMetadata(sidebarMetadata, doc, locale);
         }
     }
 
@@ -161,14 +162,12 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      *
      * @param metadata
-     * @param type
      * @param doc
      * @param locale
-     * @param recordLanguage
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private static void populateMetadata(List<Metadata> metadata, String type, SolrDocument doc, Locale locale)
+    private static void populateMetadata(List<Metadata> metadata, SolrDocument doc, Locale locale)
             throws IndexUnreachableException, PresentationException {
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
@@ -178,7 +177,6 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         }
 
         // Get metadata list for the event type
-        // logger.trace("Metadata for event '{}'", type);
         String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         for (Metadata md : metadata) {
             StructElement se = new StructElement();
@@ -203,8 +201,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         if (dateEnd == null && dateStart != null) {
             dateEnd = dateStart;
         }
-        // logger.debug("dateStart: " + dateStart.toString());
-        // logger.debug("dateEnd: " + dateEnd.toString());
+        // logger.debug("dateStart: " + dateStart.toString()); //NOSONAR Debug
+        // logger.debug("dateEnd: " + dateEnd.toString()); //NOSONAR Debug
     }
 
     /**

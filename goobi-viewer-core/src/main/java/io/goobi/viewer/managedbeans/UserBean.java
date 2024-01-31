@@ -27,11 +27,8 @@ import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -66,6 +63,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
@@ -175,7 +173,9 @@ public class UserBean implements Serializable {
             // Do not allow the same email address being used for multiple users
             Messages.error("newUserExist");
             logFailedUserRegistration();
-            logger.debug("User account already exists for e-mail address '{}'.", NetTools.scrambleEmailAddress(email));
+            if (logger.isDebugEnabled()) {
+                logger.debug("User account already exists for e-mail address '{}'.", NetTools.scrambleEmailAddress(email));
+            }
             return "";
         }
 
@@ -216,8 +216,10 @@ public class UserBean implements Serializable {
         if (request != null) {
             ipAddress = NetTools.getIpAddress(request);
         }
-        logger.debug("Failed user registration attempt from {}, e-mail '{}'", NetTools.scrambleIpAddress(ipAddress),
-                NetTools.scrambleEmailAddress(email));
+        if (logger.isDebugEnabled()) {
+            logger.debug("Failed user registration attempt from {}, e-mail '{}'", NetTools.scrambleIpAddress(ipAddress),
+                    NetTools.scrambleEmailAddress(email));
+        }
     }
 
     /**
@@ -311,7 +313,6 @@ public class UserBean implements Serializable {
      *
      * @param provider
      * @param result
-     * @param loginRequest
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
@@ -451,7 +452,7 @@ public class UserBean implements Serializable {
 
     /**
      * @param request
-     * @param response
+     * @return Redirect outcome
      */
     private String redirect(HttpServletRequest request) {
         Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(request);
@@ -505,22 +506,8 @@ public class UserBean implements Serializable {
             }
             session.removeAttribute("user");
 
-            //        // Remove priv maps
-            Enumeration<String> attributeNames = session.getAttributeNames();
-            Set<String> attributesToRemove = new HashSet<>();
-            while (attributeNames.hasMoreElements()) {
-                String attribute = attributeNames.nextElement();
-                if (attribute.startsWith(IPrivilegeHolder.PREFIX_PRIV)) {
-                    attributesToRemove.add(attribute);
-
-                }
-            }
-            if (!attributesToRemove.isEmpty()) {
-                for (String attribute : attributesToRemove) {
-                    session.removeAttribute(attribute);
-                    logger.trace("Removed session attribute: {}", attribute);
-                }
-            }
+            // Remove priv maps
+            AccessConditionUtils.clearSessionPermissions(session);
 
             try {
                 BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
@@ -562,7 +549,7 @@ public class UserBean implements Serializable {
     /**
      *
      * @param user
-     * @return
+     * @return true if activation email sent successfully; false otherwise
      */
     private boolean sendActivationEmail(User user) {
         if (StringUtils.isNotEmpty(user.getEmail())) {

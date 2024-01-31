@@ -31,7 +31,7 @@ public class TaskManagerPDFRequest extends AbstractTaskManagerRequest {
 
     public TaskManagerPDFRequest() {
         super("VIEWERPDF");
-        this.targetDir = DataManager.getInstance().getConfiguration().getDownloadFolder("pdf");
+        this.setTargetDir(DataManager.getInstance().getConfiguration().getDownloadFolder("pdf"));
     }
 
 }

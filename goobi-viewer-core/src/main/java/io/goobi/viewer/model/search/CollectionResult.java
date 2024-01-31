@@ -41,23 +41,23 @@ public class CollectionResult implements Serializable {
     /**
      * A counter for all records within the collections or its descendants
      */
-    private Long recordCount = 0l;
+    private Long recordCount = 0L;
     /**
      * A counter for direct child collections
      */
-    private Long childCount = 0l;
+    private Long childCount = 0L;
 
     public CollectionResult(String name) {
         this.name = name;
     }
 
     /**
-     * @param string
-     * @param l
+     * @param name
+     * @param recordCount
      */
-    public CollectionResult(String name, long l) {
+    public CollectionResult(String name, long recordCount) {
         this.name = name;
-        this.recordCount = l;
+        this.recordCount = recordCount;
     }
 
     /**
@@ -68,7 +68,7 @@ public class CollectionResult implements Serializable {
     }
 
     /**
-     * @param groupingValues the groupingValues to set
+     * @param facetValues the facetValues to set
      */
     public void setFacetValues(Set<String> facetValues) {
         this.facetValues = facetValues;

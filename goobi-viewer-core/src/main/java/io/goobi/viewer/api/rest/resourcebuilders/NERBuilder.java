@@ -82,10 +82,11 @@ public class NERBuilder {
 
     /**
      *
+     * @param request
      * @param query must return a set of PAGE documents within a single topStruct
      * @param typeString
      * @param rangeSize
-     * @return
+     * @return {@link DocumentReference}
      * @throws PresentationException if there is an error parsing the alto documents or if the search doesn't result in PAGE documents from a single
      *             topStruct
      * @throws IndexUnreachableException if the index cannot be reached
@@ -182,8 +183,8 @@ public class NERBuilder {
     }
 
     /**
-     * @param solrDocument
-     * @return
+     * @param solrDoc
+     * @return Page order from given solrDoc
      */
     private static Integer getPageOrderFromSolrDoc(SolrDocument solrDoc) {
         if (solrDoc != null && solrDoc.containsKey(SolrConstants.ORDER)) {

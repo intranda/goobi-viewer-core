@@ -31,9 +31,9 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_TEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TOC;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 
@@ -42,9 +42,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -60,7 +60,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  * @author florian
  *
  */
-public class RecordResourceTest extends AbstractRestApiTest {
+class RecordResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "74241";
     private static final String PI_ANNOTATIONS = "PI_1";
@@ -69,7 +69,7 @@ public class RecordResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -77,7 +77,7 @@ public class RecordResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -86,12 +86,12 @@ public class RecordResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsFile()}.
      */
     @Test
-    public void testGetRISAsFile() {
+    void testGetRISAsFile() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_FILE).params(PI).build())
                 .request()
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertTrue(entity.contains("TY  - BOOK"));
             assertTrue(entity.contains("CN  - 74241"));
@@ -104,13 +104,13 @@ public class RecordResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsText()}.
      */
     @Test
-    public void testGetRISAsText() {
+    void testGetRISAsText() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_TEXT).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertTrue(entity.contains("TY  - BOOK"));
             assertTrue(entity.contains("CN  - 74241"));
@@ -121,13 +121,13 @@ public class RecordResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getTOCAsText()}.
      */
     @Test
-    public void testGetTOCAsText() {
+    void testGetTOCAsText() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_TOC).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertTrue(entity.contains("NOBILTÀ PISANA OSSERVATA"));
             assertTrue(entity.contains("Wappen"));
@@ -141,13 +141,13 @@ public class RecordResourceTest extends AbstractRestApiTest {
      * @throws JsonMappingException
      */
     @Test
-    public void testGetAnnotationsForRecord() throws JsonMappingException, JsonProcessingException {
+    void testGetAnnotationsForRecord() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(PI_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             AnnotationCollection collection = mapper.readValue(entity, AnnotationCollection.class);
             assertNotNull(collection);
@@ -162,13 +162,13 @@ public class RecordResourceTest extends AbstractRestApiTest {
      * @throws JsonMappingException
      */
     @Test
-    public void testGetCommentPageForRecord() throws JsonMappingException, JsonProcessingException {
+    void testGetCommentPageForRecord() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(PI_ANNOTATIONS).build() + "1/")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             AnnotationPage page = mapper.readValue(entity, AnnotationPage.class);
             assertNotNull(page);
@@ -181,13 +181,13 @@ public class RecordResourceTest extends AbstractRestApiTest {
      */
     //TODO: read some actual mets file from test index
     @Test
-    public void testGetSource() {
+    void testGetSource() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(404, response.getStatus(), "Should return status 404");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject error = new JSONObject(entity);
@@ -196,14 +196,14 @@ public class RecordResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetManifest() {
+    void testGetManifest() {
         String url = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(PI).build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject manifest = new JSONObject(entity);
@@ -216,14 +216,14 @@ public class RecordResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetLayer() throws JsonMappingException, JsonProcessingException {
+    void testGetLayer() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_RECORD, RECORDS_LAYER).params(PI, "ALTO").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             Layer layer = mapper.readValue(entity, Layer.class);
@@ -232,14 +232,14 @@ public class RecordResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetNERTags() {
+    void testGetNERTags() {
         String url = urls.path(RECORDS_RECORD, RECORDS_NER_TAGS).params(PI_NER).build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200: " + response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200: " + response.getStatusInfo().getReasonPhrase());
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject doc = new JSONObject(entity);
@@ -249,7 +249,7 @@ public class RecordResourceTest extends AbstractRestApiTest {
     }
 
     //    @Test
-    public void testGetRequiredPrivilege() {
+    void testGetRequiredPrivilege() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURI()).thenReturn("/viewer/api/v1/records/PPN615391702/manifest/");
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8082/viewer/api/v1/records/PPN615391702/manifest/"));
@@ -257,7 +257,5 @@ public class RecordResourceTest extends AbstractRestApiTest {
         ApiUrls urls = new ApiUrls("http://localhost:8082/viewer/api/v1");
 
         new RecordResource(request, "");
-
     }
-
 }

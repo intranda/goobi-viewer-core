@@ -38,12 +38,11 @@ import java.net.URI;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -94,19 +93,14 @@ public class AnnotationConverter {
         return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).build());
     }
 
-    private URI getOpenAnnotationCommentURI(String pi, Integer page, Long id) {
-        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).query("format", "oa").build());
-    }
-
     /**
      * Get the annotation target as an WebAnnotation {@link de.intranda.api.annotation.IResource} java object
-     *
+     * 
+     * @param anno
      * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getTargetAsResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getTargetAsResource(PersistentAnnotation anno) throws IOException {
         if (anno.getTarget() != null) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -129,19 +123,17 @@ public class AnnotationConverter {
     /**
      * Get the annotation target as an OpenAnnotation {@link de.intranda.api.annotation.IResource} java object
      *
+     * @param anno
      * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getTargetAsOAResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getTargetAsOAResource(PersistentAnnotation anno) throws IOException {
         IResource resource = getTargetAsResource(anno);
         if (resource != null) {
             if (resource instanceof SpecificResource && ((SpecificResource) resource).getSelector() instanceof FragmentSelector) {
                 FragmentSelector selector = (FragmentSelector) ((SpecificResource) resource).getSelector();
                 ISelector oaSelector = new de.intranda.api.annotation.oa.FragmentSelector(selector.getFragment());
-                IResource oaResource = new de.intranda.api.annotation.oa.SpecificResource(resource.getId(), oaSelector);
-                return oaResource;
+                return new de.intranda.api.annotation.oa.SpecificResource(resource.getId(), oaSelector);
             }
             return resource;
         }
@@ -152,19 +144,17 @@ public class AnnotationConverter {
     /**
      * Get the
      *
+     * @param anno
      * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getBodyAsResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getBodyAsResource(PersistentAnnotation anno) throws IOException {
         if (anno.getBody() != null && anno.getBody().startsWith("{")) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             mapper.registerModule(new JavaTimeModule());
-            IResource resource = mapper.readValue(anno.getBody(), TextualResource.class);
-            return resource;
+            return mapper.readValue(anno.getBody(), TextualResource.class);
         } else if (StringUtils.isNotBlank(anno.getBody())) {
             return new TextualResource(anno.getBody());
         }
@@ -175,20 +165,18 @@ public class AnnotationConverter {
      * <p>
      * getBodyAsOAResource.
      * </p>
-     *
+     * 
+     * @param anno
      * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getBodyAsOAResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getBodyAsOAResource(PersistentAnnotation anno) throws IOException {
         if (anno.getBody() != null && anno.getBody().startsWith("{")) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             mapper.registerModule(new JavaTimeModule());
-            IResource resource = mapper.readValue(anno.getBody(), de.intranda.api.annotation.oa.TextualResource.class);
-            return resource;
+            return mapper.readValue(anno.getBody(), de.intranda.api.annotation.oa.TextualResource.class);
         } else if (StringUtils.isNotBlank(anno.getBody())) {
             return new TextualResource(anno.getBody());
         }
@@ -198,6 +186,7 @@ public class AnnotationConverter {
     /**
      * Get the annotation as an {@link de.intranda.api.annotation.wa.WebAnnotation} java object
      *
+     * @param anno
      * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      * @throws DAOException
      */
@@ -221,14 +210,14 @@ public class AnnotationConverter {
                             .setGenerator(new Agent(anno.getGenerator().getIdAsURI(), AgentType.SOFTWARE, anno.getGenerator().getOwner().getTitle()));
                 }
             } catch (DAOException e) {
-                logger.error("Error getting author of web annotation for " + anno, e);
+                logger.error("Error getting author of web annotation for {}", anno, e);
             }
             annotation.setBody(getBodyAsResource(anno));
             annotation.setTarget(getTargetAsResource(anno));
             annotation.setMotivation(anno.getMotivation());
             annotation.setRights(anno.getAccessCondition());
         } catch (IOException e) {
-            logger.error("Error creating web annotation from " + anno, e);
+            logger.error("Error creating web annotation from {}", anno, e);
         }
         return annotation;
     }
@@ -236,6 +225,7 @@ public class AnnotationConverter {
     /**
      * Get the annotation as an {@link de.intranda.api.annotation.oa.OpenAnnotation} java object
      *
+     * @param anno
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      * @throws com.fasterxml.jackson.core.JsonParseException if any.
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
@@ -255,28 +245,27 @@ public class AnnotationConverter {
         return annotation;
     }
 
+    /**
+     * 
+     * @param anno
+     * @return {@link PersistentAnnotation}
+     */
     public PersistentAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
-        CrowdsourcingAnnotation pa = new CrowdsourcingAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null),
+        return new CrowdsourcingAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null),
                 getPageNo(anno.getTarget()).orElse(null));
-        return pa;
     }
 
-    /**
-     * @param creator
-     * @return
-     */
     private Optional<Long> getUserId(Agent creator) {
         String id = urls.parseParameter(urls.path(USERS, USERS_USERID).build(), creator.getId().toString(), "{userId}");
         if (StringUtils.isNotBlank(id) && id.matches("\\d")) {
             return Optional.of(Long.parseLong(id));
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
     /**
      * @param target
-     * @return
+     * @return Optional<String>
      */
     private Optional<String> getPI(IResource target) {
         if (target.getId() != null) {
@@ -316,7 +305,7 @@ public class AnnotationConverter {
 
     /**
      * @param target
-     * @return
+     * @return Optional<Integer>
      */
     private Optional<Integer> getPageNo(IResource target) {
         if (target.getId() != null) {
@@ -331,7 +320,7 @@ public class AnnotationConverter {
 
     /**
      * @param anno
-     * @return
+     * @return anno.id if exists; null otherwise
      */
     private Long getPersistenceId(WebAnnotation anno) {
         Long id = null;
@@ -349,9 +338,8 @@ public class AnnotationConverter {
         }
         if (id != null) {
             return id;
-        } else {
-            return null;
         }
+        
+        return null;
     }
-
 }

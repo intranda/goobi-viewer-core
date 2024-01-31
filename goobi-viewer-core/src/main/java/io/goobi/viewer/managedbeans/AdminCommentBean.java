@@ -39,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -82,11 +83,13 @@ public class AdminCommentBean implements Serializable {
         lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
 
             @Override
-            public List<Comment> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+            public List<Comment> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder, Map<String, String> filters) {
                 try {
-                    if (StringUtils.isEmpty(sortField)) {
-                        sortField = "dateCreated";
-                        sortOrder = SortOrder.DESCENDING;
+                    String useSortField = sortField;
+                    SortOrder useSortOrder = sortOrder;
+                    if (StringUtils.isBlank(useSortField)) {
+                        useSortField = "dateCreated";
+                        useSortOrder = SortOrder.DESCENDING;
                     }
                     if (currentCommentGroup == null) {
                         return Collections.emptyList();
@@ -94,7 +97,7 @@ public class AdminCommentBean implements Serializable {
                     if (currentCommentGroup.isCoreType() && userBean != null && userBean.isAdmin()) {
                         return DataManager.getInstance()
                                 .getDao()
-                                .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, null);
+                                .getComments(first, pageSize, useSortField, useSortOrder.asBoolean(), filters, null);
                     }
                     if (!currentCommentGroup.isIdentifiersQueried()) {
                         CommentManager.queryCommentGroupIdentifiers(currentCommentGroup);
@@ -104,14 +107,11 @@ public class AdminCommentBean implements Serializable {
                     }
                     return DataManager.getInstance()
                             .getDao()
-                            .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, currentCommentGroup.getIdentifiers());
-                } catch (DAOException e) {
-                    logger.error(e.getMessage());
-                } catch (PresentationException e) {
-                    logger.error(e.getMessage());
-                } catch (IndexUnreachableException e) {
+                            .getComments(first, pageSize, useSortField, useSortOrder.asBoolean(), filters, currentCommentGroup.getIdentifiers());
+                } catch (DAOException | IndexUnreachableException | PresentationException e) {
                     logger.error(e.getMessage());
                 }
+
                 return Collections.emptyList();
             }
 
@@ -133,13 +133,7 @@ public class AdminCommentBean implements Serializable {
                         return 0;
                     }
                     return DataManager.getInstance().getDao().getCommentCount(filters, null, currentCommentGroup.getIdentifiers());
-                } catch (DAOException e) {
-                    logger.error(e.getMessage(), e);
-                    return 0;
-                } catch (PresentationException e) {
-                    logger.error(e.getMessage(), e);
-                    return 0;
-                } catch (IndexUnreachableException e) {
+                } catch (DAOException | IndexUnreachableException | PresentationException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
                 }
@@ -147,6 +141,7 @@ public class AdminCommentBean implements Serializable {
 
             @Override
             public void resetTotalNumberOfRecords() {
+                //
             }
 
         });
@@ -156,7 +151,7 @@ public class AdminCommentBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return true if comments enabled; false otherwise
      */
     public boolean isUserCommentsEnabled() {
         if (commentGroupAll != null) {
@@ -180,17 +175,15 @@ public class AdminCommentBean implements Serializable {
      * @throws DAOException
      */
     public void setUserCommentsEnabled(boolean userCommentsEnabled) throws DAOException {
-        if (commentGroupAll != null) {
-            if (commentGroupAll.isEnabled() != userCommentsEnabled) {
-                commentGroupAll.setEnabled(userCommentsEnabled);
-                DataManager.getInstance().getDao().updateCommentGroup(commentGroupAll);
-            }
+        if (commentGroupAll != null && commentGroupAll.isEnabled() != userCommentsEnabled) {
+            commentGroupAll.setEnabled(userCommentsEnabled);
+            DataManager.getInstance().getDao().updateCommentGroup(commentGroupAll);
         }
     }
 
     /**
      *
-     * @return
+     * @return All comment groups in the database
      * @throws DAOException
      */
     public List<CommentGroup> getAllCommentGroups() throws DAOException {
@@ -207,7 +200,6 @@ public class AdminCommentBean implements Serializable {
         if (user == null) {
             return Collections.emptyList();
         }
-        // logger.trace("user: {}", user.getEmail());
 
         // Unfiltered list for admins
         if (user.isSuperuser()) {
@@ -243,7 +235,7 @@ public class AdminCommentBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return Navigation outcome
      * @throws DAOException
      */
     public String saveCurentCommentGroupAction() throws DAOException {
@@ -255,7 +247,8 @@ public class AdminCommentBean implements Serializable {
      * saveCommentGroupAction.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveCommentGroupAction(CommentGroup commentGroup) throws DAOException {
@@ -266,14 +259,14 @@ public class AdminCommentBean implements Serializable {
                 currentCommentGroup = null;
                 return "pretty:adminUserCommentGroups";
             }
-            Messages.info("errSave");
+            Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
         } else {
             if (DataManager.getInstance().getDao().addCommentGroup(commentGroup)) {
                 Messages.info("addedSuccessfully");
                 currentCommentGroup = null;
                 return "pretty:adminUserCommentGroups";
             }
-            Messages.info("errSave");
+            Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
         }
         return "";
     }
@@ -284,7 +277,7 @@ public class AdminCommentBean implements Serializable {
      * </p>
      *
      * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
-     * @return a {@link java.lang.String} object.
+     * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteCommentGroupAction(CommentGroup commentGroup) throws DAOException {
@@ -323,13 +316,13 @@ public class AdminCommentBean implements Serializable {
             if (DataManager.getInstance().getDao().updateComment(comment)) {
                 Messages.info("updatedSuccessfully");
             } else {
-                Messages.info("errSave");
+                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
             }
         } else {
             if (DataManager.getInstance().getDao().addComment(comment)) {
                 Messages.info("addedSuccessfully");
             } else {
-                Messages.info("errSave");
+                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
             }
         }
         resetCurrentCommentAction();

@@ -55,9 +55,11 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -128,7 +130,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     @Column(name = "email", nullable = false)
     private String email;
 
-    // TODO exclude from serialization
+    // TODO exclude from serialization (without using the "transient" keyword)
     @Column(name = "password_hash")
     private String passwordHash;
 
@@ -438,9 +440,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      */
     public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
+        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi); //NOSONAR Debug
         if (isSuperuser()) {
-            // logger.trace("User '{}' is superuser, access granted.", getDisplayName());
+            // logger.trace("User '{}' is superuser, access granted.", getDisplayName()); //NOSONAR Debug
             return AccessPermission.granted();
         }
         if (requiredAccessConditions.isEmpty()) {
@@ -549,7 +551,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isMaySetRepresentativeImage() throws IndexUnreachableException, PresentationException, DAOException {
-        // logger.trace("isMaySetRepresentativeImage");
+        // logger.trace("isMaySetRepresentativeImage"); //NOSONAR Debug
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE, IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE,
                 recordsForWhichUserMaySetRepresentativeImage);
     }
@@ -633,7 +635,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      *
      * @param size
      * @param request
-     * @return
+     * @return Avatar URL
      */
     public String getAvatarUrl(int size, HttpServletRequest request) {
         return getAvatarType().getAvatar(this).getIconUrl(size, request);
@@ -736,7 +738,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * hasPrivilegesForTemplate.
      * </p>
      *
-     * @param templateId a {@link java.lang.String} object.
+     * @param template
      * @return true exactly if the user is not restricted to certain cmsTemplates or if the given templateId is among the allowed templates for the
      *         user of a usergroup she is in
      */
@@ -1646,10 +1648,24 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                     uploadedFile.getInputStream(),
                     destFile,
                     StandardCopyOption.REPLACE_EXISTING);
-            this.localAvatarUpdated = System.currentTimeMillis();
+            if(!Files.exists(destFile)) {
+                throw new IOException("Uploaded file does not exist");
+            } else if(!isValidImageFile(destFile)) {
+                throw new IOException("Uploaded file is not a valid image file");
+            } else {                
+                this.localAvatarUpdated = System.currentTimeMillis();
+            }
         } catch (IOException e) {
             logger.error("Error uploaded avatar file: {}", e.toString());
+            deleteAvatarFile();
+            throw e;
         }
+    }
+
+    private boolean isValidImageFile(Path file) throws IOException {
+        String contentType1 = FileTools.probeContentType(PathConverter.toURI(file));
+        String contentType2 = FileTools.getMimeTypeFromFile(file);
+        return contentType1.startsWith("image/");
     }
 
     public void deleteAvatarFile() throws IOException {

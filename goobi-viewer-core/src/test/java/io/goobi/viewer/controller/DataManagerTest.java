@@ -26,21 +26,21 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
-public class DataManagerTest {
+class DataManagerTest {
 
     /**
      * @see DataManager#registerModule(IModule)
      * @verifies not add module if it's already registered
      */
     @Test
-    public void registerModule_shouldNotAddModuleIfItsAlreadyRegistered() throws Exception {
+    void registerModule_shouldNotAddModuleIfItsAlreadyRegistered() throws Exception {
 
         class TestModule implements IModule {
 
@@ -139,6 +139,7 @@ public class DataManagerTest {
              */
             @Override
             public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws Exception {
+                //
             }
 
             /* (non-Javadoc)
@@ -181,7 +182,7 @@ public class DataManagerTest {
                 return 0;
             }
         }
-        Assert.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
-        Assert.assertFalse(DataManager.getInstance().registerModule(new TestModule()));
+        Assertions.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
+        Assertions.assertFalse(DataManager.getInstance().registerModule(new TestModule()));
     }
 }

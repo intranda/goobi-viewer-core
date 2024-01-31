@@ -30,6 +30,7 @@ public class EmailRecipient {
 
     /**
      *
+     * @param id
      * @param label
      * @param emailAddress
      * @param defaultRecipient

@@ -79,6 +79,7 @@ public class AuthorityResource {
     private HttpServletResponse servletResponse;
 
     public AuthorityResource() {
+        //
     }
 
     @GET
@@ -87,7 +88,7 @@ public class AuthorityResource {
     @CORSBinding
     @Operation(tags = { "authority" }, summary = "Get a normdata authority resource identified by its escaped url")
     public String getIdentity(
-            @Parameter(description = "Identifier url of the resource") @QueryParam("id") String url,
+            @Parameter(description = "Identifier url of the resource") @QueryParam("id") final String inUrl,
             @Parameter(description = "Metadata template to use") @QueryParam("template") String template,
             @Parameter(description = "Language to use for metadata fields") @QueryParam("lang") String lang)
             throws ContentNotFoundException, PresentationException {
@@ -111,7 +112,7 @@ public class AuthorityResource {
         }
         // logger.debug("norm data locale: {}", locale.toString());
 
-        url = StringTools.unescapeCriticalUrlChracters(url.trim());
+        String url = (inUrl == null ? "" : StringTools.unescapeCriticalUrlChracters(inUrl.trim()));
         String secondUrl = null;
         if (url.contains("$")) {
             String[] urlSplit = url.split("[$]");
@@ -124,13 +125,13 @@ public class AuthorityResource {
         Record rec = MetadataTools.getAuthorityDataRecord(url);
         if (rec == null) {
             logger.trace("Record not found");
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         List<NormData> normDataList = rec.getNormDataList();
         if (normDataList == null) {
             logger.trace("Normdata map is empty");
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         // Add link elements for Viaf and authority entries
@@ -187,7 +188,7 @@ public class AuthorityResource {
      * 
      * @param normData
      * @param locale
-     * @return
+     * @return {@link JSONObject}
      */
     static JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
         JSONObject jsonObj = new JSONObject();

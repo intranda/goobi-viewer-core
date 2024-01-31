@@ -35,6 +35,13 @@ import javax.faces.context.FacesContext;
 public class Messages {
 
     /**
+     * Private constructor.
+     */
+    private Messages() {
+        //
+    }
+
+    /**
      * <p>
      * error.
      * </p>

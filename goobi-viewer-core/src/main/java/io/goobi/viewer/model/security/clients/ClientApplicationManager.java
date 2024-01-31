@@ -141,7 +141,7 @@ public class ClientApplicationManager {
     public static Optional<ClientApplication> getClientFromSession(HttpSession session) {
         if (session != null) {
             Object client = session.getAttribute(CLIENT_SESSION_ATTRIBUTE);
-            if (client != null && client instanceof ClientApplication) {
+            if (client instanceof ClientApplication) {
                 return Optional.of((ClientApplication) client);
             }
         }
@@ -178,7 +178,7 @@ public class ClientApplicationManager {
     /**
      * The the client identifier from a request header
      * 
-     * @param servletRequest
+     * @param request
      * @return The identifier or null if non is in the header
      */
     public static String getClientIdentifier(HttpServletRequest request) {

@@ -31,10 +31,10 @@ public class CheckboxSelectable<T> {
     private final Function<T, String> labelGetter;
 
     /**
+     * 
      * @param dataSet
-     * @param selectionSet
      * @param value
-     * @param selected
+     * @param labelGetter
      */
     public CheckboxSelectable(Collection<T> dataSet, T value, Function<T, String> labelGetter) {
         super();
@@ -47,12 +47,14 @@ public class CheckboxSelectable<T> {
         return this.dataSet.contains(value);
     }
 
+    /**
+     * 
+     * @param selected
+     */
     public void setSelected(boolean selected) {
         if (selected) {
             if (!this.dataSet.contains(this.value)) {
                 this.dataSet.add(this.value);
-            } else {
-                //already selected
             }
         } else {
             this.dataSet.remove(this.value);

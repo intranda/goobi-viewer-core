@@ -50,7 +50,7 @@ public class SolrSearchParser extends AbstractSearchParser {
 
     private static final Logger logger = LogManager.getLogger(SolrSearchParser.class);
 
-    private static final List<String> PAGEFIELDLIST = Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT });
+    private static final List<String> PAGEFIELDLIST = Arrays.asList(SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT);
 
     private Map<Integer, Dimension> pageSizes = new HashMap<>();
 
