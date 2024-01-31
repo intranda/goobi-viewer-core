@@ -783,7 +783,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public void setRepresentativeImage() throws PresentationException, IndexUnreachableException {
-        // logger.trace("setRepresentativeImage"); //NOSONAR Debug
+        logger.trace("setRepresentativeImage"); //NOSONAR Debug
         synchronized (lock) {
             String image = "1";
             if (StringUtils.isNotEmpty(lastReceivedIdentifier) && !"-".equals(lastReceivedIdentifier)) {
@@ -791,10 +791,10 @@ public class ActiveDocumentBean implements Serializable {
                         .getSearchIndex()
                         .getFirstDoc(SolrConstants.PI + ":" + lastReceivedIdentifier, Collections.singletonList(SolrConstants.THUMBPAGENO));
                 if (doc != null && doc.getFieldValue(SolrConstants.THUMBPAGENO) != null) {
-                    this.imageToShow = String.valueOf(doc.getFieldValue(SolrConstants.THUMBPAGENO));
-                    logger.trace("{} found: {}", SolrConstants.THUMBPAGENO, this.imageToShow);
+                    image = String.valueOf(doc.getFieldValue(SolrConstants.THUMBPAGENO));
+                    logger.trace("{} found: {}", SolrConstants.THUMBPAGENO, image);
                 } else {
-                    logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, this.imageToShow);
+                    logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
                 }
             }
             setImageToShow(image);
