@@ -52,8 +52,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
-import io.goobi.viewer.controller.imaging.IIIFPresentationAPIHandler;
-import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -171,7 +169,7 @@ public final class AccessConditionUtils {
         String baseFileName = FilenameUtils.getBaseName(simpleFileName);
         sbQuery.append('+').append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
         //if fileName is an absolute http(s) url, assume that the filename is exactly the entire url
-        if(fileName.matches("https?:\\/\\/.*")) {
+        if (fileName.matches("https?:\\/\\/.*")) {
             sbQuery.append(" +").append(useFileField).append(":\"").append(fileName).append('"');
             return sbQuery.toString();
         }
@@ -543,7 +541,7 @@ public final class AccessConditionUtils {
     public static AccessPermission checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkContentFileAccessPermission: {}", identifier); //NOSONAR Debugging
-        String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT + "_" + identifier;
         AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request);
         if (ret != null) {
             // logger.trace("Permission for '{}' already in session: {}", attributeName, ret.isGranted()); //NOSONAR Debugging
@@ -758,7 +756,7 @@ public final class AccessConditionUtils {
         }
         // logger.debug("session id: " + request.getSession().getId()); //NOSONAR Debugging
         // Session persistent permission check: Servlet-local method.
-        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeType;
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeType + "_" + pi + "_" + contentFileName;
         // logger.trace("Checking session attribute: {}", attributeName); //NOSONAR Debugging
         Map<String, AccessPermission> permissions = (Map<String, AccessPermission>) getSessionPermission(attributeName, request);
         if (permissions == null) {
