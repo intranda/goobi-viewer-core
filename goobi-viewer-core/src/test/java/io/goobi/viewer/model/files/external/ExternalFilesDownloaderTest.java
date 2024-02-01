@@ -24,6 +24,7 @@ class ExternalFilesDownloaderTest {
     private final Path testZipFile = Path.of("src/test/resources/data/viewer/external-files/1287088031.zip");
     private final TestServlet server = new TestServlet("127.0.0.1", 9191);
 
+    
     @Test
     void test(@TempDir Path downloadFolder) throws IOException, InterruptedException, ExecutionException, TimeoutException {
 
@@ -33,7 +34,8 @@ class ExternalFilesDownloaderTest {
                 .respond(HttpResponse.response().withHeader(new Header("Content-Type", "application/zip")).withBody(body));
 
         assertTrue(Files.isDirectory(downloadFolder) || Files.createDirectory(downloadFolder) != null);
-            Consumer consumer = Mockito.spy(Consumer.class);
+            @SuppressWarnings("unchecked")
+            Consumer<Progress> consumer = (Consumer<Progress>)Mockito.spy(Consumer.class);
             URI uri = URI.create("http://127.0.0.1:9191/exteral/files/1287088031.zip");
             ExternalFilesDownloader download = new ExternalFilesDownloader(downloadFolder, consumer);
             Path downloadPath = download.downloadExternalFiles(uri);
