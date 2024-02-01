@@ -94,6 +94,7 @@ import io.goobi.viewer.model.maps.RecordGeoMap;
 import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
+import io.goobi.viewer.model.metadata.VariableReplacer;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -2720,8 +2721,10 @@ public class ActiveDocumentBean implements Serializable {
     }
     
     public List<String> getExternalResourceUrls() {
-        return this.getTopDocument().getMetadataValues(DataManager.getInstance().getConfiguration().getExternalResourceUrlSolrField())
-                .stream().map(url -> "\"" + url + "\"").collect(Collectors.toList());
+        List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
+        VariableReplacer vr = new VariableReplacer(getTopDocument());
+        List<String> urls = urlTemplates.stream().flatMap(templ -> vr.replace(templ).stream()).toList();
+        return urls;
     }
 
 }

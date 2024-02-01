@@ -48,9 +48,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileSizeCalculator;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.JsonObjectSignatureBuilder;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.StringTools;
@@ -152,11 +155,13 @@ public class DownloadTaskEndpoint {
         }
     }
 
-    private void listDownloadedFiles(SocketMessage message, List<Path> filePaths) throws JsonProcessingException {
+    private void listDownloadedFiles(SocketMessage message, List<Path> filePaths) throws JsonProcessingException, PresentationException, IndexUnreachableException {
         String taskId = getDownloadId(message.pi, message.url);
         SocketMessage answer = SocketMessage.buildAnswer(message, Status.COMPLETE);
+        Path downloadFolder = getDownloadFolder(message.pi, message.url);
+        String description = "-";
         answer.files = filePaths.stream()
-                .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString()))
+                .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString(), description, getMimetype(p.toString()), calculateSize(downloadFolder.resolve(p))))
                 .collect(Collectors.toList());
         sendMessage(answer);
     }
@@ -233,8 +238,7 @@ public class DownloadTaskEndpoint {
     }
     
     public List<Path> getDownloadedFiles(String pi, String downloadUrl) throws PresentationException, IndexUnreachableException {
-        Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
-        Path resourceFolder = downloadFolder.resolve(getDownloadId(pi, downloadUrl));
+        Path resourceFolder = getDownloadFolder(pi, downloadUrl);
         if (Files.exists(resourceFolder)) {
             return FileUtils.listFiles(resourceFolder.toFile(), DownloadExternalResourceHandler.ALLOWED_FILE_EXTENSIONS, true)
                     .stream()
@@ -244,6 +248,12 @@ public class DownloadTaskEndpoint {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    public Path getDownloadFolder(String pi, String downloadUrl) throws PresentationException, IndexUnreachableException {
+        Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
+        Path resourceFolder = downloadFolder.resolve(getDownloadId(pi, downloadUrl));
+        return resourceFolder;
     }
 
     private URI getDownloadUrl(String pi, String taskId, Path p) {
@@ -261,6 +271,25 @@ public class DownloadTaskEndpoint {
 
     private synchronized void sendMessage(SocketMessage message) throws JsonProcessingException {
         session.getAsyncRemote().sendText(JsonTools.getAsJson(message));
+    }
+    
+    public String getMimetype(String path) {
+        try {
+            return FileTools.getMimeTypeFromFile(Path.of(path));
+        } catch (IOException e) {
+            logger.error("Error probing mimetype of path {}", path, e);
+            return "?";
+        }
+    }
+
+
+    private String calculateSize(Path path) {
+        try {
+            return FileSizeCalculator.formatSize(FileSizeCalculator.getFileSize(path));
+        } catch (IOException e) {
+            logger.error("Error calculating file size of {}", path, e);
+            return "?";
+        }
     }
 
     @OnClose
@@ -305,13 +334,19 @@ public class DownloadTaskEndpoint {
         public ResourceFile() {
         }
 
-        public ResourceFile(String path, String url) {
+        public ResourceFile(String path, String url, String description, String mimeType, String size) {
             this.url = url;
             this.path = path;
+            this.description = description;
+            this.mimeType = mimeType;
+            this.size = size;
         }
 
         public String url; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
         public String path; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public String description; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public String size; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        public String mimeType; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
 
         public Map<String, String> getJsonSignature() {
             return JsonObjectSignatureBuilder.listProperties(getClass());

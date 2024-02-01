@@ -15,9 +15,19 @@
 	<div id="externalResourceDownload"></div>
 	<script>
 		riot.mount("#externalResourceDownload", "external-resource-download", {
-			urls : ["http://d-nb.info/1303371537/34", "http://d-nb.info/1308219385/34"], // #{activeDocumentBean.externalResourceUrls},
+			urls : #{activeDocumentBean.externalResourceUrls.stream().map(s -> "\"".concat(s.concat("\""))).toList()},
 			contextPath : "#{request.contextPath}",
-			pi : "#{activeDocumentBean.viewManager.pi}"
+			pi : "#{activeDocumentBean.viewManager.pi}",
+			msg : {
+		    		  action__external_files__order_download: "#{msg.action__external_files__order_download}",
+		    		  action__external_files__cancel_download: "#{msg.action__external_files__cancel_download}",
+		    		  action__external_files__download_in_queue: "#{msg.action__external_files__download_in_queue}",
+		    		  label__born_digital__filename: "#{msg.label__born_digital__filename}",
+		    		  label__born_digital__filedescription: "#{msg.label__born_digital__filedescription}",
+		    		  label__born_digital__filesize: "#{msg.label__born_digital__filesize}",
+		    		  label__born_digital__fileformat: "#{msg.label__born_digital__fileformat}",
+		    		  action__born_digital__download: "#{msg.action__born_digital__download}"
+		      }
 		});
 	</script>
 

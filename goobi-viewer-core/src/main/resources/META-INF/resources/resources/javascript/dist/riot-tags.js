@@ -2781,7 +2781,7 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 
 
 
-riot.tag2('external-resource-download', '<div class="download_external_resource__resource_list"><div class="download_external_resource__resource" each="{url in urls}"><div class="download_external_resource__error_wrapper {isError(url) ? \'-active\' : \'\'}"><i class="fa fa-exclamation-triangle"></i><label class="download_external_resource__error">{getErrorMessage(url)}</label></div><div class="download_external_resource__progress_wrapper"><label>{url}</label><button onclick="{startDownloadTask}" class="download_external_resource__order btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? \'\' : \'-active\'}">{msg.action__external_files__order_download}</button><div class="download_external_resource__waiting_animation {isWaiting(url) ? \'-active\' : \'\'}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div class="download_external_resource__loading_animation {isDownloading(url) ? \'-active\' : \'\'}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div><div class="download_external_resource__cancel_download {isRequested(url) && !isError(url) && !isFinished(url) ? \'-active\' : \'\'}"><button class="btn admin__cancel-button" onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button></div></div><div class="download_external_resource__results_wrapper {isFinished(url) ? \'-active\' : \'\'}"><ul><li each="{object in getFiles(url)}"><a href="{object.url}">{object.path}</a></li></ul></div></div></div>', '', '', function(opts) {
+riot.tag2('external-resource-download', '<div class="download_external_resource__resource_list"><div class="download_external_resource__resource" each="{url in urls}"><div class="download_external_resource__error_wrapper {isError(url) ? \'-active\' : \'\'}"><i class="fa fa-exclamation-triangle"></i><label class="download_external_resource__error">{getErrorMessage(url)}</label></div><div class="download_external_resource__progress_wrapper {isFinished(url) ? \'\' : \'-active\'}"><label>{url}</label><button onclick="{startDownloadTask}" class="download_external_resource__order btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? \'\' : \'-active\'}">{msg.action__external_files__order_download}</button><div class="download_external_resource__waiting_animation {isWaiting(url) ? \'-active\' : \'\'}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div class="download_external_resource__loading_animation {isDownloading(url) ? \'-active\' : \'\'}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div><div class="download_external_resource__cancel_download {isRequested(url) && !isError(url) && !isFinished(url) ? \'-active\' : \'\'}"><button class="btn admin__cancel-button" onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button></div></div><div class="download_external_resource__results_wrapper {isFinished(url) ? \'-active\' : \'\'}"><div class="born-digital__head-wrapper"><div class="born-digital__head"><span>{msg.label__born_digital__filename}</span></div><div class="born-digital__head"><span>{msg.label__born_digital__filedescription}</span></div><div class="born-digital__head"><span>{msg.label__born_digital__filesize}</span></div><div class="born-digital__head"><span>{msg.label__born_digital__fileformat}</span></div><div class="born-digital__head"><span aria-hidden="true" class="born-digital__item__download btn btn--full born-digital__item-download-dummy">#{msg.action__born_digital__download}</span></div></div><div class="born-digital__items-wrapper"><virtual each="{object in getFiles(url)}"><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filename}</span></div><div class="born-digital__item"><span>{object.path}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filedescription}</span></div><div class="born-digital__item"><span>{object.description}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filesize}</span></div><div class="born-digital__item"><span>{object.size}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__fileformat}</span></div><div class="born-digital__item"><span>{object.mimeType}</span></div><div class="born-digital__item"><a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a></div></virtual></div></div></div></div>', '', '', function(opts) {
       this.urls = [];
       this.downloads = new Map();
       this.updateListeners = new Map();
@@ -2790,14 +2790,20 @@ riot.tag2('external-resource-download', '<div class="download_external_resource_
       this.contextPath = "";
       this.preloader = "/resources/images/ajax_preloader.gif";
       this.msg = {
-    		  action__external_files__order_download: "Download resource",
-    		  action__external_files__cancel_download: "Cancel",
-    		  action__external_files__download_in_queue: "Download queued"
+    		  action__external_files__order_download: "action__external_files__order_download",
+    		  action__external_files__cancel_download: "action__external_files__cancel_download",
+    		  action__external_files__download_in_queue: "action__external_files__download_in_queue",
+    		  label__born_digital__filename: "label__born_digital__filename",
+    		  label__born_digital__filedescription: "label__born_digital__filedescription",
+    		  label__born_digital__filesize: "label__born_digital__filesize",
+    		  label__born_digital__fileformat: "label__born_digital__fileformat",
+    		  action__born_digital__download: "label__born_digital__fileformat"
       }
 
       this.on("mount", () => {
       	this.urls = this.opts.urls;
       	this.pi = this.opts.pi;
+      	this.msg = this.opts.msg;
       	this.contextPath = this.opts.contextPath ? this.opts.contextPath : this.contextPath;
       	this.preloader = this.contextPath + this.preloader;
       	this.msg = $.extend(true, {}, this.msg, this.opts.msg ? this.opts.msg : {});
@@ -2950,6 +2956,7 @@ riot.tag2('external-resource-download', '<div class="download_external_resource_
       }.bind(this)
 
       this.getFiles = function(url) {
+    	  console.log("get files ", url, this.downloads.get(url));
     	  return this.downloads.get(url)?.files;
       }.bind(this)
 

@@ -6,13 +6,10 @@ import java.nio.file.Path;
 import java.util.concurrent.Future;
 
 public class ExternalResource {
-
-    private final static Path NOT_DOWNLOADED = Path.of("");
     
     private final URI exteralResourceUri;
     private final ExternalFilesDownloader downloader;
     private final boolean exists;
-    private Path downloadPath = NOT_DOWNLOADED;
     
     public ExternalResource(URI exteralResourceUri, ExternalFilesDownloader downloader) {
         this.exteralResourceUri = exteralResourceUri;

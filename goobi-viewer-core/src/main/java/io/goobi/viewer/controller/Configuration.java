@@ -3504,8 +3504,8 @@ public class Configuration extends AbstractConfiguration {
     }
     
 
-    public String getExternalResourceUrlSolrField() {
-        return getLocalString("externalResource.urlSolrField", "MD_EXTERNAL_RESOURCE_URL");
+    public List<String> getExternalResourceUrlTemplates() {
+        return getLocalList("externalResource.urls.template", Collections.emptyList());
     }
 
     /**

@@ -87,7 +87,7 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         
         try {
             Path targetFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
-            if (!Files.isDirectory(targetFolder) && targetFolder.toFile().mkdir()) {
+            if (!Files.isDirectory(targetFolder) && !targetFolder.toFile().mkdir()) {
                 logger.error("Error downloading resouce: Cannot create folder {}", targetFolder);
                 storeError("Error downloading resouce: Cannot create folder " + targetFolder, url, messageId);
                 return MessageStatus.ERROR;

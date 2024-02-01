@@ -58,6 +58,7 @@ import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -1700,15 +1701,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getFileSizeAsString() {
-        if (fileSize > 1024 * 1024) {
-            return (fileSize / 1024 / 1024) + " MB";
-        }
-
-        else if (fileSize > 1024) {
-            return (fileSize / 1024) + " KB";
-        } else {
-            return fileSize + " Byte";
-        }
+        return FileSizeCalculator.formatSize(this.fileSize);
     }
 
     /**
