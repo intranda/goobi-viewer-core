@@ -5,9 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -33,4 +36,11 @@ class ExternalResourceTest {
         Mockito.verify(consumer, Mockito.atLeast(2)).accept(Mockito.any(Progress.class));
     }
 
+    @AfterEach
+    void after() throws IOException {
+        if(Files.isDirectory(downloadFolder)) {
+            FileUtils.deleteDirectory(downloadFolder.toFile());
+        }
+    }
+    
 }
