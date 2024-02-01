@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.ExportException;
 import java.rmi.server.RMIServerSocketFactory;
@@ -72,7 +73,6 @@ import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.jmx.QueueViewMBean;
 import org.apache.activemq.command.ActiveMQTextMessage;
-import org.apache.activemq.memory.buffer.MessageQueue;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -123,7 +123,7 @@ public class MessageQueueManager {
     private List<DefaultQueueListener> listeners = new ArrayList<>();
     @Inject
     private BeanManager beanManager;
-    private CreationalContext creationalContext;
+    private CreationalContext<MessageHandler<MessageStatus>> creationalContext;
     
      public MessageQueueManager() throws DAOException, IOException {
         this.instances = generateTicketHandlers();
@@ -185,12 +185,7 @@ public class MessageQueueManager {
     public static String getQueueForMessageType(String taskName) {
         try {
             TaskType type = TaskType.valueOf(taskName);
-            switch (type) {
-                case PRERENDER_PDF:
-                    return QUEUE_NAME_PDF;
-                default:
-                    return QUEUE_NAME_VIEWER;
-            }
+            return type == TaskType.PRERENDER_PDF ? QUEUE_NAME_PDF : QUEUE_NAME_VIEWER;
         } catch (NullPointerException | IllegalArgumentException e) {
             logger.error("Error parsing TaskType for name {}", taskName);
             return QUEUE_NAME_VIEWER;
@@ -234,11 +229,7 @@ public class MessageQueueManager {
         // JMX/RMI part taken from: https://vafer.org/blog/20061010091658/
         try {
             RMIServerSocketFactory serverFactory = new RMIServerSocketFactoryImpl(InetAddress.getByName(address));
-            try {
-                LocateRegistry.createRegistry(namingPort, null, serverFactory);
-            } catch (ExportException e) {
-                logger.trace("Cannot create registry, already in use");
-            }
+            createRegistry(namingPort, serverFactory);
 
             StringBuilder url = new StringBuilder();
             url.append("service:jmx:");
@@ -287,6 +278,14 @@ public class MessageQueueManager {
         }
         this.queueRunning = true;
         return true;
+    }
+
+    public void createRegistry(int namingPort, RMIServerSocketFactory serverFactory) throws RemoteException {
+        try {
+            LocateRegistry.createRegistry(namingPort, null, serverFactory);
+        } catch (ExportException e) {
+            logger.trace("Cannot create registry, already in use");
+        }
     }
 
     public void closeMessageServer() {
@@ -339,10 +338,11 @@ public class MessageQueueManager {
         return handlers;
     }
     
-    private CreationalContext injectMessageHandlerDependencies(BeanManager beanManager) {
-        CreationalContext<MessageHandler> ctx = beanManager.createCreationalContext(null);
+    private CreationalContext<MessageHandler<MessageStatus>> injectMessageHandlerDependencies(BeanManager beanManager) {
+        CreationalContext<MessageHandler<MessageStatus>> ctx = beanManager.createCreationalContext(null);
         for (MessageHandler<MessageStatus> handler : instances.values()) {
-            InjectionTarget<MessageHandler> injectionTarget = (InjectionTarget<MessageHandler>) beanManager
+            @SuppressWarnings("unchecked")
+            InjectionTarget<MessageHandler<MessageStatus>> injectionTarget = (InjectionTarget<MessageHandler<MessageStatus>>) beanManager
                     .getInjectionTargetFactory(beanManager.createAnnotatedType(handler.getClass())).createInjectionTarget(null);
                 injectionTarget.inject(handler, ctx);
         }
