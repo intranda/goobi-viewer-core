@@ -1,6 +1,6 @@
 package io.goobi.viewer.model.files.external;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.URI;
@@ -10,9 +10,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
@@ -23,11 +22,10 @@ import io.goobi.viewer.TestServlet;
 class ExternalFilesDownloaderTest {
 
     private final Path testZipFile = Path.of("src/test/resources/data/viewer/external-files/1287088031.zip");
-    private final Path downloadFolder = Path.of("src/test/resources/output/external-files");
     private final TestServlet server = new TestServlet("127.0.0.1", 9191);
 
     @Test
-    void test() throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    void test(@TempDir Path downloadFolder) throws IOException, InterruptedException, ExecutionException, TimeoutException {
 
         byte[] body = Files.readAllBytes(testZipFile);
         server.getServerClient()
@@ -41,14 +39,6 @@ class ExternalFilesDownloaderTest {
             Path downloadPath = download.downloadExternalFiles(uri);
             Mockito.verify(consumer, Mockito.atLeast(2)).accept(Mockito.any(Progress.class));
             assertTrue(Files.exists(downloadPath));
-    }
-
-    @AfterEach
-    void after() throws Exception {
-        server.shutdown();
-        if (Files.exists(downloadFolder)) {
-            FileUtils.deleteDirectory(downloadFolder.toFile());
-        }
     }
 
 }

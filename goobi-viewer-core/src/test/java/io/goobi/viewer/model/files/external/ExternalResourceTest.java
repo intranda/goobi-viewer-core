@@ -1,7 +1,7 @@
 package io.goobi.viewer.model.files.external;
 
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,16 +12,16 @@ import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
 
 class ExternalResourceTest {
 
     private final URI externalResourceUri = URI.create("https://d-nb.info/1287088031/34");
-    private final Path downloadFolder = Path.of("src/test/resources/output/external-files");
 
     @Test
-    void testCheckExistance() {
+    void testCheckExistance(@TempDir Path downloadFolder) {
         Consumer consumer = Mockito.spy(Consumer.class);
         ExternalResource resource = new ExternalResource(externalResourceUri, new ExternalFilesDownloader(downloadFolder, consumer));
         Mockito.verify(consumer, Mockito.never()).accept(Mockito.any(Progress.class));
@@ -29,18 +29,11 @@ class ExternalResourceTest {
     }
     
     @Test
-    void testDownload() throws IOException {
+    void testDownload(@TempDir Path downloadFolder) throws IOException {
         Consumer consumer = Mockito.spy(Consumer.class);
         ExternalResource resource = new ExternalResource(externalResourceUri, new ExternalFilesDownloader(downloadFolder, consumer));
         resource.downloadResource();
         Mockito.verify(consumer, Mockito.atLeast(2)).accept(Mockito.any(Progress.class));
-    }
-
-    @AfterEach
-    void after() throws IOException {
-        if(Files.isDirectory(downloadFolder)) {
-            FileUtils.deleteDirectory(downloadFolder.toFile());
-        }
     }
     
 }
