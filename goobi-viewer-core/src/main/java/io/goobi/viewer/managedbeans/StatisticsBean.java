@@ -309,16 +309,14 @@ public class StatisticsBean implements Serializable {
      * @return intrandaContentServer version
      */
     public String getContentServerVersion() {
-//        try {
-//            ApplicationInfo info = new ApplicationResource().getApplicationInfo();
-//            String json = new ObjectMapper().writeValueAsString(info);
-//            return JsonTools.shortFormatVersionString(json);
-//        } catch (ContentNotFoundException | IOException e) {
-//            logger.error(e.getMessage());
-//            return "";
-//        }
-        
-        return "OFF";
+        try {
+            ApplicationInfo info = new ApplicationResource().getApplicationInfo();
+            String json = new ObjectMapper().writeValueAsString(info);
+            return JsonTools.shortFormatVersionString(json);
+        } catch (ContentNotFoundException | IOException e) {
+            logger.error(e.getMessage());
+            return "";
+        }
     }
 
     /**
