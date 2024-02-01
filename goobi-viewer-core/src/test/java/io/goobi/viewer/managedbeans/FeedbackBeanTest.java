@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -36,8 +36,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -47,7 +47,7 @@ import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.user.User;
 import jakarta.mail.MessagingException;
 
-public class FeedbackBeanTest {
+class FeedbackBeanTest {
 
     private static final String USER_NAME = "Karla";
     private static final String SENDER_ADDRESS = "karla@mustermann.de";
@@ -55,57 +55,57 @@ public class FeedbackBeanTest {
     private static final String CURRENT_VIEWER_URL = "https://viewer.goobi.io/some/page/";
     private static final String PREVIOUS_VIEWER_URL = "https://viewer.goobi.io/some/other/page/";
 
-
     private static final String FEEDBACK_MESSAGE = "Feedback message";
-    
+
     FeedbackBean bean;
-    
-    @Before
-    public void setup() throws UnsupportedEncodingException, MessagingException {
-        
+
+    @BeforeEach
+    public void setUp() throws UnsupportedEncodingException, MessagingException {
+
         NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);
         Mockito.when(navigationHelper.getCurrentPrettyUrl()).thenReturn(CURRENT_VIEWER_URL);
         Mockito.when(navigationHelper.getPreviousViewUrl()).thenReturn(PREVIOUS_VIEWER_URL);
-        
+
         SecurityQuestion question = new SecurityQuestion("What is the first letter of the alphabet", Set.of("a", "A"));
         Configuration config = Mockito.mock(Configuration.class);
         Mockito.when(config.getSecurityQuestions()).thenReturn(Collections.singletonList(question));
-        
+
         CaptchaBean captchaBean = new CaptchaBean(config);// Mockito.mock(CaptchaBean.class);
         captchaBean.resetSecurityQuestion();
-        
+
         EMailSender emailSender = Mockito.mock(EMailSender.class);
         Mockito.when(emailSender.postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(true);
 
         bean = new FeedbackBean();
-        bean.navigationHelper = navigationHelper;
-        bean.captchaBean = captchaBean;
-        bean.emailSender = emailSender;
-        bean.userBean = mockUserBean(null, null);
-        bean.facesContext = mockFacesContext(Map.of());
-        
+        bean.setNavigationHelper(navigationHelper);
+        bean.setCaptchaBean(captchaBean);
+        bean.setEmailSender(emailSender);
+        bean.setUserBean(mockUserBean(null, null));
+        bean.setFacesContext(mockFacesContext(Map.of()));
+
     }
-    
+
     @Test
-    public void testNoUser() throws UnsupportedEncodingException, MessagingException {
+    void testNoUser() throws UnsupportedEncodingException, MessagingException {
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
         bean.getFeedback().setName(USER_NAME);
         bean.getFeedback().setSenderAddress(SENDER_ADDRESS);
         bean.getFeedback().setRecipientAddress(RECIPIENT_ADDRESS);
         bean.getCaptchaBean().setSecurityAnswer("A");
-        
+
         String subjectSender = bean.getFeedback().getEmailSubject("feedbackEmailSubjectSender");
         String subject = bean.getFeedback().getEmailSubject("feedbackEmailSubject");
         String body = bean.getFeedback().getEmailBody("feedbackEmailBody");
-        
+
         bean.submitFeedbackAction(true);
-        
+
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<String>> recipientCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
 
-        Mockito.verify(bean.emailSender, Mockito.times(2)).postMail(recipientCaptor.capture(), Mockito.isNull(), Mockito.isNull(), subjectCaptor.capture(), Mockito.contains(body));
+        Mockito.verify(bean.getEmailSender(), Mockito.times(2))
+                .postMail(recipientCaptor.capture(), Mockito.isNull(), Mockito.isNull(), subjectCaptor.capture(), Mockito.contains(body));
         int indexMailRecipient = recipientCaptor.getAllValues().indexOf(Arrays.asList(RECIPIENT_ADDRESS));
         int indexMailSender = recipientCaptor.getAllValues().indexOf(Arrays.asList(SENDER_ADDRESS));
         int indexSubjectRecipient = subjectCaptor.getAllValues().indexOf(subject);
@@ -116,26 +116,27 @@ public class FeedbackBeanTest {
         assertEquals(indexMailRecipient, indexSubjectRecipient);
         assertEquals(indexMailSender, indexSubjectSender);
     }
-    
+
     @Test
-    public void testUser() throws UnsupportedEncodingException, MessagingException {
-        bean.userBean = mockUserBean(USER_NAME, SENDER_ADDRESS);
+    void testUser() throws UnsupportedEncodingException, MessagingException {
+        bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
         bean.getFeedback().setRecipientAddress(RECIPIENT_ADDRESS);
         bean.getCaptchaBean().setSecurityAnswer("A");
-        
+
         String subjectSender = bean.getFeedback().getEmailSubject("feedbackEmailSubjectSender");
         String subject = bean.getFeedback().getEmailSubject("feedbackEmailSubject");
         String body = bean.getFeedback().getEmailBody("feedbackEmailBody");
-        
+
         bean.submitFeedbackAction(true);
-        
+
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<String>> recipientCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
 
-        Mockito.verify(bean.emailSender, Mockito.times(2)).postMail(recipientCaptor.capture(), Mockito.isNull(), Mockito.isNull(), subjectCaptor.capture(), Mockito.contains(body));
+        Mockito.verify(bean.getEmailSender(), Mockito.times(2))
+                .postMail(recipientCaptor.capture(), Mockito.isNull(), Mockito.isNull(), subjectCaptor.capture(), Mockito.contains(body));
         int indexMailRecipient = recipientCaptor.getAllValues().indexOf(Arrays.asList(RECIPIENT_ADDRESS));
         int indexMailSender = recipientCaptor.getAllValues().indexOf(Arrays.asList(SENDER_ADDRESS));
         int indexSubjectRecipient = subjectCaptor.getAllValues().indexOf(subject);
@@ -146,45 +147,45 @@ public class FeedbackBeanTest {
         assertEquals(indexMailRecipient, indexSubjectRecipient);
         assertEquals(indexMailSender, indexSubjectSender);
     }
-    
+
     @Test
-    public void testWrongCaptcha() throws UnsupportedEncodingException, MessagingException {
-        bean.userBean = mockUserBean(USER_NAME, SENDER_ADDRESS);
+    void testWrongCaptcha() throws UnsupportedEncodingException, MessagingException {
+        bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
         bean.getFeedback().setRecipientAddress(RECIPIENT_ADDRESS);
         bean.getCaptchaBean().setSecurityAnswer("B");
-        
+
         bean.submitFeedbackAction(true);
-        Mockito.verify(bean.emailSender, Mockito.times(0)).postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(bean.getEmailSender(), Mockito.times(0)).postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
     }
 
     @Test
-    public void testFilledHoneypot() throws UnsupportedEncodingException, MessagingException {
-        bean.userBean = mockUserBean(USER_NAME, SENDER_ADDRESS);
+    void testFilledHoneypot() throws UnsupportedEncodingException, MessagingException {
+        bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
         bean.getFeedback().setRecipientAddress(RECIPIENT_ADDRESS);
         bean.setLastName("bla");
         bean.getCaptchaBean().setSecurityAnswer("A");
-        
+
         bean.submitFeedbackAction(true);
-        Mockito.verify(bean.emailSender, Mockito.times(0)).postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(bean.getEmailSender(), Mockito.times(0)).postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
     }
 
-    private FacesContext mockFacesContext(Map<String, String> requestParameters) {
+    private static FacesContext mockFacesContext(Map<String, String> requestParameters) {
         FacesContext facesContext = Mockito.mock(FacesContext.class);
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
         Mockito.when(externalContext.getRequestParameterMap()).thenReturn(requestParameters);
         return facesContext;
     }
-    
-    private UserBean mockUserBean(String name, String email) {
+
+    private static UserBean mockUserBean(String name, String email) {
         UserBean userBean = Mockito.mock(UserBean.class);
-        if(StringUtils.isNotBlank(email)) {            
+        if (StringUtils.isNotBlank(email)) {
             User user = Mockito.mock(User.class);
             Mockito.when(user.getDisplayName()).thenReturn(USER_NAME);
             Mockito.when(user.getEmail()).thenReturn(SENDER_ADDRESS);

@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -35,7 +35,7 @@ import java.util.Map;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -47,10 +47,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
-public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
+class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
 
     @Test
-    public void test_filterResults() throws DAOException, IndexUnreachableException, PresentationException {
+    void test_filterResults() throws DAOException, IndexUnreachableException, PresentationException {
 
         IDAO dao = createDAOData();
 
@@ -134,7 +134,7 @@ public class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
      * @verifies extract pi from filter correctly
      */
     @Test
-    public void getFilteredIdentifierList_shouldExtractPiFromFilterCorrectly() throws Exception {
+    void getFilteredIdentifierList_shouldExtractPiFromFilterCorrectly() throws Exception {
         StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(AbstractSolrEnabledTest.PI_KLEIUNIV);
         IDAO dao = createDAOData();
         List<String> result = new StatisticsSummaryBuilder(dao, DataManager.getInstance().getSearchIndex()).getFilteredIdentifierList(filter);

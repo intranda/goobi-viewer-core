@@ -22,8 +22,7 @@
     </composite:interface>
     
 	<composite:implementation>
-
-		<div id="#{cc.attrs.mapId}" class="geomap">
+		<div id="#{cc.attrs.mapId}" class="geomap"> 
 			<span class="ajax_loader">
 				<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
 			</span>
@@ -93,7 +92,7 @@
 				        ],
 		            },
 		    }
-		    console.log("map layers ", config.map.layers.map(l => l.features));
+		    // console.log("map layers ", config.map.layers.map(l => l.features));
 	    	let geomap = new viewerJS.GeoMapCms(config);
 			window.geomap = geomap;
 		    let view = #{cc.attrs.geoMap.initialView};

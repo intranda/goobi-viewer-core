@@ -134,7 +134,8 @@ public abstract class AbstractBookmarkResourceBuilder {
      * getAsCollection.
      * </p>
      *
-     * @param id a {@link java.lang.Long} object.
+     * @param sharedKey
+     * @param urls
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -144,8 +145,7 @@ public abstract class AbstractBookmarkResourceBuilder {
 
         try {
             BookmarkList list = getSharedBookmarkList(sharedKey);
-            Collection2 collection = createCollection(list, urls);
-            return collection;
+            return createCollection(list, urls);
         } catch (ContentNotFoundException | RestApiException e) {
             throw new ContentNotFoundException("No matching bookmark list found");
         }
@@ -153,7 +153,8 @@ public abstract class AbstractBookmarkResourceBuilder {
 
     /**
      * @param list
-     * @return
+     * @param url
+     * @return {@link Collection2}
      */
     protected Collection2 createCollection(BookmarkList list, String url) {
         ManifestBuilder builder = new ManifestBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
@@ -174,7 +175,7 @@ public abstract class AbstractBookmarkResourceBuilder {
                     manifest.setSequence(sequence);
                 }
             } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
-                logger.error("Failed to add item " + item.getId() + " to manifest");
+                logger.error("Failed to add item {} to manifest", item.getId());
             }
         });
         return collection;
@@ -182,7 +183,7 @@ public abstract class AbstractBookmarkResourceBuilder {
 
     /**
      * @param shareKey
-     * @return
+     * @return {@link BookmarkList}
      * @throws DAOException If an error occured talking to the database
      * @throws RestApiException If no user session exists or if the user has no access to the requested list
      * @throws ContentNotFoundException If no list with the given key was found
@@ -194,7 +195,7 @@ public abstract class AbstractBookmarkResourceBuilder {
             throw new ContentNotFoundException("No bookmarklist found for key " + shareKey);
         }
         if (bookmarkList.hasShareKey()) {
-            logger.trace("Serving shared bookmark list " + bookmarkList.getId());
+            logger.trace("Serving shared bookmark list {}", bookmarkList.getId());
             return bookmarkList;
         }
         throw new RestApiException("No access to bookmark list " + bookmarkList.getId() + " - request refused", HttpServletResponse.SC_FORBIDDEN);

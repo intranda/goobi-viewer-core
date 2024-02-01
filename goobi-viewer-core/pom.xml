@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>23.11-SNAPSHOT</version>
+	<version>24.01-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -69,19 +69,18 @@
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
 		<failOnSnapshot>false</failOnSnapshot>
+        <maven.compiler.release>17</maven.compiler.release>
 
-
-		<!-- Sonar -->
+        <!-- Sonar -->
 		<sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
 		<sonar.organization>intranda</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.java.source>11</sonar.java.source>
-		<sonar.java.target>11</sonar.java.target>
+		<sonar.java.source>17</sonar.java.source>
+		<sonar.java.target>17</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>3100</checkstyle.max.violations>
+		<checkstyle.max.violations>750</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
-
 
 		<!-- Manifest information -->
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
@@ -89,21 +88,21 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.12</alto.version>
-		<ics.version>3.9.1</ics.version>
+		<ics.version>3.9.2</ics.version>
 		<tei-conversion.version>1.3.0</tei-conversion.version>
 
 		<iiif-api-model.version>2.6.1</iiif-api-model.version>
-		<normdataimporter.version>1.10.5</normdataimporter.version>
+		<normdataimporter.version>1.10.6</normdataimporter.version>
 
-		<!-- other libraries -->
-		<cdi.version>2.0.SP1</cdi.version>
+        <!-- other libraries -->
+        <angus-mail.version>2.0.2</angus-mail.version>
 		<citationstyles.version>23.11</citationstyles.version>
 		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
 		<commons-codec.version>1.16.0</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-configuration.version>1.10</commons-configuration.version>
 		<commons-configuration2.version>2.9.0</commons-configuration2.version>
-		<commons-io.version>2.15.0</commons-io.version>
+		<commons-io.version>2.15.1</commons-io.version>
 		<commons-jxpath.version>1.3</commons-jxpath.version>
 		<commons-lang3.version>3.14.0</commons-lang3.version>
 		<commons-net.version>3.10.0</commons-net.version>
@@ -114,16 +113,15 @@
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
-		<httpunit.version>1.7.3</httpunit.version>
-		<icu.version>74.1</icu.version>
+		<icu.version>74.2</icu.version>
 		<inject.version>1</inject.version>
-		<jackson.version>2.16.0</jackson.version>
+		<jackson.version>2.16.1</jackson.version>
 		<jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
 		<jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
 		<javax.annotation.version>1.3.2</javax.annotation.version>
 		<javax.el.version>3.0.1-b06</javax.el.version>
 		<javax.faces.version>2.3.9</javax.faces.version>
-		<jakarta.mail.version>2.0.1</jakarta.mail.version>
+		<jakarta.mail-api.version>2.1.2</jakarta.mail-api.version>
 		<jakarta.persistence.version>3.1.0</jakarta.persistence.version>
 		<jakarta.jms-api.version>2.0.3</jakarta.jms-api.version>
 		<javax.websocket.version>1.1</javax.websocket.version>
@@ -137,20 +135,20 @@
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20231013</json.version>
-		<jsoup.version>1.16.2</jsoup.version>
-		<junit.version>4.13.2</junit.version>
-		<mariadb-java-client.version>3.3.0</mariadb-java-client.version>
-		<mockito.version>5.7.0</mockito.version>
+		<jsoup.version>1.17.2</jsoup.version>
+		<junit.version>5.10.1</junit.version>
+		<mariadb-java-client.version>3.3.2</mariadb-java-client.version>
+		<mockito.version>5.10.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.4</omnifaces.version>
-		<openpdf.version>1.3.33</openpdf.version>
-		<poi.version>5.2.4</poi.version>
+		<openpdf.version>1.3.39</openpdf.version>
+		<poi.version>5.2.5</poi.version>
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
-		<log4j.version>2.22.0</log4j.version>
+		<log4j.version>2.22.1</log4j.version>
 		<solr.version>8.11.2</solr.version>
-		<swagger.version>2.2.19</swagger.version>
+		<swagger.version>2.2.20</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -160,7 +158,7 @@
 		<reflections.version>0.10.2</reflections.version>
 		<quartz.version>2.3.2</quartz.version>
 		<cron-expression-descriptor.version>1.2.8</cron-expression-descriptor.version>
-		<slf4j.version>2.0.9</slf4j.version>
+		<slf4j.version>2.0.11</slf4j.version>
 	</properties>
 
 
@@ -246,12 +244,6 @@
 			<artifactId>xml-apis</artifactId>
 			<version>${xml-apis.version}</version>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<version>${cdi.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.undercouch</groupId>
@@ -355,18 +347,6 @@
 			<version>${httpmime.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.httpunit</groupId>
-			<artifactId>httpunit</artifactId>
-			<version>${httpunit.version}</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>servlet-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>com.ibm.icu</groupId>
 			<artifactId>icu4j</artifactId>
 			<version>${icu.version}</version>
@@ -402,10 +382,15 @@
 			<version>${jakarta.annotation-api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>jakarta.mail</artifactId>
-			<version>${jakarta.mail.version}</version>
-		</dependency>
+			<groupId>jakarta.mail</groupId>
+			<artifactId>jakarta.mail-api</artifactId>
+			<version>${jakarta.mail-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>${angus-mail.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
@@ -545,8 +530,14 @@
 			<version>${jaxb-runtime.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -690,6 +681,18 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>5.3.31</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.3.31</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.jboss.weld.servlet</groupId>
 			<artifactId>weld-servlet-shaded</artifactId>
@@ -928,7 +931,16 @@
 									SLF4J: Defaulting to no-operation (NOP) logger implementation
 									SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
 								-->
-								<ignoredUnusedDeclaredDependency>org.slf4j:slf4j-nop</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-nop</ignoredUnusedDeclaredDependency>
+
+                                <!-- angus-mail is the implementation of the jakarta.mail specification and used for sending emails -->
+                                <ignoredUnusedDeclaredDependency>org.eclipse.angus:jakarta.mail</ignoredUnusedDeclaredDependency>
+
+                                <!-- spring-web: MediaType class needed for some unit test -->
+                                <ignoredUnusedDeclaredDependency>org.springframework:spring-web</ignoredUnusedDeclaredDependency>
+                                
+                                <!-- junit-jupiter is used to run the tests, otherwise it will fail in maven -->
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter</ignoredUnusedDeclaredDependency>
 
 								<!-- activemq libs -->
 									<!-- KahaDB is the used file based persistence database and declared in the config file  -->
@@ -960,7 +972,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
 				<configuration>
-					<release>11</release>
 					<compilerArgs>
 						<arg>-Xlint:deprecation</arg>
 						<arg>-Xlint:unchecked</arg>
@@ -980,13 +991,6 @@
 					    <java.util.logging.config.file>src/test/resources/log4j2.test.xml</java.util.logging.config.file>
 					</systemPropertyVariables>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<artifactId>surefire-junit47</artifactId>
-						<version>3.2.2</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -1130,7 +1134,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.12.5</version>
+						<version>10.12.7</version>
 					</dependency>
 				</dependencies>
 				<executions>

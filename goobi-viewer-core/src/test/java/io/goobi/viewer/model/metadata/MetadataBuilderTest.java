@@ -21,21 +21,21 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
-public class MetadataBuilderTest {
+class MetadataBuilderTest {
 
     @Test
-    public void test() {
+    void test() {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue(Map.of("en", "Gallery", "de", "Gallerie"));
         Map<String, List<IMetadataValue>> metadata = Map.of(
                 "MD_ROLE", List.of(value));

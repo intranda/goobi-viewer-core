@@ -63,7 +63,7 @@ public class Version {
         } else {
             APPLICATION_NAME = "goobi-viewer-core";
             VERSION = "unknown";
-            BUILDDATE = LocalDateTime.now().format(DateTools.formatterISO8601DateTimeNoSeconds);
+            BUILDDATE = LocalDateTime.now().format(DateTools.FORMATTERISO8601DATETIMENOSECONDS);
             BUILDVERSION = "unknown";
         }
     }

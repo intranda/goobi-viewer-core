@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
@@ -37,9 +37,9 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
-public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
+class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
@@ -49,19 +49,19 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add sort fields correctly
      */
     @Test
-    public void addSortFieldsToMetadata_shouldAddSortFieldsCorrectly() throws Exception {
+    void addSortFieldsToMetadata_shouldAddSortFieldsCorrectly() throws Exception {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
         BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
                 Locale.ENGLISH, null, null, null);
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), null);
-        Assert.assertEquals(1, be.getMetadataList().size());
-        Assert.assertEquals("SORT_FOO", be.getMetadataList().get(0).getLabel());
-        Assert.assertEquals(1, be.getMetadataList().get(0).getValues().size());
-        Assert.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
-        Assert.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
-        Assert.assertEquals("bar", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
+        Assertions.assertEquals(1, be.getMetadataList().size());
+        Assertions.assertEquals("SORT_FOO", be.getMetadataList().get(0).getLabel());
+        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().size());
+        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
+        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
+        Assertions.assertEquals("bar", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
     }
 
     /**
@@ -69,14 +69,14 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add fields on ignore list
      */
     @Test
-    public void addSortFieldsToMetadata_shouldNotAddFieldsOnIgnoreList() throws Exception {
+    void addSortFieldsToMetadata_shouldNotAddFieldsOnIgnoreList() throws Exception {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
         BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
                 Locale.ENGLISH, null, null, null);
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), Collections.singleton("SORT_FOO"));
-        Assert.assertEquals(0, be.getMetadataList().size());
+        Assertions.assertEquals(0, be.getMetadataList().size());
     }
 
     /**
@@ -84,7 +84,7 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add fields already in the list
      */
     @Test
-    public void addSortFieldsToMetadata_shouldNotAddFieldsAlreadyInTheList() throws Exception {
+    void addSortFieldsToMetadata_shouldNotAddFieldsAlreadyInTheList() throws Exception {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
@@ -94,12 +94,12 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         be.getMetadataList().add(new Metadata(String.valueOf(se.getLuceneId()), "MD_FOO", "", "old value"));
 
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), null);
-        Assert.assertEquals(1, be.getMetadataList().size());
-        Assert.assertEquals("MD_FOO", be.getMetadataList().get(0).getLabel());
-        Assert.assertEquals(1, be.getMetadataList().get(0).getValues().size());
-        Assert.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
-        Assert.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
-        Assert.assertEquals("old value", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
+        Assertions.assertEquals(1, be.getMetadataList().size());
+        Assertions.assertEquals("MD_FOO", be.getMetadataList().get(0).getLabel());
+        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().size());
+        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
+        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
+        Assertions.assertEquals("old value", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
     }
 
     /**
@@ -107,12 +107,12 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies translate docstruct label
      */
     @Test
-    public void generateDefaultLabel_shouldTranslateDocstructLabel() throws Exception {
+    void generateDefaultLabel_shouldTranslateDocstructLabel() throws Exception {
         //        BrowseElement be = new BrowseElement("PPN123", 1, null, null, Locale.GERMAN, null, null);
         StructElement se = new StructElement();
         se.setDocStructType("Monograph");
         String label = BrowseElement.generateDefaultLabel(se, Locale.GERMAN);
-        Assert.assertEquals("Monografie", label);
+        Assertions.assertEquals("Monografie", label);
     }
 
     /**
@@ -120,9 +120,9 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove any line breaks
      */
     @Test
-    public void getFulltextForHtml_shouldRemoveAnyLineBreaks() throws Exception {
+    void getFulltextForHtml_shouldRemoveAnyLineBreaks() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", "foo\nbar", Locale.ENGLISH, null, null);
-        Assert.assertEquals("foo bar", be.getFulltextForHtml());
+        Assertions.assertEquals("foo bar", be.getFulltextForHtml());
 
     }
 
@@ -131,9 +131,9 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove any JS
      */
     @Test
-    public void getFulltextForHtml_shouldRemoveAnyJS() throws Exception {
+    void getFulltextForHtml_shouldRemoveAnyJS() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR",
                 "foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar", Locale.ENGLISH, null, null);
-        Assert.assertEquals("foo  bar", be.getFulltextForHtml());
+        Assertions.assertEquals("foo  bar", be.getFulltextForHtml());
     }
 }

@@ -24,34 +24,34 @@ package io.goobi.viewer.model.security;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
-public class LicenseTest {
+class LicenseTest {
 
     /**
      * @see License#setIpRange(IpRange)
      * @verifies set user and userGroup to null if ipRange not null
      */
     @Test
-    public void setIpRange_shouldSetUserAndUserGroupToNullIfIpRangeNotNull() throws Exception {
+    void setIpRange_shouldSetUserAndUserGroupToNullIfIpRangeNotNull() throws Exception {
         {
             License lic = new License();
             lic.setUser(new User());
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
             lic.setIpRange(new IpRange());
-            Assert.assertNull(lic.getUser());
+            Assertions.assertNull(lic.getUser());
         }
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
             lic.setIpRange(new IpRange());
-            Assert.assertNull(lic.getUserGroup());
+            Assertions.assertNull(lic.getUserGroup());
         }
     }
 
@@ -60,20 +60,20 @@ public class LicenseTest {
      * @verifies not set user and userGroup to null if ipRange null
      */
     @Test
-    public void setIpRange_shouldNotSetUserAndUserGroupToNullIfIpRangeNull() throws Exception {
+    void setIpRange_shouldNotSetUserAndUserGroupToNullIfIpRangeNull() throws Exception {
         {
             License lic = new License();
             lic.setUser(new User());
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
             lic.setIpRange(null);
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
         }
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
             lic.setIpRange(null);
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
         }
     }
 
@@ -82,20 +82,20 @@ public class LicenseTest {
      * @verifies set userGroup and ipRange to null if user not null
      */
     @Test
-    public void setUser_shouldSetUserGroupAndIpRangeToNullIfUserNotNull() throws Exception {
+    void setUser_shouldSetUserGroupAndIpRangeToNullIfUserNotNull() throws Exception {
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
             lic.setUser(new User());
-            Assert.assertNull(lic.getUserGroup());
+            Assertions.assertNull(lic.getUserGroup());
         }
         {
             License lic = new License();
             lic.setIpRange(new IpRange());
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
             lic.setUser(new User());
-            Assert.assertNull(lic.getIpRange());
+            Assertions.assertNull(lic.getIpRange());
         }
     }
 
@@ -104,20 +104,20 @@ public class LicenseTest {
      * @verifies not set userGroup and ipRange to null if user null
      */
     @Test
-    public void setUser_shouldNotSetUserGroupAndIpRangeToNullIfUserNull() throws Exception {
+    void setUser_shouldNotSetUserGroupAndIpRangeToNullIfUserNull() throws Exception {
         {
             License lic = new License();
             lic.setUserGroup(new UserGroup());
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
             lic.setUser(null);
-            Assert.assertNotNull(lic.getUserGroup());
+            Assertions.assertNotNull(lic.getUserGroup());
         }
         {
             License lic = new License();
             lic.setIpRange(new IpRange());
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
             lic.setUser(null);
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
         }
     }
 
@@ -126,20 +126,20 @@ public class LicenseTest {
      * @verifies set user and ipRange to null if userGroup not null
      */
     @Test
-    public void setUserGroup_shouldSetUserAndIpRangeToNullIfUserGroupNotNull() throws Exception {
+    void setUserGroup_shouldSetUserAndIpRangeToNullIfUserGroupNotNull() throws Exception {
         {
             License lic = new License();
             lic.setUser(new User());
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
             lic.setUserGroup(new UserGroup());
-            Assert.assertNull(lic.getUser());
+            Assertions.assertNull(lic.getUser());
         }
         {
             License lic = new License();
             lic.setIpRange(new IpRange());
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
             lic.setUserGroup(new UserGroup());
-            Assert.assertNull(lic.getIpRange());
+            Assertions.assertNull(lic.getIpRange());
         }
     }
 
@@ -148,20 +148,20 @@ public class LicenseTest {
      * @verifies not set user and ipRange to null if userGroup null
      */
     @Test
-    public void setUserGroup_shouldNotSetUserAndIpRangeToNullIfUserGroupNull() throws Exception {
+    void setUserGroup_shouldNotSetUserAndIpRangeToNullIfUserGroupNull() throws Exception {
         {
             License lic = new License();
             lic.setUser(new User());
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
             lic.setUserGroup(null);
-            Assert.assertNotNull(lic.getUser());
+            Assertions.assertNotNull(lic.getUser());
         }
         {
             License lic = new License();
             lic.setIpRange(new IpRange());
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
             lic.setUserGroup(null);
-            Assert.assertNotNull(lic.getIpRange());
+            Assertions.assertNotNull(lic.getIpRange());
         }
     }
 
@@ -170,12 +170,12 @@ public class LicenseTest {
      * @verifies only return priv view ugc if licenseType ugc type
      */
     @Test
-    public void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfLicenseTypeUgcType() throws Exception {
-       License lic = new License();
-       lic.setLicenseType(new LicenseType());
-       lic.getLicenseType().ugcType = true;
-       List<String> result = lic.getAvailablePrivileges(Collections.emptySet());
-       Assert.assertEquals(1, result.size());
-       Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
+    void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfLicenseTypeUgcType() throws Exception {
+        License lic = new License();
+        lic.setLicenseType(new LicenseType());
+        lic.getLicenseType().setUgcType(true);
+        List<String> result = lic.getAvailablePrivileges(Collections.emptySet());
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
 }

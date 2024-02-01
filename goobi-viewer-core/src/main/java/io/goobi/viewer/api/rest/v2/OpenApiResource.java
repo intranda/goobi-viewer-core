@@ -63,9 +63,9 @@ import io.swagger.v3.oas.models.servers.Server;
 public class OpenApiResource {
 
     @Context
-    Application application;
+    private Application application;
     @Context
-    ServletConfig servletConfig;
+    private ServletConfig servletConfig;
 
     private static OpenAPI openApi = null;
 
@@ -94,7 +94,7 @@ public class OpenApiResource {
                 .readAllResources(false);
 
         Reader reader = new Reader(oasConfig);
-        OpenAPI openAPI = reader.read(Stream.of(
+        return reader.read(Stream.of(
                 CMSMediaImageResource3.class,
                 CollectionsResource.class,
                 ExternalImageResource.class,
@@ -105,11 +105,9 @@ public class OpenApiResource {
                 RecordResource.class,
                 RecordSectionsResource.class).collect(Collectors.toSet()));
 
-        return openAPI;
-
     }
 
-    private List<String> getApiUrls() {
+    private static List<String> getApiUrls() {
 
         return Arrays.asList(
                 DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).map(AbstractApiUrlManager::getApiUrl).orElse(null),
@@ -131,10 +129,10 @@ public class OpenApiResource {
     }
 
     /**
-     * @return
+     * @return {@link Info}
      */
     public static Info getInfo() {
-        Info info = new Info()
+        return new Info()
                 .title("Goobi viewer API.")
                 .description("This documentation describes the Goobi viewer API.")
                 .version("v2")
@@ -143,7 +141,6 @@ public class OpenApiResource {
                 .license(new License()
                         .name("GPL2 or later")
                         .url("https://github.com/intranda/goobi-viewer-core/blob/master/LICENSE"));
-        return info;
     }
 
 }

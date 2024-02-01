@@ -36,12 +36,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RssItem implements Comparable<RssItem> {
 
-    String title;
-    String link;
-    Description description;
-    Date pubDate;
-    String creator;
-    String docType;
+    private String title;
+    private String link;
+    private Description description;
+    private Date pubDate;
+    private String creator;
+    private String docType;
 
     /**
      * <p>
@@ -190,5 +190,4 @@ public class RssItem implements Comparable<RssItem> {
             return 1;
         }
     }
-
 }

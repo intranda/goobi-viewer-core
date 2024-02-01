@@ -58,6 +58,13 @@ public class ArchiveMetadataField {
     //    @ToString.Exclude
     private ArchiveEntry eadEntry;
 
+    /**
+     * 
+     * @param label
+     * @param type
+     * @param xpath
+     * @param xpathType
+     */
     public ArchiveMetadataField(String label, Integer type, String xpath, String xpathType) {
         this.label = label;
         this.type = type;
@@ -92,28 +99,28 @@ public class ArchiveMetadataField {
     }
 
     /**
-     * @return the name
+     * @return the label
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @param name the name to set
+     * @param label the label to set
      */
     public void setLabel(String label) {
         this.label = label;
     }
 
     /**
-     * @return the level
+     * @return the type
      */
     public Integer getType() {
         return type;
     }
 
     /**
-     * @param level the level to set
+     * @param type the type to set
      */
     public void setType(Integer type) {
         this.type = type;

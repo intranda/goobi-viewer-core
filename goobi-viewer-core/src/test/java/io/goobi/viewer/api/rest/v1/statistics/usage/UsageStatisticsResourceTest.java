@@ -21,17 +21,17 @@
  */
 package io.goobi.viewer.api.rest.v1.statistics.usage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.Month;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class UsageStatisticsResourceTest {
+class UsageStatisticsResourceTest {
 
     @Test
-    public void testParseDate() {
+    void testParseDate() {
         String input = "2022-07-13";
         LocalDate date = new UsageStatisticsResource().getLocalDate(input);
         assertEquals(2022, date.getYear());

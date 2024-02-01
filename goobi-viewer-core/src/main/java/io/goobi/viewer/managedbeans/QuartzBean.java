@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
@@ -63,6 +64,9 @@ public class QuartzBean implements Serializable {
     private boolean paused;
 
     private Scheduler scheduler = null;
+    
+    @Inject
+    private AdminDeveloperBean developerBean;
 
     public QuartzBean() throws SchedulerException {
         this.reset();
@@ -169,6 +173,11 @@ public class QuartzBean implements Serializable {
             RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
             trigger.setStatus(status);
             dao.updateRecurringTaskTrigger(trigger);
+            if(TaskType.PULL_THEME.name().equals(jobName)) {
+                if(developerBean != null) {
+                    developerBean.sendPullThemeFinished();
+                }
+            }
         } catch (DAOException e) {
             log.error(e);
         }

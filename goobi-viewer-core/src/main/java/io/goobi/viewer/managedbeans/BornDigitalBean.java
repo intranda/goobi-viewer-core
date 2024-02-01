@@ -114,7 +114,7 @@ public class BornDigitalBean implements Serializable {
                 return "";
             }
             if (ticket != null && ticket.isActive() && ticket.getPi().equals(pi) && ticket.checkPassword(downloadTicketPassword)
-                    && AccessConditionUtils.addPermissionToSession(pi, BeanUtils.getSession())) {
+                    && AccessConditionUtils.addDownloadTicketToSession(pi, BeanUtils.getSession())) {
                 logger.trace("Born digital download permission for {} added to user session.", pi);
                 DataManager.getInstance().getSecurityManager().resetFailedLoginAttemptForIpAddress(ipAddress);
                 Messages.info("");

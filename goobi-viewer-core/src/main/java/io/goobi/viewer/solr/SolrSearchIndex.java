@@ -106,6 +106,10 @@ public class SolrSearchIndex {
     private SolrClient client;
 
     private List<String> solrFields = null;
+    /**
+     * Usually boolean fields should not be part of the solr field list. In case one needs them, they are listed here
+     */
+    private List<String> booleanSolrFields = null;
 
     /**
      * <p>
@@ -377,7 +381,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList,
             List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
-        //        logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
+        // logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
         return search(query, first, rows, sortFields, facetFields, null, fieldList, filterQueries, params);
     }
 
@@ -970,7 +974,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             String facetPrefix, Map<String, String> params, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
-        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Sometimes needed for debugging
+        logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Sometimes needed for debugging
         SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query));
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -1041,26 +1045,44 @@ public class SolrSearchIndex {
     public List<String> getAllFieldNames() throws IndexUnreachableException {
         try {
             if (this.solrFields == null) {
-                LukeRequest lukeRequest = new LukeRequest();
-                lukeRequest.setNumTerms(0);
-                LukeResponse lukeResponse = lukeRequest.process(client);
-                Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
-
-                List<String> list = new ArrayList<>();
-                for (Entry<String, FieldInfo> entry : fieldInfoMap.entrySet()) {
-                    FieldInfo info = entry.getValue();
-                    if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
-                            || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
-                        list.add(entry.getKey());
-                    }
-                }
-                this.solrFields = list;
+                loadSolrFields();
             }
         } catch (IllegalStateException | SolrServerException | RemoteSolrException | IOException e) {
             throw new IndexUnreachableException("Failed to load SOLR field names: " + e.toString());
         }
-
         return this.solrFields;
+    }
+
+    public List<String> getAllBooleanFieldNames() throws IndexUnreachableException {
+        try {
+            if (this.booleanSolrFields == null) {
+                loadSolrFields();
+            }
+        } catch (IllegalStateException | SolrServerException | RemoteSolrException | IOException e) {
+            throw new IndexUnreachableException("Failed to load SOLR field names: " + e.toString());
+        }
+        return this.booleanSolrFields;
+    }
+
+    public void loadSolrFields() throws SolrServerException, IOException {
+        LukeRequest lukeRequest = new LukeRequest();
+        lukeRequest.setNumTerms(0);
+        LukeResponse lukeResponse = lukeRequest.process(client);
+        Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
+
+        List<String> list = new ArrayList<>();
+        List<String> boolList = new ArrayList<>();
+        for (Entry<String, FieldInfo> entry : fieldInfoMap.entrySet()) {
+            FieldInfo info = entry.getValue();
+            if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
+                    || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
+                list.add(entry.getKey());
+            } else if (info != null && info.getType().toLowerCase().contains("bool")) {
+                boolList.add(entry.getKey());
+            }
+        }
+        this.solrFields = list;
+        this.booleanSolrFields = boolList;
     }
 
     /**

@@ -200,7 +200,7 @@ public class Disclaimer {
     /**
      * set the {@link #acceptanceScope} of the disclaimer
      * 
-     * @param a {@link ConsentScope}
+     * @param acceptanceScope a {@link ConsentScope}
      */
     public void setAcceptanceScope(ConsentScope acceptanceScope) {
         this.acceptanceScope = acceptanceScope;

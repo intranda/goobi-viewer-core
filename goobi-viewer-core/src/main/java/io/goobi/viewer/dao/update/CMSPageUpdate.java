@@ -58,8 +58,8 @@ import io.goobi.viewer.model.translations.TranslatedText;
 public class CMSPageUpdate implements IModelUpdate {
 
     private static final Logger logger = LogManager.getLogger(CMSPageUpdate.class);
-    CMSContentConverter contentConverter;
-    CMSTemplateManager templateManager;
+    private CMSContentConverter contentConverter;
+    private CMSTemplateManager templateManager;
 
     public CMSPageUpdate() {
         //noop

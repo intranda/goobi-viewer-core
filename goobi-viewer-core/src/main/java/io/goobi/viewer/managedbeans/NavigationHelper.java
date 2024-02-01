@@ -83,6 +83,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -1073,6 +1074,8 @@ public class NavigationHelper implements Serializable {
                     logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 }
             }
+            // Reset access permissions in session (user might not have the same permissions for a different subtheme)
+            logger.trace("{} access premissions removed from user session.", AccessConditionUtils.clearSessionPermissions(BeanUtils.getSession()));
         }
     }
 
@@ -1774,7 +1777,7 @@ public class NavigationHelper implements Serializable {
     /**
      * 
      * @param pageType
-     * @return
+     * @return Appropriate exit URL
      */
     public String getExitUrl(PageType pageType) {
         String exitView = DataManager.getInstance().getConfiguration().getPageTypeExitView(pageType);

@@ -163,7 +163,7 @@ public enum PageType {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(PageType.class);
 
-    public final String path;
+    private final String path;
     private final String label;
     private final PageTypeHandling handling;
     private final PageType parent;
@@ -462,12 +462,12 @@ public enum PageType {
      * @return true if the given path equals either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
      *         PageType other is never matched
      */
-    public boolean matches(String pagePath) {
+    public boolean matches(final String pagePath) {
         if (StringUtils.isBlank(pagePath)) {
             return false;
         }
-        pagePath = pagePath.replaceAll("(^\\/)|(\\/$)", "");
-        return pagePath.equalsIgnoreCase(this.name()) || pagePath.equalsIgnoreCase(this.path) || pagePath.equalsIgnoreCase(getName());
+        String path = pagePath.replaceAll("(^\\/)|(\\/$)", "");
+        return path.equalsIgnoreCase(this.name()) || path.equalsIgnoreCase(this.path) || path.equalsIgnoreCase(getName());
     }
 
     /**

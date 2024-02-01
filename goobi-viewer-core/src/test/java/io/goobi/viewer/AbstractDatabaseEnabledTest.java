@@ -25,10 +25,10 @@ import java.io.FileInputStream;
 
 import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.impl.H2JdbcDatabaseTester;
@@ -45,7 +45,7 @@ public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
     //        return new XmlDataSet(new FileInputStream("resources/test_db_dataset.xml"));
     //    }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractTest.setUpClass();
 
@@ -57,13 +57,13 @@ public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
         // databaseTester.setDataSet(getDataSet());
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         databaseTester.onSetup();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         databaseTester.onTearDown();
         ((JPADAO) DataManager.getInstance().getDao()).clear();
@@ -72,7 +72,7 @@ public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
         // .write(databaseTester.getConnection().createDataSet(), new FileOutputStream("resources/" + System.currentTimeMillis() + ".xml"));
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws Exception {
         if (DataManager.getInstance().getDao() != null) {
             DataManager.getInstance().getDao().shutdown();

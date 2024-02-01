@@ -382,8 +382,8 @@ public class Configuration extends AbstractConfiguration {
      * getDfgViewerUrl.
      * </p>
      *
-     * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @should return correct value
      */
     public String getDfgViewerUrl() {
         return getLocalString("urls.dfg-viewer", "https://dfg-viewer.de/v2?set[mets]=");
@@ -391,7 +391,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getDfgViewerSourcefileField() {
@@ -501,7 +501,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured values
      * @should return all configured values
      */
     public List<MetadataView> getMetadataViews() {
@@ -583,7 +583,7 @@ public class Configuration extends AbstractConfiguration {
      * @param fallbackToDefaultTemplate If true, the _DEFAULT template will be loaded if the given template is not found
      * @param topstructValueFallbackDefaultValue If true, the default value for the parameter attribute "topstructValueFallback" will be the value
      *            passed here
-     * @return
+     * @return Configured values
      */
     private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration<ImmutableNode>> templateList,
             boolean fallbackToDefaultTemplate, boolean topstructValueFallbackDefaultValue) {
@@ -603,7 +603,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param usingTemplate
      * @param topstructValueFallbackDefaultValue Default value for topstructValueFallback, if not explicitly configured
-     * @return
+     * @return Configured values
      */
     private static List<Metadata> getMetadataForTemplate(HierarchicalConfiguration<ImmutableNode> usingTemplate,
             boolean topstructValueFallbackDefaultValue) {
@@ -633,7 +633,7 @@ public class Configuration extends AbstractConfiguration {
      * @param templateList
      * @param template
      * @param fallbackToDefaultTemplate
-     * @return
+     * @return Configured values
      */
     static HierarchicalConfiguration<ImmutableNode> selectTemplate(List<HierarchicalConfiguration<ImmutableNode>> templateList, String template,
             boolean fallbackToDefaultTemplate) {
@@ -800,8 +800,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * @return Configured values
      */
     public List<SelectItem> getGeomapFeatureTitleOptions() {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.option");
@@ -847,9 +846,9 @@ public class Configuration extends AbstractConfiguration {
         if (template != null) {
             List<HierarchicalConfiguration<ImmutableNode>> featureSetConfigs = template.configurationsAt("featureSets.featureSet");
             return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
         }
+
+        return Collections.emptyList();
     }
 
     private static Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
@@ -958,7 +957,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured values
      */
     public Metadata getSidebarWidgetUsageCitationRecommendationSource() {
         HierarchicalConfiguration<ImmutableNode> sub = null;
@@ -985,7 +984,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured values
      * @should return all configured values
      */
     public List<CitationLink> getSidebarWidgetUsageCitationLinks() {
@@ -1038,7 +1037,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isDisplayWidgetUsageDownloadOptions() {
@@ -1121,7 +1120,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getBrowsingMenuSortingIgnoreLeadingChars() {
@@ -1162,7 +1161,7 @@ public class Configuration extends AbstractConfiguration {
      * Returns the config block for the given field.
      *
      * @param field
-     * @return
+     * @return Configured values
      */
     private HierarchicalConfiguration<ImmutableNode> getCollectionConfiguration(String field) {
         List<HierarchicalConfiguration<ImmutableNode>> collectionList = getLocalConfigurationsAt("collections.collection");
@@ -1182,7 +1181,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured values
      */
     public List<String> getConfiguredCollectionFields() {
         List<String> list = getLocalList("collections.collection[@field]");
@@ -1239,7 +1238,6 @@ public class Configuration extends AbstractConfiguration {
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
      *
      * @param field a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @should return correct field for collection
      * @should give priority to exact matches
@@ -1411,7 +1409,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * url to rest api url for record media files. Always ends with a slash
      *
-     * @return
+     * @return Configured value
      */
     public String getIIIFApiUrl() {
         String urlString = getLocalString("urls.iiif", getRestApiUrl());
@@ -1423,7 +1421,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      */
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
         return getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
@@ -1579,7 +1577,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return skip fields that don't match given language
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate, String language) {
-        logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate);
+        // logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate);
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return new ArrayList<>();
@@ -1767,6 +1765,8 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
+     * @param template
+     * @param fallbackToDefaultTemplate
      * @return a boolean.
      * @should return correct value
      */
@@ -1779,7 +1779,7 @@ public class Configuration extends AbstractConfiguration {
      * @param field
      * @param template
      * @param fallbackToDefaultTemplate
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public int getAdvancedSearchFieldDisplaySelectItemsThreshold(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -1810,7 +1810,7 @@ public class Configuration extends AbstractConfiguration {
      * @param field
      * @param template
      * @param fallbackToDefaultTemplate
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getAdvancedSearchFieldSelectType(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -1876,7 +1876,7 @@ public class Configuration extends AbstractConfiguration {
      * @param attribute Attribute name
      * @param template
      * @param fallbackToDefaultTemplate
-     * @return
+     * @return Configured value
      */
     boolean isAdvancedSearchFieldHasAttribute(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
@@ -2226,7 +2226,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured values
      * @should return all configured elements
      */
     public List<String> getUrnResolverFields() {
@@ -2259,7 +2259,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured values
      * @should return all configured elements
      */
     public List<SecurityQuestion> getSecurityQuestions() {
@@ -2851,7 +2851,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured values
      */
     public List<String> getRegularFacetFields() {
         List<String> ret = new ArrayList<>();
@@ -2907,8 +2907,40 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param field
-     * @return
+     * @param facetField
+     * @return Configured value
+     * @should return correct value
+     * @should return INT_MIN if no value configured
+     */
+    public int getRangeFacetFieldMinValue(String facetField) {
+        String val = getPropertyForFacetField(facetField, "[@minValue]", null);
+        if (StringUtils.isNotEmpty(val)) {
+            return Integer.parseInt(val);
+        }
+
+        return Integer.MIN_VALUE;
+    }
+
+    /**
+     * 
+     * @param facetField
+     * @return Configured value
+     * @should return correct value
+     * @should return INT_MAX if no value configured
+     */
+    public int getRangeFacetFieldMaxValue(String facetField) {
+        String val = getPropertyForFacetField(facetField, "[@maxValue]", null);
+        if (StringUtils.isNotEmpty(val)) {
+            return Integer.parseInt(val);
+        }
+
+        return Integer.MAX_VALUE;
+    }
+
+    /**
+     * 
+     * @param facetField
+     * @return Configured value
      * @should return correct value
      */
     public String getFacetFieldStyle(String facetField) {
@@ -2937,7 +2969,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * @param facetField
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getGeoFacetFieldPredicate(String facetField) {
@@ -2947,7 +2979,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * @param facetField
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isShowSearchHitsInGeoFacetMap(String facetField) {
@@ -2960,7 +2992,7 @@ public class Configuration extends AbstractConfiguration {
      * getInitialFacetElementNumber.
      * </p>
      *
-     * @param field a {@link java.lang.String} object.
+     * @param facetField a {@link java.lang.String} object.
      * @return Number of initial facet values
      * @should return correct value
      * @should return default value if field not found
@@ -3011,7 +3043,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @param facetField
-     * @return
+     * @return Configured value
      * @should return correct value
      * @should return null if no value found
      */
@@ -3022,7 +3054,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @param facetField
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
@@ -3033,7 +3065,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param facetField
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public int getGroupToLengthForFacetField(String facetField) {
@@ -3044,7 +3076,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @param facetField
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isAlwaysApplyFacetFieldToUnfilteredHits(String facetField) {
@@ -3055,7 +3087,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @param facetField
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isFacetFieldSkipInWidget(String facetField) {
@@ -3066,7 +3098,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param facetField
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isFacetFieldDisplayValueFilter(String facetField) {
@@ -3077,7 +3109,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param facetField
-     * @return
+     * @return Configured value
      */
     public String getFacetFieldType(String facetField) {
         return getPropertyForFacetField(facetField, XML_PATH_ATTRIBUTE_TYPE, "");
@@ -3085,7 +3117,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * @param facetField
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getMultiValueOperatorForField(String facetField) {
@@ -3215,7 +3247,8 @@ public class Configuration extends AbstractConfiguration {
         List<String> fields = getSortFields();
         fields.remove(defaultField);
         fields.add(0, defaultField);
-        for (String field : fields) {
+        for (final String f : fields) {
+            String field = f;
             if (field.charAt(0) == '!') {
                 field = field.substring(1);
             }
@@ -3250,7 +3283,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * @param field
+     * @return Configured value
      */
     public Optional<String> getSearchSortingKeyAscending(String field) {
         List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
@@ -3263,6 +3297,11 @@ public class Configuration extends AbstractConfiguration {
         return Optional.empty();
     }
 
+    /**
+     * 
+     * @param field
+     * @return Configured value
+     */
     public Optional<String> getSearchSortingKeyDescending(String field) {
         List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         for (HierarchicalConfiguration<ImmutableNode> conf : fieldConfigs) {
@@ -3983,7 +4022,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getFallbackDefaultLanguage() {
@@ -4017,7 +4056,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      */
     public String getDefaultFeedbackEmailAddress() {
         for (EmailRecipient recipient : getFeedbackEmailRecipients()) {
@@ -4090,7 +4129,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * @return Configured value
      */
     public boolean reviewEnabledForComments() {
         return getLocalBoolean("comments.review[@enabled]", false);
@@ -4110,7 +4149,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     String getDataRepositoriesHome() {
@@ -4132,7 +4171,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isDocstructNavigationEnabled() {
@@ -4143,7 +4182,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param template
      * @param fallbackToDefaultTemplate
-     * @return
+     * @return Configured value
      * @should return all configured values
      */
     public List<String> getDocstructNavigationTypes(String template, boolean fallbackToDefaultTemplate) {
@@ -4431,7 +4470,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getPiwikSiteID() {
         return this.getLocalString("piwik.siteID", "1");
-
     }
 
     /**
@@ -4511,7 +4549,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      */
     public SearchFilter getDefaultSearchFilter() {
         for (SearchFilter filter : getSearchFilters()) {
@@ -4716,7 +4754,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public int getPageSelectDropdownDisplayMinPages() {
@@ -4839,7 +4877,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @param path
-     * @return
+     * @return Configured values
      */
     List<ExportFieldConfiguration> getExportConfigurations(String path) {
         if (path == null) {
@@ -5060,7 +5098,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isVisibleIIIFRenderingPDF() {
@@ -5069,7 +5107,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isVisibleIIIFRenderingViewer() {
@@ -5086,7 +5124,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isVisibleIIIFRenderingPlaintext() {
@@ -5095,7 +5133,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isVisibleIIIFRenderingAlto() {
@@ -5153,7 +5191,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isSitelinksEnabled() {
@@ -5281,7 +5319,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * @return Configured value
      */
     public boolean isDiscloseImageContentLocation() {
         return getLocalBoolean("webapi.iiif.discloseContentLocation", true);
@@ -5289,7 +5327,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isCopyrightIndicatorEnabled() {
@@ -5298,7 +5336,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getCopyrightIndicatorStyle() {
@@ -5307,7 +5345,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getCopyrightIndicatorStatusField() {
@@ -5317,6 +5355,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param value
+     * @return Configured value
      * @should return correct value
      */
     public CopyrightIndicatorStatus getCopyrightIndicatorStatusForValue(String value) {
@@ -5345,6 +5384,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param value
+     * @return Configured value
      * @should return correct value
      */
     public CopyrightIndicatorLicense getCopyrightIndicatorLicenseForValue(String value) {
@@ -5367,7 +5407,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getCopyrightIndicatorLicenseField() {
@@ -5425,8 +5465,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param marker
-     * @return
+     * @param name
+     * @return Configured value
      */
     public GeoMapMarker getGeoMapMarker(String name) {
         return getGeoMapMarkers().stream().filter(m -> name.equalsIgnoreCase(m.getName())).findAny().orElse(null);
@@ -5494,15 +5534,13 @@ public class Configuration extends AbstractConfiguration {
                     .findAny()
                     .map(config -> config.getString(".", ""))
                     .orElse("");
-        } else {
-            return "";
         }
+        return "";
     }
 
     /**
      * @param config
-     * @param marker
-     * @return
+     * @return Configured value
      */
     public static GeoMapMarker readGeoMapMarker(HierarchicalConfiguration<ImmutableNode> config) {
         GeoMapMarker marker = null;
@@ -5535,8 +5573,8 @@ public class Configuration extends AbstractConfiguration {
      * return null;
      *
      * @param templateList
-     * @param template
-     * @return
+     * @param name
+     * @return Configured value
      */
     private static HierarchicalConfiguration<ImmutableNode> getMatchingConfig(List<HierarchicalConfiguration<ImmutableNode>> templateList,
             String name) {
@@ -5563,7 +5601,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured values
      */
     public List<LicenseDescription> getLicenseDescriptions() {
         List<LicenseDescription> licenses = new ArrayList<>();
@@ -5582,7 +5620,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * @return Configured value
      */
     public String getBaseXUrl() {
         return getLocalString("urls.basex");
@@ -5600,7 +5638,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * @return Configured value
      */
     public HierarchicalConfiguration<ImmutableNode> getArchiveMetadataConfig() {
         return getLocalConfigurationAt("archives.metadataList");
@@ -5613,7 +5651,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * config: <code>&#60;iiif use-version="3.0"&#62;&#60;/iiif&#62;</code>
      *
-     * @return
+     * @return Configured value
      */
     public String getIIIFVersionToUse() {
         return getLocalString("webapi.iiif[@use-version]", "2.1.1");
@@ -5621,7 +5659,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should read config items correctly
      */
     public List<TranslationGroup> getTranslationGroups() {
@@ -5665,7 +5703,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      */
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
@@ -5673,7 +5711,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isUseFacetsAsExpandQuery() {
@@ -5682,7 +5720,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured values
      * @should return all configured elements
      */
     public List<String> getAllowedFacetsForExpandQuery() {
@@ -5691,7 +5729,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isSearchResultGroupsEnabled() {
@@ -5700,7 +5738,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured values
      * @should return all configured elements
      */
     public List<SearchResultGroup> getSearchResultGroups() {
@@ -5728,7 +5766,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isContentUploadEnabled() {
@@ -5737,7 +5775,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getContentUploadToken() {
@@ -5746,7 +5784,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getContentUploadDocstruct() {
@@ -5755,7 +5793,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getContentUploadTemplateName() {
@@ -5764,7 +5802,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getContentUploadRejectionPropertyName() {
@@ -5773,7 +5811,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getContentUploadRejectionReasonPropertyName() {
@@ -5812,7 +5850,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public boolean isConfigEditorEnabled() {
@@ -5821,7 +5859,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public int getConfigEditorBackupFiles() {
@@ -5830,7 +5868,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured values
      * @should return all configured elements
      */
     public List<String> getConfigEditorDirectories() {
@@ -5848,7 +5886,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured value
      * @should return correct value
      */
     public String getProxyUrl() {
@@ -5867,7 +5905,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param url
-     * @return
+     * @return Configured value
      * @throws MalformedURLException
      * @should return true if host whitelisted
      */
@@ -5878,7 +5916,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return
+     * @return Configured values
      */
     public List<String> getProxyWhitelist() {
         return getLocalList("proxy.whitelist.host");
@@ -5915,7 +5953,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * @param field
      * @param language
-     * @return
+     * @return Configured value
      */
     public static boolean isLanguageVersionOtherThan(String field, String language) {
         return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());

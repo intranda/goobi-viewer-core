@@ -21,24 +21,24 @@
  */
 package io.goobi.viewer.model.cms.pages;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.cms.legacy.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.jsf.JsfComponent;
 
-public class CMSPageTemplateTest {
+class CMSPageTemplateTest {
 
     Path themeComponentFile = Paths.get("src/test/resources/data/viewer/cms/theme_templates/custom_template_01_home.xml");
 
     
     @Test
-    public void testLoadLegacyThemeTemplate() {
+    void testLoadLegacyThemeTemplate() {
       CMSPageTemplate template = CMSPageTemplate.loadFromXML(themeComponentFile);
       CMSComponent component = template.createCMSComponent();
       JsfComponent jsf = component.getJsfComponent();

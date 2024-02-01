@@ -58,6 +58,8 @@ import jakarta.persistence.Transient;
 @JsonInclude(Include.NON_EMPTY)
 public class ViewerMessage {
 
+    public static final String MESSAGE_PROPERTY_ERROR = "error";
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

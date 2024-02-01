@@ -1140,7 +1140,7 @@ public class BrowseBean implements Serializable {
      *
      * @param field Collection field name
      * @param value Collection raw name
-     * @return
+     * @return Translated collection name
      */
     public String getTranslationForCollectionName(String field, String value) {
         logger.trace("getTranslationForCollectionName: {}:{}", field, value);

@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,6 +42,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.spi.FileTypeDetector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +69,7 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 /**
  * File I/O utilities.
  */
-public class FileTools {
+public final class FileTools {
 
     private static final Logger logger = LogManager.getLogger(FileTools.class);
 
@@ -77,10 +77,10 @@ public class FileTools {
     private FileTools() {
     }
 
-    public static final DirectoryStream.Filter<Path> imageNameFilter =
+    public static final DirectoryStream.Filter<Path> IMAGE_NAME_FILTER =
             (Path path) -> path.getFileName().toString().matches("(?i)[^.]+\\.(jpe?g|tiff?|png|jp2)");
 
-    public static final DirectoryStream.Filter<Path> pdfNameFilter = (Path path) -> path.getFileName().toString().matches("(?i)[^.]+\\.(pdf)");
+    public static final DirectoryStream.Filter<Path> PDF_NAME_FILTER = (Path path) -> path.getFileName().toString().matches("(?i)[^.]+\\.(pdf)");
 
     /**
      * <p>
@@ -120,24 +120,25 @@ public class FileTools {
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-    public static String getStringFromFile(File file, String encoding, String convertToEncoding) throws IOException {
+    public static String getStringFromFile(File file, final String encoding, String convertToEncoding) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("file may not be null");
         }
 
-        if (encoding == null) {
+        String useEncoding = encoding;
+        if (useEncoding == null) {
             try (FileInputStream fis = new FileInputStream(file)) {
-                encoding = getCharset(fis);
-                logger.trace("'{}' encoding detected: {}", file.getName(), encoding);
+                useEncoding = getCharset(fis);
+                logger.trace("'{}' encoding detected: {}", file.getName(), useEncoding);
             }
-            if (encoding == null) {
-                encoding = StringTools.DEFAULT_ENCODING;
+            if (useEncoding == null) {
+                useEncoding = StringTools.DEFAULT_ENCODING;
             }
         }
 
         StringBuilder text = new StringBuilder();
         String ls = System.getProperty("line.separator");
-        try (FileInputStream fis = new FileInputStream(file); Scanner scanner = new Scanner(fis, encoding)) {
+        try (FileInputStream fis = new FileInputStream(file); Scanner scanner = new Scanner(fis, useEncoding)) {
             while (scanner.hasNextLine()) {
                 text.append(scanner.nextLine()).append(ls);
             }
@@ -145,8 +146,8 @@ public class FileTools {
 
         String ret = text.toString();
         // Convert to target encoding
-        if (StringUtils.isNotEmpty(convertToEncoding) && !convertToEncoding.equals(encoding)) {
-            ret = StringTools.convertStringEncoding(ret, encoding, convertToEncoding);
+        if (StringUtils.isNotEmpty(convertToEncoding) && !convertToEncoding.equals(useEncoding)) {
+            ret = StringTools.convertStringEncoding(ret, useEncoding, convertToEncoding);
         }
 
         return ret.trim();
@@ -181,16 +182,11 @@ public class FileTools {
      * @param encoding a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String getStringFromByteArray(byte[] bytes, String encoding) {
+    public static String getStringFromByteArray(byte[] bytes, final String encoding) {
         String result = "";
-
-        if (encoding == null) {
-            encoding = StringTools.DEFAULT_ENCODING;
-        }
-
         StringBuilder text = new StringBuilder();
         String nl = System.getProperty("line.separator");
-        try (Scanner scanner = new Scanner(new ByteArrayInputStream(bytes), encoding);) {
+        try (Scanner scanner = new Scanner(new ByteArrayInputStream(bytes), encoding == null ? StringTools.DEFAULT_ENCODING : encoding)) {
             while (scanner.hasNextLine()) {
                 text.append(scanner.nextLine()).append(nl);
             }
@@ -211,20 +207,17 @@ public class FileTools {
      * @return a {@link java.io.File} object.
      * @throws java.io.IOException if any.
      */
-    public static File getFileFromString(String string, String filePath, String encoding, boolean append) throws IOException {
+    public static File getFileFromString(String string, String filePath, final String encoding, boolean append) throws IOException {
         if (string == null) {
             throw new IllegalArgumentException("string may not be null");
         }
-        if (encoding == null) {
-            encoding = StringTools.DEFAULT_ENCODING;
-        }
 
         File file = new File(filePath);
-
+        String useEncoding = encoding == null ? StringTools.DEFAULT_ENCODING : encoding;
         try (FileWriterWithEncoding writer = FileWriterWithEncoding.builder()
                 .setFile(file)
-                .setCharset(encoding)
-                .setCharsetEncoder(Charset.forName(encoding).newEncoder())
+                .setCharset(useEncoding)
+                .setCharsetEncoder(Charset.forName(useEncoding).newEncoder())
                 .setAppend(append)
                 .get()) {
             writer.write(string);
@@ -316,11 +309,11 @@ public class FileTools {
      * compressZipFile.
      * </p>
      *
+     * @param contentMap a {@link java.util.Map} object.
      * @param zipFile a {@link java.io.File} object.
      * @param level a {@link java.lang.Integer} object.
-     * @should throw FileNotFoundException if file not found
-     * @param contentMap a {@link java.util.Map} object.
      * @throws java.io.IOException if any.
+     * @should throw FileNotFoundException if file not found
      */
     public static void compressZipFile(Map<Path, String> contentMap, File zipFile, Integer level) throws IOException {
         if (contentMap == null || contentMap.isEmpty()) {
@@ -336,7 +329,39 @@ public class FileTools {
             }
             for (Entry<Path, String> entry : contentMap.entrySet()) {
                 try (InputStream in = IOUtils.toInputStream(entry.getValue(), StandardCharsets.UTF_8.name())) {
-                    zos.putNextEntry(new ZipEntry(entry.getKey().getFileName().toString()));
+                    zos.putNextEntry(new ZipEntry(entry.getKey().toString()));
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while ((len = in.read(buffer)) != -1) {
+                        zos.write(buffer, 0, len);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * <p>
+     * compressZipFile.
+     * </p>
+     *
+     * @param output
+     * @param contentMap a {@link java.util.Map} object.
+     * @param level a {@link java.lang.Integer} object.
+     * @throws java.io.IOException if any.
+     * @should throw FileNotFoundException if file not found
+     */
+    public static void compressZip(OutputStream output, Map<Path, String> contentMap, Integer level) throws IOException {
+        if (contentMap == null || contentMap.isEmpty()) {
+            throw new IllegalArgumentException("texts may not be empty or null");
+        }
+        try (ZipOutputStream zos = new ZipOutputStream(output)) {
+            if (level != null) {
+                zos.setLevel(level);
+            }
+            for (Entry<Path, String> entry : contentMap.entrySet()) {
+                try (InputStream in = IOUtils.toInputStream(entry.getValue(), StandardCharsets.UTF_8.name())) {
+                    zos.putNextEntry(new ZipEntry(entry.getKey().toString()));
                     byte[] buffer = new byte[1024];
                     int len;
                     while ((len = in.read(buffer)) != -1) {
@@ -414,15 +439,17 @@ public class FileTools {
      * @param path Absolute path to adapt
      * @return Windows-compatible path on Windows; unchanged path elsewhere
      */
-    public static String adaptPathForWindows(String path) {
+    public static String adaptPathForWindows(final String path) {
         String os = System.getProperty("os.name").toLowerCase();
-        if (os.indexOf("win") >= 0 && path.startsWith("/opt/")) {
-            path = "C:" + path;
-        } else if (os.indexOf("win") >= 0 && path.startsWith("file:///C:/opt/")) {
+
+        String ret = path;
+        if (os.indexOf("win") >= 0 && ret.startsWith("/opt/")) {
+            ret = "C:" + ret;
+        } else if (os.indexOf("win") >= 0 && ret.startsWith("file:///C:/opt/")) {
             // In case Paths.get() automatically adds "C:" to Unix paths on Windows machines, remove the "C:"
-            path = path.replace("/C:", "");
+            ret = ret.replace("/C:", "");
         }
-        return path;
+        return ret;
     }
 
     /**
@@ -470,12 +497,112 @@ public class FileTools {
         return type;
     }
 
+    
+    public static String getMimeTypeFromFile(Path path) throws IOException {
+        String mimeType = "";
+        String fileExtension = path.getFileName().toString();
+        if (!fileExtension.contains(".")) {
+            return mimeType;
+        }
+        fileExtension = fileExtension.substring(fileExtension.lastIndexOf(".") + 1).toLowerCase(); // .tar.gz will not work
+            // first try to detect mimetype from OS map
+            mimeType = Files.probeContentType(path);
+        // if this didn't work, try to get it from the internal FileNameMap to resolve the type from the extension
+        if (StringUtils.isBlank(mimeType)) {
+            mimeType = URLConnection.guessContentTypeFromName(path.getFileName().toString());
+        }
+        // we are on a mac, compare against list of known file formats
+        if (StringUtils.isBlank(mimeType) || "application/octet-stream".equals(mimeType)) {
+
+            switch (fileExtension) {
+                case "jpg":
+                case "jpeg":
+                case "jpe":
+                    mimeType = "image/jpeg";
+                    break;
+                case "jp2":
+                    mimeType = "image/jp2";
+                    break;
+                case "tif":
+                case "tiff":
+                    mimeType = "image/tiff";
+                    break;
+                case "png":
+                    mimeType = "image/png";
+                    break;
+                case "gif":
+                    mimeType = "image/gif";
+                    break;
+                case "pdf":
+                    mimeType = "application/pdf";
+                    break;
+                case "mp3":
+                    mimeType = "audio/mpeg";
+                    break;
+                case "wav":
+                    mimeType = "audio/wav";
+                    break;
+                case "mpeg":
+                case "mpg":
+                case "mpe":
+                    mimeType = " video/mpeg ";
+                    break;
+                case "mp4":
+                    mimeType = "video/mp4";
+                    break;
+                case "mxf":
+                    mimeType = "video/mxf";
+                    break;
+                case "ogg":
+                    mimeType = "video/ogg";
+                    break;
+                case "webm":
+                    mimeType = "video/webm";
+                    break;
+                case "mov":
+                    mimeType = "video/quicktime";
+                    break;
+                case "avi":
+                    mimeType = "video/x-msvideo";
+                    break;
+                case "xml":
+                    mimeType = "application/xml";
+                    break;
+                case "txt":
+                    mimeType = "text/plain";
+                    break;
+                case "x3d":
+                case "x3dv":
+                case "x3db":
+                    mimeType = "model/x3d+XXX";
+                    break;
+                case "obj":
+                case "ply":
+                case "stl":
+                case "fbx":
+                case "gltf":
+                case "glb":
+                    mimeType = "object/" + fileExtension;
+                    break;
+                case "epub":
+                    mimeType = "application/epub+zip";
+                    break;
+                default:
+                    // use a default value, if file extension is not mapped
+                    mimeType = "image/tiff";
+            }
+
+        }
+
+        return mimeType;
+    }
+
     /**
      * Guess the content type of the given text, using {@link URLConnection#guessContentTypeFromName(String)} If no content type could be determined,
      * 'text/plain' is assumed
      *
      * @param content
-     * @return
+     * @return Content mime type
      */
     public static String probeContentType(String content) {
         try (InputStream in = IOUtils.toInputStream(content, StringTools.getCharset(content))) {
@@ -491,8 +618,8 @@ public class FileTools {
     }
 
     /**
-     * @param file1
-     * @return
+     * @param file
+     * @return Charset of the given file
      * @throws IOException
      */
     public static String getCharset(Path file) throws IOException {
@@ -549,7 +676,7 @@ public class FileTools {
      *            first!
      * @return Constructed Path
      */
-    public static Path getPathFromUrlString(String urlString) {
+    public static Path getPathFromUrlString(final String urlString) {
         if (StringUtils.isEmpty(urlString)) {
             return null;
         }
@@ -560,11 +687,11 @@ public class FileTools {
         if (urlStringLocal.contains(":")) {
             try {
                 // logger.trace("url string: {}", urlString); //NOSONAR Sometimes used for debugging
-                URL url = new URL(urlString);
+                URL url = new URL(urlStringLocal);
                 URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
                         url.getQuery(), url.getRef());
-                if (urlString.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
-                    urlString = urlString.substring(0, urlString.length() - 1);
+                if (urlStringLocal.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
+                    urlStringLocal = urlStringLocal.substring(0, urlStringLocal.length() - 1);
                 }
                 path = Paths.get(uri.getPath());
             } catch (URISyntaxException | MalformedURLException e) {
@@ -573,7 +700,7 @@ public class FileTools {
         }
         // URL without protocol
         if (path == null) {
-            path = Paths.get(urlString);
+            path = Paths.get(urlStringLocal);
         }
 
         return path;
@@ -588,6 +715,7 @@ public class FileTools {
                 }
             }
         } catch (IOException ex) {
+            //
         }
         Collections.sort(fileNames);
         return fileNames;
@@ -598,7 +726,7 @@ public class FileTools {
      * 
      * @param path any file path
      * @param extension the extension, without leading '.'
-     * @return
+     * @return Given path with replaced file extension
      */
     public static Path replaceExtension(Path path, String extension) {
         String filename = path.getFileName().toString();

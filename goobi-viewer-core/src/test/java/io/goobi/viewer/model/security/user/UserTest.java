@@ -29,8 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -40,14 +40,14 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class UserTest extends AbstractDatabaseEnabledTest {
+class UserTest extends AbstractDatabaseEnabledTest {
     
     /**
      * @see User#User(User)
      * @verifies clone blueprint correctly
      */
     @Test
-    public void User_shouldCloneBlueprintCorrectly() throws Exception {
+    void User_shouldCloneBlueprintCorrectly() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         License license = new License();
         
@@ -74,31 +74,31 @@ public class UserTest extends AbstractDatabaseEnabledTest {
         blueprint.getUserProperties().put("foo", "bar");
         
         User clone = new User(blueprint);
-        Assert.assertEquals(blueprint.getId(), clone.getId());
-        Assert.assertEquals(blueprint.getEmail(), clone.getEmail());
-        Assert.assertEquals(blueprint.getPasswordHash(), clone.getPasswordHash());
-        Assert.assertEquals(blueprint.getActivationKey(), clone.getActivationKey());
-        Assert.assertEquals(blueprint.getLastLogin(), clone.getLastLogin());
-        Assert.assertEquals(blueprint.isActive(), clone.isActive());
-        Assert.assertEquals(blueprint.isSuspended(), clone.isSuspended());
-        Assert.assertEquals(blueprint.isSuperuser(), clone.isSuperuser());
-        Assert.assertEquals(blueprint.getLastName(), clone.getLastName());
-        Assert.assertEquals(blueprint.getFirstName(), clone.getFirstName());
-        Assert.assertEquals(blueprint.getNickName(), clone.getNickName());
-        Assert.assertEquals(blueprint.getComments(), clone.getComments());
-        Assert.assertEquals(blueprint.getScore(), clone.getScore());
-        Assert.assertEquals(blueprint.isAgreedToTermsOfUse(), clone.isAgreedToTermsOfUse());
-        Assert.assertEquals(blueprint.getAvatarType(), clone.getAvatarType());
-        Assert.assertEquals(blueprint.getLocalAvatarUpdated(), clone.getLocalAvatarUpdated());
+        Assertions.assertEquals(blueprint.getId(), clone.getId());
+        Assertions.assertEquals(blueprint.getEmail(), clone.getEmail());
+        Assertions.assertEquals(blueprint.getPasswordHash(), clone.getPasswordHash());
+        Assertions.assertEquals(blueprint.getActivationKey(), clone.getActivationKey());
+        Assertions.assertEquals(blueprint.getLastLogin(), clone.getLastLogin());
+        Assertions.assertEquals(blueprint.isActive(), clone.isActive());
+        Assertions.assertEquals(blueprint.isSuspended(), clone.isSuspended());
+        Assertions.assertEquals(blueprint.isSuperuser(), clone.isSuperuser());
+        Assertions.assertEquals(blueprint.getLastName(), clone.getLastName());
+        Assertions.assertEquals(blueprint.getFirstName(), clone.getFirstName());
+        Assertions.assertEquals(blueprint.getNickName(), clone.getNickName());
+        Assertions.assertEquals(blueprint.getComments(), clone.getComments());
+        Assertions.assertEquals(blueprint.getScore(), clone.getScore());
+        Assertions.assertEquals(blueprint.isAgreedToTermsOfUse(), clone.isAgreedToTermsOfUse());
+        Assertions.assertEquals(blueprint.getAvatarType(), clone.getAvatarType());
+        Assertions.assertEquals(blueprint.getLocalAvatarUpdated(), clone.getLocalAvatarUpdated());
         
-        Assert.assertEquals(1, clone.getLicenses().size());
-        Assert.assertEquals(license, clone.getLicenses().get(0));
+        Assertions.assertEquals(1, clone.getLicenses().size());
+        Assertions.assertEquals(license, clone.getLicenses().get(0));
         
-        Assert.assertEquals(1, clone.getOpenIdAccounts().size());
-        Assert.assertEquals(blueprint.getOpenIdAccounts().get(0), clone.getOpenIdAccounts().get(0));
+        Assertions.assertEquals(1, clone.getOpenIdAccounts().size());
+        Assertions.assertEquals(blueprint.getOpenIdAccounts().get(0), clone.getOpenIdAccounts().get(0));
         
-        Assert.assertEquals(1, clone.getUserProperties().size());
-        Assert.assertEquals(blueprint.getUserProperties().get("foo"), clone.getUserProperties().get("foo"));
+        Assertions.assertEquals(1, clone.getUserProperties().size());
+        Assertions.assertEquals(blueprint.getUserProperties().get("foo"), clone.getUserProperties().get("foo"));
     }
 
     /**
@@ -106,10 +106,10 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return true if condition is open access
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionIsOpenAccess() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionIsOpenAccess() throws Exception {
         User user = new User();
         user.setSuperuser(false);
-        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(SolrConstants.OPEN_ACCESS_VALUE)),
+        Assertions.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(SolrConstants.OPEN_ACCESS_VALUE)),
                 IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
     }
 
@@ -118,10 +118,10 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return true if user is superuser
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnTrueIfUserIsSuperuser() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnTrueIfUserIsSuperuser() throws Exception {
         User user = new User();
         user.setSuperuser(true);
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("restricted")), IPrivilegeHolder.PRIV_LIST, "PPN123")
                         .isGranted());
     }
@@ -131,11 +131,11 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return true if user has license
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnTrueIfUserHasLicense() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnTrueIfUserHasLicense() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
         List<String> licenceTypes = Arrays.asList(new String[] { "license type 1 name", "license type 3 name" });
-        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(licenceTypes), IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
+        Assertions.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(licenceTypes), IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
     }
 
     /**
@@ -143,10 +143,10 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return false if user has no license
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnFalseIfUserHasNoLicense() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnFalseIfUserHasNoLicense() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assert.assertNotNull(user);
-        Assert.assertFalse(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 1 name")),
+        Assertions.assertNotNull(user);
+        Assertions.assertFalse(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 1 name")),
                 IPrivilegeHolder.PRIV_VIEW_IMAGES, "PPN123").isGranted());
     }
 
@@ -155,10 +155,10 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies return true if condition list empty
      */
     @Test
-    public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionListEmpty() throws Exception {
+    void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionListEmpty() throws Exception {
         User user = new User();
         user.setSuperuser(false);
-        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<String>(0), IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
+        Assertions.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<String>(0), IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
     }
 
     /**
@@ -166,7 +166,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      * @verifies extract id correctly
      */
     @Test
-    public void getId_shouldExtractIdCorrectly() throws Exception {
-        Assert.assertEquals(Long.valueOf(1234567890L), User.getId(new URI("https://example.com/viewer/users/1234567890/")));
+    void getId_shouldExtractIdCorrectly() throws Exception {
+        Assertions.assertEquals(Long.valueOf(1234567890L), User.getId(new URI("https://example.com/viewer/users/1234567890/")));
     }
 }

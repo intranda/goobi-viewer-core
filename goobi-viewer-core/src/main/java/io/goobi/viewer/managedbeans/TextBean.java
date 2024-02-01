@@ -190,6 +190,7 @@ public class TextBean implements Serializable {
             logger.trace("topDocument is null");
             return null;
         }
+        // logger.trace("getTeiText: {}", topDocument.getPi()); //NOSONAR Debug
 
         AccessPermission permission = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topDocument.getPi(), null,
                 IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());

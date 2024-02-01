@@ -165,7 +165,7 @@ public class MessageQueueManager {
      * Add the message to the internal message queue to be handled later
      * 
      * @param message
-     * @return
+     * @return Message ID
      * @throws MessageQueueException
      */
     public String addToQueue(ViewerMessage message) throws MessageQueueException {
@@ -178,9 +178,8 @@ public class MessageQueueManager {
             } finally {
                 notifyMessageQueueStateUpdate();
             }
-        } else {
-            throw new MessageQueueException("Message queue is not running");
         }
+        throw new MessageQueueException("Message queue is not running");
     }
 
     public static String getQueueForMessageType(String taskName) {
@@ -307,17 +306,19 @@ public class MessageQueueManager {
     }
 
     private void updateMessageStatus(ViewerMessage message, MessageStatus rv) {
-        message.setMessageStatus(rv);
-        message.setQueue(MessageQueueManager.getQueueForMessageType(message.getTaskName()));
-        message.setLastUpdateTime(LocalDateTime.now());
-        try {
-            if (message.getId() == null) {
-                dao.addViewerMessage(message);
-            } else {
-                dao.updateViewerMessage(message);
+        if (MessageStatus.IGNORE != rv) {
+            message.setMessageStatus(rv);
+            message.setQueue(MessageQueueManager.getQueueForMessageType(message.getTaskName()));
+            message.setLastUpdateTime(LocalDateTime.now());
+            try {
+                if (message.getId() == null) {
+                    dao.addViewerMessage(message);
+                } else {
+                    dao.updateViewerMessage(message);
+                }
+            } catch (DAOException e) {
+                logger.error(e);
             }
-        } catch (DAOException e) {
-            logger.error(e);
         }
     }
 
@@ -384,7 +385,7 @@ public class MessageQueueManager {
         return Optional.empty();
     }
 
-    private Optional<ViewerMessage> getMessageById(String messageId, String queueName, QueueConnection connection) {
+    private static Optional<ViewerMessage> getMessageById(String messageId, String queueName, QueueConnection connection) {
         try (QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
                 QueueBrowser browser = queueSession.createBrowser(queueSession.createQueue(queueName), "JMSMessageID='" + messageId + "'");) {
             Enumeration<?> messagesInQueue = browser.getEnumeration();
@@ -556,7 +557,7 @@ public class MessageQueueManager {
         }
     }
 
-    private ObjectName getQueueViewBeanName(String queueName) throws MalformedObjectNameException {
+    private static ObjectName getQueueViewBeanName(String queueName) throws MalformedObjectNameException {
         String name = String.format("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=%s", queueName);
         return new ObjectName(name);
     }

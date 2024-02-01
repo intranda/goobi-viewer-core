@@ -21,18 +21,18 @@
  */
 package io.goobi.viewer.model.security.recordlock;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class RecordLockTest {
+class RecordLockTest {
 
     /**
      * @see RecordLock#equals(Object)
      * @verifies return true if pi and sessionId same
      */
     @Test
-    public void equals_shouldReturnTrueIfPiAndSessionIdSame() throws Exception {
+    void equals_shouldReturnTrueIfPiAndSessionIdSame() throws Exception {
         RecordLock lock = new RecordLock("PPN123", "sid123");
-        Assert.assertTrue(lock.equals(new RecordLock("PPN123", "sid123")));
+        Assertions.assertTrue(lock.equals(new RecordLock("PPN123", "sid123")));
     }
 }

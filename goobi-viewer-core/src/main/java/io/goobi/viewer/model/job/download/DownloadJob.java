@@ -61,8 +61,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -305,8 +303,8 @@ public abstract class DownloadJob implements Serializable {
                     body = body.replace("{4}", getType().toUpperCase());
                     LocalDateTime exirationDate = lastRequested;
                     exirationDate = exirationDate.plus(ttl, ChronoUnit.MILLIS);
-                    body = body.replace("{2}", DateTools.format(exirationDate, DateTools.formatterISO8601Date, false));
-                    body = body.replace("{3}", DateTools.format(exirationDate, DateTools.formatterISO8601Date, false));
+                    body = body.replace("{2}", DateTools.format(exirationDate, DateTools.FORMATTERISO8601DATE, false));
+                    body = body.replace("{3}", DateTools.format(exirationDate, DateTools.FORMATTERISO8601DATE, false));
                 }
                 break;
             case ERROR:
@@ -605,6 +603,74 @@ public abstract class DownloadJob implements Serializable {
      */
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
+        try {
+            Client client = ClientBuilder.newClient();
+            client.property(ClientProperties.CONNECT_TIMEOUT, 12000);
+            client.property(ClientProperties.READ_TIMEOUT, 30000);
+            return client
+                    .target(url)
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
+        } catch (Exception e) {
+            throw new IOException("Error connecting to " + url, e);
+        }
+    }
+
+    /**
+     * <p>
+     * getJobStatus.
+     * </p>
+     *
+     * @param identifier a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public String getJobStatus(String identifier) {
+        StringBuilder url = new StringBuilder();
+        url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
+        url.append(getRestApiPath()).append("/info/");
+        url.append(identifier);
+        ResponseHandler<String> handler = new BasicResponseHandler();
+        HttpGet httpGet = new HttpGet(url.toString());
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            CloseableHttpResponse response = httpclient.execute(httpGet);
+            String ret = handler.handleResponse(response);
+            logger.trace("TaskManager response: {}", ret);
+            return ret;
+        } catch (Exception e) {
+            logger.error("Error getting response from TaskManager", e);
+            return "";
+        }
+    }
+
+    /**
+     * @return {@link String}
+     */
+    protected abstract String getRestApiPath();
+
+    /**
+     * <p>
+     * updateStatus.
+     * </p>
+     */
+    public void updateStatus() {
+        String ret = getJobStatus(identifier);
+        try {
+            JSONObject object = new JSONObject(ret);
+            String statusString = object.getString("status");
+            JobStatus s = JobStatus.getByName(statusString);
+            setStatus(s);
+            if (JobStatus.ERROR.equals(s)) {
+                String errorMessage = object.getString("errorMessage");
+                setMessage(errorMessage);
+            }
+        } catch (JSONException e) {
+            setStatus(JobStatus.ERROR);
+            setMessage("Unable to parse TaskManager response");
+        }
+
     }
 
     /* (non-Javadoc)

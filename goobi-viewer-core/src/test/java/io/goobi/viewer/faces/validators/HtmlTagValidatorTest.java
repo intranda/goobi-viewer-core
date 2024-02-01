@@ -21,53 +21,36 @@
  */
 package io.goobi.viewer.faces.validators;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import io.goobi.viewer.faces.validators.HtmlTagValidator;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Florian Alpers
  *
  */
-public class HtmlTagValidatorTest {
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-    }
+class HtmlTagValidatorTest {
 
     @Test
-    public void test() {
-        Assert.assertFalse("Accepts <p> tag", new HtmlTagValidator().validate("abc\njkl  h <p>asdasd</p> ashdoha<br/> asdas"));
-        Assert.assertFalse("Accepts <div> tag with attribute",
-                new HtmlTagValidator().validate("abc\njkl  h <div test=\"asd\">asdasd</div> ashdoha<br/> asdas"));
-        Assert.assertTrue("Does not accept text with em and br", new HtmlTagValidator().validate("abc\njkl  h <em>asdasd</em> ashdoha<br/> asdas"));
-        Assert.assertTrue("Does not accept text with em with attribute",
-                new HtmlTagValidator().validate("abc\njkl  h <em test=\"asd\">asdasd</em> ashdoha<br/> asdas"));
-        Assert.assertFalse("Accepts text with script tag",
-                new HtmlTagValidator().validate("abc\njkl  h <script type=\"hidden\">asdasd</script> ashdoha<br/> asdas"));
-        Assert.assertFalse("Accepts tags in header", new HtmlTagValidator()
-                .validate("<head><p>asdas</p></head> <body>abc\njkl  h <script type=\"hidden\">asdasd</script> ashdoha<br/> asdas</body>"));
-        Assert.assertFalse("Accepts <body> tag with <div>",
-                new HtmlTagValidator().validate("<body>abc\njkl  h <div type=\"hidden\">asdasd</div> ashdoha<br/> asdas"));
-        Assert.assertFalse("Accepts <body> tag with <script>",
-                new HtmlTagValidator().validate("<head></head><body>abc\njkl  h <script type=\"hidden\">asdasd</script> ashdoha<br/> asdas</body>"));
-        Assert.assertFalse("Accepts <script> tag in html",
-                new HtmlTagValidator().validate("<html><script>var i = 1;</script><head></head><body>asdas</body></html>"));
-        Assert.assertFalse("Accepts pure <script> tag", new HtmlTagValidator().validate("<script>var i = 1;</script>"));
-
+    void test() {
+        Assertions.assertFalse(new HtmlTagValidator().validate("abc\njkl  h <p>asdasd</p> ashdoha<br/> asdas"), "Accepts <p> tag");
+        Assertions.assertFalse(new HtmlTagValidator().validate("abc\njkl  h <div test=\"asd\">asdasd</div> ashdoha<br/> asdas"),
+                "Accepts <div> tag with attribute");
+        Assertions.assertTrue(
+                new HtmlTagValidator().validate("abc\njkl  h <em>asdasd</em> ashdoha<br/> asdas"), "Does not accept text with em and br");
+        Assertions.assertTrue(new HtmlTagValidator().validate("abc\njkl  h <em test=\"asd\">asdasd</em> ashdoha<br/> asdas"),
+                "Does not accept text with em with attribute");
+        Assertions.assertFalse(new HtmlTagValidator().validate("abc\njkl  h <script type=\"hidden\">asdasd</script> ashdoha<br/> asdas"),
+                "Accepts text with script tag");
+        Assertions.assertFalse(new HtmlTagValidator()
+                .validate("<head><p>asdas</p></head> <body>abc\njkl  h <script type=\"hidden\">asdasd</script> ashdoha<br/> asdas</body>"),
+                "Accepts tags in header");
+        Assertions.assertFalse(new HtmlTagValidator().validate("<body>abc\njkl  h <div type=\"hidden\">asdasd</div> ashdoha<br/> asdas"),
+                "Accepts <body> tag with <div>");
+        Assertions.assertFalse(
+                new HtmlTagValidator().validate("<head></head><body>abc\njkl  h <script type=\"hidden\">asdasd</script> ashdoha<br/> asdas</body>"),
+                "Accepts <body> tag with <script>");
+        Assertions.assertFalse(new HtmlTagValidator().validate("<html><script>var i = 1;</script><head></head><body>asdas</body></html>"),
+                "Accepts <script> tag in html");
+        Assertions.assertFalse(new HtmlTagValidator().validate("<script>var i = 1;</script>"), "Accepts pure <script> tag");
     }
-
 }

@@ -25,9 +25,7 @@ import java.net.URISyntaxException;
 
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -45,12 +43,13 @@ public class IIIFPresentationAPIHandler {
      * Constructor for IIIFPresentationAPIHandler.
      * </p>
      *
-     * @param servletPath a {@link java.lang.String} object.
+     * @param urls
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
      * @throws java.net.URISyntaxException if any.
      */
     public IIIFPresentationAPIHandler(AbstractApiUrlManager urls, Configuration configuration) throws URISyntaxException {
         this.builder = new AbstractBuilder(urls) {
+            //
         };
     }
 

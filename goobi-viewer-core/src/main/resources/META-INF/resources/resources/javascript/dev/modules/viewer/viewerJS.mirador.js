@@ -76,9 +76,11 @@ var viewerJS = ( function( viewer ) {
             let miradorConfigPromise = null;
             if (manifests.length > 0) {
             	// URL identifiers
+				console.log("loading manifests ", manifests);
                 miradorConfigPromise = _getMiradorConfigForManifestUrls(manifests, this.config);
             } else if ( _getBookmarkListId() != null ) {
             	// User bookmarks
+            	console.log("Load bookmarklist ", _getBookmarkListId())
                 miradorConfigPromise = _getUserMiradorObjects( this.config.restEndpoint, _getBookmarkListId() )
                 .then( response => response.json())
                 .then( json => json.members.filter(manifest => manifest["@type"] == "sc:Manifest" || manifest.type == "Manifest") )
@@ -86,23 +88,31 @@ var viewerJS = ( function( viewer ) {
                 .then( members => _getMiradorConfigForManifestUrls(members, this.config) );
             } else if ( _getBookmarkListKey() != null ) {
                 //public/shared bookmarks
+                console.log("Load bookmarklist with key ", _getBookmarkListKey())
                 miradorConfigPromise = _getSharedMiradorObjects( this.config.restEndpoint, _getBookmarkListKey() )
                 .then( response => response.json())
                 .then( json => json.members.filter(manifest => manifest["@type"] == "sc:Manifest" || manifest.type == "Manifest") )
 //                .then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
                 .then( ids => _getMiradorConfigForManifestUrls(ids, this.config) );
-            } else {
+            } else if(_getBookmarkListId() !== null) {
             	// Session mark list
+            	console.log("load session bookmark list")
                 miradorConfigPromise = _getMiradorSessionObjects( this.config.restEndpoint )
                 .then( response => response.json())
                 .then( json => json.members.filter(manifest => manifest["@type"] == "sc:Manifest" || manifest.type == "Manifest") )
                 //.then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
                 .then( ids => _getMiradorConfigForManifestUrls(ids, this.config) );
-            }
+            } else {
+				console.log("TODO: Load empty Mirador");
+				miradorConfigPromise = Promise.resolve({
+					id: "miradorViewer"
+				});
+			}
             
             if(miradorConfigPromise) {  
                 miradorConfigPromise       
-                .then( elements => {                    
+                .then( elements => {            
+						      
                         this.miradorConfig = elements;
                         this.mirador = Mirador.viewer(this.miradorConfig);
                 })
@@ -176,7 +186,7 @@ var viewerJS = ( function( viewer ) {
 	 * @param {String} root The application root path.
 	 * @returns {Object} An JSON-Object which contains all session elements.
 	 */
-	function _getMiradorSessionObjects( root ) {
+	function _getMiradorSessionObjects( restUrl ) {
 		if ( _debug ) { 
 			console.log( '---------- _getMiradorSessionObjects() ----------' );
 			console.log( '_getMiradorSessionObjects: root - ', root );
@@ -188,21 +198,16 @@ var viewerJS = ( function( viewer ) {
 
 	
 	function _getManifestsFromUrlQuery(config) {
-        var manifests = _getQueryVariable("manifest").split("$").filter(man => man.length > 0);
-        var pis = _getQueryVariable("pi").split("$").filter(man => man.length > 0);
+        var manifests = _getQueryVariables("manifest");
+        var pis = _getQueryVariables("pi");
         var piManifests = pis.map(pi => config.manifestEndpoint + "records/" + pi + "/manifest/");
         manifests = manifests.concat(piManifests);
         return manifests;
 	}
 	
-	function _getQueryVariable(variable) {
-	       var query = window.location.search.substring(1);
-	       var vars = query.split("&");
-	       for (var i=0;i<vars.length;i++) {
-	               var pair = vars[i].split("=");
-	               if(pair[0] == variable){return pair[1];}
-	       }
-	       return '';
+	function _getQueryVariables(variable) {
+		const params = new URLSearchParams(window.location.search);
+		return params.getAll(variable).flatMap(s => s.split(/[,$]/)).filter(s => s && s.length > 0);
 	}
 	
 	   
@@ -242,6 +247,7 @@ var viewerJS = ( function( viewer ) {
         }
         return Promise.resolve(miradorConfig);
     }
+
     
     return viewer;
     

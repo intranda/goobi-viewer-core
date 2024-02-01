@@ -130,7 +130,10 @@
 	                                        <div class="row justify-content-end admin__boxed-entry-actions">
 	                                            <div class="col-3 d-flex justify-content-end">
 	                                                <!-- EDIT -->
-	                                                <a href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{msg[license.licenseType.name]} | #{license.user.display} #{license.userGroup.name} #{license.ipRange.name}">#{msg.edit}</a>
+	                                                <a href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/" class="admin__boxed-entry-actions-edit"
+	                                                    aria-label="#{msg.edit}: #{msg[license.licenseType.name]} | #{license.user.displayName} #{license.userGroup.name} #{license.ipRange.name}">
+	                                                    #{msg.edit}
+	                                                </a>
 	                                                
                                                     <!-- DELETE -->
 		                                            <button

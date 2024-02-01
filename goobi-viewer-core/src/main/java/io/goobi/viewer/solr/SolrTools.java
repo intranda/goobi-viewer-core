@@ -717,13 +717,32 @@ public final class SolrTools {
      */
     public static List<String> getAvailableValuesForField(final String field, final String filterQuery)
             throws PresentationException, IndexUnreachableException {
+        return getAvailableValuesForField(field, filterQuery, true);
+    }
+        
+        
+        /**
+         * <p>
+         * getAvailableValuesForField.
+         * </p>
+         *
+         * @param field a {@link java.lang.String} object.
+         * @param filterQuery a {@link java.lang.String} object.
+         * @param useFacetField If true, "FACET_" field variant is used for the actual search; Only use false for single-token values
+         * @return List of facet values for the given field and query
+         * @throws io.goobi.viewer.exceptions.PresentationException if any.
+         * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+         * @should return all existing values for the given field
+         */
+        public static List<String> getAvailableValuesForField(final String field, final String filterQuery, boolean useFacetField)
+                throws PresentationException, IndexUnreachableException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
         if (filterQuery == null) {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
-        String facettifiedField = SearchHelper.facetifyField(field);
+        String facettifiedField = useFacetField ? SearchHelper.facetifyField(field) : field;
         String fq = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
                 DataManager.getInstance()
@@ -760,7 +779,7 @@ public final class SolrTools {
             return Collections.emptyList();
         }
 
-        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*");
+        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*", false);
     }
 
     /**

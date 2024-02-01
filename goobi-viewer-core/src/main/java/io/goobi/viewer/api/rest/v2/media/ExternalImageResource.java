@@ -66,6 +66,7 @@ import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -85,9 +86,11 @@ public class ExternalImageResource extends ImageResource {
     private static final Logger logger = LogManager.getLogger(ExternalImageResource.class);
 
     /**
+     * @param context
      * @param request
-     * @param directory
-     * @param filename
+     * @param response
+     * @param urls
+     * @param imageUrl
      */
     public ExternalImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -116,9 +119,9 @@ public class ExternalImageResource extends ImageResource {
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
             int maxUnzoomedImageWidth = DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
-            if (maxUnzoomedImageWidth > 0 &&
-                    (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) ||
-                            scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
+            if (maxUnzoomedImageWidth > 0
+                    && (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region))
+                            || scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
                 request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE,
                         new String[] { IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES });
             }
@@ -139,7 +142,7 @@ public class ExternalImageResource extends ImageResource {
         logger.trace("getPdf: {}/{}", pi, filename);
         filename = FilenameUtils.getBaseName(filename);
         filename = pi + "_" + filename + ".pdf";
-        response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
 
         if (context.getProperty("param:metsSource") != null) {
             try {
@@ -147,7 +150,7 @@ public class ExternalImageResource extends ImageResource {
                 String metsPath = PathConverter.getPath(PathConverter.toURI(metsSource)).resolve(pi + ".xml").toUri().toString();
                 context.setProperty("param:metsFile", metsPath);
             } catch (URISyntaxException e) {
-                logger.error("Failed to convert metsSource " + context.getProperty("metsSource") + " to mets URI");
+                logger.error("Failed to convert metsSource {} to METS URI", context.getProperty("metsSource"));
             }
 
         }
@@ -171,9 +174,11 @@ public class ExternalImageResource extends ImageResource {
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
             this.resourceURI = URI.create(this.resourceURI.toString().replace(toReplace, directory));
         } catch (UnsupportedEncodingException e) {
+            //
         }
     }
 
+    @Override
     @GET
     @javax.ws.rs.Path("/info.json")
     @Produces({ MEDIA_TYPE_APPLICATION_JSONLD, MediaType.APPLICATION_JSON })

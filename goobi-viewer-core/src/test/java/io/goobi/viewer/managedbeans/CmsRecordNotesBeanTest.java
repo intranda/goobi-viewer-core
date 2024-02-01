@@ -21,11 +21,11 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -41,7 +41,7 @@ import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
  * @author florian
  *
  */
-public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
+class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
 
     CmsRecordNotesBean bean;
     AbstractApiUrlManager urls;
@@ -49,7 +49,7 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         urls = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
@@ -62,13 +62,13 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testGetAllPaginatedData() {
+    void testGetAllPaginatedData() {
         bean.getDataProvider().setEntriesPerPage(2);
         assertEquals(5, bean.getDataProvider().getSizeOfDataList());
         assertEquals(2, bean.getDataProvider().getPaginatorList().size());
@@ -79,7 +79,7 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testFilteredPaginatedData() {
+    void testFilteredPaginatedData() {
         bean.getDataProvider().getFilter(CmsRecordNotesBean.PI_TITLE_FILTER).setValue("PI1");
         bean.getDataProvider().setEntriesPerPage(2);
         assertEquals(2, bean.getDataProvider().getSizeOfDataList());
@@ -87,14 +87,14 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testFilteredByTitlePaginatedData() {
+    void testFilteredByTitlePaginatedData() {
         bean.getDataProvider().getFilter(CmsRecordNotesBean.PI_TITLE_FILTER).setValue("Bemerkungen 1");
         assertEquals(1, bean.getDataProvider().getSizeOfDataList());
         assertEquals(1, bean.getDataProvider().getPaginatorList().size());
     }
 
     @Test
-    public void testGetThumbnailUrl() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void testGetThumbnailUrl() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         String url = bean.getThumbnailUrl(note, 333, 444);
         String reference = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF).params("PI1", "full", "!333,444", "0", "default", "jpg").build();

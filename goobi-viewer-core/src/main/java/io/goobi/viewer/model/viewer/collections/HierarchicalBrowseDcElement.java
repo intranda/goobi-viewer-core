@@ -22,16 +22,14 @@
 package io.goobi.viewer.model.viewer.collections;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
@@ -56,8 +54,10 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      *
      * @param name a {@link java.lang.String} object.
      * @param number a long.
-     * @param sortField a {@link java.lang.String} object.
      * @param field a {@link java.lang.String} object.
+     * @param sortField a {@link java.lang.String} object.
+     * @param splittingChar
+     * @param displayNumberOfVolumesLevel
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public HierarchicalBrowseDcElement(String name, long number, String field, String sortField, String splittingChar,
@@ -74,7 +74,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      */
     public HierarchicalBrowseDcElement(HierarchicalBrowseDcElement blueprint) {
         super(blueprint);
-        blueprint.children.stream().map(child -> new HierarchicalBrowseDcElement(child)).forEach(child -> this.addChild(child));
+        blueprint.children.stream().map(HierarchicalBrowseDcElement::new).forEach(this::addChild);
     }
 
     /**
@@ -90,12 +90,12 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
 
     public List<HierarchicalBrowseDcElement> getChildren(boolean includeMyself) {
         if (includeMyself) {
-            List<HierarchicalBrowseDcElement> list = new ArrayList<HierarchicalBrowseDcElement>(this.children);
+            List<HierarchicalBrowseDcElement> list = new ArrayList<>(this.children);
             list.add(0, this);
             return list;
-        } else {
-            return getChildren();
         }
+
+        return getChildren();
     }
 
     /**
@@ -150,7 +150,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /** {@inheritDoc} */
     @Override
     public boolean isHasSubelements() {
-        return children.size() > 0;
+        return !children.isEmpty();
     }
 
     /**

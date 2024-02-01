@@ -46,7 +46,9 @@ public enum TaskType {
     /** Download a zip archive from a url and extract it so its content may be offered for download */
     DOWNLOAD_EXTERNAL_RESOURCE(""),
     /** Delete a resouce previously downloaded by {@link #DOWNLOAD_EXTERNAL_RESOURCE} */
-    DELETE_RESOURCE("");
+    DELETE_RESOURCE(""),
+    /** Pull the git repository of the viewer theme if it exists in the configured location **/
+    PULL_THEME("0 */1 * * * ?");
 
     private final String defaultCronExpression;
 

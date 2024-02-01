@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.WebApplicationException;
@@ -171,6 +173,38 @@ public class StatisticsSummaryBuilder {
             map.put(type, new RequestTypeSummary(total, unique, date, date));
         }
         return new StatisticsSummary(map);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String,Map<RequestType, RequestTypeSummary>> getRecordStatisticsFromSolrDoc(SolrDocument doc) {
+        Map<String,List<Long>> countsMap = new HashMap<>();
+        for (String fieldName : doc.getFieldNames()) {
+            if (fieldName.startsWith(StatisticsLuceneFields.RECORD_STATISTICS_PREFIX)) {
+                try {
+                    List<Long> values = (List<Long>) doc.getFieldValue(fieldName);
+                    countsMap.put(StatisticsLuceneFields.getPi(fieldName), values);
+                } catch (ClassCastException e) {
+                    logger.warn("Envountered solr doc field of unexcepted type: '{}' : '{}'", fieldName, doc.getFieldValue(fieldName));
+                }
+            }
+        }
+
+        Map<String, Map<RequestType, RequestTypeSummary>> map = new HashMap<>();// new EnumMap<>(RequestType.class);
+        LocalDate date = getDate(doc);
+        
+        for (Entry<String, List<Long>> entry : countsMap.entrySet()) {
+            String pi = entry.getKey();
+            List<Long> counts = entry.getValue();
+            Map<RequestType, RequestTypeSummary> recordMap = new HashMap<RequestType, RequestTypeSummary>();
+            for (int i = 0; i < counts.size(); i += 2) {
+                RequestType type = RequestType.getTypeForTotalCountIndex(i);
+                long total = counts.get(i);
+                long unique = counts.get(i+1);
+                recordMap.put(type, new RequestTypeSummary(total, unique, date, date));
+            }
+            map.put(pi, recordMap);
+        }
+        return map;
     }
 
     private static LocalDate getDate(SolrDocument doc) {

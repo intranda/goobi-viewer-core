@@ -44,11 +44,9 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -58,7 +56,7 @@ import io.goobi.viewer.solr.SolrConstants;
  * Utility class for retrieving data folders, data files and source files.
  *
  */
-public class DataFileTools {
+public final class DataFileTools {
 
     private static final Logger logger = LogManager.getLogger(DataFileTools.class);
 
@@ -86,7 +84,7 @@ public class DataFileTools {
      * by clients.
      *
      * @param dataRepositoryPath Data repository name or absolute path
-     * @return
+     * @return Absolute path of dataRepositoryPath
      * @should return correct path for empty data repository
      * @should return correct path for data repository name
      * @should return correct path for absolute data repository path
@@ -196,19 +194,19 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
+    public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, final String fileName)
             throws PresentationException, IndexUnreachableException {
         // Make sure fileName is a pure file name and not a path
-        fileName = sanitizeFileName(fileName);
+       String useFileName = sanitizeFileName(fileName);
 
         java.nio.file.Path dataFolderPath = getDataFolder(pi, dataFolderName);
-        if (StringUtils.isNotBlank(fileName)) {
-            dataFolderPath = dataFolderPath.resolve(fileName);
+        if (StringUtils.isNotBlank(useFileName)) {
+            dataFolderPath = dataFolderPath.resolve(useFileName);
         }
 
         // If selected path doesn't exist in the primary data folder, call again with alternative data folder
         if (StringUtils.isNotBlank(altDataFolderName) && !Files.exists(dataFolderPath)) {
-            return getDataFilePath(pi, altDataFolderName, null, fileName);
+            return getDataFilePath(pi, altDataFolderName, null, useFileName);
         }
 
         return dataFolderPath;
@@ -447,7 +445,7 @@ public class DataFileTools {
                     .map(NetTools::callUrlGET)
                     .filter(array -> NetTools.isStatusOk(array[0]))
                     .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
+                    .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND));
         } catch (ContentNotFoundException e1) {
             return "";
         }
@@ -476,12 +474,14 @@ public class DataFileTools {
             TextResourceBuilder builder = new TextResourceBuilder();
             return builder.getAltoDocument(pi, filename);
         } catch (ContentNotFoundException e) {
-            return new StringPair(DataManager.getInstance().getRestApiManager().getContentApiManager()
+            return new StringPair(DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
                     .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build())
                     .map(NetTools::callUrlGET)
                     .filter(array -> NetTools.isStatusOk(array[0]))
                     .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException("Resource not found")), null);
+                    .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND)), null);
         }
     }
 

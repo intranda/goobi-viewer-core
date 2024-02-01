@@ -26,20 +26,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import de.undercouch.citeproc.csl.CSLType;
 import io.goobi.viewer.AbstractTest;
 
-public class CitationTest extends AbstractTest {
+class CitationTest extends AbstractTest {
 
     /**
      * @see Citation#getCitationString(String)
      * @verifies return apa html citation correctly
      */
     @Test
-    public void getCitationString_shouldReturnApaHtmlCitationCorrectly() throws Exception {
+    void getCitationString_shouldReturnApaHtmlCitationCorrectly() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
         fields.put(CitationDataProvider.AUTHOR, Collections.singletonList("Zahn, Timothy"));
         fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
@@ -49,8 +49,8 @@ public class CitationTest extends AbstractTest {
         CitationProcessorWrapper cpw = new CitationProcessorWrapper();
         Citation cit = new Citation("id", cpw.getCitationProcessor("apa"), cpw.getCitationItemDataProvider(), CSLType.BOOK, fields);
         String s = cit.getCitationString("html");
-        Assert.assertNotNull(s);
-        Assert.assertTrue(s.contains("Zahn, T. (2017-04-11). <span style=\"font-style: italic\">Thrawn</span>."));
+        Assertions.assertNotNull(s);
+        Assertions.assertTrue(s.contains("Zahn, T. (2017-04-11). <span style=\"font-style: italic\">Thrawn</span>."));
     }
 
     /**
@@ -58,7 +58,7 @@ public class CitationTest extends AbstractTest {
      * @verifies return apa html plaintext correctly
      */
     @Test
-    public void getCitationString_shouldReturnApaHtmlPlaintextCorrectly() throws Exception {
+    void getCitationString_shouldReturnApaHtmlPlaintextCorrectly() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
         fields.put(CitationDataProvider.AUTHOR, Collections.singletonList("Zahn, Timothy"));
         fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
@@ -68,7 +68,7 @@ public class CitationTest extends AbstractTest {
         CitationProcessorWrapper cpw = new CitationProcessorWrapper();
         Citation cit = new Citation("id", cpw.getCitationProcessor("apa"), cpw.getCitationItemDataProvider(), CSLType.BOOK, fields);
         String s = cit.getCitationString("text");
-        Assert.assertNotNull(s);
-        Assert.assertTrue(s, s.equals("Zahn, T. (2017-04-11). Thrawn."));
+        Assertions.assertNotNull(s);
+        Assertions.assertEquals("Zahn, T. (2017-04-11). Thrawn.", s, s);
     }
 }

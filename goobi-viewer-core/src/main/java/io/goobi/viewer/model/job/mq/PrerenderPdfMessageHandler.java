@@ -97,8 +97,8 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
         Path pdfFolder = dataFolders.get(PDF);
         Path altoFolder = dataFolders.get(ALTO);
         if (imageFolder != null && pdfFolder != null && Files.exists(imageFolder)) {
-            List<Path> imageFiles = FileTools.listFiles(imageFolder, FileTools.imageNameFilter);
-            List<Path> pdfFiles = FileTools.listFiles(pdfFolder, FileTools.pdfNameFilter);
+            List<Path> imageFiles = FileTools.listFiles(imageFolder, FileTools.IMAGE_NAME_FILTER);
+            List<Path> pdfFiles = FileTools.listFiles(pdfFolder, FileTools.PDF_NAME_FILTER);
             if (imageFiles.isEmpty()) {
                 logger.trace("No images in {}. Abandoning task", imageFolder);
             } else if (imageFiles.size() == pdfFiles.size() && !force) {

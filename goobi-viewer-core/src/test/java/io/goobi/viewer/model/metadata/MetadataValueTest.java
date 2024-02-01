@@ -27,19 +27,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.search.SearchHelper;
 
-public class MetadataValueTest {
+class MetadataValueTest {
 
     /**
      * @see MetadataValue#getComboValueShort(int)
      * @verifies construct param correctly
      */
     @Test
-    public void getComboValueShort_shouldConstructParamCorrectly() throws Exception {
+    void getComboValueShort_shouldConstructParamCorrectly() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
@@ -49,7 +49,7 @@ public class MetadataValueTest {
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(1).add("value");
         value.getParamSuffixes().add("_suffix");
-        Assert.assertEquals("prefix_value_suffix", value.getComboValueShort(1));
+        Assertions.assertEquals("prefix_value_suffix", value.getComboValueShort(1));
     }
 
     /**
@@ -57,7 +57,7 @@ public class MetadataValueTest {
      * @verifies construct multivalued param correctly
      */
     @Test
-    public void getComboValueShort_shouldConstructMultivaluedParamCorrectly() throws Exception {
+    void getComboValueShort_shouldConstructMultivaluedParamCorrectly() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
@@ -68,7 +68,7 @@ public class MetadataValueTest {
         value.getParamValues().get(1).add("value1");
         value.getParamValues().get(1).add("value2");
         value.getParamSuffixes().add("_suffix");
-        Assert.assertEquals("prefix_value1_suffixprefix_value2_suffix", value.getComboValueShort(1));
+        Assertions.assertEquals("prefix_value1_suffixprefix_value2_suffix", value.getComboValueShort(1));
     }
 
     /**
@@ -76,13 +76,13 @@ public class MetadataValueTest {
      * @verifies return empty string if value index larger than number of values
      */
     @Test
-    public void getComboValueShort_shouldReturnEmptyStringIfValueIndexLargerThanNumberOfValues() throws Exception {
+    void getComboValueShort_shouldReturnEmptyStringIfValueIndexLargerThanNumberOfValues() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("value");
         value.getParamSuffixes().add("_suffix");
-        Assert.assertEquals("", value.getComboValueShort(1));
+        Assertions.assertEquals("", value.getComboValueShort(1));
     }
 
     /**
@@ -90,13 +90,13 @@ public class MetadataValueTest {
      * @verifies return empty string if value is empty
      */
     @Test
-    public void getComboValueShort_shouldReturnEmptyStringIfValueIsEmpty() throws Exception {
+    void getComboValueShort_shouldReturnEmptyStringIfValueIsEmpty() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("");
         value.getParamSuffixes().add("_suffix");
-        Assert.assertEquals("", value.getComboValueShort(0));
+        Assertions.assertEquals("", value.getComboValueShort(0));
     }
 
     /**
@@ -104,13 +104,13 @@ public class MetadataValueTest {
      * @verifies not add prefix if first param
      */
     @Test
-    public void getComboValueShort_shouldNotAddPrefixIfFirstParam() throws Exception {
+    void getComboValueShort_shouldNotAddPrefixIfFirstParam() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("value");
         value.getParamSuffixes().add("_suffix");
-        Assert.assertEquals("value_suffix", value.getComboValueShort(0));
+        Assertions.assertEquals("value_suffix", value.getComboValueShort(0));
     }
 
     /**
@@ -118,7 +118,7 @@ public class MetadataValueTest {
      * @verifies not add null suffix
      */
     @Test
-    public void getComboValueShort_shouldNotAddNullSuffix() throws Exception {
+    void getComboValueShort_shouldNotAddNullSuffix() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -126,7 +126,7 @@ public class MetadataValueTest {
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(1).add("value2");
-        Assert.assertEquals("value2", value.getComboValueShort(1));
+        Assertions.assertEquals("value2", value.getComboValueShort(1));
     }
 
     /**
@@ -134,7 +134,7 @@ public class MetadataValueTest {
      * @verifies not add empty prefix
      */
     @Test
-    public void getComboValueShort_shouldNotAddEmptyPrefix() throws Exception {
+    void getComboValueShort_shouldNotAddEmptyPrefix() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -142,7 +142,7 @@ public class MetadataValueTest {
         value.getParamPrefixes().add("");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(1).add("value2");
-        Assert.assertEquals("value2", value.getComboValueShort(1));
+        Assertions.assertEquals("value2", value.getComboValueShort(1));
     }
 
     /**
@@ -150,7 +150,7 @@ public class MetadataValueTest {
      * @verifies not add empty suffix
      */
     @Test
-    public void getComboValueShort_shouldNotAddEmptySuffix() throws Exception {
+    void getComboValueShort_shouldNotAddEmptySuffix() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -158,7 +158,7 @@ public class MetadataValueTest {
         value.getParamSuffixes().add("");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(1).add("value2");
-        Assert.assertEquals("value2", value.getComboValueShort(1));
+        Assertions.assertEquals("value2", value.getComboValueShort(1));
     }
 
     /**
@@ -166,13 +166,13 @@ public class MetadataValueTest {
      * @verifies add separator between values if no prefix used
      */
     @Test
-    public void getComboValueShort_shouldAddSeparatorBetweenValuesIfNoPrefixUsed() throws Exception {
+    void getComboValueShort_shouldAddSeparatorBetweenValuesIfNoPrefixUsed() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("value1");
         value.getParamValues().get(0).add("value2");
-        Assert.assertEquals("value1, value2", value.getComboValueShort(0));
+        Assertions.assertEquals("value1, value2", value.getComboValueShort(0));
     }
 
     /**
@@ -180,21 +180,21 @@ public class MetadataValueTest {
      * @verifies use master value fragment correctly
      */
     @Test
-    public void getComboValueShort_shouldUseMasterValueFragmentCorrectly() throws Exception {
+    void getComboValueShort_shouldUseMasterValueFragmentCorrectly() throws Exception {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamMasterValueFragments().add("foo {0} bar");
         value.getParamSuffixes().add("pre_");
         value.getParamSuffixes().add("_suf");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("vs");
-        Assert.assertEquals("foo vs bar", value.getComboValueShort(0));
+        Assertions.assertEquals("foo vs bar", value.getComboValueShort(0));
 
         value.getParamMasterValueFragments().add("foo {0} bar");
         value.getParamSuffixes().add("pre_");
         value.getParamSuffixes().add("_suf");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(1).add("minus");
-        Assert.assertEquals("foo minus bar", value.getComboValueShort(1));
+        Assertions.assertEquals("foo minus bar", value.getComboValueShort(1));
     }
 
     /**
@@ -202,12 +202,12 @@ public class MetadataValueTest {
      * @verifies apply highlighting correctly
      */
     @Test
-    public void applyHighlightingToParamValue_shouldApplyHighlightingCorrectly() throws Exception {
+    void applyHighlightingToParamValue_shouldApplyHighlightingCorrectly() throws Exception {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("foobar", "something");
         mdValue.getParamValues().add(values);
         mdValue.applyHighlightingToParamValue(0, Collections.singleton("foo"));
-        Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>bar", mdValue.getParamValues().get(0).get(0));
+        Assertions.assertEquals("<span class=\"search-list--highlight\">foo</span>bar", mdValue.getParamValues().get(0).get(0));
     }
 
     /**
@@ -215,13 +215,13 @@ public class MetadataValueTest {
      * @verifies return true if all param values blank
      */
     @Test
-    public void isAllParamValuesBlank_shouldReturnTrueIfAllParamValuesBlank() throws Exception {
+    void isAllParamValuesBlank_shouldReturnTrueIfAllParamValuesBlank() throws Exception {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("", "");
         mdValue.getParamValues().add(values);
         mdValue.getParamValues().add(values);
 
-        Assert.assertTrue(mdValue.isAllParamValuesBlank());
+        Assertions.assertTrue(mdValue.isAllParamValuesBlank());
     }
 
     /**
@@ -229,11 +229,11 @@ public class MetadataValueTest {
      * @verifies return false if any param value not blank
      */
     @Test
-    public void isAllParamValuesBlank_shouldReturnFalseIfAnyParamValueNotBlank() throws Exception {
+    void isAllParamValuesBlank_shouldReturnFalseIfAnyParamValueNotBlank() throws Exception {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("", "foo");
         mdValue.getParamValues().add(values);
 
-        Assert.assertFalse(mdValue.isAllParamValuesBlank());
+        Assertions.assertFalse(mdValue.isAllParamValuesBlank());
     }
 }

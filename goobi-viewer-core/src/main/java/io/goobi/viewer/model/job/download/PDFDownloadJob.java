@@ -123,5 +123,82 @@ public class PDFDownloadJob extends DownloadJob {
         return "PDF";
     }
 
+    /**
+     * <p>
+     * triggerCreation.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param downloadIdentifier a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public static void triggerCreation(String pi, String logId, String downloadIdentifier)
+            throws PresentationException, IndexUnreachableException {
+
+        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
+        if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
+            throw new DownloadException("Cannot create download folder: " + targetFolder);
+        }
+
+        String cleanedPi = StringTools.cleanUserGeneratedData(pi);
+        String cleanedLogId = StringTools.cleanUserGeneratedData(logId);
+
+        String title = cleanedPi + "_" + cleanedLogId;
+        logger.debug("Trigger PDF generation for {}", title);
+
+        String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
+        String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(cleanedPi);
+        // Path imageFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi);
+        Path metsPath =
+                Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(cleanedPi + ".xml");
+
+        logger.debug("Calling taskManager at {}", taskManagerUrl);
+
+        TaskManagerPDFRequest requestObject = new TaskManagerPDFRequest();
+        requestObject.setPi(cleanedPi);
+        requestObject.setLogId(cleanedLogId);
+        requestObject.setGoobiId(downloadIdentifier);
+        requestObject.setSourceDir(metsPath.toString());
+        try {
+            Response response = postJobRequest(taskManagerUrl, requestObject);
+            String entity = response.readEntity(String.class);
+            JSONObject entityJson = new JSONObject(entity);
+            if (entityJson.has("STATUS") && "ERROR".equals(entityJson.get("STATUS"))) {
+                if ("Job already in DB, not adding it!".equals(entityJson.get("ERRORMESSAGE"))) {
+                    logger.debug("Job is already being processed");
+                } else {
+                    throw new DownloadException(
+                            "Failed to start pdf creation for PI=" + cleanedPi + " and LOGID=" + cleanedLogId + ": TaskManager returned error "
+                                    + entityJson.get("ERRORMESSAGE"));
+                }
+            }
+        } catch (Exception e) {
+            // Had to catch generic exception here because a ParseException triggered by Tomcat error HTML getting parsed as JSON cannot be caught
+            throw new DownloadException("Failed to start pdf creation for PI=" + cleanedPi + " and LOGID=" + cleanedLogId + ": " + e.getMessage());
+        }
+    }
+
+    /**
+     * <p>
+     * getPDFJobsInQueue.
+     * </p>
+     *
+     * @param identifier a {@link java.lang.String} object.
+     * @return a int.
+     */
+    public static int getPDFJobsInQueue(String identifier) {
+        // TODO replace it with message count
+        return 1;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.download.DownloadJob#getRestApiPath()
+     */
+    @Override
+    protected String getRestApiPath() {
+        return "/viewerpdf";
+    }
 
 }

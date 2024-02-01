@@ -15,12 +15,12 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.dao.IDAO;
@@ -33,10 +33,10 @@ import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
  * @author florian
  *
  */
-public class AdminClientsBeanTest {
+class AdminClientsBeanTest {
 
     @Test
-    public void test_tableDataProvider() throws DAOException {
+    void test_tableDataProvider() throws DAOException {
         
         List<ClientApplication> clients = new ArrayList<>();
         for (int i = 0; i < 100; i++) {

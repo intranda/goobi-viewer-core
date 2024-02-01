@@ -22,8 +22,6 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -52,8 +50,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.citation.CitationLink;
-import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -1218,31 +1214,6 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * @param levelName
-     * @return List of configured citation links
-     */
-    public List<CitationLink> getSidebarWidgetUsageCitationLinksForLevel(String levelName) {
-        if (StringUtils.isEmpty(levelName)) {
-            return Collections.emptyList();
-        }
-
-        CitationLinkLevel level = CitationLinkLevel.getByName(levelName);
-        if (level == null) {
-            logger.warn("Unknown citation link level: {}", levelName);
-            return Collections.emptyList();
-        }
-
-        List<CitationLink> ret = new ArrayList<>();
-        for (CitationLink link : DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks()) {
-            if (level.equals(link.getLevel())) {
-                ret.add(link);
-            }
-        }
-
-        return ret;
-    }
-
-    /**
      * <p>
      * isSubthemeDiscriminatorFieldSet.
      * </p>
@@ -1391,7 +1362,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     * @param field
      * @return Configured value
      */
     public String getSearchSortingAscendingKey(String field) {
@@ -1399,7 +1370,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     * @param field
      * @return Configured value
      */
     public String getSearchSortingDescendingKey(String field) {

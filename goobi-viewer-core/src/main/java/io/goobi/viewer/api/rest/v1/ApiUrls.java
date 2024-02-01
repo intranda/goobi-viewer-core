@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * @author florian
@@ -238,11 +239,12 @@ public class ApiUrls extends AbstractApiUrlManager {
         this(DataManager.getInstance().getConfiguration().getRestApiUrl());
     }
 
-    public ApiUrls(String apiUrl) {
-        if (StringUtils.isNotBlank(apiUrl) && apiUrl.endsWith("/")) {
-            apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
-        }
-        this.apiUrl = apiUrl;
+    /**
+     * 
+     * @param apiUrl
+     */
+    public ApiUrls(final String apiUrl) {
+        this.apiUrl = StringUtils.isNotBlank(apiUrl) ? StringTools.removeTrailingSlashes(apiUrl) : apiUrl;
     }
 
     @Override

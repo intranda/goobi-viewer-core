@@ -73,15 +73,15 @@ public class SessionCounterFilter implements Filter {
             metadataMap = new LinkedHashMap<>();
             DataManager.getInstance().getSessionMap().put(id, metadataMap);
             metadataMap.put("id", id);
-            metadataMap.put("created", now.format(DateTools.formatterJavaUtilDateToString));
+            metadataMap.put("created", now.format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
         }
         metadataMap.put("address", req.getRemoteAddr());
         metadataMap.put("x-forwarded-for", req.getHeader("x-forwarded-for"));
-        metadataMap.put("last request", now.format(DateTools.formatterJavaUtilDateToString));
+        metadataMap.put("last request", now.format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
         metadataMap.put("previous request",
                 DateTools.getLocalDateTimeFromMillis(req.getSession().getLastAccessedTime(), false)
                         .atZone(ZoneId.systemDefault())
-                        .format(DateTools.formatterJavaUtilDateToString));
+                        .format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
         metadataMap.put("timeout", String.valueOf(req.getSession().getMaxInactiveInterval()) + " s");
 
         Optional<Map<Object, Map>> logicalViews =

@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Map;
@@ -33,8 +33,8 @@ import java.util.Optional;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.dao.IDAO;
@@ -45,7 +45,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.security.user.User;
 
-public class CMSPageTemplateEditBeanTest {
+class CMSPageTemplateEditBeanTest {
 
     private static final String FILENAME_COMPONENT = "text";
     private static final String DESCRIPTION_COMPONENT = "description_component";
@@ -54,8 +54,8 @@ public class CMSPageTemplateEditBeanTest {
 
     CMSPageTemplateEditBean bean;
 
-    @Before
-    public void setup() throws DAOException {
+    @BeforeEach
+    public void setUp() throws DAOException {
 
         CMSSidebarWidgetsBean widgetsBean = Mockito.mock(CMSSidebarWidgetsBean.class);
         Mockito.when(widgetsBean.getAllWidgets()).thenReturn(Collections.emptyList());
@@ -100,7 +100,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testEditTemplate() {
+    void testEditTemplate() {
         bean.setFacesContext(mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString())));
         bean.setTemplateManager(createTemplateManager());
 
@@ -110,7 +110,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testCreateTemplate() {
+    void testCreateTemplate() {
         bean.setFacesContext(mockFacesContext(Map.of()));
         bean.setTemplateManager(createTemplateManager());
 
@@ -120,7 +120,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testSaveTemplate() throws DAOException {
+    void testSaveTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -129,7 +129,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testDeleteTemplate() throws DAOException {
+    void testDeleteTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -140,7 +140,7 @@ public class CMSPageTemplateEditBeanTest {
     }
 
     @Test
-    public void testAddComponent() {
+    void testAddComponent() {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setTemplateManager(createTemplateManager());

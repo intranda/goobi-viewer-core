@@ -151,7 +151,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 if (StringUtils.isNotBlank(imageName)) {
                     String actualImageName = getFirstImageName(imageName);
                     Optional<PhysicalElement> page = Optional.ofNullable(AbstractPageLoader.create(topDocument).getPageForFileName(actualImageName));
-                    page.flatMap(p -> watermarkHandler.getWatermarkTextIfExists(p))
+                    page.flatMap(watermarkHandler::getWatermarkTextIfExists)
                             .ifPresent(text -> request.setProperty("param:watermarkText", text));
 
                     page
@@ -169,7 +169,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 } else {
                     Optional.ofNullable(DataManager.getInstance().getSearchIndex().getDocumentByPIAndLogId(pi, divId))
                             .map(StructElement::create)
-                            .flatMap(doc -> watermarkHandler.getWatermarkTextIfExists(doc))
+                            .flatMap(watermarkHandler::getWatermarkTextIfExists)
                             .ifPresent(text -> request.setProperty("param:watermarkText", text));
                 }
             }
@@ -180,7 +180,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      * If the imageName is actually a list of names, return the first name
      *
      * @param imageName
-     * @return
+     * @return First image name
      */
     private static String getFirstImageName(String imageName) {
         if (imageName.contains("$")) {

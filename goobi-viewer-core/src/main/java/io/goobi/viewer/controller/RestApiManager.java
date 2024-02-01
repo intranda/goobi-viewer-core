@@ -59,9 +59,6 @@ public class RestApiManager {
 
     /**
      * Create an instance directly using the unchanged given ApiUrlManagers
-     *
-     * @param dataApiManager
-     * @param contentApiManager
      */
     public RestApiManager() {
         this(DataManager.getInstance().getConfiguration());
@@ -77,7 +74,6 @@ public class RestApiManager {
     }
 
     /**
-     * @param version
      * @return the dataApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint. Otherwise
      *         null is returned
      */
@@ -113,7 +109,6 @@ public class RestApiManager {
     }
 
     /**
-     * @param version
      * @return the contentApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint.
      *         Otherwise null is returned
      */
@@ -139,14 +134,14 @@ public class RestApiManager {
     public AbstractApiUrlManager getCMSMediaImageApiManager(Version version) {
         if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
             return getContentApiManager(version).orElse(null);
-        } else {
-            return getDataApiManager(version).orElse(null);
         }
+        
+        return getDataApiManager(version).orElse(null);
     }
 
     /**
      * @param restApiUrl
-     * @return
+     * @return true if restApiUrl is legacy URL; false otherwise
      */
     public static boolean isLegacyUrl(String restApiUrl) {
         return !restApiUrl.matches(".*/api/v[12]/?");
@@ -169,6 +164,7 @@ public class RestApiManager {
     }
 
     /**
+     * @param version
      * @return the url to the content api to use for IIIF resources
      */
     public String getIIIFContentApiUrl(Version version) {
@@ -188,7 +184,7 @@ public class RestApiManager {
     }
 
     /**
-     * @return
+     * @return Appropriate API version to use for IIIF
      */
     public static Version getVersionToUseForIIIF() {
         String iiifVersion = DataManager.getInstance().getConfiguration().getIIIFVersionToUse();

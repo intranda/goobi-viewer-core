@@ -39,7 +39,9 @@ public class DynamicContent implements Serializable {
     private Map<String, Object> attributes = new HashMap<>();
 
     /**
-     *
+     * 
+     * @param type
+     * @param componentFilename
      */
     public DynamicContent(DynamicContentType type, String componentFilename) {
         this.type = type;

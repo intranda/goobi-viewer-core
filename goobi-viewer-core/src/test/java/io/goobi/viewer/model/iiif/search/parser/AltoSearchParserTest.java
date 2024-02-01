@@ -28,10 +28,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Range;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
@@ -41,7 +41,7 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocumen
  * @author florian
  *
  */
-public class AltoSearchParserTest {
+class AltoSearchParserTest {
 
     Path altoFile = Paths.get("src/test/resources/data/sample_alto.xml");
     AltoDocument doc;
@@ -50,7 +50,7 @@ public class AltoSearchParserTest {
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         doc = AltoDocument.getDocumentFromFile(altoFile.toFile());
         //        System.out.println(doc.getContent());
@@ -59,18 +59,18 @@ public class AltoSearchParserTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
-    public void testFindWordMatches() {
+    void testFindWordMatches() {
         String query = "diese* schönste*";
-        String regex = parser.getQueryRegex(query);
+        String regex = AltoSearchParser.getQueryRegex(query);
         List<Word> words =
                 doc.getFirstPage().getAllWordsAsList().stream().filter(l -> l instanceof Word).map(l -> (Word) l).collect(Collectors.toList());
-        Assert.assertFalse("No words found in " + altoFile, words == null || words.isEmpty());
-        Assert.assertNotNull("AltoSearchParser is not initialized", parser);
+        Assertions.assertFalse(words == null || words.isEmpty(), "No words found in " + altoFile);
+        Assertions.assertNotNull(parser, "AltoSearchParser is not initialized");
         List<List<Word>> hits = parser.findWordMatches(words, regex);
 
         //        for (List<Word> hit : hits) {
@@ -81,15 +81,15 @@ public class AltoSearchParserTest {
         //            }
         //        }
 
-        Assert.assertEquals(6, hits.size());
-        Assert.assertEquals(1, hits.get(0).size());
-        Assert.assertEquals(2, hits.get(1).size());
+        Assertions.assertEquals(6, hits.size());
+        Assertions.assertEquals(1, hits.get(0).size());
+        Assertions.assertEquals(2, hits.get(1).size());
     }
 
     @Test
-    public void testFindLineMatches() {
+    void testFindLineMatches() {
         String query = "diese* schönste*";
-        String regex = parser.getQueryRegex(query);
+        String regex = AltoSearchParser.getQueryRegex(query);
         List<Line> lines =
                 doc.getFirstPage().getAllLinesAsList().stream().filter(l -> l instanceof Line).map(l -> (Line) l).collect(Collectors.toList());
         Map<Range<Integer>, List<Line>> hits = parser.findLineMatches(lines, regex);
@@ -104,7 +104,6 @@ public class AltoSearchParserTest {
             //            }
         }
 
-        Assert.assertEquals(6, hits.size());
+        Assertions.assertEquals(6, hits.size());
     }
-
 }

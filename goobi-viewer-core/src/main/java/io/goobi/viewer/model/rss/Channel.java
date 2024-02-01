@@ -40,14 +40,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Channel {
 
-    String title;
-    String link;
-    String description;
-    String language;
-    String copyright;
-    Date pubDate;
+    private String title;
+    private String link;
+    private String description;
+    private String language;
+    private String copyright;
+    private Date pubDate;
 
-    List<RssItem> items = new ArrayList<>();
+    private List<RssItem> items = new ArrayList<>();
 
     /**
      * <p>

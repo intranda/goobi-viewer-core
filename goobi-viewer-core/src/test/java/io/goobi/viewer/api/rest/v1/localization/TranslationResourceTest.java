@@ -23,14 +23,14 @@ package io.goobi.viewer.api.rest.v1.localization;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION_TRANSLATIONS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -41,20 +41,21 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  * @author florian
  *
  */
-public class TranslationResourceTest extends AbstractRestApiTest{
+class TranslationResourceTest extends AbstractRestApiTest {
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.localization.TranslationResource#getTranslations(java.lang.String)}.
+     * 
      * @throws JsonProcessingException
      * @throws JsonMappingException
      */
     @Test
-    public void testGetTranslations() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(LOCALIZATION, LOCALIZATION_TRANSLATIONS).build())
+    void testGetTranslations() throws JsonMappingException, JsonProcessingException {
+        try (Response response = target(urls.path(LOCALIZATION, LOCALIZATION_TRANSLATIONS).build())
                 .queryParam("keys", "cancel,ok")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals(200, response.getStatus(), "Should return status 200");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject translations = new JSONObject(entity);

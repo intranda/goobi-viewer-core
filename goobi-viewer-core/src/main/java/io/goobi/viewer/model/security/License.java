@@ -38,7 +38,6 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.ConsentScopeConverter;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.administration.legal.ConsentScope;
@@ -531,7 +530,8 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      * Returns the list of available record privileges for adding to this license (using the given privileges list).
-     *
+     * 
+     * @param privileges
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      * @should return cms privileges if licenseType cms type
      * @should only return priv view ugc if licenseType ugc type
@@ -553,7 +553,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @param excludePrivileges
      * @param sourcePrivileges
-     * @return
+     * @return List<String>
      */
     List<String> getAvailablePrivileges(Set<String> excludePrivileges, List<String> sourcePrivileges) {
         if (excludePrivileges == null) {
@@ -577,7 +577,6 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * Returns a sorted list (according to the static array of privileges, either for records or CMS) based on the given set of privileges.
      *
      * @param privileges Listed privileges
-     * @param sourcePrivileges List containing the desired order
      * @return Sorted list of privileges contained in <code>privileges</code>
      */
     @Override
@@ -601,12 +600,11 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      *
-     * @return
+     * @return List<Selectable<String>>
      * @throws DAOException
-     * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public List<Selectable<String>> getSelectableSubthemes() throws PresentationException, IndexUnreachableException {
+    public List<Selectable<String>> getSelectableSubthemes() throws PresentationException {
         if (selectableSubthemes == null) {
             List<String> allSubthemes = BeanUtils.getCmsBean().getSubthemeDiscriminatorValues();
             selectableSubthemes =
@@ -619,7 +617,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      *
-     * @return
+     * @return List<Selectable<CMSCategory>>
      * @throws DAOException
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
@@ -633,7 +631,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      *
-     * @return
+     * @return List<Selectable<CMSPageTemplate>>
      * @throws DAOException
      */
     public List<Selectable<CMSPageTemplate>> getSelectableTemplates() throws DAOException {
@@ -901,7 +899,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      * 
-     * @return
+     * @return true if privilege PRIV_DOWNLOAD_BORN_DIGITAL_FILES is contained; false otherwise
      */
     public boolean isDisplayTicketRequiredToggle() {
         return privilegesCopy.contains(IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
@@ -1055,7 +1053,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * @param client the client to set
+     * @param clientId the clientId to set
      * @throws DAOException
      */
     public void setClientId(Long clientId) throws DAOException {

@@ -78,7 +78,7 @@ public class XServiceAuthenticationResponse {
 
         String expiryDateString = eleZ305.getChildText("z305-expiry-date");
         if (StringUtils.isNotEmpty(expiryDateString)) {
-            LocalDateTime expiryDate = LocalDate.parse(expiryDateString, DateTools.formatterISO8601DateReverse).atStartOfDay();
+            LocalDateTime expiryDate = LocalDate.parse(expiryDateString, DateTools.FORMATTERISO8601DATEREVERSE).atStartOfDay();
             expired = expiryDate.isBefore(LocalDateTime.now());
             logger.trace("expired: {}", expired);
         }

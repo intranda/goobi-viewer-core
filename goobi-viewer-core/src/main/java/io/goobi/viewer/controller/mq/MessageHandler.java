@@ -27,12 +27,14 @@ public interface MessageHandler<V> {
      * call this method to execute the ticket
      * 
      * @param ticket
-     * @return
+     * @return V
      */
 
-    
-    
     public V call(ViewerMessage ticket, MessageQueueManager queueManager);
+    
+    public default V call(ViewerMessage ticket) {
+        return this.call(ticket, null);
+    }
 
     public String getMessageHandlerName();
 

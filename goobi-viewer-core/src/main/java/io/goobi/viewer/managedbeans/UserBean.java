@@ -27,11 +27,8 @@ import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -66,6 +63,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
@@ -508,22 +506,8 @@ public class UserBean implements Serializable {
             }
             session.removeAttribute("user");
 
-            //        // Remove priv maps
-            Enumeration<String> attributeNames = session.getAttributeNames();
-            Set<String> attributesToRemove = new HashSet<>();
-            while (attributeNames.hasMoreElements()) {
-                String attribute = attributeNames.nextElement();
-                if (attribute.startsWith(IPrivilegeHolder.PREFIX_PRIV)) {
-                    attributesToRemove.add(attribute);
-
-                }
-            }
-            if (!attributesToRemove.isEmpty()) {
-                for (String attribute : attributesToRemove) {
-                    session.removeAttribute(attribute);
-                    logger.trace("Removed session attribute: {}", attribute);
-                }
-            }
+            // Remove priv maps
+            AccessConditionUtils.clearSessionPermissions(session);
 
             try {
                 BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)

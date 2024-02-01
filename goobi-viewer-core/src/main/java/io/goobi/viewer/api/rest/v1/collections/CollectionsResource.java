@@ -69,7 +69,7 @@ public class CollectionsResource {
     private final HttpServletRequest request;
 
     @Inject
-    ApiUrls urls;
+    private ApiUrls urls;
 
     public CollectionsResource(
             @Parameter(description = "Name of the SOLR field the collection is based on. Typically 'DC'") @PathParam("field") String solrField,
@@ -85,8 +85,7 @@ public class CollectionsResource {
     public Collection2 getAllCollections(
             @Parameter(description = "Add values of this field to response to allow grouping of results") @QueryParam("grouping") String grouping,
             @Parameter(description = "comma separated list of collections to ignore in response") @QueryParam("ignore") String ignoreString)
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException,
-            ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
         Collection2 collection;
         List<String> ignore = StringUtils.isNotBlank(ignoreString) ? Arrays.asList(ignoreString.split(",")) : Collections.emptyList();
@@ -108,14 +107,15 @@ public class CollectionsResource {
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection")
     @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
     public Collection2 getCollection(
-            @Parameter(
-                    description = "Name of the collection. Must be a value of the SOLR field the collection is based on") @PathParam("collection") String collectionName,
-            @Parameter(description = "Add values of this field to response to allow grouping of results") @QueryParam("grouping") String grouping,
-            @Parameter(description = "comma separated list of subcollections to ignore in response") @QueryParam("ignore") String ignoreString)
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException,
-            ViewerConfigurationException {
+            @Parameter(description = "Name of the collection. Must be a value of the SOLR field the collection is based on") 
+            @PathParam("collection") final String inCollectionName,
+            @Parameter(description = "Add values of this field to response to allow grouping of results") 
+            @QueryParam("grouping") String grouping,
+            @Parameter(description = "comma separated list of subcollections to ignore in response") 
+            @QueryParam("ignore") String ignoreString)
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
-        collectionName = StringTools.decodeUrl(collectionName);
+        String collectionName = StringTools.decodeUrl(inCollectionName);
         Collection2 collection;
         List<String> ignore = StringUtils.isNotBlank(ignoreString) ? Arrays.asList(ignoreString.split(",")) : Collections.emptyList();
         if (StringUtils.isBlank(grouping)) {

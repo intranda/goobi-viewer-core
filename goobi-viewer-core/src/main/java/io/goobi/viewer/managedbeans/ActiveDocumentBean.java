@@ -777,6 +777,31 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * Sets imageToShow to the representative page found in the search index, or "1" if none found.
+     * 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException {
+        // logger.trace("setRepresentativeImage"); //NOSONAR Debug
+        synchronized (lock) {
+            String image = "1";
+            if (StringUtils.isNotEmpty(lastReceivedIdentifier) && !"-".equals(lastReceivedIdentifier)) {
+                SolrDocument doc = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getFirstDoc(SolrConstants.PI + ":" + lastReceivedIdentifier, Collections.singletonList(SolrConstants.THUMBPAGENO));
+                if (doc != null && doc.getFieldValue(SolrConstants.THUMBPAGENO) != null) {
+                    this.imageToShow = String.valueOf(doc.getFieldValue(SolrConstants.THUMBPAGENO));
+                    logger.trace("{} found: {}", SolrConstants.THUMBPAGENO, this.imageToShow);
+                } else {
+                    logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, this.imageToShow);
+                }
+            }
+            setImageToShow(image);
+        }
+    }
+
+    /**
      * <p>
      * Getter for the field <code>imageToShow</code>.
      * </p>
@@ -1432,19 +1457,6 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
-    }
-
-    /**
-     * <p>
-     * getReadingModeUrl.
-     * </p>
-     *
-     * @deprecated renamed to fullscreen
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public String getReadingModeUrl() throws IndexUnreachableException {
-        return getFullscreenImageUrl();
     }
 
     /**
@@ -2126,7 +2138,7 @@ public class ActiveDocumentBean implements Serializable {
             // We want to get rid of them, else it may collide.
             ec.responseReset();
             ec.setResponseContentType("application/pdf");
-            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             TocWriter writer = new TocWriter("", fileNameRaw);
             writer.createPdfDocument(os, getToc().getTocElements());
@@ -2221,52 +2233,129 @@ public class ActiveDocumentBean implements Serializable {
 
         String linkCanonical = "\n<link rel=\"canonical\" href=\"";
         String linkAlternate = "\n<link rel=\"alternate\" href=\"";
+        String linkEnd = "\" />";
+
+        PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
+        PageType defaultPageTypeForRecord = PageType.determinePageType(viewManager.getTopStructElement().getDocStructType(), null,
+                isAnchor() || isGroup(), viewManager.isHasPages(), false);
 
         StringBuilder sb = new StringBuilder();
 
-        // Add canonical links
-        if (viewManager.getCurrentPage() != null) {
-            // URN resolver URL (alternate)
-            if (StringUtils.isNotEmpty(viewManager.getCurrentPage().getUrn())) {
-                String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
-                sb.append(linkAlternate).append(urnResolverUrl).append("\" />");
-            }
-            // PI resolver URL (alternate)
-            if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
-                String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
-                sb.append(linkAlternate).append(piResolverUrl).append("\" />");
+        // Add resolver links if current view matches resolved view for this record
+        if (defaultPageTypeForRecord != null && defaultPageTypeForRecord.equals(currentPageType)) {
+            if (viewManager.getCurrentPage() != null) {
+                // URN resolver URL (alternate)
+                if (StringUtils.isNotEmpty(viewManager.getCurrentPage().getUrn())) {
+                    String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
+                    sb.append(linkAlternate).append(urnResolverUrl).append(linkEnd);
+                }
+                // PI resolver URL (alternate)
+                if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
+                    String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
+                    sb.append(linkAlternate).append(piResolverUrl).append(linkEnd);
+                }
             }
         }
-        PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
-        if (currentPageType != null && StringUtils.isNotEmpty(currentPageType.name())) {
-            // logger.trace("page type: {}", currentPageType.getName());
+        if (currentPageType != null && StringUtils.isNotEmpty(currentPageType.getName())) {
+            logger.trace("page type: {}", currentPageType);
             // logger.trace("current url: {}", navigationHelper.getCurrentUrl());
-            String currentUrl = navigationHelper.getCurrentUrl();
 
-            if (currentUrl.contains(SolrTools.unescapeSpecialCharacters(getLogid()))) {
-                currentUrl = currentUrl.replace(SolrTools.unescapeSpecialCharacters(getLogid()), getLogid());
+            int page = viewManager.getCurrentImageOrder();
+            String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + viewManager.getPi() + "/";
+            String urlRootExplicit = navigationHelper.getApplicationUrl() + "!" + currentPageType.getName() + "/" + viewManager.getPi() + "/";
+            switch (currentPageType) {
+                case viewCalendar:
+                case viewFullscreen:
+                case viewImage:
+                case viewMetadata:
+                case viewObject:
+                    if (page == 1) {
+                        // Page 1: URL without page canonical
+                        sb.append(linkCanonical).append(urlRoot).append(linkEnd);
+                        sb.append(linkAlternate).append(urlRoot).append(page).append('/').append(linkEnd);
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(linkEnd);
+                    } else {
+                        // Page 2+: URL with page canonical
+                        sb.append(linkCanonical).append(urlRoot).append(page).append('/').append("\" />");
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(linkEnd);
+                    }
+                    if (StringUtils.isNotEmpty(getLogid())) {
+                        sb.append(linkAlternate).append(urlRoot).append(page).append('/').append(getLogid()).append('/').append(linkEnd);
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(getLogid()).append('/').append(linkEnd);
+                    }
+                    break;
+                case viewFulltext:
+                    if (page == 1) {
+                        sb.append(linkCanonical).append(urlRoot).append(linkEnd);
+                        sb.append(linkAlternate).append(urlRoot).append(page).append('/').append(linkEnd);
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(linkEnd);
+                    } else {
+                        sb.append(linkCanonical).append(urlRoot).append(page).append('/').append(linkEnd);
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(linkEnd);
+                    }
+                    if (StringUtils.isNotEmpty(getSelectedRecordLanguage3())) {
+                        sb.append(linkAlternate)
+                                .append(urlRoot)
+                                .append(page)
+                                .append('/')
+                                .append(getSelectedRecordLanguage3())
+                                .append('/')
+                                .append(linkEnd);
+                        sb.append(linkAlternate)
+                                .append(urlRootExplicit)
+                                .append(page)
+                                .append('/')
+                                .append(getSelectedRecordLanguage3())
+                                .append('/')
+                                .append(linkEnd);
+                    }
+                    break;
+                case viewThumbs:
+                    sb.append(linkCanonical).append(urlRoot).append(getCurrentThumbnailPage()).append('/').append(linkEnd);
+                    break;
+                case viewToc:
+                    sb.append(linkCanonical).append(urlRoot).append(tocCurrentPage).append('/').append(linkEnd);
+                    if (StringUtils.isNotEmpty(getLogid())) {
+                        sb.append(linkAlternate).append(urlRoot).append(tocCurrentPage).append('/').append(getLogid()).append('/').append(linkEnd);
+                        sb.append(linkAlternate)
+                                .append(urlRootExplicit)
+                                .append(tocCurrentPage)
+                                .append('/')
+                                .append(getLogid())
+                                .append('/')
+                                .append(linkEnd);
+                    }
+                    break;
+                default:
+                    break;
             }
 
-            String regularUrl;
-            String explicitUrl;
-            if (currentUrl.contains("!" + currentPageType.getName())) {
-                regularUrl = currentUrl.replace("!" + currentPageType.getName(), currentPageType.getName());
-                explicitUrl = currentUrl;
-            } else {
-                regularUrl = currentUrl;
-                explicitUrl = currentUrl.replace(currentPageType.getName(), "!" + currentPageType.getName());
-            }
+            //            String regularUrl;
+            //            String explicitUrl;
+            //            String currentUrl = navigationHelper.getCurrentUrl();
+            //
+            //            if (currentUrl.contains(SolrTools.unescapeSpecialCharacters(getLogid()))) {
+            //                currentUrl = currentUrl.replace(SolrTools.unescapeSpecialCharacters(getLogid()), getLogid());
+            //            }
 
-            // Regular URL (canonical)
-            sb.append(linkCanonical).append(regularUrl).append("\" />");
-            // Explicitly selected view (alternate)
-            sb.append(linkAlternate).append(explicitUrl).append("\" />");
+            //            if (currentUrl.contains("!" + currentPageType.getName())) {
+            //                regularUrl = currentUrl.replace("!" + currentPageType.getName(), currentPageType.getName());
+            //                explicitUrl = currentUrl;
+            //            } else {
+            //                regularUrl = currentUrl;
+            //                explicitUrl = currentUrl.replace(currentPageType.getName(), "!" + currentPageType.getName());
+            //            }
+            //
+            //            // Regular URL (canonical)
+            //            sb.append(linkCanonical).append(regularUrl).append("\" />");
+            //            // Explicitly selected view (alternate)
+            //            sb.append(linkAlternate).append(explicitUrl).append("\" />");
 
         }
 
         // Skip prev/next links for non-paginated views
         if (PageType.viewMetadata.equals(currentPageType) || PageType.viewToc.equals(currentPageType)) {
-            return "";
+            return sb.toString();
         }
 
         // Add next/prev links
@@ -2274,10 +2363,10 @@ public class ActiveDocumentBean implements Serializable {
         String prevUrl = getPreviousPageUrl();
         String nextUrl = getNextPageUrl();
         if (StringUtils.isNotEmpty(nextUrl) && !nextUrl.equals(currentUrl)) {
-            sb.append("\n<link rel=\"next\" href=\"").append(nextUrl).append("\" />");
+            sb.append("\n<link rel=\"next\" href=\"").append(nextUrl).append(linkEnd);
         }
         if (StringUtils.isNotEmpty(prevUrl) && !prevUrl.equals(currentUrl)) {
-            sb.append("\n<link rel=\"prev\" href=\"").append(prevUrl).append("\" />");
+            sb.append("\n<link rel=\"prev\" href=\"").append(prevUrl).append(linkEnd);
         }
 
         return sb.toString();

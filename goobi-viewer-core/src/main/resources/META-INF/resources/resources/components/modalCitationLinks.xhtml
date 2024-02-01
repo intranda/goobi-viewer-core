@@ -35,19 +35,19 @@
 				        
 				            <!-- RECORD -->
 				            <ui:fragment 
-				                rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')) > 0}">
+				                rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork and fn:length(activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('record')) > 0}">
 				            	<div class="widget-usage__citelinks-block">
 				                <h3 id="titleWorkLinks" class="widget-usage__citelinks-subtitle">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
 				                <h:outputText rendered="#{fn:length(msg['label__citation_link_record_introduction_text']) > 0}">
 				                   <div class="widget-usage__citelinks-info-text">#{msg['label__citation_link_record_introduction_text']}:</div>
 				                </h:outputText>
-							    <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
+							    <c:forEach var="link" items="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('record')}">
 							        
-							        <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+							        <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
 				                         <div class="widget-usage__citelinks-row">
 				                         <div class="widget-usage__citelinks-label">#{msg[link.label]}:</div>
 				                         <div class="widget-usage__citelinks-input-wrapper">
-				                        <h:inputText styleClass="widget-usage__citelinks-input" value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
+				                        <h:inputText styleClass="widget-usage__citelinks-input" value="#{link.value}" disabled="true" />
 				                        <a id="citeLinkUrl"
 				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
 				                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
@@ -76,20 +76,20 @@
 							
 				            <!-- SUB-DOCSTRUCT -->
 				            <ui:fragment
-                                rendered="#{activeDocumentBean.viewManager.displayCiteLinkDocstruct and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('docstruct')) > 0}">
+                                rendered="#{activeDocumentBean.viewManager.displayCiteLinkDocstruct and fn:length(activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('docstruct')) > 0}">
 				                <div class="widget-usage__citelinks-block">
 				                <h3 id="titleModalCitationPage" class="widget-usage__citelinks-subtitle"
 				                    title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h3>
 				                <h:outputText rendered="#{fn:length(msg['label__citation_link_docstruct_introduction_text']) > 0}">
 				                    <div class="widget-usage__citelinks-info-text">#{msg['label__citation_link_docstruct_introduction_text']}:</div>
 				                </h:outputText>
-				                <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('docstruct')}">
-				                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+				                <c:forEach var="link" items="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('docstruct')}">
+				                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
 				                         <div class="widget-usage__citelinks-row">
 				                         <div class="widget-usage__citelinks-label">#{msg[link.label]}:</div>
 				                        	<div class="widget-usage__citelinks-input-wrapper">
 				                        <h:inputText styleClass="widget-usage__citelinks-input"
-				                            value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
+				                            value="#{link.value}" disabled="true" />
 				                        <a id="citeLinkWork"
 				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
 				                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
@@ -116,23 +116,22 @@
 				
 				            <!-- IMAGE -->
 				            <ui:fragment
-				                rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')) > 0}">
+				                rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode and fn:length(activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('image')) > 0}">
 				                <div class="widget-usage__citelinks-block">
 				                <h3 id="titleImageModalCitation" class="widget-usage__citelinks-subtitle">#{msg.image}</h3>
 				                <h:outputText rendered="#{fn:length(msg['label__citation_link_image_introduction_text']) > 0}">
 				                    <div class="widget-usage__citelinks-info-text">#{msg['label__citation_link_image_introduction_text']}:</div>
 				                </h:outputText>
-				                <c:forEach var="link" varStatus="index" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
-				                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+				                <c:forEach var="link" varStatus="index" items="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('image')}">
+				                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
 				                        <div class="widget-usage__citelinks-row">
 				                        <div class="widget-usage__citelinks-label">#{msg[link.label]}:</div>
 				                        <div class="widget-usage__citelinks-input-wrapper">
 				                        <h:inputText styleClass="widget-usage__citelinks-input"
-				                            value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
+				                            value="#{link.value}" disabled="true" />
 				                        <a id="citeLinkUrn#{index.count}"
 				                            class="widget-usage__citelink-page widget-usage__citelinks-copy-to-clipboard"
-				                            data-copy-value="page-citelink"
-				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
 				                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
 				                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
 				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>

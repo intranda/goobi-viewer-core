@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.controller;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 
@@ -32,24 +32,24 @@ import io.goobi.viewer.controller.AlphabetIterator;
  * @author Florian Alpers
  *
  */
-public class AlphabetIteratorTest {
+class AlphabetIteratorTest {
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
     @Test
-    public void test() {
+    void test() {
         AlphabetIterator abc = new AlphabetIterator();
 
         String lastValue = "";
@@ -59,18 +59,18 @@ public class AlphabetIteratorTest {
             lastValue = abc.next();
             switch (index) {
                 case 1:
-                    Assert.assertEquals("a", lastValue);
+                    Assertions.assertEquals("a", lastValue);
                     break;
                 case 2:
-                    Assert.assertEquals("b", lastValue);
+                    Assertions.assertEquals("b", lastValue);
                     break;
                 case 26:
-                    Assert.assertEquals("z", lastValue);
+                    Assertions.assertEquals("z", lastValue);
                     break;
             }
         }
-        Assert.assertEquals("z", lastValue);
-        Assert.assertEquals(26, index);
+        Assertions.assertEquals("z", lastValue);
+        Assertions.assertEquals(26, index);
     }
 
 }
