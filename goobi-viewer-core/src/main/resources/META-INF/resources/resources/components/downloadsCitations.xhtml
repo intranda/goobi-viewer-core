@@ -7,14 +7,16 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-
-	<composite:interface />
+    
+    <composite:interface>
+ 		<composite:attribute name="showCiteLinksButton" required="false" default="true" /> 
+    </composite:interface>
 
 	<composite:implementation>
 
 		<!-- CITATION LINKS -->
 		<ui:fragment
-			rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
+			rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and cc.attrs.showCiteLinksButton}">
 
 			<div class="widget-usage__citelinks widget__badge-container">
 				<h3 id="titleCiteLinks"
