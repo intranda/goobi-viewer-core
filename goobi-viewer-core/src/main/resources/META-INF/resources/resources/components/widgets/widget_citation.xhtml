@@ -46,7 +46,7 @@
                             rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')) > 0}">
                             <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
                                     
-                                <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+                                <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
                                     <button type="button" 
                                     	id="citeLinkUrl"
                                         class="badge badge-dark"
@@ -100,7 +100,7 @@
                                             !activeDocumentBean.viewManager.doublePageMode and 
                                             fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')) > 0}">
                                 <c:forEach var="link" varStatus="index" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
-                                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+                                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
                                         <button type="button" 
                                         	id="citeLinkUrn#{index.count}"
                                             class="badge badge-dark"
