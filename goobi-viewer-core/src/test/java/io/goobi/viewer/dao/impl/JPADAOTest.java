@@ -51,11 +51,10 @@ import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
@@ -199,7 +198,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    @DisabledOnOs(OS.WINDOWS)
     void updateUserTest() throws DAOException {
         Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
         User user = DataManager.getInstance().getDao().getUser(1);
@@ -229,7 +227,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(user.getNickName(), user2.getNickName());
         Assertions.assertEquals(user.getComments(), user2.getComments());
         Assertions.assertEquals(user.getAvatarType(), user2.getAvatarType());
-        Assertions.assertEquals(user.getLastLogin(), user2.getLastLogin());
+        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
+        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(user.getLastLogin()),
+                DateTools.FORMATTERISO8601DATETIMEMS.format(user2.getLastLogin()));
         Assertions.assertEquals(user.isActive(), user2.isActive());
         Assertions.assertEquals(user.isSuspended(), user2.isSuspended());
         Assertions.assertEquals(user.isSuperuser(), user2.isSuperuser());
@@ -775,7 +775,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    @DisabledOnOs(OS.WINDOWS)
     void updateCommentTest() throws DAOException {
         Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = DataManager.getInstance().getDao().getComment(1);
@@ -793,7 +792,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(comment.getTargetPI(), comment2.getTargetPI());
         Assertions.assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
         Assertions.assertEquals(comment.getText(), comment2.getText());
-        Assertions.assertEquals(now, comment2.getDateModified());
+        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
+        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
+                DateTools.FORMATTERISO8601DATETIMEMS.format(comment2.getDateModified()));
         Assertions.assertEquals(comment.getCreator(), comment2.getCreator());
     }
 
@@ -936,11 +937,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(o.getSortString(), o2.getSortString());
         Assertions.assertEquals(o.getFacetString(), o2.getFacetString());
         Assertions.assertEquals(o.isNewHitsNotification(), o2.isNewHitsNotification());
-        Assertions.assertEquals(now, o2.getDateUpdated());
+        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
+        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now), DateTools.FORMATTERISO8601DATETIMEMS.format(o2.getDateUpdated()));
     }
 
     @Test
-    @DisabledOnOs(OS.WINDOWS)
     void updateSearchTest() throws DAOException {
         Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
         Search o = DataManager.getInstance().getDao().getSearch(1);
@@ -957,7 +958,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assertions.assertNotNull(o2);
         Assertions.assertEquals(o.getName(), o2.getName());
         Assertions.assertEquals(o.getOwner(), o2.getOwner());
-        Assertions.assertEquals(now, o2.getDateUpdated());
+        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
+        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now), DateTools.FORMATTERISO8601DATETIMEMS.format(o2.getDateUpdated()));
     }
 
     @Test
@@ -2166,7 +2168,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      * @verifies add object correctly
      */
     @Test
-    @DisabledOnOs(OS.WINDOWS)
     void addDownloadJob_shouldAddObjectCorrectly() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         PDFDownloadJob job = new PDFDownloadJob("PI_2", "LOG_0002", now, 3600);
@@ -2186,7 +2187,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(job.getPi(), job2.getPi());
         Assertions.assertEquals(job.getLogId(), job2.getLogId());
         Assertions.assertEquals(job.getIdentifier(), job2.getIdentifier());
-        Assertions.assertEquals(now, job2.getLastRequested());
+        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
+        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
+                DateTools.FORMATTERISO8601DATETIMEMS.format(job2.getLastRequested()));
         Assertions.assertEquals(job.getTtl(), job2.getTtl());
         Assertions.assertEquals(job.getStatus(), job2.getStatus());
     }
@@ -2196,7 +2199,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      * @verifies update object correctly
      */
     @Test
-    @DisabledOnOs(OS.WINDOWS)
     void updateDownloadJob_shouldUpdateObjectCorrectly() throws Exception {
         Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
@@ -2216,7 +2218,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         DownloadJob job2 = DataManager.getInstance().getDao().getDownloadJob(job.getId());
         Assertions.assertNotNull(job2);
         Assertions.assertEquals(job.getId(), job2.getId());
-        Assertions.assertEquals(now, job2.getLastRequested());
+        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
+        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
+                DateTools.FORMATTERISO8601DATETIMEMS.format(job2.getLastRequested()));
         Assertions.assertEquals(JobStatus.READY, job2.getStatus());
         Assertions.assertEquals(2, job2.getObservers().size());
         Assertions.assertEquals("newobserver@example.com", job2.getObservers().get(1));
@@ -3343,7 +3347,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    @DisabledOnOs(OS.WINDOWS)
     void test_persistRecurringTaskTrigger() throws Exception {
         IDAO dao = DataManager.getInstance().getDao();
 
@@ -3364,7 +3367,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(updated);
         assertEquals(TaskType.DOWNLOAD_PDF.name(), updated.getTaskType());
         assertEquals("0 0 0 * * ?", updated.getScheduleExpression());
-        assertEquals(triggered, updated.getLastTimeTriggered());
+        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
+        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(triggered),
+                DateTools.FORMATTERISO8601DATETIMEMS.format(updated.getLastTimeTriggered()));
 
         dao.deleteRecurringTaskTrigger(trigger.getId());
         assertTrue(dao.getRecurringTaskTriggers().isEmpty());

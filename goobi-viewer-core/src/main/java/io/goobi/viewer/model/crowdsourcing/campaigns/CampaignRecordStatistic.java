@@ -414,13 +414,11 @@ public class CampaignRecordStatistic implements Serializable {
         try {
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.NUMPAGES));
             if (doc != null && doc.containsKey(SolrConstants.NUMPAGES)) {
-                Integer numPages = (Integer) doc.getFieldValue(SolrConstants.NUMPAGES);
-                return numPages;
-            } else {
-                return 0;
+                return (Integer) doc.getFieldValue(SolrConstants.NUMPAGES);
             }
+            return 0;
         } catch (PresentationException | IndexUnreachableException e) {
-            logger.error("Error retrieving page cound for " + query);
+            logger.error("Error retrieving page cound for query: {}", query);
             return null;
         }
 

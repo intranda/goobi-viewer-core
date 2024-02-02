@@ -609,6 +609,7 @@ public class RecordResource {
      * @throws PresentationException
      */
     private static StructElement getStructElement(String pi) throws PresentationException, IndexUnreachableException {
+        // logger.trace("getStructElement: {}", pi); //NOSONAR Debug
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, null);
         return new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
     }
@@ -620,6 +621,7 @@ public class RecordResource {
      * @throws ServiceNotAllowedException
      */
     private void checkFulltextAccessConditions(String pi) throws ServiceNotAllowedException {
+        // logger.trace("checkFulltextAccessConditions: {}", pi); //NOSONAR Debug
         boolean access = false;
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest)

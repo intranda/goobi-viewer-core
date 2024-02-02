@@ -75,10 +75,12 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
     }
 
     /**
-     * @param string
-     * @param i
+     * @param pi
+     * @param page
      * @param owner
-     * @param string2
+     * @param text
+     * @param accessCondition
+     * @param publicationStatus
      */
     public Comment(String pi, int page, User owner, String text, String accessCondition, PublicationStatus publicationStatus) {
         super();
@@ -129,7 +131,7 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
     }
 
     /**
-     * @param c2
+     * @param o
      * @return
      */
     @Override

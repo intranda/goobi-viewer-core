@@ -199,11 +199,10 @@
 				<img class="user-settings__profile-image" src="#{userBean.user.getAvatarUrl(300)}" alt="User Avatar" />
 
 					<div class="user-dashboard__sidebar-welcome-text">
-						<span class="user-dashboard__sidebar-welcome-text-bold">
-							<h:outputFormat value="#{msg.user_dashboard__hello_user}" escape="true">
+							<h:outputFormat value="#{msg.user_dashboard__hello}" escape="false">
 							 	<f:param value="#{userBean.user.displayName}" />
-							</h:outputFormat></span><span><h:outputFormat value="#{msg.user_dashboard__hello_text}" escape="false" />
-						</span>
+							</h:outputFormat>
+<!-- 							<span><h:outputFormat value="#{msg.user_dashboard__hello_text}" escape="false" /></span> -->
 					</div>
 
 		</h:panelGroup>

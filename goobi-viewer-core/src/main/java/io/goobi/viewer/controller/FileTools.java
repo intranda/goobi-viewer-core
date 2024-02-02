@@ -42,6 +42,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.spi.FileTypeDetector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -494,6 +495,106 @@ public final class FileTools {
             }
         }
         return type;
+    }
+
+    
+    public static String getMimeTypeFromFile(Path path) throws IOException {
+        String mimeType = "";
+        String fileExtension = path.getFileName().toString();
+        if (!fileExtension.contains(".")) {
+            return mimeType;
+        }
+        fileExtension = fileExtension.substring(fileExtension.lastIndexOf(".") + 1).toLowerCase(); // .tar.gz will not work
+            // first try to detect mimetype from OS map
+            mimeType = Files.probeContentType(path);
+        // if this didn't work, try to get it from the internal FileNameMap to resolve the type from the extension
+        if (StringUtils.isBlank(mimeType)) {
+            mimeType = URLConnection.guessContentTypeFromName(path.getFileName().toString());
+        }
+        // we are on a mac, compare against list of known file formats
+        if (StringUtils.isBlank(mimeType) || "application/octet-stream".equals(mimeType)) {
+
+            switch (fileExtension) {
+                case "jpg":
+                case "jpeg":
+                case "jpe":
+                    mimeType = "image/jpeg";
+                    break;
+                case "jp2":
+                    mimeType = "image/jp2";
+                    break;
+                case "tif":
+                case "tiff":
+                    mimeType = "image/tiff";
+                    break;
+                case "png":
+                    mimeType = "image/png";
+                    break;
+                case "gif":
+                    mimeType = "image/gif";
+                    break;
+                case "pdf":
+                    mimeType = "application/pdf";
+                    break;
+                case "mp3":
+                    mimeType = "audio/mpeg";
+                    break;
+                case "wav":
+                    mimeType = "audio/wav";
+                    break;
+                case "mpeg":
+                case "mpg":
+                case "mpe":
+                    mimeType = " video/mpeg ";
+                    break;
+                case "mp4":
+                    mimeType = "video/mp4";
+                    break;
+                case "mxf":
+                    mimeType = "video/mxf";
+                    break;
+                case "ogg":
+                    mimeType = "video/ogg";
+                    break;
+                case "webm":
+                    mimeType = "video/webm";
+                    break;
+                case "mov":
+                    mimeType = "video/quicktime";
+                    break;
+                case "avi":
+                    mimeType = "video/x-msvideo";
+                    break;
+                case "xml":
+                    mimeType = "application/xml";
+                    break;
+                case "txt":
+                    mimeType = "text/plain";
+                    break;
+                case "x3d":
+                case "x3dv":
+                case "x3db":
+                    mimeType = "model/x3d+XXX";
+                    break;
+                case "obj":
+                case "ply":
+                case "stl":
+                case "fbx":
+                case "gltf":
+                case "glb":
+                    mimeType = "object/" + fileExtension;
+                    break;
+                case "epub":
+                    mimeType = "application/epub+zip";
+                    break;
+                default:
+                    // use a default value, if file extension is not mapped
+                    mimeType = "image/tiff";
+            }
+
+        }
+
+        return mimeType;
     }
 
     /**

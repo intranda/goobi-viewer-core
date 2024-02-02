@@ -507,7 +507,7 @@ public class UserBean implements Serializable {
             session.removeAttribute("user");
 
             // Remove priv maps
-            AccessConditionUtils.removeSessionPermissions(session);
+            AccessConditionUtils.clearSessionPermissions(session);
 
             try {
                 BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)

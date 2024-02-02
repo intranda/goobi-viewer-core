@@ -206,6 +206,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public Optional<StructElement> getStructElement(String pi) throws PresentationException, IndexUnreachableException {
+        // logger.trace("getStructElement: {}", pi); //NOSONAR Debug
         String query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();
         List<String> fieldList = new ArrayList<>(Arrays.asList(WatermarkHandler.REQUIRED_SOLR_FIELDS));
         fieldList.addAll(DataManager.getInstance().getConfiguration().getWatermarkIdField());

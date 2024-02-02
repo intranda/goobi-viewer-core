@@ -516,8 +516,9 @@ public abstract class AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
+        // logger.trace("getDocument: {}", pi); //NOSONAR Debug
         String query = "PI:" + pi;
-        List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
+        // List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
         if (doc != null) {
             StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);

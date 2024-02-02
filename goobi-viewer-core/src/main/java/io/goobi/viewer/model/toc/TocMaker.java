@@ -154,10 +154,9 @@ public final class TocMaker {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static Map<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
-            int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("generateToc");
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not me null");
@@ -478,7 +477,6 @@ public final class TocMaker {
         if (tocCurrentPage < 1) {
             throw new IllegalArgumentException("page must be >=1");
         }
-        //        List<String> anchorFieldList = getSolrFieldsToFetchForAnchor(anchorDocstructType);
 
         String query = new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(iddoc).toString();
         int hits = (int) DataManager.getInstance().getSearchIndex().getHitCount(query);

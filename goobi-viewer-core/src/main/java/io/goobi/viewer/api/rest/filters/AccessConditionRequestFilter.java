@@ -115,7 +115,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
      */
     private static void filterForAccessConditions(HttpServletRequest request, String pi, String logid, final String inContentFileName)
             throws ServiceNotAllowedException {
-        // logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId()); //NOSONAR Sometimes needed for debugging
+        // logger.trace("filterForAccessConditions: {}", request.getSession().getId()); //NOSONAR Sometimes needed for debugging
         String contentFileName = StringTools.decodeUrl(inContentFileName);
         boolean access = false;
         try {

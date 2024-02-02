@@ -52,6 +52,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -198,7 +199,9 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         Assertions.assertTrue(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
 
         CrowdsourcingAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
-        Assertions.assertEquals(fromDAO.getDateModified(), fromDAO2.getDateModified());
+        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
+        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(fromDAO.getDateModified()),
+                DateTools.FORMATTERISO8601DATETIMEMS.format(fromDAO2.getDateModified()));
     }
 
     @Test

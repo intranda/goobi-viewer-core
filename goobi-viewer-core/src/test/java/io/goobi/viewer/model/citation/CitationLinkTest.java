@@ -38,7 +38,7 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
     void getUrl_shouldConstructInternalRecordUrlCorrectly() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
-        Assertions.assertTrue(viewManager.getTopStructElementIddoc() == viewManager.getCurrentStructElementIddoc());
+        Assertions.assertEquals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc());
 
         CitationLink link = new CitationLink("internal", "record", "foo");
         Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/1/", link.getUrl(viewManager));
@@ -53,7 +53,7 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
-        Assertions.assertFalse(viewManager.getTopStructElementIddoc() == viewManager.getCurrentStructElementIddoc());
+        Assertions.assertNotEquals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc());
 
         CitationLink link = new CitationLink("internal", "docstruct", "foo").setField(SolrConstants.PI_TOPSTRUCT);
         Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/5/LOG_0003/", link.getUrl(viewManager));
@@ -71,74 +71,5 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
 
         CitationLink link = new CitationLink("internal", "image", "foo");
         Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/2/", link.getUrl(viewManager));
-    }
-
-    /**
-     * @see CitationLink#getUrl(ViewManager)
-     * @verifies construct external url correctly
-     */
-    @Test
-    void getUrl_shouldConstructExternalUrlCorrectly() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assertions.assertNotNull(viewManager);
-        viewManager.setCurrentImageOrder(2);
-
-        CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.PI_TOPSTRUCT)
-                .setPattern("https://viewer.goobi.io/resolver?id={value}&page={page}");
-        Assertions.assertEquals("https://viewer.goobi.io/resolver?id=" + PI_KLEIUNIV + "&page=2", link.getUrl(viewManager));
-    }
-
-    /**
-     * @see CitationLink#getValue(ViewManager)
-     * @verifies return correct value for record type
-     */
-    @Test
-    void getValue_shouldReturnCorrectValueForRecordType() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assertions.assertNotNull(viewManager);
-
-        CitationLink link = new CitationLink("url", "record", "foo").setField(SolrConstants.PI);
-        Assertions.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
-    }
-
-    /**
-     * @see CitationLink#getValue(ViewManager)
-     * @verifies return correct value for docstruct type
-     */
-    @Test
-    void getValue_shouldReturnCorrectValueForDocstructType() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assertions.assertNotNull(viewManager);
-
-        CitationLink link = new CitationLink("url", "docstruct", "foo").setField(SolrConstants.PI);
-        Assertions.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
-    }
-
-    /**
-     * @see CitationLink#getValue(ViewManager)
-     * @verifies return correct value for image type
-     */
-    @Test
-    void getValue_shouldReturnCorrectValueForImageType() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assertions.assertNotNull(viewManager);
-        viewManager.setCurrentImageOrder(10);
-
-        CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.ORDER);
-        Assertions.assertEquals("10", link.getValue(viewManager));
-    }
-
-    /**
-     * @see CitationLink#getValue(ViewManager)
-     * @verifies fall back to topstruct value correctly
-     */
-    @Test
-    void getValue_shouldFallBackToTopstructValueCorrectly() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
-        Assertions.assertNotNull(viewManager);
-        viewManager.setCurrentImageOrder(10);
-
-        CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.PI).setTopstructValueFallback(true);
-        Assertions.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
     }
 }

@@ -190,7 +190,7 @@ public class RecordPageResource {
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
                             + " otherwise as W3C-Webannotations") @QueryParam("format") String format)
             throws URISyntaxException, DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
-
+        // logger.trace("getTextForPage"); //NOSONAR Debug
         //        ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);
         boolean access;
         try {

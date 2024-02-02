@@ -728,7 +728,7 @@ public final class SolrTools {
          *
          * @param field a {@link java.lang.String} object.
          * @param filterQuery a {@link java.lang.String} object.
-         * @param useFacetField set to true to use the "FACET_" field for the actual search. Should only be false if the field only contains single-token values
+         * @param useFacetField If true, "FACET_" field variant is used for the actual search; Only use false for single-token values
          * @return List of facet values for the given field and query
          * @throws io.goobi.viewer.exceptions.PresentationException if any.
          * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

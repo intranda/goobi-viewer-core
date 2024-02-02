@@ -606,6 +606,7 @@ public final class SearchHelper {
      */
     public static StringPair getFirstRecordPiAndPageType(String luceneField, String value, boolean filterForWhitelist,
             boolean filterForBlacklist, final String splittingChar) throws IndexUnreachableException, PresentationException {
+        // logger.trace("getFirstRecordPiAndPageType: {}:{}", luceneField, value); //NOSONAR Debug
         if (luceneField == null || value == null) {
             return null;
         }
@@ -638,7 +639,7 @@ public final class SearchHelper {
         List<String> fields =
                 Arrays.asList(SolrConstants.PI, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT, SolrConstants.THUMBNAIL, SolrConstants.ISANCHOR,
                         SolrConstants.ISWORK, SolrConstants.LOGID);
-        //        logger.trace("first record query: {}", sbQuery.toString());
+        logger.trace("first record query: {}", sbQuery);
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 1, null, null, fields);
 
         if (resp.getResults().isEmpty()) {
@@ -1016,9 +1017,8 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
-     * generateCollectionBlacklistFilterSuffix.
-     * </p>
+     * Generates a Solr query suffix that filters out values for the given field that are configured as blacklisted. This isn't an expensive method,
+     * so the suffix is generated anew upon every call and not persisted.
      *
      * @param field a {@link java.lang.String} object.
      * @should construct suffix correctly
@@ -2037,7 +2037,18 @@ public final class SearchHelper {
             } else if (bmfc.getSortField() != null) {
                 // Only the first term will have a matching sort field, so attempt a fallback to a facetified variant
                 List<String> facetifiedSortTermValues = SolrTools.getMetadataValues(doc, SearchHelper.facetifyField(bmfc.getSortField()));
-                String bestMatch = StringTools.findBestMatch(startsWith, facetifiedSortTermValues, language);
+                String bestMatch = null;
+                // Look for exact match
+                for (String val : facetifiedSortTermValues) {
+                    if (StringUtils.equalsIgnoreCase(val, term)) {
+                        bestMatch = val;
+                        break;
+                    }
+                }
+                // Look for most similar value
+                if (StringUtils.isEmpty(bestMatch)) {
+                    bestMatch = StringTools.findBestMatch(term, facetifiedSortTermValues, language);
+                }
                 if (StringUtils.isNotEmpty(bestMatch)) {
                     compareTerm = bestMatch;
                     sortTerm = bestMatch;

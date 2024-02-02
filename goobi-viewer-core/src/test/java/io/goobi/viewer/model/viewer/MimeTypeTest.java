@@ -36,6 +36,7 @@ class MimeTypeTest {
         Assertions.assertEquals(BaseMimeType.AUDIO, BaseMimeType.getByName("audio"));
         Assertions.assertEquals(BaseMimeType.IMAGE, BaseMimeType.getByName("image"));
         Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML, BaseMimeType.getByName("text"));
+        Assertions.assertEquals(BaseMimeType.MODEL, BaseMimeType.getByName("object"));
     }
 
     /**

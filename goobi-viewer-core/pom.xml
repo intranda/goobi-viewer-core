@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>23.12.2</version>
+	<version>24.01-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -37,15 +37,6 @@
 			<id>intranda-public</id>
 			<url>https://nexus.intranda.com/repository/maven-public</url>
 		</repository>
-		<repository>
-			<id>oss-snapshots-repo</id>
-			<name>Sonatype OSS Maven Repository</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
 	</repositories>
 
 
@@ -69,18 +60,17 @@
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
 		<failOnSnapshot>false</failOnSnapshot>
+        <maven.compiler.release>17</maven.compiler.release>
 
         <!-- Sonar -->
-        <sonar.scanner.force-deprecated-java-version>true</sonar.scanner.force-deprecated-java-version>
-
 		<sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
 		<sonar.organization>intranda</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.java.source>11</sonar.java.source>
-		<sonar.java.target>11</sonar.java.target>
+		<sonar.java.source>17</sonar.java.source>
+		<sonar.java.target>17</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>750</checkstyle.max.violations>
+		<checkstyle.max.violations>650</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -98,7 +88,7 @@
         <!-- other libraries -->
         <angus-mail.version>2.0.2</angus-mail.version>
 		<citationstyles.version>23.11</citationstyles.version>
-		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
+		<citeproc-java.version>3.0.0-beta.2</citeproc-java.version>
 		<commons-codec.version>1.16.0</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-configuration.version>1.10</commons-configuration.version>
@@ -139,11 +129,11 @@
 		<jsoup.version>1.17.2</jsoup.version>
 		<junit.version>5.10.1</junit.version>
 		<mariadb-java-client.version>3.3.2</mariadb-java-client.version>
-		<mockito.version>5.9.0</mockito.version>
+		<mockito.version>5.10.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.4</omnifaces.version>
-		<openpdf.version>1.3.37</openpdf.version>
+		<openpdf.version>1.3.39</openpdf.version>
 		<poi.version>5.2.5</poi.version>
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
@@ -865,9 +855,6 @@
 								</requireMavenVersion>
 								<requireReleaseDeps>
 									<message>No Snapshots Allowed!</message>
-									 <excludes>
-										 <exclude>de.undercouch:citeproc-java</exclude>
-									 </excludes>
 								</requireReleaseDeps>
 							</rules>
 							<fail>${failOnSnapshot}</fail>
@@ -971,9 +958,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
+				<version>3.12.1</version>
 				<configuration>
-					<release>11</release>
 					<compilerArgs>
 						<arg>-Xlint:deprecation</arg>
 						<arg>-Xlint:unchecked</arg>
@@ -983,7 +969,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.2</version>
+				<version>3.2.5</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
@@ -1064,7 +1050,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.6.2</version>
+				<version>3.6.3</version>
 				<configuration>
 					<doclint>none</doclint>
 					<fixTags>link,throws,return,param</fixTags>
@@ -1136,7 +1122,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.12.7</version>
+						<version>10.13.0</version>
 					</dependency>
 				</dependencies>
 				<executions>
