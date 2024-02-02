@@ -228,9 +228,14 @@ public class UserAvatarResource extends ImageResource {
 
     public static Path getAvatarFilePath(String uploadFilename, Long userId) {
         ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(uploadFilename);
-        String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + fileFormat.getFileExtension();
+        if(fileFormat != null) {
+            String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + fileFormat.getFileExtension();
+            return getUserAvatarFolder().resolve(filename);            
+        } else {
+            String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + FilenameUtils.getExtension(uploadFilename);
+            return getUserAvatarFolder().resolve(filename);      
+        }
 
-        return getUserAvatarFolder().resolve(filename);
     }
 
     /**

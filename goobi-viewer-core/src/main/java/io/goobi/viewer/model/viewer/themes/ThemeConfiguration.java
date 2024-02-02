@@ -70,17 +70,17 @@ public class ThemeConfiguration {
     private String styleSheet;
     @Column(name = "social_media_link", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = ThemeLinkConverter.class)
-    List<ThemeLink> socialMediaUrls = new ArrayList<>();
+    private List<ThemeLink> socialMediaUrls = new ArrayList<>();
     @Column(name = "footer_link", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = ThemeLinkConverter.class)
-    List<ThemeLink> footerLinks = new ArrayList<>();
+    private List<ThemeLink> footerLinks = new ArrayList<>();
 
     /**
      * Creates the internal lists for theme links
      */
     public ThemeConfiguration() {
-        this.socialMediaUrls = Arrays.stream(ThemeLink.SocialMediaService.values()).map(s -> new ThemeLink(s)).collect(Collectors.toList());
-        this.footerLinks = Arrays.stream(ThemeLink.InternalService.values()).map(s -> new ThemeLink(s)).collect(Collectors.toList());
+        this.socialMediaUrls = Arrays.stream(ThemeLink.SocialMediaService.values()).map(ThemeLink::new).collect(Collectors.toList());
+        this.footerLinks = Arrays.stream(ThemeLink.InternalService.values()).map(ThemeLink::new).collect(Collectors.toList());
         this.logo = new SimpleMediaHolder();
         this.fullscreenLogo = new SimpleMediaHolder();
         this.icon = new SimpleMediaHolder();
@@ -88,12 +88,18 @@ public class ThemeConfiguration {
 
     /**
      * sets the name and calls default constructor
+     * 
+     * @param themeName
      */
     public ThemeConfiguration(String themeName) {
         this();
         this.name = themeName;
     }
 
+    /**
+     * 
+     * @param orig
+     */
     public ThemeConfiguration(ThemeConfiguration orig) {
         this.id = orig.id;
         this.name = orig.name;
@@ -121,14 +127,14 @@ public class ThemeConfiguration {
     }
 
     /**
-     * @return the styleSheetFilename
+     * @return the styleSheet
      */
     public String getStyleSheet() {
         return styleSheet;
     }
 
     /**
-     * @param styleSheetFilename the styleSheetFilename to set
+     * @param styleSheet the styleSheet to set
      */
     public void setStyleSheet(String styleSheet) {
         this.styleSheet = styleSheet;

@@ -168,6 +168,11 @@ public final class AccessConditionUtils {
         String simpleFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
         String baseFileName = FilenameUtils.getBaseName(simpleFileName);
         sbQuery.append('+').append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
+        //if fileName is an absolute http(s) url, assume that the filename is exactly the entire url
+        if (fileName.matches("https?:\\/\\/.*")) {
+            sbQuery.append(" +").append(useFileField).append(":\"").append(fileName).append('"');
+            return sbQuery.toString();
+        }
         // Different media types have the file name in different fields
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         switch (extension) {
@@ -384,10 +389,10 @@ public final class AccessConditionUtils {
             }
 
             ret = checkAccessPermissionBySolrDoc(results.get(0), query, privilegeName, request);
-            
+
             // Add permission check outcome to user session
             addSessionPermission(attributeName, ret, request);
-            
+
             return ret;
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
@@ -536,7 +541,7 @@ public final class AccessConditionUtils {
     public static AccessPermission checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkContentFileAccessPermission: {}", identifier); //NOSONAR Debugging
-        String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT + "_" + identifier;
         AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request);
         if (ret != null) {
             // logger.trace("Permission for '{}' already in session: {}", attributeName, ret.isGranted()); //NOSONAR Debugging
@@ -569,10 +574,10 @@ public final class AccessConditionUtils {
                 logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             }
         }
-        
+
         // Add permission check outcome to user session
         addSessionPermission(attributeName, ret, request);
-        
+
         //return only the access status for the relevant files
         return ret;
     }
@@ -751,7 +756,7 @@ public final class AccessConditionUtils {
         }
         // logger.debug("session id: " + request.getSession().getId()); //NOSONAR Debugging
         // Session persistent permission check: Servlet-local method.
-        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeType;
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeType + "_" + pi + "_" + contentFileName;
         // logger.trace("Checking session attribute: {}", attributeName); //NOSONAR Debugging
         Map<String, AccessPermission> permissions = (Map<String, AccessPermission>) getSessionPermission(attributeName, request);
         if (permissions == null) {
@@ -772,8 +777,8 @@ public final class AccessConditionUtils {
 
         if (permissions.containsKey(key) && permissions.get(key) != null) {
             return permissions.get(key);
-            //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, ret.isGranted(), pi, contentFileName,
-            //                    request.getSession().getId()); //NOSONAR Debugging
+            // logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType,
+            // ret.isGranted(), pi, contentFileName, request.getSession().getId()); //NOSONAR Debugging
         }
         // TODO check for all images and save to map
         Map<String, AccessPermission> accessMap = checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
@@ -782,10 +787,10 @@ public final class AccessConditionUtils {
             AccessPermission pageAccess = entry.getValue();
             permissions.put(newKey, pageAccess);
         }
-        
+
         // Add permission check outcome to user session
         addSessionPermission(attributeName, permissions, request);
-        
+
         return permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
         // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, ret.isGranted()); //NOSONAR Deb
     }
@@ -1186,7 +1191,7 @@ public final class AccessConditionUtils {
         List<License> licenses = dao.getLicenses(type);
         List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
         List<IpRange> ipRangesApplyingToGivenIp =
-                dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
+                dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).toList();
 
         List<License> applyingLicenses = licenses.stream()
                 .filter(license -> {
@@ -1194,7 +1199,7 @@ public final class AccessConditionUtils {
                             || userGroups.contains(license.getUserGroup())
                             || ipRangesApplyingToGivenIp.stream().anyMatch(r -> r.getSubnetMask().equals(license.getIpRange().getSubnetMask()));
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return applyingLicenses.stream()
                 .filter(l -> {
@@ -1202,7 +1207,7 @@ public final class AccessConditionUtils {
                             .filter(ol -> !ol.equals(l))
                             .noneMatch(ol -> l.getLicenseType().getOverriddenLicenseTypes().contains(ol.getLicenseType()));
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -1236,7 +1241,7 @@ public final class AccessConditionUtils {
      * 
      * @param attributeName
      * @param request
-     * @return
+     * @return Object found in session; null otherwise
      */
     public static Object getSessionPermission(String attributeName, HttpServletRequest request) {
         if (request == null || request.getSession() == null) {
@@ -1251,7 +1256,7 @@ public final class AccessConditionUtils {
      * @param attributeName
      * @param attributeValue
      * @param request
-     * @return
+     * @return true if successful; false otherwise
      */
     public static boolean addSessionPermission(String attributeName, Object attributeValue, HttpServletRequest request) {
         // logger.trace("addSessionPermission: {}", attributeName); //NOSONAR Debugging

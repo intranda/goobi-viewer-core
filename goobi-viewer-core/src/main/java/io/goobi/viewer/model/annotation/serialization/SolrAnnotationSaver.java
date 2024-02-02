@@ -27,13 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -46,7 +44,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  */
 public class SolrAnnotationSaver implements AnnotationSaver {
 
-    private final static Logger logger = LogManager.getLogger(SolrAnnotationSaver.class);
+    private static final Logger logger = LogManager.getLogger(SolrAnnotationSaver.class);
 
     @Override
     public void save(PersistentAnnotation... annotations) throws IOException {
@@ -54,7 +52,7 @@ public class SolrAnnotationSaver implements AnnotationSaver {
         List<Target> targets = Arrays.stream(annotations)
                 .map(anno -> new Target(anno.getTargetPI(), anno.getTargetPageOrder()))
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
 
         for (Target target : targets) {
             reindexTarget(target);
@@ -76,10 +74,10 @@ public class SolrAnnotationSaver implements AnnotationSaver {
     }
 
     static class Target {
-        final String pi;
-        final Integer page;
+        private final String pi;
+        private final Integer page;
 
-        final static Map<String, Target> targetStore = new ConcurrentHashMap<>();
+        static final Map<String, Target> TARGET_STORE = new ConcurrentHashMap<>();
 
         Target(String pi, Integer page) {
             if (StringUtils.isBlank(pi)) {
@@ -102,8 +100,7 @@ public class SolrAnnotationSaver implements AnnotationSaver {
          */
         @Override
         public int hashCode() {
-            int hash = Objects.hash(this.pi, this.page);
-            return hash;
+            return Objects.hash(this.pi, this.page);
         }
 
         @Override
@@ -111,9 +108,8 @@ public class SolrAnnotationSaver implements AnnotationSaver {
             if (obj != null && obj.getClass().equals(Target.class)) {
                 Target other = (Target) obj;
                 return Objects.equals(this.pi, (other.pi)) && Objects.equals(this.page, (other.page));
-            } else {
-                return false;
             }
+            return false;
         }
     }
 

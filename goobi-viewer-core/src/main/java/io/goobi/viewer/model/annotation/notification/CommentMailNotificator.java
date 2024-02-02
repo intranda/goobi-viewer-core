@@ -136,10 +136,9 @@ public class CommentMailNotificator implements ChangeNotificator {
     /**
      * Sends an email notification about a new or altered comment to the configured recipient addresses.
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
-     * @param oldText a {@link java.lang.String} object.
-     * @param locale Language locale for the email text.
-     * @return a boolean.
+     * @param subject E-mail subject
+     * @param body E-mail body
+     * @return true if mail sent successfully; false otherwise
      */
     private boolean sendEmailNotifications(String subject, String body) {
         if (recipients == null || recipients.isEmpty()) {
@@ -156,6 +155,11 @@ public class CommentMailNotificator implements ChangeNotificator {
         return false;
     }
 
+    /**
+     * 
+     * @param annotation
+     * @return Creator display name; 'unknown' if none foudn
+     */
     private static String getCreator(PersistentAnnotation annotation) {
         try {
             User user = annotation.getCreator();

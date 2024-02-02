@@ -50,7 +50,8 @@ class CitationTest extends AbstractTest {
         Citation cit = new Citation("id", cpw.getCitationProcessor("apa"), cpw.getCitationItemDataProvider(), CSLType.BOOK, fields);
         String s = cit.getCitationString("html");
         Assertions.assertNotNull(s);
-        Assertions.assertTrue(s.contains("Zahn, T. (2017-04-11). <span style=\"font-style: italic\">Thrawn</span>."));
+        // Assertions.assertTrue(s.contains("Zahn, T. (2017-04-11). <span style=\"font-style: italic\">Thrawn</span>."));
+        Assertions.assertTrue(s.contains("Zahn, T. (2017). <span style=\"font-style: italic\">Thrawn</span>."));
     }
 
     /**
@@ -69,6 +70,7 @@ class CitationTest extends AbstractTest {
         Citation cit = new Citation("id", cpw.getCitationProcessor("apa"), cpw.getCitationItemDataProvider(), CSLType.BOOK, fields);
         String s = cit.getCitationString("text");
         Assertions.assertNotNull(s);
-        Assertions.assertEquals("Zahn, T. (2017-04-11). Thrawn.", s, s);
+        // Assertions.assertEquals("Zahn, T. (2017-04-11). Thrawn.", s, s);
+        Assertions.assertEquals("Zahn, T. (2017). Thrawn.", s, s);
     }
 }

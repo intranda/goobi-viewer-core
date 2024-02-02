@@ -1427,7 +1427,9 @@ public class SearchBean implements SearchInterface, Serializable {
      * JSF expects a getter, too.
      *
      * @return a {@link java.lang.String} object.
+     * @derecated user SearchBean.getExactSearchString()
      */
+    @Deprecated(since = "24.01")
     public String getExactSearchStringResetGui() {
         return getExactSearchString();
     }
@@ -3028,7 +3030,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public int getProximitySearchDistance() {
         return proximitySearchDistance;
     }
-    
+
     /**
      * 
      * @param queryField
@@ -3250,7 +3252,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         facets.getActiveFacetString());
         }
     }
-    
+
     @Override
     public String changeSorting() throws IOException {
         logger.trace("changeSorting");

@@ -140,7 +140,7 @@ initMap() {
         mapId : "geoMap_" + this.opts.index,
         language: Crowdsourcing.translator.language,
         tilesource: this.opts.geomap.tilesource,
-        layer: {
+        layers: [{
 	        allowMovingFeatures: !this.opts.item.isReviewMode(),
 	        popover: undefined,
 	        emptyMarkerMessage: undefined,            
@@ -153,7 +153,7 @@ initMap() {
 	            icon: "fa-circle",
 	            svg: true
 	        }
-        }
+        }]
     })
 
     let initialView = $.extend(true, {}, DEFAULT_VIEW, this.opts.geomap.initialView);
@@ -230,6 +230,8 @@ removeFeature(feature) {
 	    this.question.saveToLocalStorage();
     }
 }
+
+
 
 
 </script>

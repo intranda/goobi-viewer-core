@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>24.01-SNAPSHOT</version>
+	<version>24.02-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -36,15 +36,6 @@
 		<repository>
 			<id>intranda-public</id>
 			<url>https://nexus.intranda.com/repository/maven-public</url>
-		</repository>
-		<repository>
-			<id>oss-snapshots-repo</id>
-			<name>Sonatype OSS Maven Repository</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
 		</repository>
 	</repositories>
 
@@ -79,7 +70,7 @@
 		<sonar.java.target>17</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>750</checkstyle.max.violations>
+		<checkstyle.max.violations>650</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -97,7 +88,7 @@
         <!-- other libraries -->
         <angus-mail.version>2.0.2</angus-mail.version>
 		<citationstyles.version>23.11</citationstyles.version>
-		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
+		<citeproc-java.version>3.0.0-beta.2</citeproc-java.version>
 		<commons-codec.version>1.16.0</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-configuration.version>1.10</commons-configuration.version>
@@ -870,9 +861,6 @@
 								</requireMavenVersion>
 								<requireReleaseDeps>
 									<message>No Snapshots Allowed!</message>
-									 <excludes>
-										 <exclude>de.undercouch:citeproc-java</exclude>
-									 </excludes>
 								</requireReleaseDeps>
 							</rules>
 							<fail>${failOnSnapshot}</fail>
@@ -981,7 +969,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
+				<version>3.12.1</version>
 				<configuration>
 					<compilerArgs>
 						<arg>-Xlint:deprecation</arg>
@@ -992,7 +980,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.2</version>
+				<version>3.2.5</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
@@ -1073,7 +1061,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.6.2</version>
+				<version>3.6.3</version>
 				<configuration>
 					<doclint>none</doclint>
 					<fixTags>link,throws,return,param</fixTags>
@@ -1145,7 +1133,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.12.7</version>
+						<version>10.13.0</version>
 					</dependency>
 				</dependencies>
 				<executions>

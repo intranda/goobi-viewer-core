@@ -2091,7 +2091,7 @@ this.initMap = function() {
         mapId : "geoMap_" + this.opts.index,
         language: Crowdsourcing.translator.language,
         tilesource: this.opts.geomap.tilesource,
-        layer: {
+        layers: [{
 	        allowMovingFeatures: !this.opts.item.isReviewMode(),
 	        popover: undefined,
 	        emptyMarkerMessage: undefined,
@@ -2104,7 +2104,7 @@ this.initMap = function() {
 	            icon: "fa-circle",
 	            svg: true
 	        }
-        }
+        }]
     })
 
     let initialView = $.extend(true, {}, DEFAULT_VIEW, this.opts.geomap.initialView);
