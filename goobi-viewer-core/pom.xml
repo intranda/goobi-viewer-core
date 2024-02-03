@@ -851,7 +851,7 @@
 						<configuration>
 							<rules>
 								<requireMavenVersion>
-									<version>3.3.9</version>
+									<version>3.8.8</version>
 								</requireMavenVersion>
 								<requireReleaseDeps>
 									<message>No Snapshots Allowed!</message>
@@ -1033,7 +1033,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>3.2.0</version>
 				<configuration>
 					<shortRevisionLength>7</shortRevisionLength>
 					<doCheck>false</doCheck>
