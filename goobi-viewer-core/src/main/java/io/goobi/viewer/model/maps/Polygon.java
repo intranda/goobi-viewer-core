@@ -105,8 +105,8 @@ public class Polygon implements IArea {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             Polygon other = (Polygon) obj;
-            return this.vertices.size() == other.vertices.size() &&
-                    this.vertices.stream().filter(v -> other.vertices.contains(v)).count() == this.vertices.size();
+            return this.vertices.size() == other.vertices.size()
+                    && this.vertices.stream().filter(v -> other.vertices.contains(v)).count() == this.vertices.size();
         } else {
             return false;
         }

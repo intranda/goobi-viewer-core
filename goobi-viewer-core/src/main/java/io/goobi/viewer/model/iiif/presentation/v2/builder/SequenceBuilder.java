@@ -303,7 +303,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws PresentationException
      */
     public PhysicalElement getPage(StructElement doc, int order) throws IndexUnreachableException, DAOException, PresentationException {
-        IPageLoader loader = AbstractPageLoader.create(doc);// new LeanPageLoader(doc, 1);
+        IPageLoader loader = AbstractPageLoader.create(doc); // new LeanPageLoader(doc, 1);
         return loader.getPage(order);
     }
 

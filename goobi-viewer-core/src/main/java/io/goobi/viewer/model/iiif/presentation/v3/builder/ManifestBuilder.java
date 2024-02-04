@@ -418,7 +418,7 @@ public class ManifestBuilder extends AbstractBuilder {
                     .map(page -> {
                         LinkingProperty cmsPageLink = new LinkingProperty(LinkingTarget.VIEWER, page.getTitleTranslations());
                         URI uri = URI.create(page.getUrl());
-                        if(!uri.isAbsolute()) {
+                        if (!uri.isAbsolute()) {
                             uri = UriBuilder.fromUri(uri).path(page.getUrl()).build();
                         }
                         LabeledResource cmsPage = cmsPageLink.getResource(uri);
