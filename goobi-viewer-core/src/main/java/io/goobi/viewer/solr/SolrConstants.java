@@ -311,6 +311,8 @@ public final class SolrConstants {
     /** Constant <code>SOURCEDOCFORMAT_LIDO="LIDO"</code> */
     public static final String SOURCEDOCFORMAT_LIDO = "LIDO";
     /** Constant <code>SOURCEDOCFORMAT_DENKXWEB="DENKXWEB"</code> */
+    /** Constant <code>SOURCEDOCFORMAT_EAD="EAD"</code> */
+    public static final String SOURCEDOCFORMAT_EAD = "EAD";
     public static final String SOURCEDOCFORMAT_DENKXWEB = "DENKXWEB";
     /** Constant <code>SOURCEDOCFORMAT_DUBLINCORE="DUBLINCORE"</code> */
     public static final String SOURCEDOCFORMAT_DUBLINCORE = "DUBLINCORE";

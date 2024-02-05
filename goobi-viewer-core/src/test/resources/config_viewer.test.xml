@@ -13,15 +13,16 @@
 	<!-- viewerHome: root path of (usually) all viewer data -->
 	<viewerHome>src/test/resources/data/viewer/</viewerHome>
 	<!-- dataRepositoriesHome: root folder for data repositories -->
-	<dataRepositoriesHome>src/test/resources/data/viewer/data/
-	</dataRepositoriesHome>
-	<!-- indexedMetsFolder: contains indexed mets files (used by the METS resolver) -->
+	<dataRepositoriesHome>src/test/resources/data/viewer/data/</dataRepositoriesHome>
+	<!-- indexedMetsFolder: contains indexed METS files-->
 	<indexedMetsFolder>indexed_mets</indexedMetsFolder>
-	<!-- indexedLidoFolder: contains indexed lido files (used by the LIDO resolver) -->
+	<!-- indexedLidoFolder: contains indexed LIDO files -->
 	<indexedLidoFolder>indexed_lido</indexedLidoFolder>
-    <!-- indexedDenkxwebFolder: contains indexed DenkXweb files (used by the DenkXweb resolver) -->
+    <!-- indexedEadFolder: contains indexed EAD files -->
+    <indexedEadFolder>indexed_ead</indexedEadFolder>
+    <!-- indexedDenkxwebFolder: contains indexed DenkXweb files -->
     <indexedDenkxwebFolder>indexed_denkxweb</indexedDenkxwebFolder>
-    <!-- indexedDublinCoreFolder: contains indexed DublinCore files (used by the DublinCore resolver) -->
+    <!-- indexedDublinCoreFolder: contains indexed DublinCore files -->
     <indexedDublinCoreFolder>indexed_dublincore</indexedDublinCoreFolder>
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->

@@ -1996,6 +1996,18 @@ public class Configuration extends AbstractConfiguration {
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder", "indexed_lido");
     }
+    
+    /**
+     * <p>
+     * getIndexedEadFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIndexedEadFolder() {
+        return getLocalString("indexedEadFolder", "indexed_ead");
+    }
 
     /**
      * <p>

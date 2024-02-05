@@ -325,6 +325,15 @@ class ConfigurationTest extends AbstractTest {
     void getIndexedLidoFolder_shouldReturnCorrectValue() throws Exception {
         assertEquals("indexed_lido", DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
     }
+    
+    /**
+     * @see Configuration#getIndexedEadFolder()
+     * @verifies return correct value
+     */
+    @Test
+    void getIndexedEadFolder_shouldReturnCorrectValue() throws Exception {
+        assertEquals("indexed_ead", DataManager.getInstance().getConfiguration().getIndexedEadFolder());
+    }
 
     /**
      * @see Configuration#getIndexedMetsFolder()
