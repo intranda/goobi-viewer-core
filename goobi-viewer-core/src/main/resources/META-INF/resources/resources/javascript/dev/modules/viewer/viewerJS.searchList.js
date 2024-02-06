@@ -263,48 +263,37 @@ var viewerJS = ( function( viewer ) {
                 if ( sessionStorage.getItem( 'searchListShowThumbs' ) == undefined ) {
                     sessionStorage.setItem( 'searchListShowThumbs', false );
                 }
-                _searchListShowThumbs = sessionStorage.getItem( 'searchListShowThumbs' ).toLowerCase() === "true" ? true : false;
-                
-                let activeTitle = $thumbToggle.attr("data-title-active");
-                let inactiveTitle = $thumbToggle.attr("data-title-inactive");
-                if(_searchListShowThumbs) {                    
-                    $thumbToggle
-                        .addClass("-active")
-                        .attr("title", activeTitle)
-                        .tooltip('_fixTitle')
-                        .attr('aria-checked', true);
-                } else {
-                    $thumbToggle
-                    .removeClass("-active")
-                    .attr("title", inactiveTitle)
-                    .tooltip('_fixTitle')
-                    .attr('aria-checked', false);
-                }
-                
-                $thumbToggle.on("click", (event) => {
-                    $thumbToggle.blur();
+                _searchListShowThumbs = sessionStorage.getItem( 'searchListShowThumbs' ).toLowerCase() === "true";
+                this.showSearchListThumbs(_searchListShowThumbs);
+                                
+                $thumbToggle.on("click", () => {
+                    $thumbToggle.trigger( "blur" );
                     _searchListShowThumbs = !_searchListShowThumbs;
-                    if(_searchListShowThumbs && !$thumbToggle.hasClass("-active")) {
-                        $thumbToggle
-                            .addClass("-active")
-                            .attr("title", activeTitle)
-                            .tooltip('_fixTitle')
-                            .tooltip('show')
-                            .attr('aria-checked', true);
-                        $(".search-list__subhit-thumbnail").show();
-                    } else {
-                        $thumbToggle
-                            .removeClass("-active")
-                            .attr("title", inactiveTitle)
-                            .tooltip('_fixTitle')
-                            .tooltip('show')
-                            .attr('aria-checked', false);
-                        $(".search-list__subhit-thumbnail").hide();
-                    }
-                    sessionStorage.setItem( 'searchListShowThumbs', _searchListShowThumbs );
+                    this.showSearchListThumbs(_searchListShowThumbs);
                 });
             }
         },
+        showSearchListThumbs: function(show) {
+			const $thumbToggle = $('[data-action="toggle-thumbs"]');
+			const activeTitle = $thumbToggle.attr("data-title-active");
+            const inactiveTitle = $thumbToggle.attr("data-title-inactive");
+            if(show) {                    
+            	$thumbToggle
+                .addClass("-active")
+                .attr("title", activeTitle)
+                .tooltip('_fixTitle')
+                .attr('aria-checked', true);
+                $(".search-list__subhit-thumbnail").show();
+             } else {
+                $thumbToggle
+                .removeClass("-active")
+                .attr("title", inactiveTitle)
+                .tooltip('_fixTitle')
+                .attr('aria-checked', false);
+                $(".search-list__subhit-thumbnail").hide();
+             }
+             sessionStorage.setItem( 'searchListShowThumbs', show );
+		},
         initSubHits: function() {
 			            
             // get child hits            
