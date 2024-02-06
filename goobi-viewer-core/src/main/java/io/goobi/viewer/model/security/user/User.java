@@ -1648,9 +1648,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                     uploadedFile.getInputStream(),
                     destFile,
                     StandardCopyOption.REPLACE_EXISTING);
-            if(!Files.exists(destFile)) {
+            if (!Files.exists(destFile)) {
                 throw new IOException("Uploaded file does not exist");
-            } else if(!isValidImageFile(destFile)) {
+            } else if (!isValidImageFile(destFile)) {
                 throw new IOException("Uploaded file is not a valid image file");
             } else {                
                 this.localAvatarUpdated = System.currentTimeMillis();

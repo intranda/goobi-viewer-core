@@ -173,8 +173,8 @@ public class QuartzBean implements Serializable {
             RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
             trigger.setStatus(status);
             dao.updateRecurringTaskTrigger(trigger);
-            if(TaskType.PULL_THEME.name().equals(jobName)) {
-                if(developerBean != null) {
+            if (TaskType.PULL_THEME.name().equals(jobName)) {
+                if (developerBean != null) {
                     developerBean.sendPullThemeFinished();
                 }
             }

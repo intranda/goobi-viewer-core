@@ -176,8 +176,8 @@ public class StatisticsSummaryBuilder {
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String,Map<RequestType, RequestTypeSummary>> getRecordStatisticsFromSolrDoc(SolrDocument doc) {
-        Map<String,List<Long>> countsMap = new HashMap<>();
+    private Map<String, Map<RequestType, RequestTypeSummary>> getRecordStatisticsFromSolrDoc(SolrDocument doc) {
+        Map<String, List<Long>> countsMap = new HashMap<>();
         for (String fieldName : doc.getFieldNames()) {
             if (fieldName.startsWith(StatisticsLuceneFields.RECORD_STATISTICS_PREFIX)) {
                 try {
@@ -189,7 +189,7 @@ public class StatisticsSummaryBuilder {
             }
         }
 
-        Map<String, Map<RequestType, RequestTypeSummary>> map = new HashMap<>();// new EnumMap<>(RequestType.class);
+        Map<String, Map<RequestType, RequestTypeSummary>> map = new HashMap<>(); // new EnumMap<>(RequestType.class);
         LocalDate date = getDate(doc);
         
         for (Entry<String, List<Long>> entry : countsMap.entrySet()) {
@@ -199,7 +199,7 @@ public class StatisticsSummaryBuilder {
             for (int i = 0; i < counts.size(); i += 2) {
                 RequestType type = RequestType.getTypeForTotalCountIndex(i);
                 long total = counts.get(i);
-                long unique = counts.get(i+1);
+                long unique = counts.get(i + 1);
                 recordMap.put(type, new RequestTypeSummary(total, unique, date, date));
             }
             map.put(pi, recordMap);

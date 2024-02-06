@@ -52,8 +52,8 @@ public class CMSMediaLister {
                 .collect(Collectors.toList());
         return allItems
                 .stream()
-                .filter(item -> cleanedTags.isEmpty() ||
-                        item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(cleanedTags::contains))
+                .filter(item -> cleanedTags.isEmpty()
+                        || item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(cleanedTags::contains))
                 .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
                 .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
                 .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))

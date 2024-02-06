@@ -141,9 +141,9 @@ public class Location implements Serializable {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             Location other = (Location) obj;
-            return StringUtils.equals(this.label, other.label) &&
-                    Objects.equals(this.uri, other.uri) &&
-                    Objects.equals(this.area, other.area);
+            return StringUtils.equals(this.label, other.label)
+                    && Objects.equals(this.uri, other.uri)
+                    && Objects.equals(this.area, other.area);
         }
 
         return false;

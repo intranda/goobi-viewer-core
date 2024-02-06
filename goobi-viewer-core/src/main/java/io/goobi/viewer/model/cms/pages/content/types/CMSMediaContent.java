@@ -269,7 +269,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     
     @Override
     public int hashCode() {
-        if(this.getId() == null) {
+        if (this.getId() == null) {
             return 0;
         } else {            
             return this.getId().intValue();
@@ -278,8 +278,8 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     
     @Override
     public boolean equals(Object arg0) {
-        if(arg0 != null && this.getClass().equals(arg0.getClass())) {            
-            return Objects.equals(this.getId(), ((CMSMediaContent)arg0).getId());
+        if (arg0 != null && this.getClass().equals(arg0.getClass())) {            
+            return Objects.equals(this.getId(), ((CMSMediaContent) arg0).getId());
         } else {
             return false;
         }

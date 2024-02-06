@@ -161,7 +161,7 @@ public class GeoMap implements Serializable {
         this.dateCreated = blueprint.dateCreated;
         this.dateUpdated = blueprint.dateUpdated;
         this.id = blueprint.id;
-        this.translations = blueprint.translations;//.stream().filter(t -> !t.isEmpty()).map(t -> new MapTranslation(t)).collect(Collectors.toSet());
+        this.translations = blueprint.translations; //.stream().filter(t -> !t.isEmpty()).map(t -> new MapTranslation(t)).collect(Collectors.toSet());
         this.featureSets = blueprint.featureSets.stream().map(FeatureSet::copy).collect(Collectors.toList());
         this.initialView = blueprint.initialView;
 
