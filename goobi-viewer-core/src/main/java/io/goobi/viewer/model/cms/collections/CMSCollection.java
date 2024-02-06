@@ -408,12 +408,12 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @return
      */
     public boolean contentEquals(CMSCollection other) {
-        return Objects.equals(this.mediaItem, other.mediaItem) &&
-                StringUtils.equals(this.representativeWorkPI, other.representativeWorkPI) &&
-                StringUtils.equals(this.solrField, other.solrField) &&
-                StringUtils.equals(this.collectionUrl, other.collectionUrl) &&
-                StringUtils.equals(this.solrFieldValue, other.solrFieldValue) &&
-                translationsEquals(this.translations, other.translations);
+        return Objects.equals(this.mediaItem, other.mediaItem)
+                && StringUtils.equals(this.representativeWorkPI, other.representativeWorkPI)
+                && StringUtils.equals(this.solrField, other.solrField)
+                && StringUtils.equals(this.collectionUrl, other.collectionUrl)
+                && StringUtils.equals(this.solrFieldValue, other.solrFieldValue)
+                && translationsEquals(this.translations, other.translations);
     }
 
     /**
