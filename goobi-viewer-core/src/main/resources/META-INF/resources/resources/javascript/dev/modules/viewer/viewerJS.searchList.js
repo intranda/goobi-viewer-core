@@ -270,6 +270,7 @@ var viewerJS = ( function( viewer ) {
                     $thumbToggle.trigger( "blur" );
                     _searchListShowThumbs = !_searchListShowThumbs;
                     this.showSearchListThumbs(_searchListShowThumbs);
+                    sessionStorage.setItem( 'searchListShowThumbs', _searchListShowThumbs );
                 });
             }
         },
@@ -292,7 +293,6 @@ var viewerJS = ( function( viewer ) {
                 .attr('aria-checked', false);
                 $(".search-list__subhit-thumbnail").hide();
              }
-             sessionStorage.setItem( 'searchListShowThumbs', show );
 		},
         initSubHits: function() {
 			            
