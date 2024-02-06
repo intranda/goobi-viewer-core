@@ -420,6 +420,17 @@ public class SearchHit implements Comparable<SearchHit> {
                             hitsPopulated++;
                         }
                         break;
+                    case ARCHIVE:
+                        iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
+                        if (!ownerHits.containsKey(iddoc)) {
+                            SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
+                            children.add(childHit);
+                            ownerHits.put(iddoc, childHit);
+                            ownerDocs.put(iddoc, childDoc);
+                            hitsPopulated++;
+                            // TODO Check and add link to record, if exists
+                        }
+                        break;
                     case GROUP:
                     default:
                         break;

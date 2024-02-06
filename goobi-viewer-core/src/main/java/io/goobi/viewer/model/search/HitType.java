@@ -6,6 +6,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 
 public enum HitType {
     ACCESSDENIED,
+    ARCHIVE,
     DOCSTRCT,
     PAGE,
     METADATA, // grouped metadata

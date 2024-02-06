@@ -851,7 +851,7 @@ public class ThumbnailHandler {
                         thumbnailUrl = getThumbnailPath(PERSON_THUMB).toString();
                     }
                     break;
-                case DOCSTRCT, PAGE:
+                case ARCHIVE, DOCSTRCT, PAGE:
                 default:
                     String mimeType = getMimeType(doc).orElse("unknown");
                     BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
@@ -888,7 +888,7 @@ public class ThumbnailHandler {
                                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                                 break;
                             default:
-                                logger.warn("mime type not suppoerted: {}", baseMimeType);
+                                logger.warn("Mime type not supported: {}", baseMimeType);
                                 break;
                         }
                     }

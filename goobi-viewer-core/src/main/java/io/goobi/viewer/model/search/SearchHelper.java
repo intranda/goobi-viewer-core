@@ -399,7 +399,7 @@ public final class SearchHelper {
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
                     HitType hitType = getHitType(childDoc);
-                    if (hitType != HitType.METADATA) {
+                    if (hitType != null && hitType != HitType.METADATA) {
                         int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                         hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
                     }

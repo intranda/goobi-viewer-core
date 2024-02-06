@@ -32,12 +32,13 @@ public final class SolrConstants {
 
     public enum DocType {
         ACCESSDENIED,
+        ARCHIVE, // EAD archive
         DOCSTRCT,
         PAGE,
         METADATA, // grouped metadata
         EVENT, // LIDO event
         UGC, // user-generated content
-        GROUP; // convolute
+        GROUP; // convolute/series
 
         public static DocType getByName(String name) {
             if (name != null) {
