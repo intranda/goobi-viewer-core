@@ -348,7 +348,7 @@ public class SearchFacets implements Serializable {
      * @return List<IFacetItem>
      */
     public List<IFacetItem> getAvailableFacetsForField(String field, boolean excludeSelected) {
-        logger.trace("getAvailableFacetsForField: {}", field);
+        // logger.trace("getAvailableFacetsForField: {}", field);
         List<IFacetItem> facetItems = availableFacets.get(field);
         if (facetItems == null) {
             return Collections.emptyList();

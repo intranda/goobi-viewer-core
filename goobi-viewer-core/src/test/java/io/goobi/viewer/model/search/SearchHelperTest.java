@@ -45,8 +45,8 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -288,6 +288,18 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 .getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty(),
                         IPrivilegeHolder.PRIV_DOWNLOAD_METADATA)
                 .contains("ACCESSCONDITION:\"license type 3 name\""));
+    }
+
+    /**
+     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,String)
+     * @verifies limit to open access if licenseTypes empty
+     */
+    @Test
+    void getPersonalFilterQuerySuffix_shouldLimitToOpenAccessIfLicenseTypesEmpty() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        // User has metadata download privilege for 'license type 3 name', but not listing
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(Collections.emptyList(), user, null, Optional.empty(), IPrivilegeHolder.PRIV_LIST);
+        Assertions.assertEquals(" +(ACCESSCONDITION:\"OPENACCESS\")", suffix);
     }
 
     /**
