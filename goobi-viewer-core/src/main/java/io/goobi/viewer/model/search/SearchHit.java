@@ -809,6 +809,21 @@ public class SearchHit implements Comparable<SearchHit> {
 
         return 0;
     }
+    
+    /**
+     * <p>
+     * getArchiveHitCount.
+     * </p>
+     *
+     * @return a int.
+     */
+    public int getArchiveHitCount() {
+        if (hitTypeCounts.get(HitType.ARCHIVE) != null) {
+            return hitTypeCounts.get(HitType.ARCHIVE);
+        }
+
+        return 0;
+    }
 
     /**
      * <p>

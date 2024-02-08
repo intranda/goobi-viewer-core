@@ -115,7 +115,8 @@
                             <ui:fragment rendered="#{hit.hasHitCount}">
                             <div class="search-list__child-hits-button-wrapper">
                                 <button onclick="viewerJS.searchList.openChildHits(this)" type="button" class="btn btn--clean" 
-                                data-toggle="hit-content" data-toggle-id="childHits_#{status.index}" data-load-hits-script="loadChildHits_#{status.index}" data-childhits="#{hit.hitCount}">
+                                    data-toggle="hit-content" data-toggle-id="childHits_#{status.index}"
+                                    data-load-hits-script="loadChildHits_#{status.index}" data-childhits="#{hit.hitCount}">
                                     <ui:fragment rendered="#{hit.hitsPopulated == 0}">
 	                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
                                     </ui:fragment>
@@ -134,14 +135,21 @@
                                         <f:param value="#{hit.pageHitCount}" />
                                     </h:outputFormat>
                                     <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
-                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
+                                        <h:outputText
+                                           rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
                                         <f:param value="#{hit.eventHitCount}" />
                                     </h:outputFormat>
                                     <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
                                         <h:outputText
-                                         rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
-                                         value=", " />
+                                            rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
+                                            value=", " />
                                         <f:param value="#{hit.ugcHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.archiveHitCount > 0}" value="#{msg.searchChildArchiveHitCount}">
+                                        <h:outputText
+                                            rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0 or hit.ugcHitCount > 0}"
+                                            value=", " />
+                                        <f:param value="#{hit.archiveHitCount}" />
                                     </h:outputFormat>
                                 </button>
                                 <o:commandScript name="loadChildHits_#{status.index}" action="#{hit.loadChildHits(configurationBean.searchChildHitsToLoadOnExpand)}" render="childHitGroup" 
