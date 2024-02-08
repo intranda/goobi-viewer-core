@@ -915,6 +915,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+        logger.trace("searchFacetsAndStatistics: {}", query);
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, null, getFieldStatistics);
     }
 
@@ -934,6 +935,7 @@ public class SolrSearchIndex {
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             Map<String, String> params, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
+        logger.trace("searchFacetsAndStatistics: {}", query);
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, params, getFieldStatistics);
     }
 
