@@ -73,6 +73,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Wrapper class for search hits. Contains the corresponding <code>BrowseElement</code>
@@ -104,6 +105,8 @@ public class SearchHit implements Comparable<SearchHit> {
     @JsonIgnore
     private final Map<String, String> exportMetadata = new HashMap<>();
     private final String url;
+    /** Secondary URL */
+    private String altUrl;
     @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
@@ -223,13 +226,12 @@ public class SearchHit implements Comparable<SearchHit> {
             List<String> texts = new ArrayList<>();
             for (PersistentCMSComponent component : page.getPersistentComponents()) {
                 for (CMSContent content : component.getContentItems()) {
-                    if (content instanceof TranslatableCMSContent) {
-                        TranslatableCMSContent trCont = (TranslatableCMSContent) content;
+                    if (content instanceof TranslatableCMSContent trCont) {
                         for (Locale loc : trCont.getText().getLocales()) {
                             texts.add(trCont.getText().getText(loc));
                         }
-                    } else if (content instanceof CMSMediaHolder) {
-                        CMSMediaItem media = ((CMSMediaHolder) content).getMediaItem();
+                    } else if (content instanceof CMSMediaHolder cmsMediaHolder) {
+                        CMSMediaItem media = cmsMediaHolder.getMediaItem();
                         if (media != null && media.isHasExportableText()) {
                             texts.add(CmsMediaBean.getMediaFileAsString(media));
 
@@ -428,7 +430,12 @@ public class SearchHit implements Comparable<SearchHit> {
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
                             hitsPopulated++;
-                            // TODO Check and add link to record, if exists
+                            //Check and add link to record, if exists
+                            String entryId = SolrTools.getSingleFieldStringValue(childDoc, "MD_ARCHIVE_ENTRY_ID");
+                            if (StringUtils.isNotEmpty(entryId)) {
+                                altUrl = "archives/EAD/" + pi + "/?selected=" + entryId + "#selected";
+                            }
+                            // logger.trace("altUrl: {}", altUrl);
                         }
                         break;
                     case GROUP:
@@ -809,7 +816,7 @@ public class SearchHit implements Comparable<SearchHit> {
 
         return 0;
     }
-    
+
     /**
      * <p>
      * getArchiveHitCount.
@@ -849,6 +856,20 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * @return the altUrl
+     */
+    public String getAltUrl() {
+        return altUrl;
+    }
+
+    /**
+     * @param altUrl the altUrl to set
+     */
+    public void setAltUrl(String altUrl) {
+        this.altUrl = altUrl;
     }
 
     /**
