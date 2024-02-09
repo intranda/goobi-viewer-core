@@ -63,6 +63,9 @@ public class AdminDeveloperBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(AdminDeveloperBean.class);
 
+    private static final String SCRIPT_PURPOSE_CREATE_PACKAGE = "create-package";
+    private static final String SCRIPT_PURPOSE_PULL_THEME = "theme-pull";
+    
     private static final String SQL_STATEMENT_CREATE_USERS = "DROP TABLE IF EXISTS `users`;\n"
             + "CREATE TABLE `users` (\n"
             + "  `user_id` bigint(20) NOT NULL AUTO_INCREMENT,\n"

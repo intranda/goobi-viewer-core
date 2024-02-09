@@ -5942,6 +5942,17 @@ public class Configuration extends AbstractConfiguration {
     public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
+    
+    public boolean isDeveloperPageActive() {
+        return getLocalBoolean("deveoper[@enabled]", false);
+    }
+    
+    public String getDeveloperScriptPath(String purpose) {
+        List<HierarchicalConfiguration<ImmutableNode>> scriptNodes = getLocalConfigurationsAt("developer.script");
+        return scriptNodes.stream()
+                .filter(node -> node.getString("[@purpose]", "").equals(purpose))
+                .map(node -> node.getString(".", "")).findAny().orElse("");
+    }
 
     /**
      * @param field
@@ -5957,5 +5968,5 @@ public class Configuration extends AbstractConfiguration {
         String path = String.format("viewer.formats.%s.%s", type, locale.getLanguage());
         return Optional.ofNullable(getLocalString(path, null));
     }
-
+    
 }
