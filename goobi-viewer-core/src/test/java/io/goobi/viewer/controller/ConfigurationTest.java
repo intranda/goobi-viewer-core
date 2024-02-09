@@ -118,7 +118,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getBrowsingMenuFields_shouldReturnAllConfiguredElements() throws Exception {
-        assertEquals(5, DataManager.getInstance().getConfiguration().getBrowsingMenuFields().size());
+        assertEquals(6, DataManager.getInstance().getConfiguration().getBrowsingMenuFields().size());
     }
 
     /**
