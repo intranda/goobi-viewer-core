@@ -433,7 +433,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             //Check and add link to record, if exists
                             String entryId = SolrTools.getSingleFieldStringValue(childDoc, "MD_ARCHIVE_ENTRY_ID");
                             if (StringUtils.isNotEmpty(entryId)) {
-                                altUrl = "archives/EAD/" + pi + "/?selected=" + entryId + "#selected";
+                                childHit.setAltUrl("archives/EAD/" + pi + "/?selected=" + entryId + "#selected");
                             }
                             // logger.trace("altUrl: {}", altUrl);
                         }
@@ -862,6 +862,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @return the altUrl
      */
     public String getAltUrl() {
+        logger.trace("getAltUrl: {}", altUrl);
         return altUrl;
     }
 
