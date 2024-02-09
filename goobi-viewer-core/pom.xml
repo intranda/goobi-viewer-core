@@ -89,7 +89,7 @@
         <angus-mail.version>2.0.2</angus-mail.version>
 		<citationstyles.version>23.11</citationstyles.version>
 		<citeproc-java.version>3.0.0-beta.2</citeproc-java.version>
-		<commons-codec.version>1.16.0</commons-codec.version>
+		<commons-codec.version>1.16.1</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-configuration.version>1.10</commons-configuration.version>
 		<commons-configuration2.version>2.9.0</commons-configuration2.version>
