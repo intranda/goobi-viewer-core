@@ -837,6 +837,7 @@
 			<!-- TODO: describe in the manual -->
 			<!-- <field sortField="SORT_TITLE" docstructFilters="Monograph;Volume;PeriodicalVolume">MD_TITLE_UNTOKENIZED</field> -->
 			<field>MD_SHELFMARK</field>
+            <field skipInWidget="true">MD_OTHERPURPOSE</field>
 		</browsingMenu>
         
         <!-- Used to associate license urls with a label and possibly an icon. Also provides a list
