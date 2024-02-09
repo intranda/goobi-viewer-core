@@ -1112,6 +1112,7 @@ public final class SearchHelper {
      * @should construct suffix correctly if ip range has license privilege
      * @should construct suffix correctly if moving wall license
      * @should construct suffix correctly for alternate privilege
+     * @should limit to open access if licenseTypes empty
      */
     public static String getPersonalFilterQuerySuffix(List<LicenseType> licenseTypes, User user, String ipAddress, Optional<ClientApplication> client,
             String privilege) throws IndexUnreachableException, PresentationException, DAOException {
@@ -1120,23 +1121,24 @@ public final class SearchHelper {
             throw new IllegalArgumentException("privilege may not be null");
         }
 
-        // No relevant LicenseTypes
-        if (licenseTypes == null || licenseTypes.isEmpty()) {
-            return "";
-        }
-
         // No restrictions for admins
         if (user != null && user.isSuperuser()) {
             return "";
         }
+        
         // No restrictions for localhost, if so configured
-        if (NetTools.isIpAddressLocalhost(ipAddress)
-                && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
+        if (NetTools.isIpAddressLocalhost(ipAddress) && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
             return "";
         }
 
         StringBuilder query = new StringBuilder();
         query.append(" +(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(SolrConstants.OPEN_ACCESS_VALUE).append('"');
+
+        // No configured LicenseTypes - OPENACCESS only
+        if (licenseTypes == null || licenseTypes.isEmpty()) {
+            query.append(')');
+            return query.toString();
+        }
 
         Set<String> usedLicenseTypes = new HashSet<>();
         for (LicenseType licenseType : licenseTypes) {
