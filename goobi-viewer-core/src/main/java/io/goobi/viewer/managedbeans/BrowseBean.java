@@ -772,6 +772,7 @@ public class BrowseBean implements Serializable {
 
     /**
      * Getter for unit tests.
+     * 
      * @return the availableStringFilters
      */
     Map<String, List<String>> getAvailableStringFiltersMap() {
@@ -897,11 +898,12 @@ public class BrowseBean implements Serializable {
 
     /**
      * <p>
-     * getBrowsingMenuItems.
+     * Returns the list of fields configured for term browsing to be listed in term browsing widgets.
      * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return List of browsing menu items
+     * @should skip items that have skipInWidget true
      * @should skip items for language-specific fields if no language was given
      * @should skip items for language-specific fields if they don't match given language
      * @should return language-specific fields with placeholder
@@ -913,6 +915,10 @@ public class BrowseBean implements Serializable {
         }
         List<String> ret = new ArrayList<>();
         for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
+            if (bmfc.isSkipInWidget()) {
+                logger.trace("Browsing field {} is configured to be skipped in the menu.", bmfc.getField());
+                continue;
+            }
             if (bmfc.getField().contains(SolrConstants.MIDFIX_LANG)
                     && (useLanguage == null || !(bmfc.getField().contains(SolrConstants.MIDFIX_LANG + useLanguage)
                             || bmfc.getField().contains(SolrConstants.MIDFIX_LANG + "{}")))) {

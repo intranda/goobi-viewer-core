@@ -948,6 +948,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+        // logger.trace("searchFacetsAndStatistics: {}", query);
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, null, getFieldStatistics);
     }
 
@@ -967,25 +968,8 @@ public class SolrSearchIndex {
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             Map<String, String> params, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
+        // logger.trace("searchFacetsAndStatistics: {}", query);
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, params, getFieldStatistics);
-    }
-
-    /**
-     *
-     * @return true if ping successful; false otherwise
-     */
-    public boolean pingSolrIndex() {
-        if (client != null) {
-            try {
-                SolrPingResponse ping = client.ping();
-                return ping.getStatus() < 400;
-            } catch (SolrException | SolrServerException | IOException e) {
-                logger.trace("Ping to solr failed: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
-                return false;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -1007,7 +991,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             String facetPrefix, Map<String, String> params, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
-        logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Sometimes needed for debugging
+        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Sometimes needed for debugging
         SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query));
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -1400,6 +1384,24 @@ public class SolrSearchIndex {
         }
 
         return null;
+    }
+
+    /**
+     *
+     * @return true if ping successful; false otherwise
+     */
+    public boolean pingSolrIndex() {
+        if (client != null) {
+            try {
+                SolrPingResponse ping = client.ping();
+                return ping.getStatus() < 400;
+            } catch (SolrException | SolrServerException | IOException e) {
+                logger.trace("Ping to solr failed: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**

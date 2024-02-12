@@ -78,8 +78,8 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         boolean printStackTrace = false;
         ContentLibException ee = e;
         //Get actual exception if e if of the wrapper class ImageManagerException
-        if (ee.getClass().equals(ImageManagerException.class) && ee.getCause() != null && ee.getCause() instanceof ContentLibException) {
-            ee = (ContentLibException) ee.getCause();
+        if (ee.getClass().equals(ImageManagerException.class) && ee.getCause() != null && ee.getCause() instanceof ContentLibException cle) {
+            ee = cle;
         }
         if (ee instanceof IllegalRequestException) {
             status = Status.BAD_REQUEST;
