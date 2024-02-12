@@ -807,7 +807,7 @@ public final class AccessConditionUtils {
      * @param query Solr query describing the resource in question.
      * @param remoteAddress a {@link java.lang.String} object.
      * @param client
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -858,7 +858,7 @@ public final class AccessConditionUtils {
      * @param remoteAddress a {@link java.lang.String} object.
      * @param client
      * @param query Solr query describing the resource in question.
-     * @return a {@link java.util.Map} object.
+     * @return Map<String, AccessPermission>
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -875,38 +875,39 @@ public final class AccessConditionUtils {
             throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName); //NOSONAR Debugging
 
-        Map<String, AccessPermission> accessMap = new HashMap<>();
-        accessMap.put("", AccessPermission.denied());
+        Map<String, AccessPermission> ret = new HashMap<>();
+        ret.put("", AccessPermission.denied());
+        // TODO check whether ret ever has more than one key
 
         // If user is superuser, allow immediately
         if (user != null && user.isSuperuser()) {
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.granted()));
-            return accessMap;
+            ret.keySet().forEach(key -> ret.put(key, AccessPermission.granted()));
+            return ret;
         }
         // If no access condition given, allow immediately (though this should never be the case)
         if (requiredAccessConditions.isEmpty()) {
             logger.trace("No required access conditions given, access granted.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.granted()));
-            return accessMap;
+            ret.keySet().forEach(key -> ret.put(key, AccessPermission.granted()));
+            return ret;
         }
         // If OPENACCESS is the only condition, allow immediately
         if (isFreeOpenAccess(requiredAccessConditions, allLicenseTypes)) {
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.granted()));
-            return accessMap;
+            ret.keySet().forEach(key -> ret.put(key, AccessPermission.granted()));
+            return ret;
         }
         // If no license types are configured or no privilege name is given, deny immediately
         if (allLicenseTypes == null || !StringUtils.isNotEmpty(privilegeName)) {
             logger.trace("No license types or no privilege name given.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.denied()));
-            return accessMap;
+            ret.keySet().forEach(key -> ret.put(key, AccessPermission.denied()));
+            return ret;
         }
 
-        Map<String, List<LicenseType>> licenseMap = getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query, accessMap);
+        Map<String, List<LicenseType>> licenseMap = getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query, ret);
         // If no relevant license types found (configured), deny all
         if (licenseMap.isEmpty()) {
             logger.trace("No relevant license types found.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.denied()));
-            return accessMap;
+            ret.keySet().forEach(key -> ret.put(key, AccessPermission.denied()));
+            return ret;
         }
 
         for (Entry<String, List<LicenseType>> entry : licenseMap.entrySet()) {
@@ -915,7 +916,7 @@ public final class AccessConditionUtils {
             if (relevantLicenseTypes.isEmpty()) {
                 // No relevant license types for this file, set to false and continue
                 logger.trace("No relevant license types.");
-                accessMap.put(entry.getKey(), AccessPermission.denied());
+                ret.put(entry.getKey(), AccessPermission.denied());
                 continue;
             }
 
@@ -938,17 +939,17 @@ public final class AccessConditionUtils {
             }
             if (licenseTypeAllowsPriv) {
                 // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName); //NOSONAR Debugging
-                accessMap.put(entry.getKey(), AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl));
+                ret.put(entry.getKey(), AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl));
             } else if (isFreeOpenAccess(useAccessConditions, relevantLicenseTypes)) {
                 logger.trace("Privilege '{}' is OpenAccess", privilegeName);
-                accessMap.put(entry.getKey(), AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl));
+                ret.put(entry.getKey(), AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl));
             } else {
                 // Check IP range
                 if (StringUtils.isNotEmpty(remoteAddress)) {
                     if (NetTools.isIpAddressLocalhost(remoteAddress)
                             && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
                         logger.trace("Access granted to localhost");
-                        accessMap.put(entry.getKey(), AccessPermission.granted());
+                        ret.put(entry.getKey(), AccessPermission.granted());
                         continue;
                     }
                     // Check whether the requested privilege is allowed to this IP range (for all access conditions)
@@ -958,7 +959,7 @@ public final class AccessConditionUtils {
                                     ipRange.canSatisfyAllAccessConditions(useAccessConditions, relevantLicenseTypes, privilegeName, null);
                             if (access.isGranted()) {
                                 logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                                accessMap.put(entry.getKey(), access);
+                                ret.put(entry.getKey(), access);
                             }
                         }
                     }
@@ -969,7 +970,7 @@ public final class AccessConditionUtils {
                     AccessPermission access =
                             user.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
                     if (access.isGranted()) {
-                        accessMap.put(entry.getKey(), access);
+                        ret.put(entry.getKey(), access);
                     }
                 }
 
@@ -980,7 +981,7 @@ public final class AccessConditionUtils {
                     if (client.isPresent()) {
                         AccessPermission access = client.get().canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
                         if (access.isGranted()) {
-                            accessMap.put(entry.getKey(), access);
+                            ret.put(entry.getKey(), access);
                             clientAccessGranted = true;
                         }
                     }
@@ -991,7 +992,7 @@ public final class AccessConditionUtils {
                             AccessPermission access =
                                     allClients.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
                             if (access.isGranted()) {
-                                accessMap.put(entry.getKey(), access);
+                                ret.put(entry.getKey(), access);
                             }
                         }
                     }
@@ -999,7 +1000,7 @@ public final class AccessConditionUtils {
             }
         }
 
-        return accessMap;
+        return ret;
     }
 
     /**
