@@ -237,6 +237,7 @@ public class CmsPageEditBean implements Serializable {
                     if (DataManager.getInstance().getSearchIndex().getHitCount(pi) > 0) {
                         IndexerTools.deleteRecord("CMS" + selectedPage.getId(), false,
                                 Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
+                        logger.debug("Page contents will be deleted from index: {}", pi);
                     } else {
                         logger.trace("Page not in index, no deletion necessary: {}", pi);
                     }
