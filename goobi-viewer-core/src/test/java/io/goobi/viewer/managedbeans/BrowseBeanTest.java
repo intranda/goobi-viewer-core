@@ -33,6 +33,19 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
 
 class BrowseBeanTest extends AbstractTest {
+    
+    /**
+     * @see BrowseBean#getBrowsingMenuItems(String)
+     * @verifies skip items that have skipInWidget true
+     */
+    @Test
+    void getBrowsingMenuItems_shouldSkipItemsThatHaveSkipInWidgetTrue() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        List<String> result = bb.getBrowsingMenuItems(null);
+        assertEquals(2, result.size());
+        assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
+        assertEquals("MD_SHELFMARK", result.get(1));
+    }
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)

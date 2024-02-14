@@ -45,8 +45,8 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -288,6 +288,18 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 .getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty(),
                         IPrivilegeHolder.PRIV_DOWNLOAD_METADATA)
                 .contains("ACCESSCONDITION:\"license type 3 name\""));
+    }
+
+    /**
+     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,String)
+     * @verifies limit to open access if licenseTypes empty
+     */
+    @Test
+    void getPersonalFilterQuerySuffix_shouldLimitToOpenAccessIfLicenseTypesEmpty() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        // User has metadata download privilege for 'license type 3 name', but not listing
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(Collections.emptyList(), user, null, Optional.empty(), IPrivilegeHolder.PRIV_LIST);
+        Assertions.assertEquals(" +(ACCESSCONDITION:\"OPENACCESS\")", suffix);
     }
 
     /**
@@ -1451,7 +1463,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     void getFilteredTerms_shouldBeThreadSafeWhenCountingTerms() throws Exception {
         int previousSize = -1;
         Map<String, Long> previousCounts = new HashMap<>();
-        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null, false, false, false);
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null);
         for (int i = 0; i < 10; ++i) {
             List<BrowseTerm> terms =
                     SearchHelper.getFilteredTerms(bmfc, null, null, 0, SolrSearchIndex.MAX_HITS, new BrowseTermComparator(Locale.ENGLISH), null);
@@ -1474,7 +1486,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getFilteredTermsFromIndex_shouldContainFacetsForTheMainField() throws Exception {
-        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null, false, false, false);
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null);
         QueryResponse resp = SearchHelper.getFilteredTermsFromIndex(bmfc, "", null, null, 0, SolrSearchIndex.MAX_HITS, null);
         Assertions.assertNotNull(resp);
         Assertions.assertNotNull(resp.getFacetField(SearchHelper.facetifyField(bmfc.getField())));
@@ -1486,7 +1498,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getFilteredTermsFromIndex_shouldContainFacetsForTheSortField() throws Exception {
-        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATORDISPLAY_UNTOKENIZED", "SORT_CREATOR", null, false, false, false);
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATORDISPLAY_UNTOKENIZED", "SORT_CREATOR", null);
         QueryResponse resp = SearchHelper.getFilteredTermsFromIndex(bmfc, "", null, null, 0, SolrSearchIndex.MAX_HITS, null);
         Assertions.assertNotNull(resp);
         Assertions.assertNotNull(resp.getFacetField(SearchHelper.facetifyField(bmfc.getSortField())));

@@ -242,9 +242,9 @@ public class GeoMapFeature {
         }
         if (obj.getClass().equals(this.getClass())) {
             GeoMapFeature other = (GeoMapFeature) obj;
-            return Objects.equals(this.json, other.json) &&
-                    Objects.equals(getIndentifyingString(this.title), getIndentifyingString(other.title)) &&
-                    Objects.equals(this.link, other.link);
+            return Objects.equals(this.json, other.json)
+                    && Objects.equals(getIndentifyingString(this.title), getIndentifyingString(other.title))
+                    && Objects.equals(this.link, other.link);
         }
 
         return false;

@@ -126,7 +126,7 @@ public class CMSPageTemplate implements Serializable {
 
                 String itemId = eleContentItem.getAttributeValue("id");
                 if ("preview01".equals(itemId)) {
-                    continue;//preview texts are directly in cmsPage. They should not be loaded as content item
+                    continue; //preview texts are directly in cmsPage. They should not be loaded as content item
                 }
 
                 CMSContentItemType type = CMSContentItemType.getByName(eleContentItem.getAttributeValue("type"));
@@ -161,7 +161,7 @@ public class CMSPageTemplate implements Serializable {
                 template.setMayHaveTopBarSlider(parseBoolean(options.getChildText("topBarSlider"), false));
             }
             Element attributes = root.getChild("attributes");
-            if(attributes != null) {
+            if (attributes != null) {
                 List<Element> attributeElements = attributes.getChildren("attribute");
                 for (Element element : attributeElements) {
                     CMSComponentAttribute attr = CMSComponentAttribute.loadFromXML(element);

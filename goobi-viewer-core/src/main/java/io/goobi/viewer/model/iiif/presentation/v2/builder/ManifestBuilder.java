@@ -27,19 +27,15 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
@@ -70,9 +66,9 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.metadata.Metadata;
-import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -94,7 +90,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * Constructor for ManifestBuilder.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param apiUrlManager
      */
     public ManifestBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -149,10 +145,10 @@ public class ManifestBuilder extends AbstractBuilder {
      */
     public void populate(StructElement ele, final AbstractPresentationModelElement2 manifest)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
-        this.getAttributions().forEach(attr -> manifest.addAttribution(attr));
+        this.getAttributions().forEach(manifest::addAttribution);
         IMetadataValue label = getLabel(ele).orElse(new SimpleMetadataValue(ele.getLabel()));
         manifest.setLabel(label);
-        getDescription(ele).ifPresent(desc -> manifest.setDescription(desc));
+        getDescription(ele).ifPresent(manifest::setDescription);
 
         addMetadata(manifest, ele);
 
@@ -191,7 +187,7 @@ public class ManifestBuilder extends AbstractBuilder {
                     .getDao()
                     .getCMSPagesForRecord(ele.getPi(), null)
                     .stream()
-                    .filter(page -> page.isPublished())
+                    .filter(CMSPage::isPublished)
                     .forEach(page -> {
                         try {
                             LinkingContent cmsPage = new LinkingContent(new URI(this.urls.getApplicationUrl() + "/" + page.getUrl()));
@@ -202,12 +198,12 @@ public class ManifestBuilder extends AbstractBuilder {
                             logger.error("Unable to retrieve viewer url for {}", ele);
                         }
                     });
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.warn(e.toString());
         }
     }
 
-    private void addNavDate(StructElement ele, final AbstractPresentationModelElement2 manifest) {
+    private static void addNavDate(StructElement ele, final AbstractPresentationModelElement2 manifest) {
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
         if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
             try {
@@ -220,13 +216,13 @@ public class ManifestBuilder extends AbstractBuilder {
         }
     }
 
-    private void addLicences(final AbstractPresentationModelElement2 manifest) {
+    private static void addLicences(final AbstractPresentationModelElement2 manifest) {
         for (String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
             try {
                 URI uri = new URI(license);
                 manifest.addLicense(uri);
             } catch (URISyntaxException e) {
-                logger.error("Configured license '" + license + "' is not a URI");
+                logger.error("Configured license '{}' is not a URI", license);
             }
         }
     }
@@ -245,7 +241,7 @@ public class ManifestBuilder extends AbstractBuilder {
                 logo = new ImageContent(new URI(url));
                 manifest.addLogo(logo);
             } catch (URISyntaxException e) {
-                logger.error("Error adding manifest logo from " + url, e);
+                logger.error("Error adding manifest logo from {}", url, e);
             }
         }
     }
@@ -291,15 +287,15 @@ public class ManifestBuilder extends AbstractBuilder {
                     manifest.addSeeAlso(seeAlso);
                 }
             } catch (IndexUnreachableException | PresentationException | URISyntaxException e) {
-                logger.error("Unable to create seeAlso link for " + config.getLabel(), e);
+                logger.error("Unable to create seeAlso link for {}", config.getLabel(), e);
             }
 
         }
     }
 
     /**
-     * @param page
-     * @param canvas
+     * @param manifest
+     * @param ele
      * @throws URISyntaxException
      */
     public void addRenderings(AbstractPresentationModelElement2 manifest, StructElement ele) {
@@ -351,11 +347,13 @@ public class ManifestBuilder extends AbstractBuilder {
             case LIDO:
                 uri = new URI(getLidoResolverUrl(ele));
                 break;
+            default:
+                break;
         }
         return uri;
     }
 
-    private PageType getMatchingPageType(StructElement ele) {
+    private static PageType getMatchingPageType(StructElement ele) {
         PageType pageType = PageType.viewMetadata;
         if (ele.isHasImages()) {
             pageType = PageType.viewImage;
@@ -382,7 +380,7 @@ public class ManifestBuilder extends AbstractBuilder {
                     anchor.addManifest((Manifest2) child);
                 }
             } catch (ViewerConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
-                logger.error("Error creating child manigest for " + volume);
+                logger.error("Error creating child manigest for {}", volume);
             }
 
         }
@@ -411,8 +409,8 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param v1
-     * @return
+     * @param volume
+     * @return {@link Integer}
      */
     private static Integer getSortingNumber(StructElement volume) {
         String numSort = volume.getVolumeNoSort();
@@ -420,7 +418,7 @@ public class ManifestBuilder extends AbstractBuilder {
             try {
                 return Integer.parseInt(numSort);
             } catch (NumberFormatException e) {
-                logger.error("Cannot read integer value from " + numSort);
+                logger.error("Cannot read integer value from {}", numSort);
             }
         }
         return -1;
@@ -437,7 +435,7 @@ public class ManifestBuilder extends AbstractBuilder {
     private List<String> getLogoUrl() throws ViewerConfigurationException {
         List<String> urlStrings = DataManager.getInstance().getConfiguration().getIIIFLogo();
         List<String> logos = new ArrayList<>();
-        for (String urlString : urlStrings) {
+        for (final String urlString : urlStrings) {
             try {
                 URI url = new URI(urlString);
                 if (url.isAbsolute() && url.getScheme().toLowerCase().startsWith("http")) {
@@ -458,7 +456,6 @@ public class ManifestBuilder extends AbstractBuilder {
                 }
             } catch (URISyntaxException e) {
                 logger.error("Value '{}' configured in webapi.iiif.logo is not a valid uri", urlString);
-                urlString = null;
             }
 
         }

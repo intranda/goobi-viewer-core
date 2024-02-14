@@ -1110,8 +1110,13 @@ public class Configuration extends AbstractConfiguration {
             boolean translate = sub.getBoolean("[@translate]", false);
             boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
             boolean alwaysApplyFilter = sub.getBoolean("[@alwaysApplyFilter]", false);
+            boolean skipInWidget = sub.getBoolean("[@skipInWidget]", false);
             BrowsingMenuFieldConfig bmfc =
-                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, recordsAndAnchorsOnly, alwaysApplyFilter);
+                    new BrowsingMenuFieldConfig(field, sortField, filterQuery)
+                            .setTranslate(translate)
+                            .setAlwaysApplyFilter(alwaysApplyFilter)
+                            .setSkipInWidget(skipInWidget)
+                            .setRecordsAndAnchorsOnly(recordsAndAnchorsOnly);
             ret.add(bmfc);
         }
 

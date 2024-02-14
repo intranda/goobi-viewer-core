@@ -1408,8 +1408,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      */
     @Override
     public boolean isEmpty(Locale locale) {
-        return StringUtils.isBlank(getDescription(locale.getLanguage())) &&
-                StringUtils.isBlank(getTitle(locale.getLanguage()));
+        return StringUtils.isBlank(getDescription(locale.getLanguage()))
+                && StringUtils.isBlank(getTitle(locale.getLanguage()));
     }
 
     /**
