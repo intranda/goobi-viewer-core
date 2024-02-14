@@ -275,8 +275,9 @@
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
     </url-mapping>
+    <!-- searchTerm5: Pattern for search results (not term listing) while preserving search mode. Needed for correct filtering via active result group. -->
     <url-mapping id="searchTerm5">
-        <!-- PrettyFacets URLPAtternParser.getParameterCount() doesn't count "-" parameters and throws and exception, if "-" is used here. -->
+        <!-- PrettyFacets URLPatternParser.getParameterCount() doesn't count "-" parameters and throws and exception, if "-" is used here. -->
         <pattern value="/term/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.setActiveSearchType(4)}</action>
@@ -317,7 +318,7 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="search6">
-		<pattern value="/search/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/-/" />
+		<pattern value="/search/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/-/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
@@ -348,7 +349,7 @@
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
 	<url-mapping id="searchAdvanced6">
-		<pattern value="/searchadvanced/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/-/" />
+		<pattern value="/searchadvanced/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/-/" />
         <view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 	</url-mapping>
@@ -1227,7 +1228,7 @@
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
     </url-mapping>
     <url-mapping id="cmsOpenPage7">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/-/" />
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/-/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>

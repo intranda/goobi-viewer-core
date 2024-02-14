@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
@@ -59,7 +59,6 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
-import io.goobi.viewer.model.viewer.collections.SimpleBrowseElementInfo;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -80,9 +79,9 @@ public class CollectionBuilder extends AbstractBuilder {
             { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
                     SolrConstants.IDDOC };
     /** Constant <code>RSS_FEED_LABEL="Rss feed"</code> */
-    public final static String RSS_FEED_LABEL = "Rss feed";
+    public static final String RSS_FEED_LABEL = "Rss feed";
     /** Constant <code>RSS_FEED_FORMAT="Rss feed"</code> */
-    public final static String RSS_FEED_FORMAT = "Rss feed";
+    public static final String RSS_FEED_FORMAT = "Rss feed";
 
     /**
      * Caching for collections
@@ -95,7 +94,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * Constructor for CollectionBuilder.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param apiUrlManager
      * @throws java.net.URISyntaxException if any.
      */
     public CollectionBuilder(AbstractApiUrlManager apiUrlManager) throws URISyntaxException {
@@ -111,6 +110,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param topElement a {@link java.lang.String} object.
      * @param splittingChar a {@link java.lang.String} object.
      * @param facetField A SOLR field which values are requested for all records within the collection and stored within the collection for later use
+     * @param ignoreCollections
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -215,8 +215,8 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param createCollectionQuery
-     * @return
+     * @param query
+     * @return {@link SolrDocumentList}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -260,14 +260,12 @@ public class CollectionBuilder extends AbstractBuilder {
             throws URISyntaxException, ViewerConfigurationException {
         try {
             Collection2 collection = new Collection2(uri, baseElement == null ? null : baseElement.getName());
-            this.getAttributions().forEach(attr -> collection.addAttribution(attr));
+            this.getAttributions().forEach(collection::addAttribution);
             if (baseElement != null) {
 
                 BrowseElementInfo info = baseElement.getInfo();
-                if (info != null && info instanceof CMSCollection) {
-                    if (info instanceof CMSCollection) {
-                        collection.setDescription(info.getTranslationsForDescription());
-                    }
+                if (info instanceof CMSCollection) {
+                    collection.setDescription(info.getTranslationsForDescription());
                 }
                 collection.setLabel(getLabel(baseElement.getName()));
 
@@ -322,8 +320,9 @@ public class CollectionBuilder extends AbstractBuilder {
 
     /**
      * @param baseElement
+     * @param collectionView
      * @param target
-     * @return
+     * @return {@link URI}
      */
     private URI getLinkingPropertyUri(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, LinkingTarget target) {
 
@@ -331,6 +330,8 @@ public class CollectionBuilder extends AbstractBuilder {
         switch (target) {
             case VIEWER:
                 uri = absolutize(collectionView.getCollectionUrl(baseElement));
+                break;
+            default:
                 break;
         }
         return uri;
@@ -341,7 +342,8 @@ public class CollectionBuilder extends AbstractBuilder {
      *
      * @param collection
      * @param collectionField
-     * @param groupingField
+     * @param facetField
+     * @param label
      * @throws IndexUnreachableException
      * @throws IllegalRequestException
      */
@@ -355,8 +357,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param ele
-     * @return
+     * @param collection
+     * @param view
+     * @param label
      */
     private void addTagListService(Collection2 collection, CollectionView view, String label) {
         if (collection.getInternalName() != null) {
@@ -376,7 +379,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
-     * @param facetField a {@link java.lang.String} object.
+     * @param groupingField a {@link java.lang.String} object.
      * @param splittingChar a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -390,16 +393,14 @@ public class CollectionBuilder extends AbstractBuilder {
             return new CollectionView((CollectionView) BeanUtils.getSessionBean().get(key));
         }
 
-        CollectionView view = createCollectionView(collectionField, groupingField, splittingChar);
-
-        return view;
+        return createCollectionView(collectionField, groupingField, splittingChar);
     }
 
     /**
      * @param collectionField
      * @param facetField A SOLR field which values are queried and kept in the collectionView for later use
      * @param splittingChar
-     * @return
+     * @return {@link CollectionView}
      * @throws IndexUnreachableException
      * @throws IllegalRequestException
      */
@@ -412,7 +413,6 @@ public class CollectionBuilder extends AbstractBuilder {
         String key = collectionField + "::" + facetField;
         BeanUtils.getSessionBean().put(key, view);
         return view;
-
     }
 
     /**

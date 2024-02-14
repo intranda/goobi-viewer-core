@@ -517,7 +517,7 @@ public final class ALTOTools {
                             Word nextWord = words.get(wordIndex);
                             int hits = ALTOTools.getMatchALTOWord(nextWord, Arrays.copyOfRange(searchWords, totalHits, searchWords.length));
                             if (hits == 0) {
-                                if(remainingProximityReach < 1) {
+                                if (remainingProximityReach < 1) {
                                     wordIndex--;
                                     match = false;
                                     break;
