@@ -40,7 +40,7 @@ public class BrowseFunctionality implements Functionality {
     private String browseField = "";
 
     /**
-     * @param collectionField
+     * @param field
      */
     public BrowseFunctionality(String field) {
         setBrowseField(field);
@@ -74,14 +74,14 @@ public class BrowseFunctionality implements Functionality {
     /**
      * Get the SOLR field which to browse to create the list
      *
-     * @return
+     * @return the browseField
      */
     public String getBrowseField() {
         return this.browseField;
     }
 
     /**
-     * Set an additionl filter to restrict the list to a subset of all records
+     * Set an additional filter to restrict the list to a subset of all records
      *
      * @param field
      * @param value
@@ -106,7 +106,7 @@ public class BrowseFunctionality implements Functionality {
     /**
      * Get the start character for which results should be displayed
      *
-     * @return
+     * @return String
      */
     public String getStartingCharacter() {
         return bean.getCurrentStringFilter();

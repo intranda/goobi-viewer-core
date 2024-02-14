@@ -142,7 +142,7 @@ public class TocFunctionality implements Functionality {
     }
 
     /**
-     * @return
+     * @return Created {@link StructElement}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -156,7 +156,7 @@ public class TocFunctionality implements Functionality {
     }
 
     /**
-     * @return
+     * @return Created {@link TOC}
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException

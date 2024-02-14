@@ -170,7 +170,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * <p>
      * search.
      * </p>
-     *
+     * 
+     * @param subtheme
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -187,7 +188,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * @return
+     * 
+     * @param subtheme
+     * @return {@link String}
      */
     private String getCompleteFilterString(String subtheme) {
 
@@ -207,7 +210,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     /**
      * @param subtheme
-     * @return
+     * @return Solr query part for subtheme
      */
     private static String getSubthemeFilter(String subtheme) {
         if (StringUtils.isNotBlank(subtheme)) {
@@ -426,9 +429,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @param descending a boolean.
      * @return a {@link java.lang.String} object.
      */
-    public String getSortUrl(String sortString, boolean descending) {
-        sortString = (descending ? "!" : "") + sortString;
-        return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix(sortString);
+    public String getSortUrl(final String sortString, final boolean descending) {
+        return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix((descending ? "!" : "") + sortString);
     }
 
     /**
