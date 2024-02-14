@@ -223,12 +223,11 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add("type2");
 
-        Map<String, List<LicenseType>> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
-                "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005", Collections.singletonMap("", AccessPermission.denied()));
-        Assertions.assertNotNull(ret);
-        Assertions.assertNotNull(ret.get(""));
-        Assertions.assertEquals(1, ret.get("").size());
-        Assertions.assertEquals("type2", ret.get("").get(0).getName());
+        List<LicenseType> result = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
+                "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005");
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("type2", result.get(0).getName());
     }
 
     /**
@@ -242,14 +241,12 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         lt.setMovingWall(true);
 
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005";
-        Map<String, List<LicenseType>> ret =
-                AccessConditionUtils.getRelevantLicenseTypesOnly(Collections.singletonList(lt), Collections.singleton("type1"),
-                        query, Collections.singletonMap("", AccessPermission.denied()));
-        Assertions.assertNotNull(ret);
-        Assertions.assertNotNull(ret.get(""));
-        Assertions.assertEquals(1, ret.get("").size());
-        Assertions.assertTrue(ret.get("").get(0).isRestrictionsExpired(query));
-        Assertions.assertEquals("type1", ret.get("").get(0).getName());
+        List<LicenseType> result =
+                AccessConditionUtils.getRelevantLicenseTypesOnly(Collections.singletonList(lt), Collections.singleton("type1"), query);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertTrue(result.get(0).isRestrictionsExpired(query));
+        Assertions.assertEquals("type1", result.get(0).getName());
     }
 
     /**
