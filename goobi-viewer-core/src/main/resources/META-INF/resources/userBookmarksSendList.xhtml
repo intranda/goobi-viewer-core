@@ -34,10 +34,11 @@
                         styleClass="form-horizontal"
                         prependId="false">
                         <div class="form-row form-group">
+                    <p>#{msg.bookmarkList_session_mail_text}</p>
                             <label
                                 for="userEMailToSend"
-                                class="col-12 col-sm-3 control-label">#{msg.email}:</label>
-                            <div class="col-12 col-sm-9">
+                                class="col-12 col-lg-4 control-label">#{msg.email}:</label>
+                            <div class="col-12 col-lg-8">
                                 <h:inputText
                                     id="userEMailToSend"
                                     styleClass="form-control"
@@ -48,14 +49,19 @@
                                 </h:inputText>
                             </div>
                         </div>
-                        <p>#{msg.bookmarkList_session_mail_text}</p>
+
 
                         <ui:fragment rendered="#{captchaBean.securityQuestion != null}">
                             <div class="form-group form-row no-gutters">
+                            <div class="col-12 col-lg-4">
                                 <label for="sendSessionBookmarkListConfirm"
-                                    class="control-label col-12 col-lg-12">#{msg.user__security_question}: #{msg[captchaBean.securityQuestion.questionKey]}</label>
-                                <div class="col-12 col-lg-12">  
-                                    <span></span>
+                                    class="control-label">#{msg.user__security_question}:</label>
+                                    
+                                    
+  </div>
+                                    
+                                <div class="col-12 col-lg-8">  
+                                    <div>#{msg[captchaBean.securityQuestion.questionKey]}</div>
                                     <h:inputSecret id="sendSessionBookmarkListConfirm"
                                         styleClass="form-control"
                                         autocomplete="off" value="#{captchaBean.securityAnswer}"
