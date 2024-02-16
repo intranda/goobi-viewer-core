@@ -681,13 +681,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>5.3.31</version>
+			<version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>5.3.31</version>
+			<version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
 		<dependency>
