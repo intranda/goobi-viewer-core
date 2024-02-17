@@ -881,7 +881,16 @@
 						</goals>
 						<configuration>
 							<failOnWarning>true</failOnWarning>
-							<ignoredUnusedDeclaredDependencies>
+                            <ignoredUsedUndeclaredDependencies>
+                                <!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
+                                <ignoredUnusedDeclaredDependency>io.swagger.core.v3:swagger-annotations-jakarta</ignoredUnusedDeclaredDependency>
+							</ignoredUsedUndeclaredDependencies>
+
+                            <ignoredUnusedDeclaredDependencies>
+                                <!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
+                                <ignoredUnusedDeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUnusedDeclaredDependency>
+
+
 								<!-- JSTL is used within JSF for example c:forEach -->
 								<ignoredUnusedDeclaredDependency>javax.servlet:jstl</ignoredUnusedDeclaredDependency>
 
@@ -955,7 +964,6 @@
 									
                                 <!-- Required for commons-configuration 1.10 used by ICS -->
                                 <ignoredNonTestScopedDependency>commons-lang:commons-lang</ignoredNonTestScopedDependency>
-                                
 							</ignoredUnusedDeclaredDependencies>
 							
 							<ignoredNonTestScopedDependencies>
