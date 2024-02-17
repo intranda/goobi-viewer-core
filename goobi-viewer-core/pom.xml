@@ -702,7 +702,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-annotations-jakarta</artifactId>
+			<artifactId>swagger-annotations</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
 		<dependency>
