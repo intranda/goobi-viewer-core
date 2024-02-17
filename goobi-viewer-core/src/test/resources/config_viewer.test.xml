@@ -163,7 +163,7 @@
 		
         <solr>
             <!-- useHttp2: If false, the old HTTP1 client will be used for backwards compatibility with Solr 8. Default is true. -->
-            <useHttp2>false</useHttp2>
+            <useHttp2>true</useHttp2>
             <!-- DEPRECATED compressionEnabled: Enables compression for the Solr HTTP client. Default is true. -->
             <compressionEnabled>false</compressionEnabled>
             <!-- DEPRECATED backwardsCompatible: If true, an XML response parser instead of binary will be used
