@@ -66,7 +66,7 @@
                                             <h:panelGroup>
                                                 <dd>
                                                     <ui:repeat value="#{metadata.values}" var="val">
-                                                        <h:outputFormat value="#{mval.getDisplayValue(navigationHelper.locale)}" escape="false">
+                                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
                                                         </h:outputFormat>
                                                     </ui:repeat>
                                                 </dd>
