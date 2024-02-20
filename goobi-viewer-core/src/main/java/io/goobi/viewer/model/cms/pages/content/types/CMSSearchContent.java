@@ -72,7 +72,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     private HitListView view = HitListView.DETAILS;
     
     @Column(name = "sort_field", length = 40)
-    private String sortField = "RELEVANCE";
+    private String sortField = DataManager.getInstance().getConfiguration().getDefaultSortField("");
 
     @Transient
     private SearchFunctionality search = null;
