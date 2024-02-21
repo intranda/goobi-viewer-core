@@ -1295,8 +1295,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return persistentComponents;
     }
 
+    public boolean isComponentsLoaded() {
+        return this.cmsComponents.size() == this.persistentComponents.size();
+    }
+    
     public List<CMSComponent> getComponents() {
-        if (this.cmsComponents.size() != this.persistentComponents.size()) {
+        if (!this.isComponentsLoaded()) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;
