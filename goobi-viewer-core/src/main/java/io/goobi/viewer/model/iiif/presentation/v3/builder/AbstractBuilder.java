@@ -434,7 +434,10 @@ public abstract class AbstractBuilder {
     public URI getCollectionURI(String collectionField, final String baseCollectionName) {
         String urlString;
         if (StringUtils.isNotBlank(baseCollectionName)) {
-            urlString = this.urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, StringTools.encodeUrl(baseCollectionName)).build();
+            urlString =
+                    this.urls.path(COLLECTIONS, COLLECTIONS_COLLECTION)
+                            .params(collectionField, StringTools.encodeUrl(baseCollectionName))
+                            .build();
         } else {
             urlString = this.urls.path(COLLECTIONS).params(collectionField).build();
         }
@@ -483,8 +486,8 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * Get the page order (1-based) from a canavs URI. That is the number in the last path parameter after '/canvas/' If the URI doesn't match a canvas
-     * URI, null is returned
+     * Get the page order (1-based) from a canavs URI. That is the number in the last path parameter after '/canvas/' If the URI doesn't match a
+     * canvas URI, null is returned
      *
      * @param uri a {@link java.net.URI} object.
      * @return a {@link java.lang.Integer} object.

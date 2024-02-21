@@ -57,10 +57,8 @@ public class LinkingProperty {
     private final IMetadataValue label;
 
     /**
-     * @param type
      * @param target
      * @param label
-     * @param id
      */
     public LinkingProperty(LinkingTarget target, IMetadataValue label) {
         super();
@@ -68,6 +66,11 @@ public class LinkingProperty {
         this.label = label;
     }
 
+    /**
+     * 
+     * @param id
+     * @return {@link LabeledResource}
+     */
     public LabeledResource getResource(URI id) {
         return new LabeledResource(id, target.type, target.mimeType.getLabel(), target.profile, label);
     }

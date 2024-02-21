@@ -208,8 +208,9 @@ public class DataRetriever {
     }
 
     /**
-     * @param name
-     * @param keySet
+     * @param collection
+     * @param splittingChar
+     * @param allCollections
      * @return Child count
      */
     private static long getChildCount(String collection, String splittingChar, Set<String> allCollections) {
