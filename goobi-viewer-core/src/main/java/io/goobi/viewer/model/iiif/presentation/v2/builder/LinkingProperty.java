@@ -49,8 +49,8 @@ public class LinkingProperty {
         METS(Format.TEXT_XML, DcType.TEXT),
         LIDO(Format.TEXT_XML, DcType.TEXT);
 
-        public final Format mimeType;
-        public final DcType type;
+        private final Format mimeType;
+        private final DcType type;
 
         private LinkingTarget(Format mimeType, DcType type) {
             this.mimeType = mimeType;

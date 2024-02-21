@@ -36,9 +36,9 @@ import java.util.List;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jdom2.JDOMException;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jdom2.JDOMException;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.SimpleResource;
@@ -53,7 +53,6 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocumen
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
@@ -76,7 +75,7 @@ import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
  */
 public class CanvasBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LogManager.getLogger(ManifestBuilder.class);
+    private static final Logger logger = LogManager.getLogger(CanvasBuilder.class);
 
     private final ImageHandler images;
     private final AbstractApiUrlManager imageUrlManager = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();
@@ -89,8 +88,18 @@ public class CanvasBuilder extends AbstractBuilder {
         this.images = new ImageHandler(urls);
     }
 
+    /**
+     * 
+     * @param pi
+     * @param order
+     * @return {@link Canvas3}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentLibException
+     * @throws URISyntaxException
+     */
     public Canvas3 build(String pi, int order)
-            throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException, ContentLibException, URISyntaxException {
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException {
         StructElement topStruct = this.dataRetriever.getDocument(pi);
         PhysicalElement page = AbstractPageLoader.loadPage(topStruct, order);
         if (page != null) {
@@ -100,17 +109,35 @@ public class CanvasBuilder extends AbstractBuilder {
         throw new ContentNotFoundException(String.format("Not canvas found at order %d in record %s", order, pi));
     }
 
+    /**
+     * 
+     * @param pi
+     * @param order
+     * @return {@link AnnotationPage}
+     * @throws ContentLibException
+     * @throws URISyntaxException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public AnnotationPage buildFulltextAnnotations(String pi, int order)
-            throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
         StructElement topStruct = this.dataRetriever.getDocument(pi);
         PhysicalElement page = AbstractPageLoader.loadPage(topStruct, order);
         Canvas3 canvas = build(page);
-        AnnotationPage fulltext = getFulltextAnnotations(canvas, page);
-        return fulltext;
+        return getFulltextAnnotations(canvas, page);
     }
 
+    /**
+     * 
+     * @param page
+     * @return {@link Canvas3}
+     * @throws ContentLibException
+     * @throws URISyntaxException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public Canvas3 build(PhysicalElement page)
-            throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
         URI canvasUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(page.getPi(), page.getOrder()).buildURI();
         Canvas3 canvas = new Canvas3(canvasUri);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
@@ -118,7 +145,7 @@ public class CanvasBuilder extends AbstractBuilder {
         if (page.getMimeType().matches("(?i)image(\\/.*)?")) {
             addImageResource(canvas, page);
         } else {
-            //not implemented
+            // not implemented
         }
 
         canvas.addAnnotations(getFulltextAnnotationsReference(page));
@@ -133,18 +160,21 @@ public class CanvasBuilder extends AbstractBuilder {
 
     /**
      * @param page
-     * @return
+     * @return {@link AnnotationPage}
      */
     private AnnotationPage getCommentAnnotationsReference(PhysicalElement page) {
         URI annoPageUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_COMMENTS).params(page.getPi(), page.getOrder()).buildURI();
-        AnnotationPage annoPage = new AnnotationPage(annoPageUri, false);
-        return annoPage;
+        return new AnnotationPage(annoPageUri, false);
     }
 
+    /**
+     * 
+     * @param page
+     * @return {@link AnnotationPage}
+     */
     private AnnotationPage getCrowdsourcingAnnotationsReference(PhysicalElement page) {
         URI annoPageUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_ANNOTATIONS).params(page.getPi(), page.getOrder()).buildURI();
-        AnnotationPage annoPage = new AnnotationPage(annoPageUri, false);
-        return annoPage;
+        return new AnnotationPage(annoPageUri, false);
     }
 
     /**
@@ -156,8 +186,7 @@ public class CanvasBuilder extends AbstractBuilder {
     private AnnotationPage getFulltextAnnotationsReference(PhysicalElement page) {
         if (page.isFulltextAvailable()) {
             URI annoPageUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_TEXT).params(page.getPi(), page.getOrder()).buildURI();
-            AnnotationPage annoPage = new AnnotationPage(annoPageUri, false);
-            return annoPage;
+            return new AnnotationPage(annoPageUri, false);
         }
 
         return null;
@@ -168,7 +197,7 @@ public class CanvasBuilder extends AbstractBuilder {
      *
      * @param canvas
      * @param page
-     * @return
+     * @return {@link AnnotationPage}
      * @throws IndexUnreachableException
      */
     private AnnotationPage getFulltextAnnotations(Canvas3 canvas, PhysicalElement page) throws IndexUnreachableException {
@@ -193,9 +222,9 @@ public class CanvasBuilder extends AbstractBuilder {
                     }
                 }
             } catch (ContentNotFoundException e) {
-                logger.trace("No alto file found: " + page.getAltoFileName());
+                logger.trace("No alto file found: {}", page.getAltoFileName());
             } catch (PresentationException | IOException | JDOMException e) {
-                logger.error("Error loading alto text from " + page.getAltoFileName(), e);
+                logger.error("Error loading alto text from {}", page.getAltoFileName(), e);
             }
 
         } else if (StringUtils.isNotBlank(page.getFulltextFileName())) {
@@ -211,7 +240,7 @@ public class CanvasBuilder extends AbstractBuilder {
                     annoPage.addItem(anno);
                 }
             } catch (ContentNotFoundException | PresentationException | IndexUnreachableException e) {
-                logger.error("Error loading plaintext from " + page.getFulltextFileName(), e);
+                logger.error("Error loading plaintext from {}", page.getFulltextFileName(), e);
             }
         }
         return annoPage;
@@ -224,10 +253,9 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws PresentationException
      * @throws URISyntaxException
      * @throws ContentLibException
-     * @throws IllegalPathSyntaxException
      */
     private void addImageResource(Canvas3 canvas, PhysicalElement page)
-            throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
         if (page.getImageWidth() > 0 && page.getImageHeight() > 0) {
             canvas.setWidth(page.getImageWidth());
             canvas.setHeight(page.getImageHeight());
@@ -251,6 +279,11 @@ public class CanvasBuilder extends AbstractBuilder {
 
     }
 
+    /**
+     * 
+     * @param canvas
+     * @param page
+     */
     private void addRelatedResources(Canvas3 canvas, PhysicalElement page) {
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer()) {
@@ -292,7 +325,5 @@ public class CanvasBuilder extends AbstractBuilder {
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
             canvas.addRendering(text.getResource(uri));
         }
-
     }
-
 }

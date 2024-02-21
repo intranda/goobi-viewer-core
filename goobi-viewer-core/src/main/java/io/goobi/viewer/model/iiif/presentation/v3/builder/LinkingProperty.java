@@ -23,15 +23,9 @@ package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
-
-import de.intranda.api.iiif.presentation.content.LinkingContent;
-import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * @author florian
@@ -39,7 +33,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  */
 public class LinkingProperty {
 
-    public static enum LinkingTarget {
+    public enum LinkingTarget {
         PLAINTEXT("Text", Format.TEXT_PLAIN, null),
         ALTO("Dataset", Format.TEXT_XML, "https://www.loc.gov/alto/"),
         METS("Dataset", Format.TEXT_XML, "https://www.loc.gov/mets/"),
@@ -48,9 +42,9 @@ public class LinkingProperty {
         PDF("Text", Format.APPLICATION_PDF, null),
         VIEWER("Text", Format.TEXT_HTML, null);
 
-        public final Format mimeType;
-        public final String type;
-        public final String profile;
+        private final Format mimeType;
+        private final String type;
+        private final String profile;
 
         private LinkingTarget(String type, Format mimeType, String profile) {
             this.type = type;
@@ -59,8 +53,8 @@ public class LinkingProperty {
         }
     }
 
-    public final LinkingTarget target;
-    public final IMetadataValue label;
+    private final LinkingTarget target;
+    private final IMetadataValue label;
 
     /**
      * @param type
@@ -75,8 +69,20 @@ public class LinkingProperty {
     }
 
     public LabeledResource getResource(URI id) {
-
         return new LabeledResource(id, target.type, target.mimeType.getLabel(), target.profile, label);
+    }
 
+    /**
+     * @return the target
+     */
+    public LinkingTarget getTarget() {
+        return target;
+    }
+
+    /**
+     * @return the label
+     */
+    public IMetadataValue getLabel() {
+        return label;
     }
 }
