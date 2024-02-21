@@ -139,7 +139,7 @@
 		<poi.version>5.2.5</poi.version>
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
-		<log4j.version>2.22.1</log4j.version>
+		<log4j.version>2.23.0</log4j.version>
 		<solr.version>9.5.0</solr.version>
 		<swagger.version>2.2.20</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
