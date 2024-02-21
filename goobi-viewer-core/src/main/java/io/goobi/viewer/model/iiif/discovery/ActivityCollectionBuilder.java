@@ -61,8 +61,10 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class ActivityCollectionBuilder {
 
-    private final static String[] SOLR_FIELDS = { SolrConstants.PI, SolrConstants.DATEUPDATED, SolrConstants.DATECREATED, SolrConstants.DATEDELETED };
-    private final static String[] FACET_FIELDS = { SolrConstants.DATEUPDATED, SolrConstants.DATECREATED };
+    private static final String[] SOLR_FIELDS = { SolrConstants.PI, SolrConstants.DATEUPDATED, SolrConstants.DATECREATED, SolrConstants.DATEDELETED };
+    private static final String[] FACET_FIELDS = { SolrConstants.DATEUPDATED, SolrConstants.DATECREATED };
+    
+    private static final String QUERY_ISWORK = "ISWORK:true";
 
     private final int activitiesPerPage = DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage();
     private Integer numActivities = null;
@@ -90,7 +92,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Creates An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Acvitities}, i.e. a partial list of Activities. Which
+     * Creates An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Activities}, i.e. a partial list of Activities. Which
      * Activities are contained within the page depends on the given pageNo as well as the configured number of entries per page defined by
      * {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
      *
@@ -117,11 +119,11 @@ public class ActivityCollectionBuilder {
         }
 
         List<Long> dates = getActivities(startDate, first, last);
-        Long startDate = dates.get(0);
-        Long endDate = dates.get(dates.size() - 1);
-        SolrDocumentList docs = getDocs(startDate, endDate);
+        Long start = dates.get(0);
+        Long end = dates.get(dates.size() - 1);
+        SolrDocumentList docs = getDocs(start, end);
 
-        page.setOrderedItems(buildItems(docs, startDate, endDate));
+        page.setOrderedItems(buildItems(docs, start, end));
 
         return page;
 
@@ -202,6 +204,13 @@ public class ActivityCollectionBuilder {
         return getNumActivities() / getActivitiesPerPage();
     }
 
+    /**
+     * 
+     * @param docs
+     * @param startDate
+     * @param endDate
+     * @return List<Activity>
+     */
     private List<Activity> buildItems(SolrDocumentList docs, Long startDate, Long endDate) {
         List<Activity> activities = new ArrayList<>();
         for (SolrDocument doc : docs) {
@@ -210,7 +219,7 @@ public class ActivityCollectionBuilder {
                     .stream()
                     .map(o -> (Long) o)
                     .filter(date -> date >= startDate && date <= endDate)
-                    .collect(Collectors.toList());
+                    .toList();
             Long created = (Long) doc.getFieldValue(SolrConstants.DATECREATED);
 
             Long deleted = null;
@@ -246,7 +255,7 @@ public class ActivityCollectionBuilder {
     }
 
     private static int getNumberOfActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
-        String query = "ISWORK:true";
+        String query = QUERY_ISWORK;
         query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null) {
             query += " AND (DATEUPDATED:[" + startDate + " TO*] OR DATECREATED:[" + startDate + " TO *])";
@@ -267,7 +276,7 @@ public class ActivityCollectionBuilder {
      * @param startDate
      * @param first
      * @param last
-     * @return
+     * @return List<Long>
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -276,7 +285,7 @@ public class ActivityCollectionBuilder {
     }
 
     private static List<Long> getActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
-        String query = "ISWORK:true";
+        String query = QUERY_ISWORK;
         query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null) {
             query += " AND (DATEUPDATED:[" + startDate + " TO *] OR DATECREATED:[" + startDate + " TO *])";
@@ -297,7 +306,7 @@ public class ActivityCollectionBuilder {
     }
 
     private static SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
-        String query = "ISWORK:true";
+        String query = QUERY_ISWORK;
         query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null && endDate != null) {
             query = "(" + query + ") AND (DATEUPDATED:[" + startDate + " TO " + endDate + "] OR DATECREATED:[" + startDate + " TO " + endDate + "])";
