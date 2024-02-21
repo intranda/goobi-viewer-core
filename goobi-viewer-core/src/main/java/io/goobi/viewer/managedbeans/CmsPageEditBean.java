@@ -288,6 +288,11 @@ public class CmsPageEditBean implements Serializable {
     public void deletePage(CMSPage page) throws DAOException {
         if (this.dao != null && page != null && page.getId() != null) {
             logger.info("Deleting CMS page: {}", page);
+            
+            if(!page.isComponentsLoaded()) {
+                page.initialiseCMSComponents(this.templateManager);
+            }
+            
             List<CMSComponent> components = new ArrayList<>(page.getComponents());
             for (CMSComponent component : components) {
                 PersistentCMSComponent persistentComponent = component.getPersistentComponent();
