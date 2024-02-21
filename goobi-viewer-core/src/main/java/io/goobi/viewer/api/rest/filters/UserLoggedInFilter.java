@@ -28,10 +28,12 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+
 
 /**
  * Only allow requests from a session with a logged in goobi-viewer user
@@ -39,6 +41,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
+@Provider
 @UserLoggedInBinding
 public class UserLoggedInFilter implements ContainerRequestFilter {
 

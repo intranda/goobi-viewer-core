@@ -80,6 +80,9 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.CacheUtils;
+import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
 import io.goobi.viewer.controller.DataManager;
@@ -148,7 +151,7 @@ public class CMSMediaResource {
     @Operation(
             tags = { "media" },
             summary = "Get a list of CMS-Media Items")
-
+    @AuthorizationBinding
     public MediaList getAllMedia(
             @Parameter(description = "Comma separated list of tags. Only media items with any of these tags"
                     + " will be included") @QueryParam("tags") String tags,
@@ -348,6 +351,7 @@ public class CMSMediaResource {
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @UserLoggedInBinding
     public List<String> getAllFiles() throws PresentationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
@@ -361,6 +365,7 @@ public class CMSMediaResource {
     @DELETE
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @AuthorizationBinding
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
@@ -368,6 +373,7 @@ public class CMSMediaResource {
     @DELETE
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
+    @AuthorizationBinding
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
@@ -387,6 +393,7 @@ public class CMSMediaResource {
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @UserLoggedInBinding
     public Response
             uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
                     @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
