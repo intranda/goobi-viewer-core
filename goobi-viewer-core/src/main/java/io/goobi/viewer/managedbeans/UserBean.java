@@ -382,8 +382,8 @@ public class UserBean implements Serializable {
                     }
                     
                     // Start timer
-                    sessionTimeoutMonitorTimer = new Timer();
-                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
+//                    sessionTimeoutMonitorTimer = new Timer();
+//                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
                     
                     if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
                         logger.trace("Redirecting to {}", redirectUrl);
