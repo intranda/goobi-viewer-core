@@ -79,7 +79,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.12</alto.version>
-		<ics.version>3.9.2</ics.version>
+		<ics.version>3.10-SNAPSHOT</ics.version>
 		<tei-conversion.version>1.3.0</tei-conversion.version>
 
 		<iiif-api-model.version>2.6.1</iiif-api-model.version>
@@ -91,12 +91,9 @@
 		<citeproc-java.version>3.0.0-beta.2</citeproc-java.version>
 		<commons-codec.version>1.16.1</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
-		<commons-configuration.version>1.10</commons-configuration.version>
 		<commons-configuration2.version>2.9.0</commons-configuration2.version>
 		<commons-io.version>2.15.1</commons-io.version>
 		<commons-jxpath.version>1.3</commons-jxpath.version>
-		<!-- commons-lang 2.6 is needed for ICS until it's switched to commons-configuration2 -->
-		<commons-lang.version>2.6</commons-lang.version>
 		<commons-lang3.version>3.14.0</commons-lang3.version>
 		<commons-net.version>3.10.0</commons-net.version>
 		<commons-text.version>1.11.0</commons-text.version>
@@ -215,10 +212,6 @@
 					<artifactId>jakarta.ws.rs-api</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>commons-configuration</groupId>
-					<artifactId>commons-configuration</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>joda-time</groupId>
 					<artifactId>joda-time</artifactId>
 				</exclusion>
@@ -266,17 +259,6 @@
 			<version>${commons-collections4.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>${commons-configuration.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-lang</groupId>
-					<artifactId>commons-lang</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-configuration2</artifactId>
 			<version>${commons-configuration2.version}</version>
@@ -291,11 +273,6 @@
 			<artifactId>commons-jxpath</artifactId>
 			<version>${commons-jxpath.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons-lang.version}</version>
-        </dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -897,9 +874,6 @@
 								<!-- The jersey-container-servlet dependency is used for startup during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
 
-								<!-- commons-configuration (1) is required by ICS -->
-								<ignoredUnusedDeclaredDependency>commons-configuration:commons-configuration</ignoredUnusedDeclaredDependency>
-
 								<!-- JXPath is used at XPathExpressionEngine from org.apache.commons.configuration2, i.e. LanguageHelper -->
 								<ignoredUnusedDeclaredDependency>commons-jxpath:commons-jxpath</ignoredUnusedDeclaredDependency>
 
@@ -962,8 +936,6 @@
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
 									
-                                <!-- Required for commons-configuration 1.10 used by ICS -->
-                                <ignoredNonTestScopedDependency>commons-lang:commons-lang</ignoredNonTestScopedDependency>
 							</ignoredUnusedDeclaredDependencies>
 							
 							<ignoredNonTestScopedDependencies>
