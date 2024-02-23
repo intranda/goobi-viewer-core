@@ -226,7 +226,7 @@ public final class SolrTools {
             throw new IllegalArgumentException("doc may not be null");
         }
         if (field == null) {
-            throw new IllegalArgumentException("field may not be null");
+            return null;
         }
 
         Collection<Object> valueList = doc.getFieldValues(field);
