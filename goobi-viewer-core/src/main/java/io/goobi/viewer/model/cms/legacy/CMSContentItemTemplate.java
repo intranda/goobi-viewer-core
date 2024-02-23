@@ -65,8 +65,8 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * For SOLRQUERY items: If true, show number of hits and sort order options on page and hide them in cms backend
      */
-    boolean hitListOptions = false;
-    boolean randomizeItems = false;
+    private boolean hitListOptions = false;
+    private boolean randomizeItems = false;
 
     /**
      * <p>
@@ -252,7 +252,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     *
+     * @return the randomizeItems
      */
     public boolean isRandomizeItems() {
         return this.randomizeItems;
@@ -276,7 +276,8 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * 
      * @param type
-     * @return
+     * @param mediaFilter
+     * @return {@link CMSContent}
      */
     private static CMSContent createCMSContent(CMSContentItemType type, String mediaFilter) {
         switch (type.name()) {
@@ -301,9 +302,8 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
             case "MEDIA":
                 if (StringUtils.isNotBlank(mediaFilter) && mediaFilter.toLowerCase().contains(".pdf")) {
                     return new CMSDocumentContent();
-                } else {
-                    return new CMSMediaContent();
                 }
+                return new CMSMediaContent();
             case "METADATA":
                 return new CMSMetadataContent();
             case "GEOMAP":
