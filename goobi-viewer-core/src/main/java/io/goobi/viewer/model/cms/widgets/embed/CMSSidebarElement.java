@@ -121,6 +121,7 @@ public class CMSSidebarElement implements Serializable {
      * Default constructor for a certain type of widget
      * 
      * @param type
+     * @param owner
      */
     public CMSSidebarElement(WidgetContentType type, CMSPage owner) {
         this(type);
@@ -131,6 +132,7 @@ public class CMSSidebarElement implements Serializable {
      * Default constructor for a certain type of widget
      * 
      * @param type
+     * @param owner
      */
     public CMSSidebarElement(WidgetContentType type, CMSPageTemplate owner) {
         this(type);
@@ -140,7 +142,8 @@ public class CMSSidebarElement implements Serializable {
     /**
      * Default constructor for a certain type of widget and owning CMSPage
      * 
-     * @param type
+     * @param orig
+     * @param owner
      */
     public CMSSidebarElement(CMSSidebarElement orig, CMSPage owner) {
         this(orig.contentType);
@@ -152,7 +155,8 @@ public class CMSSidebarElement implements Serializable {
     /**
      * Default constructor for a certain type of widget and owning CMSPageTemplate
      * 
-     * @param type
+     * @param orig
+     * @param owner
      */
     public CMSSidebarElement(CMSSidebarElement orig, CMSPageTemplate owner) {
         this(orig.contentType);
@@ -166,7 +170,7 @@ public class CMSSidebarElement implements Serializable {
      * 
      * @param orig
      * @param owner
-     * @return
+     * @return {@link CMSSidebarElement}
      */
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPage owner) {
         switch (orig.getClass().getSimpleName()) {
@@ -186,7 +190,7 @@ public class CMSSidebarElement implements Serializable {
      * 
      * @param orig
      * @param owner
-     * @return
+     * @return {@link CMSSidebarElement}
      */
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPageTemplate owner) {
         switch (orig.getClass().getSimpleName()) {
@@ -292,7 +296,7 @@ public class CMSSidebarElement implements Serializable {
     /**
      * The title displayed for this element when editing the owning CMSPage
      * 
-     * @return
+     * @return {@link TranslatedText}
      */
     public TranslatedText getTitle() {
         return new TranslatedText(ViewerResourceBundle.getTranslations(getContentType().getLabel()));
