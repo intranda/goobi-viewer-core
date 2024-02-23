@@ -41,7 +41,8 @@ public class RequestTypeSummary {
     /**
      * @param totalRequests
      * @param uniqueRequests
-     * @param localDate
+     * @param startDate
+     * @param endDate
      */
     public RequestTypeSummary(long totalRequests, long uniqueRequests, LocalDate startDate, LocalDate endDate) {
         super();

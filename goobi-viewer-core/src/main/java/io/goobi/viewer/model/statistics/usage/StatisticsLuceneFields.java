@@ -31,12 +31,12 @@ import org.apache.commons.lang3.StringUtils;
  * @author florian
  *
  */
-public class StatisticsLuceneFields {
+public final class StatisticsLuceneFields {
 
     /**
      * Format dates to/from the string representation used in SOLR
      */
-    public static final DateTimeFormatter solrDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final DateTimeFormatter SOLR_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     /**
      * DOCTYPE field value for usage statistics documents
@@ -60,7 +60,7 @@ public class StatisticsLuceneFields {
      * Get the complete SOLR field name for a given record identifier
      * 
      * @param pi the record identifier
-     * @return
+     * @return {@link String}
      */
     public static String getFieldName(String pi) {
         return RECORD_STATISTICS_PREFIX + pi;
@@ -75,9 +75,8 @@ public class StatisticsLuceneFields {
     public static String getPi(String fieldname) {
         if (StringUtils.isNotBlank(fieldname) && fieldname.contains(RECORD_STATISTICS_PREFIX)) {
             return fieldname.replace(RECORD_STATISTICS_PREFIX, "");
-        } else {
-            return "";
         }
+        return "";
     }
 
     private StatisticsLuceneFields() {

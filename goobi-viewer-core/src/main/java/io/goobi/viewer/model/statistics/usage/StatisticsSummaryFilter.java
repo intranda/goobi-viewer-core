@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author florian
  *
  */
-public class StatisticsSummaryFilter {
+public final class StatisticsSummaryFilter {
 
     /**
      * {@link LOCAL_DATE_MIN} is not accepted as date by SQL, so this is the min date to use, 0000-01-01
@@ -93,7 +93,7 @@ public class StatisticsSummaryFilter {
      * Create an instance filtering by a single date
      * 
      * @param date
-     * @return
+     * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter ofDate(LocalDate date) {
         return new StatisticsSummaryFilter(date, date, "");
@@ -104,7 +104,7 @@ public class StatisticsSummaryFilter {
      * 
      * @param start the first date to include
      * @param end the last date to include
-     * @return
+     * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter ofDateRange(LocalDate start, LocalDate end) {
         return new StatisticsSummaryFilter(start, end, "");
@@ -114,7 +114,7 @@ public class StatisticsSummaryFilter {
      * Create an instance for a single record identifier
      * 
      * @param pi
-     * @return
+     * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter forRecord(String pi) {
         return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, StringUtils.isNotBlank(pi) ? ("PI:" + pi) : "PI:\"\"");
@@ -124,7 +124,7 @@ public class StatisticsSummaryFilter {
      * Create an instance for all records within a single digital collection
      * 
      * @param collectionName
-     * @return
+     * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter ofDigitalCollection(String collectionName) {
         String query = "(DC:{} DC:{}.*)".replace("{}", collectionName);
@@ -135,7 +135,7 @@ public class StatisticsSummaryFilter {
      * Create an instance for all records returned by a SOLR query
      * 
      * @param query the SOLR query returning all record identifiers which to include in the summary
-     * @return
+     * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter ofQuery(String query) {
         return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, query);
@@ -147,7 +147,7 @@ public class StatisticsSummaryFilter {
      * @param start the first date to include
      * @param end the last date to include
      * @param query the SOLR query returning all record identifiers which to include in the summary
-     * @return
+     * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter of(LocalDate start, LocalDate end, String query) {
         return new StatisticsSummaryFilter(start, end, query);

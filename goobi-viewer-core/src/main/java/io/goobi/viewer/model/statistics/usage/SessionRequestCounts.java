@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.statistics.usage;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +39,7 @@ import org.json.JSONArray;
  */
 public class SessionRequestCounts {
 
-    private final Map<RequestType, Long> counts = new HashMap<>();
+    private final Map<RequestType, Long> counts = new EnumMap<>(RequestType.class);
 
     /**
      * Empty default constructor
@@ -90,10 +90,10 @@ public class SessionRequestCounts {
      * Get the total count of requests for a given {@link RequestType}
      * 
      * @param type
-     * @return
+     * @return {@link Long}
      */
     public Long getCount(RequestType type) {
-        return Optional.ofNullable(this.counts.get(type)).orElse(0l);
+        return Optional.ofNullable(this.counts.get(type)).orElse(0L);
     }
 
     /**
@@ -106,7 +106,7 @@ public class SessionRequestCounts {
         List<Long> countsList = Arrays.asList(new Long[numTypes]);
         for (int index = 0; index < numTypes; index++) {
             RequestType type = RequestType.getTypeForSessionCountIndex(index);
-            Long count = Optional.ofNullable(counts.get(type)).orElse(0l);
+            Long count = Optional.ofNullable(counts.get(type)).orElse(0L);
             countsList.set(index, count);
         }
         return new JSONArray(countsList).toString();
@@ -118,8 +118,11 @@ public class SessionRequestCounts {
     }
 
     /**
-     * Two SessionRequestCounts are equal if the have the same request counts for all {@link RequestType}s
+     * Two SessionRequestCounts are equal if the have the same request counts for all {@link RequestType}s.
+     * @param o
+     * @return true if objects equal; false otherwise
      */
+    @Override
     public boolean equals(Object o) {
         if (o != null && o.getClass().equals(this.getClass())) {
             SessionRequestCounts other = (SessionRequestCounts) o;
