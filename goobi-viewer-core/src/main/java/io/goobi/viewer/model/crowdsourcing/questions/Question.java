@@ -152,6 +152,10 @@ public class Question implements Serializable {
         this.targetFrequency = targetFrequency;
     }
 
+    /**
+     * 
+     * @param orig
+     */
     public Question(Question orig) {
         this.id = orig.id;
         this.owner = orig.owner;
@@ -165,7 +169,7 @@ public class Question implements Serializable {
     /**
      * Create a clone of the given question with the given campaign as owner
      *
-     * @param q
+     * @param orig
      * @param campaign
      */
     public Question(Question orig, Campaign campaign) {
@@ -179,7 +183,7 @@ public class Question implements Serializable {
     public void serializeMetadataFields() {
         if (QuestionType.METADATA.equals(getQuestionType())) {
             this.metadataFields =
-                    getMetadataFieldSelection().entrySet().stream().filter(e -> e.getValue()).map(e -> e.getKey()).collect(Collectors.toList());
+                    getMetadataFieldSelection().entrySet().stream().filter(Entry::getValue).map(Entry::getKey).collect(Collectors.toList());
         }
     }
 
