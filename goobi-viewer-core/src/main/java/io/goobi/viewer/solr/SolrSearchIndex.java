@@ -172,6 +172,7 @@ public class SolrSearchIndex {
             return getNewHttp2SolrClient();
         }
 
+        logger.trace("Using HTTP1 compatiblity mode.");
         return getNewHttpSolrClient();
     }
 
