@@ -52,6 +52,7 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.Translation;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -273,7 +274,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      *
-     * @return
+     * @return {@link CMSCollectionTranslation}
      */
     public CMSCollectionTranslation getDescriptionAsTranslation() {
         // logger.trace("getDescriptionAsTranslation: {}", selectedLocale.getLanguage());
@@ -304,7 +305,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                 .filter(translation -> language.equalsIgnoreCase(translation.getLanguage()))
                 //                .filter(translation -> StringUtils.isNotBlank(translation.getValue()))
                 .findFirst()
-                .map(translation -> translation.getValue())
+                .map(Translation::getValue)
                 .orElse("");
         //                .orElse(ViewerResourceBundle.getTranslation(getSolrFieldValue() + "_DESCRIPTION", null));
     }
@@ -417,9 +418,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * @param translations2
-     * @param translations3
-     * @return
+     * @param tr1
+     * @param tr2
+     * @return true if translations equal; false otherwise
      */
     private static boolean translationsEquals(List<CMSCollectionTranslation> tr1, List<CMSCollectionTranslation> tr2) {
         if (tr1.size() == tr2.size()) {
@@ -580,8 +581,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * @param solrFieldValue2
-     * @return
+     * @param collectionName
+     * @return {@link URI}
      */
     @Deprecated
     public static URI getDefaultIcon(String collectionName) {
