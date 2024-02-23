@@ -73,6 +73,11 @@ public class PriorityComparator implements Comparator<CMSMediaItem> {
         }
     }
 
+    /**
+     * 
+     * @param a
+     * @return an int
+     */
     private int valueFor(CMSMediaItem a) {
         synchronized (map) {
             return map.computeIfAbsent(a, ignore -> randomizer.nextInt());
@@ -80,7 +85,7 @@ public class PriorityComparator implements Comparator<CMSMediaItem> {
     }
 
     /**
-     * @param b
+     * @param teim
      */
     private void maybeAddToPriorityList(CMSMediaItem item) {
         if (item.isImportant() && priorityList.size() < prioritySlots && !priorityList.contains(item)) {

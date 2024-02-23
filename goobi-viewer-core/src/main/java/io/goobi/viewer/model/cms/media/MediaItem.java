@@ -43,7 +43,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 /**
  * Simple representation of a cms-media-item
@@ -66,6 +65,10 @@ public class MediaItem {
     private final boolean important;
     private final Integer order;
 
+    /**
+     * 
+     * @param imageURI
+     */
     public MediaItem(URI imageURI) {
         this.image = new ImageContent(imageURI);
         this.tags = new ArrayList<>();
@@ -79,6 +82,11 @@ public class MediaItem {
 
     }
 
+    /**
+     * 
+     * @param source
+     * @param servletRequest
+     */
     public MediaItem(CMSMediaItem source, HttpServletRequest servletRequest) {
         this.label = source.getTranslationsForName();
         this.description = source.getTranslationsForDescription();
@@ -93,7 +101,7 @@ public class MediaItem {
 
     /**
      * @param source
-     * @return
+     * @return {@link IContent}
      */
     public static IContent getMediaResource(CMSMediaItem source) {
 
