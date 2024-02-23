@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -37,8 +36,8 @@ import javax.inject.Named;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -75,6 +74,9 @@ public class UserDataBean implements Serializable {
 
     private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
     private TableDataProvider<PersistentAnnotation> lazyModelComments;
+
+    /** Cache user comment count to avoid multiple DB calls. */
+    private Long commentCount = null;
 
     /**
      * Required setter for ManagedProperty injection
@@ -157,7 +159,7 @@ public class UserDataBean implements Serializable {
                 .stream()
                 .sorted((s1, s2) -> s2.getDateUpdated().compareTo(s1.getDateUpdated()))
                 .limit(numEntries == null ? Integer.MAX_VALUE : numEntries)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -220,6 +222,12 @@ public class UserDataBean implements Serializable {
         return DataManager.getInstance().getDao().getSearchCount(user, null);
     }
 
+    /**
+     * 
+     * @param user
+     * @return Number of comments in the DB for the given user
+     * @throws DAOException
+     */
     public long getNumComments(User user) throws DAOException {
         // TODO filter via PI whitelist here?
         logger.trace("getNumComments");
@@ -229,7 +237,7 @@ public class UserDataBean implements Serializable {
     public long getNumAnnotations(User user) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
-                .getAnnotationCount(Collections.singletonMap("creatorId", String.valueOf(userBean.getUser().getId())));
+                .getAnnotationCount(Collections.singletonMap("creatorId", String.valueOf(user.getId())));
     }
 
     public Long getNumRecordsWithComments(User user) throws DAOException {
@@ -244,10 +252,16 @@ public class UserDataBean implements Serializable {
     }
 
     public long getCommentCount() throws DAOException {
+        // logger.trace("getCommentCount"); //NOSONAR Debug
         if (userBean == null || userBean.getUser() == null) {
             return 0;
         }
-        return getNumComments(userBean.getUser());
+
+        if (commentCount == null) {
+            commentCount = getNumComments(userBean.getUser());
+        }
+
+        return commentCount;
     }
 
     /**
@@ -267,7 +281,7 @@ public class UserDataBean implements Serializable {
                 .distinct()
                 .sorted((c1, c2) -> c1.compareTo(c2) * -1)
                 .limit(numEntries)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookmarkList> getBookmarkListsForUser(User user, int numEntries) throws DAOException {
@@ -277,7 +291,7 @@ public class UserDataBean implements Serializable {
                 .stream()
                 .sorted()
                 .limit(numEntries)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<UserActivity> getLatestActivity(User user, int numEntries) throws DAOException {
@@ -289,14 +303,14 @@ public class UserDataBean implements Serializable {
                 .flatMap(list -> list.getItems().stream())
                 .sorted((bm1, bm2) -> bm1.getDateAdded().compareTo(bm2.getDateAdded()))
                 .limit(numEntries)
-                .collect(Collectors.toList());
+                .toList();
         List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
         List<Comment> lastUpdatedComments = DataManager.getInstance()
                 .getDao()
                 .getCommentsOfUser(user, numEntries, "dateModified", true)
                 .stream()
                 .filter(c -> c.getDateModified() != null)
-                .collect(Collectors.toList());
+                .toList();
         List<CrowdsourcingAnnotation> lastCreatedCrowdsourcingAnnotations =
                 DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateCreated", true);
         List<CrowdsourcingAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance()
@@ -304,7 +318,7 @@ public class UserDataBean implements Serializable {
                 .getAnnotationsForUserId(user.getId(), numEntries, "dateModified", true)
                 .stream()
                 .filter(c -> c.getDateModified() != null)
-                .collect(Collectors.toList());
+                .toList();
 
         Stream<UserActivity> activities = Stream.of(
                 searches.stream().map(UserActivity::getFromSearch),
@@ -316,6 +330,6 @@ public class UserDataBean implements Serializable {
                 .flatMap(Function.identity())
                 .distinct()
                 .sorted((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
-        return activities.limit(numEntries).collect(Collectors.toList());
+        return activities.limit(numEntries).toList();
     }
 }
