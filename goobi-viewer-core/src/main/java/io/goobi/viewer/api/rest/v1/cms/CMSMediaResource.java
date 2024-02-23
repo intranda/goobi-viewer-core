@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.v1.cms;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_BY_CATEGORY;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_AUDIO;
@@ -44,6 +45,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -132,6 +134,42 @@ public class CMSMediaResource {
 
     public CMSMediaResource(IDAO dao) {
         this.dao = dao;
+    }
+    
+    /**
+     * <p>
+     * getMediaByTag.
+     * </p>
+     *
+     * @param tags a {@link java.lang.String} object.
+     * @param maxItems
+     * @param prioritySlots
+     * @param random
+     * @return a {@link io.goobi.viewer.servlets.rest.cms.CMSMediaResource.MediaList} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags = { "media" },
+            summary = "Get a list of CMS-Media Items of one or more categories")
+    @javax.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
+    public MediaList getMediaOfCategories(
+            @Parameter(description = "tag specifying the category the delivered media items must be associated with. Multiple categories can be listed using '...' as separator") @PathParam("tags") String tags,
+            @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
+            @Parameter(description = "Number of media items marks as 'important' that must be included"
+                    + " in the result") @QueryParam("prioritySlots") Integer prioritySlots,
+            @Parameter(description = "Set to 'true' to return random items for each call."
+                    + " Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
+            throws DAOException {
+        List<String> tagList = new ArrayList<>();
+        if (StringUtils.isNotBlank(tags)) {
+            tagList.addAll(Arrays.stream(StringUtils.split(tags, "...")).map(String::toLowerCase).collect(Collectors.toList()));
+            List<CMSMediaItem> items = new CMSMediaLister(dao).getMediaItems(tagList, maxItems, prioritySlots, Boolean.TRUE.equals(random));
+            return new MediaList(items, servletRequest);
+        } else {
+            return new MediaList(Collections.emptyList(), servletRequest);
+        }
     }
 
     /**

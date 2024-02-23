@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.pages.content.types;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_BY_CATEGORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -160,7 +161,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
      */
     public String getTileGridUrl() throws IllegalRequestException {
 
-        String tags = this.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
+        String tags = this.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining("..."));
 
         return DataManager.getInstance()
                 .getRestApiManager()
@@ -170,13 +171,12 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     }
 
     private static String buildTilegridUrl(AbstractApiUrlManager urls, String tags, int imagesPerView, int priorityImagesPerView) {
-        ApiPath path = urls.path(CMS_MEDIA)
+        tags = StringUtils.isBlank(tags) ? "-" : tags;
+        ApiPath path = urls.path(CMS_MEDIA, CMS_MEDIA_BY_CATEGORY)
+                .params(tags)
                 .query("max", imagesPerView)
                 .query("prioritySlots", priorityImagesPerView)
                 .query("random", "true");
-        if (StringUtils.isNotBlank(tags)) {
-            path = path.query("tags", tags);
-        }
         return path.build();
     }
 
