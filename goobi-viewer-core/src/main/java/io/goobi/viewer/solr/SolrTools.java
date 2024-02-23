@@ -222,6 +222,13 @@ public final class SolrTools {
      * @return a {@link java.lang.Object} object.
      */
     public static Object getSingleFieldValue(SolrDocument doc, String field) {
+        if (doc == null) {
+            throw new IllegalArgumentException("doc may not be null");
+        }
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+
         Collection<Object> valueList = doc.getFieldValues(field);
         if (valueList != null && !valueList.isEmpty()) {
             return valueList.iterator().next();
@@ -719,23 +726,22 @@ public final class SolrTools {
             throws PresentationException, IndexUnreachableException {
         return getAvailableValuesForField(field, filterQuery, true);
     }
-        
-        
-        /**
-         * <p>
-         * getAvailableValuesForField.
-         * </p>
-         *
-         * @param field a {@link java.lang.String} object.
-         * @param filterQuery a {@link java.lang.String} object.
-         * @param useFacetField If true, "FACET_" field variant is used for the actual search; Only use false for single-token values
-         * @return List of facet values for the given field and query
-         * @throws io.goobi.viewer.exceptions.PresentationException if any.
-         * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-         * @should return all existing values for the given field
-         */
-        public static List<String> getAvailableValuesForField(final String field, final String filterQuery, boolean useFacetField)
-                throws PresentationException, IndexUnreachableException {
+
+    /**
+     * <p>
+     * getAvailableValuesForField.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param filterQuery a {@link java.lang.String} object.
+     * @param useFacetField If true, "FACET_" field variant is used for the actual search; Only use false for single-token values
+     * @return List of facet values for the given field and query
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return all existing values for the given field
+     */
+    public static List<String> getAvailableValuesForField(final String field, final String filterQuery, boolean useFacetField)
+            throws PresentationException, IndexUnreachableException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
