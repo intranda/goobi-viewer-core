@@ -86,7 +86,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
         this.searchPrefix = orig.searchPrefix;
         this.displayEmptySearchResults = orig.displayEmptySearchResults;
         this.sortField = orig.sortField;
-        this.elementsPerPage = orig.elementsPerPage;
+        this.elementsPerPage = orig.elementsPerPage < 1 ? DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue() : orig.elementsPerPage;
         this.view = orig.view;
     }
 
