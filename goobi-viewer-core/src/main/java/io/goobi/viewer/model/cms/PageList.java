@@ -231,7 +231,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     *
+     * @param page
      * @return true if the given string is a number, i.e. it is the identifier of a cms page
      */
     private static boolean isCMSPage(String page) {

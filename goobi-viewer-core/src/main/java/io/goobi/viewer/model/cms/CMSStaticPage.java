@@ -199,9 +199,6 @@ public class CMSStaticPage implements Serializable {
         }
     }
 
-    /**
-     * @param cmsPageId2
-     */
     private void updateCmsPage() {
         getCmsPageId().ifPresent(id1 -> {
             try {
