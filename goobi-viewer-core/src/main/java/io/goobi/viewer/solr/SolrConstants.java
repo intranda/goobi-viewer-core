@@ -30,6 +30,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  */
 public final class SolrConstants {
 
+    /**
+     * Enum representing values of the Solr field DOCTYPE.
+     */
     public enum DocType {
         ACCESSDENIED,
         DOCSTRCT,
@@ -39,25 +42,18 @@ public final class SolrConstants {
         UGC, // user-generated content
         GROUP; // convolute
 
+        /**
+         * 
+         * @param name
+         * @return {@link DocType} matching name
+         * @should return correct type
+         */
         public static DocType getByName(String name) {
             if (name != null) {
-                switch (name) {
-                    case "ACCESSDENIED":
-                        return ACCESSDENIED;
-                    case "DOCSTRCT":
-                        return DOCSTRCT;
-                    case "PAGE":
-                        return PAGE;
-                    case "METADATA":
-                        return METADATA;
-                    case "EVENT":
-                        return EVENT;
-                    case "UGC":
-                        return UGC;
-                    case "GROUP":
-                        return GROUP;
-                    default:
-                        return null;
+                for (DocType type : DocType.values()) {
+                    if (type.name().equals(name)) {
+                        return type;
+                    }
                 }
             }
 
@@ -69,6 +65,9 @@ public final class SolrConstants {
         }
     }
 
+    /**
+     * Enum representing values of the Solr field METADATATYPE.
+     */
     public enum MetadataGroupType {
         PERSON,
         CORPORATION,
@@ -81,29 +80,18 @@ public final class SolrConstants {
         CITATION,
         OTHER;
 
+        /**
+         * 
+         * @param name
+         * @return {@link MetadataGroupType} matching name
+         */
         public static MetadataGroupType getByName(String name) {
             if (name != null) {
-                switch (name) {
-                    case "PERSON":
-                        return PERSON;
-                    case "CORPORATION":
-                        return CORPORATION;
-                    case "CONFERENCE":
-                        return CONFERENCE;
-                    case "LOCATION":
-                        return LOCATION;
-                    case "SUBJECT":
-                        return SUBJECT;
-                    case "ORIGININFO":
-                        return ORIGININFO;
-                    case "CITATION":
-                        return CITATION;
-                    case "OTHER":
-                        return OTHER;
-                    default:
-                        return null;
+                for (MetadataGroupType type : MetadataGroupType.values()) {
+                    if (type.name().equals(name)) {
+                        return type;
+                    }
                 }
-
             }
 
             return null;
@@ -358,11 +346,11 @@ public final class SolrConstants {
     public static final String SOLR_QUERY_OR = " OR ";
     public static final String SOLR_QUERY_TRUE = ":true";
     public static final String MD_VALUE = "MD_VALUE";
-    
+
     /**
      * Private constructor.
      */
     private SolrConstants() {
-        
+
     }
 }

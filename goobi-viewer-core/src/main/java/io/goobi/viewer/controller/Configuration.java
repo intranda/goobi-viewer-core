@@ -1110,8 +1110,13 @@ public class Configuration extends AbstractConfiguration {
             boolean translate = sub.getBoolean("[@translate]", false);
             boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
             boolean alwaysApplyFilter = sub.getBoolean("[@alwaysApplyFilter]", false);
+            boolean skipInWidget = sub.getBoolean("[@skipInWidget]", false);
             BrowsingMenuFieldConfig bmfc =
-                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, recordsAndAnchorsOnly, alwaysApplyFilter);
+                    new BrowsingMenuFieldConfig(field, sortField, filterQuery)
+                            .setTranslate(translate)
+                            .setAlwaysApplyFilter(alwaysApplyFilter)
+                            .setSkipInWidget(skipInWidget)
+                            .setRecordsAndAnchorsOnly(recordsAndAnchorsOnly);
             ret.add(bmfc);
         }
 
@@ -4096,6 +4101,18 @@ public class Configuration extends AbstractConfiguration {
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
+    
+    /**
+     * <p>
+     * isSolrUseHttp2.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSolrUseHttp2() {
+        return getLocalBoolean(("performance.solr.useHttp2"), true);
+    }
 
     /**
      * <p>
@@ -4103,8 +4120,9 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @deprecated Not supported when using HTTP2
      */
+    @Deprecated(since = "24.01")
     public boolean isSolrCompressionEnabled() {
         return getLocalBoolean(("performance.solr.compressionEnabled"), true);
     }
@@ -4116,7 +4134,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a boolean.
+     * @deprecated Not supported when using HTTP2
      */
+    @Deprecated(since = "24.01")
     public boolean isSolrBackwardsCompatible() {
         return getLocalBoolean(("performance.solr.backwardsCompatible"), false);
     }

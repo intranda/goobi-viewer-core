@@ -53,6 +53,7 @@ import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -230,19 +231,17 @@ public class CmsPageEditBean implements Serializable {
             }
 
             // Delete CMS page metadata from index if page is not published
-            if (!selectedPage.isPublished()) {
-                if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
-                    try {
-                        IndexerTools.deleteRecord(selectedPage.getRelatedPI(), false,
-                                Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
-                    } catch (IOException e) {
-                        logger.error(e.getMessage());
-                    }
-                }
+            if (!selectedPage.isPublished() || !selectedPage.isSearchable()) {
                 try {
-                    IndexerTools.deleteRecord("CMS" + selectedPage.getId(), false,
-                            Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
-                } catch (IOException e) {
+                    String pi = "CMS" + selectedPage.getId();
+                    if (DataManager.getInstance().getSearchIndex().getHitCount(pi) > 0) {
+                        IndexerTools.deleteRecord("CMS" + selectedPage.getId(), false,
+                                Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
+                        logger.debug("Page contents will be deleted from index: {}", pi);
+                    } else {
+                        logger.trace("Page not in index, no deletion necessary: {}", pi);
+                    }
+                } catch (IOException | IndexUnreachableException | PresentationException e) {
                     logger.error(e.getMessage());
                 }
             }
@@ -289,6 +288,11 @@ public class CmsPageEditBean implements Serializable {
     public void deletePage(CMSPage page) throws DAOException {
         if (this.dao != null && page != null && page.getId() != null) {
             logger.info("Deleting CMS page: {}", page);
+            
+            if(!page.isComponentsLoaded()) {
+                page.initialiseCMSComponents(this.templateManager);
+            }
+            
             List<CMSComponent> components = new ArrayList<>(page.getComponents());
             for (CMSComponent component : components) {
                 PersistentCMSComponent persistentComponent = component.getPersistentComponent();

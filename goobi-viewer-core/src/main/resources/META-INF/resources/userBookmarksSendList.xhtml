@@ -28,15 +28,17 @@
             <div class="user-bookmark-send-list">
                 <h1 >#{msg.bookmarkList_session_mail_heading}</h1>
                 <div class="user-bookmark-send-list__form">
+                    <ui:fragment rendered="#{captchaBean.resetSecurityQuestion()}">
                     <h:form
                         id="userBookshelfSendListForm"
                         styleClass="form-horizontal"
                         prependId="false">
                         <div class="form-row form-group">
+                    <p>#{msg.bookmarkList_session_mail_text}</p>
                             <label
                                 for="userEMailToSend"
-                                class="col-12 col-sm-3 control-label">#{msg.email}:</label>
-                            <div class="col-12 col-sm-9">
+                                class="col-12 col-lg-4 control-label">#{msg.email}:</label>
+                            <div class="col-12 col-lg-8">
                                 <h:inputText
                                     id="userEMailToSend"
                                     styleClass="form-control"
@@ -47,7 +49,29 @@
                                 </h:inputText>
                             </div>
                         </div>
-                        <p>#{msg.bookmarkList_session_mail_text}</p>
+
+
+                        <ui:fragment rendered="#{captchaBean.securityQuestion != null}">
+                            <div class="form-group form-row no-gutters">
+                            <div class="col-12 col-lg-4">
+                                <label for="sendSessionBookmarkListConfirm"
+                                    class="control-label">#{msg.user__security_question}:</label>
+                                    
+                                    
+  </div>
+                                    
+                                <div class="col-12 col-lg-8">  
+                                    <div>#{msg[captchaBean.securityQuestion.questionKey]}</div>
+                                    <h:inputSecret id="sendSessionBookmarkListConfirm"
+                                        styleClass="form-control"
+                                        autocomplete="off" value="#{captchaBean.securityAnswer}"
+                                        required="true"
+                                        requiredMessage="#{msg.user__security_question_required_msg}">
+                                        <f:passThroughAttribute name="autocomplete" value="new-password" />
+                                    </h:inputSecret>
+                                </div>
+                            </div>
+                        </ui:fragment>
                         <div class="user-bookmark-send-list__action">
                             <h:commandButton
                                 styleClass="btn btn--full"
@@ -55,6 +79,7 @@
                                 action="#{bookmarkBean.sendSessionBookmarkListAsMail}" />
                         </div>
                     </h:form>
+                    </ui:fragment>
                 </div>
             </div>
         </f:view>

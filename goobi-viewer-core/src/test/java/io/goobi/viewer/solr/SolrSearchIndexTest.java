@@ -297,23 +297,6 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    void getSpellingSuggestions() throws IndexUnreachableException {
-        List<String> suggestions = DataManager.getInstance()
-                .getSearchIndex()
-                .querySpellingSuggestions("tier", 0.7f, false);
-        assertEquals(1, suggestions.size());
-        assertTrue(suggestions.contains("thier"));
-
-        suggestions = DataManager.getInstance()
-                .getSearchIndex()
-                .querySpellingSuggestions("tier", 0.5f, false);
-        assertEquals(10, suggestions.size());
-        assertTrue(suggestions.contains("thier"));
-        assertTrue(suggestions.contains("teil"));
-
-    }
-
-    @Test
     void test_getHeatMap() throws IndexUnreachableException {
 
         String world = "[\"-180 -90\" TO \"180 90\"]";

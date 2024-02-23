@@ -84,6 +84,55 @@
 				</div>
 			</div>
 		</div>
+		
+		<!-- SOLR SORT FIELDS -->
+		<div class="admin__content-component-input-group">
+			<div class="admin__content-component-input-label">
+				<label for="solrSortFields">#{msg.cms_itemSolrSortFields}:</label>
+			</div>
+			<div class="admin__content-component-input-field">
+				<div class="custom-control custom-control--select">
+					<h:selectOneMenu id="solrSortFields" styleClass="form-control -hide-disabled-options"
+						value="#{cc.attrs.contentItem.content.sortField}">
+						<f:selectItem itemDisabled="#{!cc.attrs.contentItem.owningComponent.getBooleanAttributeValue('showOptions', false)}" itemValue="" itemLabel="#{msg.option__use_default_sorting_selection}" />
+						<c:forEach var="field" items="#{cmsBean.possibleSortFields}">
+						    <c:choose>
+                                   <c:when test="#{field eq 'RELEVANCE'}">
+                                       <f:selectItem itemValue="#{field}" itemLabel="#{msg.searchSortingDropdown_relevance}" />
+                                   </c:when>
+						        <c:when test="#{field eq 'RANDOM'}">
+                                       <f:selectItem itemValue="#{field}" itemLabel="#{msg.searchSortingDropdown_random}" />
+                                   </c:when>
+                                   <c:otherwise>
+                                       <f:selectItem itemValue="#{field}"
+                                           itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_ascending})" />
+                                       <f:selectItem itemValue="!#{field}"
+                                           itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_descending})" />
+                                   </c:otherwise>
+                               </c:choose>
+						</c:forEach>
+						<f:passThroughAttribute name="aria-label"
+							value="#{msg.cms_itemSolrSortFields}" />
+					</h:selectOneMenu>
+				</div>
+			</div>
+		</div>
+		
+		<!-- ITEM COUNT -->
+		<div class="admin__content-component-input-group">
+			<div class="admin__content-component-input-label">
+				<label for="itemCount">#{msg.cms_itemCount}:</label>
+			</div>
+			<div class="admin__content-component-input-field">
+				<h:inputText id="itemCount" styleClass="form-control"
+					value="#{cc.attrs.contentItem.content.elementsPerPage}">
+					<f:passThroughAttribute name="aria-label"
+						value="#{msg.cms_itemGroupByField}" />
+					<f:passThroughAttribute name="data-input" value="number"></f:passThroughAttribute>
+					<!-- <f:ajax event="change" render="@this" /> -->
+				</h:inputText>
+			</div>
+		</div>
 
 		<div class="admin__content-component-input-group"></div>
 

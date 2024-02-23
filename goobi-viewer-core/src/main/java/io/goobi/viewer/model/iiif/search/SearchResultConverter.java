@@ -33,19 +33,21 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.JDOMException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.FieldListResource;
@@ -89,7 +91,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class SearchResultConverter {
 
-    private static final Logger logger = LogManager.getLogger(IIIFSearchBuilder.class);
+    private static final Logger logger = LogManager.getLogger(SearchResultConverter.class);
 
     private static final int MAX_TEXT_LENGTH = 20;
 
@@ -105,13 +107,13 @@ public class SearchResultConverter {
     /**
      * Create a new converter; parameters are used to construct urls or result resources
      *
-     * @param requestURI The URI of the search request
-     * @param restApiURI The URI of the viewer rest api
+     * @param urls
      * @param pi The PI of the manifest to search
      * @param pageNo The page number of generated resources
      */
     public SearchResultConverter(AbstractApiUrlManager urls, String pi, Integer pageNo) {
         this.presentationBuilder = new AbstractBuilder(urls) {
+            //
         };
         this.altoBuilder = new AltoAnnotationBuilder(urls, "oa");
         this.urls = urls;
@@ -172,7 +174,7 @@ public class SearchResultConverter {
      */
     public AbstractBuilder getPresentationBuilder() {
         return presentationBuilder;
-    };
+    }
 
     /**
      * Generates a search hit from a {@link io.goobi.viewer.model.annotation.comments.Comment}
@@ -294,7 +296,7 @@ public class SearchResultConverter {
     /**
      * Create annotations for all matches of the given query within the given alto file
      *
-     * @param doc The {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument}
+     * @param path
      * @param query a regex; each match of the query within the alto document creates a {@link de.intranda.api.iiif.search.SearchHit} with one or more
      *            annotations referencing alto word or line elements
      * @return A result list containing hits for each mach of the query and annotations containing the hits
@@ -316,9 +318,9 @@ public class SearchResultConverter {
             List<Line> lines = parser.getLines(doc);
             if (!lines.isEmpty()) {
                 Map<Range<Integer>, List<Line>> hits = parser.findLineMatches(lines, query);
-                for (Range<Integer> position : hits.keySet()) {
-                    List<Line> containingLines = hits.get(position);
-                    SearchHit hit = createAltoHit(lines, position, containingLines);
+                for (Entry<Range<Integer>, List<Line>> entry : hits.entrySet()) {
+                    List<Line> containingLines = entry.getValue();
+                    SearchHit hit = createAltoHit(lines, entry.getKey(), containingLines);
                     results.add(hit);
                 }
             }
@@ -401,7 +403,7 @@ public class SearchResultConverter {
      */
     public SearchHit convertAltoToHit(List<Word> altoElements) {
         SearchHit hit = new SearchHit();
-        hit.setAnnotations(altoElements.stream().map(this::createAnnotation).collect(Collectors.toList()));
+        hit.setAnnotations(new ArrayList<>(altoElements.stream().map(this::createAnnotation).toList()));
         hit.setMatch(altoElements.stream().map(Word::getSubsContent).collect(Collectors.joining(" ")));
 
         if (!altoElements.isEmpty()) {
@@ -447,7 +449,7 @@ public class SearchResultConverter {
             selector.setSuffix(after);
         }
         hit.setSelectors(Collections.singletonList(selector));
-        hit.setAnnotations(containingLines.stream().map(this::createAnnotation).collect(Collectors.toList()));
+        hit.setAnnotations(new ArrayList<>(containingLines.stream().map(this::createAnnotation).toList()));
         return hit;
     }
 
@@ -500,22 +502,22 @@ public class SearchResultConverter {
      *
      * @param metadataField
      * @param doc
-     * @return
+     * @return {@link OpenAnnotation}
      */
     private OpenAnnotation createAnnotation(String metadataField, SolrDocument doc) {
-        String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
+        String usePi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
         String logId = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LOGID);
         boolean isWork = SolrTools.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
         Integer thumbPageNo = SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
-        OpenAnnotation anno = new OpenAnnotation(getMetadataAnnotationURI(pi, logId, metadataField));
+        OpenAnnotation anno = new OpenAnnotation(getMetadataAnnotationURI(usePi, logId, metadataField));
         anno.setMotivation(Motivation.DESCRIBING);
         if (thumbPageNo != null) {
-            anno.setTarget(createSimpleCanvasResource(pi, thumbPageNo));
+            anno.setTarget(createSimpleCanvasResource(usePi, thumbPageNo));
         } else {
             if (Boolean.TRUE.equals(isWork)) {
-                anno.setTarget(new SimpleResource(getPresentationBuilder().getManifestURI(pi)));
+                anno.setTarget(new SimpleResource(getPresentationBuilder().getManifestURI(usePi)));
             } else {
-                anno.setTarget(new SimpleResource(getPresentationBuilder().getRangeURI(pi, logId)));
+                anno.setTarget(new SimpleResource(getPresentationBuilder().getRangeURI(usePi, logId)));
             }
         }
         IMetadataValue label = ViewerResourceBundle.getTranslations(metadataField);
@@ -539,6 +541,10 @@ public class SearchResultConverter {
 
     /**
      * create a text annotation with the given text in the given canvas
+     * 
+     * @param text
+     * @param canvas
+     * @return {@link IAnnotation}
      */
     private IAnnotation createAnnotation(String text, IResource canvas) {
         AbstractAnnotation anno = new OpenAnnotation(getPlaintextAnnotationURI(pi, pageNo));
@@ -549,6 +555,12 @@ public class SearchResultConverter {
         return anno;
     }
 
+    /**
+     * 
+     * @param pi Record identifier
+     * @param comment
+     * @return {@link IAnnotation}
+     */
     private IAnnotation createAnnotation(String pi, Comment comment) {
         OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(comment.getId().toString()));
         anno.setMotivation(Motivation.COMMENTING);
@@ -562,7 +574,7 @@ public class SearchResultConverter {
     /**
      * Create a URI-only resource for a page. Either as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page has a width and height
      *
-     * @param pi PI of the work containing the page
+     * @param pi PI of the record containing the page
      * @param pageNo page number (ORDER) of the page
      * @return A URI to a canvas resource
      */
@@ -576,7 +588,12 @@ public class SearchResultConverter {
     }
 
     /**
-     * Return a URI to an annotation list for the given pi and pageNo
+     * Return a URI to an annotation list for the given pi and pageNo.
+     * 
+     * @param pi PI of the record containing the page
+     * @param pageNo page number (ORDER) of the page
+     * @param type
+     * @return {@link URI}
      */
     private URI getAnnotationListURI(String pi, Integer pageNo, AnnotationType type) {
         if (pageNo != null) {

@@ -34,9 +34,9 @@ import de.intranda.api.iiif.search.SearchHit;
  */
 public class AnnotationResultList {
 
-    public long numHits;
-    public final List<IAnnotation> annotations;
-    public final List<SearchHit> hits;
+    private long numHits;
+    private final List<IAnnotation> annotations;
+    private final List<SearchHit> hits;
 
     /**
      * <p>
@@ -94,4 +94,33 @@ public class AnnotationResultList {
             add(searchHit);
         }
     }
+
+    /**
+     * @return the numHits
+     */
+    public long getNumHits() {
+        return numHits;
+    }
+
+    /**
+     * @param numHits the numHits to set
+     */
+    public void setNumHits(long numHits) {
+        this.numHits = numHits;
+    }
+
+    /**
+     * @return the annotations
+     */
+    public List<IAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    /**
+     * @return the hits
+     */
+    public List<SearchHit> getHits() {
+        return hits;
+    }
+
 }

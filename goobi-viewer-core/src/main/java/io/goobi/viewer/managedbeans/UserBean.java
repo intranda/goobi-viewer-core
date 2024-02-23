@@ -25,10 +25,14 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -46,6 +50,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
+import org.omnifaces.cdi.Push;
+import org.omnifaces.cdi.PushContext;
 
 import com.ocpsoft.pretty.PrettyContext;
 
@@ -94,6 +100,12 @@ public class UserBean implements Serializable {
     @Inject
     private NavigationHelper navigationHelper;
 
+    @Inject
+    @Push
+    private PushContext sessionTimeoutCounter;
+    
+    private Timer sessionTimeoutMonitorTimer;
+
     private User user;
     private String nickName;
     private String email;
@@ -124,12 +136,24 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection
-     *
-     * @param navigationHelper the navigationHelper to set
-     */
-    public void setNavigationHelper(NavigationHelper navigationHelper) {
-        this.navigationHelper = navigationHelper;
+    *
+    */
+    public void updateSessionTimeoutCounter() {
+        logger.trace("updateSessionTimeoutCounter");
+        sessionTimeoutCounter.send("update");
+    }
+
+    public String getSessionTimeout() {
+        long lastActityTimestamp = BeanUtils.getSession().getLastAccessedTime();
+        logger.trace("lastActityTimestamp: {}", lastActityTimestamp);
+        long inactiveMillis = System.currentTimeMillis() - lastActityTimestamp;
+        logger.trace("inactiveMillis: {}", inactiveMillis);
+        int maxInactiveSeconds = BeanUtils.getSession().getMaxInactiveInterval();
+        // logger.trace("maxInactiveSeconds: {}", maxInactiveSeconds);
+        long timeoutMillis = maxInactiveSeconds * 1000 - inactiveMillis;
+        logger.trace("timeoutMillis: {}", timeoutMillis);
+        LocalTime timeout = LocalTime.ofSecondOfDay(timeoutMillis / 1000);
+        return DateTimeFormatter.ISO_TIME.format(timeout);
     }
 
     /**
@@ -356,6 +380,11 @@ public class UserBean implements Serializable {
                     if (request != null && request.getSession(false) != null) {
                         request.getSession(false).setAttribute("user", u);
                     }
+                    
+                    // Start timer
+//                    sessionTimeoutMonitorTimer = new Timer();
+//                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
+                    
                     if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
                         logger.trace("Redirecting to {}", redirectUrl);
                         String url = this.redirectUrl;
@@ -433,8 +462,14 @@ public class UserBean implements Serializable {
             loggedInProvider = null;
         }
         try {
+            // Kill session timeout update timer
+            if (sessionTimeoutMonitorTimer != null) {
+                sessionTimeoutMonitorTimer.cancel();
+            }
+            
             wipeSession(request);
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
+            
             // Reset loaded user-generated content lists
             BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
@@ -1257,4 +1292,11 @@ public class UserBean implements Serializable {
         }
     }
 
+    public class SessionTimeoutMonitorTask extends TimerTask {
+        @Override
+        public void run() {
+            logger.trace("timeout monitor update task running");
+            updateSessionTimeoutCounter();
+        }
+    }
 }

@@ -80,8 +80,9 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * converted to WebAnnotations here
      *
      * @param pi The persistent identifier of the work to query
-     * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @param urlOnlyTarget a boolean.
+     * @param request
+     * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -93,11 +94,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
             for (SolrDocument doc : ugcDocs) {
                 WebAnnotation anno = createUGCWebAnnotation(pi, doc, urlOnlyTarget);
                 Integer page = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
-                List<WebAnnotation> annoList = annoMap.get(page);
-                if (annoList == null) {
-                    annoList = new ArrayList<>();
-                    annoMap.put(page, annoList);
-                }
+                List<WebAnnotation> annoList = annoMap.computeIfAbsent(page, k -> new ArrayList<>());
                 annoList.add(anno);
             }
         }
@@ -109,8 +106,8 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * converted to WebAnnotations here
      *
      * @param pi The persistent identifier of the work to query
-     * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @param urlOnlyTarget a boolean.
+     * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws DAOException
@@ -123,17 +120,21 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
             for (CrowdsourcingAnnotation persAnno : annotations) {
                 WebAnnotation anno = new AnnotationConverter().getAsWebAnnotation(persAnno);
                 Integer page = Optional.ofNullable(persAnno).map(p -> p.getTargetPageOrder()).orElse(null);
-                List<WebAnnotation> annoList = annoMap.get(page);
-                if (annoList == null) {
-                    annoList = new ArrayList<>();
-                    annoMap.put(page, annoList);
-                }
+                List<WebAnnotation> annoList = annoMap.computeIfAbsent(page, k -> new ArrayList<>());
+
                 annoList.add(anno);
             }
         }
         return annoMap;
     }
 
+    /**
+     * 
+     * @param id
+     * @return {@link IAnnotation}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public IAnnotation getCrowdsourcingAnnotation(String id) throws PresentationException, IndexUnreachableException {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(" +DOCTYPE:UGC");
@@ -142,8 +143,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString());
         if (docList != null && !docList.isEmpty()) {
             SolrDocument doc = docList.get(0);
-            IAnnotation anno = createUGCWebAnnotation(doc, false);
-            return anno;
+            return createUGCWebAnnotation(doc, false);
         }
 
         return null;
@@ -201,10 +201,10 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
 
     /**
      * @param pi
-     * @param urlOnlyTarget
-     * @param anno
-     * @param coordString
      * @param pageOrder
+     * @param coordString
+     * @param urlOnlyTarget
+     * @return {@link IResource}
      */
     public IResource createFragmentTarget(String pi, int pageOrder, String coordString, boolean urlOnlyTarget) {
         try {
@@ -235,7 +235,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
 
     /**
      * @param doc
-     * @return
+     * @return {@link IResource}
      */
     public IResource createAnnnotationBodyFromUGCDocument(SolrDocument doc) {
         IResource body = null;
@@ -255,10 +255,10 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param pi
      * @param uri
-     * @param b
-     * @return
+     * @param pi
+     * @param urlsOnly
+     * @return {@link AnnotationPage}
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
@@ -272,6 +272,15 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
         return page;
     }
 
+    /**
+     * 
+     * @param uri
+     * @param pi
+     * @param pageNo
+     * @param urlsOnly
+     * @return {@link AnnotationPage}
+     * @throws DAOException
+     */
     public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer pageNo, boolean urlsOnly)
             throws DAOException {
         List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly).entrySet()

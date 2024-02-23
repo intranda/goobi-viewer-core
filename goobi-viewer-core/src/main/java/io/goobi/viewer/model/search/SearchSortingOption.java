@@ -42,6 +42,10 @@ public class SearchSortingOption implements Serializable {
 
     private final String field;
     private final boolean ascending;
+    /**
+     * true if this option is the default from the configuration and not set from the url path or a cms page
+     */
+    private boolean defaultOption = false;
 
     /**
      * Constructor for default sorting
@@ -173,6 +177,15 @@ public class SearchSortingOption implements Serializable {
             return StringUtils.equals(this.getField(), other.getField()) && this.isAscending() == other.isAscending();
         }
         return false;
+    }
+    
+    // s
+    public void setDefaultOption(boolean defaultOption) {
+        this.defaultOption = defaultOption;
+    }
+    
+    public boolean isDefaultOption() {
+        return defaultOption;
     }
 
     @Override
