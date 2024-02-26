@@ -51,6 +51,9 @@ public class ArchiveMetadataField {
     /** type of the xpath return value, can be text, attribute, element (default) */
     private String xpathType;
 
+    /** Index field containing the metadata value. */
+    private String indexField;
+
     /** contains the metadata values */
     private List<FieldValue> values;
 
@@ -138,6 +141,20 @@ public class ArchiveMetadataField {
      */
     public void setXpathType(String xpathType) {
         this.xpathType = xpathType;
+    }
+
+    /**
+     * @return the indexField
+     */
+    public String getIndexField() {
+        return indexField;
+    }
+
+    /**
+     * @param indexField the indexField to set
+     */
+    public void setIndexField(String indexField) {
+        this.indexField = indexField;
     }
 
     public String getValue() {
