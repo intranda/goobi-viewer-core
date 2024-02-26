@@ -1097,7 +1097,12 @@ public class Configuration extends AbstractConfiguration {
      * @should return all configured elements
      */
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("metadata.browsingMenu.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("metadata.browsingMenu.luceneField");
+        if (fields != null && !fields.isEmpty()) {
+            logger.warn("Old <luceneField> configuration found - please migrate to <field>.");
+        } else {
+            fields = getLocalConfigurationsAt("metadata.browsingMenu.field");
+        }
         if (fields == null) {
             return new ArrayList<>();
         }
@@ -2001,7 +2006,7 @@ public class Configuration extends AbstractConfiguration {
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder", "indexed_lido");
     }
-    
+
     /**
      * <p>
      * getIndexedEadFolder.
@@ -4113,7 +4118,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
-    
+
     /**
      * <p>
      * isSolrUseHttp2.
