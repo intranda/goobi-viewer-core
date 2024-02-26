@@ -5989,4 +5989,11 @@ public class Configuration extends AbstractConfiguration {
         return Optional.ofNullable(getLocalString(path, null));
     }
     
+    public String getThemePullScriptPath() {
+        return getLocalString("developer.scripts.pullTheme", "script_theme-pull.sh");
+    }
+    
+    public String getCreateDeveloperPackageScriptPath() {
+        return getLocalString("developer.scripts.createDeveloperPackage", "script_create_package.sh");
+    }
 }

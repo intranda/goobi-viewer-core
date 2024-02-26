@@ -128,11 +128,13 @@ public class AdminDeveloperBean implements Serializable {
             logger.error("Error getting quartz scheduler", e);
         }
     }
-
+    
+    
     public void downloadDeveloperArchive() {
         try {
             sendDownloadProgressUpdate(0);
-            byte[] zip = createDeveloperArchive(p -> sendDownloadProgressUpdate(0.1f + p * 0.8f));
+            Path zipPath = createZipFile(DataManager.getInstance().getConfiguration().getCreateDeveloperPackageScriptPath());
+//            byte[] zip = createDeveloperArchive(p -> sendDownloadProgressUpdate(0.1f + p * 0.8f));
             logger.debug("Sending file...");
             Faces.sendFile(zip, this.viewerThemeName + "_developer.zip", true);
             logger.debug("Done sending file");
