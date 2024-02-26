@@ -160,7 +160,7 @@
 							<h3 >#{msg.userComments}</h3>
 
 							<c:choose>
-								<c:when test="#{userDataBean.getNumComments(userBean.user) > 0}">
+								<c:when test="#{userDataBean.commentCount > 0}">
 									<div class="user-dashboard__comments-wrapper">
 										<!-- USER COMMENTS -->
 										<ui:repeat value="#{userDataBean.getLatestComments(userBean.user, 3)}" var="comment">
@@ -172,7 +172,7 @@
 									</div>
 									<div class="user-dashboard__searches-count">
 										<h:outputFormat value="#{msg.user_dashboard__comments_created}">
-											 <f:param value="#{userDataBean.getNumComments(userBean.user)}" />
+											 <f:param value="#{userDataBean.commentCount}" />
 											 <f:param value="#{userDataBean.getNumRecordsWithComments(userBean.user)}" />
 										</h:outputFormat>
 									</div>

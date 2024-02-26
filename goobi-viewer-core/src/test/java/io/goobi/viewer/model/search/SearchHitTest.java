@@ -43,6 +43,7 @@ import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -529,7 +530,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     void generateNotificationFragment_shouldGenerateFragmentCorrectly() throws Exception {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + AbstractSolrEnabledTest.PI_KLEIUNIV, null);
         Assertions.assertNotNull(doc);
-        String title = (String) doc.getFieldValue(SolrConstants.TITLE);
+        String title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
         Assertions.assertNotNull(title);
 
         SearchHit hit =

@@ -27,6 +27,7 @@ import java.io.Serializable;
  * An entity holding an object which can be selected or unselected
  *
  * @author florian
+ * @param <T>
  */
 public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
 

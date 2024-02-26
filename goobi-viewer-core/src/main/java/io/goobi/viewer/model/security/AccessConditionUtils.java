@@ -210,10 +210,28 @@ public final class AccessConditionUtils {
                         .append(simpleFileName)
                         .append("\")");
                 break;
-            case "tif":
-            case "tiff":
-            case "jpg":
-            case "jpeg":
+            case "tif", "tiff":
+                sbQuery.append(" +(")
+                        .append(useFileField)
+                        .append(":\"")
+                        .append(simpleFileName)
+                        .append("\" ")
+                        .append(SolrConstants.FILENAME)
+                        .append("_TIFF:\"")
+                        .append(simpleFileName)
+                        .append("\")");
+                break;
+            case "jpg", "jpeg":
+                sbQuery.append(" +(")
+                        .append(useFileField)
+                        .append(":\"")
+                        .append(simpleFileName)
+                        .append("\" ")
+                        .append(SolrConstants.FILENAME)
+                        .append("_JPEG:\"")
+                        .append(simpleFileName)
+                        .append("\")");
+                break;
             case "png":
             case "jp2":
             case "obj":

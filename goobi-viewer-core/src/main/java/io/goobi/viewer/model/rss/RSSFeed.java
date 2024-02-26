@@ -60,13 +60,13 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
-import io.netty.channel.ChannelException;
 
 /**
  * <p>
@@ -242,7 +242,8 @@ public final class RSSFeed {
             boolean hasImages = SolrTools.isHasImages(doc);
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
+            boolean hasMedia = !hasImages && !anchor && BaseMimeType.getByName(mimeType).isMediaType();
+            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages || hasMedia, false);
             int pageNo = getRepresentativePageNumber(doc);
 
             for (String field : FIELDS) {

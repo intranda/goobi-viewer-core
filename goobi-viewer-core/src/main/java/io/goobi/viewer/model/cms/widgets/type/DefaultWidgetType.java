@@ -82,9 +82,9 @@ public enum DefaultWidgetType implements WidgetContentType {
     }
 
     /**
-     * A message key for a description of ths widget type
+     * A message key for a description of this widget type
      * 
-     * @return
+     * @return the description
      */
     public String getDescription() {
         return description;

@@ -284,8 +284,9 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
                 return false;
             }
             return super.equals(obj);
-        } else if (!id.equals(other.id))
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         return true;
     }
 
@@ -466,6 +467,8 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
                     } catch (DAOException e) {
                         logger.error("Unable to add widget: Cannot load geomap id={}", displayWidget.getId());
                     }
+                    break;
+                default:
                     break;
             }
             if (element != null) {
@@ -818,7 +821,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     public boolean isComplete(Locale locale) {
         Locale defaultLocale = IPolyglott.getDefaultLocale();
         return this.title.isComplete(locale, defaultLocale, true)
-               && this.cmsComponents.stream()
+                && this.cmsComponents.stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
                         .allMatch(content -> ((TranslatableCMSContent) content.getContent()).getText()
                                 .isComplete(locale, defaultLocale, content.isRequired()));

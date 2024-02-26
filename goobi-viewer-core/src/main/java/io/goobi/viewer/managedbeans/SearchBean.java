@@ -1469,7 +1469,9 @@ public class SearchBean implements SearchInterface, Serializable {
             if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(tempSortString)) {
                 tempSortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
             }
-            setSearchSortingOption(new SearchSortingOption(tempSortString));
+            SearchSortingOption option = new SearchSortingOption(tempSortString);
+            option.setDefaultOption(StringUtils.isEmpty(sortString) || "-".equals(sortString)); // if the given sort string was empty, remember this
+            setSearchSortingOption(option);
         } else {
             setSearchSortingOption(null);
         }

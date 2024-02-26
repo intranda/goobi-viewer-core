@@ -34,26 +34,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
-import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
 import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.Collection3;
-import de.intranda.api.iiif.presentation.v3.IIIFAgent;
 import de.intranda.api.iiif.presentation.v3.IPresentationModelElement3;
 import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.api.iiif.presentation.v3.Manifest3;
@@ -61,29 +57,24 @@ import de.intranda.api.iiif.presentation.v3.Range3;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
-import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
-import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 
 /**
@@ -102,16 +93,26 @@ public class ManifestBuilder extends AbstractBuilder {
      * Constructor for ManifestBuilder.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param apiUrlManager
      */
     public ManifestBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
 
     }
 
+    /**
+     * 
+     * @param pi
+     * @param request
+     * @return {@link IPresentationModelElement3}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentLibException
+     * @throws URISyntaxException
+     * @throws DAOException
+     */
     public IPresentationModelElement3 build(String pi, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException,
-            IllegalPathSyntaxException, ContentLibException, URISyntaxException, DAOException {
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {
 
         List<StructElement> documents = this.dataRetriever.getDocumentWithChildren(pi);
 
@@ -120,17 +121,23 @@ public class ManifestBuilder extends AbstractBuilder {
 
         AbstractPresentationModelElement3 manifest = generateManifest(mainDocument);
 
-        if (manifest instanceof Manifest3) {
-            addPages(mainDocument, (Manifest3) manifest);
-            addStructures(mainDocument, childDocuments, (Manifest3) manifest);
+        if (manifest instanceof Manifest3 manifest3) {
+            addPages(mainDocument, manifest3);
+            addStructures(mainDocument, childDocuments, manifest3);
             addAnnotations(mainDocument.getPi(), (Manifest3) manifest, request);
-        } else if (manifest instanceof Collection3) {
-            addVolumes(mainDocument, childDocuments, (Collection3) manifest);
+        } else if (manifest instanceof Collection3 col3) {
+            addVolumes(childDocuments, col3);
         }
 
         return manifest;
     }
 
+    /**
+     * 
+     * @param pi
+     * @param manifest
+     * @param request
+     */
     private void addAnnotations(String pi, Manifest3 manifest, HttpServletRequest request) {
         try {
             ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
@@ -149,24 +156,21 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param mainDocument
      * @param childDocuments
      * @param manifest
      */
-    private void addVolumes(StructElement mainDocument, List<StructElement> childDocuments, Collection3 manifest) {
+    private void addVolumes(List<StructElement> childDocuments, Collection3 manifest) {
         for (StructElement volume : childDocuments) {
             try {
                 IPresentationModelElement child = generateManifest(volume);
-                if (child instanceof Manifest3) {
+                if (child instanceof Manifest3 manifest3) {
                     //                    addBaseSequence((Manifest)child, volume, child.getId().toString());
-                    manifest.addItem((Manifest3) child);
+                    manifest.addItem(manifest3);
                 }
-            } catch (ViewerConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | ContentLibException e) {
-                logger.error("Error creating child manigest for " + volume);
+            } catch (PresentationException e) {
+                logger.error("Error creating child manigest for {}", volume);
             }
-
         }
-
     }
 
     /**
@@ -183,7 +187,7 @@ public class ManifestBuilder extends AbstractBuilder {
         topRange.getItems()
                 .stream()
                 .filter(item -> item instanceof Range3)
-                .map(item -> (Range3) item)
+                .map(Range3.class::cast)
                 .forEach(manifest::addRange);
     }
 
@@ -196,15 +200,8 @@ public class ManifestBuilder extends AbstractBuilder {
      * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws ContentLibException
-     * @throws IllegalPathSyntaxException
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    private AbstractPresentationModelElement3 generateManifest(StructElement ele)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalPathSyntaxException, ContentLibException,
-            URISyntaxException {
+    private AbstractPresentationModelElement3 generateManifest(StructElement ele) throws PresentationException {
 
         final AbstractPresentationModelElement3 manifest;
 
@@ -226,11 +223,16 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @throws DAOException @throws URISyntaxException @throws ContentLibException @throws IllegalPathSyntaxException @param ele @param
-     *             manifest @throws IndexUnreachableException @throws PresentationException @throws
+     * @param ele
+     * @param manifest
+     * @throws DAOException
+     * @throws URISyntaxException
+     * @throws ContentLibException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    private void addPages(StructElement ele, Manifest3 manifest) throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException,
-            ContentLibException, URISyntaxException, DAOException {
+    private void addPages(StructElement ele, Manifest3 manifest)
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {
         CanvasBuilder canvasBuilder = new CanvasBuilder(urls);
         IPageLoader pageLoader = AbstractPageLoader.create(ele);
         for (int order = pageLoader.getFirstPageOrder(); order <= pageLoader.getLastPageOrder(); order++) {
@@ -249,13 +251,11 @@ public class ManifestBuilder extends AbstractBuilder {
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @return {@link AbstractPresentationModelElement3}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     private AbstractPresentationModelElement3 populateData(StructElement ele, final AbstractPresentationModelElement3 manifest)
-            throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
+            throws PresentationException {
 
         IMetadataValue label = getLabel(ele).orElse(ele.getMultiLanguageDisplayLabel());
         manifest.setLabel(label);
@@ -308,7 +308,7 @@ public class ManifestBuilder extends AbstractBuilder {
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingViewer()));
             manifest.addHomepage(homepage.getResource(recordURI));
 
-            getCmsPageLinks(ele.getPi()).forEach(link -> manifest.addHomepage(link));
+            getCmsPageLinks(ele.getPi()).forEach(manifest::addHomepage);
         }
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
@@ -346,32 +346,35 @@ public class ManifestBuilder extends AbstractBuilder {
                     manifest.addSeeAlso(seeAlso);
                 }
             } catch (IndexUnreachableException | PresentationException | URISyntaxException e) {
-                logger.error("Unable to create seeAlso link for " + config.getLabel(), e);
+                logger.error("Unable to create seeAlso link for {}", config.getLabel(), e);
             }
         }
 
     }
 
-    private String getType(String format) {
+    /**
+     * 
+     * @param format
+     * @return {@link String}
+     */
+    private static String getType(String format) {
         if (StringUtils.isBlank(format)) {
             return "";
-        } else {
-            String typeString = format.replaceAll("\\/.*", "").toLowerCase();
-            switch (typeString) {
-                case "image":
-                    return "Image";
-                case "object":
-                    return "Model";
-                case "video":
-                    return "Video";
-                case "audio":
-                    return "Sound";
-                case "text":
-                    return "Text";
-                default:
-                    return "Dataset";
-            }
-
+        }
+        String typeString = format.replaceAll("\\/.*", "").toLowerCase();
+        switch (typeString) {
+            case "image":
+                return "Image";
+            case "object":
+                return "Model";
+            case "video":
+                return "Video";
+            case "audio":
+                return "Sound";
+            case "text":
+                return "Text";
+            default:
+                return "Dataset";
         }
     }
 
@@ -379,9 +382,9 @@ public class ManifestBuilder extends AbstractBuilder {
      * TODO: config for docStruct types that should be presented as "paged"
      *
      * @param ele
-     * @return
+     * @return {@link ViewingHint}
      */
-    private ViewingHint getViewingBehavior(StructElement ele) {
+    private static ViewingHint getViewingBehavior(StructElement ele) {
         String docStructType = ele.getDocStructType().toLowerCase();
         switch (docStructType) {
             case "monograph":
@@ -394,7 +397,12 @@ public class ManifestBuilder extends AbstractBuilder {
         }
     }
 
-    private LocalDateTime getNavDate(StructElement ele) {
+    /**
+     * 
+     * @param ele
+     * @return {@link LocalDateTime}
+     */
+    private static LocalDateTime getNavDate(StructElement ele) {
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
         if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
             try {
@@ -408,24 +416,28 @@ public class ManifestBuilder extends AbstractBuilder {
         return null;
     }
 
-    private List<LabeledResource> getCmsPageLinks(String pi) {
+    /**
+     * 
+     * @param pi
+     * @return List<LabeledResource>
+     */
+    private static List<LabeledResource> getCmsPageLinks(String pi) {
         try {
             return DataManager.getInstance()
                     .getDao()
                     .getCMSPagesForRecord(pi, null)
                     .stream()
-                    .filter(page -> page.isPublished())
+                    .filter(CMSPage::isPublished)
                     .map(page -> {
                         LinkingProperty cmsPageLink = new LinkingProperty(LinkingTarget.VIEWER, page.getTitleTranslations());
                         URI uri = URI.create(page.getUrl());
                         if (!uri.isAbsolute()) {
                             uri = UriBuilder.fromUri(uri).path(page.getUrl()).build();
                         }
-                        LabeledResource cmsPage = cmsPageLink.getResource(uri);
-                        return cmsPage;
+                        return cmsPageLink.getResource(uri);
                     })
                     .collect(Collectors.toList());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.warn(e.toString());
             return Collections.emptyList();
         }

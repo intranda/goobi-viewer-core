@@ -63,8 +63,7 @@ public class MovingWallAnnualStatistics {
     }
 
     /**
-     * 
-     * @return
+     * @param separator
      * @throws PresentationException
      * @throws IndexUnreachableException
      */

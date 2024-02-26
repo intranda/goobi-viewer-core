@@ -30,14 +30,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -89,14 +90,14 @@ public class DataRetriever {
         String anchorQuery = "(ISWORK:* AND PI_PARENT:" + pi + ") OR (ISANCHOR:* AND PI:" + pi + ")";
         String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
         String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
-        List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
+        List<String> displayFields = new ArrayList<>(addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales()));
 
         // handle metadata fields from events
         Map<String, List<String>> eventFields = getEventFields();
         if (!eventFields.isEmpty()) {
             String eventQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:EVENT";
             query += " OR (" + eventQuery + ")";
-            displayFields.addAll(eventFields.values().stream().flatMap(value -> value.stream()).collect(Collectors.toList()));
+            displayFields.addAll(eventFields.values().stream().flatMap(Collection::stream).toList());
             displayFields.add(SolrConstants.EVENTTYPE);
         }
 
@@ -132,7 +133,7 @@ public class DataRetriever {
      * Get all top level collections (i.e. those without splitting-char) along with the number of contained works and direct children
      *
      * @param solrField
-     * @return
+     * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
      */
     public List<CollectionResult> getTopLevelCollections(String solrField) throws IndexUnreachableException {
@@ -143,7 +144,7 @@ public class DataRetriever {
                 .filter(c -> !c.getName().contains(splittingChar))
                 .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
                 .peek(c -> c.setChildCount(getChildCount(c.getName(), splittingChar, result.keySet())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -151,7 +152,7 @@ public class DataRetriever {
      *
      * @param solrField
      * @param collectionName
-     * @return
+     * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
      */
     public List<CollectionResult> getChildCollections(String solrField, String collectionName) throws IndexUnreachableException {
@@ -167,7 +168,7 @@ public class DataRetriever {
                 .filter(c -> c.getName().matches(regex))
                 .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
                 .peek(c -> c.setChildCount(getChildCount(c.getName(), splittingChar, result.keySet())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -175,22 +176,28 @@ public class DataRetriever {
      *
      * @param solrField
      * @param collectionName
-     * @return
+     * @return List<StructElement> (immutable!)
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public List<StructElement> getContainedRecords(String solrField, String collectionName) throws IndexUnreachableException, PresentationException {
         String query = "+{field}:{collection} +(ISWORK:* ISANCHOR:*)".replace("{field}", solrField).replace("{collection}", collectionName);
-        List<String> displayFields = addLanguageFields(Arrays.asList(CONTAINED_WORKS_QUERY_FIELDS), ViewerResourceBundle.getAllLocales());
+        List<String> displayFields =
+                new ArrayList<>(addLanguageFields(Arrays.asList(CONTAINED_WORKS_QUERY_FIELDS), ViewerResourceBundle.getAllLocales()));
 
         List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
         if (docs == null) {
             return Collections.emptyList();
         }
 
-        return docs.stream().map(doc -> createStructElement(doc)).filter(struct -> struct != null).collect(Collectors.toList());
+        return docs.stream().map(doc -> createStructElement(doc)).filter(Objects::nonNull).toList();
     }
 
+    /**
+     * 
+     * @param doc
+     * @return Constructed {@link StructElement}
+     */
     private static StructElement createStructElement(SolrDocument doc) {
         try {
             return new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
@@ -201,9 +208,10 @@ public class DataRetriever {
     }
 
     /**
-     * @param name
-     * @param keySet
-     * @return
+     * @param collection
+     * @param splittingChar
+     * @param allCollections
+     * @return Child count
      */
     private static long getChildCount(String collection, String splittingChar, Set<String> allCollections) {
         String regex = collection + "[{}][^{}]+$".replace("{}", splittingChar);
@@ -218,9 +226,9 @@ public class DataRetriever {
      * @param events The list of event SolrDocuments from which to take the metadata
      */
     protected void addEventMetadataToWorkElement(List<StructElement> eles, List<SolrDocument> events) {
-        Optional<StructElement> main_o = eles.stream().filter(ele -> ele.isWork()).findFirst();
-        if (main_o.isPresent()) {
-            StructElement main = main_o.get();
+        Optional<StructElement> mainO = eles.stream().filter(ele -> ele.isWork()).findFirst();
+        if (mainO.isPresent()) {
+            StructElement main = mainO.get();
             for (SolrDocument event : events) {
                 String eventType = event.getFieldValue(SolrConstants.EVENTTYPE).toString();
                 Map<String, List<String>> mds = main.getMetadataFields();
@@ -257,11 +265,7 @@ public class DataRetriever {
                 event = "";
                 field = string;
             }
-            List<String> eventFields = events.get(event);
-            if (eventFields == null) {
-                eventFields = new ArrayList<>();
-                events.put(event, eventFields);
-            }
+            List<String> eventFields = events.computeIfAbsent(event, k -> new ArrayList<>());
             eventFields.add(field);
         }
         return events;
@@ -301,9 +305,7 @@ public class DataRetriever {
      */
     public List<String> getSolrFieldList() {
         Set<String> fields = new HashSet<>(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
-        for (String string : REQUIRED_SOLR_FIELDS) {
-            fields.add(string);
-        }
+        fields.addAll(Arrays.asList(REQUIRED_SOLR_FIELDS));
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
         if (StringUtils.isNotBlank(navDateField)) {
             fields.add(navDateField);
@@ -317,13 +319,20 @@ public class DataRetriever {
 
     /**
      * @param displayFields
-     * @param allLocales
-     * @return
+     * @param locales
+     * @return List<String> (immutable!)
      */
     protected static List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
-        return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream()).collect(Collectors.toList());
+        return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream()).toList();
     }
 
+    /**
+     * 
+     * @param field
+     * @param locales
+     * @param includeSelf
+     * @return List<String>
+     */
     private static List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {
         List<String> fields = new ArrayList<>();
         if (includeSelf) {

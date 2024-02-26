@@ -11,10 +11,7 @@
   <module name="TreeWalker">
 	<module name="SuppressionCommentFilter"/>
     <module name="JavadocMethod">
-      <!--<property name="accessModifiers" value="public"/>-->
-      <!--<property name="allowMissingJavadoc" value="true"/>-->
-      <!--<property name="logLoadErrors" value="true"/>-->
-      <!--<property name="suppressLoadErrors" value="true"/>-->
+      <property name="accessModifiers" value="public"/>
     </module>
     <module name="JavadocStyle">
       <property name="severity" value="info"/>

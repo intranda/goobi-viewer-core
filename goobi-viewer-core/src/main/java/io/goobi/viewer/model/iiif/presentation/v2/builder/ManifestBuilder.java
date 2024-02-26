@@ -302,7 +302,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
         this.getRenderings().forEach(link -> {
             try {
-                URI id = getLinkingPropertyUri(ele, link.target);
+                URI id = getLinkingPropertyUri(ele, link.getTarget());
                 if (id != null) {
                     manifest.addRendering(link.getLinkingContent(id));
                 }
