@@ -216,13 +216,16 @@ public class SearchResultConverter {
     }
 
     /**
-     * Create a IIIF Search hit from a UGC solr document (usually a crowdsouring created comment/metadata)
+     * Create a IIIF Search hit from a UGC solr document (usually a crowdsourcing created comment/metadata)
      *
      * @param queryRegex a {@link java.lang.String} object.
      * @return A search hit matching the queryRegex within the given UGC SolrDocument
      * @param ugc a {@link org.apache.solr.common.SolrDocument} object.
      */
     public SearchHit convertUGCToHit(String queryRegex, SolrDocument ugc) {
+        if (ugc == null) {
+            throw new IllegalArgumentException("ugc may not be null");
+        }
 
         SearchHit hit = new SearchHit();
         String mdText = SolrTools.getMetadataValues(ugc, SolrConstants.UGCTERMS).stream().collect(Collectors.joining("; "));
