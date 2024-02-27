@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -43,12 +42,10 @@ import org.mockito.Mockito;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
-import io.goobi.viewer.exceptions.ArchiveException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
-class ArchiveManagerTest extends AbstractTest{
+class ArchiveManagerTest extends AbstractTest {
 
     BasexEADParser eadParser;
     List<ArchiveResource> possibleDatabases;
@@ -58,12 +55,14 @@ class ArchiveManagerTest extends AbstractTest{
         try {
             Document doc = XmlTools.readXmlFile("src/test/resources/data/EAD_Export_Tektonik.XML");
             BasexEADParser tempParser = new BasexEADParser(null, null);
-            ArchiveEntry root = tempParser.readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataConfig())
-                    .parseEadFile(doc);
+            tempParser.readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataConfig());
+            ArchiveEntry root = tempParser.parseEadFile(doc);
 
             possibleDatabases = new ArrayList<>();
-            possibleDatabases.add(new ArchiveResource("database 1", "resource 1", ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
-            possibleDatabases.add(new ArchiveResource("database 1", "resource 2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+            possibleDatabases.add(new ArchiveResource("database 1", "resource 1",
+                    ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+            possibleDatabases
+                    .add(new ArchiveResource("database 1", "resource 2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
 
             eadParser = new BasexEADParser(null, null) {
                 public List<ArchiveResource> getPossibleDatabases() {
@@ -87,7 +86,7 @@ class ArchiveManagerTest extends AbstractTest{
     }
 
     @Test
-    void testGetDatabase() throws ArchiveException {
+    void testGetDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
             ArchiveTree tree = archiveManager.getArchiveTree("database 1", "resource 1");
@@ -106,7 +105,7 @@ class ArchiveManagerTest extends AbstractTest{
     }
 
     @Test
-    void testUpdateDatabase() throws IllegalStateException, ConfigurationException, IOException, HTTPException, JDOMException, ArchiveException {
+    void testUpdateDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
             archiveManager.getArchiveTree("database 1", "resource 1");
@@ -114,10 +113,10 @@ class ArchiveManagerTest extends AbstractTest{
             Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
         }
         {
-//            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-//            archiveManager.getArchiveTree("database 1", "resource 2");
-//            archiveManager.getArchiveTree("database 1", "resource 2");
-//            Mockito.verify(archiveManager, Mockito.times(2)).loadDatabase(Mockito.any(), Mockito.any());
+            //            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
+            //            archiveManager.getArchiveTree("database 1", "resource 2");
+            //            archiveManager.getArchiveTree("database 1", "resource 2");
+            //            Mockito.verify(archiveManager, Mockito.times(2)).loadDatabase(Mockito.any(), Mockito.any());
         }
     }
 
@@ -125,7 +124,8 @@ class ArchiveManagerTest extends AbstractTest{
     void testAddNewArchive() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
 
-        ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3", ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
+        ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3",
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
         possibleDatabases.add(newArchive);
         assertNull(archiveManager.getArchive("database 1", "resource 3"));
         archiveManager.updateArchiveList();
@@ -142,6 +142,5 @@ class ArchiveManagerTest extends AbstractTest{
         assertNull(archiveManager.getArchive("database 1", "resource 2"));
 
     }
-
 
 }

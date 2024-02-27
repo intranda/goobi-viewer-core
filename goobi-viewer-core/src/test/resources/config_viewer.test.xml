@@ -1417,7 +1417,7 @@
       </record>
 	</maps>
 
-    <archives enabled="true">
+    <archives enabled="true" type="basex">
 
         <metadataList>
             <!-- internal fields, not visible on the UI -->

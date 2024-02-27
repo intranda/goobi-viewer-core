@@ -41,10 +41,9 @@ class BasexEADParserTest extends AbstractDatabaseAndSolrEnabledTest {
         Document doc = XmlTools.readXmlFile("src/test/resources/data/EAD_Export_Tektonik.XML");
         Assertions.assertNotNull(doc);
         Assertions.assertNotNull(doc.getRootElement());
-        ArchiveEntry root =
-                new BasexEADParser(null, null)
-                        .readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataConfig())
-                        .parseEadFile(doc);
+        BasexEADParser parser = new BasexEADParser(null, null);
+        parser.readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataConfig());
+        ArchiveEntry root = parser.parseEadFile(doc);
         Assertions.assertNotNull(root);
         Assertions.assertEquals(1, root.getSubEntryList().size());
         ArchiveEntry topEntry = root.getSubEntryList().get(0);

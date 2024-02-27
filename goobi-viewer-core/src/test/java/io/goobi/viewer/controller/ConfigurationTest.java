@@ -325,7 +325,7 @@ class ConfigurationTest extends AbstractTest {
     void getIndexedLidoFolder_shouldReturnCorrectValue() throws Exception {
         assertEquals("indexed_lido", DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
     }
-    
+
     /**
      * @see Configuration#getIndexedEadFolder()
      * @verifies return correct value
@@ -1814,7 +1814,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFields_shouldReturnAllValues() throws Exception {
         assertEquals(1, DataManager.getInstance().getConfiguration().getRangeFacetFields().size());
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMinValue()
      * @verifies return correct value
@@ -1823,7 +1823,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFieldMinValue_shouldReturnCorrectValue() throws Exception {
         assertEquals(-1000, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue(SolrConstants.YEAR));
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMinValue()
      * @verifies return INT_MIN if no value configured
@@ -1832,7 +1832,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFieldMinValue_shouldReturnINT_MINIfNoValueConfigured() throws Exception {
         assertEquals(Integer.MIN_VALUE, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue("MD_NOSUCHFIELD"));
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMaxValue()
      * @verifies return correct value
@@ -1841,7 +1841,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFieldMaxValue_shouldReturnCorrectValue() throws Exception {
         assertEquals(2050, DataManager.getInstance().getConfiguration().getRangeFacetFieldMaxValue(SolrConstants.YEAR));
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMaxValue()
      * @verifies return INT_MAX if no value configured
@@ -3529,5 +3529,23 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void testGetDateFormat() {
         assertEquals("dd/MM/yyyy", DataManager.getInstance().getConfiguration().getStringFormat("date", Locale.ENGLISH).orElse("Not configured"));
+    }
+
+    /**
+     * @see Configuration#isArchivesEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    void isArchivesEnabled_shouldReturnCorrectValue() throws Exception {
+        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isArchivesEnabled());
+    }
+
+    /**
+     * @see Configuration#getArchivesType()
+     * @verifies return correct value
+     */
+    @Test
+    void getArchivesType_shouldReturnCorrectValue() throws Exception {
+        assertEquals("basex", DataManager.getInstance().getConfiguration().getArchivesType());
     }
 }

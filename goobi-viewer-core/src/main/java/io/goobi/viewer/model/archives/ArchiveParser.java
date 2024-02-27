@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.archives;
 
+import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,17 +38,15 @@ import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
-/**
- * Loads and parses EAD documents from BaseX databases.
- */
 public abstract class ArchiveParser {
 
     private static final Logger logger = LogManager.getLogger(ArchiveParser.class);
@@ -61,12 +60,9 @@ public abstract class ArchiveParser {
     /**
      *
      * @param searchIndex
-     * @throws IndexUnreachableException
-     * @throws PresentationException
      */
-    protected ArchiveParser(SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
+    protected ArchiveParser(SolrSearchIndex searchIndex) {
         this.searchIndex = searchIndex;
-        updateAssociatedRecordMap();
     }
 
     public void updateAssociatedRecordMap() throws PresentationException, IndexUnreachableException {
@@ -95,36 +91,30 @@ public abstract class ArchiveParser {
     }
 
     /**
-     * Get the database names and file names from the basex databases
+     * Get the database names and file names.
      *
      * @return List<ArchiveResource>
+     * @throws HTTPException
      * @throws IndexUnreachableException
+     * @throws IOException
      * @throws PresentationException
      */
-    public abstract List<ArchiveResource> getPossibleDatabases() throws PresentationException, IndexUnreachableException;
+    public abstract List<ArchiveResource> getPossibleDatabases() throws PresentationException, IndexUnreachableException, IOException, HTTPException;
 
     /**
      * Loads the given database and parses the EAD document.
      *
      * @param database
      * @return Root element of the loaded tree
+     * @throws HTTPException
+     * @throws IllegalStateException
      * @throws IndexUnreachableException
+     * @throws IOException
+     * @throws JDOMException
      * @throws PresentationException
      */
-    public abstract ArchiveEntry loadDatabase(ArchiveResource database) throws PresentationException, IndexUnreachableException;
-
-    /**
-     * 
-     * @param node
-     * @param entry
-     */
-    public static void setNodeType(Element node, ArchiveEntry entry) {
-        String type = node.getAttributeValue("otherlevel");
-        if (StringUtils.isBlank(type)) {
-            type = node.getAttributeValue("level");
-        }
-        entry.setNodeType(type);
-    }
+    public abstract ArchiveEntry loadDatabase(ArchiveResource database)
+            throws PresentationException, IndexUnreachableException, IllegalStateException, IOException, HTTPException, JDOMException;
 
     /**
      * Add the metadata to the configured level
@@ -232,4 +222,6 @@ public abstract class ArchiveParser {
     public static String getIdForName(String name) {
         return name.replaceAll("(?i)\\.xml", "");
     }
+    
+    public abstract String getUrl();
 }

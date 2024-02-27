@@ -28,15 +28,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import org.apache.commons.configuration2.HierarchicalConfiguration;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.tree.ImmutableNode;
-import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
-import org.jdom2.Element;
+import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -62,6 +58,7 @@ public class SolrEADParser extends ArchiveParser {
      */
     public SolrEADParser(SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
         super(searchIndex);
+        updateAssociatedRecordMap();
     }
 
     /**
@@ -102,7 +99,6 @@ public class SolrEADParser extends ArchiveParser {
      */
     @Override
     public ArchiveEntry loadDatabase(ArchiveResource database) throws PresentationException, IndexUnreachableException {
-
         SolrDocument doc = searchIndex.getFirstDoc(SolrConstants.PI + ":" + database.getResourceName(), null);
         if (doc != null) {
             return loadHierarchyFromIndex(1, 0, doc, configuredFields, associatedRecordMap);
@@ -118,9 +114,11 @@ public class SolrEADParser extends ArchiveParser {
      * @param configuredFields
      * @param associatedPIs
      * @return {@link ArchiveEntry}
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    private static ArchiveEntry loadHierarchyFromIndex(int order, int hierarchy, SolrDocument doc, List<ArchiveMetadataField> configuredFields,
-            Map<String, Entry<String, Boolean>> associatedPIs) {
+    private ArchiveEntry loadHierarchyFromIndex(int order, int hierarchy, SolrDocument doc, List<ArchiveMetadataField> configuredFields,
+            Map<String, Entry<String, Boolean>> associatedPIs) throws PresentationException, IndexUnreachableException {
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
@@ -152,51 +150,39 @@ public class SolrEADParser extends ArchiveParser {
             entry.setLabel(label);
         }
 
-        //        // nodeType
-        //        // get child elements
-        //        List<Element> clist = null;
-        //        Element archdesc = element.getChild("archdesc", NAMESPACE_EAD);
-        //        if (archdesc != null) {
-        //            setNodeType(archdesc, entry);
-        //            Element dsc = archdesc.getChild("dsc", NAMESPACE_EAD);
-        //            if (dsc != null) {
-        //                clist = dsc.getChildren("c", NAMESPACE_EAD);
-        //            }
-        //
-        //        } else {
-        //            setNodeType(element, entry);
-        //
-        //        }
-        //
-        //        if (entry.getNodeType() == null) {
-        //            entry.setNodeType("folder");
-        //        }
-        //
-        //        Entry<String, Boolean> associatedRecordEntry = associatedPIs.get(entry.getId());
-        //        if (associatedRecordEntry != null) {
-        //            entry.setAssociatedRecordPi(associatedRecordEntry.getKey());
-        //            entry.setContainsImage(associatedRecordEntry.getValue());
-        //        }
-        //
-        //        // Set description level value
-        //        entry.setDescriptionLevel(element.getAttributeValue("level"));
-        //
-        //        if (clist == null) {
-        //            clist = element.getChildren("c", NAMESPACE_EAD);
-        //        }
-        //        if (clist != null) {
-        //            int subOrder = 0;
-        //            int subHierarchy = hierarchy + 1;
-        //            for (Element c : clist) {
-        //                ArchiveEntry child = parseElement(subOrder, subHierarchy, c, configuredFields, associatedPIs);
-        //                entry.addSubEntry(child);
-        //                child.setParentNode(entry);
-        //                if (child.isContainsImage()) {
-        //                    entry.setContainsImage(true);
-        //                }
-        //                subOrder++;
-        //            }
-        //        }
+        // nodeType
+        // TODO check otherlevel first
+        entry.setNodeType(SolrTools.getSingleFieldStringValue(doc, "MD_ARCHIVE_ENTRY_LEVEL"));
+        if (entry.getNodeType() == null) {
+            entry.setNodeType("folder");
+        }
+
+        // Associated record
+        Entry<String, Boolean> associatedRecordEntry = associatedPIs.get(entry.getId());
+        if (associatedRecordEntry != null) {
+            entry.setAssociatedRecordPi(associatedRecordEntry.getKey());
+            entry.setContainsImage(associatedRecordEntry.getValue());
+        }
+
+        // Set description level value
+        entry.setDescriptionLevel(SolrTools.getSingleFieldStringValue(doc, "MD_ARCHIVE_ENTRY_LEVEL"));
+
+        // get child elements
+        SolrDocumentList clist =
+                searchIndex.getDocs(SolrConstants.IDDOC_PARENT + ":" + SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), null);
+        if (clist != null) {
+            int subOrder = 0;
+            int subHierarchy = hierarchy + 1;
+            for (SolrDocument c : clist) {
+                ArchiveEntry child = loadHierarchyFromIndex(subOrder, subHierarchy, c, configuredFields, associatedPIs);
+                entry.addSubEntry(child);
+                child.setParentNode(entry);
+                if (child.isContainsImage()) {
+                    entry.setContainsImage(true);
+                }
+                subOrder++;
+            }
+        }
 
         // generate new id, if id is null
         if (entry.getId() == null) {
@@ -205,124 +191,9 @@ public class SolrEADParser extends ArchiveParser {
 
         return entry;
     }
-
-    /**
-     * 
-     * @param node
-     * @param entry
-     */
-    public static void setNodeType(Element node, ArchiveEntry entry) {
-        String type = node.getAttributeValue("otherlevel");
-        if (StringUtils.isBlank(type)) {
-            type = node.getAttributeValue("level");
-        }
-        entry.setNodeType(type);
-    }
-
-    /**
-     * Add the metadata to the configured level
-     *
-     * @param entry
-     * @param emf
-     * @param stringValues
-     */
-    protected static void addFieldToEntry(ArchiveEntry entry, ArchiveMetadataField emf, List<String> stringValues) {
-        if (StringUtils.isBlank(entry.getLabel()) && emf.getXpath().contains("unittitle") && stringValues != null && !stringValues.isEmpty()) {
-            entry.setLabel(stringValues.get(0));
-        }
-        ArchiveMetadataField toAdd = new ArchiveMetadataField(emf.getLabel(), emf.getType(), emf.getXpath(), emf.getXpathType());
-        toAdd.setEadEntry(entry);
-
-        if (stringValues != null && !stringValues.isEmpty()) {
-
-            // split single value into multiple fields
-            for (String stringValue : stringValues) {
-                FieldValue fv = new FieldValue(toAdd);
-                fv.setValue(stringValue);
-                toAdd.addFieldValue(fv);
-            }
-        } else {
-            FieldValue fv = new FieldValue(toAdd);
-            toAdd.addFieldValue(fv);
-        }
-
-        switch (toAdd.getType()) {
-            case 1:
-                entry.getIdentityStatementAreaList().add(toAdd);
-                break;
-            case 2:
-                entry.getContextAreaList().add(toAdd);
-                break;
-            case 3:
-                entry.getContentAndStructureAreaAreaList().add(toAdd);
-                break;
-            case 4:
-                entry.getAccessAndUseAreaList().add(toAdd);
-                break;
-            case 5:
-                entry.getAlliedMaterialsAreaList().add(toAdd);
-                break;
-            case 6:
-                entry.getNotesAreaList().add(toAdd);
-                break;
-            case 7:
-                entry.getDescriptionControlAreaList().add(toAdd);
-                break;
-            default:
-                break;
-        }
-
-    }
-
-    /**
-     *
-     * @param node
-     * @param searchValue
-     */
-    static void searchInNode(ArchiveEntry node, String searchValue) {
-        if (node.getId() != null && node.getId().equals(searchValue)) {
-            // ID match
-            node.markAsFound(true);
-        } else if (node.getLabel() != null && node.getLabel().toLowerCase().contains(searchValue.toLowerCase())) {
-            // mark element + all parents as displayable
-            node.markAsFound(true);
-        }
-        if (node.getSubEntryList() != null) {
-            for (ArchiveEntry child : node.getSubEntryList()) {
-                searchInNode(child, searchValue);
-            }
-        }
-    }
-
-    /**
-     * Loads fields from the given configuration node.
-     *
-     * @param metadataConfig
-     * @return {@link SolrEADParser}
-     * @throws ConfigurationException
-     */
-    public SolrEADParser readConfiguration(HierarchicalConfiguration<ImmutableNode> metadataConfig) throws ConfigurationException {
-        if (metadataConfig == null) {
-            throw new ConfigurationException("No basexMetadata configurations found");
-        }
-        // metadataConfig.setListDelimiter('&');
-        metadataConfig.setExpressionEngine(new XPathExpressionEngine());
-
-        List<HierarchicalConfiguration<ImmutableNode>> configurations = metadataConfig.configurationsAt("/metadata");
-        if (configurations == null) {
-            throw new ConfigurationException("Error reading basexMetadata configuration: No basexMetadata configurations found");
-        }
-        configuredFields = new ArrayList<>(configurations.size());
-        for (HierarchicalConfiguration<ImmutableNode> hc : configurations) {
-            ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("@label"), hc.getInt("@type"), hc.getString("@xpath"),
-                    hc.getString("@xpathType", "element"));
-            configuredFields.add(field);
-        }
-
-        return this;
-    }
-
-    public static String getIdForName(String name) {
-        return name.replaceAll("(?i)\\.xml", "");
+    
+    @Override
+    public String getUrl() {
+        return searchIndex.getSolrServerUrl();
     }
 }

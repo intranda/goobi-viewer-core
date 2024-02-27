@@ -5656,8 +5656,22 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("urls.basex");
     }
 
+    /**
+     * 
+     * @return Configured value
+     * @should return correct value
+     */
     public boolean isArchivesEnabled() {
         return getLocalBoolean("archives[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return Configured value
+     * @should return correct value
+     */
+    public String getArchivesType() {
+        return getLocalString("archives[@type]", "solr").toLowerCase();
     }
 
     public Map<String, String> getArchiveNodeTypes() {

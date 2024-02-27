@@ -31,14 +31,15 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.BaseXException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveManager;
@@ -93,7 +94,7 @@ public class ArchiveBean implements Serializable {
                 if (StringUtils.isNotBlank(selectedEntryId)) {
                     this.setSelectedEntryId(selectedEntryId);
                 }
-            } catch (ArchiveException e) {
+            } catch (PresentationException | IllegalStateException | IndexUnreachableException e) {
                 logger.error("Error initializing archive tree: {}", e.getMessage());
                 Messages.error("Error initializing archive tree: " + e.getMessage());
                 this.databaseLoaded = false;
