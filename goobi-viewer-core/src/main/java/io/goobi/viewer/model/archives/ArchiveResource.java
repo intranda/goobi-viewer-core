@@ -38,6 +38,7 @@ public class ArchiveResource implements Serializable {
 
     private final String databaseName;
     private final String resourceName;
+    private final String resourceIdentifier;
     private final LocalDateTime modifiedDate;
     private final Long size;
 
@@ -48,9 +49,10 @@ public class ArchiveResource implements Serializable {
      * @param modifiedDate
      * @param size
      */
-    public ArchiveResource(String databaseName, String resourceName, String modifiedDate, String size) {
+    public ArchiveResource(String databaseName, String resourceName, String resourceIdentifier, String modifiedDate, String size) {
         this.databaseName = databaseName;
         this.resourceName = resourceName;
+        this.resourceIdentifier = resourceIdentifier;
         this.modifiedDate = LocalDateTime.parse(modifiedDate, DATE_TIME_FORMATTER);
         this.size = Long.parseLong(size);
     }
@@ -67,6 +69,13 @@ public class ArchiveResource implements Serializable {
      */
     public String getResourceName() {
         return resourceName;
+    }
+
+    /**
+     * @return the resourceIdentifier
+     */
+    public String getResourceIdentifier() {
+        return resourceIdentifier;
     }
 
     /**

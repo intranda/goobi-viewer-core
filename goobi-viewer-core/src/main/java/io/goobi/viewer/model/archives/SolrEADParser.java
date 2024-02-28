@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.archives;
 
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -77,13 +76,13 @@ public class SolrEADParser extends ArchiveParser {
                 .search("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name());
 
         List<ArchiveResource> ret = new ArrayList<>();
-        String dbName = "TODO";
-        logger.trace("found {} databases", docs.size());
+        String dbName = "Solr";
         for (SolrDocument doc : docs) {
             String resourceName = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+            String resourceIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
             String lastUpdated = formatDate(SolrTools.getSingleFieldLongValue(doc, SolrConstants.DATEUPDATED));
             String size = "0";
-            ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, lastUpdated, size);
+            ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, resourceIdentifier, lastUpdated, size);
             ret.add(eadResource);
         }
 
@@ -112,7 +111,12 @@ public class SolrEADParser extends ArchiveParser {
      */
     @Override
     public ArchiveEntry loadDatabase(ArchiveResource database) throws PresentationException, IndexUnreachableException {
-        SolrDocument doc = searchIndex.getFirstDoc(SolrConstants.PI + ":" + database.getResourceName(), null);
+        if (database == null) {
+            throw new IllegalArgumentException("database may not be null");
+        }
+
+        logger.trace("loadDatabase: {}", database.getResourceIdentifier());
+        SolrDocument doc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceIdentifier() + '"', null);
         if (doc != null) {
             return loadHierarchyFromIndex(1, 0, doc, configuredFields, associatedRecordMap);
         }
@@ -184,6 +188,7 @@ public class SolrEADParser extends ArchiveParser {
         SolrDocumentList clist =
                 searchIndex.getDocs(SolrConstants.IDDOC_PARENT + ":" + SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), null);
         if (clist != null) {
+            // logger.trace("found {} children", clist.size()); //NOSONAR Debug
             int subOrder = 0;
             int subHierarchy = hierarchy + 1;
             for (SolrDocument c : clist) {

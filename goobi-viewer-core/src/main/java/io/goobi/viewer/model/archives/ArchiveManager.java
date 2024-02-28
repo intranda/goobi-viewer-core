@@ -130,7 +130,7 @@ public class ArchiveManager implements Serializable {
             if (StringUtils.isNotBlank(basexUrl)) {
                 try {
                     parser = new BasexEADParser(basexUrl, searchIndex);
-                    initArchivesFromBaseXServer(parser);
+                    initArchives(parser);
                     //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
                     this.databaseState = DatabaseState.ARCHIVES_LOADED;
                 } catch (PresentationException | IndexUnreachableException e) {
@@ -148,7 +148,7 @@ public class ArchiveManager implements Serializable {
 
     public ArchiveManager(ArchiveParser eadParser, Map<String, String> archiveNodeTypes) {
         try {
-            initArchivesFromBaseXServer(eadParser);
+            initArchives(eadParser);
             //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         } catch (IOException | HTTPException | PresentationException | IndexUnreachableException e) {
@@ -171,8 +171,8 @@ public class ArchiveManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private boolean initArchivesFromBaseXServer(ArchiveParser eadParser)
-            throws IOException, HTTPException, PresentationException, IndexUnreachableException {
+    private boolean initArchives(ArchiveParser eadParser) throws IOException, HTTPException, PresentationException, IndexUnreachableException {
+        logger.trace("initArchives");
         //initialize archives with 'null' archive tree values
         List<ArchiveResource> databases = eadParser.getPossibleDatabases();
         Map<ArchiveResource, ArchiveTree> cachedDatabases = this.archives;
@@ -439,7 +439,9 @@ public class ArchiveManager implements Serializable {
             try {
                 if (this.archives.get(resource) == null || isOutdated(resource)) {
                     ArchiveTree archiveTree = loadDatabase(eadParser, resource);
-                    this.archives.put(resource, archiveTree);
+                    if (archiveTree != null) {
+                        this.archives.put(resource, archiveTree);
+                    }
                 }
             } catch (IOException | HTTPException e) {
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
@@ -497,8 +499,13 @@ public class ArchiveManager implements Serializable {
         HierarchicalConfiguration<ImmutableNode> baseXMetadataConfig = DataManager.getInstance().getConfiguration().getArchiveMetadataConfig();
         eadParser.readConfiguration(baseXMetadataConfig);
         ArchiveEntry rootElement = eadParser.loadDatabase(archive);
-        logger.info("Loaded EAD database: {}", archive.getCombinedName());
-        return loadTree(rootElement);
+        if (rootElement != null) {
+            logger.info("Loaded EAD database: {}", archive.getCombinedName());
+            return loadTree(rootElement);
+        }
+
+        logger.error("Failed to load EAD database: {}", archive.getCombinedName());
+        return null;
     }
 
     /**
@@ -537,9 +544,10 @@ public class ArchiveManager implements Serializable {
      * request, or if an archive was added or removed. In these cases, the list of records associated with an archive entry is updated as well
      */
     public void updateArchiveList() {
+        // logger.trace("updateArchiveList"); //NOSONAR Debug
         try {
 
-            if (this.initArchivesFromBaseXServer(eadParser)) {
+            if (this.initArchives(eadParser)) {
                 this.eadParser.updateAssociatedRecordMap();
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
             }
