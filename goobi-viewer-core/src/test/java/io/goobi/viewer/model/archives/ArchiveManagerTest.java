@@ -59,10 +59,11 @@ class ArchiveManagerTest extends AbstractTest {
             ArchiveEntry root = tempParser.parseEadFile(doc);
 
             possibleDatabases = new ArrayList<>();
-            possibleDatabases.add(new ArchiveResource("database 1", "resource 1",
+            possibleDatabases.add(new ArchiveResource("database 1", "resource 1", "r1",
                     ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
             possibleDatabases
-                    .add(new ArchiveResource("database 1", "resource 2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+                    .add(new ArchiveResource("database 1", "resource 2", "r2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER),
+                            "10"));
 
             eadParser = new BasexEADParser(null, null) {
                 public List<ArchiveResource> getPossibleDatabases() {
@@ -124,7 +125,7 @@ class ArchiveManagerTest extends AbstractTest {
     void testAddNewArchive() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
 
-        ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3",
+        ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3", "r3",
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
         possibleDatabases.add(newArchive);
         assertNull(archiveManager.getArchive("database 1", "resource 3"));
