@@ -21,7 +21,9 @@
  */
 package io.goobi.viewer.model.archives;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,17 +78,28 @@ public class SolrEADParser extends ArchiveParser {
 
         List<ArchiveResource> ret = new ArrayList<>();
         String dbName = "TODO";
+        logger.trace("found {} databases", docs.size());
         for (SolrDocument doc : docs) {
             String resourceName = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
-            Long lastUpdatedTimestamp = SolrTools.getSingleFieldLongValue(doc, SolrConstants.DATEUPDATED);
-            LocalDateTime ldtDateUpdated = lastUpdatedTimestamp != null ? DateTools.getLocalDateTimeFromMillis(lastUpdatedTimestamp, false) : null;
-            String lastUpdated = ldtDateUpdated != null ? DateTools.FORMATTERCNDATE.format(ldtDateUpdated) : null;
+            String lastUpdated = formatDate(SolrTools.getSingleFieldLongValue(doc, SolrConstants.DATEUPDATED));
             String size = "0";
             ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, lastUpdated, size);
             ret.add(eadResource);
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     * @param timestamp
+     * @return Given timestamp formatted as an ISO instant; null if timestamp null
+     * @should format timestamp correctly
+     */
+    static String formatDate(Long timestamp) {
+        ZonedDateTime ldtDateUpdated =
+                timestamp != null ? DateTools.getLocalDateTimeFromMillis(timestamp, false).atZone(ZoneOffset.UTC) : null;
+        return ldtDateUpdated != null ? DateTools.FORMATTERISO8601DATETIMEINSTANT.format(ldtDateUpdated) : null;
     }
 
     /**
@@ -191,7 +204,7 @@ public class SolrEADParser extends ArchiveParser {
 
         return entry;
     }
-    
+
     @Override
     public String getUrl() {
         return searchIndex.getSolrServerUrl();
