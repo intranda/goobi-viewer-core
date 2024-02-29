@@ -24,6 +24,7 @@ package io.goobi.viewer.model.archives;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -116,9 +117,22 @@ public class SolrEADParser extends ArchiveParser {
         }
 
         logger.trace("loadDatabase: {}", database.getResourceIdentifier());
-        SolrDocument doc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceIdentifier() + '"', null);
-        if (doc != null) {
-            return loadHierarchyFromIndex(1, 0, doc, configuredFields, associatedRecordMap);
+        SolrDocument topDoc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceIdentifier() + '"', null);
+        if (topDoc != null) {
+            SolrDocumentList archiveDocs = searchIndex.search(SolrConstants.PI_TOPSTRUCT + ":\"" + database.getResourceIdentifier() + '"', null);
+            Map<String, List<SolrDocument>> archiveDocMap = new HashMap<>();
+            for (SolrDocument doc : archiveDocs) {
+                String iddocParent = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
+                if (iddocParent != null) {
+                    List<SolrDocument> docList = archiveDocMap.computeIfAbsent(iddocParent, k -> new ArrayList<>());
+                    docList.add(doc);
+                }
+            }
+            try {
+                return loadHierarchyFromIndex(1, 0, topDoc, archiveDocMap, configuredFields, associatedRecordMap);
+            } finally {
+                logger.trace("Database loaded.");
+            }
         }
 
         return null;
@@ -127,14 +141,16 @@ public class SolrEADParser extends ArchiveParser {
     /**
      * @param order
      * @param hierarchy
-     * @param doc
+     * @param topDoc
+     * @param archiveDocMap
      * @param configuredFields
      * @param associatedPIs
      * @return {@link ArchiveEntry}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private ArchiveEntry loadHierarchyFromIndex(int order, int hierarchy, SolrDocument doc, List<ArchiveMetadataField> configuredFields,
+    private ArchiveEntry loadHierarchyFromIndex(int order, int hierarchy, SolrDocument doc, Map<String, List<SolrDocument>> archiveDocMap,
+            List<ArchiveMetadataField> configuredFields,
             Map<String, Entry<String, Boolean>> associatedPIs) throws PresentationException, IndexUnreachableException {
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
@@ -185,14 +201,15 @@ public class SolrEADParser extends ArchiveParser {
         entry.setDescriptionLevel(SolrTools.getSingleFieldStringValue(doc, "MD_ARCHIVE_ENTRY_LEVEL"));
 
         // get child elements
-        SolrDocumentList clist =
-                searchIndex.getDocs(SolrConstants.IDDOC_PARENT + ":" + SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), null);
-        if (clist != null) {
+        //        SolrDocumentList clist =
+        //                searchIndex.getDocs(SolrConstants.IDDOC_PARENT + ":" + SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), null);
+        String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+        if (archiveDocMap.containsKey(iddoc)) {
             // logger.trace("found {} children", clist.size()); //NOSONAR Debug
             int subOrder = 0;
             int subHierarchy = hierarchy + 1;
-            for (SolrDocument c : clist) {
-                ArchiveEntry child = loadHierarchyFromIndex(subOrder, subHierarchy, c, configuredFields, associatedPIs);
+            for (SolrDocument c : archiveDocMap.get(iddoc)) {
+                ArchiveEntry child = loadHierarchyFromIndex(subOrder, subHierarchy, c, archiveDocMap, configuredFields, associatedPIs);
                 entry.addSubEntry(child);
                 child.setParentNode(entry);
                 if (child.isContainsImage()) {
