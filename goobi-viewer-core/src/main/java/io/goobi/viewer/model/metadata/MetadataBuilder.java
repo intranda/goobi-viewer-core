@@ -224,9 +224,9 @@ public class MetadataBuilder {
 
     private static IMetadataValue getFieldValue(MetadataParameter param, IMetadataValue keyValue, IMetadataValue altKeyValue) {
         IMetadataValue value;
-        if (keyValue != null) {
+        if (keyValue != null && !keyValue.isEmpty()) {
             value = keyValue;
-        } else if (altKeyValue != null) {
+        } else if (altKeyValue != null && !altKeyValue.isEmpty()) {
             value = altKeyValue;
         } else if (StringUtils.isNotBlank(param.getDefaultValue())) {
             // Translate key, if no index field found
