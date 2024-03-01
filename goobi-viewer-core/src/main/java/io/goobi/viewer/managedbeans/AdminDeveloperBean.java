@@ -48,6 +48,7 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
+import io.goobi.viewer.controller.variablereplacer.VariableReplacer;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
@@ -98,6 +99,8 @@ public class AdminDeveloperBean implements Serializable {
 
     private static final String[] FILES_TO_INCLUDE = new String[] { "config_viewer-module-crowdsourcing.xml", "messages_*.properties" };
 
+    private static final long CREATE_DEVELOPER_PACKAGE_TIMEOUT = 120_000; //2 min
+
     @Inject
     @Push
     private PushContext downloadContext;
@@ -134,18 +137,30 @@ public class AdminDeveloperBean implements Serializable {
         try {
             sendDownloadProgressUpdate(0);
             Path zipPath = createZipFile(DataManager.getInstance().getConfiguration().getCreateDeveloperPackageScriptPath());
-//            byte[] zip = createDeveloperArchive(p -> sendDownloadProgressUpdate(0.1f + p * 0.8f));
+            sendDownloadProgressUpdate(1);
             logger.debug("Sending file...");
-            Faces.sendFile(zip, this.viewerThemeName + "_developer.zip", true);
+            Faces.sendFile(zipPath.toFile(), this.viewerThemeName + "_developer.zip", true);
             logger.debug("Done sending file");
             sendDownloadFinished();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.error("Bean thread interrupted while waiting for bash call to finish");
             sendDownloadError("Backing thread interrupted");
-        } catch (IOException | JDOMException e) {
+        } catch (IOException e) {
             logger.error("Error creating zip archive: {}", e.toString());
             sendDownloadError("Error creating zip archive: " + e.toString());
+        }
+    }
+    
+    
+
+    private Path createZipFile(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
+        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
+        ShellCommand command = new ShellCommand(commandString.split("\\s+"));
+        if(command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT) > 0) {
+            throw new IOException(command.getErrorOutput());
+        } else {            
+            return Path.of(command.getOutput());
         }
     }
 
