@@ -104,7 +104,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * 
      * @param language
-     * @return
+     * @return Language specific variant of field if it contains a placeholder; otherwise unaltered field
      */
     public String getFieldForLanguage(String language) {
         if (field != null && field.endsWith(SolrConstants.MIDFIX_LANG + "{}")) {
@@ -201,7 +201,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
         if (recordsAndAnchorsOnly) {
             filterQueries.add(SearchHelper.ALL_RECORDS_QUERY);
         }
-        
+
         return this;
     }
 }

@@ -344,7 +344,7 @@ public class GeoMap implements Serializable {
     /**
      * Resets the cached feature string.
      * 
-     * return {@link IMetadataValue}
+     * @return {@link IMetadataValue}
      */
     public IMetadataValue getTitles() {
         synchronized (lockTranslations) {

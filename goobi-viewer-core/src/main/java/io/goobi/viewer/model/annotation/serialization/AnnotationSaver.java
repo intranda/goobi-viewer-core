@@ -28,7 +28,6 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 /**
  * Save WebAnnotations to a persistence contex
  *
- * @param <T>
  * @author florian
  *
  */
