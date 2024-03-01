@@ -67,12 +67,14 @@ public class ArchiveMetadataField {
      * @param type
      * @param xpath
      * @param xpathType
+     * @param indexField
      */
-    public ArchiveMetadataField(String label, Integer type, String xpath, String xpathType) {
+    public ArchiveMetadataField(String label, Integer type, String xpath, String xpathType, String indexField) {
         this.label = label;
         this.type = type;
         this.xpath = xpath;
         this.xpathType = xpathType;
+        this.indexField = indexField;
     }
 
     public boolean isFilled() {

@@ -427,7 +427,7 @@ public class ArchiveBean implements Serializable {
     }
 
     public void updateArchives() {
-        // ogger.trace("updateArchives"); //NOSONAR Debug
+        // logger.trace("updateArchives"); //NOSONAR Debug
         this.archiveManager.updateArchiveList();
 
     }

@@ -127,7 +127,7 @@ public abstract class ArchiveParser {
         if (StringUtils.isBlank(entry.getLabel()) && emf.getXpath().contains("unittitle") && stringValues != null && !stringValues.isEmpty()) {
             entry.setLabel(stringValues.get(0));
         }
-        ArchiveMetadataField toAdd = new ArchiveMetadataField(emf.getLabel(), emf.getType(), emf.getXpath(), emf.getXpathType());
+        ArchiveMetadataField toAdd = new ArchiveMetadataField(emf.getLabel(), emf.getType(), emf.getXpath(), emf.getXpathType(), emf.getIndexField());
         toAdd.setEadEntry(entry);
 
         if (stringValues != null && !stringValues.isEmpty()) {
@@ -212,7 +212,7 @@ public abstract class ArchiveParser {
         configuredFields = new ArrayList<>(configurations.size());
         for (HierarchicalConfiguration<ImmutableNode> hc : configurations) {
             ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("@label"), hc.getInt("@type"), hc.getString("@xpath"),
-                    hc.getString("@xpathType", "element"));
+                    hc.getString("@xpathType", "element"), hc.getString("@indexField"));
             configuredFields.add(field);
         }
 
@@ -222,6 +222,6 @@ public abstract class ArchiveParser {
     public static String getIdForName(String name) {
         return name.replaceAll("(?i)\\.xml", "");
     }
-    
+
     public abstract String getUrl();
 }

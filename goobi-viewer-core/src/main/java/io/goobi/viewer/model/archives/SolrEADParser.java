@@ -24,10 +24,13 @@ package io.goobi.viewer.model.archives;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +55,14 @@ public class SolrEADParser extends ArchiveParser {
 
     private static final Logger logger = LogManager.getLogger(SolrEADParser.class);
 
+    private static final String FIELD_ARCHIVE_ENTRY_ID = "MD_ARCHIVE_ENTRY_ID";
+    private static final String FIELD_ARCHIVE_ENTRY_LEVEL = "MD_ARCHIVE_ENTRY_LEVEL";
+
+    private static final List<String> SOLR_FIELDS_DATABASES =
+            Arrays.asList(SolrConstants.DATEUPDATED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
+    private static final String[] SOLR_FIELDS_ENTRIES = { SolrConstants.IDDOC,
+            SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_ID, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.TITLE };
+
     /**
      *
      * @param searchIndex
@@ -74,7 +85,7 @@ public class SolrEADParser extends ArchiveParser {
     public List<ArchiveResource> getPossibleDatabases() throws PresentationException, IndexUnreachableException {
         List<SolrDocument> docs = DataManager.getInstance()
                 .getSearchIndex()
-                .search("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name());
+                .search("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name(), SOLR_FIELDS_DATABASES);
 
         List<ArchiveResource> ret = new ArrayList<>();
         String dbName = "Solr";
@@ -117,9 +128,21 @@ public class SolrEADParser extends ArchiveParser {
         }
 
         logger.trace("loadDatabase: {}", database.getResourceIdentifier());
-        SolrDocument topDoc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceIdentifier() + '"', null);
+        List<String> solrFields = new ArrayList<>(Arrays.asList(SOLR_FIELDS_ENTRIES));
+        SolrDocument topDoc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceIdentifier() + '"', solrFields);
         if (topDoc != null) {
-            SolrDocumentList archiveDocs = searchIndex.search(SolrConstants.PI_TOPSTRUCT + ":\"" + database.getResourceIdentifier() + '"', null);
+            // Collect mapped metadata field names
+            Set<String> additionalMetadataFields = new HashSet<>();
+            for (ArchiveMetadataField amf : configuredFields) {
+                if (StringUtils.isNotEmpty(amf.getIndexField())) {
+                    additionalMetadataFields.add(amf.getIndexField());
+                    logger.trace("added md field: {}", amf.getIndexField());
+                }
+            }
+            solrFields.addAll(additionalMetadataFields);
+
+            SolrDocumentList archiveDocs = searchIndex.search(SolrConstants.PI_TOPSTRUCT + ":\"" + database.getResourceIdentifier() + "\" -"
+                    + SolrConstants.PI + ":\"" + database.getResourceIdentifier() + '"', solrFields);
             Map<String, List<SolrDocument>> archiveDocMap = new HashMap<>();
             for (SolrDocument doc : archiveDocs) {
                 String iddocParent = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
@@ -173,7 +196,7 @@ public class SolrEADParser extends ArchiveParser {
             addFieldToEntry(entry, emf, stringValues);
         }
 
-        String id = SolrTools.getSingleFieldStringValue(doc, "MD_ARCHIVE_ENTRY_ID");
+        String id = SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_ID);
         if (StringUtils.isNotEmpty(id)) {
             entry.setId(id);
         }
@@ -185,7 +208,7 @@ public class SolrEADParser extends ArchiveParser {
 
         // nodeType
         // TODO check otherlevel first
-        entry.setNodeType(SolrTools.getSingleFieldStringValue(doc, "MD_ARCHIVE_ENTRY_LEVEL"));
+        entry.setNodeType(SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_LEVEL));
         if (entry.getNodeType() == null) {
             entry.setNodeType("folder");
         }
@@ -198,7 +221,7 @@ public class SolrEADParser extends ArchiveParser {
         }
 
         // Set description level value
-        entry.setDescriptionLevel(SolrTools.getSingleFieldStringValue(doc, "MD_ARCHIVE_ENTRY_LEVEL"));
+        entry.setDescriptionLevel(SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_LEVEL));
 
         // get child elements
         //        SolrDocumentList clist =
