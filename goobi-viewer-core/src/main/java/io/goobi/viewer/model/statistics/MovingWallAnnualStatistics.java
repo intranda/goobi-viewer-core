@@ -64,6 +64,7 @@ public class MovingWallAnnualStatistics {
 
     /**
      * @param separator
+     * @return CSV {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
