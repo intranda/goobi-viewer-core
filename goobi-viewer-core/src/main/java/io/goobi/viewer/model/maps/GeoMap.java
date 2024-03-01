@@ -27,48 +27,30 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.solr.SolrTools;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -304,24 +286,32 @@ public class GeoMap implements Serializable {
     public String getInitialView() {
         if (StringUtils.isBlank(initialView)) {
             return DataManager.getInstance().getConfiguration().getGeomapDefaultView().getGeoJson();
-        } else {
-            return initialView;
         }
+        return initialView;
     }
 
     /**
      * Link to the html page to render for oembed
      *
-     * @return
+     * @return {@link URI}
      */
     public URI getOEmbedLink() {
         return URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/embed/map/" + getId() + "/");
     }
 
+    /**
+     * 
+     * @return {@link URI}
+     */
     public URI getOEmbedURI() {
         return getOEmbedURI(null);
     }
 
+    /**
+     * 
+     * @param linkTarget
+     * @return {@link URI}
+     */
     public URI getOEmbedURI(String linkTarget) {
         try {
             String linkURI = getOEmbedLink().toString();
@@ -353,8 +343,9 @@ public class GeoMap implements Serializable {
 
     /**
      * Resets the cached feature string.
+     * 
+     * return {@link IMetadataValue}
      */
-
     public IMetadataValue getTitles() {
         synchronized (lockTranslations) {
             Map<String, String> titles = translations.stream()
