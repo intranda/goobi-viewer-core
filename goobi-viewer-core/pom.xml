@@ -70,7 +70,7 @@
 		<sonar.java.target>17</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>200</checkstyle.max.violations>
+		<checkstyle.max.violations>140</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
