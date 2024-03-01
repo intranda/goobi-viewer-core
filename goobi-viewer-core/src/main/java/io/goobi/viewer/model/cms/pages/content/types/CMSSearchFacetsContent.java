@@ -73,7 +73,7 @@ public class CMSSearchFacetsContent extends CMSContent {
      * If <code>facetField</code> contains a language code placeholder, this method replaces it with the give language code.
      * 
      * @param language ISO-2 language code
-     * @return
+     * @return Configured facetField, placeholder replaced with given language
      */
     public String getFacetFieldForLanguage(String language) {
         if (facetField != null && language != null) {

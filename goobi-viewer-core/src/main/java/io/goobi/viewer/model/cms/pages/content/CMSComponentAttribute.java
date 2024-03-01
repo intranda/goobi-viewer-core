@@ -115,21 +115,32 @@ public class CMSComponentAttribute implements Serializable {
     public boolean isBooleanValue() {
         return booleanValue;
     }
-    
+
+    /**
+     * 
+     * @param element
+     * @return {@link CMSComponentAttribute}
+     */
     public static CMSComponentAttribute loadFromXML(Element element) {
         String attrName = element.getAttributeValue("name");
         String attrLabel = element.getAttributeValue("label");
         String attrType = element.getAttributeValue("type");
         boolean bool = Optional.ofNullable(element.getAttributeValue("boolean")).map(Boolean::parseBoolean).orElse(false);
         boolean display = Optional.ofNullable(element.getAttributeValue("display")).map(Boolean::parseBoolean).orElse(true);
-        List<Option> attrOptions = XmlTools.evaluateToElements("value", element, null).stream().map(CMSComponentAttribute::createOption).collect(Collectors.toList());
+        List<Option> attrOptions =
+                XmlTools.evaluateToElements("value", element, null).stream().map(CMSComponentAttribute::createOption).collect(Collectors.toList());
         String value = XmlTools.evaluateToFirstElement("value[@default='true']", element, null).map(Element::getText).orElse("");
         if (!display && StringUtils.isBlank(value)) {
             value = attrOptions.iterator().next().getValue();
         }
         return new CMSComponentAttribute(attrName, attrLabel, attrType, display, bool, attrOptions, value);
     }
-    
+
+    /**
+     * 
+     * @param element
+     * @return {@link Option}
+     */
     private static Option createOption(Element element) {
         String label = element.getAttributeValue("label");
         String value = element.getText();
@@ -138,6 +149,5 @@ public class CMSComponentAttribute implements Serializable {
         }
         return new Option(value, label);
     }
-
 
 }

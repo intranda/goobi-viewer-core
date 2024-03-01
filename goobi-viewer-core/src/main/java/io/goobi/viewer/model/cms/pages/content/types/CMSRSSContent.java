@@ -101,7 +101,7 @@ public class CMSRSSContent extends CMSContent {
     /**
      * Alias for {@link #getItemsPerView()}. Used in legacy cms-templates
      * 
-     * @return
+     * @return an int
      */
     public int getElementsPerPage() {
         return getItemsPerView();
