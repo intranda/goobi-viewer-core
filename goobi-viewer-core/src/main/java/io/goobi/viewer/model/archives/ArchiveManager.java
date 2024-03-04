@@ -120,9 +120,10 @@ public class ArchiveManager implements Serializable {
         if ("solr".equals(DataManager.getInstance().getConfiguration().getArchivesType())) {
             try {
                 parser = new SolrEADParser(searchIndex);
+                initArchives(parser);
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
-            } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Failed to retrieve database names from Solr: {}", basexUrl, e.toString());
+            } catch (PresentationException | IndexUnreachableException | IOException | HTTPException e) {
+                logger.error("Failed to retrieve database names from Solr: {}", e.toString());
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
             }
         } else {
@@ -573,7 +574,7 @@ public class ArchiveManager implements Serializable {
      * request, or if an archive was added or removed. In these cases, the list of records associated with an archive entry is updated as well
      */
     public void updateArchiveList() {
-        // logger.trace("updateArchiveList"); //NOSONAR Debug
+        logger.trace("updateArchiveList"); //NOSONAR Debug
         try {
 
             if (this.initArchives(eadParser)) {
