@@ -135,10 +135,10 @@ public class AdminDeveloperBean implements Serializable {
     
     
     public void downloadDeveloperArchive() {
-       byte[] bytes;
+       Path zipPath;
         try {
             sendDownloadProgressUpdate(0);
-            bytes = createZipArchive(DataManager.getInstance().getConfiguration().getCreateDeveloperPackageScriptPath());
+            zipPath = createZipFile(DataManager.getInstance().getConfiguration().getCreateDeveloperPackageScriptPath());
             sendDownloadProgressUpdate(1);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -150,18 +150,15 @@ public class AdminDeveloperBean implements Serializable {
             sendDownloadError("Error creating zip archive: " + e.toString());
             return;
         }
-//        try {
-            logger.debug("Sending file...");
-//            Path zipPath = Path.of("/home/florian/tmp/viewer/viewer-test.zip");
-//            FileInputStream fis = new FileInputStream(zipPath.toFile());
-            
-            Faces.sendFile(bytes, this.viewerThemeName + "_developer.zip", true);
+        try {
+            logger.debug("Sending file...");            
+            Faces.sendFile(zipPath, this.viewerThemeName + "_developer.zip", true);
             logger.debug("Done sending file");
             sendDownloadFinished();
-//        } catch (IOException e) {
-//            logger.error("Error creating zip archive: {}", e.toString());
-//            sendDownloadError("Error creating zip archive: " + e.toString());
-//        }
+        } catch (IOException e) {
+            logger.error("Error creating zip archive: {}", e.toString());
+            sendDownloadError("Error creating zip archive: " + e.toString());
+        }
     }
     
     private byte[] createZipArchive(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
