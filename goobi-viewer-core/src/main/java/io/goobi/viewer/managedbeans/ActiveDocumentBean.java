@@ -83,6 +83,7 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
+import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
@@ -2723,7 +2724,10 @@ public class ActiveDocumentBean implements Serializable {
     public List<String> getExternalResourceUrls() {
         List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
         VariableReplacer vr = new VariableReplacer(getTopDocument());
-        List<String> urls = urlTemplates.stream().flatMap(templ -> vr.replace(templ).stream()).toList();
+        List<String> urls = urlTemplates.stream()
+                .flatMap(templ -> vr.replace(templ).stream())
+                .filter(url -> ExternalFilesDownloader.resourceExists(url))
+                .toList();
         return urls;
     }
 

@@ -3,6 +3,7 @@ package io.goobi.viewer.model.files.external;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -56,7 +57,17 @@ public class ExternalFilesDownloader {
 
     }
 
-    public boolean resourceExists(URI uri) {
+
+    public static boolean resourceExists(String url) {
+        try {
+            return resourceExists(new URI(url));
+        } catch (URISyntaxException e) {
+            logger.error("Error checking resource at {}. Not a valid url", url);
+            return false;
+        }
+    }
+    
+    public static boolean resourceExists(URI uri) {
         logger.trace("checking url {}", uri);
         switch (uri.getScheme()) {
             case "http":
@@ -74,7 +85,7 @@ public class ExternalFilesDownloader {
         }
     }
 
-    private boolean checkHttpResource(URI uri) throws IOException {
+    private static boolean checkHttpResource(URI uri) throws IOException {
         try (final CloseableHttpClient client = createHttpClient()) {
             try (final CloseableHttpResponse response = createHttpHeadResponse(client, uri)) {
                 return Status.OK.getStatusCode() == response.getStatusLine().getStatusCode();
@@ -82,7 +93,7 @@ public class ExternalFilesDownloader {
         }
     }
 
-    private boolean checkFileResource(URI uri) {
+    private static boolean checkFileResource(URI uri) {
         Path sourcePath = PathConverter.getPath(uri);
         return Files.exists(sourcePath);
     }
@@ -220,4 +231,5 @@ public class ExternalFilesDownloader {
         request.setConfig(config);
         return client.execute(request);
     }
+
 }
