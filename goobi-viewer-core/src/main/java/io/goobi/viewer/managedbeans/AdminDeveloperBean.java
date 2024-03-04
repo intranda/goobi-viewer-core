@@ -2,6 +2,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
@@ -134,33 +135,58 @@ public class AdminDeveloperBean implements Serializable {
     
     
     public void downloadDeveloperArchive() {
+       byte[] bytes;
         try {
             sendDownloadProgressUpdate(0);
-            Path zipPath = createZipFile(DataManager.getInstance().getConfiguration().getCreateDeveloperPackageScriptPath());
+            bytes = createZipArchive(DataManager.getInstance().getConfiguration().getCreateDeveloperPackageScriptPath());
             sendDownloadProgressUpdate(1);
-            logger.debug("Sending file...");
-            Faces.sendFile(zipPath.toFile(), this.viewerThemeName + "_developer.zip", true);
-            logger.debug("Done sending file");
-            sendDownloadFinished();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.error("Bean thread interrupted while waiting for bash call to finish");
             sendDownloadError("Backing thread interrupted");
+            return;
         } catch (IOException e) {
             logger.error("Error creating zip archive: {}", e.toString());
             sendDownloadError("Error creating zip archive: " + e.toString());
+            return;
         }
+//        try {
+            logger.debug("Sending file...");
+//            Path zipPath = Path.of("/home/florian/tmp/viewer/viewer-test.zip");
+//            FileInputStream fis = new FileInputStream(zipPath.toFile());
+            
+            Faces.sendFile(bytes, this.viewerThemeName + "_developer.zip", true);
+            logger.debug("Done sending file");
+            sendDownloadFinished();
+//        } catch (IOException e) {
+//            logger.error("Error creating zip archive: {}", e.toString());
+//            sendDownloadError("Error creating zip archive: " + e.toString());
+//        }
     }
     
-    
+    private byte[] createZipArchive(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
+        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
+        ShellCommand command = new ShellCommand(commandString.split("\\s+"));
+        int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
+        String out = command.getOutput();
+        String error = command.getErrorOutput();
+        if(ret > 0) {
+            throw new IOException(error);
+        } else {            
+            return out.getBytes("utf-8");
+        }
+    }
 
     private Path createZipFile(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
         String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
-        if(command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT) > 0) {
-            throw new IOException(command.getErrorOutput());
+        int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
+        String out = command.getOutput();
+        String error = command.getErrorOutput();
+        if(ret > 0) {
+            throw new IOException(error);
         } else {            
-            return Path.of(command.getOutput());
+            return Path.of(out);
         }
     }
 
