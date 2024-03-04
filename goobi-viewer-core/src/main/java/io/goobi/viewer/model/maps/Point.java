@@ -29,8 +29,8 @@ import org.json.JSONObject;
  */
 public class Point implements IArea {
 
-    public final double lng;
-    public final double lat;
+    private final double lng;
+    private final double lat;
 
     /**
      * First longitide in eastern direction, then latitude in northern direction
@@ -84,9 +84,21 @@ public class Point implements IArea {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             Point other = (Point) obj;
             return this.lat == other.lat && this.lng == other.lng;
-        } else {
-            return false;
         }
+        return false;
     }
 
+    /**
+     * @return the lng
+     */
+    public double getLng() {
+        return lng;
+    }
+
+    /**
+     * @return the lat
+     */
+    public double getLat() {
+        return lat;
+    }
 }

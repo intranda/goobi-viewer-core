@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
  * ServletUtils class.
  * </p>
  */
-public class ServletUtils {
+public final class ServletUtils {
 
     /**
      * Private constructor.

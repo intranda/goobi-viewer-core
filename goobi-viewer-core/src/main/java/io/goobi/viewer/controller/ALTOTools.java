@@ -185,7 +185,7 @@ public final class ALTOTools {
     private static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
         value =
-                value.replaceAll(TAG_LABEL_IGNORE_REGEX, ""); //NOSONAR TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions which would cause catastrophic backtracking
+                value.replaceAll(TAG_LABEL_IGNORE_REGEX, ""); //NOSONAR TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions
         Type type = Type.getByLabel(tag.getType());
         if (type == null) {
             logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.MISC.name());
@@ -457,7 +457,6 @@ public final class ALTOTools {
      * @param charset
      * @param searchTerms Set of search terms
      * @param rotation Image rotation in degrees
-     * @param rotation2 
      * @return a {@link java.util.List} object.
      * @should match hyphenated words
      * @should match phrases

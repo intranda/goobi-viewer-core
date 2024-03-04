@@ -71,7 +71,10 @@ public class RecordGeoMap {
     private final List<FeatureSetConfiguration> featureSetConfigs;
 
     /**
-     * Create a new geomap with features from the given StructElement and related documents
+     * Create a new geomap with features from the given StructElement and related documents.
+     * 
+     * @param struct
+     * @param relatedDocuments
      */
     public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments) throws DAOException {
         this(struct, relatedDocuments, DataManager.getInstance().getDao(),
@@ -79,7 +82,12 @@ public class RecordGeoMap {
     }
 
     /**
-     * Create a new geomap with features from the given StructElement and related documents
+     * Create a new geomap with features from the given StructElement and related documents.
+     * 
+     * @param struct
+     * @param relatedDocuments
+     * @param dao
+     * @param featureSetConfigs
      */
     public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments, IDAO dao, List<FeatureSetConfiguration> featureSetConfigs) {
         this.dao = dao;
@@ -198,10 +206,10 @@ public class RecordGeoMap {
                     .map(DisplayUserGeneratedContent::new)
                     .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
                     .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
-                    .collect(Collectors.toList());
+                    .toList();
             for (DisplayUserGeneratedContent anno : annos) {
-                if (anno.getAnnotationBody() instanceof TypedResource) {
-                    GeoMapFeature feature = new GeoMapFeature(((TypedResource) anno.getAnnotationBody()).asJson());
+                if (anno.getAnnotationBody() instanceof TypedResource tr) {
+                    GeoMapFeature feature = new GeoMapFeature(tr.asJson());
                     feature.setPageNo(anno.getPage());
                     feature.setDocumentId(anno.getId().toString());
                     features.add(feature.getJsonObject().toString());
