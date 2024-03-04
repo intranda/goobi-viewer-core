@@ -84,7 +84,7 @@ public class ArchiveBean implements Serializable {
     }
 
     public void initializeArchiveTree(String selectedEntryId) {
-
+        logger.trace("initializeArchiveTree: {}", selectedEntryId);
         if (getCurrentArchive() != null) {
             try {
                 this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));

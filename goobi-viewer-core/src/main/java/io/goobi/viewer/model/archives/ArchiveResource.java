@@ -37,8 +37,10 @@ public class ArchiveResource implements Serializable {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private final String databaseName;
+    /** Displayed name of the resource. */
     private final String resourceName;
-    private final String resourceIdentifier;
+    /** Unique identifier of the resource. */
+    private final String resourceId;
     private final LocalDateTime modifiedDate;
     private final Long size;
 
@@ -46,13 +48,14 @@ public class ArchiveResource implements Serializable {
      * 
      * @param databaseName
      * @param resourceName
+     * @param resourceId
      * @param modifiedDate
      * @param size
      */
-    public ArchiveResource(String databaseName, String resourceName, String resourceIdentifier, String modifiedDate, String size) {
+    public ArchiveResource(String databaseName, String resourceName, String resourceId, String modifiedDate, String size) {
         this.databaseName = databaseName;
         this.resourceName = resourceName;
-        this.resourceIdentifier = resourceIdentifier;
+        this.resourceId = resourceId;
         this.modifiedDate = LocalDateTime.parse(modifiedDate, DATE_TIME_FORMATTER);
         this.size = Long.parseLong(size);
     }
@@ -72,10 +75,10 @@ public class ArchiveResource implements Serializable {
     }
 
     /**
-     * @return the resourceIdentifier
+     * @return the resourceId
      */
-    public String getResourceIdentifier() {
-        return resourceIdentifier;
+    public String getResourceId() {
+        return resourceId;
     }
 
     /**
@@ -105,10 +108,6 @@ public class ArchiveResource implements Serializable {
 
     public String getDatabaseId() {
         return getDatabaseName();
-    }
-
-    public String getResourceId() {
-        return resourceName.replaceAll("(?i)\\.xml", "");
     }
 
     @Override

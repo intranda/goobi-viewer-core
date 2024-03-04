@@ -544,7 +544,7 @@ public class ArchiveEntry {
     }
 
     public List<ArchiveMetadataField> getAllAreaLists() {
-        logger.trace("getAllAreaLists ({})", id);
+        // logger.trace("getAllAreaLists ({})", id);
         List<ArchiveMetadataField> ret = new ArrayList<>(getIdentityStatementAreaList().size()
                 + getContextAreaList().size()
                 + getContentAndStructureAreaAreaList().size()
@@ -560,7 +560,7 @@ public class ArchiveEntry {
         ret.addAll(getNotesAreaList());
         ret.addAll(getDescriptionControlAreaList());
 
-        logger.trace("getAllAreaLists END");
+        // logger.trace("getAllAreaLists END");
         return ret;
     }
 

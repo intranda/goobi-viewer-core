@@ -63,6 +63,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.archives.SolrEADParser;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -433,7 +434,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             //Check and add link to record, if exists
                             String entryId = SolrTools.getSingleFieldStringValue(childDoc, "MD_ARCHIVE_ENTRY_ID");
                             if (StringUtils.isNotEmpty(entryId)) {
-                                childHit.setAltUrl("archives/EAD/" + pi + "/?selected=" + entryId + "#selected");
+                                childHit.setAltUrl("archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected");
                             }
                             // logger.trace("altUrl: {}", altUrl);
                         }

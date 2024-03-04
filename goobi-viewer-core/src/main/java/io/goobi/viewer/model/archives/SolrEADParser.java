@@ -57,6 +57,7 @@ public class SolrEADParser extends ArchiveParser {
 
     private static final String FIELD_ARCHIVE_ENTRY_ID = "MD_ARCHIVE_ENTRY_ID";
     private static final String FIELD_ARCHIVE_ENTRY_LEVEL = "MD_ARCHIVE_ENTRY_LEVEL";
+    public static final String DATABASE_NAME = "EAD";
 
     private static final List<String> SOLR_FIELDS_DATABASES =
             Arrays.asList(SolrConstants.DATEUPDATED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
@@ -88,7 +89,7 @@ public class SolrEADParser extends ArchiveParser {
                 .search("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name(), SOLR_FIELDS_DATABASES);
 
         List<ArchiveResource> ret = new ArrayList<>();
-        String dbName = "Solr";
+        String dbName = DATABASE_NAME;
         for (SolrDocument doc : docs) {
             String resourceName = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
             String resourceIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
@@ -127,22 +128,22 @@ public class SolrEADParser extends ArchiveParser {
             throw new IllegalArgumentException("database may not be null");
         }
 
-        logger.trace("loadDatabase: {}", database.getResourceIdentifier());
+        logger.trace("loadDatabase: {}", database.getResourceId());
         List<String> solrFields = new ArrayList<>(Arrays.asList(SOLR_FIELDS_ENTRIES));
-        SolrDocument topDoc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceIdentifier() + '"', solrFields);
+        SolrDocument topDoc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
         if (topDoc != null) {
             // Collect mapped metadata field names
             Set<String> additionalMetadataFields = new HashSet<>();
             for (ArchiveMetadataField amf : configuredFields) {
                 if (StringUtils.isNotEmpty(amf.getIndexField())) {
                     additionalMetadataFields.add(amf.getIndexField());
-                    logger.trace("added md field: {}", amf.getIndexField());
+                    // logger.trace("added md field: {}", amf.getIndexField()); //NOSONAR Debug
                 }
             }
             solrFields.addAll(additionalMetadataFields);
 
-            SolrDocumentList archiveDocs = searchIndex.search(SolrConstants.PI_TOPSTRUCT + ":\"" + database.getResourceIdentifier() + "\" -"
-                    + SolrConstants.PI + ":\"" + database.getResourceIdentifier() + '"', solrFields);
+            SolrDocumentList archiveDocs = searchIndex.search(SolrConstants.PI_TOPSTRUCT + ":\"" + database.getResourceId() + "\" -"
+                    + SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
             Map<String, List<SolrDocument>> archiveDocMap = new HashMap<>();
             for (SolrDocument doc : archiveDocs) {
                 String iddocParent = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);

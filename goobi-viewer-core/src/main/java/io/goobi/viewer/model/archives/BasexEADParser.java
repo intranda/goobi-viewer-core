@@ -110,7 +110,7 @@ public class BasexEADParser extends ArchiveParser {
                     String resourceName = resource.getText();
                     String lastUpdated = resource.getAttributeValue("modified-date");
                     String size = resource.getAttributeValue("size");
-                    ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, null, lastUpdated, size);
+                    ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, resourceName.replaceAll("(?i)\\.xml", ""), lastUpdated, size);
                     ret.add(eadResource);
                 }
             }

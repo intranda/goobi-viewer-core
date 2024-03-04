@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -269,7 +268,13 @@ public class ArchiveManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public ArchiveResource loadArchiveForEntry(String identifier) throws IllegalStateException, PresentationException, IndexUnreachableException {
-        ArchiveResource resource = getArchiveForEntry(identifier);
+        ArchiveResource resource = null;
+        if ("basex".equalsIgnoreCase(DataManager.getInstance().getConfiguration().getArchivesType())) {
+            resource = getArchiveForEntryBaseX(identifier);
+        } else {
+            resource = getArchiveForEntrySolr(identifier);
+        }
+
         this.initializeArchiveTree(resource);
         return resource;
     }
@@ -367,7 +372,7 @@ public class ArchiveManager implements Serializable {
             } else if (trueRoot != null && (trueRoot.equals(entry) || trueRoot.equals(entry.getParentNode()))) {
                 return Collections.singletonList(entry);
             } else {
-                return entry.getAncestors(false).stream().skip(1).collect(Collectors.toList());
+                return entry.getAncestors(false).stream().skip(1).toList();
             }
         }
 
@@ -375,10 +380,11 @@ public class ArchiveManager implements Serializable {
     }
 
     public ArchiveResource getArchive(String databaseId, String resourceId) {
+        logger.trace("getArchive: {}, {}", databaseId, resourceId);
         if (StringUtils.isNoneBlank(databaseId, resourceId)) {
             return this.archives.keySet()
                     .stream()
-                    //                    .peek(a -> System.out.println("Archive " + a.getDatabaseId() + " - " + a.getResourceId()))
+                    // .peek(a -> System.out.println("Archive " + a.getDatabaseId() + " - " + a.getResourceId()))
                     .filter(a -> a.getDatabaseId().equals(databaseId))
                     .filter(a -> a.getResourceId().equals(resourceId))
                     .findAny()
@@ -388,7 +394,31 @@ public class ArchiveManager implements Serializable {
         return null;
     }
 
-    private ArchiveResource getArchiveForEntry(String identifier) {
+    /**
+     * 
+     * @param identifier
+     * @return {@link ArchiveResource}
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    private ArchiveResource getArchiveForEntrySolr(String identifier) throws PresentationException, IndexUnreachableException {
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(SolrConstants.ARCHIVE_ENTRY_ID + ":\"" + identifier + '"', Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
+        if (doc != null) {
+            String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
+            return getArchive(SolrEADParser.DATABASE_NAME, pi);
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param identifier
+     * @return {@link ArchiveResource}
+     */
+    private ArchiveResource getArchiveForEntryBaseX(String identifier) {
         URI archiveUri = URI.create(DataManager.getInstance().getConfiguration().getBaseXUrl());
         URI requestUri = UriBuilder.fromUri(archiveUri).path("dbname").path(identifier).build();
 
@@ -405,7 +435,6 @@ public class ArchiveManager implements Serializable {
                 return null;
             }
             String filename = doc != null ? doc.getRootElement().getChild("record", null).getAttributeValue("filename") : "notfound";
-            String archiveId = ArchiveParser.getIdForName(database);
             String resourceId = ArchiveParser.getIdForName(filename);
             return getArchive(database, resourceId);
         } catch (IOException | HTTPException | JDOMException e) {
@@ -533,7 +562,7 @@ public class ArchiveManager implements Serializable {
      */
     private static List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
         if (archiveNodeTypes != null) {
-            return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+            return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).toList();
         }
 
         return Collections.emptyList();
