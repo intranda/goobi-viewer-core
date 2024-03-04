@@ -8,7 +8,7 @@
 		</div>
 		<div class="download_external_resource__progress_wrapper {isFinished(url) ? '' : '-active'}">
 			<label>{url}</label>
-			<button onclick="{startDownloadTask}" class="download_external_resource__order btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? '' : '-active'}">{msg.action__external_files__order_download}</button>
+			<button onclick="{startDownloadTask}" class="download_external_resource__order btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? '' : '-active'}">{msg.downloadButton}</button>
 			<div class="download_external_resource__waiting_animation {isWaiting(url) ? '-active' : ''}">
 				<img src="{preloader}" class="img-responsive"
 					alt="{msg.action__external_files__download_in_queue}"
@@ -19,7 +19,7 @@
 					max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress>
 			</div>
 			<div class="download_external_resource__cancel_download {isRequested(url) && !isError(url) && !isFinished(url) ? '-active' : ''}">
-				<button class="btn admin__cancel-button" onclick="{cancelDownload}">{msg.action__external_files__cancel_download}</button>
+				<button class="btn admin__cancel-button" onclick="{cancelDownload}">{msg.cancel}</button>
 			</div>
 		</div>
 		<div class="download_external_resource__results_wrapper {isFinished(url) ? '-active' : ''}">

@@ -207,15 +207,27 @@ public class DownloadTaskEndpoint {
 
 
     private void cancelDownload(SocketMessage message) throws JsonProcessingException {
-        boolean deleted = this.queueManager.deleteMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), message.messageQueueId);
-        if (deleted) {
-            sendMessage(SocketMessage.buildAnswer(message, Status.CANCELED));
-        } else {
-            SocketMessage answer = SocketMessage.buildAnswer(message, Status.ERROR);
-            answer.errorMessage = "Error canceling external resource download of url " + message.url;
-            logger.error(answer.errorMessage);
-            sendMessage(answer);
-        }
+       try {
+           boolean deleted = this.queueManager.deleteMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), message.messageQueueId);
+           Path resourceFolder = getDownloadFolder(message.pi, message.url);
+           if(Files.exists(resourceFolder)) {
+               FileUtils.deleteDirectory(resourceFolder.toFile());
+           }
+           storageBean.remove(message.url);
+           if (deleted) {
+               sendMessage(SocketMessage.buildAnswer(message, Status.CANCELED));
+           } else {
+               SocketMessage answer = SocketMessage.buildAnswer(message, Status.ERROR);
+               answer.errorMessage = "Error canceling external resource download of url " + message.url;
+               logger.error(answer.errorMessage);
+               sendMessage(answer);
+           }         
+       } catch (PresentationException | IOException | IndexUnreachableException e) {
+           SocketMessage answer = SocketMessage.buildAnswer(message, Status.ERROR);
+           answer.errorMessage = "Error canceling external resource download of url " + message.url;
+           logger.error(answer.errorMessage);
+           sendMessage(answer);
+       }
     }
 
     private void sendError(SocketMessage message, String errorMessage) throws JsonProcessingException {
