@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
@@ -45,7 +46,7 @@ import io.goobi.viewer.solr.SolrTools;
 
 public class RelationshipMetadataContainer extends ComplexMetadataContainer {
 
-    private static final String FIELD_IN_RELATED_DOCUMENT_PREFIX = "related.";
+    public static final String FIELD_IN_RELATED_DOCUMENT_PREFIX = "related.";
     private static final String RELATED_RECORD_QUERY_FORMAT = "+DOCTYPE:DOCSTRCT +MD_PROCESSID:(%s)";
     public static final String DOCUMENT_IDENTIFIER = "MD_PROCESSID";
     public static final String RELATIONSHIP_ID_REFERENCE = "MD_IDENTIFIER";
@@ -82,6 +83,21 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
     public static RelationshipMetadataContainer loadRelationshipMetadata(String pi, SolrSearchIndex searchIndex, List<String> recordFields)
             throws PresentationException, IndexUnreachableException {
         ComplexMetadataContainer container = ComplexMetadataContainer.loadMetadataDocuments(pi, searchIndex);
+        return loadRelationships(searchIndex, recordFields, container);
+    }
+    
+    public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container)
+            throws PresentationException, IndexUnreachableException {
+        return loadRelationships(container, DataManager.getInstance().getSearchIndex());
+    }
+    
+    public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container, SolrSearchIndex searchIndex)
+            throws PresentationException, IndexUnreachableException {
+        return loadRelationships(searchIndex, RELATED_RECORD_METADATA_FIELDS, container);
+    }
+
+    public static RelationshipMetadataContainer loadRelationships(SolrSearchIndex searchIndex, List<String> recordFields,
+            ComplexMetadataContainer container) throws PresentationException, IndexUnreachableException {
         List<ComplexMetadata> relationshipMetadata = container.metadataMap.values()
                 .stream()
                 .flatMap(List::stream)
