@@ -90,17 +90,17 @@ class ArchiveManagerTest extends AbstractTest {
     void testGetDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "resource 1");
+            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "r1");
             assertNotNull(tree);
         }
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "resource 2");
+            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "r2");
             assertNotNull(tree);
         }
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "resource 3");
+            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "r3");
             assertNull(tree);
         }
     }
@@ -109,8 +109,8 @@ class ArchiveManagerTest extends AbstractTest {
     void testUpdateDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            archiveManager.getArchiveTree("database 1", "resource 1");
-            archiveManager.getArchiveTree("database 1", "resource 1");
+            archiveManager.getArchiveTree("database 1", "r1");
+            archiveManager.getArchiveTree("database 1", "r1");
             Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
         }
         {
@@ -128,9 +128,9 @@ class ArchiveManagerTest extends AbstractTest {
         ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3", "r3",
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
         possibleDatabases.add(newArchive);
-        assertNull(archiveManager.getArchive("database 1", "resource 3"));
+        assertNull(archiveManager.getArchive("database 1", "r3"));
         archiveManager.updateArchiveList();
-        assertNotNull(archiveManager.getArchive("database 1", "resource 3"));
+        assertNotNull(archiveManager.getArchive("database 1", "r3"));
 
     }
 
@@ -138,9 +138,9 @@ class ArchiveManagerTest extends AbstractTest {
     void testRemoveArchive() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
         possibleDatabases.remove(1);
-        assertNotNull(archiveManager.getArchive("database 1", "resource 2"));
+        assertNotNull(archiveManager.getArchive("database 1", "r2"));
         archiveManager.updateArchiveList();
-        assertNull(archiveManager.getArchive("database 1", "resource 2"));
+        assertNull(archiveManager.getArchive("database 1", "r2"));
 
     }
 
