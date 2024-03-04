@@ -70,6 +70,7 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
      * Cloning constructor
      * 
      * @param tr
+     * @param owner
      */
     public CMSCollectionTranslation(CMSCollectionTranslation tr, CMSCollection owner) {
         this.id = tr.id;

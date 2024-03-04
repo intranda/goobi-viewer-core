@@ -193,7 +193,6 @@ public class CMSContentConverter {
 
         CMSPageListContent content = new CMSPageListContent();
         categories.forEach(content::addCategory);
-        content.setItemsPerView(itemsPerView);
         return content;
     }
 

@@ -143,7 +143,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     /**
      * Identifier of the underlying data, if any
      * 
-     * @return
+     * @return the id
      */
     public Long getId() {
         return id;

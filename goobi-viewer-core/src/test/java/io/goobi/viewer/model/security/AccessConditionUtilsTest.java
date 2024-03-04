@@ -223,12 +223,11 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add("type2");
 
-        Map<String, List<LicenseType>> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
-                "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005", Collections.singletonMap("", AccessPermission.denied()));
-        Assertions.assertNotNull(ret);
-        Assertions.assertNotNull(ret.get(""));
-        Assertions.assertEquals(1, ret.get("").size());
-        Assertions.assertEquals("type2", ret.get("").get(0).getName());
+        List<LicenseType> result = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
+                "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005");
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("type2", result.get(0).getName());
     }
 
     /**
@@ -242,14 +241,12 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         lt.setMovingWall(true);
 
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005";
-        Map<String, List<LicenseType>> ret =
-                AccessConditionUtils.getRelevantLicenseTypesOnly(Collections.singletonList(lt), Collections.singleton("type1"),
-                        query, Collections.singletonMap("", AccessPermission.denied()));
-        Assertions.assertNotNull(ret);
-        Assertions.assertNotNull(ret.get(""));
-        Assertions.assertEquals(1, ret.get("").size());
-        Assertions.assertTrue(ret.get("").get(0).isRestrictionsExpired(query));
-        Assertions.assertEquals("type1", ret.get("").get(0).getName());
+        List<LicenseType> result =
+                AccessConditionUtils.getRelevantLicenseTypesOnly(Collections.singletonList(lt), Collections.singleton("type1"), query);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertTrue(result.get(0).isRestrictionsExpired(query));
+        Assertions.assertEquals("type1", result.get(0).getName());
     }
 
     /**
@@ -260,7 +257,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     void generateAccessCheckQuery_shouldUseCorrectFieldNameForAVFiles() throws Exception {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.tif\"", result);
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.tif\" "
+                    + SolrConstants.FILENAME + "_TIFF:\"00000001.tif\")", result);
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.webm");
@@ -339,11 +337,15 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     void generateAccessCheckQuery_shouldUseFullNameForImageFormats() throws Exception {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.tif\"", result);
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.tif\" "
+                    + SolrConstants.FILENAME + "_TIFF:\"00000001.tif\")", result);
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jpeg");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jpeg\"", result);
+            Assertions.assertEquals(
+                    "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.jpeg\" " + SolrConstants.FILENAME
+                            + "_JPEG:\"00000001.jpeg\")",
+                    result);
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.png");
@@ -355,7 +357,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jpg");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jpg\"", result);
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.jpg\" "
+                    + SolrConstants.FILENAME + "_JPEG:\"00000001.jpg\")", result);
         }
     }
 

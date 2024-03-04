@@ -64,15 +64,12 @@ import jakarta.persistence.Transient;
 public class CMSPageListContent extends CMSContent implements CMSCategoryHolder {
 
     private static final String COMPONENT_NAME = "pagelist";
-    private static final int DEFAULT_ITEMS_PER_VIEW = 10;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_content_pagelist_categories", joinColumns = @JoinColumn(name = "content_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<CMSCategory> categories = new ArrayList<>();
 
-    @Column(name = "items_per_view")
-    private int itemsPerView;
     @Column(name = "group_by_category")
     private boolean groupByCategory = false;
 
@@ -90,13 +87,11 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     public CMSPageListContent() {
         super();
         this.categories = new ArrayList<>();
-        this.itemsPerView = DEFAULT_ITEMS_PER_VIEW;
     }
 
     private CMSPageListContent(CMSPageListContent orig) {
         super(orig);
         this.categories = orig.categories;
-        this.itemsPerView = orig.itemsPerView;
     }
 
     @Override
@@ -168,10 +163,27 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * @param templateManager
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated use {@link #getNestedPages(Boolean, CMSTemplateManager)} instead
      */
+    @Deprecated(since="24.2")
     public List<CMSPage> getNestedPages(Boolean random, Boolean paged, CMSTemplateManager templateManager) throws DAOException {
+        return getNestedPages(random, templateManager);
+    }
+    
+    /**
+     * <p>
+     * Getter for the field <code>nestedPages</code>.
+     * </p>
+     * 
+     * @param random
+     * @param paged
+     * @param templateManager
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<CMSPage> getNestedPages(Boolean random, CMSTemplateManager templateManager) throws DAOException {
         if (nestedPages == null) {
-            nestedPages = loadNestedPages(random, paged, templateManager);
+            nestedPages = loadNestedPages(random, templateManager);
         }
         return nestedPages;
     }
@@ -187,11 +199,30 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * @param templateManager
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated use {@link #getNestedPagesByCategory(boolean, CMSCategory, CMSTemplateManager)} instead
      */
+    @Deprecated(since="24.2")
     public List<CMSPage> getNestedPagesByCategory(boolean random, boolean paged, CMSCategory category, CMSTemplateManager templateManager)
             throws DAOException {
+        return getNestedPagesByCategory(random, category, templateManager);
+    }
+    
+    /**
+     * <p>
+     * Getter for the field <code>nestedPages</code>.
+     * </p>
+     *
+     * @param random
+     * @param paged
+     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param templateManager
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<CMSPage> getNestedPagesByCategory(boolean random, CMSCategory category, CMSTemplateManager templateManager)
+            throws DAOException {
         if (nestedPages == null) {
-            nestedPages = loadNestedPages(random, paged, templateManager);
+            nestedPages = loadNestedPages(random, templateManager);
         }
         return nestedPages.stream()
                 .filter(child -> this.getCategories().isEmpty()
@@ -216,10 +247,8 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * @return List<CMSPage>
      * @throws DAOException
      */
-    private List<CMSPage> loadNestedPages(boolean random, boolean paged, CMSTemplateManager templateManager) throws DAOException {
+    private List<CMSPage> loadNestedPages(boolean random, CMSTemplateManager templateManager) throws DAOException {
         int pageNo = 1;
-        int size = getItemsPerView();
-        int offset = (pageNo - 1) * size;
         AtomicInteger totalPages = new AtomicInteger(0);
         Stream<CMSPage> nestedPagesStream = DataManager.getInstance()
                 .getDao()
@@ -235,11 +264,8 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
         } else {
             nestedPagesStream = nestedPagesStream.sorted(new CMSPage.PageComparator());
         }
-        if (paged) {
-            nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
-        }
         List<CMSPage> ret = nestedPagesStream.collect(Collectors.toList());
-        setNestedPagesCount((int) Math.ceil((totalPages.intValue()) / (double) size));
+        setNestedPagesCount(totalPages.intValue());
         return ret;
     }
 
@@ -296,14 +322,6 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
         }
 
         return Collections.emptyList();
-    }
-
-    public int getItemsPerView() {
-        return itemsPerView;
-    }
-
-    public void setItemsPerView(int itemsPerView) {
-        this.itemsPerView = itemsPerView;
     }
 
     public void setGroupByCategory(boolean groupByCategory) {

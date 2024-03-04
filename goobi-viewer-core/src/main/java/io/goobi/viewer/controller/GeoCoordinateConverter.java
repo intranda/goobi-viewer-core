@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,6 +41,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,8 +54,6 @@ import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.ocpsoft.pretty.PrettyContext;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
@@ -71,6 +71,7 @@ import io.goobi.viewer.model.metadata.MetadataBuilder;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -214,6 +215,9 @@ public class GeoCoordinateConverter {
         fieldList.add(SolrConstants.THUMBPAGENO);
         fieldList.add(SolrConstants.LOGID);
         fieldList.add(SolrConstants.MD_VALUE);
+        fieldList.add(SolrConstants.MIMETYPE);
+        fieldList.add(SolrConstants.ISWORK);
+        fieldList.add(SolrConstants.THUMBNAIL);
         fieldList.addAll(getSolrFields(this.entityTitleConfigs.values()));
         fieldList.addAll(getSolrFields(this.featureTitleConfigs.values()));
         return new ArrayList<>(fieldList);
@@ -227,6 +231,9 @@ public class GeoCoordinateConverter {
         fieldList.add(SolrConstants.THUMBPAGENO);
         fieldList.add(SolrConstants.LOGID);
         fieldList.add(SolrConstants.MD_VALUE);
+        fieldList.add(SolrConstants.MIMETYPE);
+        fieldList.add(SolrConstants.ISWORK);
+        fieldList.add(SolrConstants.THUMBNAIL);
         fieldList.add("MD_REFID");
         fieldList.addAll(getSolrFields(this.entityTitleConfigs.values()));
         fieldList.addAll(getSolrFields(this.featureTitleConfigs.values()));
@@ -277,7 +284,8 @@ public class GeoCoordinateConverter {
                 .limit(1)
                 .collect(Collectors.toList()));
         List<GeoMapFeature> docFeatures = getFeatures(points);
-        addMetadataToFeature(doc, children, docFeatures);
+        addEntityToFeatures(doc, children, docFeatures);
+        docFeatures.forEach(feature -> setLink(feature, doc));
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(children.stream()
                 .findAny()
                 .map(child -> SolrTools.getSingleFieldStringValue(child, SolrConstants.LABEL))
@@ -298,7 +306,7 @@ public class GeoCoordinateConverter {
         List<String> points = new ArrayList<>();
         points.addAll(SolrTools.getMetadataValues(doc, metadataField));
         List<GeoMapFeature> docFeatures = getFeatures(points);
-        addMetadataToFeature(doc, Collections.emptyList(), docFeatures);
+        addEntityToFeatures(doc, Collections.emptyList(), docFeatures);
         docFeatures.forEach(feature -> setLink(feature, doc));
         docFeatures.forEach(f -> f.setDocumentId((String) doc.getFieldValue(SolrConstants.LOGID)));
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(
@@ -313,34 +321,8 @@ public class GeoCoordinateConverter {
     }
 
     private void setLink(GeoMapFeature feature, SolrDocument doc) {
-        String pi = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT))
-                .or(() -> Optional.of(SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI)))
-                .orElse("");
-        String pageNo = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.THUMBPAGENO))
-                .orElse("");
-        String logId = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LOGID))
-                .orElse("");
-
-        PrettyContext pretty = getPrettyContext();
-        if (pretty != null) {
-            if (StringUtils.isNoneBlank(pi, pageNo, logId)) {
-                feature.setLink(PrettyUrlTools.getAbsolutePageUrl(pretty, "object3", pi, pageNo, logId));
-            } else if (StringUtils.isNotBlank(pi)) {
-                feature.setLink(PrettyUrlTools.getAbsolutePageUrl(pretty, "object1", pi));
-            }
-        }
-    }
-
-    public PrettyContext getPrettyContext() {
-        PrettyContext pretty = null;
-        try {
-            pretty = PrettyContext.getCurrentInstance();
-        } catch (IllegalStateException e) {
-            if (this.servletRequest != null) {
-                pretty = PrettyContext.getCurrentInstance(this.servletRequest);
-            }
-        }
-        return pretty;
+        URI link = UriBuilder.fromUri(DataManager.getInstance().getConfiguration().getViewerBaseUrl()).path(IdentifierResolver.constructUrl(doc, false)).build();
+       feature.setLink(link.toString());
     }
 
     public Collection<GeoMapFeature> getGeojsonPoints(MetadataContainer doc, String metadataField, String titleField) {
@@ -435,7 +417,7 @@ public class GeoCoordinateConverter {
         return docFeatures;
     }
 
-    private static void addMetadataToFeature(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
+    private static void addEntityToFeatures(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
 
         MetadataContainer entity = MetadataContainer.createMetadataEntity(doc, children,
                 getFeatureFieldFilter(children != null && !children.isEmpty()), getEntityFieldFilter());

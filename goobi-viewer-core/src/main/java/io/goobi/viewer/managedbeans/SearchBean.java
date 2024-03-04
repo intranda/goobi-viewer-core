@@ -1427,7 +1427,9 @@ public class SearchBean implements SearchInterface, Serializable {
      * JSF expects a getter, too.
      *
      * @return a {@link java.lang.String} object.
+     * @derecated user SearchBean.getExactSearchString()
      */
+    @Deprecated(since = "24.01")
     public String getExactSearchStringResetGui() {
         return getExactSearchString();
     }
@@ -1467,7 +1469,9 @@ public class SearchBean implements SearchInterface, Serializable {
             if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(tempSortString)) {
                 tempSortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
             }
-            setSearchSortingOption(new SearchSortingOption(tempSortString));
+            SearchSortingOption option = new SearchSortingOption(tempSortString);
+            option.setDefaultOption(StringUtils.isEmpty(sortString) || "-".equals(sortString)); // if the given sort string was empty, remember this
+            setSearchSortingOption(option);
         } else {
             setSearchSortingOption(null);
         }
@@ -3028,7 +3032,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public int getProximitySearchDistance() {
         return proximitySearchDistance;
     }
-    
+
     /**
      * 
      * @param queryField
@@ -3250,7 +3254,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         facets.getActiveFacetString());
         }
     }
-    
+
     @Override
     public String changeSorting() throws IOException {
         logger.trace("changeSorting");

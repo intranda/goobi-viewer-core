@@ -62,7 +62,7 @@ public interface CMSMediaHolder {
     /**
      * A string representing the allowed media formates for a user. Should be a comma separated list of format names or filename suffixes
      * 
-     * @return
+     * @return {@link String}
      */
     public String getMediaTypes();
 

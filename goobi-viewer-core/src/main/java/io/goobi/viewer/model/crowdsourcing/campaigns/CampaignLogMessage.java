@@ -59,6 +59,8 @@ public class CampaignLogMessage extends LogMessage {
      * @param message
      * @param creatorId
      * @param dateCreated
+     * @param campaign
+     * @param pi
      */
     public CampaignLogMessage(String message, Long creatorId, LocalDateTime dateCreated, Campaign campaign, String pi) {
         super(message, creatorId, dateCreated, null);
@@ -69,6 +71,8 @@ public class CampaignLogMessage extends LogMessage {
     /**
      * @param message
      * @param creatorId
+     * @param campaign
+     * @param pi
      */
     public CampaignLogMessage(String message, Long creatorId, Campaign campaign, String pi) {
         super(message, creatorId, null);

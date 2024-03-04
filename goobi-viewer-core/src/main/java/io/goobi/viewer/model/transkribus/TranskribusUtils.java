@@ -27,14 +27,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -49,7 +48,7 @@ import io.goobi.viewer.model.job.JobStatus;
  * TranskribusUtils class.
  * </p>
  */
-public class TranskribusUtils {
+public final class TranskribusUtils {
 
     private static final Logger logger = LogManager.getLogger(TranskribusUtils.class);
 
@@ -164,9 +163,8 @@ public class TranskribusUtils {
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
-     * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    public static TranskribusSession login(String baseUrl, String userName, String password) throws IOException, JDOMException, HTTPException {
+    public static TranskribusSession login(String baseUrl, String userName, String password) throws IOException, JDOMException {
         if (baseUrl == null) {
             throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
@@ -354,13 +352,10 @@ public class TranskribusUtils {
      * @param viewerCollectionId a {@link java.lang.String} object.
      * @should ingest record correctly
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
-     * @throws org.apache.http.client.ClientProtocolException if any.
-     * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.HTTPException if any.
-     * @throws org.jdom2.JDOMException if any.
+     * @throws java.io.IOException if any. o
      */
     protected static TranskribusJob ingestRecordToCollections(String baseUrl, TranskribusSession session, String pi, String metsUrl,
-            String userCollectionId, String viewerCollectionId) throws ClientProtocolException, IOException, HTTPException, JDOMException {
+            String userCollectionId, String viewerCollectionId) throws IOException {
         if (baseUrl == null) {
             throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
@@ -407,12 +402,10 @@ public class TranskribusUtils {
      * @param jobId a {@link java.lang.String} object.
      * @should return correct status
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus} object.
-     * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    protected static JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
-            throws ClientProtocolException, IOException, HTTPException {
+    protected static JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId) throws IOException, HTTPException {
         if (baseUrl == null) {
             throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
@@ -440,6 +433,9 @@ public class TranskribusUtils {
                             return JobStatus.READY;
                         case "FAILED":
                             return JobStatus.ERROR;
+                        default:
+                            logger.warn("Unknown state: {}", state);
+                            break;
                     }
                 }
             }

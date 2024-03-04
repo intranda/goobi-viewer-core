@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
  * A {@link io.goobi.viewer.model.cms.TranslatedSelectable} which may also contain a list of {@link CMSCategory categories}
  *
  * @author florian
+ * @param <T>
  */
 public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T> implements Serializable {
 

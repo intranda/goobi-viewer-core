@@ -27,6 +27,7 @@ import java.util.Locale;
  * A {@link io.goobi.viewer.model.cms.Selectable} which may also hold a locale to indicate the currently visible language/translation
  *
  * @author florian
+ * @param <T>
  */
 public class TranslatedSelectable<T> extends Selectable<T> {
 

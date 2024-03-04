@@ -81,6 +81,9 @@ public abstract class CMSRecordNote implements Serializable {
 
     @Column(name = "display_note", nullable = false, columnDefinition = "boolean default true")
     private boolean displayNote = true;
+    
+    @Column(name = "style_class", nullable = true)
+    private String styleClass = "";
 
     protected CMSRecordNote() {
     }
@@ -93,13 +96,14 @@ public abstract class CMSRecordNote implements Serializable {
     }
 
     /**
-     * @param o
+     * @param source
      */
     protected CMSRecordNote(CMSRecordNote source) {
         this.id = source.id;
         this.noteTitle = new TranslatedText(source.noteTitle);
         this.noteText = new TranslatedText(source.noteText);
         this.displayNote = source.displayNote;
+        this.styleClass = source.styleClass;
     }
 
     /* (non-Javadoc)
@@ -118,18 +122,23 @@ public abstract class CMSRecordNote implements Serializable {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         CMSRecordNote other = (CMSRecordNote) obj;
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         return true;
     }
 
@@ -173,6 +182,14 @@ public abstract class CMSRecordNote implements Serializable {
      */
     public void setDisplayNote(boolean displayNote) {
         this.displayNote = displayNote;
+    }
+    
+    public String getStyleClass() {
+        return styleClass;
+    }
+    
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
     }
 
     public abstract boolean isSingleRecordNote();

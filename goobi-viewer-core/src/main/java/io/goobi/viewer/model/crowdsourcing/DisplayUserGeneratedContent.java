@@ -94,7 +94,7 @@ public class DisplayUserGeneratedContent {
 
     private static final Logger logger = LogManager.getLogger(DisplayUserGeneratedContent.class);
     /** Constant <code>format</code> */
-    public static final NumberFormat format = new DecimalFormat("00000000");
+    public static final NumberFormat FORMAT = new DecimalFormat("00000000");
 
     private Long id;
 
@@ -151,8 +151,8 @@ public class DisplayUserGeneratedContent {
             ObjectMapper mapper = new ObjectMapper();
             try {
                 IResource resource = mapper.readValue(target, SpecificResource.class);
-                if (resource instanceof SpecificResource) {
-                    return ((SpecificResource) resource).getSelector().getValue();
+                if (resource instanceof SpecificResource specificResource) {
+                    return specificResource.getSelector().getValue();
                 }
                 return "";
             } catch (JsonProcessingException e) {
@@ -629,8 +629,8 @@ public class DisplayUserGeneratedContent {
             ret.setAnnotationBody(body);
         }
         Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
-        if (pageNo instanceof Number) {
-            ret.setPage(((Number) pageNo).intValue());
+        if (pageNo instanceof Number number) {
+            ret.setPage(number.intValue());
         }
         if (StringUtils.isNotBlank(ret.getAnnotationBody().getType())) {
             ret.setLabel(createLabelFromBody(ret.getType(), ret.getAnnotationBody()));
@@ -649,16 +649,17 @@ public class DisplayUserGeneratedContent {
      * @return the text if the body is a TextualResource. Otherwise return null
      */
     private static String createExtendedLabelFromBody(ContentType type, ITypedResource body) {
-        if (ContentType.COMMENT.equals(type) && body instanceof TextualResource) {
-            return ((TextualResource) body).getText();
+        if (ContentType.COMMENT.equals(type) && body instanceof TextualResource text) {
+            return text.getText();
         }
 
         return null;
     }
 
     /**
-     * @param annotationBody2
-     * @return
+     * @param type
+     * @param body
+     * @return {@link String}
      */
     private static String createLabelFromBody(ContentType type, ITypedResource body) {
         if (type == null || body == null) {
@@ -673,8 +674,8 @@ public class DisplayUserGeneratedContent {
                 return getDataSetForDisplay(body);
             case COMMENT:
             default:
-                if (body instanceof TextualResource) {
-                    return HtmlParser.getPlaintext(((TextualResource) body).getText());
+                if (body instanceof TextualResource text) {
+                    return HtmlParser.getPlaintext(text.getText());
                 }
                 return "admin__crowdsourcing_question_type_" + type.toString();
         }
@@ -682,7 +683,7 @@ public class DisplayUserGeneratedContent {
 
     /**
      * @param body
-     * @return
+     * @return {@link String}
      */
     private static String getDataSetForDisplay(ITypedResource body) {
         JSONObject json = new JSONObject(body.toString());
@@ -699,7 +700,10 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" then the {@link #type} is set accordingly
+     * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" then the {@link #type} is set accordingly.
+     * 
+     * @param body
+     * @return {@link ContentType}
      */
     private static ContentType getTypeFromBody(ITypedResource body) {
         if (body != null && StringUtils.isNotBlank(body.getType())) {
@@ -739,15 +743,12 @@ public class DisplayUserGeneratedContent {
         String text = StringTools.escapeHtmlChars(se.getMetadataValue("MD_TEXT"));
         if (se.getMetadataValue(SolrConstants.UGCTYPE) != null) {
             switch (se.getMetadataValue(SolrConstants.UGCTYPE)) {
-                case "PERSON": {
+                case "PERSON":
                     return generatePersonLabel(se);
-                }
-                case "CORPORATION": {
+                case "CORPORATION":
                     return generateCorporationLabel(se);
-                }
-                case "ADDRESS": {
+                case "ADDRESS":
                     return generateAddressLabel(se, text);
-                }
                 case "COMMENT":
                     return text;
                 default:
@@ -758,6 +759,12 @@ public class DisplayUserGeneratedContent {
         return se.getMetadataValue(SolrConstants.LABEL);
     }
 
+    /**
+     * 
+     * @param se
+     * @param text
+     * @return {@link String}
+     */
     public static String generateAddressLabel(StructElement se, String text) {
         StringBuilder sb = new StringBuilder();
 
@@ -777,6 +784,11 @@ public class DisplayUserGeneratedContent {
         return sb.toString();
     }
 
+    /**
+     * 
+     * @param sb
+     * @param value
+     */
     private static void appendIfNotEmpty(StringBuilder sb, String value) {
         if (StringUtils.isNotEmpty(value)) {
             if (sb.length() > 0) {
@@ -786,6 +798,11 @@ public class DisplayUserGeneratedContent {
         }
     }
 
+    /**
+     * 
+     * @param se
+     * @return {@link String}
+     */
     public static String generateCorporationLabel(StructElement se) {
         StringBuilder sb = new StringBuilder();
         String address = se.getMetadataValue("MD_ADDRESS");
@@ -851,6 +868,11 @@ public class DisplayUserGeneratedContent {
         return getPageUrl(BeanUtils.getNavigationHelper().getCurrentPageType());
     }
 
+    /**
+     * 
+     * @param pageType
+     * @return Generated URL
+     */
     public String getPageUrl(PageType pageType) {
 
         String pageTypeUrl = BeanUtils.getNavigationHelper().getPageUrl(pageType); //no trailing slash

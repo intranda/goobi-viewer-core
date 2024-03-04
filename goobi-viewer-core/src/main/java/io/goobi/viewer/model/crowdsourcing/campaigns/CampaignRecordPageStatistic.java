@@ -118,23 +118,30 @@ public class CampaignRecordPageStatistic implements Serializable {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         CampaignRecordPageStatistic other = (CampaignRecordPageStatistic) obj;
         if (owner == null) {
-            if (other.owner != null)
+            if (other.owner != null) {
                 return false;
-        } else if (!owner.equals(other.owner))
+            }
+        } else if (!owner.equals(other.owner)) {
             return false;
+        }
         if (pi == null) {
-            if (other.pi != null)
+            if (other.pi != null) {
                 return false;
-        } else if (!pi.equals(other.pi))
+            }
+        } else if (!pi.equals(other.pi)) {
             return false;
+        }
         return true;
     }
 

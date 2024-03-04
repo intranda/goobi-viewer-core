@@ -21,7 +21,4 @@
 	<attribute name="random" display="false" boolean="true">
 		<value>false</value>
 	</attribute>
-	<attribute name="paged" display="false" boolean="true">
-		<value>true</value>
-	</attribute>
 </component>

@@ -121,7 +121,7 @@ public class StatisticsIndexTask {
                             SolrConstants.DOCTYPE,
                             StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
                             StatisticsLuceneFields.DATE,
-                            StatisticsLuceneFields.solrDateFormatter.format(stat.getDate().atStartOfDay()));
+                            StatisticsLuceneFields.SOLR_DATE_FORMATTER.format(stat.getDate().atStartOfDay()));
                     SolrDocumentList list = this.solrIndex.search(query);
                     if (!list.isEmpty()) {
                         logger.info("Indexing of usage statistics for {} finished", stat.getDate());

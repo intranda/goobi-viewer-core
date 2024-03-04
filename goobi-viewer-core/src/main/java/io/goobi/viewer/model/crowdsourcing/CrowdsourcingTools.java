@@ -28,6 +28,10 @@ import io.goobi.viewer.model.security.user.User;
 
 public class CrowdsourcingTools {
 
+    /** Private constructor. */
+    private CrowdsourcingTools() {
+    }
+
     /**
      *
      * @param user User to check

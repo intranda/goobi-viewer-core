@@ -44,7 +44,7 @@ import io.goobi.viewer.model.security.user.User;
  */
 @FacesValidator("nicknameValidator")
 public class NicknameValidator implements Validator<String> {
-    
+
     private static final String REGEX = "^[\\wäáàâöóòôüúùûëéèêßñ\\-. ]+$"; //NOSONAR input size is limited
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
@@ -71,7 +71,7 @@ public class NicknameValidator implements Validator<String> {
             throw new ValidatorException(msg);
         }
     }
-    
+
     /**
      * <p>
      * validateEmailAddress.
@@ -95,14 +95,16 @@ public class NicknameValidator implements Validator<String> {
 
     /**
      * @param nick
-     * @return true if the given email is not already assigned to a user except a possibly currently logged in user in this session
+     * @return true if the given email is not already used by a different user; false otherwise
      * @throws DAOException
      */
     private static boolean validateUniqueness(String nick) throws DAOException {
-        User user = DataManager.getInstance().getDao().getUserByNickname(nick);
+        User otherUser = DataManager.getInstance().getDao().getUserByNickname(nick);
         User currentUser = BeanUtils.getUserBean().getUser();
-        if (user != null) {
-            return currentUser != null && user.getId().equals(currentUser.getId());
+        if (otherUser != null && currentUser != null && StringUtils.isNotBlank(otherUser.getNickName())
+                && StringUtils.isNotBlank(currentUser.getNickName())
+                && StringUtils.equalsIgnoreCase(otherUser.getNickName().trim(), currentUser.getNickName().trim())) {
+            return otherUser.getId().equals(currentUser.getId());
         }
 
         return true;

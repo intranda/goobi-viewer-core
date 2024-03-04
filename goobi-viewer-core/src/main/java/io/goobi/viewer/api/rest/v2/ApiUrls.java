@@ -182,6 +182,7 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String CMS = "/cms";
     public static final String CMS_MEDIA = "/cms/media";
+    public static final String CMS_MEDIA_BY_CATEGORY = "/category/{tags}";
     public static final String CMS_MEDIA_ITEM = "/{id}";
     public static final String CMS_MEDIA_ITEM_BY_ID = "/{id: \\d+}";
     public static final String CMS_MEDIA_ITEM_BY_FILE = "/{filename: [^\\/]*\\.\\w{1,4}}";

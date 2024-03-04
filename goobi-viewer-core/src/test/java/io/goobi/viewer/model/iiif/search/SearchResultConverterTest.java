@@ -187,9 +187,9 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
         Assertions.assertTrue(StringUtils.isNotBlank(queryRegex), "Query regex is Blank");
 
         AnnotationResultList results = converter.getAnnotationsFromAlto(altoFile, queryRegex);
-        Assertions.assertEquals(9, results.hits.size());
+        Assertions.assertEquals(9, results.getHits().size());
 
-        SearchHit hit1 = results.hits.get(0);
+        SearchHit hit1 = results.getHits().get(0);
         Assertions.assertEquals("Hollywood!", hit1.getMatch());
         String url = urls.path(ApiUrls.ANNOTATIONS, ApiUrls.ANNOTATIONS_ALTO).params(pi, pageNo, "Word_14").query("format", "oa").build();
         Assertions.assertEquals(url, hit1.getAnnotations().get(0).getId().toString());
@@ -206,8 +206,8 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
         AnnotationResultList results = converter.getAnnotationsFromFulltext(text, pi, pageNo, queryRegex, 0, 0, 1000);
-        Assertions.assertEquals(1, results.hits.size());
-        Assertions.assertEquals(2, results.hits.get(0).getSelectors().size());
+        Assertions.assertEquals(1, results.getHits().size());
+        Assertions.assertEquals(2, results.getHits().get(0).getSelectors().size());
     }
 
 }
