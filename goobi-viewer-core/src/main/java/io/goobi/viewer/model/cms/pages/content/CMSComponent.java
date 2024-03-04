@@ -71,13 +71,23 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     private CMSComponentScope scope = CMSComponentScope.PAGEVIEW;
 
+    /**
+     * 
+     * @param template
+     * @param items
+     */
     public CMSComponent(CMSComponent template, List<CMSContentItem> items) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
                 template.getScope(), template.getAttributes(), template.getOrder(), Optional.ofNullable(template.getPersistentComponent()));
-        List<CMSContentItem> newItems = items.stream().map(CMSContentItem::new).collect(Collectors.toList());
+        List<CMSContentItem> newItems = items.stream().map(CMSContentItem::new).toList();
         this.contentItems.addAll(newItems);
     }
 
+    /**
+     * 
+     * @param template
+     * @param jpa
+     */
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
                 template.getScope(),
@@ -87,15 +97,38 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
                 jpa);
         List<CMSContent> contentData = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList());
         List<CMSContentItem> items =
-                template.getContentItems().stream().map(item -> populateContentItem(item, contentData)).collect(Collectors.toList());
+                template.getContentItems().stream().map(item -> populateContentItem(item, contentData)).toList();
         this.contentItems.addAll(items);
     }
 
+    /**
+     * 
+     * @param jsfComponent
+     * @param label
+     * @param description
+     * @param iconPath
+     * @param templateFilename
+     * @param scope
+     * @param attributes
+     * @param order
+     */
     public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
             CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Integer order) {
         this(jsfComponent, label, description, iconPath, templateFilename, scope, attributes, order, Optional.empty());
     }
 
+    /**
+     * 
+     * @param jsfComponent
+     * @param label
+     * @param description
+     * @param iconPath
+     * @param templateFilename
+     * @param scope
+     * @param attributes
+     * @param order
+     * @param jpa
+     */
     private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
             CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Integer order, Optional<PersistentCMSComponent> jpa) {
         this.jsfComponent = jsfComponent;
@@ -109,10 +142,18 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         this.order = Optional.ofNullable(order).orElse(jpa.map(PersistentCMSComponent::getOrder).orElse(0));
     }
 
+    /**
+     * 
+     * @return the persistentComponent
+     */
     public PersistentCMSComponent getPersistentComponent() {
         return persistentComponent;
     }
 
+    /**
+     * 
+     * @param publicationState
+     */
     public void setPublicationState(ContentItemPublicationState publicationState) {
         Optional.ofNullable(persistentComponent).ifPresent(p -> p.setPublicationState(publicationState));
     }
@@ -123,6 +164,10 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
                 .orElse(ContentItemPublicationState.PUBLISHED);
     }
 
+    /**
+     * 
+     * @param order
+     */
     public void setOrder(int order) {
         Optional.ofNullable(persistentComponent).ifPresent(p -> p.setOrder(order));
         this.order = order;
@@ -132,6 +177,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return Optional.ofNullable(persistentComponent).map(PersistentCMSComponent::getOrder).orElse(this.order);
     }
 
+    /**
+     * 
+     * @param item
+     * @return true if item added successfully; false otherwise
+     */
     public boolean addContentItem(CMSContentItem item) {
         if (!this.contentItems.contains(item)) {
             return this.contentItems.add(item);
@@ -139,6 +189,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return false;
     }
 
+    /**
+     * 
+     * @param item
+     * @return true if item removed successfully; false otherwise
+     */
     public boolean removeContentItem(CMSContentItem item) {
         if (this.contentItems.contains(item)) {
             return this.contentItems.remove(item);
@@ -237,6 +292,10 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return uiComponent;
     }
 
+    /**
+     * 
+     * @param uiComponent
+     */
     public void setUiComponent(UIComponent uiComponent) {
         this.uiComponent = uiComponent;
     }
@@ -254,22 +313,47 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return backendUiComponent;
     }
 
+    /**
+     * 
+     * @param backendUiComponent
+     */
     public void setBackendUiComponent(UIComponent backendUiComponent) {
         this.backendUiComponent = backendUiComponent;
     }
 
+    /**
+     * 
+     * @param key
+     * @return {@link CMSComponentAttribute}
+     */
     public CMSComponentAttribute getAttribute(String key) {
         return this.attributes.get(key);
     }
 
+    /**
+     * 
+     * @param key
+     * @param defaultValue
+     * @return a boolean
+     */
     public boolean getBooleanAttributeValue(String key, boolean defaultValue) {
         return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getBooleanValue).orElse(defaultValue);
     }
 
+    /**
+     * 
+     * @param key
+     * @return {@link String}
+     */
     public String getAttributeValue(String key) {
         return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getValue).orElse("");
     }
 
+    /**
+     * 
+     * @param key
+     * @param value
+     */
     public void setAttribute(String key, String value) {
         CMSComponentAttribute attr = this.attributes.get(key);
         if (attr != null) {
@@ -280,6 +364,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         }
     }
 
+    /**
+     * 
+     * @param key
+     * @param value
+     */
     public void toggleAttribute(String key, String value) {
         String oldValue = getAttribute(key).getValue();
         if (StringUtils.isBlank(oldValue)) {
@@ -299,6 +388,10 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return ContentItemPublicationState.PUBLISHED.equals(this.getPublicationState());
     }
 
+    /**
+     * 
+     * @param published
+     */
     public void setPublished(boolean published) {
         setPublicationState(published ? ContentItemPublicationState.PUBLISHED : ContentItemPublicationState.ADMINISTRATOR);
     }
@@ -307,6 +400,10 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return !isPublished();
     }
 
+    /**
+     * 
+     * @param privat
+     */
     public void setPrivate(boolean privat) {
         setPublished(!privat);
     }
@@ -325,7 +422,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      * 
      * @param item
      * @param contentData
-     * @return
+     * @return {@link CMSContentItem}
      */
     private CMSContentItem populateContentItem(CMSContentItem item, List<CMSContent> contentData) {
         CMSContent content = contentData
@@ -357,6 +454,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return newAttrs;
     }
 
+    /**
+     * 
+     * @param user
+     * @return a boolean
+     */
     public boolean hasAccess(User user) {
         if (isPublished()) {
             return true;
@@ -364,10 +466,22 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return user != null && user.isCmsAdmin();
     }
 
+    /**
+     * 
+     * @param itemId
+     * @return {@link String}
+     */
     public String getContentData(String itemId) {
         return getContentData(itemId, null, null);
     }
 
+    /**
+     * 
+     * @param itemId
+     * @param width
+     * @param height
+     * @return {@link String}
+     */
     public String getContentData(String itemId, Integer width, Integer height) {
         return this.contentItems.stream()
                 .filter(item -> Objects.equals(item.getItemId(), itemId))
@@ -401,7 +515,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * wether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself
+     * whether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself
      * 
      * @return
      */
@@ -418,7 +532,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     public long getPersistenceId() {
-        return Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getId).orElse(0l);
+        return Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getId).orElse(0L);
     }
 
     public CMSPage getOwningPage() {

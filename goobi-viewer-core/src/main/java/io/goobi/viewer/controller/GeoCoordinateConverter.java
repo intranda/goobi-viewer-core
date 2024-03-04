@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,6 +41,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,8 +54,6 @@ import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.ocpsoft.pretty.PrettyContext;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
@@ -71,6 +71,7 @@ import io.goobi.viewer.model.metadata.MetadataBuilder;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -214,6 +215,9 @@ public class GeoCoordinateConverter {
         fieldList.add(SolrConstants.THUMBPAGENO);
         fieldList.add(SolrConstants.LOGID);
         fieldList.add(SolrConstants.MD_VALUE);
+        fieldList.add(SolrConstants.MIMETYPE);
+        fieldList.add(SolrConstants.ISWORK);
+        fieldList.add(SolrConstants.THUMBNAIL);
         fieldList.addAll(getSolrFields(this.entityTitleConfigs.values()));
         fieldList.addAll(getSolrFields(this.featureTitleConfigs.values()));
         return new ArrayList<>(fieldList);
@@ -227,6 +231,9 @@ public class GeoCoordinateConverter {
         fieldList.add(SolrConstants.THUMBPAGENO);
         fieldList.add(SolrConstants.LOGID);
         fieldList.add(SolrConstants.MD_VALUE);
+        fieldList.add(SolrConstants.MIMETYPE);
+        fieldList.add(SolrConstants.ISWORK);
+        fieldList.add(SolrConstants.THUMBNAIL);
         fieldList.add("MD_REFID");
         fieldList.addAll(getSolrFields(this.entityTitleConfigs.values()));
         fieldList.addAll(getSolrFields(this.featureTitleConfigs.values()));
@@ -246,14 +253,14 @@ public class GeoCoordinateConverter {
                     .filter(StringUtils::isNotBlank)
                     .map(this::getLanguageFields)
                     .flatMap(List::stream)
-                    .collect(Collectors.toList()));
+                    .toList());
             fields.addAll(metadata.getParams()
                     .stream()
                     .map(param -> param.getAltKey())
                     .filter(StringUtils::isNotBlank)
                     .map(this::getLanguageFields)
                     .flatMap(List::stream)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
         return fields;
     }
@@ -275,9 +282,10 @@ public class GeoCoordinateConverter {
                 .flatMap(List::stream)
                 .filter(StringUtils::isNotBlank)
                 .limit(1)
-                .collect(Collectors.toList()));
+                .toList());
         List<GeoMapFeature> docFeatures = getFeatures(points);
-        addMetadataToFeature(doc, children, docFeatures);
+        addEntityToFeatures(doc, children, docFeatures);
+        docFeatures.forEach(feature -> setLink(feature, doc));
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(children.stream()
                 .findAny()
                 .map(child -> SolrTools.getSingleFieldStringValue(child, SolrConstants.LABEL))
@@ -298,7 +306,7 @@ public class GeoCoordinateConverter {
         List<String> points = new ArrayList<>();
         points.addAll(SolrTools.getMetadataValues(doc, metadataField));
         List<GeoMapFeature> docFeatures = getFeatures(points);
-        addMetadataToFeature(doc, Collections.emptyList(), docFeatures);
+        addEntityToFeatures(doc, Collections.emptyList(), docFeatures);
         docFeatures.forEach(feature -> setLink(feature, doc));
         docFeatures.forEach(f -> f.setDocumentId((String) doc.getFieldValue(SolrConstants.LOGID)));
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(
@@ -312,40 +320,16 @@ public class GeoCoordinateConverter {
         return docFeatures;
     }
 
-    private void setLink(GeoMapFeature feature, SolrDocument doc) {
-        String pi = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT))
-                .or(() -> Optional.of(SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI)))
-                .orElse("");
-        String pageNo = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.THUMBPAGENO))
-                .orElse("");
-        String logId = Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LOGID))
-                .orElse("");
-
-        PrettyContext pretty = getPrettyContext();
-        if (pretty != null) {
-            if (StringUtils.isNoneBlank(pi, pageNo, logId)) {
-                feature.setLink(PrettyUrlTools.getAbsolutePageUrl(pretty, "object3", pi, pageNo, logId));
-            } else if (StringUtils.isNotBlank(pi)) {
-                feature.setLink(PrettyUrlTools.getAbsolutePageUrl(pretty, "object1", pi));
-            }
-        }
-    }
-
-    public PrettyContext getPrettyContext() {
-        PrettyContext pretty = null;
-        try {
-            pretty = PrettyContext.getCurrentInstance();
-        } catch (IllegalStateException e) {
-            if (this.servletRequest != null) {
-                pretty = PrettyContext.getCurrentInstance(this.servletRequest);
-            }
-        }
-        return pretty;
+    private static void setLink(GeoMapFeature feature, SolrDocument doc) {
+        URI link = UriBuilder.fromUri(DataManager.getInstance().getConfiguration().getViewerBaseUrl())
+                .path(IdentifierResolver.constructUrl(doc, false))
+                .build();
+        feature.setLink(link.toString());
     }
 
     public Collection<GeoMapFeature> getGeojsonPoints(MetadataContainer doc, String metadataField, String titleField) {
         List<String> points = new ArrayList<>();
-        points.addAll(doc.get(metadataField).stream().filter(Objects::nonNull).map(md -> md.getValueOrFallback(null)).collect(Collectors.toList()));
+        points.addAll(doc.get(metadataField).stream().filter(Objects::nonNull).map(md -> md.getValueOrFallback(null)).toList());
         List<GeoMapFeature> docFeatures = getFeatures(points);
         docFeatures.forEach(f -> f.addEntity(doc));
         String title = StringUtils.isBlank(titleField) ? null : doc.getFirstValue(titleField);
@@ -435,7 +419,7 @@ public class GeoCoordinateConverter {
         return docFeatures;
     }
 
-    private static void addMetadataToFeature(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
+    private static void addEntityToFeatures(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
 
         MetadataContainer entity = MetadataContainer.createMetadataEntity(doc, children,
                 getFeatureFieldFilter(children != null && !children.isEmpty()), getEntityFieldFilter());
@@ -477,7 +461,7 @@ public class GeoCoordinateConverter {
                         .map(p -> new Location(p, label,
                                 Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false),
                                         DataManager.getInstance().getUrlBuilder())))
-                        .collect(Collectors.toList()));
+                        .toList());
             } catch (IllegalArgumentException e) {
                 logger.error("Error parsing field {} of document {}: {}", solrFieldName, doc.get("IDDOC"), e.getMessage());
                 logger.error(e.toString(), e);
@@ -496,13 +480,12 @@ public class GeoCoordinateConverter {
         List<IArea> locs = new ArrayList<>();
         if (o == null) {
             return locs;
-        } else if (o instanceof List) {
-            for (int i = 0; i < ((List) o).size(); i++) {
-                locs.addAll(getLocations(((List) o).get(i)));
+        } else if (o instanceof List l) {
+            for (int i = 0; i < l.size(); i++) {
+                locs.addAll(getLocations(l.get(i)));
             }
             return locs;
-        } else if (o instanceof String) {
-            String s = (String) o;
+        } else if (o instanceof String s) {
             Matcher polygonMatcher = Pattern.compile(POLYGON_LAT_LNG_PATTERN).matcher(s); //NOSONAR   no catastrophic backtracking detected
             while (polygonMatcher.find()) {
                 String match = polygonMatcher.group();
@@ -511,7 +494,7 @@ public class GeoCoordinateConverter {
                 polygonMatcher = Pattern.compile(POLYGON_LAT_LNG_PATTERN).matcher(s); //NOSONAR   no catastrophic backtracking detected
             }
             if (StringUtils.isNotBlank(s)) {
-                locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).collect(Collectors.toList()));
+                locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).toList());
             }
             return locs;
         }
@@ -534,15 +517,15 @@ public class GeoCoordinateConverter {
      * @return Parsed point as a double[]
      */
     private static double[] parsePoint(Object x, Object y) {
-        if (x instanceof Number) {
+        if (x instanceof Number n) {
             double[] loc = new double[2];
-            loc[0] = ((Number) x).doubleValue();
+            loc[0] = n.doubleValue();
             loc[1] = ((Number) y).doubleValue();
             return loc;
-        } else if (x instanceof String) {
+        } else if (x instanceof String s) {
             try {
                 double[] loc = new double[2];
-                loc[0] = Double.parseDouble((String) x);
+                loc[0] = Double.parseDouble(s);
                 loc[1] = Double.parseDouble((String) y);
                 return loc;
             } catch (NumberFormatException e) {
@@ -560,8 +543,7 @@ public class GeoCoordinateConverter {
             JSONArray array = json.getJSONArray("features");
             if (array != null) {
                 array.forEach(f -> {
-                    if (f instanceof JSONObject) {
-                        JSONObject jsonObj = (JSONObject) f;
+                    if (f instanceof JSONObject jsonObj) {
                         String jsonString = jsonObj.toString();
                         GeoMapFeature feature = new GeoMapFeature(jsonString);
                         if (!features.contains(feature)) {

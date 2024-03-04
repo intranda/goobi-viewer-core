@@ -64,7 +64,9 @@
 			layer.language = this.config.map.language;
 			//when clicking on features with an associated link, open that link
 	    	layer.onFeatureClick.subscribe(feature => {
-	   	       if(feature.properties && feature.properties.link && !feature.properties.highlighted) {
+//				console.log("click on feature ", feature);
+	   	       if(feature.properties?.link && !feature.properties.entities?.filter(e => e.visible !== false).filter(e => e.title?.length > 0).length && !feature.properties.highlighted) {
+	   	           $(layer.config.search.loader).show();
 	   	           window.location.assign(feature.properties.link);
 	   	       }
 	   	    });
@@ -74,12 +76,13 @@
 	            layer.onFeatureClick.subscribe( (feature) => { 
 					// viewerJS.notifications.confirm("Do you want to show search results for this location?")
 					// .then(() => {
-//						console.log("click in feature", feature);
 						let featuresToShow = feature.properties?.entities?.filter(e => e.visible !== false).filter(e => e.title?.length > 0);
-						if(featuresToShow.length == 0) {
+//						console.log("click for search ", featuresToShow, feature.properties.count, feature.properties.link);
+						if(featuresToShow.length == 0 && (feature.properties.count > 1 || !feature.properties?.link?.length))  {
 							$(layer.config.search.loader).show();
 							let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
 							queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
+//							console.log("open search url ", queryUrl);
 							window.open(queryUrl, layer.config.search.linkTarget);
 						} 
 					// })

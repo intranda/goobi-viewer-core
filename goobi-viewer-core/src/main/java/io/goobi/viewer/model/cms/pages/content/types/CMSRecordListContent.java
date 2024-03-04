@@ -152,7 +152,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
      * If <code>sortField</code> contains a language code placeholder, this method replaces it with the give language code.
      * 
      * @param language ISO-2 language code
-     * @return
+     * @return Configured sortField, placeholder replaced with given language
      */
     public String getSortFieldForLanguage(String language) {
         if (sortField != null && language != null) {
@@ -272,7 +272,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 s.setMetadataListType(metadataListType);
             }
             SearchFacets facets = searchBean.getFacets();
-//            facets.resetActiveFacets();
+            //            facets.resetActiveFacets();
             facets.resetAvailableFacets();
             s.setPage(getCurrentListPage());
             searchBean.setHitsPerPage(this.getElementsPerPage());
@@ -282,8 +282,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 s.setQuery("*:*");
             }
             s.setCustomFilterQuery(this.solrQuery);
-//            facets.getActiveFacets().forEach(f -> f.setCount(0));
-//            facets.getAvailableFacets().values().stream().flatMap(List::stream).forEach(f -> f.setCount(0));
+            //            facets.getActiveFacets().forEach(f -> f.setCount(0));
+            //            facets.getAvailableFacets().values().stream().flatMap(List::stream).forEach(f -> f.setCount(0));
             s.execute(facets, null, searchBean.getHitsPerPage(), locale, true,
                     this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(s);
@@ -302,7 +302,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     /**
      * Alias for {@link #getSearch()}. Used in legacy templates
      * 
-     * @return
+     * @return {@link Functionality}
      */
     public Functionality getFunctionality() {
         return getSearch();

@@ -4136,6 +4136,7 @@ public class Configuration extends AbstractConfiguration {
      * isSolrCompressionEnabled.
      * </p>
      *
+     * @return a boolean
      * @should return correct value
      * @deprecated Not supported when using HTTP2
      */
