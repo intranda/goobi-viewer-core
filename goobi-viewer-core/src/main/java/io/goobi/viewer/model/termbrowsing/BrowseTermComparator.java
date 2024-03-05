@@ -110,7 +110,7 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
 
     /**
      *
-     * @param s String to normalize
+     * @param str String to normalize
      * @param ignoreChars Optional string containing leading characters to remove from the string
      * @return Cleaned-up string for comparison
      * @should use ignoreChars if provided
