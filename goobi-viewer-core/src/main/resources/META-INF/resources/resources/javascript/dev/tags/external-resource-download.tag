@@ -96,6 +96,7 @@
       }
 
       this.on("mount", () => {
+    	  console.log("mounting external resource download", this, this.opts);
       	this.urls = this.opts.urls;
       	this.pi = this.opts.pi;
       	this.msg = this.opts.msg;

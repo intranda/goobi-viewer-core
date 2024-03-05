@@ -2801,6 +2801,7 @@ riot.tag2('external-resource-download', '<div class="download_external_resource_
       }
 
       this.on("mount", () => {
+    	  console.log("mounting external resource download", this, this.opts);
       	this.urls = this.opts.urls;
       	this.pi = this.opts.pi;
       	this.msg = this.opts.msg;

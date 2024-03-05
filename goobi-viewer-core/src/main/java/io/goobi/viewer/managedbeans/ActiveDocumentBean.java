@@ -194,7 +194,9 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
-
+    
+    private List<String> externalResourceUrls = null;
+    
     /**
      * Empty constructor.
      */
@@ -268,6 +270,7 @@ public class ActiveDocumentBean implements Serializable {
             prevDocstructUrlCache.clear();
             nextDocstructUrlCache.clear();
             lastReceivedIdentifier = null;
+            externalResourceUrls = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -2722,13 +2725,19 @@ public class ActiveDocumentBean implements Serializable {
     }
     
     public List<String> getExternalResourceUrls() {
+        if(this.externalResourceUrls == null) {
+            this.externalResourceUrls = loadExternalResourceUrls();
+        }
+        return this.externalResourceUrls;
+    }
+    
+    private List<String> loadExternalResourceUrls() {
         List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
         VariableReplacer vr = new VariableReplacer(getTopDocument());
-        List<String> urls = urlTemplates.stream()
+        return urlTemplates.stream()
                 .flatMap(templ -> vr.replace(templ).stream())
                 .filter(url -> ExternalFilesDownloader.resourceExists(url))
                 .toList();
-        return urls;
     }
 
 }

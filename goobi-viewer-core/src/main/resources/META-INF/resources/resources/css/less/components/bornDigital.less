@@ -94,10 +94,11 @@
 	}
 	&__progress_wrapper {
 		display: none;
-		justify-content: space-between;
-		align-items: center;
+		padding: .5rem 1.5rem;
 		&.-active {
-			display: flex;
+			display: grid;
+			grid-template-columns: 5fr 1fr;
+			grid-gap: 5px;
 		}
 		label {
 			margin-bottom: 0;
