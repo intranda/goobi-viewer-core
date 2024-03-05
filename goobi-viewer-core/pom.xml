@@ -86,7 +86,7 @@
 		<normdataimporter.version>1.10.6</normdataimporter.version>
 
         <!-- other libraries -->
-        <angus-mail.version>2.0.2</angus-mail.version>
+        <angus-mail.version>2.0.3</angus-mail.version>
 		<citationstyles.version>23.11</citationstyles.version>
 		<citeproc-java.version>3.0.0-beta.2</citeproc-java.version>
 		<commons-codec.version>1.16.1</commons-codec.version>
