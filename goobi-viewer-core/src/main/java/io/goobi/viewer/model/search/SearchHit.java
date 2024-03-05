@@ -105,7 +105,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /** Metadata for Excel export. */
     @JsonIgnore
     private final Map<String, String> exportMetadata = new HashMap<>();
-    private final String url;
+    private String url;
     /** Secondary URL */
     private String altUrl;
     @JsonIgnore
@@ -434,7 +434,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             //Check and add link to record, if exists
                             String entryId = SolrTools.getSingleFieldStringValue(childDoc, "MD_ARCHIVE_ENTRY_ID");
                             if (StringUtils.isNotEmpty(entryId)) {
-                                childHit.setAltUrl("archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected");
+                                childHit.url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected";
                             }
                             // logger.trace("altUrl: {}", altUrl);
                         }
