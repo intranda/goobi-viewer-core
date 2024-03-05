@@ -5992,10 +5992,10 @@ public class Configuration extends AbstractConfiguration {
     }
     
     public String getThemePullScriptPath() {
-        return getLocalString("developer.scripts.pullTheme", "script_theme-pull.sh");
+        return getLocalString("developer.scripts.pullTheme", "{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../");
     }
     
     public String getCreateDeveloperPackageScriptPath() {
-        return getLocalString("developer.scripts.createDeveloperPackage", "script_create_package.sh");
+        return getLocalString("developer.scripts.createDeveloperPackage", "{config-folder-path}/script_create_package.sh viewer {base-path} /home/florian/tmp/viewer/ {solr-url}");
     }
 }

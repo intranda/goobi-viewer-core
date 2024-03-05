@@ -139,7 +139,11 @@ public class AdminDeveloperBean implements Serializable {
         try {
             sendDownloadProgressUpdate(0);
             zipPath = createZipFile(DataManager.getInstance().getConfiguration().getCreateDeveloperPackageScriptPath());
-            sendDownloadProgressUpdate(1);
+            if(Files.exists(zipPath)) {                
+                sendDownloadProgressUpdate(1);
+            } else {
+                throw new IOException("Failed to create file " + zipPath);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.error("Bean thread interrupted while waiting for bash call to finish");
@@ -178,8 +182,8 @@ public class AdminDeveloperBean implements Serializable {
         String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
-        String out = command.getOutput();
-        String error = command.getErrorOutput();
+        String out = command.getOutput().trim();
+        String error = command.getErrorOutput().trim();
         if(ret > 0) {
             throw new IOException(error);
         } else {            

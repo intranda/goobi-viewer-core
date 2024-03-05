@@ -36,6 +36,7 @@ import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
+import io.goobi.viewer.controller.variablereplacer.VariableReplacer;
 import io.goobi.viewer.managedbeans.AdminDeveloperBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
@@ -116,7 +117,9 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     }
 
     private static boolean pullThemeRepository(Path themePath) throws IOException, InterruptedException {
-        String commandString = BASH_STATEMENT_PULL_THEME_REPOSITORY.replace("$VIEWERTHEMEPATH", themePath.toAbsolutePath().toString());
+        
+        String scriptTemplate = DataManager.getInstance().getConfiguration().getThemePullScriptPath();
+        String commandString =  new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(scriptTemplate);
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec();
         String output = command.getOutput();
