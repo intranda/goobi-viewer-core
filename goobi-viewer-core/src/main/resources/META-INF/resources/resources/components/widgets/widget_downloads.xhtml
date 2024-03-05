@@ -19,7 +19,7 @@
 				<div class="widget-downloads__topbar">
 					<!-- WIDGET TITLE -->
 					<h2 tabindex="0" role="button"
-						class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
+						class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group or (navigationHelper.currentPage == 'fulltext') ? '' : 'collapseable'}">
 						<span>#{msg.downloads}</span> <i class="fa fa-angle-down"
 							aria-hidden="true"></i>
 					</h2>
@@ -27,13 +27,23 @@
 
 				<!-- WIDGET BODY -->
 				<div
-					class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
+					class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group or (navigationHelper.currentPage == 'fulltext') ? '' : 'collapseable'}">
 					<!-- INTRODUCTION TEXT -->
 					<ui:fragment
-						rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']) > 0}">
+						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and navigationHelper.currentPage == 'object' }">
 						<p id="introductionText" class="widget-downloads__license-text">
 							<h:outputText
-								value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']}"
+								value="#{msg['widget__downloads__intro_text_object_downloads']}"
+								escape="false" />
+						</p>
+					</ui:fragment>
+					
+					<!-- INTRODUCTION TEXT -->
+					<ui:fragment
+						rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and navigationHelper.currentPage == 'fulltext' }">
+						<p id="introductionText" class="widget-downloads__license-text">
+							<h:outputText
+								value="#{msg['widget__downloads__intro_text_text_formats']}"
 								escape="false" />
 						</p>
 					</ui:fragment>

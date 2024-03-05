@@ -49,9 +49,9 @@
 							<!-- NAME OF THE RECORD -->
 							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 		
-		                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
-								<viewerComponent:copyrightIndicator />
-							</ui:fragment>
+<!-- 		                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}"> -->
+<!-- 								<viewerComponent:copyrightIndicator /> -->
+<!-- 							</ui:fragment> -->
 		
 						</h1>
 					</div>
@@ -445,11 +445,11 @@
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="toc" />
         
-        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
-        	<widgetComponent:widget_copyrightInfo />
-        </ui:fragment>
+<!--         <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"> -->
+<!--         	<widgetComponent:widget_copyrightInfo /> -->
+<!--         </ui:fragment> -->
 
-        <widgetComponent:widget_searchInCurrentItem />
+<!--         <widgetComponent:widget_searchInCurrentItem /> -->
         
         <widgetComponent:widget_statistics_usage />
 
@@ -459,7 +459,7 @@
 
         <widgetComponent:widget_searchResultNavigation />
 
-        <widgetComponent:widget_metadata />
+<!--         <widgetComponent:widget_metadata /> -->
 
 		<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}">
 	        <widgetComponent:widget_geoMap 
@@ -472,9 +472,9 @@
 		        popoverClass="record_geomap_popover"
 		        highlightDocumentId="#{activeDocumentBean.logid}"/>
         </ui:fragment>
-		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+<!-- 		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" /> -->
 
-        <widgetComponent:widget_relatedGroups />
+<!--         <widgetComponent:widget_relatedGroups /> -->
 
         <widgetComponent:widget_additionalFiles />
 

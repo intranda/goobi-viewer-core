@@ -21,18 +21,18 @@
 					<h2
 						tabindex="0"
 						role="button"
-						class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
+						class="widget__title #{(activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group) or (navigationHelper.currentPage == 'metadata') ? '' : 'collapseable'}">
 	                    <span>#{msg.widget_formatsLinks}</span>
 	                    <i class="fa fa-angle-down" aria-hidden="true"></i>
 	                </h2>
 				</div>
 
                 <!-- WIDGET BODY -->
-				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
+				<div class="widget__body #{(activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group) or (navigationHelper.currentPage == 'metadata') ? '' : 'collapseable'}">
                     <!-- INTRODUCTION TEXT -->
-                    <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']) > 0}">
+                    <ui:fragment rendered="#{fn:length(msg['widget__formatlinks_intro_text']) > 0}">
                         <p id="introductionText" class="widget-format-links__license-text">
-                            <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']}" escape="false" />
+                            <h:outputText value="#{msg['widget__formatlinks_intro_text']}" escape="false" />
                         </p>
                     </ui:fragment>
 

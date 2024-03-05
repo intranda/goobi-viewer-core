@@ -96,11 +96,11 @@
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="metadata" />
         
-        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
-        	<widgetComponent:widget_copyrightInfo />
-        </ui:fragment>
+<!--         <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"> -->
+<!--         	<widgetComponent:widget_copyrightInfo /> -->
+<!--         </ui:fragment> -->
 
-        <widgetComponent:widget_searchInCurrentItem />
+<!--         <widgetComponent:widget_searchInCurrentItem /> -->
 
         <widgetComponent:widget_statistics_usage />
 
@@ -122,13 +122,13 @@
 		        highlightDocumentId="#{activeDocumentBean.logid}"/>
         </ui:fragment>
         
-		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+<!-- 		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" /> -->
 
         <widgetComponent:widget_formatsLinks />
 
-        <widgetComponent:widget_relatedGroups />
+<!--         <widgetComponent:widget_relatedGroups /> -->
 
-        <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
+<!--         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" /> -->
 
         <widgetComponent:widget_additionalFiles />
 

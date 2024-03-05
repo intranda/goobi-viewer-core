@@ -53,9 +53,9 @@
                                         data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
                                         data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
                                         aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
-                                        #{link.label}</button>
+                                        #{msg[link.label]}</button>
                                 </ui:fragment>
-                                    
+                                     
                                 <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
                                     <button type="button"
                                     	id="citeLinkInternal"
@@ -63,7 +63,7 @@
                                         data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
                                         data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
                                         aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
-                                        #{link.label}</button>
+                                       #{msg[link.label]}</button>
                                 </ui:fragment>
                                     
                             </c:forEach>
