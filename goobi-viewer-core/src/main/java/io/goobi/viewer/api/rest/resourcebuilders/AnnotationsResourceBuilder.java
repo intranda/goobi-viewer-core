@@ -284,9 +284,10 @@ public class AnnotationsResourceBuilder {
     }
     
     /**
-     * @param format
+     * @param pi
+     * @param pageNo
      * @param uri
-     * @return
+     * @return {@link AnnotationCollection}
      * @throws DAOException
      */
     public AnnotationCollection getWebAnnotationCollectionForPageComments(String pi, int pageNo, URI uri) throws DAOException {

@@ -77,6 +77,7 @@ public final class SelectItemBuilder {
      * @param valueSupplier
      * @param labelSupplier
      * @param descriptionSupplier
+     * @param disabledPredicate
      * @return List<SelectItem>
      */
     public static <T> List<SelectItem> getAsGroupedSelectItems(Map<String, List<T>> map, Function<T, Object> valueSupplier,

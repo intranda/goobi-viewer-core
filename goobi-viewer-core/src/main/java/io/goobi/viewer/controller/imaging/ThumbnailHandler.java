@@ -805,87 +805,113 @@ public class ThumbnailHandler {
         return thumbnailUrl;
     }
 
-    public String getDocumentImagePath(StructElement doc, String thumbnailUrl) {
+    /**
+     * 
+     * @param doc
+     * @param thumbnailUrl
+     * @return String
+     */
+    public String getDocumentImagePath(StructElement doc, final String thumbnailUrl) {
+        String ret = thumbnailUrl;
         DocType docType = getDocType(doc).orElse(DocType.DOCSTRCT);
         switch (docType) {
             case EVENT:
-                thumbnailUrl = getThumbnailPath(EVENT_THUMB).toString();
+                ret = getThumbnailPath(EVENT_THUMB).toString();
                 break;
             case GROUP:
-                thumbnailUrl = getThumbnailPath(GROUP_THUMB).toString();
+                ret = getThumbnailPath(GROUP_THUMB).toString();
                 break;
             case METADATA:
                 MetadataGroupType metadataGroupType = getMetadataGroupType(doc).orElse(MetadataGroupType.SUBJECT);
                 if (MetadataGroupType.PERSON.equals(metadataGroupType)) {
-                    thumbnailUrl = getThumbnailPath(PERSON_THUMB).toString();
+                    ret = getThumbnailPath(PERSON_THUMB).toString();
                 }
                 break;
             case DOCSTRCT, PAGE:
             default:
-                thumbnailUrl = getDocStructImagePath(doc, thumbnailUrl);
+                ret = getDocStructImagePath(doc, ret);
         }
-        return thumbnailUrl;
+
+        return ret;
     }
 
-    public String getDocStructImagePath(StructElement doc, String thumbnailUrl) {
+    /**
+     * 
+     * @param doc
+     * @param thumbnailUrl
+     * @return {@link String}
+     */
+    public String getDocStructImagePath(StructElement doc, final String thumbnailUrl) {
+        String ret = thumbnailUrl;
         String mimeType = getMimeType(doc).orElse("unknown");
         BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
         if (baseMimeType != null) {
             switch (baseMimeType.getName()) {
                 case "image":
-                    thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
+                    ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
                     break;
                 case "video", "text":
-                    thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-                    if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
-                        thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
+                    ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
+                    if (StringUtils.isEmpty(ret) || !isImageMimeType(ret)) {
+                        ret = getThumbnailPath(VIDEO_THUMB).toString();
                     }
                     break;
                 case "audio":
-                    thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-                    if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
-                        thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
+                    ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
+                    if (StringUtils.isEmpty(ret) || !isImageMimeType(ret)) {
+                        ret = getThumbnailPath(AUDIO_THUMB).toString();
                     }
                     break;
                 case "application":
                     switch (mimeType) {
                         case "application/pdf":
-                            thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
+                            ret = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
                             break;
                         case "application/object":
-                            thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
+                            ret = getThumbnailPath(OBJECT_3D_THUMB).toString();
                             break;
                         default:
                             break;
                     }
                     break;
                 case "object":
-                    thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
+                    ret = getThumbnailPath(OBJECT_3D_THUMB).toString();
                     break;
                 default:
-                    logger.warn("Mime type of '{}' not supported: {}", doc.getMetadataValue(SolrConstants.PI_TOPSTRUCT), baseMimeType);
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("Mime type of '{}' not supported: {}", doc.getMetadataValue(SolrConstants.PI_TOPSTRUCT), baseMimeType);
+                    }
                     break;
             }
         }
-        return thumbnailUrl;
+        return ret;
     }
 
-    public String getAnchorImagePath(StructElement doc, String thumbnailUrl, String anchorThumbnailMode) {
+    /**
+     * 
+     * @param doc
+     * @param thumbnailUrl
+     * @param anchorThumbnailMode
+     * @return {@link String}
+     */
+    public String getAnchorImagePath(StructElement doc, final String thumbnailUrl, String anchorThumbnailMode) {
+        String ret = thumbnailUrl;
+
         // Anchor
         if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(anchorThumbnailMode)) {
-            thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
+            ret = getThumbnailPath(ANCHOR_THUMB).toString();
         } else if (ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(anchorThumbnailMode)) {
             try {
                 StructElement volume = doc.getFirstVolume(new ArrayList<>(REQUIRED_SOLR_FIELDS));
                 if (volume != null) {
                     String volumeImagePath = getImagePath(volume);
                     if (StringUtils.isNotBlank(volumeImagePath) && !URI.create(volumeImagePath).isAbsolute()) {
-                        thumbnailUrl = volume.getPi() + "/" + getImagePath(volume);
+                        ret = volume.getPi() + "/" + getImagePath(volume);
                     } else {
-                        thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
+                        ret = getThumbnailPath(ANCHOR_THUMB).toString();
                     }
                 } else {
-                    thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
+                    ret = getThumbnailPath(ANCHOR_THUMB).toString();
                 }
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error("Unable to retrieve first volume of {} from index", doc, e);
@@ -893,10 +919,17 @@ public class ThumbnailHandler {
         } else {
             logger.error("Unknown value in viewer.anchorThumbnailMode: {}. No thumbnail can be rendered for {}", anchorThumbnailMode, doc);
         }
-        return thumbnailUrl;
+
+        return ret;
     }
 
-    public String getCMSPageImagePath(StructElement doc, String thumbnailUrl) {
+    /**
+     * 
+     * @param doc
+     * @param thumbnailUrl
+     * @return String
+     */
+    public String getCMSPageImagePath(StructElement doc, final String thumbnailUrl) {
         // CMS page
         int id = Integer.parseInt(doc.getPi().substring(3));
         try {
@@ -911,7 +944,7 @@ public class ThumbnailHandler {
                         .findFirst()
                         .orElse(null);
                 if (item != null) {
-                    thumbnailUrl = item.getUrl();
+                    return item.getUrl();
                 }
             } else {
                 logger.warn("CMS page not found: {}", id);
@@ -919,6 +952,7 @@ public class ThumbnailHandler {
         } catch (DAOException | UnsupportedEncodingException e) {
             logger.error(e.getMessage());
         }
+
         return thumbnailUrl;
     }
 
@@ -931,16 +965,31 @@ public class ThumbnailHandler {
         return format != null;
     }
 
+    /**
+     * 
+     * @param structElement
+     * @return Optional<DocType>
+     */
     private static Optional<DocType> getDocType(StructElement structElement) {
         DocType docType = DocType.getByName(structElement.getMetadataValue(SolrConstants.DOCTYPE));
         return Optional.ofNullable(docType);
     }
 
+    /**
+     * 
+     * @param structElement
+     * @return Optional<MetadataGroupType>
+     */
     private static Optional<MetadataGroupType> getMetadataGroupType(StructElement structElement) {
         MetadataGroupType type = MetadataGroupType.getByName(structElement.getMetadataValue(SolrConstants.METADATATYPE));
         return Optional.ofNullable(type);
     }
 
+    /**
+     * 
+     * @param structElement
+     * @return Optional<String>
+     */
     private static Optional<String> getFilename(StructElement structElement) {
         String filename = structElement.getMetadataValue(SolrConstants.FILENAME);
         if (StringUtils.isEmpty(filename)) {
@@ -953,9 +1002,15 @@ public class ThumbnailHandler {
                 logger.warn("Unable to retrieve first page of structElement from index");
             }
         }
+
         return Optional.ofNullable(filename).filter(StringUtils::isNotBlank);
     }
 
+    /**
+     * 
+     * @param structElement
+     * @return Optional<String>
+     */
     private static Optional<String> getMimeType(StructElement structElement) {
         Optional<String> mimeType = Optional.empty();
         if (structElement.isAnchor()) {
@@ -972,6 +1027,7 @@ public class ThumbnailHandler {
                     .map(ImageFileFormat::getImageFileFormatFromFileExtension)
                     .map(ImageFileFormat::getMimeType);
         }
+
         return mimeType;
     }
 

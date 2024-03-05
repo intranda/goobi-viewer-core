@@ -106,6 +106,7 @@ public class IIIFPresentation2ResourceBuilder {
     /**
      * 
      * @param pi
+     * @param pagesToInclude
      * @param mode
      * @return {@link IPresentationModelElement}
      * @throws PresentationException
@@ -115,25 +116,24 @@ public class IIIFPresentation2ResourceBuilder {
      * @throws ViewerConfigurationException
      * @throws DAOException
      */
-public IPresentationModelElement getManifest(String pi, List<Integer> pagesToInclude, BuildMode mode) throws PresentationException, IndexUnreachableException,
-            ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
+    public IPresentationModelElement getManifest(String pi, List<Integer> pagesToInclude, BuildMode mode)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException,
+            DAOException {
         getManifestBuilder().setBuildMode(mode);
         getSequenceBuilder().setBuildMode(mode);
-        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) || !pagesToInclude.isEmpty() ? 
-                getManifestBuilder().getDocumentWithChildren(pi) : Arrays.asList(getManifestBuilder().getDocument(pi));
+        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) || !pagesToInclude.isEmpty()
+                ? getManifestBuilder().getDocumentWithChildren(pi) : Arrays.asList(getManifestBuilder().getDocument(pi));
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + pi);
         }
         StructElement mainDoc = docs.get(0);
         IPresentationModelElement manifest = getManifestBuilder().generateManifest(mainDoc, pagesToInclude);
 
-        if (manifest instanceof Collection2 && docs.size() > 1) {
-            getManifestBuilder().addVolumes((Collection2) manifest, docs.subList(1, docs.size()));
-        } else if (manifest instanceof Manifest2) {
-            getManifestBuilder().addAnchor((Manifest2) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
-
+        if (manifest instanceof Collection2 col2 && docs.size() > 1) {
+            getManifestBuilder().addVolumes(col2, docs.subList(1, docs.size()));
+        } else if (manifest instanceof Manifest2 col2) {
+            getManifestBuilder().addAnchor(col2, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
             getSequenceBuilder().addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), pagesToInclude, request);
-
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId) && BuildMode.IIIF.equals(mode) && pagesToInclude.isEmpty()) {
                 List<Range2> ranges = getStructureBuilder().generateStructure(docs, pi, false);
@@ -195,11 +195,11 @@ public IPresentationModelElement getManifest(String pi, List<Integer> pagesToInc
 
         if (manifest instanceof Collection2) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
-        } else if (manifest instanceof Manifest2) {
+        } else if (manifest instanceof Manifest2 manifest2) {
             new SequenceBuilder(urls).setBuildMode(buildMode)
                     .setPreferedView(preferedView)
-                    .addBaseSequence((Manifest2) manifest, doc, manifest.getId().toString(), Collections.emptyList(), request);
-            return ((Manifest2) manifest).getSequences().get(0);
+                    .addBaseSequence(manifest2, doc, manifest.getId().toString(), Collections.emptyList(), request);
+            return manifest2.getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
 
@@ -251,7 +251,8 @@ public IPresentationModelElement getManifest(String pi, List<Integer> pagesToInc
                     (id, lang) -> urls.path(RECORDS_RECORD, RECORDS_CMDI_LANG).params(id, lang).buildURI());
 
         } else {
-            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", Collections.emptyList(), request);
+            Map<AnnotationType, List<AnnotationList>> annoLists =
+                    getSequenceBuilder().addBaseSequence(null, doc, "", Collections.emptyList(), request);
             return getLayerBuilder().generateLayer(pi, annoLists, type);
         }
     }

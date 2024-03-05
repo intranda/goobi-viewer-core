@@ -628,14 +628,14 @@ public abstract class AbstractBuilder {
         String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
         return URI.create(urlString);
     }
-    
+
     /**
      * <p>
      * getManifestURI for page
      * </p>
      *
      * @param pi Persistent identifier of a record
-     * @param 1-based page order within the record
+     * @param pageNo 1-based page order within the record
      * @return a {@link java.net.URI} object.
      */
     public URI getPageManifestURI(String pi, int pageNo) {

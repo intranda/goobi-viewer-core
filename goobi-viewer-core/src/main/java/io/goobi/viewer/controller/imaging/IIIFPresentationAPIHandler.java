@@ -57,6 +57,7 @@ public class IIIFPresentationAPIHandler {
      * Returns the url to the manifest for the given pi
      *
      * @param pi a {@link java.lang.String} object.
+     * @param pageNo
      * @return The IIIF manifest
      * @throws java.net.URISyntaxException if any.
      */

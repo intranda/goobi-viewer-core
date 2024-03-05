@@ -21,7 +21,12 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -104,6 +109,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param pagesToInclude
      * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -134,7 +140,7 @@ public class ManifestBuilder extends AbstractBuilder {
         return manifest;
     }
 
-    private PhysicalElement getPhysicalElement(Integer pageNo, StructElement struct) {
+    private static PhysicalElement getPhysicalElement(Integer pageNo, StructElement struct) {
         if (pageNo != null && struct != null) {
             try {
                 return DataManager.getInstance().getSearchIndex().getPage(struct, pageNo);
@@ -142,9 +148,8 @@ public class ManifestBuilder extends AbstractBuilder {
                 logger.error("error loading page no {} in {}: {}", pageNo, struct.getPi(), e.toString());
                 return null;
             }
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -256,7 +261,7 @@ public class ManifestBuilder extends AbstractBuilder {
         if (logoUrl.isEmpty()) {
             Optional<String> url =
                     BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
-            url.ifPresent(l -> logoUrl.add(l));
+            url.ifPresent(logoUrl::add);
         }
         for (String url : logoUrl) {
             ImageContent logo;
@@ -327,12 +332,7 @@ public class ManifestBuilder extends AbstractBuilder {
         this.getRenderings().forEach(link -> {
             try {
                 URI id = page.map(p -> {
-                    try {
-                        return getLinkingPropertyUri(p, link.getTarget());
-                    } catch (IndexUnreachableException | ViewerConfigurationException e) {
-                        logger.error("Error getting link for page {} in {}: {}", p.getOrder(), p.getPi(), e.toString());
-                        return null;
-                    }
+                    return getLinkingPropertyUri(p, link.getTarget());
                 }).orElse(getLinkingPropertyUri(ele, link.getTarget()));
                 if (id != null) {
                     manifest.addRendering(link.getLinkingContent(id));
@@ -343,8 +343,13 @@ public class ManifestBuilder extends AbstractBuilder {
         });
     }
 
-    private URI getLinkingPropertyUri(PhysicalElement page, LinkingTarget target)
-            throws IndexUnreachableException, ViewerConfigurationException {
+    /**
+     * 
+     * @param page
+     * @param target
+     * @return {@link URI}
+     */
+    private URI getLinkingPropertyUri(PhysicalElement page, LinkingTarget target) {
 
         URI uri = null;
         switch (target) {
@@ -352,17 +357,35 @@ public class ManifestBuilder extends AbstractBuilder {
                 uri = URI.create(getViewUrl(page, PageType.viewObject));
                 break;
             case ALTO:
-                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), Path.of(Optional.ofNullable(page.getAltoFileName()).orElse("-")).getFileName()).buildURI();
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                        .params(page.getPi(), Path.of(Optional.ofNullable(page.getAltoFileName()).orElse("-")).getFileName())
+                        .buildURI();
                 break;
             case PLAINTEXT:
-                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), Path.of(Optional.ofNullable(page.getFulltextFileName()).orElse(Optional.ofNullable(page.getAltoFileName()).orElse("-"))).getFileName()).buildURI();
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                        .params(page.getPi(),
+                                Path.of(Optional.ofNullable(page.getFulltextFileName())
+                                        .orElse(Optional.ofNullable(page.getAltoFileName()).orElse("-"))).getFileName())
+                        .buildURI();
                 break;
             case PDF:
                 uri = URI.create(imageDelivery.getPdf().getPdfUrl(null, page));
+                break;
+            default:
+                break;
         }
         return uri;
     }
 
+    /**
+     * 
+     * @param ele
+     * @param target
+     * @return {@link URISyntaxException}
+     * @throws URISyntaxException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target)
             throws URISyntaxException, PresentationException, IndexUnreachableException {
 

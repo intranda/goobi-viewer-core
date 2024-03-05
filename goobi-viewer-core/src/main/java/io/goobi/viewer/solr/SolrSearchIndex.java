@@ -1454,7 +1454,7 @@ public class SolrSearchIndex {
         json.put("counts_ints2D", rows);
 
         return json.toString();
-    }    
+    }
 
     /**
      * <p>
@@ -1474,17 +1474,16 @@ public class SolrSearchIndex {
             StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
             IPageLoader pageLoader = AbstractPageLoader.create(struct, List.of(order));
             return pageLoader.getPage(order);
-        } else {
-            return null;
         }
+        return null;
     }
-    
+
     /**
      * <p>
      * getPage.
      * </p>
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param struct
      * @param order a int.
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1492,10 +1491,10 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public PhysicalElement getPage(StructElement struct, int order) throws IndexUnreachableException, PresentationException, DAOException {
-            IPageLoader pageLoader = AbstractPageLoader.create(struct, List.of(order));
-            return pageLoader.getPage(order);
+        IPageLoader pageLoader = AbstractPageLoader.create(struct, List.of(order));
+        return pageLoader.getPage(order);
     }
-    
+
     /**
      * @return the dataRepositoryNames
      */
@@ -1520,5 +1519,5 @@ public class SolrSearchIndex {
             return Long.compare(weightMap.get(term1), weightMap.get(term2));
         }
     }
-    
+
 }

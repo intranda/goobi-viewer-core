@@ -133,8 +133,7 @@ public class RecordPageResource {
                     + " all resources from files") @QueryParam("mode") String mode,
             @Parameter(
                     description = "Set prefered goobi-viewer view for rendering attribute of canvases. Only valid values is 'fullscreen',"
-                            + " any other value results in default object/image view being referenced.") 
-            @QueryParam("preferedView") String preferedView)
+                            + " any other value results in default object/image view being referenced.") @QueryParam("preferedView") String preferedView)
 
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {
@@ -142,7 +141,7 @@ public class RecordPageResource {
         BuildMode buildMode = RecordResource.getBuildeMode(mode);
         return builder.getBaseSequence(pi, buildMode, preferedView);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -151,7 +150,9 @@ public class RecordPageResource {
     public IPresentationModelElement getManifest(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @Parameter(
-                    description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
+                    description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns"
+                            + " the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources"
+                            + " and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException {
         IIIFPresentation2ResourceBuilder b = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
