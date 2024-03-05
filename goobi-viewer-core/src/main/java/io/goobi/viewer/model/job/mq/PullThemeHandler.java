@@ -57,11 +57,8 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     public MessageStatus call(ViewerMessage ticket) {
         updateProgress(0.1f);
         if (DataManager.getInstance().getConfiguration().getThemeRootPath() != null) {
-            Path themeRootPath = Path.of(DataManager.getInstance().getConfiguration().getThemeRootPath()).toAbsolutePath();
-            themeRootPath = Path.of("/").resolve(themeRootPath.subpath(0, themeRootPath.getNameCount() - 4));
-            if (Files.exists(themeRootPath) && Files.exists(themeRootPath.resolve(".git"))) {
                 try {
-                    if (pullThemeRepository(themeRootPath)) {
+                    if (pullThemeRepository()) {
                         updateProgress(1f);
                         return MessageStatus.FINISH;
                     }
@@ -80,10 +77,9 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
                     sendProgressError("Error pulling theme: " + e.toString());
                     return MessageStatus.ERROR;
                 }
-            }
-            ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Theme root path is not accessible or is not a git repository");
-            sendProgressError("Theme root path is not accessible or is not a git repository");
-            return MessageStatus.ERROR;
+//            ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Theme root path is not accessible or is not a git repository");
+//            sendProgressError("Theme root path is not accessible or is not a git repository");
+//            return MessageStatus.ERROR;
         }
         ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "No theme root path configured");
         sendProgressError("No theme root path configured");
@@ -116,7 +112,7 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
         }
     }
 
-    private static boolean pullThemeRepository(Path themePath) throws IOException, InterruptedException {
+    private static boolean pullThemeRepository() throws IOException, InterruptedException {
         
         String scriptTemplate = DataManager.getInstance().getConfiguration().getThemePullScriptPath();
         String commandString =  new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(scriptTemplate);

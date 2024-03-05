@@ -204,8 +204,14 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     public boolean isAutopullActive() throws DAOException {
-        RecurringTaskTrigger trigger = DataManager.getInstance().getDao().getRecurringTaskTriggerForTask(TaskType.PULL_THEME);
-        return trigger != null && trigger.getStatus() == TaskTriggerStatus.RUNNING;
+        List<ViewerMessage> messages = DataManager.getInstance()
+                .getDao()
+                .getViewerMessages(0, 1, "lastUpdateTime", true,
+                        Map.of("taskName", TaskType.PULL_THEME.name()));
+        if (!messages.isEmpty()) {
+            return messages.get(0).getMessageStatus() == MessageStatus.FINISH;
+        }
+        return false;
     }
 
     public boolean isAutopullError() throws DAOException {
