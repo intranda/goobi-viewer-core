@@ -62,7 +62,7 @@
 	         			<span>{msg.label__born_digital__fileformat}</span>
 	         		</div>
 	                <div class="born-digital__item">
-	                 	<span>{object.mimeType}</span>
+	                 	<span>{msg[object.mimeType]}</span>
 	                </div>
 	                <div class="born-digital__item">
 	               		<a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a>

@@ -287,7 +287,7 @@ public class DownloadTaskEndpoint {
     
     public String getMimetype(String path) {
         try {
-            return FileTools.getMimeTypeFromFile(Path.of(path));
+            return  FileTools.getMimeTypeFromFile(Path.of(path));
         } catch (IOException e) {
             logger.error("Error probing mimetype of path {}", path, e);
             return "?";
