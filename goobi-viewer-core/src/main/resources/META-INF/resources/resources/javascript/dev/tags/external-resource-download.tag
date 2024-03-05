@@ -89,7 +89,8 @@
     		  label__born_digital__filedescription: "label__born_digital__filedescription",
     		  label__born_digital__filesize: "label__born_digital__filesize",
     		  label__born_digital__fileformat: "label__born_digital__fileformat",
-    		  action__born_digital__download: "label__born_digital__fileformat"
+    		  action__born_digital__download: "label__born_digital__fileformat",
+    		  label__born_digital__downloading: "label__born_digital__downloading",
       }
 
       this.on("mount", () => {
@@ -244,9 +245,10 @@
       getDownloadProgressLabel(url) {
     	  let fraction = this.getDownloadProgress(url)/this.getDownloadSize(url);
     	  if(isNaN(fraction) || fraction < 0) {
-    		  return "unknown";
+    		  console.log("title: ", this.msg.label__born_digital__downloading)
+    		  return this.msg.label__born_digital__downloading;
     	  } else {
-    		  return (fraction * 100) + "%";
+    		  return this.msg.label__born_digital__downloading + ": " + (fraction * 100) + "%";
     	  }
       }
       
