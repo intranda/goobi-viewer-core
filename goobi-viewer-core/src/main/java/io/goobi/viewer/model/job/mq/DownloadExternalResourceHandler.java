@@ -65,10 +65,6 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
     public static final String[] ALLOWED_FILE_EXTENSIONS =
             new String[] { "xml", "html", "pdf", "epub", "jpg", "jpeg", "png", "mp3", "mp4", "zip", "xlsx", "doc", "docx", "gs" };
     
-    private static final int DAYS_BEFORE_DELETION = 1;
-
-    private static final long MILLISPERDAY = 1000*60*60*24l;
-
     private static final Logger logger = LogManager.getLogger(DownloadExternalResourceHandler.class);
 
     @Inject

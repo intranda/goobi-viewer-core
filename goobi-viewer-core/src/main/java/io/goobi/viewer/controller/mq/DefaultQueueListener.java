@@ -105,8 +105,7 @@ public class DefaultQueueListener {
                 lastLoopCircle = LocalDateTime.now();
                 waitForMessage(sess, consumer);
                 if (Thread.interrupted()) {
-                    log.info("Queue listener for queue {} interrupted: exiting listener", queueType);
-                    return;
+                    log.info("Queue listener for queue {} interrupted: Resuming loop", queueType);
                 }
             }
         }
@@ -207,6 +206,10 @@ public class DefaultQueueListener {
         } finally {
             MessageQueueManager.notifyMessageQueueStateUpdate();
         }
+    }
+    
+    public void interruptTask() {
+        
     }
 
     public void close() {

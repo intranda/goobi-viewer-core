@@ -17,12 +17,6 @@
                 <div class="born-digital__no-access-box"><p><h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" /></p></div>
             </ui:fragment>
 
-			<ui:fragment rendered="#{not empty activeDocumentBean.externalResourceUrls}">
-				<div class="born-digital__box">
-		            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml"></ui:include>
-				</div>
-			</ui:fragment>
-            
             <!-- ACCESS GRANTED -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
                 <div class="born-digital__box">
@@ -78,6 +72,14 @@
 	                        </div>
 	                    </div>
                     </ui:repeat>
+                    
+					<ui:fragment rendered="#{not empty activeDocumentBean.externalResourceUrls}">
+						<div class="born-digital__external_resources">
+							<h3>#{msg.bornDigital_external_resources}</h3>
+				            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml"></ui:include>
+						</div>
+					</ui:fragment>
+            
                 </div>
             </ui:fragment>
         </div>

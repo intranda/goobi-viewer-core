@@ -18,9 +18,6 @@
 				<progress value="{getDownloadProgress(url)}"
 					max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress>
 			</div>
-			<div class="download_external_resource__cancel_download {isRequested(url) && !isError(url) && !isFinished(url) ? '-active' : ''}">
-				<button class="btn admin__cancel-button" onclick="{cancelDownload}">{msg.cancel}</button>
-			</div>
 		</div>
 		<div class="download_external_resource__results_wrapper {isFinished(url) ? '-active' : ''}">
 			<div class="born-digital__head-wrapper">
@@ -170,7 +167,11 @@
         	  case "processing":
 	        	  this.downloads.set(data.url, data);
 	        	  if(!this.updateListeners.has(data.url)) {
-	        		  this.startDownloadTask({item:data})
+	        		  //download in progress. Set up listener to wait for update
+	        		const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, data.url, "update")), this.updateDelay);
+			        this.updateListeners.set(data.url, listener);
+			        listener.then(() => {});
+// 	        		  this.startDownloadTask({item:data})
 	        	  }
         		  break;
         	  case "complete":
