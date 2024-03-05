@@ -96,12 +96,12 @@ class StatisticsIndexerTest {
                 SolrConstants.DOCTYPE, 
                 StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
                 StatisticsLuceneFields.DATE,
-                StatisticsLuceneFields.solrDateFormatter.format(date.atStartOfDay()));
+                StatisticsLuceneFields.SOLR_DATE_FORMATTER.format(date.atStartOfDay()));
         String query2 = "+{docTypeField}:{doctype} +{dateField}:\"{date}\""
                 .replace("{docTypeField}", SolrConstants.DOCTYPE)
                 .replace("{doctype}", StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE)
                 .replace("{dateField}", StatisticsLuceneFields.DATE)
-                .replace("{date}", StatisticsLuceneFields.solrDateFormatter.format(date.atStartOfDay()));
+                .replace("{date}", StatisticsLuceneFields.SOLR_DATE_FORMATTER.format(date.atStartOfDay()));
         
         assertEquals(query1, query2);
         assertEquals("+DOCTYPE:STATISTICS_USAGE +STATISTICS_DATE:\"2022-08-30T00:00:00Z\"", query1);

@@ -70,7 +70,7 @@ public class Location implements Serializable {
      * @param pi
      * @param pageType
      * @param urlBuilder If not null, the URL will be build using the URL builder, otherwise manually
-     * @return
+     * @return {@link URI}
      */
     public static URI getRecordURI(String pi, PageType pageType, IURLBuilder urlBuilder) {
         if (urlBuilder != null) {

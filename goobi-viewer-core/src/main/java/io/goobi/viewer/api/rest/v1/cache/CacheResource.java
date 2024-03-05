@@ -34,7 +34,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.solr.common.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

@@ -28,6 +28,10 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -39,18 +43,19 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
+@Provider
 @AdminLoggedInBinding
 public class AdminLoggedInFilter implements ContainerRequestFilter {
 
-    @Context
-    private HttpServletRequest servletRequest;
+    private static final Logger logger = LogManager.getLogger(AdminLoggedInFilter.class);
 
-    /* (non-Javadoc)
-     * @see javax.ws.rs.container.ContainerRequestFilter#filter(javax.ws.rs.container.ContainerRequestContext)
-     */
+    @Context
+    private HttpServletRequest req;
+
+    /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        if (!isAdminLoggedIn(servletRequest)) {
+        if (!isAdminLoggedIn(req)) {
             Response response = Response.status(Response.Status.UNAUTHORIZED)
                     .entity("You must be logged in as administrator to access this resource")
                     .build();

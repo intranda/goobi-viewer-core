@@ -32,16 +32,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jdom2.JDOMException;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jdom2.JDOMException;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.SimpleResource;
@@ -106,7 +109,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * Constructor for SequenceBuilder.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param apiUrlManager
      */
     public SequenceBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -119,6 +122,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param manifestId a {@link java.lang.String} object.
      * @param pagesToInclude
+     * @param request
      * @return a {@link java.util.Map} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -130,7 +134,7 @@ public class SequenceBuilder extends AbstractBuilder {
             List<Integer> pagesToInclude, HttpServletRequest request)
             throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
 
-        Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
+        Map<AnnotationType, List<AnnotationList>> annotationMap = new EnumMap<>(AnnotationType.class);
 
         Sequence sequence = new Sequence(getSequenceURI(doc.getPi(), null));
 
@@ -142,7 +146,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
             IPageLoader pageLoader = AbstractPageLoader.create(doc, pagesToInclude);
-            
+
             Map<Integer, Canvas2> canvasMap = new HashMap<>();
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
                 if (pagesToInclude.isEmpty() || pagesToInclude.contains(i)) {
@@ -185,7 +189,6 @@ public class SequenceBuilder extends AbstractBuilder {
      * </p>
      *
      * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -193,13 +196,9 @@ public class SequenceBuilder extends AbstractBuilder {
     public void addSeeAlsos(Canvas2 canvas, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
 
         this.getSeeAlsos().forEach(link -> {
-            try {
-                URI id = getCanvasLinkingPropertyUri(page, link.target);
-                if (id != null) {
-                    canvas.addSeeAlso(link.getLinkingContent(id));
-                }
-            } catch (URISyntaxException e) {
-                logger.error("Error building linking property url", e);
+            URI id = getCanvasLinkingPropertyUri(page, link.getTarget());
+            if (id != null) {
+                canvas.addSeeAlso(link.getLinkingContent(id));
             }
         });
     }
@@ -207,18 +206,13 @@ public class SequenceBuilder extends AbstractBuilder {
     /**
      * @param page
      * @param canvas
-     * @throws URISyntaxException
      */
-    public void addRenderings(PhysicalElement page, Canvas2 canvas) throws URISyntaxException {
+    public void addRenderings(PhysicalElement page, Canvas2 canvas) {
 
         this.getRenderings().forEach(link -> {
-            try {
-                URI id = getCanvasLinkingPropertyUri(page, link.target);
-                if (id != null) {
-                    canvas.addRendering(link.getLinkingContent(id));
-                }
-            } catch (URISyntaxException e) {
-                logger.error("Error building linking property url", e);
+            URI id = getCanvasLinkingPropertyUri(page, link.getTarget());
+            if (id != null) {
+                canvas.addRendering(link.getLinkingContent(id));
             }
         });
     }
@@ -263,15 +257,14 @@ public class SequenceBuilder extends AbstractBuilder {
 
     /**
      * @param canvas
-     * @param i
-     * @param j
+     * @param x
+     * @param y
      * @param width
      * @param height
-     * @return
+     * @return {@link SpecificResource}
      */
     private static SpecificResource createSpecificResource(Canvas2 canvas, int x, int y, int width, int height) {
-        SpecificResource part = new SpecificResource(canvas.getId(), new FragmentSelector(new Rectangle(x, y, width, height)));
-        return part;
+        return new SpecificResource(canvas.getId(), new FragmentSelector(new Rectangle(x, y, width, height)));
     }
 
     /**
@@ -283,13 +276,9 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param content a {@link java.util.Map} object.
      */
     public void merge(Map<AnnotationType, List<AnnotationList>> annotationMap, Map<AnnotationType, AnnotationList> content) {
-        for (AnnotationType type : content.keySet()) {
-            List<AnnotationList> list = annotationMap.get(type);
-            if (list == null) {
-                list = new ArrayList<>();
-                annotationMap.put(type, list);
-            }
-            list.add(content.get(type));
+        for (Entry<AnnotationType, AnnotationList> entry : content.entrySet()) {
+            List<AnnotationList> list = annotationMap.computeIfAbsent(entry.getKey(), k -> new ArrayList<>());
+            list.add(entry.getValue());
         }
     }
 
@@ -315,7 +304,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * generateCanvas.
      * </p>
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param pi Record identifier
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
      * @throws java.net.URISyntaxException if any.
@@ -385,11 +374,10 @@ public class SequenceBuilder extends AbstractBuilder {
 
     /**
      * @param page
-     * @param doc
-     * @param link
-     * @throws URISyntaxException
+     * @param target
+     * @return {@link URI}
      */
-    private URI getCanvasLinkingPropertyUri(PhysicalElement page, LinkingProperty.LinkingTarget target) throws URISyntaxException {
+    private URI getCanvasLinkingPropertyUri(PhysicalElement page, LinkingProperty.LinkingTarget target) {
         if (target.equals(LinkingTarget.PLAINTEXT) && StringUtils.isAllBlank(page.getFulltextFileName(), page.getAltoFileName())) {
             return null;
         }
@@ -413,6 +401,9 @@ public class SequenceBuilder extends AbstractBuilder {
                 break;
             case PDF:
                 uri = URI.create(imageDelivery.getPdf().getPdfUrl(null, page));
+                break;
+            default:
+                break;
         }
         return uri;
     }
@@ -434,7 +425,7 @@ public class SequenceBuilder extends AbstractBuilder {
     public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas2 canvas, boolean populate)
             throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
 
-        Map<AnnotationType, AnnotationList> annotationMap = new HashMap<>();
+        Map<AnnotationType, AnnotationList> annotationMap = new EnumMap<>(AnnotationType.class);
         TextResourceBuilder builder = new TextResourceBuilder();
 
         if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
@@ -456,9 +447,9 @@ public class SequenceBuilder extends AbstractBuilder {
                             }
                         }
                     } catch (ContentNotFoundException e) {
-                        logger.trace("No alto file found: " + page.getAltoFileName());
+                        logger.trace("No alto file found: {}", page.getAltoFileName());
                     } catch (PresentationException | IOException | JDOMException e) {
-                        logger.error("Error loading alto text from " + page.getAltoFileName(), e);
+                        logger.error("Error loading alto text from {}", page.getAltoFileName(), e);
                     }
 
                 } else if (StringUtils.isNotBlank(page.getFulltextFileName())) {
@@ -555,12 +546,11 @@ public class SequenceBuilder extends AbstractBuilder {
 
     /**
      * @param page
-     * @return
-     * @throws ViewerConfigurationException
+     * @return {@link DimensionMismatchException}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private Dimension getSize(PhysicalElement page) throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
+    private Dimension getSize(PhysicalElement page) throws PresentationException, IndexUnreachableException {
         Dimension size = new Dimension(0, 0);
         if (page.getMimeType().toLowerCase().startsWith("video") || page.getMimeType().toLowerCase().startsWith("text")) {
             size.setSize(page.getVideoWidth(), page.getVideoHeight());

@@ -83,9 +83,9 @@ public class CMSPageTemplate implements Serializable {
     private boolean mayHaveTopBarSlider = false;
 
     private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
-    
-    private final Map<String, CMSComponentAttribute> attributes = new HashMap<String, CMSComponentAttribute>();
-    
+
+    private final Map<String, CMSComponentAttribute> attributes = new HashMap<>();
+
     private boolean themeTemplate = false;
 
     /**
@@ -421,6 +421,8 @@ public class CMSPageTemplate implements Serializable {
         switch (itemId) {
             case CMSPage.TOPBAR_SLIDER_ID:
                 return new CMSContentItemTemplate(CMSContentItemType.SLIDER);
+            default:
+                break;
         }
         return null;
     }
@@ -546,7 +548,7 @@ public class CMSPageTemplate implements Serializable {
     public static boolean parseBoolean(String text) {
         return parseBoolean(text, false);
     }
-    
+
     public Map<String, CMSComponentAttribute> getAttributes() {
         return attributes;
     }

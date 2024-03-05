@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +32,9 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.controller.DataManager;
@@ -58,8 +57,8 @@ public class StatisticsIndexTask {
 
     private static final Logger logger = LogManager.getLogger(StatisticsIndexTask.class);
 
-    private static final long DELAY_BETWEEN_INDEX_CHECKS_SECONDS = 2 * 60l;
-    private static final long TIMEOUT_INDEX_CHECKS_HOURS = 2 * 24l;
+    private static final long DELAY_BETWEEN_INDEX_CHECKS_SECONDS = 2 * 60L;
+    private static final long TIMEOUT_INDEX_CHECKS_HOURS = 2 * 24L;
 
     private final IDAO dao;
     private final StatisticsIndexer indexer;
@@ -100,7 +99,7 @@ public class StatisticsIndexTask {
         List<DailySessionUsageStatistics> stats = this.dao.getAllUsageStatistics()
                 .stream()
                 .filter(stat -> stat.getDate().isBefore(LocalDate.now()))
-                .collect(Collectors.toList());
+                .toList();
         if (!stats.isEmpty()) {
             logger.info("Moving {} daily usage statistics to SOLR", stats.size());
             for (DailySessionUsageStatistics stat : stats) {
@@ -115,13 +114,13 @@ public class StatisticsIndexTask {
             while (System.currentTimeMillis() < timeStartIndexing + getTimeoutMillis()) {
                 Thread.sleep(getCheckDelayMillis());
                 List<DailySessionUsageStatistics> statsNotIndexed =
-                        statsIndexed.entrySet().stream().filter(e -> !e.getValue()).map(Entry::getKey).collect(Collectors.toList());
+                        statsIndexed.entrySet().stream().filter(e -> !e.getValue()).map(Entry::getKey).toList();
                 for (DailySessionUsageStatistics stat : statsNotIndexed) {
                     String query = String.format("+%s:%s +%s:\"%s\"",
                             SolrConstants.DOCTYPE,
                             StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
                             StatisticsLuceneFields.DATE,
-                            StatisticsLuceneFields.solrDateFormatter.format(stat.getDate().atStartOfDay()));
+                            StatisticsLuceneFields.SOLR_DATE_FORMATTER.format(stat.getDate().atStartOfDay()));
                     SolrDocumentList list = this.solrIndex.search(query);
                     if (!list.isEmpty()) {
                         logger.info("Indexing of usage statistics for {} finished", stat.getDate());
@@ -143,11 +142,11 @@ public class StatisticsIndexTask {
         }
     }
 
-    private long getCheckDelayMillis() {
+    private static long getCheckDelayMillis() {
         return Duration.of(DELAY_BETWEEN_INDEX_CHECKS_SECONDS, ChronoUnit.SECONDS).toMillis();
     }
 
-    private long getTimeoutMillis() {
+    private static long getTimeoutMillis() {
         return Duration.of(TIMEOUT_INDEX_CHECKS_HOURS, ChronoUnit.HOURS).toMillis();
     }
 

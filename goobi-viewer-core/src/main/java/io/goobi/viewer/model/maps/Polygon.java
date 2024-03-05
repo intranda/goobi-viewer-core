@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONObject;
 
 /**
@@ -41,11 +40,11 @@ public class Polygon implements IArea {
     }
 
     public Polygon(double[][] points) {
-        List<Point> vertices = new ArrayList<>();
+        List<Point> v = new ArrayList<>();
         for (int i = 0; i < points.length; i++) {
-            vertices.add(new Point(points[i][0], points[i][1]));
+            v.add(new Point(points[i][0], points[i][1]));
         }
-        this.vertices = Collections.unmodifiableList(vertices);
+        this.vertices = Collections.unmodifiableList(v);
     }
 
     /* (non-Javadoc)
@@ -82,10 +81,10 @@ public class Polygon implements IArea {
         double minLat = Double.MAX_VALUE;
         double maxLat = 0;
         for (Point point : vertices) {
-            minLng = Math.min(minLng, point.lng);
-            maxLng = Math.max(maxLng, point.lng);
-            minLat = Math.min(minLat, point.lat);
-            maxLat = Math.max(maxLat, point.lat);
+            minLng = Math.min(minLng, point.getLng());
+            maxLng = Math.max(maxLng, point.getLng());
+            minLat = Math.min(minLat, point.getLat());
+            maxLat = Math.max(maxLat, point.getLat());
         }
         return Math.sqrt((maxLng - minLng) * (maxLng - minLng) + (maxLat - minLat) * (maxLat - minLat));
     }
@@ -106,10 +105,9 @@ public class Polygon implements IArea {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             Polygon other = (Polygon) obj;
             return this.vertices.size() == other.vertices.size()
-                    && this.vertices.stream().filter(v -> other.vertices.contains(v)).count() == this.vertices.size();
-        } else {
-            return false;
+                    && this.vertices.stream().filter(other.vertices::contains).count() == this.vertices.size();
         }
+        return false;
     }
 
 }

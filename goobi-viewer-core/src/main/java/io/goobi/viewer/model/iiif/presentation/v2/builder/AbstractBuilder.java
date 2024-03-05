@@ -26,6 +26,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -104,15 +105,16 @@ public abstract class AbstractBuilder {
      * Constructor for AbstractBuilder.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param apiUrlManager
      */
-    public AbstractBuilder(AbstractApiUrlManager apiUrlManager) {
-        if (apiUrlManager == null) {
+    protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager) {
+        AbstractApiUrlManager useApiUrlManager = apiUrlManager;
+        if (useApiUrlManager == null) {
             String apiUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl();
             apiUrl = apiUrl.replace("/rest", "/api/v1");
-            apiUrlManager = new ApiUrls(apiUrl);
+            useApiUrlManager = new ApiUrls(apiUrl);
         }
-        this.urls = apiUrlManager;
+        this.urls = useApiUrlManager;
         this.initLinkingProperties();
     }
 
@@ -139,16 +141,16 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * @param labelIIIFRenderingPDF
-     * @return
+     * @param value
+     * @return {@link IMetadataValue}
      */
     protected IMetadataValue getLabel(String value) {
         return ViewerResourceBundle.getTranslations(value, this.translationLocales, false);
     }
 
     /**
-     * @param iconURI
-     * @return
+     * @param uri
+     * @return {@link URI}
      */
     public URI absolutize(URI uri) {
         if (uri == null) {
@@ -329,13 +331,13 @@ public abstract class AbstractBuilder {
      *
      * @param field
      * @param displayFields
-     * @return
+     * @return true if displayFields contains field; false otherwise
      */
     protected boolean contained(String field, List<String> displayFields) {
         return displayFields.stream().anyMatch(displayField -> matches(field, displayField));
     }
 
-    private boolean matches(String field, String template) {
+    private static boolean matches(String field, String template) {
 
         String cleanedTemplate = template.replace("*", "");
         String cleanedField = field.replaceAll("_LANG_\\w{2,3}", "");
@@ -352,13 +354,20 @@ public abstract class AbstractBuilder {
 
     /**
      * @param displayFields
-     * @param allLocales
-     * @return
+     * @param locales
+     * @return List<String> (immutable!)
      */
     protected static List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
-        return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream()).collect(Collectors.toList());
+        return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream()).toList();
     }
 
+    /**
+     * 
+     * @param field
+     * @param locales
+     * @param includeSelf
+     * @return List<String>
+     */
     private static List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {
         List<String> fields = new ArrayList<>();
         if (includeSelf) {
@@ -368,18 +377,17 @@ public abstract class AbstractBuilder {
                 .map(Locale::getLanguage)
                 .map(String::toUpperCase)
                 .map(string -> field.concat("_LANG_").concat(string))
-                .collect(Collectors.toList()));
+                .toList());
         return fields;
     }
 
     /**
      * @param ele
-     * @return
+     * @return List<String> (immutable!)
      */
     private static List<String> getMetadataFields(StructElement ele) {
         Set<String> fields = ele.getMetadataFields().keySet();
-        List<String> baseFields = fields.stream().map(field -> field.replaceAll("_LANG_\\w{2,3}$", "")).distinct().collect(Collectors.toList());
-        return baseFields;
+        return fields.stream().map(field -> field.replaceAll("_LANG_\\w{2,3}$", "")).distinct().toList();
     }
 
     /**
@@ -395,14 +403,15 @@ public abstract class AbstractBuilder {
         String anchorQuery = "(ISWORK:* AND PI_PARENT:" + pi + ") OR (ISANCHOR:* AND PI:" + pi + ")";
         String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
         String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
-        List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
+        List<String> displayFields = new ArrayList<>();
+        displayFields.addAll(addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales()));
 
         // handle metadata fields from events
         Map<String, List<String>> eventFields = getEventFields();
         if (!eventFields.isEmpty()) {
             String eventQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:EVENT";
             query += " OR (" + eventQuery + ")";
-            displayFields.addAll(eventFields.values().stream().flatMap(value -> value.stream()).collect(Collectors.toList()));
+            displayFields.addAll(eventFields.values().stream().flatMap(Collection::stream).toList());
             displayFields.add(SolrConstants.EVENTTYPE);
         }
 
@@ -439,15 +448,15 @@ public abstract class AbstractBuilder {
      * @param events The list of event SolrDocuments from which to take the metadata
      */
     protected void addEventMetadataToWorkElement(List<StructElement> eles, List<SolrDocument> events) {
-        Optional<StructElement> main_o = eles.stream().filter(ele -> ele.isWork()).findFirst();
-        if (main_o.isPresent()) {
-            StructElement main = main_o.get();
+        Optional<StructElement> mainO = eles.stream().filter(ele -> ele.isWork()).findFirst();
+        if (mainO.isPresent()) {
+            StructElement main = mainO.get();
             for (SolrDocument event : events) {
                 String eventType = event.getFieldValue(SolrConstants.EVENTTYPE).toString();
                 Map<String, List<String>> mds = main.getMetadataFields();
                 for (String eventField : event.getFieldNames()) {
                     Collection<Object> fieldValues = event.getFieldValues(eventField);
-                    List<String> fieldValueList = fieldValues.stream().map(SolrTools::getAsString).collect(Collectors.toList());
+                    List<String> fieldValueList = new ArrayList<>(fieldValues.stream().map(SolrTools::getAsString).toList());
                     // add the event field twice to the md-list: Once for unspecified event type and
                     // once for the specific event type
                     mds.put("/" + eventField, fieldValueList);
@@ -468,7 +477,8 @@ public abstract class AbstractBuilder {
         List<String> eventStrings = DataManager.getInstance().getConfiguration().getIIIFEventFields();
         Map<String, List<String>> events = new HashMap<>();
         for (String string : eventStrings) {
-            String event, field;
+            String event;
+            String field;
             int separatorIndex = string.indexOf("/");
             if (separatorIndex > -1) {
                 event = string.substring(0, separatorIndex);
@@ -477,11 +487,7 @@ public abstract class AbstractBuilder {
                 event = "";
                 field = string;
             }
-            List<String> eventFields = events.get(event);
-            if (eventFields == null) {
-                eventFields = new ArrayList<>();
-                events.put(event, eventFields);
-            }
+            List<String> eventFields = events.computeIfAbsent(event, k -> new ArrayList<>());
             eventFields.add(field);
         }
         return events;
@@ -519,9 +525,7 @@ public abstract class AbstractBuilder {
      */
     public List<String> getSolrFieldList() {
         Set<String> fields = new HashSet<>(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
-        for (String string : REQUIRED_SOLR_FIELDS) {
-            fields.add(string);
-        }
+        fields.addAll(Arrays.asList(REQUIRED_SOLR_FIELDS));
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
         if (StringUtils.isNotBlank(navDateField)) {
             fields.add(navDateField);
@@ -539,14 +543,12 @@ public abstract class AbstractBuilder {
      * @return the configured attribution
      */
     protected List<IMetadataValue> getAttributions() {
-        List<IMetadataValue> messages = DataManager.getInstance()
+        return DataManager.getInstance()
                 .getConfiguration()
                 .getIIIFAttribution()
                 .stream()
                 .map(this::getLabel)
                 .collect(Collectors.toList());
-
-        return messages;
     }
 
     /**
@@ -602,11 +604,12 @@ public abstract class AbstractBuilder {
      * @param baseCollectionName a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
      */
-    public URI getCollectionURI(String collectionField, String baseCollectionName) {
+    public URI getCollectionURI(String collectionField, final String baseCollectionName) {
         String urlString;
-        if (StringUtils.isNotBlank(baseCollectionName)) {
-            baseCollectionName = StringTools.encodeUrl(baseCollectionName);
-            urlString = this.urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, baseCollectionName).build();
+        String useBaseCollectionName = baseCollectionName;
+        if (StringUtils.isNotBlank(useBaseCollectionName)) {
+            useBaseCollectionName = StringTools.encodeUrl(useBaseCollectionName);
+            urlString = this.urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, useBaseCollectionName).build();
         } else {
             urlString = this.urls.path(COLLECTIONS).params(collectionField).build();
         }
@@ -677,11 +680,8 @@ public abstract class AbstractBuilder {
      * @param label a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
      */
-    public URI getSequenceURI(String pi, String label) {
-        if (StringUtils.isBlank(label)) {
-            label = "basic";
-        }
-        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_SEQUENCE).params(pi, label).build();
+    public URI getSequenceURI(String pi, final String label) {
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_SEQUENCE).params(pi, StringUtils.isBlank(label) ? "basic" : label).build();
         return URI.create(urlString);
     }
 
@@ -740,6 +740,7 @@ public abstract class AbstractBuilder {
      * @param pi a {@link java.lang.String} object.
      * @param pageNo a int.
      * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @param openAnnotation
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type, boolean openAnnotation) {
@@ -785,8 +786,6 @@ public abstract class AbstractBuilder {
      * getCommentAnnotationURI.
      * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param pageNo a int.
      * @param id a long.
      * @return a {@link java.net.URI} object.
      */
@@ -846,8 +845,6 @@ public abstract class AbstractBuilder {
      * getAnnotationURI.
      * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
      * @param id a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
      */
@@ -930,11 +927,7 @@ public abstract class AbstractBuilder {
 
     private void addLinkingProperty(LinkingProperty.LinkingTarget target, IMetadataValue label, LinkingType type) {
         LinkingProperty property = new LinkingProperty(type, target, label);
-        List<LinkingProperty> seeAlsos = this.linkingProperties.get(type);
-        if (seeAlsos == null) {
-            seeAlsos = new ArrayList<>();
-            this.linkingProperties.put(type, seeAlsos);
-        }
+        List<LinkingProperty> seeAlsos = this.linkingProperties.computeIfAbsent(type, k -> new ArrayList<>());
         seeAlsos.add(property);
     }
 

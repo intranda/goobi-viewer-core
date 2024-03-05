@@ -81,6 +81,7 @@ public class CMSSlider implements Serializable {
 
     /**
      * Copy constructor
+     * @param o
      */
     public CMSSlider(CMSSlider o) {
         this.id = o.id;

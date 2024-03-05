@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.v2.cms;
 
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_BY_CATEGORY;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_AUDIO;
@@ -44,6 +45,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -79,7 +81,8 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.CacheUtils;
-import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
 import io.goobi.viewer.controller.DataManager;
@@ -131,6 +134,42 @@ public class CMSMediaResource {
      * getMediaByTag.
      * </p>
      *
+     * @param tags a {@link java.lang.String} object.
+     * @param maxItems
+     * @param prioritySlots
+     * @param random
+     * @return a {@link io.goobi.viewer.servlets.rest.cms.CMSMediaResource.MediaList} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags = { "media" },
+            summary = "Get a list of CMS-Media Items of one or more categories")
+    @javax.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
+    public MediaList getMediaOfCategories(
+            @Parameter(description = "tag specifying the category the delivered media items must be associated with."
+                    + " Multiple categories can be listed using '...' as separator") @PathParam("tags") String tags,
+            @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
+            @Parameter(description = "Number of media items marks as 'important' that must be included"
+                    + " in the result") @QueryParam("prioritySlots") Integer prioritySlots,
+            @Parameter(description = "Set to 'true' to return random items for each call."
+                    + " Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
+            throws DAOException {
+        List<String> tagList = new ArrayList<>();
+        if (StringUtils.isNotBlank(tags)) {
+            tagList.addAll(Arrays.stream(StringUtils.split(tags, "...")).map(String::toLowerCase).collect(Collectors.toList()));
+            List<CMSMediaItem> items = new CMSMediaLister(dao).getMediaItems(tagList, maxItems, prioritySlots, Boolean.TRUE.equals(random));
+            return new MediaList(items);
+        }
+        return new MediaList(Collections.emptyList());
+    }
+
+    /**
+     * <p>
+     * getMediaByTag.
+     * </p>
+     *
      * @param tags
      * @param maxItems
      * @param prioritySlots
@@ -143,15 +182,15 @@ public class CMSMediaResource {
     @Operation(
             tags = { "media" },
             summary = "Get a list of CMS-Media Items")
-
+    @AuthorizationBinding
     public MediaList getAllMedia(
-            @Parameter(description = "Comma separated list of tags. Only media items with any of these tags will be included")
-            @QueryParam("tags") String tags,
+            @Parameter(
+                    description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") String tags,
             @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
-            @Parameter(description = "Number of media items marks as 'important' that must be included in the result")
-            @QueryParam("prioritySlots") Integer prioritySlots,
-            @Parameter(description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")
-            @QueryParam("random") Boolean random)
+            @Parameter(
+                    description = "Number of media items marks as 'important' that must be included in the result") @QueryParam("prioritySlots") Integer prioritySlots,
+            @Parameter(
+                    description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
             throws DAOException {
         List<String> tagList = new ArrayList<>();
         if (StringUtils.isNotBlank(tags)) {
@@ -343,6 +382,7 @@ public class CMSMediaResource {
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @UserLoggedInBinding
     public List<String> getAllFiles() throws PresentationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
@@ -356,6 +396,7 @@ public class CMSMediaResource {
     @DELETE
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @AuthorizationBinding
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
@@ -363,6 +404,7 @@ public class CMSMediaResource {
     @DELETE
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
+    @AuthorizationBinding
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
@@ -382,7 +424,7 @@ public class CMSMediaResource {
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    @AdminLoggedInBinding
+    @UserLoggedInBinding
     public Response uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
             @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
             throws DAOException {

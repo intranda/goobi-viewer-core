@@ -178,7 +178,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     /**
      * Return the type of this custom sidebar widget. Must be implemented by subclasses of {@link CustomSidebarWidget}
      * 
-     * @return
+     * @return {@link CustomWidgetType}
      */
     public CustomWidgetType getType() {
         return null;
@@ -221,7 +221,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
      * Creates a copy of the given custom widget o. Depends on cloning constructors if sublass
      *
      * @param o
-     * @return
+     * @return {@link CustomSidebarWidget}
      */
     public static CustomSidebarWidget clone(CustomSidebarWidget o) {
         if (o == null) {

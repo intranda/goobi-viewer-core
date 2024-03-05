@@ -92,9 +92,10 @@ public class ThumbnailHandler {
     private static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
 
     /** Constant <code>REQUIRED_SOLR_FIELDS</code> */
-    public static final Set<String> REQUIRED_SOLR_FIELDS = Collections.unmodifiableSet(Set.of(SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, 
-            SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME, 
-            SolrConstants.FILENAME_HTML_SANDBOXED));
+    public static final Set<String> REQUIRED_SOLR_FIELDS =
+            Collections.unmodifiableSet(Set.of(SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT,
+                    SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME,
+                    SolrConstants.FILENAME_HTML_SANDBOXED));
 
     private final String staticImagesPath;
 
@@ -696,7 +697,7 @@ public class ThumbnailHandler {
             return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
-        } else if(se != null) {
+        } else if (se != null) {
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, se.getPi(), Region.SQUARE_IMAGE, size + ",", "0", StringConstants.DEFAULT,
                     "jpg");
         } else {
@@ -862,7 +863,7 @@ public class ThumbnailHandler {
                     thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                     break;
                 default:
-                    logger.warn("mime type not suppoerted: {}", baseMimeType);
+                    logger.warn("Mime type of '{}' not supported: {}", doc.getMetadataValue(SolrConstants.PI_TOPSTRUCT), baseMimeType);
                     break;
             }
         }
@@ -1224,7 +1225,7 @@ public class ThumbnailHandler {
      */
     static String getSize(Integer width, Integer height) {
         String size = "max";
-        if(width == null && height == null) {
+        if (width == null && height == null) {
             return size;
         } else if (height == null || (height.equals(0) && width != null && !width.equals(0))) {
             size = width + ",";

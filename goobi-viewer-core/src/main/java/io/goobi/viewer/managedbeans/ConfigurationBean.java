@@ -789,7 +789,7 @@ public class ConfigurationBean implements Serializable {
                 .getSortFields()
                 .stream()
                 .filter(field -> !Configuration.isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

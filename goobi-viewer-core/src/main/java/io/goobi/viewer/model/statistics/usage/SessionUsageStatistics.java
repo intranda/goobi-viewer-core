@@ -159,7 +159,7 @@ public class SessionUsageStatistics {
     public long getRecordRequestCount(RequestType type, String recordIdentifier) {
         return Optional.ofNullable(getRecordRequests(recordIdentifier))
                 .map(count -> count.getCount(type))
-                .orElse(0l);
+                .orElse(0L);
     }
 
     /**
@@ -177,7 +177,7 @@ public class SessionUsageStatistics {
      * 
      * @param type the type of the request
      * @param identifiersToInclude record identifiers for which the number of requests should be counted
-     * @return
+     * @return a long
      */
     public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
         Collection<String> requestValues = getRequestedCounts(identifiersToInclude);
@@ -246,6 +246,11 @@ public class SessionUsageStatistics {
         return s;
     }
 
+    /**
+     * 
+     * @param identifiersToInclude
+     * @return Collection<String> (immutable!)
+     */
     private Collection<String> getRequestedCounts(List<String> identifiersToInclude) {
         Collection<String> requestValues;
         if (identifiersToInclude.isEmpty()) {
@@ -255,7 +260,7 @@ public class SessionUsageStatistics {
                     .stream()
                     .filter(identifiersToInclude::contains)
                     .map(key -> this.recordRequests.get(key))
-                    .collect(Collectors.toList());
+                    .toList();
         }
         return requestValues;
     }

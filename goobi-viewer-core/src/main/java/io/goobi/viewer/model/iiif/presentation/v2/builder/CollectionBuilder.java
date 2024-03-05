@@ -209,7 +209,7 @@ public class CollectionBuilder extends AbstractBuilder {
                     work = new Manifest2(uri);
                     collection.addManifest((Manifest2) work);
                 }
-                getLabelIfExists(solrDocument).ifPresent(label -> work.setLabel(label));
+                getLabelIfExists(solrDocument).ifPresent(work::setLabel);
             }
         }
     }
@@ -305,12 +305,13 @@ public class CollectionBuilder extends AbstractBuilder {
 
     /**
      * @param baseElement
+     * @param collectionView
      * @param collection
      */
     private void addRenderings(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, Collection2 collection) {
 
         this.getRenderings().forEach(link -> {
-            URI id = getLinkingPropertyUri(baseElement, collectionView, link.target);
+            URI id = getLinkingPropertyUri(baseElement, collectionView, link.getTarget());
             if (id != null) {
                 collection.addRendering(link.getLinkingContent(id));
             }
@@ -429,7 +430,7 @@ public class CollectionBuilder extends AbstractBuilder {
             if (facetFieldMap.containsKey(collectionField)) {
                 return facetFieldMap.get(collectionField);
             }
-            String facetField = collectionField;
+            String facetField;
             if (collectionField.startsWith("MD_")) {
                 facetField = collectionField.replace("MD_", "FACET_");
             } else {

@@ -328,12 +328,12 @@ public class ManifestBuilder extends AbstractBuilder {
             try {
                 URI id = page.map(p -> {
                     try {
-                        return getLinkingPropertyUri(p, link.target);
+                        return getLinkingPropertyUri(p, link.getTarget());
                     } catch (IndexUnreachableException | ViewerConfigurationException e) {
                         logger.error("Error getting link for page {} in {}: {}", p.getOrder(), p.getPi(), e.toString());
                         return null;
                     }
-                }).orElse(getLinkingPropertyUri(ele, link.target));
+                }).orElse(getLinkingPropertyUri(ele, link.getTarget()));
                 if (id != null) {
                     manifest.addRendering(link.getLinkingContent(id));
                 }

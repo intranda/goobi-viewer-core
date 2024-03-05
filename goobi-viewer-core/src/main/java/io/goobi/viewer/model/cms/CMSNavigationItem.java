@@ -191,12 +191,12 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CMSNavigationItem && ((getParentItem() == null && ((CMSNavigationItem) obj).getParentItem() == null)
-                || (getParentItem() != null && getParentItem().equals(((CMSNavigationItem) obj).getParentItem())))) {
-            if (getCmsPage() != null && getCmsPage().equals(((CMSNavigationItem) obj).getCmsPage())) {
+        if (obj instanceof CMSNavigationItem item && ((getParentItem() == null && item.getParentItem() == null)
+                || (getParentItem() != null && getParentItem().equals(item.getParentItem())))) {
+            if (getCmsPage() != null && getCmsPage().equals(item.getCmsPage())) {
                 return true;
-            } else if (getPageUrl().equals(((CMSNavigationItem) obj).getPageUrl())
-                    && getItemLabel().equals(((CMSNavigationItem) obj).getItemLabel())) {
+            } else if (getPageUrl().equals(item.getPageUrl())
+                    && getItemLabel().equals(item.getItemLabel())) {
                 return true;
             }
         }
@@ -410,16 +410,16 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * @param pageUrl2
-     * @return
+     * @param url
+     * @return a boolean
      */
     private static boolean isOnSameRessource(String url) {
         return url.startsWith("#");
     }
 
     /**
-     * @param pageUrl2
-     * @return
+     * @param url
+     * @return true if url absolute; false otherwise
      */
     private boolean isAbsolute(String url) {
         try {
@@ -452,11 +452,12 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      *
      * @param pageUrl a {@link java.lang.String} object.
      */
-    public void setPageUrl(String pageUrl) {
-        if (StringUtils.isNotBlank(pageUrl) && pageUrl.toLowerCase().startsWith("www.")) {
-            pageUrl = "http://" + pageUrl;
+    public void setPageUrl(final String pageUrl) {
+        String usePageUrl = pageUrl;
+        if (StringUtils.isNotBlank(usePageUrl) && usePageUrl.toLowerCase().startsWith("www.")) {
+            usePageUrl = "http://" + usePageUrl;
         }
-        this.pageUrl = pageUrl;
+        this.pageUrl = usePageUrl;
     }
 
     /**

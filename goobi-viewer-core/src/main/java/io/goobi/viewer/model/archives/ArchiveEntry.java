@@ -214,6 +214,9 @@ public class ArchiveEntry {
         } else if (!orderNumber.equals(other.orderNumber)) {
             return false;
         }
+        if (label != null && !label.equals(other.getLabel())) {
+            return false;
+        }
         if (parentNode == null && other.parentNode == null) {
             return true;
         }
@@ -230,6 +233,9 @@ public class ArchiveEntry {
             if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
                 return false;
             }
+            if (!parentNode.equals(other.parentNode)) {
+                return false;
+            }
         }
 
         return true;
@@ -243,6 +249,7 @@ public class ArchiveEntry {
         result = prime * result + ((orderNumber == null) ? 0 : orderNumber.hashCode());
         result = prime * result + ((parentNode == null) ? 0 : parentNode.getHierarchyLevel().hashCode());
         result = prime * result + ((parentNode == null) ? 0 : parentNode.getOrderNumber().hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
         return result;
     }
 

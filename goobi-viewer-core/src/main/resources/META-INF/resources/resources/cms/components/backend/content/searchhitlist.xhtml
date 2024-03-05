@@ -154,7 +154,7 @@
 					value="#{cc.attrs.contentItem.content.elementsPerPage}">
 					<f:passThroughAttribute name="aria-label"
 						value="#{msg.cms_itemGroupByField}" />
-					<!-- <f:ajax event="change" render="@this" /> -->
+					<f:passThroughAttribute name="data-input" value="number"></f:passThroughAttribute>	
 				</h:inputText>
 			</div>
 		</div>

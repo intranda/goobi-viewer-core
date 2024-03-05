@@ -74,7 +74,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @param pi
+     * @param query
      */
     public CMSMultiRecordNote(String query) {
         super();
@@ -82,12 +82,12 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @param o
+     * @param source
      */
     public CMSMultiRecordNote(CMSRecordNote source) {
         super(source);
-        if (source instanceof CMSMultiRecordNote) {
-            this.query = ((CMSMultiRecordNote) source).query;
+        if (source instanceof CMSMultiRecordNote note) {
+            this.query = note.query;
         }
     }
 
@@ -183,7 +183,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
      * given pi returns at least one result
      *
      * @param pi
-     * @return
+     * @return true if pi matches query; false otherwise
      */
     public boolean matchesRecord(String pi) {
 
