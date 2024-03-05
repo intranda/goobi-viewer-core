@@ -29,6 +29,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.faces.model.SelectItem;
@@ -3511,6 +3515,18 @@ public class Configuration extends AbstractConfiguration {
 
     public List<String> getExternalResourceUrlTemplates() {
         return getLocalList("externalResource.urls.template", Collections.emptyList());
+    }
+    
+    public Duration getExternalResourceTimeBeforeDeletion() {
+        int amount = getLocalInt("externalResource.deleteAfter.value", 1);
+        String unitString = getLocalString("externalResource.deleteAfter.unit", ChronoUnit.DAYS.name());
+        try {            
+            ChronoUnit unit = ChronoUnit.valueOf(unitString.toUpperCase());
+            return Duration.of(amount, unit);
+        } catch(IllegalArgumentException e) {
+            logger.warn("Could not read temporal unit from string '{}' in config field 'externalResource.deleteAfter.unit'. Assuming days");
+            return Duration.of(amount, ChronoUnit.DAYS);
+        }
     }
 
     /**

@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,6 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
@@ -108,7 +108,9 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
                 
                 removeProgress(url);
                 
-                triggerDeletion(queueManager, extractedFolder, MILLISPERDAY*DAYS_BEFORE_DELETION);
+                Duration duration = DataManager.getInstance().getConfiguration().getExternalResourceTimeBeforeDeletion();
+                
+                triggerDeletion(queueManager, targetFolder.resolve(downloadId), duration.toMillis());
             
             }
             
