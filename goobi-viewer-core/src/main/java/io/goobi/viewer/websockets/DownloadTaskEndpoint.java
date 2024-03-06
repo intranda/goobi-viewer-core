@@ -24,6 +24,7 @@ package io.goobi.viewer.websockets;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.temporal.ChronoUnit;
@@ -41,6 +42,7 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -48,7 +50,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -56,7 +57,6 @@ import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.JsonObjectSignatureBuilder;
 import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -64,7 +64,6 @@ import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.files.external.Progress;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
@@ -268,12 +267,22 @@ public class DownloadTaskEndpoint {
         return resourceFolder;
     }
 
-    private URI getDownloadUrl(String pi, String taskId, Path p) {
-        return DataManager.getInstance()
-                .getRestApiManager()
-                .getDataApiManager()
-                .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH).params(pi, taskId, p).buildURI())
-                .orElse(null);
+    private URI getDownloadUrl(String pi, String taskId, Path p)  {
+            URI uri = toUri(p);
+            URI ret = DataManager.getInstance()
+                    .getRestApiManager()
+                    .getDataApiManager()
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH).params(pi, taskId, uri).buildURI())
+                    .orElse(null);
+            return ret;
+    }
+
+    private URI toUri(Path p) {
+        UriBuilder builder = UriBuilder.fromPath("");
+        for(int i = 0; i < p.getNameCount(); i++) {
+            builder.path(p.getName(i).toString());
+        }
+        return builder.build();
     }
 
     private String getDownloadId(String pi, String downloadUrl) {
