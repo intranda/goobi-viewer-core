@@ -32,14 +32,14 @@ public interface IArea {
     /**
      * An array containing all points (2 size double arrays) of the area.
      *
-     * @return
+     * @return double[][]
      */
     public double[][] getVertices();
 
     public String getGeoJson();
 
     /**
-     * @return
+     * @return double
      */
     public double getDiameter();
 }

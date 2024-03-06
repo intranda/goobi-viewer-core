@@ -75,6 +75,11 @@ public class DailySessionUsageStatistics {
             inverseJoinColumns = @JoinColumn(name = "session_statistics_id"))
     private List<SessionUsageStatistics> sessions = new ArrayList<>();
 
+    /**
+     * 
+     * @param date
+     * @param viewer
+     */
     public DailySessionUsageStatistics(LocalDate date, String viewer) {
         this.date = date;
         this.viewerInstance = viewer;
@@ -84,11 +89,20 @@ public class DailySessionUsageStatistics {
         this(LocalDate.now(), DataManager.getInstance().getConfiguration().getTheme());
     }
 
+    /**
+     * 
+     * @param orig
+     */
     public DailySessionUsageStatistics(DailySessionUsageStatistics orig) {
         this(orig.date, orig.viewerInstance);
         this.sessions.addAll(orig.sessions.stream().map(SessionUsageStatistics::new).collect(Collectors.toList()));
     }
 
+    /**
+     * 
+     * @param sessionId
+     * @return {@link SessionUsageStatistics}
+     */
     public SessionUsageStatistics getSession(String sessionId) {
         if (StringUtils.isNotBlank(sessionId)) {
             return sessions.stream().filter(s -> sessionId.equals(s.getSessionId())).findAny().orElse(null);
@@ -96,6 +110,10 @@ public class DailySessionUsageStatistics {
         return null;
     }
 
+    /**
+     * 
+     * @param session
+     */
     public void addSession(SessionUsageStatistics session) {
         this.sessions.add(session);
     }
@@ -122,37 +140,65 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * @param string
-     * @return
+     * @param type
+     * @param pi
+     * @return a long
      */
     public long getTotalRequestCount(RequestType type, String pi) {
         return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi)).sum();
     }
 
+    /**
+     * 
+     * @param type
+     * @return a long
+     */
     public long getTotalRequestCount(RequestType type) {
         return getTotalRequestCount(type, Collections.emptyList());
     }
 
+    /**
+     * 
+     * @param type
+     * @param identifiersToInclude
+     * @return a long
+     */
     public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
         return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type, identifiersToInclude)).sum();
     }
 
+    /**
+     * 
+     * @param type
+     * @return a long
+     */
     public long getUniqueRequestCount(RequestType type) {
         return this.sessions.stream().mapToLong(s -> s.getRequestedRecordsCount(type)).sum();
     }
 
+    /**
+     * 
+     * @param type
+     * @param pi
+     * @return a long
+     */
     public long getUniqueRequestCount(RequestType type, String pi) {
-        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi) > 0 ? 1l : 0l).sum();
+        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi) > 0 ? 1L : 0L).sum();
     }
 
     /**
-     * @param string
-     * @return
+     * @param type
+     * @param includedIdentifiers
+     * @return a long
      */
     public long getUniqueRequestCount(RequestType type, List<String> includedIdentifiers) {
-        return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type, includedIdentifiers) > 0 ? 1l : 0l).sum();
+        return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type, includedIdentifiers) > 0 ? 1L : 0L).sum();
     }
 
+    /**
+     * 
+     * @return List<String>
+     */
     public List<String> getRecordIdentifier() {
         return this.sessions.stream().flatMap(s -> s.getRecordIdentifier().stream()).distinct().collect(Collectors.toList());
     }

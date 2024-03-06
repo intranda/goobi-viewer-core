@@ -136,7 +136,7 @@ public class UsageStatisticsRecorder {
      * Get the statistics for the given date from the database
      * 
      * @param date
-     * @return
+     * @return {@link DailySessionUsageStatistics}
      * @throws DAOException If an error occured regarding the database
      */
     private DailySessionUsageStatistics getStatistics(LocalDate date) throws DAOException {
@@ -147,16 +147,15 @@ public class UsageStatisticsRecorder {
      * Update the given statistics object in the database
      * 
      * @param statistics
-     * @return
+     * @return true if successful; false otherwise
      * @throws DAOException If an error occured regarding the database
      * @throws IllegalArgumentException If no statistics object exists in the database for the date of the given statistics
      */
     private boolean updateStatistics(DailySessionUsageStatistics statistics) throws DAOException, IllegalArgumentException {
         if (statistics.getId() != null) {
             return this.dao.updateUsageStatistics(statistics);
-        } else {
-            throw new IllegalArgumentException("given statistics object is not a dao entity (doesn't have a database id)");
         }
+        throw new IllegalArgumentException("given statistics object is not a dao entity (doesn't have a database id)");
     }
 
     /**

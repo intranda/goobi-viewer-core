@@ -80,9 +80,9 @@ public final class ComplexMetadata {
     private Map<String, List<IMetadataValue>> metadata = new HashMap<>();
 
     private ComplexMetadata(SolrDocument doc) {
-        if (!DocType.METADATA.name().equals(doc.get(SolrConstants.DOCTYPE))) {
-            throw new IllegalArgumentException("ComplexMetadata must be initialized from SolrDocument of DocType 'METADATA'");
-        }
+//        if (!DocType.METADATA.name().equals(doc.get(SolrConstants.DOCTYPE))) {
+//            throw new IllegalArgumentException("ComplexMetadata must be initialized from SolrDocument of DocType 'METADATA'");
+//        }
         this.field = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
         this.type = SolrTools.getSingleFieldStringValue(doc, SolrConstants.METADATATYPE);
         this.ownerId = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC_OWNER)).map(String.class::cast).map(Long::parseLong).orElse(null);

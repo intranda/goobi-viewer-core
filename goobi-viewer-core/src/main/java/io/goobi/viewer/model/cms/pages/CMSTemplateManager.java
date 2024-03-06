@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -110,8 +109,6 @@ public class CMSTemplateManager implements Serializable {
 
     /**
      *
-     * @param filesystemPath
-     * @param themeRootPath If the theme contents are in an external folder, its root path must be provided here
      * @throws PresentationException
      */
     @PostConstruct
@@ -190,12 +187,11 @@ public class CMSTemplateManager implements Serializable {
     public Optional<CMSPageTemplate> loadLegacyTemplate(String filename) {
         Optional<Path> corePath = coreFolderPath.map(p -> p.resolve("legacy")).map(p -> p.resolve(filename));
         if (corePath.isPresent()) {
-            return corePath.map(p -> CMSPageTemplate.loadFromXML(p));
-        } else {
-            Optional<Path> themePath = themeFolderPath.map(p -> p.resolve("legacy")).map(p -> p.resolve(filename));
-            if (themePath.isPresent()) {
-                return themePath.map(p -> CMSPageTemplate.loadFromXML(p));
-            }
+            return corePath.map(CMSPageTemplate::loadFromXML);
+        }
+        Optional<Path> themePath = themeFolderPath.map(p -> p.resolve("legacy")).map(p -> p.resolve(filename));
+        if (themePath.isPresent()) {
+            return themePath.map(p -> CMSPageTemplate.loadFromXML(p));
         }
         return Optional.empty();
     }
@@ -274,7 +270,7 @@ public class CMSTemplateManager implements Serializable {
      * @param servletContext
      * @param templateFolderUrl
      * @param absolutetemplateFolderUrl
-     * @return
+     * @return Optional<URL>
      * @throws URISyntaxException
      * @throws IOException
      */
@@ -315,7 +311,7 @@ public class CMSTemplateManager implements Serializable {
                         .sorted()
                         .map(CMSPageTemplate::loadFromXML)
                         .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                        .toList();
             }
         } catch (IOException e) {
             logger.warn("Failed to read template files from {}. Cause: {}", path, e.toString());
@@ -392,7 +388,7 @@ public class CMSTemplateManager implements Serializable {
      * getTemplate.
      * </p>
      *
-     * @param id a {@link java.lang.String} object.
+     * @param templateId a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
      */
     public CMSComponent getLegacyComponent(String templateId) {

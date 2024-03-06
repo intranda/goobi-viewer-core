@@ -59,7 +59,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.filters.LoginFilter;
@@ -103,7 +102,7 @@ public class UserBean implements Serializable {
     @Inject
     @Push
     private PushContext sessionTimeoutCounter;
-    
+
     private Timer sessionTimeoutMonitorTimer;
 
     private User user;
@@ -380,11 +379,11 @@ public class UserBean implements Serializable {
                     if (request != null && request.getSession(false) != null) {
                         request.getSession(false).setAttribute("user", u);
                     }
-                    
+
                     // Start timer
-//                    sessionTimeoutMonitorTimer = new Timer();
-//                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
-                    
+                    //                    sessionTimeoutMonitorTimer = new Timer();
+                    //                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
+
                     if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
                         logger.trace("Redirecting to {}", redirectUrl);
                         String url = this.redirectUrl;
@@ -466,10 +465,10 @@ public class UserBean implements Serializable {
             if (sessionTimeoutMonitorTimer != null) {
                 sessionTimeoutMonitorTimer.cancel();
             }
-            
+
             wipeSession(request);
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
-            
+
             // Reset loaded user-generated content lists
             BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
@@ -738,11 +737,6 @@ public class UserBean implements Serializable {
                     transkribusUserName, transkribusPassword));
         } catch (IOException | JDOMException e) {
             Messages.error("transkribus_loginError");
-            return "";
-        } catch (HTTPException e) {
-            if (e.getCode() == 401 || e.getCode() == 403) {
-                Messages.error("transkribus_loginDataError");
-            }
             return "";
         }
         if (user.getTranskribusSession() == null) {

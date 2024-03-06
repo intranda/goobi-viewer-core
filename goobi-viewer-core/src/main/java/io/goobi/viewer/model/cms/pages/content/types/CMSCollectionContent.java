@@ -218,6 +218,10 @@ public class CMSCollectionContent extends CMSContent {
 
     /**
      * call {@link CollectionView#reset(boolean) CollectionView#reset(true)} on the CollectionView stored in the cmsBean for this item, if any
+     * 
+     * @param resetResults
+     * @param component
+     * @return {@link String}
      */
     @Override
     public String handlePageLoad(boolean resetResults, CMSComponent component) {
@@ -226,8 +230,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * @param subThemeDiscriminatorValue
-     * @return
+     * @return {@link String}
      */
     public String getCombinedFilterQuery() {
         String subThemeDiscriminatorValue = getOwningPage().getSubThemeDiscriminatorValue();
@@ -242,7 +245,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * Querys solr for a list of all values of the set collectionField which my serve as a collection
+     * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -259,7 +262,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * @return
+     * @return Map<String, CollectionResult>
      * @throws IndexUnreachableException
      */
     public Map<String, CollectionResult> getColletionMap() throws IndexUnreachableException {
@@ -274,7 +277,7 @@ public class CMSCollectionContent extends CMSContent {
     /**
      * Alias for {@link #getCollectionName()}. Used in legacy templates
      * 
-     * @return
+     * @return {@link String}
      */
     public String getBaseCollection() {
         return getCollectionName();
@@ -283,7 +286,7 @@ public class CMSCollectionContent extends CMSContent {
     /**
      * Alias for {@link #getSolrField()}. Used in legacy templates
      * 
-     * @return
+     * @return {@link String}
      */
     public String getCollectionField() {
         return getSolrField();
@@ -292,7 +295,7 @@ public class CMSCollectionContent extends CMSContent {
     /**
      * Alias for {@link #getGroupingField()}. Used in legacy templates
      * 
-     * @return
+     * @return {@link String}
      */
     public String getGroupBy() {
         return getGroupingField();
@@ -307,5 +310,4 @@ public class CMSCollectionContent extends CMSContent {
     public boolean isEmpty() {
         return StringUtils.isBlank(solrField);
     }
-
 }

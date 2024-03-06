@@ -204,8 +204,8 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * @param daoList
-     * @return
+     * @param items
+     * @return List<CMSNavigationItem>
      */
     private List<CMSNavigationItem> cloneItemHierarchy(List<CMSNavigationItem> items) {
         List<CMSNavigationItem> clones = new ArrayList<>();
@@ -282,6 +282,11 @@ public class CMSNavigationManager implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @param item
+     * @throws DAOException
+     */
     private static void addItem(CMSNavigationItem item) throws DAOException {
         if (item.getId() != null && DataManager.getInstance().getDao().getCMSNavigationItem(item.getId()) != null) {
             DataManager.getInstance().getDao().updateCMSNavigationItem(item);
@@ -293,6 +298,7 @@ public class CMSNavigationManager implements Serializable {
     /**
      * Deletes a navigationitem and all its children from the database
      *
+     * @param oldItem
      * @throws DAOException
      */
     private void deleteItem(CMSNavigationItem oldItem) throws ConcurrentModificationException, DAOException {

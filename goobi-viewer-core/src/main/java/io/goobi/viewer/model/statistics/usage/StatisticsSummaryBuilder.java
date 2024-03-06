@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -109,22 +108,7 @@ public class StatisticsSummaryBuilder {
     /**
      * 
      * @param filter
-     * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @deprecated statistics are loaded from solr, using the {@link #loadFromSolr(StatisticsSummaryFilter) method
-     */
-    @Deprecated(since = "22.08")
-    private StatisticsSummary loadFromDAO(StatisticsSummaryFilter filter) throws DAOException, IndexUnreachableException {
-        List<String> identifiersToInclude = getFilteredIdentifierList(filter);
-        List<DailySessionUsageStatistics> days = this.dao.getUsageStatistics(filter.getStartDate(), filter.getEndDate());
-        return days.stream().reduce(StatisticsSummary.empty(), (s, d) -> add(s, d, identifiersToInclude), StatisticsSummary::add);
-    }
-
-    /**
-     * 
-     * @param filter
-     * @return
+     * @return {@link StatisticsSummary}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -133,7 +117,7 @@ public class StatisticsSummaryBuilder {
         if (filter.hasFilterQuery() && identifiersToInclude.isEmpty()) {
             throw new WebApplicationException("No records found matching filter " + filter.getFilterQuery());
         }
-        List<String> fields = getFieldListForRecords(identifiersToInclude);
+        List<String> fields = new ArrayList<>(getFieldListForRecords(identifiersToInclude));
         if (!fields.isEmpty()) {
             fields.add(StatisticsLuceneFields.DATE);
         }
@@ -143,14 +127,25 @@ public class StatisticsSummaryBuilder {
         return docs.stream().reduce(StatisticsSummary.empty(), this::add, StatisticsSummary::add);
     }
 
+    /**
+     * 
+     * @param s
+     * @param d
+     * @return {@link StatisticsSummary}
+     */
     private StatisticsSummary add(StatisticsSummary s, SolrDocument d) {
         StatisticsSummary s2 = getStatisticsFromSolrDoc(d);
         return s.add(s2);
     }
 
+    /**
+     * 
+     * @param doc
+     * @return {@link StatisticsSummary}
+     */
     @SuppressWarnings("unchecked")
     private StatisticsSummary getStatisticsFromSolrDoc(SolrDocument doc) {
-        Long[] counts = new Long[] { 0l, 0l, 0l, 0l, 0l, 0l };
+        Long[] counts = new Long[] { 0L, 0L, 0L, 0L, 0L, 0L };
         for (String fieldName : doc.getFieldNames()) {
             if (fieldName.startsWith(StatisticsLuceneFields.RECORD_STATISTICS_PREFIX)) {
                 try {
@@ -174,7 +169,7 @@ public class StatisticsSummaryBuilder {
         }
         return new StatisticsSummary(map);
     }
-    
+
     @SuppressWarnings("unchecked")
     private Map<String, Map<RequestType, RequestTypeSummary>> getRecordStatisticsFromSolrDoc(SolrDocument doc) {
         Map<String, List<Long>> countsMap = new HashMap<>();
@@ -191,11 +186,11 @@ public class StatisticsSummaryBuilder {
 
         Map<String, Map<RequestType, RequestTypeSummary>> map = new HashMap<>(); // new EnumMap<>(RequestType.class);
         LocalDate date = getDate(doc);
-        
+
         for (Entry<String, List<Long>> entry : countsMap.entrySet()) {
             String pi = entry.getKey();
             List<Long> counts = entry.getValue();
-            Map<RequestType, RequestTypeSummary> recordMap = new HashMap<RequestType, RequestTypeSummary>();
+            Map<RequestType, RequestTypeSummary> recordMap = new EnumMap<>(RequestType.class);
             for (int i = 0; i < counts.size(); i += 2) {
                 RequestType type = RequestType.getTypeForTotalCountIndex(i);
                 long total = counts.get(i);
@@ -215,8 +210,13 @@ public class StatisticsSummaryBuilder {
         return null;
     }
 
+    /**
+     * 
+     * @param identifiersToInclude
+     * @return List<String> (immutable!)
+     */
     private static List<String> getFieldListForRecords(List<String> identifiersToInclude) {
-        return identifiersToInclude.stream().map(StatisticsLuceneFields::getFieldName).collect(Collectors.toList());
+        return identifiersToInclude.stream().map(StatisticsLuceneFields::getFieldName).toList();
     }
 
     private static String getSolrQuery(StatisticsSummaryFilter filter) {
@@ -228,16 +228,16 @@ public class StatisticsSummaryBuilder {
                     .append(StatisticsLuceneFields.DATE)
                     .append(":")
                     .append("[")
-                    .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate().atStartOfDay()))
+                    .append(StatisticsLuceneFields.SOLR_DATE_FORMATTER.format(filter.getStartDate().atStartOfDay()))
                     .append(" TO ")
-                    .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getEndDate().atStartOfDay()))
+                    .append(StatisticsLuceneFields.SOLR_DATE_FORMATTER.format(filter.getEndDate().atStartOfDay()))
                     .append("]");
         } else if (filter.hasStartDateRestriction()) {
             sb.append(" +")
                     .append(StatisticsLuceneFields.DATE)
                     .append(":")
                     .append("\"")
-                    .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate().atStartOfDay()))
+                    .append(StatisticsLuceneFields.SOLR_DATE_FORMATTER.format(filter.getStartDate().atStartOfDay()))
                     .append("\"");
         }
         return sb.toString();
@@ -246,7 +246,7 @@ public class StatisticsSummaryBuilder {
     /**
      * 
      * @param filter
-     * @return
+     * @return List<String>
      * @throws IndexUnreachableException
      * @should extract pi from filter correctly
      */
@@ -260,7 +260,7 @@ public class StatisticsSummaryBuilder {
                         this.searchIndex.search(completeFilter, Collections.singletonList(SolrConstants.PI))
                                 .stream()
                                 .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
-                                .collect(Collectors.toList()));
+                                .toList());
             } catch (PresentationException e) {
                 throw new IndexUnreachableException(e.toString());
             }

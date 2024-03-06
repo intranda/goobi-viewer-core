@@ -46,7 +46,7 @@ public enum CMSContentItemType {
      * This method evaluates the text from cms-template xml files to select the correct item type
      *
      * @param name
-     * @return
+     * @return CMSContentItemType
      */
     public static CMSContentItemType getByName(String name) {
         if (name != null) {

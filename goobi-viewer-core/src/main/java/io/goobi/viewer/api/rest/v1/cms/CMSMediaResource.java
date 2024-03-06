@@ -82,7 +82,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.CacheUtils;
-import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -135,7 +134,7 @@ public class CMSMediaResource {
     public CMSMediaResource(IDAO dao) {
         this.dao = dao;
     }
-    
+
     /**
      * <p>
      * getMediaByTag.
@@ -155,7 +154,8 @@ public class CMSMediaResource {
             summary = "Get a list of CMS-Media Items of one or more categories")
     @javax.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
     public MediaList getMediaOfCategories(
-            @Parameter(description = "tag specifying the category the delivered media items must be associated with. Multiple categories can be listed using '...' as separator") @PathParam("tags") String tags,
+            @Parameter(description = "tag specifying the category the delivered media items must be associated with."
+                    + " Multiple categories can be listed using '...' as separator") @PathParam("tags") String tags,
             @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
             @Parameter(description = "Number of media items marks as 'important' that must be included"
                     + " in the result") @QueryParam("prioritySlots") Integer prioritySlots,
@@ -167,9 +167,8 @@ public class CMSMediaResource {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, "...")).map(String::toLowerCase).collect(Collectors.toList()));
             List<CMSMediaItem> items = new CMSMediaLister(dao).getMediaItems(tagList, maxItems, prioritySlots, Boolean.TRUE.equals(random));
             return new MediaList(items, servletRequest);
-        } else {
-            return new MediaList(Collections.emptyList(), servletRequest);
         }
+        return new MediaList(Collections.emptyList(), servletRequest);
     }
 
     /**

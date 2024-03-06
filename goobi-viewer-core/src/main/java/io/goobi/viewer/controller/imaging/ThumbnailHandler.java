@@ -888,7 +888,7 @@ public class ThumbnailHandler {
                                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                                 break;
                             default:
-                                logger.warn("mime type not suppoerted: {}", baseMimeType);
+                                logger.warn("Mime type of '{}' not supported: {}", doc.getMetadataValue(SolrConstants.PI_TOPSTRUCT), baseMimeType);
                                 break;
                         }
                     }
