@@ -190,8 +190,8 @@
 									</a>
 								</ui:fragment>
 							</ui:fragment>
-
-							<!-- EPUB -->
+				
+	<!-- EPUB -->
 							<ui:fragment
 								rendered="#{activeDocumentBean.accessPermissionEpub}">
 								<a href="#"
@@ -226,6 +226,42 @@
 								</ui:fragment>
 							</ui:fragment>
 
+                        <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest}">   
+                        
+                            <!-- IIIF MANIFEST FULL RECORD -->
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and navigationHelper.currentView != 'fulltext'}">
+	                           <button 
+                                   id="iiifManifest"
+                                   class="badge badge-dark widget-usage__work-download-iiif" 
+	                               data-copy-value="#{imageDelivery.iiifManifest}" 
+	                               data-copy-done-msg="#{msg.copyUrlDone}"
+                                   title="#{msg.copyUrl}"
+                                   aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
+                                   tabindex="0"> 
+	                               #{msg.iiif}
+	                           </button>
+	                       </ui:fragment>      
+	                    
+                            <!-- MIRADOR FULL RECORD -->
+                            <ui:fragment
+                                rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'}">                     
+                                    <a
+                                        href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
+                                        id="mirador" 
+                                        class="badge badge-dark widget-usage__work-link-mirador-viewer" 
+                                        title="#{msg.action__view_in_mirador__tooltip}"
+										data-toggle="tooltip"
+										data-placement="top"
+										data-trigger="hover"
+                                        target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}"> 
+                                        #{msg.action__view_in_mirador}
+                                    </a> 
+                            </ui:fragment>
+                        
+                        </ui:fragment>
+
 						</div>
 
 					</ui:fragment>
@@ -259,9 +295,6 @@
 
 								<h3 id="titleImage"
 									class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__this_page}</h3>
-
-
-
 
 								<!-- PDF (PAGE) -->
 								<ui:fragment
@@ -395,7 +428,7 @@
 									<!-- PURL -->
 
 								</ui:fragment>
-								<!-- IIIF MANIFEST -->
+								<!-- IIIF MANIFEST PAGE -->
 								<ui:fragment
 									rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and navigationHelper.currentView != 'fulltext'}">
 									<button id="iiifManifest"
@@ -406,7 +439,7 @@
 										#{msg.iiif}</button>
 								</ui:fragment>
 
-								<!-- MIRADOR -->
+								<!-- MIRADOR PAGE -->
 								<ui:fragment
 									rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'}">
 									<a

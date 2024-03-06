@@ -125,7 +125,10 @@
 <!-- 		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" /> -->
 
         <widgetComponent:widget_formatsLinks />
-
+        
+        <ui:fragment rendered="#{!activeDocumentBean.viewManager.displayObjectViewLink}">
+        	<widgetComponent:widget_citation />
+		</ui:fragment>
 <!--         <widgetComponent:widget_relatedGroups /> -->
 
 <!--         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" /> -->
