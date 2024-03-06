@@ -33,7 +33,7 @@
                 		<div class="born-digital__head">
                 			<span>#{msg.label__born_digital__fileformat}</span>
                 		</div>
-                		<div class="born-digital__head"><span aria-hidden="true" class="born-digital__item__download btn btn--full born-digital__item-download-dummy">#{msg.action__born_digital__download}</span></div>
+                		<div class="born-digital__head"></div>
                 	</div>
                     <ui:repeat var="page" value="#{activeDocumentBean.viewManager.allPages}">
                         <div class="born-digital__items-wrapper"> 
@@ -59,7 +59,7 @@
 	                        <div class="born-digital__item">
 	                        	<span>#{msg[page.mimeType]}</span>
 	                        </div>
-	                        <div class="born-digital__item">
+	                        <div class="born-digital__item-download-last">
 	                            <!-- Ticket required for download -->
                                 <ui:fragment rendered="#{page.bornDigitalDownloadTicketRequired}">
                                     <button class="btn btn--full" data-toggle="modal"
@@ -74,8 +74,8 @@
                     </ui:repeat>
                     
 					<ui:fragment rendered="#{not empty activeDocumentBean.externalResourceUrls}">
-						<div class="born-digital__external_resources">
-							<h3>#{msg.bornDigital_external_resources}</h3>
+						<div class="download-external-resource__wrapper">
+							<div class="download-external-resource__heading">#{msg.bornDigital_external_resources}</div>
 				            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml"></ui:include>
 						</div>
 					</ui:fragment>
