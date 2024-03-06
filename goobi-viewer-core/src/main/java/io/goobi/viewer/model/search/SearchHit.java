@@ -435,8 +435,21 @@ public class SearchHit implements Comparable<SearchHit> {
                             String entryId = SolrTools.getSingleFieldStringValue(childDoc, "MD_ARCHIVE_ENTRY_ID");
                             if (StringUtils.isNotEmpty(entryId)) {
                                 childHit.url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected";
+                                // TODO 
+                                SolrDocument relatedWork =
+                                        DataManager.getInstance()
+                                                .getSearchIndex()
+                                                .getFirstDoc(
+                                                        '+' + SolrConstants.DOCTYPE + ':' + DocType.DOCSTRCT.name() + " +MD_ARCHIVE_ENTRY_ID:\""
+                                                                + entryId + '"',
+                                                        Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
+                                if (relatedWork != null) {
+                                    childHit.setAltUrl(
+                                            "piresolver?id=" + SolrTools.getSingleFieldStringValue(relatedWork, SolrConstants.PI_TOPSTRUCT));
+                                    logger.trace("altUrl: {}", altUrl);
+                                }
+
                             }
-                            // logger.trace("altUrl: {}", altUrl);
                         }
                         break;
                     case GROUP:
