@@ -450,6 +450,14 @@
 <!--         </ui:fragment> -->
 
 <!--         <widgetComponent:widget_searchInCurrentItem /> -->
+
+        <ui:fragment rendered="#{(activeDocumentBean.anchor or activeDocumentBean.group)}">
+        	<widgetComponent:widget_formatsLinks />
+		</ui:fragment>
+		
+        <ui:fragment rendered="#{(activeDocumentBean.anchor or activeDocumentBean.group)}">
+        	<widgetComponent:widget_citation /> 
+		</ui:fragment>
         
         <widgetComponent:widget_statistics_usage />
 
