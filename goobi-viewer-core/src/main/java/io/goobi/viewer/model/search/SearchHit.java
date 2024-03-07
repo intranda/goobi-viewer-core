@@ -446,7 +446,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if (relatedWork != null) {
                                     childHit.setAltUrl(
                                             "piresolver?id=" + SolrTools.getSingleFieldStringValue(relatedWork, SolrConstants.PI_TOPSTRUCT));
-                                    logger.trace("altUrl: {}", altUrl);
+                                    logger.trace("altUrl: {}", childHit.getAltUrl());
                                 }
 
                             }
@@ -876,7 +876,6 @@ public class SearchHit implements Comparable<SearchHit> {
      * @return the altUrl
      */
     public String getAltUrl() {
-        logger.trace("getAltUrl: {}", altUrl);
         return altUrl;
     }
 
