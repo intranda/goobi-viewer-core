@@ -28,7 +28,7 @@
 
 		</div>
 		<viewerComponent:adminBreadcrumbs />
- 
+
 		<div class="admin__info-text -padding-left">
 			#{msg.admin__developer__general_info_text}</div>
 
@@ -40,57 +40,22 @@
 				<div class="admin__content-main -refreshHCsticky">
 					<div id="adminDeveloper" class="admin__content-inner-content">
 
-
-						<h:form>
-
-
-							<!-- START: zip archive progress monitor -->
-							<span class="admin__developer_download_archive__loader"
-								id="pullThemeLoader"> <!-- 				   		<progress id="pullThemeProgressBar" value="0" max="1"/> -->
-								<img
-								src="#{request.contextPath}/resources/images/ajax_preloader.gif"
-								class="img-fluid" alt="Download developer archive loader" />
-							</span>
-							<script>
-								function updatePullThemeProgress(message,
-										channel, event) {
-									const json = JSON.parse(message);
-									if (json.status == "processing") {
-										$("#pullThemeLoader").show();
-										$("#pullThemeProgressBar").val(
-												json.progress);
-									} else if (json.status == "error") {
-										//                       			viewerJS.swaltoasts.error("Error pulling theme from git repository", error);
-										$("#pullThemeLoader").hide();
-										updateTheme();
-									} else if (json.status == "finished") {
-										//                      				viewerJS.swaltoasts.success("theme update finished");
-										$("#pullThemeLoader").hide();
-										updateTheme();
-									}
-								}
-							</script>
-							<o:socket channel="pullThemeContext"
-								onmessage="updatePullThemeProgress" />
-							<!-- END: zip archive progress monitor -->
-						</h:form>
-
 						<!-- DOWNLOAD FILES -->
 						<h2>#{msg.admin__developer__download_files}</h2>
 						<div class="admin__default-block">
 							<h:form>
-								
+
 								<div class="admin__developer-download-wrapper">
 									<h:outputText layout="block"
-									styleClass="admin__developer-download-info-text" escape="false"
-									value="#{msg.admin__developer__files_info}" />
-									
+										styleClass="admin__developer-download-info-text"
+										escape="false" value="#{msg.admin__developer__files_info}" />
+
 
 									<button
 										jsf:action="#{adminDeveloperBean.downloadDeveloperArchive()}"
 										class="btn btn--full admin__developer-download-button">
 										<i class="fa fa-download" aria-hidden="true"></i> <span>Herunterladen</span>
-										<f:ajax/>
+										<f:ajax />
 									</button>
 									<!-- START: zip archive progress monitor -->
 									<span class="admin__developer_download_archive__loader"
@@ -114,7 +79,7 @@
 											} else if (json.status == "finished") {
 												viewerJS.swaltoasts
 														.success("Download finished");
-												$("#downloadZipLoader").hide(); 
+												$("#downloadZipLoader").hide();
 											}
 										}
 									</script>
@@ -133,10 +98,13 @@
 										data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__unzip_file_code, navigationHelper.theme)}">
 										<i class="fa fa-clipboard" aria-hidden="true"></i>
 									</div>
-									<code data-target="sqlCode"><h:outputFormat
+									<code data-target="sqlCode">
+										<h:outputFormat
 											value="#{msg.admin__developer__unzip_file_code}"
 											escape="false">
-											<f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
+											<f:param value="#{navigationHelper.theme}" />
+										</h:outputFormat>
+									</code>
 
 								</div>
 							</h:form>
@@ -160,10 +128,12 @@
 									data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__sql_commands, navigationHelper.theme)}">
 									<i class="fa fa-clipboard" aria-hidden="true"></i>
 								</div>
-								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__sql_commands}"
+								<code data-target="code">
+									<h:outputFormat value="#{msg.admin__developer__sql_commands}"
 										escape="false">
 										<f:param value="#{navigationHelper.theme}" />
-									</h:outputFormat></code>
+									</h:outputFormat>
+								</code>
 
 							</div>
 						</div>
@@ -182,11 +152,13 @@
 									data-copy-value="#{msg.admin__developer__local_messages_config_code}">
 									<i class="fa fa-clipboard" aria-hidden="true"></i>
 								</div>
-								<code data-target="code"><h:outputFormat
+								<code data-target="code">
+									<h:outputFormat
 										value="#{msg.admin__developer__local_messages_config_code}"
 										escape="false">
 										<f:param value="#{navigationHelper.theme}" />
-									</h:outputFormat></code>
+									</h:outputFormat>
+								</code>
 
 							</div>
 
@@ -207,41 +179,79 @@
 				</div>
 				<div class="admin__content-side -sticky">
 					<!-- THEME PULL STATUS AND ACTIONS BOX -->
-					<h:panelGroup id="updateThemeGroup">
-						<div class="admin__developer-autopull-wrapper">
-							<div class="admin__developer-autopull-status-wrapper">
-								<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
-								<div class="admin__developer-autopull-status-text">Pull theme 
-<!-- 								#{adminDeveloperBean.autopullActive ? 'ON' : 'OFF'} -->
-									#{adminDeveloperBean.autopullError ? '(failed)' : ''}</div>
-								<div
-									class="admin__developer-autopull-status-icon #{adminDeveloperBean.autopullError ? '-isError' : ''} #{adminDeveloperBean.autopullActive ? '-isActive' : '-isOff'}"></div>
-							</div>
-							<div class="admin__developer-autopull-last-pull">
-								<h:outputText value="#{adminDeveloperBean.lastAutopull}">
-									<f:converter converterId="localDateTimeConverter" />
-									<f:attribute name="pattern"
-										value="#{navigationHelper.dateTimePattern}" />
-								</h:outputText>
-							</div>
-							<div class="admin__developer-autopull-version-info">
-								<c:set scope="request" var="versionInfo"
-									value="#{adminDeveloperBean.themeVersion}" />
-								<!-- 					<div class="admin__developer-autopull-application-name">#{versionInfo.applicationName}</div> -->
-								<div class="admin__developer-autopull-build-date">#{versionInfo.buildDate}</div>
-								<div class="admin__developer-autopull-git-revision">#{versionInfo.gitRevision}</div>
-								<div class="admin__developer-autopull-release-version">#{versionInfo.releaseVersion}</div>
+					<h:form>
+						<h:panelGroup id="updateThemeGroup">
+							<div class="admin__developer-autopull-wrapper">
+								<div class="admin__developer-autopull-status-wrapper">
+									<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
+									<div class="admin__developer-autopull-status-text">
+										Pull theme
+										<!-- 								#{adminDeveloperBean.autopullActive ? 'ON' : 'OFF'} -->
+										#{adminDeveloperBean.autopullError ? '(failed)' : ''}
+									</div>
+									<div
+										class="admin__developer-autopull-status-icon #{adminDeveloperBean.autopullError ? '-isError' : ''} #{adminDeveloperBean.autopullActive ? '-isActive' : '-isOff'}"></div>
+								</div>
+								<div class="admin__developer-autopull-last-pull">
+									<h:outputText value="#{adminDeveloperBean.lastAutopull}">
+										<f:converter converterId="localDateTimeConverter" />
+										<f:attribute name="pattern"
+											value="#{navigationHelper.dateTimePattern}" />
+									</h:outputText>
+								</div>
+								<div class="admin__developer-autopull-version-info">
 
-								<o:commandScript name="updateTheme" render="updateThemeGroup"></o:commandScript>
-								<h:commandButton styleClass="btn btn--default mt-3"
-									action="#{adminDeveloperBean.triggerPullTheme}"
-									value="Pull theme">
-									<f:ajax render="@form"></f:ajax>
-								</h:commandButton>
-							</div>
+									<c:set scope="request" var="versionInfo"
+										value="#{adminDeveloperBean.themeVersion}" />
+									<!-- 					<div class="admin__developer-autopull-application-name">#{versionInfo.applicationName}</div> -->
+									<div class="admin__developer-autopull-build-date">#{versionInfo.buildDate}</div>
+									<div class="admin__developer-autopull-git-revision">#{versionInfo.gitRevision}</div>
+									<div class="admin__developer-autopull-release-version">#{versionInfo.releaseVersion}</div>
 
-						</div>
-					</h:panelGroup>
+									<o:commandScript name="updateTheme" render="updateThemeGroup"></o:commandScript>
+									<h:commandButton styleClass="btn btn--default mt-3"
+										action="#{adminDeveloperBean.triggerPullTheme}"
+										value="Pull theme">
+										<f:ajax render="@form"></f:ajax>
+									</h:commandButton>
+
+									<!-- START: zip archive progress monitor -->
+									<span class="admin__developer_download_archive__loader"
+										id="pullThemeLoader"> <!-- 				   		<progress id="pullThemeProgressBar" value="0" max="1"/> -->
+										<img
+										src="#{request.contextPath}/resources/images/ajax_preloader.gif"
+										class="img-fluid" alt="Download developer archive loader" />
+									</span>
+									<script>
+										function updatePullThemeProgress(
+												message, channel, event) {
+											const json = JSON.parse(message);
+											console.log("received message ",
+													json);
+											if (json.status == "processing") {
+												$("#pullThemeLoader").show();
+												$("#pullThemeProgressBar").val(
+														json.progress);
+											} else if (json.status == "error") {
+												viewerJS.swaltoasts.error(json.message);
+												$("#pullThemeLoader").hide();
+												updateTheme();
+											} else if (json.status == "finished") {
+												viewerJS.swaltoasts.success("Pulling theme finished\n"+json.message);
+												$("#pullThemeLoader").hide();
+												updateTheme();
+											}
+										}
+									</script>
+									<o:socket channel="pullThemeContext"
+										onmessage="updatePullThemeProgress" />
+									<!-- END: zip archive progress monitor -->
+
+								</div>
+
+							</div>
+						</h:panelGroup>
+					</h:form>
 				</div>
 
 			</div>

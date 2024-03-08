@@ -44,11 +44,12 @@ import io.goobi.viewer.model.job.TaskType;
 public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(PullThemeHandler.class);
+    
+    private static final int MAX_RETRIES = 0;
 
     private static final String BASH_STATEMENT_PULL_THEME_REPOSITORY =
             "git -C $VIEWERTHEMEPATH pull";
-
-    private static final String ALREADY_UP_TO_DATE_REGEX = "Already[\\s-]+up[\\s-]+to[\\s-]+date.?\\s*";
+    private static final String ALREADY_UP_TO_DATE_REGEX = ".*[Aa]lready[\\s-]+up[\\s-]+to[\\s-]+date.?\\s*";
 
     @Inject
     private AdminDeveloperBean developerBean;
@@ -58,12 +59,10 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
         updateProgress(0.1f);
         if (DataManager.getInstance().getConfiguration().getThemeRootPath() != null) {
                 try {
-                    if (pullThemeRepository()) {
-                        updateProgress(1f);
-                        return MessageStatus.FINISH;
-                    }
-                    updateProgress(1f);
-                    return MessageStatus.IGNORE;
+                    String result = pullThemeRepository();
+                    ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_INFO, result);
+                    sendProgressFinished(result);
+                    return MessageStatus.FINISH;
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.error("Message handler thread interrupted while waiting for bash call to finish");
@@ -73,13 +72,12 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
                     return MessageStatus.ERROR;
                 } catch (IOException e) {
                     logger.error("Error pulling theme: {}", e.toString());
-                    ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Error pulling theme: " + e.toString());
+                    String errorMessage = "Error pulling theme: " + e.toString();
+                    errorMessage = errorMessage.substring(0, 255);
+                    ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, errorMessage);
                     sendProgressError("Error pulling theme: " + e.toString());
                     return MessageStatus.ERROR;
                 }
-//            ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Theme root path is not accessible or is not a git repository");
-//            sendProgressError("Theme root path is not accessible or is not a git repository");
-//            return MessageStatus.ERROR;
         }
         ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "No theme root path configured");
         sendProgressError("No theme root path configured");
@@ -96,6 +94,13 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
             developerBean.sendPullThemeError(message);
         }
     }
+    
+    private void sendProgressFinished(String message) {
+        developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);
+        if (developerBean != null) {
+            developerBean.sendPullThemeFinished(message);
+        }
+    }
 
     /**
      * 
@@ -107,12 +112,12 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
             if (f < 1) {
                 developerBean.sendPullThemeUpdate(f);
             } else {
-                developerBean.sendPullThemeFinished();
+                developerBean.sendPullThemeFinished("");
             }
         }
     }
 
-    private static boolean pullThemeRepository() throws IOException, InterruptedException {
+    private String pullThemeRepository() throws IOException, InterruptedException {
         
         String scriptTemplate = DataManager.getInstance().getConfiguration().getThemePullScriptPath();
         String commandString =  new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(scriptTemplate);
@@ -121,11 +126,11 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
         String output = command.getOutput();
         String error = command.getErrorOutput();
         if (ret > 0) {
-            throw new IOException("Error executing command '" + commandString + "': " + command.getErrorOutput());
+            throw new IOException("Error executing command '" + commandString + "': " + error);
         } else if (StringUtils.isNotBlank(error)) {
             throw new IOException("Error calling git pull: " + error);
         }  else {
-            return !(output != null && output.matches(ALREADY_UP_TO_DATE_REGEX));
+            return output;
         }
     }
 

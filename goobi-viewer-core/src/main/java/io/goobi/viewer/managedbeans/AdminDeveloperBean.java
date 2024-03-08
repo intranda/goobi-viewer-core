@@ -26,6 +26,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
@@ -200,6 +201,7 @@ public class AdminDeveloperBean implements Serializable {
     public void triggerPullTheme() throws MessageQueueException {
         sendPullThemeUpdate(0f);
         ViewerMessage message = new ViewerMessage(TaskType.PULL_THEME.name());
+        message.setMaxRetries(1);
         queueManager.addToQueue(message);
     }
 
@@ -352,12 +354,12 @@ public class AdminDeveloperBean implements Serializable {
         downloadContext.send(json.toString());
     }
 
-    public void sendPullThemeFinished() {
-        updatePullThemeProgress("finished", Optional.empty(), 1.0f);
+    public void sendPullThemeFinished(String message) {
+        updatePullThemeProgress("finished", Optional.ofNullable(message).filter(StringUtils::isNotBlank), 1.0f);
     }
 
     public void sendPullThemeError(String message) {
-        updatePullThemeProgress("error", Optional.of(message), 0);
+        updatePullThemeProgress("error", Optional.of(message).filter(StringUtils::isNotBlank), 0);
     }
 
     public void sendPullThemeUpdate(float progress) {
