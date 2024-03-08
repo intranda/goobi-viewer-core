@@ -170,12 +170,6 @@
                             							<h:outputFormat escape="false" value="#{childHit.displayText}"/>
                             						</a>
                             					</h4>
-                            					<!-- TODO proper placement -->
-                            					<ui:fragment rendered="#{childHit.altUrl != null}">
-                                                    <a href="#{request.contextPath}/#{childHit.altUrl}">
-                                                        RELATED RECORD
-                                                    </a>
-                            					</ui:fragment>
                             					<ui:fragment rendered="#{childHit.includeMetadata()}">
                             						<div class="search-list__struct-title__metadata">
 		                            					<ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
@@ -184,6 +178,14 @@
                             						</div>
                            						</ui:fragment>
                             				</div>
+                            				<div>
+                                                <!-- TODO proper placement -->
+                                                <ui:fragment rendered="#{childHit.altUrl != null}">
+                                                    <a href="#{request.contextPath}/#{childHit.altUrl}">
+                                                        #{childHit.altLabel}
+                                                    </a>
+                                                </ui:fragment>
+                                            </div>
                             				<div class="search-list__struct-child-hits">
                             					<ui:repeat var="grandChildHit" value="#{childHit.children}">                            						
                             						<dl class="dl-horizontal">

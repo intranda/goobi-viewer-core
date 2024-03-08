@@ -24,6 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -108,6 +109,8 @@ public class SearchHit implements Comparable<SearchHit> {
     private String url;
     /** Secondary URL */
     private String altUrl;
+    /** Secondary label. */
+    private String altLabel;
     @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
@@ -424,6 +427,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         }
                         break;
                     case ARCHIVE:
+                        // EAD archive
                         iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                         if (!ownerHits.containsKey(iddoc)) {
                             SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
@@ -435,17 +439,21 @@ public class SearchHit implements Comparable<SearchHit> {
                             String entryId = SolrTools.getSingleFieldStringValue(childDoc, "MD_ARCHIVE_ENTRY_ID");
                             if (StringUtils.isNotEmpty(entryId)) {
                                 childHit.url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected";
-                                // TODO 
-                                SolrDocument relatedWork =
+                                // Related record link 
+                                SolrDocument relatedRecordDoc =
                                         DataManager.getInstance()
                                                 .getSearchIndex()
                                                 .getFirstDoc(
                                                         '+' + SolrConstants.DOCTYPE + ':' + DocType.DOCSTRCT.name() + " +MD_ARCHIVE_ENTRY_ID:\""
                                                                 + entryId + '"',
-                                                        Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
-                                if (relatedWork != null) {
+                                                        Arrays.asList(SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT));
+                                if (relatedRecordDoc != null) {
                                     childHit.setAltUrl(
-                                            "piresolver?id=" + SolrTools.getSingleFieldStringValue(relatedWork, SolrConstants.PI_TOPSTRUCT));
+                                            "piresolver?id=" + SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT));
+                                    childHit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.LABEL));
+                                    if (StringUtils.isEmpty(childHit.getAltLabel())) {
+                                        childHit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT));
+                                    }
                                     logger.trace("altUrl: {}", childHit.getAltUrl());
                                 }
 
@@ -884,6 +892,20 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public void setAltUrl(String altUrl) {
         this.altUrl = altUrl;
+    }
+
+    /**
+     * @return the altLabel
+     */
+    public String getAltLabel() {
+        return altLabel;
+    }
+
+    /**
+     * @param altLabel the altLabel to set
+     */
+    public void setAltLabel(String altLabel) {
+        this.altLabel = altLabel;
     }
 
     /**
