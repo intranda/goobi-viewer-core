@@ -151,7 +151,7 @@ public class AdminDeveloperBean implements Serializable {
             return;
         } catch (IOException e) {
             logger.error("Error creating zip archive: {}", e.toString());
-            sendDownloadError("Error creating zip archive: " + e.toString());
+            sendDownloadError("Error creating zip archive: " + e.getMessage());
             return;
         }
         try {
@@ -161,7 +161,7 @@ public class AdminDeveloperBean implements Serializable {
             sendDownloadFinished();
         } catch (IOException e) {
             logger.error("Error creating zip archive: {}", e.toString());
-            sendDownloadError("Error creating zip archive: " + e.toString());
+            sendDownloadError("Error creating zip archive: " + e.getMessage());
         }
     }
     

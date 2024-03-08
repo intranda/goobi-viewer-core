@@ -5997,6 +5997,6 @@ public class Configuration extends AbstractConfiguration {
     }
     
     public String getCreateDeveloperPackageScriptPath() {
-        return getLocalString("developer.scripts.createDeveloperPackage", "{config-folder-path}/script_create_package.sh viewer {base-path} /home/florian/tmp/viewer/ {solr-url}");
+        return getLocalString("developer.scripts.createDeveloperPackage", "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
     }
 }

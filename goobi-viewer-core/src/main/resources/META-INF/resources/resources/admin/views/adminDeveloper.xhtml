@@ -90,6 +90,7 @@
 										jsf:action="#{adminDeveloperBean.downloadDeveloperArchive()}"
 										class="btn btn--full admin__developer-download-button">
 										<i class="fa fa-download" aria-hidden="true"></i> <span>Herunterladen</span>
+										<f:ajax/>
 									</button>
 									<!-- START: zip archive progress monitor -->
 									<span class="admin__developer_download_archive__loader"
@@ -108,14 +109,12 @@
 														json.progress);
 											} else if (json.status == "error") {
 												viewerJS.swaltoasts
-														.error(
-																"Error downloading developer archive",
-																error);
+														.error(json.message);
 												$("#downloadZipLoader").hide();
 											} else if (json.status == "finished") {
 												viewerJS.swaltoasts
 														.success("Download finished");
-												$("#downloadZipLoader").hide();
+												$("#downloadZipLoader").hide(); 
 											}
 										}
 									</script>
@@ -261,7 +260,7 @@
 				var originalCode = $(this).data('copy-value');
 				var cleanCode = originalCode.replace(/<br ?\/?>/g, "\n");
 				$(this).data('copy-value', cleanCode);
-				console.log(cleanCode);
+				//console.log(cleanCode);
 			});
 
 			//]]>
