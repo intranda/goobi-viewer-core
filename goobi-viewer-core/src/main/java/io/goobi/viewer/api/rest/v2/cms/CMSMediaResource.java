@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.api.rest.v2.cms;
 
-import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_BY_CATEGORY;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_BY_CATEGORY;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_AUDIO;
@@ -81,7 +81,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.CacheUtils;
-import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -104,7 +103,6 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.media.CMSMediaLister;
 import io.goobi.viewer.model.cms.media.MediaItem;
-import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -150,7 +148,8 @@ public class CMSMediaResource {
             summary = "Get a list of CMS-Media Items of one or more categories")
     @javax.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
     public MediaList getMediaOfCategories(
-            @Parameter(description = "tag specifying the category the delivered media items must be associated with. Multiple categories can be listed using '...' as separator") @PathParam("tags") String tags,
+            @Parameter(description = "tag specifying the category the delivered media items must be associated with."
+                    + " Multiple categories can be listed using '...' as separator") @PathParam("tags") String tags,
             @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
             @Parameter(description = "Number of media items marks as 'important' that must be included"
                     + " in the result") @QueryParam("prioritySlots") Integer prioritySlots,
@@ -162,11 +161,10 @@ public class CMSMediaResource {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, "...")).map(String::toLowerCase).collect(Collectors.toList()));
             List<CMSMediaItem> items = new CMSMediaLister(dao).getMediaItems(tagList, maxItems, prioritySlots, Boolean.TRUE.equals(random));
             return new MediaList(items);
-        } else {
-            return new MediaList(Collections.emptyList());
         }
+        return new MediaList(Collections.emptyList());
     }
-    
+
     /**
      * <p>
      * getMediaByTag.
@@ -186,13 +184,13 @@ public class CMSMediaResource {
             summary = "Get a list of CMS-Media Items")
     @AuthorizationBinding
     public MediaList getAllMedia(
-            @Parameter(description = "Comma separated list of tags. Only media items with any of these tags will be included")
-            @QueryParam("tags") String tags,
+            @Parameter(
+                    description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") String tags,
             @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
-            @Parameter(description = "Number of media items marks as 'important' that must be included in the result")
-            @QueryParam("prioritySlots") Integer prioritySlots,
-            @Parameter(description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")
-            @QueryParam("random") Boolean random)
+            @Parameter(
+                    description = "Number of media items marks as 'important' that must be included in the result") @QueryParam("prioritySlots") Integer prioritySlots,
+            @Parameter(
+                    description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
             throws DAOException {
         List<String> tagList = new ArrayList<>();
         if (StringUtils.isNotBlank(tags)) {

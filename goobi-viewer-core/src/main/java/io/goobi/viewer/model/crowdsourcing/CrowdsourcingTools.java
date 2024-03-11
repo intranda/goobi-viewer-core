@@ -26,7 +26,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.User;
 
-public class CrowdsourcingTools {
+public final class CrowdsourcingTools {
 
     /** Private constructor. */
     private CrowdsourcingTools() {

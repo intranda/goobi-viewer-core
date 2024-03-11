@@ -251,7 +251,8 @@ public class IndexResource {
     @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
     public StreamingOutput stream(
             @Schema(description = "Raw SOLR streaming expression",
-                    example = "search(collection1,q=\"+ISANCHOR:*\", sort=\"YEAR asc\", fl=\"YEAR,PI,DOCTYPE\", rows=5, qt=\"/select\")") String expression) {
+                    example = "search(collection1,q=\"+ISANCHOR:*\", sort=\"YEAR asc\", fl=\"YEAR,PI,DOCTYPE\""
+                            + ", rows=5, qt=\"/select\")") String expression) {
         String solrUrl = DataManager.getInstance().getSearchIndex().getSolrServerUrl();
         logger.trace("Call solr {}", solrUrl);
         logger.trace("Streaming expression {}", expression);

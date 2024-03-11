@@ -57,6 +57,7 @@ public class MapTranslation extends Translation implements Serializable {
      *
      * @param language
      * @param tag
+     * @param owner
      */
     public MapTranslation(String language, String tag, GeoMap owner) {
         super();
