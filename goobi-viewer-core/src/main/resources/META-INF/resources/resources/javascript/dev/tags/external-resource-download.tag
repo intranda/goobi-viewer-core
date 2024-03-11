@@ -20,8 +20,8 @@
 			</div>
 		</div>
 		<div class="download-external-resource__results_wrapper {isFinished(url) ? '-active' : ''}">
-          	<div class="born-digital__items-wrapper">
           		<virtual each="{object in getFiles(url)}"> 
+          			<div class="born-digital__items-wrapper">
 	         		<div class="born-digital__head-mobile">
 	         			<span>{msg.label__born_digital__filename}</span>
 	         		</div>
@@ -46,11 +46,11 @@
 	                <div class="born-digital__item">
 	                 	<span>{msg[object.mimeType]}</span>
 	                </div>
-	                <div class="born-digital__item born-digital__item-download-last">
+	                <div class="born-digital__item-download-last">
 	               		<a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a>
 	              	</div>
+	        		</div>
 	          	</virtual>
-	        </div>
 		</div>
 	</div>
 </div>
