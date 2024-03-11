@@ -6,6 +6,7 @@ import static io.goobi.viewer.controller.variablereplacer.ReplacerVariables.REST
 import static io.goobi.viewer.controller.variablereplacer.ReplacerVariables.SOLR_URL;
 import static io.goobi.viewer.controller.variablereplacer.ReplacerVariables.THEME_PATH;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class VariableReplacer {
         temp.put(BASE_PATH, config.getViewerHome());
         temp.put(SOLR_URL, config.getSolrUrl());
         temp.put(THEME_PATH, config.getThemeRootPath());
-        temp.put(CONFIG_FOLDER_PATH, config.getConfigLocalPath());
+        temp.put(CONFIG_FOLDER_PATH, Path.of(config.getViewerHome()).resolve("config").toString());
         temp.put(REST_API_URL, config.getRestApiUrl());
         
         return temp;
