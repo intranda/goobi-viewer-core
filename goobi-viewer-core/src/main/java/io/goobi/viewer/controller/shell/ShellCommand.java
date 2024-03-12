@@ -55,7 +55,11 @@ public class ShellCommand {
             Thread errorBufferThread = new Thread(errorReader);
             errorBufferThread.start();
 
-            int result = process.waitFor(timeoutInMillis, TimeUnit.MILLISECONDS) ? 0 : -1;
+            boolean terminatedNormally = process.waitFor(timeoutInMillis, TimeUnit.MILLISECONDS);
+            if(!terminatedNormally) {
+                logger.warn("Script '{}' was interrupted due to timeout", StringUtils.join(command, " "));
+            }
+            int result = process.exitValue();
             logger.debug("Done with shell command");
             bufferThread.join(timeoutInMillis);
             errorBufferThread.join(timeoutInMillis);

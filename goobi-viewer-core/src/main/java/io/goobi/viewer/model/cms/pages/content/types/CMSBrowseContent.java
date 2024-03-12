@@ -137,7 +137,7 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
     /**
      * Alias for {@link #getBrowse()}. Used in legacy templates
      * 
-     * @return
+     * @return {@link Functionality}
      */
     public Functionality getFunctionality() {
         return getBrowse();

@@ -37,11 +37,22 @@ public class View {
     private final double zoom;
     private final Point center;
 
+    /**
+     * 
+     * @param zoom
+     * @param center
+     */
     public View(double zoom, Point center) {
         this.zoom = zoom;
         this.center = center;
     }
 
+    /**
+     * 
+     * @param zoom
+     * @param lng
+     * @param lat
+     */
     public View(double zoom, double lng, double lat) {
         this(zoom, new Point(lng, lat));
     }
@@ -49,7 +60,7 @@ public class View {
     public String getGeoJson() {
         JSONObject json = new JSONObject();
         json.put("zoom", this.zoom);
-        json.put("center", List.of(this.center.lng, this.center.lat));
+        json.put("center", List.of(this.center.getLng(), this.center.getLat()));
         return json.toString();
     }
 

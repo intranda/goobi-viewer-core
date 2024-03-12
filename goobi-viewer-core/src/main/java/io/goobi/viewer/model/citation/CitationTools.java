@@ -53,12 +53,14 @@ public final class CitationTools {
     }
 
     /**
+     * 
+     * @param allLinks
      * @param level
      * @param viewManager
      * @return Subset of allLinks that corresponds given level, populated with values
      * @throws IndexUnreachableException
      * @throws PresentationException
-     *  @should throw IllegalArgumentException if allLinks null
+     * @should throw IllegalArgumentException if allLinks null
      * @should throw IllegalArgumentException if level null
      * @should throw IllegalArgumentException if viewManager null
      * @should preserve internal links

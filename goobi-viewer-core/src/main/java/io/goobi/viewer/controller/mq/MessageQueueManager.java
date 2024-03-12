@@ -447,7 +447,8 @@ public class MessageQueueManager {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(config.getConnectorURI());
         connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
         ActiveMQConnection connection =
-                (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(), this.config.getPasswordAdmin()); //NOSONAR: Connection is closed in calling methods
+                (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(),
+                        this.config.getPasswordAdmin()); //NOSONAR: Connection is closed in calling methods
         return connection;
     }
 

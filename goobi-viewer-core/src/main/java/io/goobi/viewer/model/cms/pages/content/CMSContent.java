@@ -115,7 +115,6 @@ public abstract class CMSContent {
      * Writes HTML fragment value as file for re-indexing. HTML/text fragments are exported directly. Attached media items are exported as long as
      * their content type is one of the supported text document formats.
      *
-     * @param pageId ID of the owning CMS page
      * @param outputFolderPath a {@link java.lang.String} object.
      * @param namingScheme a {@link java.lang.String} object.
      * @return Exported Files
@@ -128,8 +127,9 @@ public abstract class CMSContent {
     /**
      * Method to call when loading a CMSPage including this content item
      * 
-     * @param cmsBean
-     * @return a jsf action response
+     * @param resetResults
+     * @param component
+     * @return a JSF action response
      * @throws PresentationException
      */
     public abstract String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException;
@@ -140,16 +140,25 @@ public abstract class CMSContent {
         return this instanceof TranslatableCMSContent;
     }
 
+    /**
+     * 
+     * @return the id
+     */
     public Long getId() {
         return this.id;
     }
 
+    /**
+     * 
+     * @param id
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * 
+     * @param width
+     * @param height
      * @return a string representing this contentItem for use in frontend-components. May be an empty string for content with no clear String
      *         representation
      */
@@ -159,12 +168,19 @@ public abstract class CMSContent {
         return this.getData((Integer) null, (Integer) null);
     }
 
+    /**
+     * 
+     * @return the required
+     */
     public boolean isRequired() {
         return required;
     }
 
+    /**
+     * 
+     * @param required
+     */
     public void setRequired(boolean required) {
         this.required = required;
     }
-
 }

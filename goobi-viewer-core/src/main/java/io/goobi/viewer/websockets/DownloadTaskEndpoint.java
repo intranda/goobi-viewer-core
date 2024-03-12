@@ -158,10 +158,14 @@ public class DownloadTaskEndpoint {
         String taskId = getDownloadId(message.pi, message.url);
         SocketMessage answer = SocketMessage.buildAnswer(message, Status.COMPLETE);
         Path downloadFolder = getDownloadFolder(message.pi, message.url);
-        String description = "-";
-        answer.files = filePaths.stream()
-                .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString(), description, getMimetype(p.toString()), calculateSize(downloadFolder.resolve(p))))
-                .collect(Collectors.toList());
+        if(Files.exists(downloadFolder)) {
+            String description = "-";
+            answer.files = filePaths.stream()
+                    .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString(), description, getMimetype(p.toString()), calculateSize(downloadFolder.resolve(p))))
+                    .collect(Collectors.toList());
+        } else {
+            answer.files = Collections.emptyList();
+        }
         sendMessage(answer);
     }
 
@@ -404,6 +408,15 @@ public class DownloadTaskEndpoint {
 
         public Map<String, String> getJsonSignature() {
             return JsonObjectSignatureBuilder.listProperties(getClass());
+        }
+        
+        @Override
+        public String toString() {
+           try {
+            return  JsonTools.getAsJson(this);
+        } catch (JsonProcessingException e) {
+            return "SocketMessage: action = " + this.action;
+        }
         }
     }
 

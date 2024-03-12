@@ -196,9 +196,12 @@ public class DefaultQueueListener {
             if (result != MessageStatus.ERROR) {
                 //acknowledge message, it is done
                 message.acknowledge();
-            } else {
+            } else if(ticket.shouldRetry()) {
                 //error or wait => put back to queue and retry by redeliveryPolicy
                 sess.recover();
+            } else {
+                //error, but don't retry
+                message.acknowledge();
             }
         } catch (Exception t) {
             log.error("Error handling ticket {}: ", message.getJMSMessageID(), t);

@@ -57,7 +57,6 @@ public class ExternalFilesDownloader {
 
     }
 
-
     public static boolean resourceExists(String url) {
         try {
             return resourceExists(new URI(url));
@@ -66,7 +65,7 @@ public class ExternalFilesDownloader {
             return false;
         }
     }
-    
+
     public static boolean resourceExists(URI uri) {
         logger.trace("checking url {}", uri);
         switch (uri.getScheme()) {
@@ -149,12 +148,12 @@ public class ExternalFilesDownloader {
             case "application/zip":
                 Path targetFolder = prepareNewFolder(destination);
                 logger.trace("Writing to output folder {}", destination);
-                try(ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor));
-                    ZipInputStream zis = new ZipInputStream(monitored)) {
+                try (ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor));
+                        ZipInputStream zis = new ZipInputStream(monitored)) {
                     return extractZip(targetFolder, zis);
                 }
             default://assume normal file
-                try(ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor))) {
+                try (ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor))) {
                     return writeFile(destination, monitored);
                 }
         }
@@ -162,27 +161,27 @@ public class ExternalFilesDownloader {
 
     public Path extractZip(Path destination, ZipInputStream zis) throws IOException {
         ZipEntry entry = null;
-            while ((entry = zis.getNextEntry()) != null) {
-                String name = entry.getName();
-                Path entryFile = destination.resolve(entry.getName());
-                if (entry.isDirectory()) {
-                    logger.trace("Creating directory {}", entryFile);
-                    Files.createDirectory(entryFile);
-                } else {
-                    logger.trace("Writing file {}", entryFile);
-                    if (!Files.isDirectory(entryFile.getParent())) {
-                        Files.createDirectories(entryFile.getParent());
-                    }
-                    writeFile(entryFile, zis);
+        while ((entry = zis.getNextEntry()) != null) {
+            String name = entry.getName();
+            Path entryFile = destination.resolve(entry.getName());
+            if (entry.isDirectory()) {
+                logger.trace("Creating directory {}", entryFile);
+                Files.createDirectory(entryFile);
+            } else {
+                logger.trace("Writing file {}", entryFile);
+                if (!Files.isDirectory(entryFile.getParent())) {
+                    Files.createDirectories(entryFile.getParent());
                 }
+                writeFile(entryFile, zis);
             }
-            return destination;
+        }
+        return destination;
     }
 
     private Path writeFile(Path entryFile, InputStream zis) throws IOException {
-            Files.deleteIfExists(entryFile);
-            Files.copy(zis, entryFile);
-            return entryFile;
+        Files.deleteIfExists(entryFile);
+        Files.copy(zis, entryFile);
+        return entryFile;
     }
 
     private String getFilename(URI uri, CloseableHttpResponse response) {
