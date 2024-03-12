@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -247,9 +248,16 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
 
         OEmbedRecord ret = new OEmbedRecord();
         StructElement se = new StructElement(iddoc);
+        se.setPi(pi);
         ret.setStructElement(se);
-        PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
-        ret.setPhysicalElement(pe);
+        if(se.isAnchor() || se.isGroup()) {
+            StructElement seChild = se.getFirstVolume(Arrays.asList(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
+            PhysicalElement pe = AbstractPageLoader.loadPage(seChild, page);
+            ret.setPhysicalElement(pe);
+        } else {            
+            PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
+            ret.setPhysicalElement(pe);
+        }
 
         return ret;
     }
