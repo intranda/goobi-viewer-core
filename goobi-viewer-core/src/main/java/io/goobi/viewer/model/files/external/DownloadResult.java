@@ -9,7 +9,7 @@ public class DownloadResult {
     private final Supplier<Long> progressMonitor;
     private final Future<Path> path;
     private final long size;
-    
+
     public DownloadResult(Supplier<Long> progressMonitor, Future<Path> resultPath, long size) {
         super();
         this.progressMonitor = progressMonitor;
@@ -24,13 +24,13 @@ public class DownloadResult {
     public Future<Path> getPath() {
         return path;
     }
-    
+
     public long getSize() {
         return size;
     }
-    
+
     public long getProgressPercent() {
-        return 100*progressMonitor.get()/size;
+        return 100 * progressMonitor.get() / size;
     }
-    
+
 }

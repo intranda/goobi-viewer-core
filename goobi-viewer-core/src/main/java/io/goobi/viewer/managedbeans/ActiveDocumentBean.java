@@ -194,9 +194,9 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
-    
+
     private List<String> externalResourceUrls = null;
-    
+
     /**
      * Empty constructor.
      */
@@ -2723,14 +2723,14 @@ public class ActiveDocumentBean implements Serializable {
     public List<String> getGeomapFilters() {
         return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }
-    
+
     public List<String> getExternalResourceUrls() {
-        if(this.externalResourceUrls == null) {
+        if (this.externalResourceUrls == null) {
             this.externalResourceUrls = loadExternalResourceUrls();
         }
         return this.externalResourceUrls;
     }
-    
+
     private List<String> loadExternalResourceUrls() {
         List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
         VariableReplacer vr = new VariableReplacer(getTopDocument());

@@ -68,7 +68,7 @@ public class AdminDeveloperBean implements Serializable {
 
     private static final String SCRIPT_PURPOSE_CREATE_PACKAGE = "create-package";
     private static final String SCRIPT_PURPOSE_PULL_THEME = "theme-pull";
-    
+
     private static final String SQL_STATEMENT_CREATE_USERS = "DROP TABLE IF EXISTS `users`;\n"
             + "CREATE TABLE `users` (\n"
             + "  `user_id` bigint(20) NOT NULL AUTO_INCREMENT,\n"
@@ -133,14 +133,13 @@ public class AdminDeveloperBean implements Serializable {
             logger.error("Error getting quartz scheduler", e);
         }
     }
-    
-    
+
     public void downloadDeveloperArchive() {
-       Path zipPath;
+        Path zipPath;
         try {
             sendDownloadProgressUpdate(0);
             zipPath = createZipFile(DataManager.getInstance().getConfiguration().getCreateDeveloperPackageScriptPath());
-            if(Files.exists(zipPath)) {                
+            if (Files.exists(zipPath)) {
                 sendDownloadProgressUpdate(1);
             } else {
                 throw new IOException("Failed to create file " + zipPath);
@@ -156,7 +155,7 @@ public class AdminDeveloperBean implements Serializable {
             return;
         }
         try {
-            logger.debug("Sending file...");            
+            logger.debug("Sending file...");
             Faces.sendFile(zipPath, this.viewerThemeName + "_developer.zip", true);
             logger.debug("Done sending file");
             sendDownloadFinished();
@@ -165,16 +164,16 @@ public class AdminDeveloperBean implements Serializable {
             sendDownloadError("Error creating zip archive: " + e.getMessage());
         }
     }
-    
+
     private byte[] createZipArchive(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
         String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
         String out = command.getOutput();
         String error = command.getErrorOutput();
-        if(ret > 0) {
+        if (ret > 0) {
             throw new IOException(error);
-        } else {            
+        } else {
             return out.getBytes("utf-8");
         }
     }
@@ -185,9 +184,9 @@ public class AdminDeveloperBean implements Serializable {
         int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
         String out = command.getOutput().trim();
         String error = command.getErrorOutput().trim();
-        if(ret > 0) {
+        if (ret > 0) {
             throw new IOException(error);
-        } else {            
+        } else {
             return Path.of(out);
         }
     }
