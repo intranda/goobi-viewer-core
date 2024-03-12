@@ -86,17 +86,16 @@
 	}
 	&__heading {
 		font-size: 14px;
-		margin-bottom: 10px;
-		margin-top: 10px;
+		margin: 0;
 		font-weight: 700;
+		margin-top: 5px;
 	}
-	&__resource_list {
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
 	}
-	&__resource {
-		border-bottom: 1px solid lightgray;
-		&:last-child {
-			border-bottom: none;
-		}
+	&__item {
 	}
 	&__error_wrapper {
 		display: none;
@@ -105,16 +104,16 @@
 			display:block;
 		}
 	}
-	&__progress-wrapper {
+	&__inner-wrapper {
 		display: none;
 		&.-active {
-			display: grid;
-			grid-template-columns: 5fr 1fr;
-			grid-gap: 5px;
+			display: flex;
+			align-items: center;
 		}
-		label {
-			margin-bottom: 0;
-		}
+	}
+	&__label {
+		margin-right: auto;
+		display: block;
 	}
 	&__order {
 		display: none;
@@ -140,10 +139,12 @@
 			display:block;
 		}
 	}
-	&__results_wrapper {
+	&__results {
 		display: none;
 		&.-active {
-			display: block;
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
 		}
 	}
 
@@ -174,10 +175,36 @@
 	.born-digital__head-wrapper {
 		display: none;
 	}
+	.born-digital {
+		&__box {
+			padding: 0 15px;
+			padding-bottom: 15px;
+		}
+		&__items-wrapper {
+			padding: 10px 15px;
+		}
+		&__item {
+			&-download-last {
+				justify-content: flex-start;
+			}
+		}
+	}
+	.download-external-resource {
+		&__inner-wrapper {
+			&.-active {
+				flex-direction: column;
+				gap: 10px;
+				align-items: flex-start; 	
+			}
+
+		}
+	}
 }
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

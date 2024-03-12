@@ -1,14 +1,14 @@
 <!-- progress-bar.tag -->
 <external-resource-download>
-<div class="download-external-resource__resource_list">
-	<div class="download-external-resource__resource" each="{url in urls}">
+<div class="download-external-resource__list">
+	<div class="download-external-resource__item" each="{url in urls}">
 		<div class="download-external-resource__error_wrapper {isError(url) ? '-active' : ''}">
 			<i class="fa fa-exclamation-triangle"/>
 			<label class="download-external-resource__error">{getErrorMessage(url)}</label>
 		</div>
-		<div class="download-external-resource__progress-wrapper {isFinished(url) ? '' : '-active'}">
-			<label>{url}</label>
-			<button onclick="{startDownloadTask}" class="download-external-resource__order btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? '' : '-active'}">{msg.downloadButton}</button>
+		<div class="download-external-resource__inner-wrapper {isFinished(url) ? '' : '-active'}">
+			<span class="download-external-resource__label">{url}</span>
+			<button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? '' : '-active'}" onclick="{startDownloadTask}">{msg.downloadButton}</button>
 			<div class="download-external-resource__waiting_animation {isWaiting(url) ? '-active' : ''}">
 				<img src="{preloader}" class="img-responsive"
 					alt="{msg.action__external_files__download_in_queue}"
@@ -19,7 +19,7 @@
 					max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress>
 			</div>
 		</div>
-		<div class="download-external-resource__results_wrapper {isFinished(url) ? '-active' : ''}">
+		<div class="download-external-resource__results {isFinished(url) ? '-active' : ''}">
           		<virtual each="{object in getFiles(url)}"> 
           			<div class="born-digital__items-wrapper">
 	         		<div class="born-digital__head-mobile">
