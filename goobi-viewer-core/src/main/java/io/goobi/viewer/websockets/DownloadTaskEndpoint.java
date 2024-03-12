@@ -128,9 +128,7 @@ public class DownloadTaskEndpoint {
 
     public void handleDownloadRequest(SocketMessage message) throws JsonProcessingException {
         try {
-            logger.info("handleDownloadRequest {}", message);
             List<Path> filePaths = getDownloadedFiles(message.pi, message.url);
-            logger.info("Found {} files in {}", filePaths.size(), getDownloadFolder(message.pi, message.url));
             if (!filePaths.isEmpty()) {
                 listDownloadedFiles(message, filePaths);
             } else {
@@ -149,7 +147,6 @@ public class DownloadTaskEndpoint {
             answer.progress = 0;
             answer.resourceSize = 1;
             answer.messageQueueId = messageId;
-            logger.info("start download ", answer);
             sendMessage(answer);
         } catch (MessageQueueException e) {
             logger.error("Error adding message '{}' to queue: {}", mqMessage, e);
@@ -161,11 +158,14 @@ public class DownloadTaskEndpoint {
         String taskId = getDownloadId(message.pi, message.url);
         SocketMessage answer = SocketMessage.buildAnswer(message, Status.COMPLETE);
         Path downloadFolder = getDownloadFolder(message.pi, message.url);
-        String description = "-";
-        answer.files = filePaths.stream()
-                .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString(), description, getMimetype(p.toString()), calculateSize(downloadFolder.resolve(p))))
-                .collect(Collectors.toList());
-        logger.info("List downloaded files {}", answer);
+        if(Files.exists(downloadFolder)) {
+            String description = "-";
+            answer.files = filePaths.stream()
+                    .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString(), description, getMimetype(p.toString()), calculateSize(downloadFolder.resolve(p))))
+                    .collect(Collectors.toList());
+        } else {
+            answer.files = Collections.emptyList();
+        }
         sendMessage(answer);
     }
 
