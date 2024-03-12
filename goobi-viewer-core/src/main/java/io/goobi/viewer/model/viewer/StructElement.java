@@ -924,6 +924,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     return new StructElement(Long.parseLong(iddoc), docVolume);
                 }
             }
+        } else if(isGroup()) {
+            List<StringPair> sortFields = DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(getDocStructType());
+
+            SolrDocument docVolume = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(new StringBuilder("GROUPID_SERIES_2").append(':').append(this.pi).toString(), fields, sortFields);
+            if (docVolume == null) {
+                logger.warn("Group has no child element: Cannot determine appropriate value");
+            } else {
+                String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
+                if (StringUtils.isNotBlank(iddoc)) {
+                    return new StructElement(Long.parseLong(iddoc), docVolume);
+                }
+            }
         }
 
         return null;
