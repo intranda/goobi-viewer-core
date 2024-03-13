@@ -163,6 +163,13 @@ public class AdminDeveloperBean implements Serializable {
         } catch (IOException | InterruptedException e) {
             logger.error("Error creating zip archive: {}", e.toString());
             sendDownloadError("Error creating zip archive: " + e.getMessage());
+        } finally {
+            try {
+                Files.deleteIfExists(zipPath);
+            } catch (IOException e) {
+                logger.error("Failed to delete developer zip archive {}. Please delete manually", zipPath);
+                sendDownloadError("Failed to delete developer zip archive "+zipPath+". Please delete manually");
+            }
         }
     }
 
