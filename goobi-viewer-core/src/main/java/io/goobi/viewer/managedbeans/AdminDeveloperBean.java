@@ -156,10 +156,11 @@ public class AdminDeveloperBean implements Serializable {
         }
         try {
             logger.debug("Sending file...");
+            Thread.sleep(500);
             Faces.sendFile(zipPath, this.viewerThemeName + "_developer.zip", true);
             logger.debug("Done sending file");
             sendDownloadFinished();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             logger.error("Error creating zip archive: {}", e.toString());
             sendDownloadError("Error creating zip archive: " + e.getMessage());
         }
