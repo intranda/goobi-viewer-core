@@ -261,7 +261,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             rtl = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_DIRECTION_RTL));
             // Load shape metadata
             // TODO use indicator field in doc to avoid this extra search for non-shape elements
-            String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+            String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse(null);
             if (iddoc != null) {
                 SolrDocumentList shapeDocs =
                         MetadataTools.getGroupedMetadata(iddoc, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), null);

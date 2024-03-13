@@ -1023,4 +1023,12 @@ public final class SolrTools {
         return refId;
     }
 
+    public static List<Locale> getAllUsedLocales(StructElement structElement) {
+        return structElement.getMetadataFields().keySet().stream()
+        .filter(field -> field.matches(MULTILANGUAGE_FIELD_REGEX))
+        .map(SolrTools::getLanguage)
+        .map(Locale::forLanguageTag)
+        .toList();
+    }
+
 }
