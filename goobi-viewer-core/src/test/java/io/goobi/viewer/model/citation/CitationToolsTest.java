@@ -42,7 +42,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValue_shouldThrowIllegalArgumentExceptionIfAllLinksNull() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
         Exception e = Assertions.assertThrows(IllegalArgumentException.class,
@@ -56,7 +56,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValue_shouldThrowIllegalArgumentExceptionIfLevelNull() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
         List<CitationLink> allLinks = Collections.emptyList();
@@ -71,7 +71,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValue_shouldThrowIllegalArgumentExceptionIfViewManagerNull() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
         List<CitationLink> allLinks = Collections.emptyList();
@@ -86,7 +86,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValue_shouldPreserveInternalLinks() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
         CitationLink link = new CitationLink("url", "record", "foo").setField(SolrConstants.PI);
@@ -100,7 +100,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValue_shouldSetCorrectValueForRecordType() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
         CitationLink link = new CitationLink("url", "record", "foo").setField(SolrConstants.PI);
@@ -114,7 +114,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValue_shouldSetCorrectValueForDocstructType() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
         CitationLink link = new CitationLink("url", "docstruct", "foo").setField(SolrConstants.PI);
@@ -128,7 +128,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValue_shouldSetCorrectValueForImageType() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
 
@@ -143,7 +143,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValue_shouldFallBackToTopstructValueCorrectly() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
 
@@ -158,7 +158,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValue_shouldApplyPatternCorrectly() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);
 

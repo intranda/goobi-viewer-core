@@ -36,7 +36,7 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getUrl_shouldConstructInternalRecordUrlCorrectly() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         Assertions.assertEquals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc());
 
@@ -50,7 +50,7 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getUrl_shouldConstructInternalDocstructUrlCorrectly() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
         Assertions.assertNotEquals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc());
@@ -65,7 +65,7 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getUrl_shouldConstructInternalImageUrlCorrectly() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);
 
