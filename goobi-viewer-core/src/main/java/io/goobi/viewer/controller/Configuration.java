@@ -28,6 +28,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1396,6 +1397,7 @@ public class Configuration extends AbstractConfiguration {
         return urlString;
     }
 
+    
     /**
      * <p>
      * getRestApiUrl.
@@ -5994,6 +5996,17 @@ public class Configuration extends AbstractConfiguration {
     public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
+    
+    public boolean isDeveloperPageActive() {
+        return getLocalBoolean("deveoper[@enabled]", false);
+    }
+    
+    public String getDeveloperScriptPath(String purpose) {
+        List<HierarchicalConfiguration<ImmutableNode>> scriptNodes = getLocalConfigurationsAt("developer.script");
+        return scriptNodes.stream()
+                .filter(node -> node.getString("[@purpose]", "").equals(purpose))
+                .map(node -> node.getString(".", "")).findAny().orElse("");
+    }
 
     /**
      * @param field
@@ -6009,5 +6022,12 @@ public class Configuration extends AbstractConfiguration {
         String path = String.format("viewer.formats.%s.%s", type, locale.getLanguage());
         return Optional.ofNullable(getLocalString(path, null));
     }
-
+    
+    public String getThemePullScriptPath() {
+        return getLocalString("developer.scripts.pullTheme", "{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../");
+    }
+    
+    public String getCreateDeveloperPackageScriptPath() {
+        return getLocalString("developer.scripts.createDeveloperPackage", "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
+    }
 }

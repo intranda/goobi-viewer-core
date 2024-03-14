@@ -8,12 +8,15 @@
         <solr>http://localhost:8983/solr/collection2</solr>
         
 	</urls>
+	
+	<configFolder>/none/</configFolder>
 
+	<viewerHome>/opt/digiverso/viewer</viewerHome>
 
 	<viewer>
 
 		<theme mainTheme="mainTheme_value" discriminatorField="MD2_VIEWERSUBTHEME">
-            <rootPath>/opt/digiverso/goobi-viewer-theme-test/goobi-viewer-theme-mest/WebContent/resources/themes/</rootPath>
+            <rootPath>/opt/digiverso/goobi-viewer-theme-test/goobi-viewer-theme-test/WebContent/resources/themes/</rootPath>
 		</theme>
 
 	</viewer>

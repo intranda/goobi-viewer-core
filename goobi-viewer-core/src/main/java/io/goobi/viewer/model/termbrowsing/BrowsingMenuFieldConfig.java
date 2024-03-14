@@ -185,7 +185,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
 
     /**
      *
-     * @return
+     * @return a boolean
      */
     public boolean isRecordsAndAnchorsOnly() {
         return filterQueries.contains(SearchHelper.ALL_RECORDS_QUERY);

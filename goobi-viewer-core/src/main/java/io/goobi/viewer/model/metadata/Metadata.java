@@ -380,12 +380,13 @@ public class Metadata implements Serializable {
      */
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String paramLabel, String url, Map<String, String> options,
             String groupType, Locale locale) {
-        setParamValue(valueIndex, paramIndex, inValues, new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap()), paramLabel, url, options, groupType, locale);
+        setParamValue(valueIndex, paramIndex, inValues, new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap()),
+                paramLabel, url, options, groupType, locale);
     }
-        
-        
-    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, RelationshipMetadataContainer relatedMetadata, String paramLabel, String url, Map<String, String> options,
-                String groupType, Locale locale) {
+
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, RelationshipMetadataContainer relatedMetadata, String paramLabel,
+            String url, Map<String, String> options,
+            String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label); //NOSONAR Debug
         if (inValues == null || inValues.isEmpty()) {
             return;
@@ -421,7 +422,8 @@ public class Metadata implements Serializable {
             String value = val.trim();
             switch (param.getType()) {
                 case RELATEDFIELD:
-                    value = relatedMetadata.getMetadataValue(this.label, RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX + param.getKey(), locale);
+                    value = relatedMetadata.getMetadataValue(this.label,
+                            RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX + param.getKey(), locale);
                 case WIKIFIELD:
                 case WIKIPERSONFIELD:
                     if (value.contains(",")) {
@@ -912,7 +914,7 @@ public class Metadata implements Serializable {
              * Load data of related documents if any params are of type "related". Otherwise generate an empty RelationshipMetadataContainer
              */
             RelationshipMetadataContainer relatedDocuments = new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap());
-            if(hasRelationshipMetadata()) {                
+            if (hasRelationshipMetadata()) {
                 relatedDocuments = RelationshipMetadataContainer.loadRelationships(new ComplexMetadataContainer(groupedMdList));
             }
             int count = 0;
@@ -968,7 +970,8 @@ public class Metadata implements Serializable {
                         setParamValue(count, i, paramValues, relatedDocuments, param.getKey(), null, options, groupType, locale);
                     } else if (param.getDefaultValue() != null) {
                         logger.debug("No value found for {}, using default value", param.getKey());
-                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), relatedDocuments, param.getKey(), null, null, groupType, locale);
+                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), relatedDocuments, param.getKey(), null, null,
+                                groupType, locale);
                         found = true;
                     } else {
                         setParamValue(count, i, Collections.singletonList(""), relatedDocuments, null, null, null, groupType, locale);

@@ -179,11 +179,6 @@ public class QuartzListener implements ServletContextListener {
         } else if (storedTriggers.containsKey(TaskType.CACHE_GEOMAPS.name())) {
             dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.CACHE_GEOMAPS.name()).getId());
         }
-        if (StringUtils.isNotBlank(config.getThemeRootPath()) && Files.exists(Path.of(config.getThemeRootPath()))) {
-            addTrigger(storedTriggers, triggers, TaskType.PULL_THEME, TaskTriggerStatus.PAUSED);
-        } else if (storedTriggers.containsKey(TaskType.PULL_THEME.name())) {
-            dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.PULL_THEME.name()).getId());
-        }
         return triggers;
     }
 
