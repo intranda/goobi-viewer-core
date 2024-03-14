@@ -40,7 +40,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class EmailValidator implements Validator<String> {
 
     private static final String REGEX =
-            "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"; //NOSONAR   input size is limited
+            "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*" //NOSONAR input size is limited
+            + "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"; //NOSONAR input size is limited
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     /* (non-Javadoc)

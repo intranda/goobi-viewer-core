@@ -250,11 +250,11 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
         StructElement se = new StructElement(iddoc);
         se.setPi(pi);
         ret.setStructElement(se);
-        if(se.isAnchor() || se.isGroup()) {
+        if (se.isAnchor() || se.isGroup()) {
             StructElement seChild = se.getFirstVolume(Arrays.asList(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
             PhysicalElement pe = AbstractPageLoader.loadPage(seChild, page);
             ret.setPhysicalElement(pe);
-        } else {            
+        } else {
             PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
             ret.setPhysicalElement(pe);
         }

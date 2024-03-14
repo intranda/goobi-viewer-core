@@ -197,7 +197,7 @@ public class DefaultQueueListener {
             if (result != MessageStatus.ERROR) {
                 //acknowledge message, it is done
                 message.acknowledge();
-            } else if(ticket.shouldRetry()) {
+            } else if (ticket.shouldRetry()) {
                 //error or wait => put back to queue and retry by redeliveryPolicy
                 sess.recover();
             } else {
