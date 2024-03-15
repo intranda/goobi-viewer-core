@@ -19,7 +19,7 @@
 				<div class="widget-downloads__topbar">
 					<!-- WIDGET TITLE -->
 					<h2 tabindex="0" role="button"
-						class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group or (navigationHelper.currentPage == 'fulltext') ? '' : 'collapseable'}">
+						class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group or (navigationHelper.currentPage == 'fulltext') or (activeDocumentBean.viewManager.displayContentDownloadMenu) ? '' : 'collapseable'}">
 						<span>#{msg.downloads}</span> <i class="fa fa-angle-down"
 							aria-hidden="true"></i>
 					</h2>
@@ -27,7 +27,7 @@
 
 				<!-- WIDGET BODY -->
 				<div
-					class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group or (navigationHelper.currentPage == 'fulltext') ? '' : 'collapseable'}">
+					class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group or (navigationHelper.currentPage == 'fulltext') or (activeDocumentBean.viewManager.displayContentDownloadMenu) ? '' : 'collapseable'}">
 					<!-- INTRODUCTION TEXT -->
 					<ui:fragment
 						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and navigationHelper.currentPage == 'object' }">
@@ -38,7 +38,8 @@
 						</p>
 					</ui:fragment>
 					
-					<!-- INTRODUCTION TEXT -->
+					
+					<!-- INTRODUCTION TEXT DOWNLOADS GENERAL -->
 					<ui:fragment
 						rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and navigationHelper.currentPage == 'fulltext' }">
 						<p id="introductionText" class="widget-downloads__license-text">
@@ -46,6 +47,17 @@
 								value="#{msg['widget__downloads__intro_text_text_formats']}"
 								escape="false" />
 						</p>
+					</ui:fragment>
+					
+					<ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
+					
+						<!-- INTRODUCTION TEXT ADDITIONAL FILES -->
+						<ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0}">
+	                        <p id="introductionText" class="widget-downloads__additional-files-text">
+	                            <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']}" escape="false" />
+	                        </p>
+	                    </ui:fragment> 
+					
 					</ui:fragment>
 
 					<!-- WORK -->
@@ -486,6 +498,26 @@
 							</div>
 						</div>
 					</ui:fragment>
+					
+					
+				<!-- INTEGRATED WIDGET ADDITIONAL FILES -->
+		    	<ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
+					<div id="widgetAdditionalFiles" class="widget-downloads__additional-files-wrapper">
+			    	    <h:form id="widgetAdditionalFilesForm">
+							<h3 id="additionFilesTitle" class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget_additionalFiles}</h3>
+
+							<ul class="widget-downloads__additional-files-list">
+								<ui:repeat value="#{activeDocumentBean.viewManager.contentDownloadLinksForWork}" var="link">
+									<li>
+										<h:outputLink value="#{link.url}" target="_blank">
+											#{link.name}
+										</h:outputLink>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:form>
+					</div>
+				</ui:fragment>
 
 
 
