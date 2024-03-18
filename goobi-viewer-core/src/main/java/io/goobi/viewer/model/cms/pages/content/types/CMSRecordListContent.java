@@ -64,7 +64,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
     private static final String COMPONENT_NAME = "searchhitlist";
 
-    @Column(name = "solr_query")
+    @Column(name = "solr_query", columnDefinition = "TEXT")
     private String solrQuery = "";
     @Column(name = "sort_field", length = 40)
     private String sortField = "RELEVANCE";

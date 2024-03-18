@@ -59,7 +59,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "search";
 
-    @Column(name = "search_prefix")
+    @Column(name = "search_prefix", columnDefinition = "TEXT")
     private String searchPrefix = "";
 
     @Column(name = "displayEmptySearchResults")
