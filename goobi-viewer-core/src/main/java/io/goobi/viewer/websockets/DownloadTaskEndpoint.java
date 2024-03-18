@@ -397,18 +397,91 @@ public class DownloadTaskEndpoint {
             return answer;
         }
 
-        public Action action; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public Status status; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public String pi; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public String url; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public long progress; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public long resourceSize; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public String messageQueueId; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public String errorMessage; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public List<ResourceFile> files; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        private Action action;
+        private Status status;
+        private String pi;
+        private String url;
+        private long progress;
+        private long resourceSize;
+        private String messageQueueId;
+        private String errorMessage;
+        private List<ResourceFile> files;
 
         public Map<String, String> getJsonSignature() {
             return JsonObjectSignatureBuilder.listProperties(getClass());
+        }
+        
+
+        public Action getAction() {
+            return action;
+        }
+
+        public void setAction(Action action) {
+            this.action = action;
+        }
+
+        public Status getStatus() {
+            return status;
+        }
+
+        public void setStatus(Status status) {
+            this.status = status;
+        }
+
+        public String getPi() {
+            return pi;
+        }
+
+        public void setPi(String pi) {
+            this.pi = pi;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public long getProgress() {
+            return progress;
+        }
+
+        public void setProgress(long progress) {
+            this.progress = progress;
+        }
+
+        public long getResourceSize() {
+            return resourceSize;
+        }
+
+        public void setResourceSize(long resourceSize) {
+            this.resourceSize = resourceSize;
+        }
+
+        public String getMessageQueueId() {
+            return messageQueueId;
+        }
+
+        public void setMessageQueueId(String messageQueueId) {
+            this.messageQueueId = messageQueueId;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        public void setErrorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
+        }
+
+        public List<ResourceFile> getFiles() {
+            return files;
+        }
+
+        public void setFiles(List<ResourceFile> files) {
+            this.files = files;
         }
 
         @Override
