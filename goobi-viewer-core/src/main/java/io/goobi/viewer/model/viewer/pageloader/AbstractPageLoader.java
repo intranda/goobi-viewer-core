@@ -73,9 +73,23 @@ public abstract class AbstractPageLoader implements IPageLoader {
             SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.BOOL_DOUBLE_IMAGE };
 
     /**
+     * Creates and returns the appropriate loader instance for the given <code>StructElement</code>. Only creates loaders that load pages.
+     *
+     * @param topStructElement Top level <code>StructElement</code> of the record
+     * @return Appropriate page loader implementation for the given record topStructElement
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public static AbstractPageLoader create(StructElement topStructElement) throws IndexUnreachableException, PresentationException, DAOException {
+        return create(topStructElement, true);
+    }
+
+    /**
      * Creates and returns the appropriate loader instance for the given <code>StructElement</code>.
      *
      * @param topStructElement Top level <code>StructElement</code> of the record
+     * @param loadPages If true, created an appropriate page loader; if false (e.g. for TOC building), create a dummy loader
      * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -83,8 +97,11 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @should return EagerPageLoader if page count below threshold
      * @should return LeanPageLoder if page count at or above threshold
      */
-    public static AbstractPageLoader create(StructElement topStructElement)
+    public static AbstractPageLoader create(StructElement topStructElement, boolean loadPages)
             throws IndexUnreachableException, PresentationException, DAOException {
+        if (!loadPages) {
+            return new EmptyPageLoader(topStructElement);
+        }
         int numPages = topStructElement.getNumPages();
         if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
             return new EagerPageLoader(topStructElement);
@@ -98,7 +115,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      *
      * @param format a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
-     * @should replace numpages currectly
+     * @should replace numpages correctly
      * @should replace message keys correctly
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

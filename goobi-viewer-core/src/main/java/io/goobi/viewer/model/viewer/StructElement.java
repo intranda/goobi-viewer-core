@@ -924,7 +924,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     return new StructElement(Long.parseLong(iddoc), docVolume);
                 }
             }
-        } else if(isGroup()) {
+        } else if (isGroup()) {
             List<StringPair> sortFields = DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(getDocStructType());
 
             SolrDocument docVolume = DataManager.getInstance()

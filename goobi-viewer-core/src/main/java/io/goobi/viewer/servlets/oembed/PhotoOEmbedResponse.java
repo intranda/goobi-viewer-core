@@ -56,7 +56,7 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
         if (rec == null) {
             throw new IllegalArgumentException("record may not be null");
         }
-        if(rec.getPhysicalElement() != null) {            
+        if (rec.getPhysicalElement() != null) {
             url = rec.getPhysicalElement().getImageUrl(size);
         }
     }

@@ -56,7 +56,7 @@ public class ShellCommand {
             errorBufferThread.start();
 
             boolean terminatedNormally = process.waitFor(timeoutInMillis, TimeUnit.MILLISECONDS);
-            if(!terminatedNormally) {
+            if (!terminatedNormally) {
                 logger.warn("Script '{}' was interrupted due to timeout", StringUtils.join(command, " "));
             }
             int result = process.exitValue();
@@ -106,7 +106,7 @@ public class ShellCommand {
         if (outputReader != null) {
             return outputReader.getOutput();
         }
-        
+
         return "";
     }
 
@@ -114,7 +114,7 @@ public class ShellCommand {
         if (errorReader != null) {
             return errorReader.getOutput();
         }
-        
+
         return "";
     }
 

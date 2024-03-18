@@ -2,7 +2,6 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
@@ -156,11 +155,11 @@ public class AdminDeveloperBean implements Serializable {
         }
         try {
             logger.debug("Sending file...");
-            Thread.sleep(500);
+
             Faces.sendFile(zipPath, this.viewerThemeName + "_developer.zip", true);
             logger.debug("Done sending file");
             sendDownloadFinished();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             logger.error("Error creating zip archive: {}", e.toString());
             sendDownloadError("Error creating zip archive: " + e.getMessage());
         } finally {
@@ -186,7 +185,7 @@ public class AdminDeveloperBean implements Serializable {
         }
     }
 
-    private Path createZipFile(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
+    private static Path createZipFile(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
         String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
