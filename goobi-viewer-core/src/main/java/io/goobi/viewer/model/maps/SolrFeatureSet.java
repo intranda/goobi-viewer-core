@@ -47,7 +47,7 @@ public class SolrFeatureSet extends FeatureSet {
     private static final long serialVersionUID = -9054215108168526688L;
     private static final Logger logger = LogManager.getLogger(SolrFeatureSet.class);
 
-    @Column(name = "solr_query")
+    @Column(name = "solr_query", columnDefinition = "TEXT")
     private String solrQuery = null;
 
     @Column(name = "aggregate_results")
