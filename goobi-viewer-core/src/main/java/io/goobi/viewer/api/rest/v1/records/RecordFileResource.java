@@ -216,7 +216,7 @@ public class RecordFileResource {
 
         throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
@@ -225,15 +225,16 @@ public class RecordFileResource {
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
             @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException {
-        
+
         //TODO: check access conditions for some download action
-        
+
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
         Path taskFolder = downloadFolder.resolve(taskId);
         Path resourceFile = taskFolder.resolve(Path.of(path));
-        if(Files.isRegularFile(resourceFile)) {
+        if (Files.isRegularFile(resourceFile)) {
             try {
-                servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(resourceFile.getFileName()).toString());
+                servletResponse.setHeader("Content-Disposition",
+                        new StringBuilder("attachment;filename=").append(resourceFile.getFileName()).toString());
                 servletResponse.setHeader("Content-Length", String.valueOf(Files.size(resourceFile)));
                 String contentType = Files.probeContentType(resourceFile);
                 logger.trace("content type: {}", contentType);
@@ -252,7 +253,6 @@ public class RecordFileResource {
             throw new ContentNotFoundException("No resource found at " + resourceFile);
         }
 
-        
     }
 
     /**

@@ -1396,7 +1396,6 @@ public class Configuration extends AbstractConfiguration {
         return urlString;
     }
 
-    
     /**
      * <p>
      * getRestApiUrl.
@@ -3513,19 +3512,18 @@ public class Configuration extends AbstractConfiguration {
 
         }
     }
-    
 
     public List<String> getExternalResourceUrlTemplates() {
         return getLocalList("externalResource.urls.template", Collections.emptyList());
     }
-    
+
     public Duration getExternalResourceTimeBeforeDeletion() {
         int amount = getLocalInt("externalResource.deleteAfter.value", 1);
         String unitString = getLocalString("externalResource.deleteAfter.unit", ChronoUnit.DAYS.name());
-        try {            
+        try {
             ChronoUnit unit = ChronoUnit.valueOf(unitString.toUpperCase());
             return Duration.of(amount, unit);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.warn("Could not read temporal unit from string '{}' in config field 'externalResource.deleteAfter.unit'. Assuming days");
             return Duration.of(amount, ChronoUnit.DAYS);
         }
@@ -4126,7 +4124,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
-    
+
     /**
      * <p>
      * isSolrUseHttp2.
@@ -5988,16 +5986,18 @@ public class Configuration extends AbstractConfiguration {
     public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
-    
+
     public boolean isDeveloperPageActive() {
         return getLocalBoolean("deveoper[@enabled]", false);
     }
-    
+
     public String getDeveloperScriptPath(String purpose) {
         List<HierarchicalConfiguration<ImmutableNode>> scriptNodes = getLocalConfigurationsAt("developer.script");
         return scriptNodes.stream()
                 .filter(node -> node.getString("[@purpose]", "").equals(purpose))
-                .map(node -> node.getString(".", "")).findAny().orElse("");
+                .map(node -> node.getString(".", ""))
+                .findAny()
+                .orElse("");
     }
 
     /**
@@ -6018,8 +6018,9 @@ public class Configuration extends AbstractConfiguration {
     public String getThemePullScriptPath() {
         return getLocalString("developer.scripts.pullTheme", "{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../");
     }
-    
+
     public String getCreateDeveloperPackageScriptPath() {
-        return getLocalString("developer.scripts.createDeveloperPackage", "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
+        return getLocalString("developer.scripts.createDeveloperPackage",
+                "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
     }
 }

@@ -78,14 +78,15 @@ public final class JsonTools {
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
     }
-    
+
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_STATUS = "status";
 
     /**
      * Private constructor.
      */
-    private JsonTools() {}
+    private JsonTools() {
+    }
 
     /**
      * Returns a <code>JSONArray</code> containing JSON objects for every <code>SolrDocument</code> in the given result. Order remains the same as in
@@ -167,7 +168,7 @@ public final class JsonTools {
     public static String getAsJson(Object object) throws JsonProcessingException {
         return mapper.writeValueAsString(object);
     }
-    
+
     public static <T> T getAsObject(String json, Class<T> clazz) throws IOException {
         return mapper.createParser(json).readValueAs(clazz);
     }

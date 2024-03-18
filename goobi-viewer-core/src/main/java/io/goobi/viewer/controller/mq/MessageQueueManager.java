@@ -124,8 +124,8 @@ public class MessageQueueManager {
     @Inject
     private BeanManager beanManager;
     private CreationalContext<MessageHandler<MessageStatus>> creationalContext;
-    
-     public MessageQueueManager() throws DAOException, IOException {
+
+    public MessageQueueManager() throws DAOException, IOException {
         this.instances = generateTicketHandlers();
         this.dao = DataManager.getInstance().getDao();
         try {
@@ -146,17 +146,17 @@ public class MessageQueueManager {
         this.dao = dao;
         this.config = config;
     }
-    
+
     @PostConstruct
     public void init() {
-        if(beanManager != null) {            
+        if (beanManager != null) {
             creationalContext = this.injectMessageHandlerDependencies(beanManager);
         }
     }
-    
+
     @PreDestroy
     public void shutdown() {
-        if(creationalContext != null) {
+        if (creationalContext != null) {
             creationalContext.release();
         }
     }
@@ -329,7 +329,7 @@ public class MessageQueueManager {
             try {
                 MessageHandler<MessageStatus> handler = clazz.getDeclaredConstructor().newInstance();
                 handlers.put(handler.getMessageHandlerName(), handler);
-                
+
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException
                     | SecurityException e) {
                 logger.error(e);
@@ -337,14 +337,15 @@ public class MessageQueueManager {
         }
         return handlers;
     }
-    
+
     private CreationalContext<MessageHandler<MessageStatus>> injectMessageHandlerDependencies(BeanManager beanManager) {
         CreationalContext<MessageHandler<MessageStatus>> ctx = beanManager.createCreationalContext(null);
         for (MessageHandler<MessageStatus> handler : instances.values()) {
             @SuppressWarnings("unchecked")
             InjectionTarget<MessageHandler<MessageStatus>> injectionTarget = (InjectionTarget<MessageHandler<MessageStatus>>) beanManager
-                    .getInjectionTargetFactory(beanManager.createAnnotatedType(handler.getClass())).createInjectionTarget(null);
-                injectionTarget.inject(handler, ctx);
+                    .getInjectionTargetFactory(beanManager.createAnnotatedType(handler.getClass()))
+                    .createInjectionTarget(null);
+            injectionTarget.inject(handler, ctx);
         }
         return ctx;
     }
@@ -361,7 +362,7 @@ public class MessageQueueManager {
         // we still need a fifo queue for message deduplication, though.
         // See: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-additional-fifo-queue-recommendations.html
         message.setStringProperty("JMSXGroupID", UUID.randomUUID().toString());
-        if(ticket.getDelay() > 0) {
+        if (ticket.getDelay() > 0) {
             message.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, ticket.getDelay());
         }
         message.setText(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(ticket));
@@ -525,7 +526,7 @@ public class MessageQueueManager {
         }
         return messages;
     }
-    
+
     public boolean deleteMessage(ViewerMessage ticket) {
         return deleteMessage(ticket.getTaskName(), ticket.getMessageId());
     }

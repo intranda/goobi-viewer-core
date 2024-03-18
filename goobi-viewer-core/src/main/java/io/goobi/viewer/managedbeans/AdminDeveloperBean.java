@@ -167,7 +167,7 @@ public class AdminDeveloperBean implements Serializable {
                 Files.deleteIfExists(zipPath);
             } catch (IOException e) {
                 logger.error("Failed to delete developer zip archive {}. Please delete manually", zipPath);
-                sendDownloadError("Failed to delete developer zip archive "+zipPath+". Please delete manually");
+                sendDownloadError("Failed to delete developer zip archive " + zipPath + ". Please delete manually");
             }
         }
     }

@@ -210,9 +210,9 @@ public class DefaultQueueListener {
             MessageQueueManager.notifyMessageQueueStateUpdate();
         }
     }
-    
+
     public void interruptTask() {
-        
+
     }
 
     public void close() {

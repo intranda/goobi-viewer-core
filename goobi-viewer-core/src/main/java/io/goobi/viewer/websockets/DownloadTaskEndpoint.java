@@ -118,7 +118,7 @@ public class DownloadTaskEndpoint {
         } catch (IOException e) {
             logger.error("Error interpreting download task message {}", messageString);
             try {
-                sendError(new SocketMessage(Action.UPDATE, Status.ERROR, "", ""), "Error interpreting download task message "+ messageString);
+                sendError(new SocketMessage(Action.UPDATE, Status.ERROR, "", ""), "Error interpreting download task message " + messageString);
             } catch (JsonProcessingException e1) {
                 logger.error("Error generating socket message message: {}", e1.toString());
 
@@ -154,14 +154,16 @@ public class DownloadTaskEndpoint {
         }
     }
 
-    private void listDownloadedFiles(SocketMessage message, List<Path> filePaths) throws JsonProcessingException, PresentationException, IndexUnreachableException {
+    private void listDownloadedFiles(SocketMessage message, List<Path> filePaths)
+            throws JsonProcessingException, PresentationException, IndexUnreachableException {
         String taskId = getDownloadId(message.pi, message.url);
         SocketMessage answer = SocketMessage.buildAnswer(message, Status.COMPLETE);
         Path downloadFolder = getDownloadFolder(message.pi, message.url);
-        if(Files.exists(downloadFolder)) {
+        if (Files.exists(downloadFolder)) {
             String description = "-";
             answer.files = filePaths.stream()
-                    .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString(), description, getMimetype(p.toString()), calculateSize(downloadFolder.resolve(p))))
+                    .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString(), description, getMimetype(p.toString()),
+                            calculateSize(downloadFolder.resolve(p))))
                     .collect(Collectors.toList());
         } else {
             answer.files = Collections.emptyList();
@@ -176,13 +178,13 @@ public class DownloadTaskEndpoint {
                 .map(ExternalFilesDownloadJob.class::cast)
                 .orElse(null);
         ViewerMessage queueMessage = queueManager.getMessageById(message.messageQueueId).orElse(null);
-        if(queueMessage != null && job == null) {
+        if (queueMessage != null && job == null) {
             answer.status = Status.WAITING;
         } else if (job != null) {
-            if(job.isError()) {
+            if (job.isError()) {
                 answer.errorMessage = job.getErrorMessage();
                 answer.status = Status.ERROR;
-                storageBean.remove(message.url);    //reset the status so a new download attempt is possible
+                storageBean.remove(message.url); //reset the status so a new download attempt is possible
             } else if (job.getProgress().complete() && !isFilesExist(message.pi, message.url)) {
                 //download task has completed but files are no longer available. remove job from storage bean and return waiting status
                 storageBean.remove(message.url);
@@ -201,36 +203,34 @@ public class DownloadTaskEndpoint {
                     answer.resourceSize = job.getProgress().getTotalSize();
                 }
             }
-        } else if(isFilesExist(message.pi, message.url)) {
+        } else if (isFilesExist(message.pi, message.url)) {
             answer.status = Status.COMPLETE;
         }
         sendMessage(answer);
     }
 
-
-
     private void cancelDownload(SocketMessage message) throws JsonProcessingException {
-       try {
-           boolean deleted = this.queueManager.deleteMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), message.messageQueueId);
-           Path resourceFolder = getDownloadFolder(message.pi, message.url);
-           if(Files.exists(resourceFolder)) {
-               FileUtils.deleteDirectory(resourceFolder.toFile());
-           }
-           storageBean.remove(message.url);
-           if (deleted) {
-               sendMessage(SocketMessage.buildAnswer(message, Status.CANCELED));
-           } else {
-               SocketMessage answer = SocketMessage.buildAnswer(message, Status.ERROR);
-               answer.errorMessage = "Error canceling external resource download of url " + message.url;
-               logger.error(answer.errorMessage);
-               sendMessage(answer);
-           }         
-       } catch (PresentationException | IOException | IndexUnreachableException e) {
-           SocketMessage answer = SocketMessage.buildAnswer(message, Status.ERROR);
-           answer.errorMessage = "Error canceling external resource download of url " + message.url;
-           logger.error(answer.errorMessage);
-           sendMessage(answer);
-       }
+        try {
+            boolean deleted = this.queueManager.deleteMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), message.messageQueueId);
+            Path resourceFolder = getDownloadFolder(message.pi, message.url);
+            if (Files.exists(resourceFolder)) {
+                FileUtils.deleteDirectory(resourceFolder.toFile());
+            }
+            storageBean.remove(message.url);
+            if (deleted) {
+                sendMessage(SocketMessage.buildAnswer(message, Status.CANCELED));
+            } else {
+                SocketMessage answer = SocketMessage.buildAnswer(message, Status.ERROR);
+                answer.errorMessage = "Error canceling external resource download of url " + message.url;
+                logger.error(answer.errorMessage);
+                sendMessage(answer);
+            }
+        } catch (PresentationException | IOException | IndexUnreachableException e) {
+            SocketMessage answer = SocketMessage.buildAnswer(message, Status.ERROR);
+            answer.errorMessage = "Error canceling external resource download of url " + message.url;
+            logger.error(answer.errorMessage);
+            sendMessage(answer);
+        }
     }
 
     private void sendError(SocketMessage message, String errorMessage) throws JsonProcessingException {
@@ -251,7 +251,7 @@ public class DownloadTaskEndpoint {
         }
         return true;
     }
-    
+
     public List<Path> getDownloadedFiles(String pi, String downloadUrl) throws PresentationException, IndexUnreachableException {
         Path resourceFolder = getDownloadFolder(pi, downloadUrl);
         if (Files.exists(resourceFolder)) {
@@ -271,19 +271,21 @@ public class DownloadTaskEndpoint {
         return resourceFolder;
     }
 
-    private URI getDownloadUrl(String pi, String taskId, Path p)  {
-            URI uri = toUri(p);
-            URI ret = DataManager.getInstance()
-                    .getRestApiManager()
-                    .getDataApiManager()
-                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH).params(pi, taskId, uri).buildURI())
-                    .orElse(null);
-            return ret;
+    private URI getDownloadUrl(String pi, String taskId, Path p) {
+        URI uri = toUri(p);
+        URI ret = DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH)
+                        .params(pi, taskId, uri)
+                        .buildURI())
+                .orElse(null);
+        return ret;
     }
 
     private URI toUri(Path p) {
         UriBuilder builder = UriBuilder.fromPath("");
-        for(int i = 0; i < p.getNameCount(); i++) {
+        for (int i = 0; i < p.getNameCount(); i++) {
             builder.path(p.getName(i).toString());
         }
         return builder.build();
@@ -297,16 +299,15 @@ public class DownloadTaskEndpoint {
     private synchronized void sendMessage(SocketMessage message) throws JsonProcessingException {
         session.getAsyncRemote().sendText(JsonTools.getAsJson(message));
     }
-    
+
     public String getMimetype(String path) {
         try {
-            return  FileTools.getMimeTypeFromFile(Path.of(path));
+            return FileTools.getMimeTypeFromFile(Path.of(path));
         } catch (IOException e) {
             logger.error("Error probing mimetype of path {}", path, e);
             return "?";
         }
     }
-
 
     private String calculateSize(Path path) {
         try {
@@ -332,7 +333,7 @@ public class DownloadTaskEndpoint {
         CANCELDOWNLOAD,
         UPDATE,
         LISTFILES;
-        
+
         @Override
         public String toString() {
             return name().toLowerCase();
@@ -346,7 +347,7 @@ public class DownloadTaskEndpoint {
         COMPLETE,
         ERROR,
         CANCELED;
-        
+
         @Override
         public String toString() {
             return name().toLowerCase();
@@ -409,14 +410,14 @@ public class DownloadTaskEndpoint {
         public Map<String, String> getJsonSignature() {
             return JsonObjectSignatureBuilder.listProperties(getClass());
         }
-        
+
         @Override
         public String toString() {
-           try {
-            return  JsonTools.getAsJson(this);
-        } catch (JsonProcessingException e) {
-            return "SocketMessage: action = " + this.action;
-        }
+            try {
+                return JsonTools.getAsJson(this);
+            } catch (JsonProcessingException e) {
+                return "SocketMessage: action = " + this.action;
+            }
         }
     }
 

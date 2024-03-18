@@ -64,12 +64,12 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
 
     public static final String[] ALLOWED_FILE_EXTENSIONS =
             new String[] { "xml", "html", "pdf", "epub", "jpg", "jpeg", "png", "mp3", "mp4", "zip", "xlsx", "doc", "docx", "gs" };
-    
+
     private static final Logger logger = LogManager.getLogger(DownloadExternalResourceHandler.class);
 
     @Inject
     PersistentStorageBean storageBean;
-    
+
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
@@ -78,9 +78,9 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         String url = message.getProperties().get(PARAMETER_URL);
 
         String messageId = message.getMessageId();
-        
+
         Path extractedFolder = Paths.get("");
-        
+
         try {
             Path targetFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
             if (!Files.isDirectory(targetFolder) && !targetFolder.toFile().mkdirs()) {
@@ -88,42 +88,40 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
                 storeError("Error downloading resouce: Cannot create folder " + targetFolder, url, messageId);
                 return MessageStatus.ERROR;
             }
-    
+
             String downloadId = getDownloadId(pi, url);
-            
+
             URI uri = new URI(url);
-            if(!uri.isAbsolute()) {
+            if (!uri.isAbsolute()) {
                 logger.error("Error downloading resouce: Cannot locate url {}", url);
                 storeError("Error downloading resouce: Cannot locate url " + url, url, messageId);
                 return MessageStatus.ERROR;
             }
-            
-            if(!isFilesExist(pi, url, downloadId)) {
-                
+
+            if (!isFilesExist(pi, url, downloadId)) {
+
                 extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(downloadId), messageId);
-                
+
                 removeProgress(url);
-                
+
                 Duration duration = DataManager.getInstance().getConfiguration().getExternalResourceTimeBeforeDeletion();
-                
+
                 triggerDeletion(queueManager, targetFolder.resolve(downloadId), duration.toMillis());
-            
+
             }
-            
-            
-        } catch (PresentationException | IndexUnreachableException | IOException | URISyntaxException  e) {
+
+        } catch (PresentationException | IndexUnreachableException | IOException | URISyntaxException e) {
             logger.error("Error downloading resouce: Cannot locate url {}", url);
             storeError("Error downloading resouce: Cannot locate url " + url, url, messageId);
             return MessageStatus.ERROR;
         } catch (MessageQueueException e) {
             //error in #triggerDeletion
-            logger.error("Error sending message to trigger deletion of {}. Files will remain in the file system. Reason: {}", extractedFolder, e.toString());
+            logger.error("Error sending message to trigger deletion of {}. Files will remain in the file system. Reason: {}", extractedFolder,
+                    e.toString());
         }
 
         return MessageStatus.FINISH;
     }
-
-
 
     private void triggerDeletion(MessageQueueManager queueManager, Path extractedFolder, long delay) throws MessageQueueException {
         ViewerMessage message = new ViewerMessage(TaskType.DELETE_RESOURCE.name());
@@ -133,21 +131,21 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
     }
 
     private Path downloadAndExtractFiles(URI url, Path targetFolder, String messageId) throws IOException {
-        ExternalFilesDownloader downloader = new ExternalFilesDownloader(targetFolder, 
+        ExternalFilesDownloader downloader = new ExternalFilesDownloader(targetFolder,
                 p -> storeProgress(p, url.toString(), Paths.get(""), messageId));
         return downloader.downloadExternalFiles(url);
     }
-    
+
     private void storeProgress(Progress progress, String identifier, Path path, String messageId) {
         ExternalFilesDownloadJob job = new ExternalFilesDownloadJob(progress, identifier, path, messageId);
         storageBean.put(identifier, job);
     }
-    
+
     private void storeError(String errorMessage, String identifier, String messageId) {
         ExternalFilesDownloadJob job = new ExternalFilesDownloadJob(identifier, messageId, errorMessage);
         storageBean.put(identifier, job);
     }
-    
+
     private void removeProgress(String identifier) {
         storageBean.remove(identifier);
     }
@@ -164,7 +162,7 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         }
         return true;
     }
-    
+
     public List<Path> getDownloadedFiles(String pi, String downloadUrl, String downloadId) throws PresentationException, IndexUnreachableException {
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
         Path resourceFolder = downloadFolder.resolve(downloadId);
@@ -178,17 +176,17 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
             return Collections.emptyList();
         }
     }
-    
+
     private String getDownloadId(String pi, String downloadUrl) {
         return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), pi,
                 downloadUrl);
     }
-    
+
     @Override
     public String getMessageHandlerName() {
         return TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name();
     }
-    
+
     public static ViewerMessage createMessage(String pi, String url) {
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name());
         message.setProperties(Map.of(PARAMETER_PI, pi, PARAMETER_URL, url));

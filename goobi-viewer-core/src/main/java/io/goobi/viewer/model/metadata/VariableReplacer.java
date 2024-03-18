@@ -11,19 +11,19 @@ import java.util.regex.Pattern;
 import io.goobi.viewer.model.viewer.StructElement;
 
 public class VariableReplacer {
-    
-    private static final String REPLACEMENT_GROUP_REGEX = "\\{(\\w+)\\}"; 
-    
+
+    private static final String REPLACEMENT_GROUP_REGEX = "\\{(\\w+)\\}";
+
     private final StructElement metadataContainer;
-    
+
     public VariableReplacer(StructElement metadataContainer) {
         this.metadataContainer = metadataContainer;
     }
-    
+
     public List<String> replace(String template) {
         List<String> replacementStrings = getReplacementStrings(template);
         SortedMap<String, List<String>> replacementValues = getReplacementValues(replacementStrings);
-        if(replacementValues.isEmpty()) {
+        if (replacementValues.isEmpty()) {
             return List.of(template);
         } else {
             return getReplacedStrings(template, replacementValues);
@@ -36,7 +36,7 @@ public class VariableReplacer {
         List<String> replacedStrings = new ArrayList<>(numValues);
         for (int valueIndex = 0; valueIndex < numValues; valueIndex++) {
             String replacedString = template;
-            for (int replacementStringIndex = entryList.size()-1; replacementStringIndex >= 0; replacementStringIndex--) {
+            for (int replacementStringIndex = entryList.size() - 1; replacementStringIndex >= 0; replacementStringIndex--) {
                 String replacementString = entryList.get(replacementStringIndex).getKey();
                 List<String> values = entryList.get(replacementStringIndex).getValue();
                 String value = valueIndex < values.size() ? values.get(valueIndex) : "";
@@ -61,14 +61,14 @@ public class VariableReplacer {
         Pattern pattern = Pattern.compile(REPLACEMENT_GROUP_REGEX);
         Matcher matcher = pattern.matcher(template);
         List<String> replacementStrings = new ArrayList<>();
-        while(matcher.find()) {
+        while (matcher.find()) {
             replacementStrings.add(matcher.group());
         }
         return replacementStrings;
     }
-    
+
     private String getReplacementTerm(String replacementString) {
-        if(replacementString.matches(REPLACEMENT_GROUP_REGEX)) {
+        if (replacementString.matches(REPLACEMENT_GROUP_REGEX)) {
             return replacementString.replaceAll(REPLACEMENT_GROUP_REGEX, "$1");
         } else {
             return "";

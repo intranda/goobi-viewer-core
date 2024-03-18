@@ -31,7 +31,7 @@ public interface MessageHandler<V> {
      */
 
     public V call(ViewerMessage ticket, MessageQueueManager queueManager);
-    
+
     public default V call(ViewerMessage ticket) {
         return this.call(ticket, null);
     }

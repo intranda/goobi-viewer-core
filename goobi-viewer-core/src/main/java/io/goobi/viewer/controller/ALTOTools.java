@@ -465,7 +465,7 @@ public final class ALTOTools {
     public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int rotation) {
         return getWordCoords(altoString, charset, searchTerms, 0, rotation);
     }
-    
+
     public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int proximitySearchDistance, int rotation) {
         if (altoString == null) {
             throw new IllegalArgumentException("altoDoc may not be null");
@@ -520,7 +520,7 @@ public final class ALTOTools {
                                     wordIndex--;
                                     match = false;
                                     break;
-                                } else {                                    
+                                } else {
                                     remainingProximityReach--;
                                 }
                             } else {
