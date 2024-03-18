@@ -129,21 +129,6 @@ public class EPUBDownloadJob extends DownloadJob {
         return "EPUB";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public int getQueuePosition() {
-        switch (status) {
-            case ERROR:
-                return -1;
-            case READY:
-                return 0;
-            default:
-                return getEPUBJobsInQueue(identifier);
-        }
-    }
 
     /**
      * <p>
@@ -195,15 +180,6 @@ public class EPUBDownloadJob extends DownloadJob {
             logger.error("Error getting response from TaskManager", e);
             return -1;
         }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#triggerCreation(java.lang.String, java.lang.String, java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    protected void triggerCreation() throws PresentationException, IndexUnreachableException {
-        triggerCreation(pi, identifier);
     }
 
     /**

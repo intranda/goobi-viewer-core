@@ -133,8 +133,8 @@ var viewerJS = ( function( viewer ) {
     viewer.overlay.open = function(node, closable, fullscreen, onClose) {
    
    		return new Promise( (resolve, reject) => {
-   
 	        let $overlay = $(".overlay");
+   		console.log("open overlay", node, $overlay);
 	        if($overlay.length > 0) {
 	            if($overlay.hasClass("active")) {
 	                reject("overlay is already active");

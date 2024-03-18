@@ -51,6 +51,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "mq_messages")
@@ -59,7 +60,7 @@ public class ViewerMessage {
 
     public static final String MESSAGE_PROPERTY_ERROR = "error";
     public static final String MESSAGE_PROPERTY_INFO = "result";
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -88,7 +89,7 @@ public class ViewerMessage {
 
     @Column(name = "retry_count")
     private int retryCount = 1;
-    
+
     @Column(name = "max_retries")
     private int maxRetries = 10;
 
@@ -96,6 +97,9 @@ public class ViewerMessage {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime lastUpdateTime = LocalDateTime.now();
+
+    @Column(name = "delay_millis")
+    private long delay = 0l;
 
     public ViewerMessage() {
 
@@ -169,6 +173,14 @@ public class ViewerMessage {
         this.queue = queue;
     }
 
+    public long getDelay() {
+        return delay;
+    }
+
+    public void setDelay(long delay) {
+        this.delay = delay;
+    }
+
     public boolean isProcessing() {
         return MessageStatus.PROCESSING.equals(getMessageStatus());
     }
@@ -179,17 +191,32 @@ public class ViewerMessage {
                 .registerModule(new JavaTimeModule())
                 .readValue(json, ViewerMessage.class);
     }
-    
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append("Viewer Message of type ")
+                .append(this.taskName)
+                .append("\t")
+                .append("Message id: ")
+                .append(getMessageId())
+                .append("\t")
+                .append("Message status: ")
+                .append(getMessageStatus())
+                .toString();
+
+    }
+
     public int getMaxRetries() {
         return maxRetries;
     }
-    
+
     public void setMaxRetries(int maxRetries) {
         this.maxRetries = maxRetries;
     }
-    
+
     public boolean shouldRetry() {
         return this.retryCount < this.maxRetries;
     }
-    
+
 }

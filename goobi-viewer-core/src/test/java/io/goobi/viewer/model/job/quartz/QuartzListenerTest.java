@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.quartz.SchedulerException;
+
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.Configuration;
@@ -62,7 +64,7 @@ class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         super.setUp();
         this.dao = DataManager.getInstance().getDao();
         this.config = DataManager.getInstance().getConfiguration();
-        ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));        
+        ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));   
         MessageQueueManager tempBroker = new MessageQueueManager(activeMQConfig, dao);
         broker = Mockito.spy(tempBroker);
         listener = new QuartzListener(dao, config, broker);

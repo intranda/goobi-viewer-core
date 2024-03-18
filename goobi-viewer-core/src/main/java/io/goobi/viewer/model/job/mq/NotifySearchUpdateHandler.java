@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
@@ -40,7 +41,7 @@ public class NotifySearchUpdateHandler implements MessageHandler<MessageStatus> 
     private static final Logger logger = LogManager.getLogger(NotifySearchUpdateHandler.class);
 
     @Override
-    public MessageStatus call(ViewerMessage ticket) {
+    public MessageStatus call(ViewerMessage ticket, MessageQueueManager queueManager) {
         try {
             new SearchHitsNotifier().sendNewHitsNotifications();
         } catch (DAOException | PresentationException | IndexUnreachableException | ViewerConfigurationException e) {

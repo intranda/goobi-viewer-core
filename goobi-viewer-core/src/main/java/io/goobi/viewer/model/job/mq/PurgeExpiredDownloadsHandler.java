@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
@@ -38,7 +39,7 @@ public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatu
     private static final Logger logger = LogManager.getLogger(PurgeExpiredDownloadsHandler.class);
 
     @Override
-    public MessageStatus call(ViewerMessage message) {
+    public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
         int count = 0;
         try {
             for (DownloadTicket ticket : DataManager.getInstance()

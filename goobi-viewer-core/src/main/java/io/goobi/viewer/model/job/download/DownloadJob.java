@@ -61,8 +61,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -181,116 +179,6 @@ public abstract class DownloadJob implements Serializable {
 
     /**
      * <p>
-     * checkDownload.
-     * </p>
-     *
-     * @param type For now just 'pdf'.
-     * @param email Optional e-mail address to be notified.
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param downloadIdentifier Identifier has (Construct via DownloadJob.generateDownloadJobId()).
-     * @param ttl Number of ms before the job expires.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier,
-            long ttl)
-            throws DAOException, PresentationException, IndexUnreachableException {
-        if (type == null) {
-            throw new IllegalArgumentException("type may not be null");
-        }
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-        if (downloadIdentifier == null) {
-            throw new IllegalArgumentException("downloadIdentifier may not be null");
-        }
-        String controlIdentifier = DownloadJob.generateDownloadJobId(type, pi, logId);
-        if (!controlIdentifier.equals(downloadIdentifier)) {
-            throw new IllegalArgumentException("wrong downloadIdentifier");
-        }
-
-        logger.debug("Checking download of job {}", controlIdentifier);
-
-        try {
-            /*Get or create job*/
-            boolean newJob = false;
-            DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
-            if (downloadJob == null) {
-                logger.debug("Create new download job");
-                newJob = true;
-                switch (type) {
-                    case PDFDownloadJob.LOCAL_TYPE:
-                        downloadJob = new PDFDownloadJob(pi, logId, LocalDateTime.now(), ttl);
-                        break;
-                    case EPUBDownloadJob.LOCAL_TYPE:
-                        downloadJob = new EPUBDownloadJob(pi, logId, LocalDateTime.now(), ttl);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Uknown type: " + type);
-                }
-            } else {
-                // Update latest request timestamp of an existing job
-                logger.debug("Retrieve existing job");
-                downloadJob.setLastRequested(LocalDateTime.now());
-                downloadJob.updateStatus();
-            }
-
-            /*set observer email*/
-            String useEmail = null;
-            if (StringUtils.isNotBlank(email)) {
-                useEmail = email.trim().toLowerCase();
-            }
-            if (StringUtils.isNotBlank(useEmail)) {
-                downloadJob.getObservers().add(useEmail);
-            }
-            if (downloadJob.status.equals(JobStatus.WAITING)) {
-                //keep waiting
-            } else if (downloadJob.getFile() != null && downloadJob.getFile().toFile().exists()) {
-                //not waiting and file exists -> file has been created
-                downloadJob.setStatus(JobStatus.READY);
-            } else {
-                //not waiting but file doesn't exist -> trigger creation
-                logger.debug("Triggering {} creation", downloadJob.getType());
-                try {
-                    downloadJob.triggerCreation();
-                    downloadJob.setStatus(JobStatus.WAITING);
-                } catch (DownloadException e) {
-                    downloadJob.setStatus(JobStatus.ERROR);
-                    downloadJob.setMessage(e.getMessage());
-                }
-            }
-
-            /*Add or update job in database*/
-            boolean updated = false;
-            if (newJob) {
-                DataManager.getInstance().getDao().addDownloadJob(downloadJob);
-            }
-            updated = DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
-            if (updated) {
-                return downloadJob;
-            }
-            return null;
-        } finally {
-            // Clean up expired jobs AFTER updating the one in use
-            DownloadJobTools.cleanupExpiredDownloads();
-        }
-    }
-
-    /**
-     * <p>
-     * triggerCreation.
-     * </p>
-     *
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException;
-
-    /**
-     * <p>
      * ocrFolderExists.
      * </p>
      *
@@ -369,15 +257,6 @@ public abstract class DownloadJob implements Serializable {
      */
     @JsonIgnore
     public abstract String getDisplayName();
-
-    /**
-     * <p>
-     * getQueuePosition.
-     * </p>
-     *
-     * @return a int.
-     */
-    public abstract int getQueuePosition();
 
     /**
      * <p>

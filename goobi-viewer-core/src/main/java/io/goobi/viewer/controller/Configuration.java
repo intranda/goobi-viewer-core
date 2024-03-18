@@ -30,6 +30,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,6 +43,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.faces.model.SelectItem;
@@ -1405,7 +1409,6 @@ public class Configuration extends AbstractConfiguration {
         return urlString;
     }
 
-    
     /**
      * <p>
      * getRestApiUrl.
@@ -3515,9 +3518,27 @@ public class Configuration extends AbstractConfiguration {
                 return getLocalString("pdf.downloadFolder", "/opt/digiverso/viewer/pdf_download");
             case "epub":
                 return getLocalString("epub.downloadFolder", "/opt/digiverso/viewer/epub_download");
+            case "resource":
+                return getLocalString("externalResource.downloadFolder", "/opt/digiverso/viewer/resource_download");
             default:
                 return "";
 
+        }
+    }
+
+    public List<String> getExternalResourceUrlTemplates() {
+        return getLocalList("externalResource.urls.template", Collections.emptyList());
+    }
+
+    public Duration getExternalResourceTimeBeforeDeletion() {
+        int amount = getLocalInt("externalResource.deleteAfter.value", 1);
+        String unitString = getLocalString("externalResource.deleteAfter.unit", ChronoUnit.DAYS.name());
+        try {
+            ChronoUnit unit = ChronoUnit.valueOf(unitString.toUpperCase());
+            return Duration.of(amount, unit);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Could not read temporal unit from string '{}' in config field 'externalResource.deleteAfter.unit'. Assuming days");
+            return Duration.of(amount, ChronoUnit.DAYS);
         }
     }
 
@@ -4116,7 +4137,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
-    
+
     /**
      * <p>
      * isSolrUseHttp2.
@@ -5978,16 +5999,18 @@ public class Configuration extends AbstractConfiguration {
     public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
-    
+
     public boolean isDeveloperPageActive() {
         return getLocalBoolean("deveoper[@enabled]", false);
     }
-    
+
     public String getDeveloperScriptPath(String purpose) {
         List<HierarchicalConfiguration<ImmutableNode>> scriptNodes = getLocalConfigurationsAt("developer.script");
         return scriptNodes.stream()
                 .filter(node -> node.getString("[@purpose]", "").equals(purpose))
-                .map(node -> node.getString(".", "")).findAny().orElse("");
+                .map(node -> node.getString(".", ""))
+                .findAny()
+                .orElse("");
     }
 
     /**
@@ -6004,12 +6027,13 @@ public class Configuration extends AbstractConfiguration {
         String path = String.format("viewer.formats.%s.%s", type, locale.getLanguage());
         return Optional.ofNullable(getLocalString(path, null));
     }
-    
+
     public String getThemePullScriptPath() {
         return getLocalString("developer.scripts.pullTheme", "{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../");
     }
-    
+
     public String getCreateDeveloperPackageScriptPath() {
-        return getLocalString("developer.scripts.createDeveloperPackage", "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
+        return getLocalString("developer.scripts.createDeveloperPackage",
+                "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
     }
 }

@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
@@ -49,7 +50,7 @@ public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
     }
 
     @Override
-    public MessageStatus call(ViewerMessage ticket) {
+    public MessageStatus call(ViewerMessage ticket, MessageQueueManager queueManager) {
         try {
             PersistentStorageBean applicationBean = BeanUtils.getPersistentStorageBean();
             IDAO dao = DataManager.getInstance().getDao();

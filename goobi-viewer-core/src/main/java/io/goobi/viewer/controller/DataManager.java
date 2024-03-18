@@ -67,6 +67,8 @@ public final class DataManager {
 
     private static final Object LOCK = new Object();
 
+    private static final int THREAD_POOL_SIZE = 10;
+
     private static DataManager instance = null;
 
     private final List<IModule> modules = new ArrayList<>();
@@ -112,6 +114,8 @@ public final class DataManager {
     private SecurityManager securityManager = null;
 
     private UsageStatisticsRecorder usageStatisticsRecorder = null;
+
+    private ThreadPoolManager threadPoolManager = null;
 
     /**
      * <p>
@@ -599,4 +603,12 @@ public final class DataManager {
     public void setUsageStatisticsRecorder(UsageStatisticsRecorder usageStatisticsRecorder) {
         this.usageStatisticsRecorder = usageStatisticsRecorder;
     }
+
+    public synchronized ThreadPoolManager getThreadPoolManager() {
+        if (threadPoolManager == null) {
+            this.threadPoolManager = new ThreadPoolManager(THREAD_POOL_SIZE);
+        }
+        return threadPoolManager;
+    }
+
 }
