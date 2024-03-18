@@ -104,11 +104,11 @@ public abstract class AbstractPageLoader implements IPageLoader {
 
     public static AbstractPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad)
             throws IndexUnreachableException, PresentationException, DAOException {
-        if (!pageNosToLoad.isEmpty()) {
+        if (pageNosToLoad.isEmpty()) {
             return new EmptyPageLoader(topStructElement);
         }
         int numPages = topStructElement.getNumPages();
-        if (pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
+        if (!pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
             return new EagerPageLoader(topStructElement);
         }
         logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
