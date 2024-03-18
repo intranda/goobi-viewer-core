@@ -13,7 +13,7 @@
 
 	<composite:implementation>
 		<ui:fragment
-			rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
+			rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group and (!activeDocumentBean.viewManager.bornDigital || activeDocumentBean.viewManager.displayContentDownloadMenu)}">
 			<div id="widgetDownloads" class="widget widget-downloads">
 
 				<div class="widget-downloads__topbar">
