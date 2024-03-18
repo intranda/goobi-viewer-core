@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,12 +33,10 @@ import java.util.Map.Entry;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import de.intranda.api.iiif.presentation.v3.IPresentationModelElement3;
 import io.goobi.viewer.api.rest.model.statistics.usage.UsageStatisticsInformation;
 import io.goobi.viewer.api.rest.v1.statistics.usage.UsageStatisticsResource;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -84,7 +82,7 @@ public class StatisticsSummary {
      * @param includedIdentifiers A list of record identifiers for which to count the requests. If empty, all requests will be counted
      */
     public StatisticsSummary(DailySessionUsageStatistics dailyStats, List<String> includedIdentifiers) {
-        Map<RequestType, RequestTypeSummary> tempTypes = new HashMap<>();
+        Map<RequestType, RequestTypeSummary> tempTypes = new EnumMap<>(RequestType.class);
         for (RequestType type : RequestType.getUsedValues()) {
             long total = dailyStats.getTotalRequestCount(type, includedIdentifiers);
             long unique = dailyStats.getUniqueRequestCount(type, includedIdentifiers);
@@ -99,7 +97,7 @@ public class StatisticsSummary {
      * @return an empty {@link StatisticsSummary}
      */
     public static StatisticsSummary empty() {
-        Map<RequestType, RequestTypeSummary> types = new HashMap<>();
+        Map<RequestType, RequestTypeSummary> types = new EnumMap<>(RequestType.class);
         for (RequestType type : RequestType.getUsedValues()) {
             types.put(type, new RequestTypeSummary(0, 0));
         }
@@ -122,7 +120,7 @@ public class StatisticsSummary {
      * @return the sum of {@link SummaryStatistics}
      */
     public StatisticsSummary add(StatisticsSummary other) {
-        Map<RequestType, RequestTypeSummary> combinedTypes = new HashMap<>();
+        Map<RequestType, RequestTypeSummary> combinedTypes = new EnumMap<>(RequestType.class);
         if (other.getTotalRequests() == 0) {
             return new StatisticsSummary(this.getTypes());
         }
@@ -135,8 +133,7 @@ public class StatisticsSummary {
             LocalDate endDate = mine.getEndDate().isAfter(others.getEndDate()) ? mine.getEndDate() : others.getEndDate();
             combinedTypes.put(type, new RequestTypeSummary(total, unique, startDate, endDate));
         }
-        StatisticsSummary combined = new StatisticsSummary(combinedTypes);
-        return combined;
+        return new StatisticsSummary(combinedTypes);
     }
 
     /**
@@ -171,7 +168,7 @@ public class StatisticsSummary {
      * Get the last date for which requests have been recorded
      * 
      * @param types the {@link RequestType} to check
-     * @return
+     * @return {@link LocalDate}
      */
     public LocalDate getLastRecordedDate(RequestType... types) {
         return this.types.entrySet()
@@ -212,13 +209,18 @@ public class StatisticsSummary {
         return sb.toString();
     }
 
-    private String getAsString(LocalDate start, LocalDate end, DateTimeFormatter format) {
+    /**
+     * 
+     * @param start
+     * @param end
+     * @param format
+     * @return Formatted date range
+     */
+    private static String getAsString(LocalDate start, LocalDate end, DateTimeFormatter format) {
         if (end.isAfter(start)) {
-            String timeString = format.format(start) + " - " + format.format(end);
-            return timeString;
-        } else {
-            return format.format(start);
+            return format.format(start) + " - " + format.format(end);
         }
+        return format.format(start);
     }
 
     public String calculateStartDate() {

@@ -72,12 +72,12 @@ public class CMSSingleRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @param o
+     * @param source
      */
     public CMSSingleRecordNote(CMSRecordNote source) {
         super(source);
-        if (source instanceof CMSSingleRecordNote) {
-            this.recordPi = ((CMSSingleRecordNote) source).recordPi;
+        if (source instanceof CMSSingleRecordNote note) {
+            this.recordPi = note.recordPi;
             this.recordTitle = new TranslatedText(((CMSSingleRecordNote) source).recordTitle);
         }
     }
@@ -132,9 +132,9 @@ public class CMSSingleRecordNote extends CMSRecordNote {
             return getNoteTitle().getValues()
                     .stream()
                     .map(ValuePair::getValue)
-                    .anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase())) ||
-                    getRecordPi().toLowerCase().contains(filter.toLowerCase()) ||
-                    getRecordTitle().getValues()
+                    .anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()))
+                    || getRecordPi().toLowerCase().contains(filter.toLowerCase())
+                    || getRecordTitle().getValues()
                             .stream()
                             .map(ValuePair::getValue)
                             .anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()));

@@ -380,6 +380,13 @@ public class Metadata implements Serializable {
      */
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String paramLabel, String url, Map<String, String> options,
             String groupType, Locale locale) {
+        setParamValue(valueIndex, paramIndex, inValues, new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap()),
+                paramLabel, url, options, groupType, locale);
+    }
+
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, RelationshipMetadataContainer relatedMetadata, String paramLabel,
+            String url, Map<String, String> options,
+            String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label); //NOSONAR Debug
         if (inValues == null || inValues.isEmpty()) {
             return;
@@ -414,6 +421,9 @@ public class Metadata implements Serializable {
             }
             String value = val.trim();
             switch (param.getType()) {
+                case RELATEDFIELD:
+                    value = relatedMetadata.getMetadataValue(this.label,
+                            RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX + param.getKey(), locale);
                 case WIKIFIELD:
                 case WIKIPERSONFIELD:
                     if (value.contains(",")) {
@@ -900,6 +910,13 @@ public class Metadata implements Serializable {
             if (groupedMdList == null || groupedMdList.isEmpty()) {
                 return false;
             }
+            /**
+             * Load data of related documents if any params are of type "related". Otherwise generate an empty RelationshipMetadataContainer
+             */
+            RelationshipMetadataContainer relatedDocuments = new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap());
+            if (hasRelationshipMetadata()) {
+                relatedDocuments = RelationshipMetadataContainer.loadRelationships(new ComplexMetadataContainer(groupedMdList));
+            }
             int count = 0;
             for (SolrDocument doc : groupedMdList) {
                 String metadataDocIddoc = null;
@@ -950,13 +967,14 @@ public class Metadata implements Serializable {
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue(FIELD_NORM_TYPE) != null) {
                             options.put(FIELD_NORM_TYPE, SolrTools.getSingleFieldStringValue(doc, FIELD_NORM_TYPE));
                         }
-                        setParamValue(count, i, paramValues, param.getKey(), null, options, groupType, locale);
+                        setParamValue(count, i, paramValues, relatedDocuments, param.getKey(), null, options, groupType, locale);
                     } else if (param.getDefaultValue() != null) {
                         logger.debug("No value found for {}, using default value", param.getKey());
-                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType, locale);
+                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), relatedDocuments, param.getKey(), null, null,
+                                groupType, locale);
                         found = true;
                     } else {
-                        setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
+                        setParamValue(count, i, Collections.singletonList(""), relatedDocuments, null, null, null, groupType, locale);
                     }
                 }
                 // Set value IDDOC
@@ -981,6 +999,10 @@ public class Metadata implements Serializable {
         }
 
         return found;
+    }
+
+    private boolean hasRelationshipMetadata() {
+        return this.params.stream().map(param -> param.getType()).anyMatch(type -> type == MetadataParameterType.RELATEDFIELD);
     }
 
     /**

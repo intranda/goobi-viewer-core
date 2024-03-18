@@ -103,7 +103,7 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
                     .getIIIFImageUrl(baseUri, RegionRequest.FULL, scale, new Rotation(rotation), Colortype.DEFAULT,
                             ImageFileFormat.getImageFileFormatFromFileExtension(format));
             response.sendRedirect(uri);
-        } catch(IllegalRequestException e) {
+        } catch (IllegalRequestException e) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Size parameter must be a number, but is: " + widthString);
             } catch (IOException e1) {
@@ -121,13 +121,13 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
     public Scale parseScale(String widthString) throws IllegalRequestException, ServiceNotImplementedException {
         try {            
             Scale scale;
-            if(StringUtils.isNumeric(widthString)) {
+            if (StringUtils.isNumeric(widthString)) {
                 scale = new Scale.ScaleToWidth(Integer.parseInt(widthString));
             } else {
                 scale = Scale.getScaleMethod(widthString);
             }
             return scale;
-        } catch(NumberFormatException | NullPointerException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             throw new IllegalRequestException(e);
         }
     }

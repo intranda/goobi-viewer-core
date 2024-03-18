@@ -316,8 +316,8 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             PersistentCMSComponent other = (PersistentCMSComponent) obj;
-            return this.hashCode() == other.hashCode() &&
-                    Objects.equals(this.order, other.order);
+            return this.hashCode() == other.hashCode()
+                    && Objects.equals(this.order, other.order);
         } else {
             return false;
         }

@@ -64,7 +64,8 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
     }
 
     /**
-     *
+     * @param o1
+     * @param o2
      * @should compare correctly
      * @should use sort term if provided
      * @should use translated term if provided
@@ -110,17 +111,18 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
 
     /**
      *
-     * @param s String to normalize
+     * @param str String to normalize
      * @param ignoreChars Optional string containing leading characters to remove from the string
      * @return Cleaned-up string for comparison
      * @should use ignoreChars if provided
      * @should remove first char if non alphanum if ignoreChars not provided
      */
-    public static String normalizeString(String s, String ignoreChars) {
-        if (s == null) {
+    public static String normalizeString(final String str, String ignoreChars) {
+        if (str == null) {
             return null;
         }
 
+        String s = str;
         if (StringUtils.isNotEmpty(ignoreChars)) {
             // Remove leading chars if they are among ignored chars
             while (s.length() > 1 && ignoreChars.contains(s.substring(0, 1))) {

@@ -71,7 +71,8 @@ public class MetadataParameter implements Serializable {
         MILLISFIELD("millisfield"),
         NORMDATAURI("normdatauri"),
         NORMDATASEARCH("normdatasearch"),
-        CITEPROC("citeproc");
+        CITEPROC("citeproc"),
+        RELATEDFIELD("related");
 
         private static final Logger logger = LogManager.getLogger(MetadataParameterType.class);
 

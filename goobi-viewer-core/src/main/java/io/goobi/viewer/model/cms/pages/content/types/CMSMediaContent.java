@@ -214,7 +214,6 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
      * getMediaName.
      * </p>
      *
-     * @param contentId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
     public String getMediaName() {
@@ -227,7 +226,6 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
      * getMediaDescription.
      * </p>
      *
-     * @param contentId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
     public String getMediaDescription() {
@@ -240,7 +238,6 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
      * getMediaMetadata.
      * </p>
      *
-     * @param itemId a {@link java.lang.String} object.
      * @return The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no
      *         such item exists
      */
@@ -255,7 +252,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     @Override
     public String getData(Integer w, Integer h) {
         try {
-            return getUrl(Optional.ofNullable(w).map(Object::toString).orElse(null), Optional.ofNullable(h).map(i -> i.toString()).orElse(null));
+            return getUrl(Optional.ofNullable(w).map(Object::toString).orElse(null), Optional.ofNullable(h).map(Object::toString).orElse(null));
         } catch (UnsupportedEncodingException e) {
             logger.error("Error loading media item url for media item {}. Reason: {}", this.mediaItem, e.toString());
             return "";
@@ -266,23 +263,21 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     public boolean isEmpty() {
         return Optional.ofNullable(mediaItem).map(media -> StringUtils.isBlank(media.getFileName())).orElse(true);
     }
-    
+
     @Override
     public int hashCode() {
-        if(this.getId() == null) {
+        if (this.getId() == null) {
             return 0;
-        } else {            
-            return this.getId().intValue();
         }
+        return this.getId().intValue();
     }
-    
+
     @Override
     public boolean equals(Object arg0) {
-        if(arg0 != null && this.getClass().equals(arg0.getClass())) {            
-            return Objects.equals(this.getId(), ((CMSMediaContent)arg0).getId());
-        } else {
-            return false;
+        if (arg0 != null && this.getClass().equals(arg0.getClass())) {
+            return Objects.equals(this.getId(), ((CMSMediaContent) arg0).getId());
         }
+        return false;
     }
 
     @Override

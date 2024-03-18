@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -566,6 +565,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                         logger.error("Unable to add widget: Cannot load geomap id={}", displayWidget.getId());
                     }
                     break;
+                default:
+                    break;
             }
             if (element != null) {
                 this.sidebarElements.add(element);
@@ -772,7 +773,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public Long getPageSorting() {
         return pageSorting;
     }
-    
+
     public Long getPageSortingOrElse(long defaultOrder) {
         return Optional.ofNullable(this.getPageSorting()).orElse(defaultOrder);
     }
@@ -866,15 +867,16 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      *
      * @param persistentUrl the persistentUrl to set
      */
-    public void setPersistentUrl(String persistentUrl) {
-        persistentUrl = StringUtils.removeStart(persistentUrl, "/");
-        persistentUrl = StringUtils.removeEnd(persistentUrl, "/");
-        this.persistentUrl = persistentUrl.trim();
+    public void setPersistentUrl(final String persistentUrl) {
+        // TODO null check
+        String temp = StringUtils.removeStart(persistentUrl, "/");
+        temp = StringUtils.removeEnd(temp, "/");
+        this.persistentUrl = temp.trim();
     }
 
     public static class PageComparator implements Comparator<CMSPage> {
         //null values are high
-        NullComparator<Long> nullComparator = new NullComparator<>(true);
+        private NullComparator<Long> nullComparator = new NullComparator<>(true);
 
         @Override
         public int compare(CMSPage page1, CMSPage page2) {
@@ -1171,7 +1173,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
         List<CMSContent> contents = this.persistentComponents.stream()
                 .flatMap(p -> p.getContentItems().stream())
-                .collect(Collectors.toList());
+                .toList();
 
         List<File> ret = new ArrayList<>();
         for (CMSContent cmsContent : contents) {
@@ -1210,7 +1212,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .map(CMSContentItem::getContent)
                 .map(TranslatableCMSContent.class::cast)
                 .map(TranslatableCMSContent::getText)
-                .collect(Collectors.toList());
+                .toList();
 
         for (TranslatedText text : texts) {
             for (ValuePair pair : text.getValues()) {
@@ -1298,7 +1300,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public boolean isComponentsLoaded() {
         return this.cmsComponents.size() == this.persistentComponents.size();
     }
-    
+
     public List<CMSComponent> getComponents() {
         if (!this.isComponentsLoaded()) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
@@ -1351,9 +1353,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Override
     public boolean isComplete(Locale locale) {
         Locale defaultLocale = IPolyglott.getDefaultLocale();
-        return this.title.isComplete(locale, defaultLocale, true) &&
-                this.menuTitle.isComplete(locale, defaultLocale, false) &&
-                this.getPersistentComponents()
+        return this.title.isComplete(locale, defaultLocale, true)
+                && this.menuTitle.isComplete(locale, defaultLocale, false)
+                && this.getPersistentComponents()
                         .stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
                         .allMatch(content -> content.getText().isComplete(locale, defaultLocale, content.isRequired()));
@@ -1361,8 +1363,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     @Override
     public boolean isValid(Locale locale) {
-        return this.title.isValid(locale) &&
-                this.getPersistentComponents()
+        return this.title.isValid(locale)
+                && this.getPersistentComponents()
                         .stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
                         .filter(TranslatableCMSContent::isRequired)
@@ -1441,7 +1443,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public boolean isFirstComponent(CMSComponent component) {
-        return this.getComponents().stream().filter(CMSComponent::isPageScope).collect(Collectors.toList()).indexOf(component) == 0;
+        return this.getComponents().stream().filter(CMSComponent::isPageScope).toList().indexOf(component) == 0;
     }
 
     public boolean isLastComponent(CMSComponent component) {
@@ -1469,7 +1471,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
-    
+
     public List<CMSContentItem> getPreviewItems(String itemId) {
         return this.getComponents()
                 .stream()
@@ -1483,7 +1485,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public CMSContentItem getPreviewItem(String itemId) {
         return getPreviewItems(itemId).stream().findFirst().orElse(null);
     }
-    
+
     public List<CMSComponent> getPreviewComponents() {
         return this.getComponents()
                 .stream()
@@ -1510,7 +1512,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             } else {
                 Map<String, List<CMSContentItem>> map = new LinkedHashMap<>();
                 for (CMSContentItem item : cmsComponent.getContentItems()) {
-                    List<CMSContentItem> items = map.merge(item.getHtmlGroup(), List.of(item), ListUtils::union);
+                    map.merge(item.getHtmlGroup(), List.of(item), ListUtils::union);
                 }
 
                 for (Entry<String, List<CMSContentItem>> entry : map.entrySet()) {

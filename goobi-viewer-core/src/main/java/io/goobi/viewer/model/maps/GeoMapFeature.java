@@ -228,8 +228,7 @@ public class GeoMapFeature {
     public int hashCode() {
         int jsonCode = this.json == null ? "".hashCode() : this.json.hashCode();
         int titleCode = this.title == null ? "".hashCode() : getIndentifyingString(this.title).hashCode();
-        int linkCode = this.link == null ? "".hashCode() : this.link.hashCode();
-        return jsonCode + 31 * (titleCode + 31 * linkCode);
+        return jsonCode + 31 * (titleCode);
     }
 
     /* (non-Javadoc)
@@ -242,9 +241,8 @@ public class GeoMapFeature {
         }
         if (obj.getClass().equals(this.getClass())) {
             GeoMapFeature other = (GeoMapFeature) obj;
-            return Objects.equals(this.json, other.json) &&
-                    Objects.equals(getIndentifyingString(this.title), getIndentifyingString(other.title)) &&
-                    Objects.equals(this.link, other.link);
+            return Objects.equals(this.json, other.json)
+                    && Objects.equals(getIndentifyingString(this.title), getIndentifyingString(other.title));
         }
 
         return false;

@@ -31,7 +31,7 @@ import java.text.DecimalFormat;
 public abstract class AbstractCalendarItem implements ICalendarItem {
 
     /** Constant <code>dfTwoDigitInteger</code> */
-    public static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
+    private static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
 
     protected String name;
     protected int value;

@@ -65,11 +65,7 @@ public class BrowseTerm implements Serializable {
         this.translations = translations;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
+
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -79,11 +75,7 @@ public class BrowseTerm implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {

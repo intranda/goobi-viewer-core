@@ -31,21 +31,21 @@ public interface WidgetContentType {
     /**
      * Get a message key providing a label for this widget
      * 
-     * @return
+     * @return {@link String}
      */
     public String getLabel();
 
     /**
      * The filename of the xhtml component for this widget
      * 
-     * @return
+     * @return {@link String}
      */
     public String getFilename();
 
     /**
      * The enum value of this type, taken from the classes implementing this interface
      * 
-     * @return
+     * @return {@link String}
      */
     public String getName();
 
@@ -77,7 +77,7 @@ public interface WidgetContentType {
      * {@link CustomWidgetType} have the generation type {@link WidgetGenerationType.CUSTOM}
      * 
      * @param type
-     * @return
+     * @return {@link WidgetGenerationType}
      */
     public static WidgetGenerationType getGenerationType(WidgetContentType type) {
         switch (type.getClass().getSimpleName()) {

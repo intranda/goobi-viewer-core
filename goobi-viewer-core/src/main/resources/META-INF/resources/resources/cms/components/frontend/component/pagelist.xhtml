@@ -13,7 +13,6 @@
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
 		<composite:attribute name="random" required="false" default="false" type="java.lang.Boolean"/>
-		<composite:attribute name="paged" required="false" default="false" type="java.lang.Boolean" />
 	</composite:interface>
 
 	<composite:implementation>
@@ -37,7 +36,7 @@
 
 				<div class="tpl-news-overview__list">
 					<div class="row">
-						<ui:repeat var="subPage" value="#{cc.attrs.component.firstContentItem.content.getNestedPages(cc.attrs.random, cc.attrs.paged, cmsBean.templateManager)}">
+						<ui:repeat var="subPage" value="#{cc.attrs.component.firstContentItem.content.getNestedPages(cc.attrs.random, cmsBean.templateManager)}">
 							<div class="tpl-news-overview__list-item clearfix">
 							
 								<ui:repeat var="previewItem" value="#{subPage.previewItems}">
@@ -72,10 +71,6 @@
 						</ui:repeat>
 						<!-- PAGINATOR -->
 						
-						<viewerComponent:simplePaginator
-							itemCount="#{cc.attrs.component.firstContentItem.content.nestedPagesCount}"
-							itemActive="#{cc.attrs.component.owningPage.listPage}"
-							urlPrefix="#{cmsBean.getUrl(cc.attrs.component.owningPage)}" />
 					</div>
 				</div>
 

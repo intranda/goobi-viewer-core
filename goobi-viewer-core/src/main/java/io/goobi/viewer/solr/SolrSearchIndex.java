@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +50,7 @@ import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
+import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.LukeRequest;
@@ -115,7 +117,7 @@ public class SolrSearchIndex {
      */
     public SolrSearchIndex(SolrClient client) {
         if (client == null) {
-            this.client = getNewHttpSolrClient();
+            this.client = getNewSolrClient();
         } else {
             this.client = client;
         }
@@ -125,40 +127,53 @@ public class SolrSearchIndex {
      * Checks whether the server's configured URL matches that in the config file. If not, a new server instance is created.
      */
     public void checkReloadNeeded() {
-        if (!(client instanceof HttpSolrClient)) {
+        if (!(client instanceof Http2SolrClient || client instanceof HttpSolrClient)) {
             return;
         }
 
-        HttpSolrClient httpSolrClient = (HttpSolrClient) client;
-        if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(httpSolrClient.getBaseURL())) {
+        String baseUrl = client instanceof Http2SolrClient http2Client ? http2Client.getBaseURL() : ((HttpSolrClient) client).getBaseURL();
+        if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(baseUrl)) {
             // Re-init Solr client if the configured Solr URL has been changed
             logger.info("Solr URL has changed, re-initializing Solr client...");
             synchronized (this) {
                 solrFields = null; // Reset available Solr field name list
                 try {
-                    httpSolrClient.close();
+                    client.close();
                 } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error(e.getMessage());
                 }
-                client = getNewHttpSolrClient();
+                client = getNewSolrClient();
             }
         } else if (lastPing == 0 || System.currentTimeMillis() - lastPing > 60000) {
             // Check whether the HTTP connection pool of the Solr client has been shut down and re-init
             try {
-                httpSolrClient.ping();
+                client.ping();
             } catch (Exception e) {
                 logger.warn("HTTP client was closed, re-initializing Sorl client...");
                 synchronized (this) {
                     try {
-                        httpSolrClient.close();
+                        client.close();
                     } catch (IOException e1) {
                         logger.error(e1.getMessage());
                     }
-                    client = getNewHttpSolrClient();
+                    client = getNewSolrClient();
                 }
             }
             lastPing = System.currentTimeMillis();
         }
+    }
+
+    /**
+     * 
+     * @return New {@link SolrClient}
+     */
+    public static SolrClient getNewSolrClient() {
+        if (DataManager.getInstance().getConfiguration().isSolrUseHttp2()) {
+            return getNewHttp2SolrClient();
+        }
+
+        logger.trace("Using HTTP1 compatiblity mode.");
+        return getNewHttpSolrClient();
     }
 
     /**
@@ -167,8 +182,10 @@ public class SolrSearchIndex {
      * </p>
      *
      * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
+     * @deprecated Use getNewHttp2SolrClient(), if Solr 9 is available
      */
-    public static HttpSolrClient getNewHttpSolrClient() {
+    @Deprecated(since = "24.01")
+    static HttpSolrClient getNewHttpSolrClient() {
         HttpSolrClient client = new HttpSolrClient.Builder()
                 .withBaseSolrUrl(DataManager.getInstance().getConfiguration().getSolrUrl())
                 .withSocketTimeout(TIMEOUT_SO)
@@ -186,6 +203,23 @@ public class SolrSearchIndex {
         }
 
         return client;
+    }
+
+    /**
+     * <p>
+     * getNewHttp2SolrClient.
+     * </p>
+     *
+     * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
+     */
+    static Http2SolrClient getNewHttp2SolrClient() {
+        return new Http2SolrClient.Builder(DataManager.getInstance().getConfiguration().getSolrUrl())
+                .withIdleTimeout(TIMEOUT_SO, TimeUnit.MILLISECONDS)
+                .withConnectionTimeout(TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
+                .withFollowRedirects(false)
+                .withRequestWriter(new BinaryRequestWriter())
+                // .allowCompression(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled())
+                .build();
     }
 
     /**
@@ -887,7 +921,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
-        logger.trace("searchFacetsAndStatistics: {}", query);
+        // logger.trace("searchFacetsAndStatistics: {}", query);
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, null, getFieldStatistics);
     }
 
@@ -907,26 +941,8 @@ public class SolrSearchIndex {
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             Map<String, String> params, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
-        logger.trace("searchFacetsAndStatistics: {}", query);
+        // logger.trace("searchFacetsAndStatistics: {}", query);
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, params, getFieldStatistics);
-    }
-
-    /**
-     *
-     * @return true if ping successful; false otherwise
-     */
-    public boolean pingSolrIndex() {
-        if (client != null) {
-            try {
-                SolrPingResponse ping = client.ping();
-                return ping.getStatus() < 400;
-            } catch (SolrException | SolrServerException | IOException e) {
-                logger.trace("Ping to solr failed: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
-                return false;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -948,7 +964,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             String facetPrefix, Map<String, String> params, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
-        logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Sometimes needed for debugging
+        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Sometimes needed for debugging
         SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query));
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -1336,11 +1352,29 @@ public class SolrSearchIndex {
      * @return Base URL of the active Solr server
      */
     public String getSolrServerUrl() {
-        if (client instanceof HttpSolrClient) {
-            return ((HttpSolrClient) client).getBaseURL();
+        if (client instanceof Http2SolrClient) {
+            return ((Http2SolrClient) client).getBaseURL();
         }
 
         return null;
+    }
+
+    /**
+     *
+     * @return true if ping successful; false otherwise
+     */
+    public boolean pingSolrIndex() {
+        if (client != null) {
+            try {
+                SolrPingResponse ping = client.ping();
+                return ping.getStatus() < 400;
+            } catch (SolrException | SolrServerException | IOException e) {
+                logger.trace("Ping to solr failed: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**

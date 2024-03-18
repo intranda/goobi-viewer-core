@@ -69,7 +69,7 @@ public class LocalUserAvatar implements UserAvatar {
             String format = UserAvatarResource.getAvatarFileSuffix(userId);
             String displayFormat = format;
             ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(format);
-            if(fileFormat != null) {
+            if (fileFormat != null) {
                 displayFormat = ImageFileFormat.getMatchingTargetFormat(fileFormat).getFileExtension();                
             }
             

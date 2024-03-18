@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -260,9 +259,11 @@ public class MetadataContainer {
             Predicate<String> childDocFieldNameFilter) {
         Map<String, List<IMetadataValue>> translatedMetadata = SolrTools.getTranslatedMetadata(doc, mainDocFieldNameFilter::test);
         MetadataContainer entity = new MetadataContainer(
-                SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC),
-                Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL))
-                        .orElse(Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_VALUE)).orElse("")));
+                SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), "");
+        //        MetadataContainer entity = new MetadataContainer(
+        //                SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC),
+        //                Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL))
+        //                        .orElse(Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_VALUE)).orElse("")));
 
         Set<String> childLabels = children.stream()
                 .map(c -> SolrTools.getSingleFieldStringValue(c, SolrConstants.LABEL))
@@ -278,7 +279,7 @@ public class MetadataContainer {
                 .map(mdDoc -> mdDoc.getMetadata().entrySet())
                 .flatMap(Set::stream)
                 .filter(e -> childDocFieldNameFilter.test(e.getKey()))
-                .collect(Collectors.toList());
+                .toList();
         allChildDocValues.forEach(e -> entity.addAll(e.getKey(), e.getValue(), true));
         return entity;
     }
@@ -300,7 +301,6 @@ public class MetadataContainer {
      * doc
      * 
      * @param doc The main DOCSTRUCT document
-     * @param fieldNameFilter A function which should return true for all metadata field names to be included in the return value
      * @return a {@link MetadataContainer}
      */
     public static MetadataContainer createMetadataEntity(SolrDocument doc) {

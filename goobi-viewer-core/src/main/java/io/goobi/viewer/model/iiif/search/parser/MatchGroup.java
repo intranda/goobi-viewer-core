@@ -23,13 +23,40 @@ package io.goobi.viewer.model.iiif.search.parser;
 
 public class MatchGroup {
 
-    public final int start;
-    public final int end;
-    public final String text;
+    private final int start;
+    private final int end;
+    private final String text;
 
+    /**
+     * 
+     * @param start
+     * @param end
+     * @param text
+     */
     public MatchGroup(int start, int end, String text) {
         this.start = start;
         this.end = end;
         this.text = text;
+    }
+
+    /**
+     * @return the start
+     */
+    public int getStart() {
+        return start;
+    }
+
+    /**
+     * @return the end
+     */
+    public int getEnd() {
+        return end;
+    }
+
+    /**
+     * @return the text
+     */
+    public String getText() {
+        return text;
     }
 }

@@ -45,29 +45,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapKeyColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.jboss.weld.exceptions.IllegalArgumentException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -95,6 +79,21 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  *
@@ -184,7 +183,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
             DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1") + "crowdsourcing/campaigns/{id}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/?$";
 
-    private static final Random random = new SecureRandom();
+    private static final Random RANDOM = new SecureRandom();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -366,18 +365,23 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Campaign other = (Campaign) obj;
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         return true;
     }
 
@@ -408,7 +412,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
             }
             return getTotalPageCount();
         } catch (PresentationException e) {
-            logger.warn("Error getting number of records for campaign:" + e.toString());
+            logger.warn("Error getting number of records for campaign: {}", e.toString());
             return 0;
         }
     }
@@ -510,9 +514,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     public long getContributorCount() throws DAOException {
         Set<Long> userIds = new HashSet<>();
         if (StatisticMode.PAGE.equals(statisticMode)) {
-            for (String pi : statistics.keySet()) {
-                for (String key : statistics.get(pi).getPageStatistics().keySet()) {
-                    CampaignRecordPageStatistic pageStatistic = statistics.get(pi).getPageStatistics().get(key);
+            for (Entry<String, CampaignRecordStatistic> statisticsEntry : statistics.entrySet()) {
+                for (String key : statistics.get(statisticsEntry.getKey()).getPageStatistics().keySet()) {
+                    CampaignRecordPageStatistic pageStatistic = statisticsEntry.getValue().getPageStatistics().get(key);
                     for (User u : pageStatistic.getAnnotators()) {
                         userIds.add(u.getId());
                     }
@@ -522,11 +526,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
                 }
             }
         } else {
-            for (String pi : statistics.keySet()) {
-                for (User u : statistics.get(pi).getAnnotators()) {
+            for (Entry<String, CampaignRecordStatistic> entry : statistics.entrySet()) {
+                for (User u : entry.getValue().getAnnotators()) {
                     userIds.add(u.getId());
                 }
-                for (User u : statistics.get(pi).getReviewers()) {
+                for (User u : entry.getValue().getReviewers()) {
                     userIds.add(u.getId());
                 }
             }
@@ -541,16 +545,16 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      */
     public boolean isHasAnnotations() {
         if (StatisticMode.PAGE.equals(statisticMode)) {
-            for (String pi : statistics.keySet()) {
-                for (String key : statistics.get(pi).getPageStatistics().keySet()) {
-                    if (!statistics.get(pi).getPageStatistics().get(key).getAnnotators().isEmpty()) {
+            for (Entry<String, CampaignRecordStatistic> entry : statistics.entrySet()) {
+                for (String key : entry.getValue().getPageStatistics().keySet()) {
+                    if (!entry.getValue().getPageStatistics().get(key).getAnnotators().isEmpty()) {
                         return true;
                     }
                 }
             }
         } else {
-            for (String pi : statistics.keySet()) {
-                if (!statistics.get(pi).getAnnotators().isEmpty()) {
+            for (Entry<String, CampaignRecordStatistic> entry : statistics.entrySet()) {
+                if (!entry.getValue().getAnnotators().isEmpty()) {
                     return true;
                 }
             }
@@ -677,7 +681,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * @should return false if user not in group
      */
     public boolean isUserAllowedAction(User user, CrowdsourcingStatus status) throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("isUserAllowedAction: {}", status);
+        // logger.trace("isUserAllowedAction: {}", status); //NOSONAR Debug
         if (status == null) {
             return false;
         }
@@ -706,10 +710,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
                     return user != null && reviewerUserGroup.getMembersAndOwner().contains(user);
                 } else if (CampaignVisibility.PUBLIC.equals(visibility)) {
                     return true;
-                } else if (user == null) {
-                    return false;
                 } else {
-                    return true;
+                    return user != null;
                 }
             default:
                 return false;
@@ -719,7 +721,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      *
      * @param user User for whom to check access
-     * @return
+     * @return true if given {@link User} has permission to edit this {@link Campaign}; false otherwise
      * @throws DAOException
      * @should return false if user null
      * @should return true if user superuser
@@ -1054,7 +1056,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
 
     /**
      *
-     * @return
+     * @return {@link LocalDate}
      */
     public LocalDate getDateOnlyStart() {
         if (dateStart == null) {
@@ -1134,7 +1136,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
 
     /**
      *
-     * @return
+     * @return {@link LocalDate}
      */
     public LocalDate getDateOnlyEnd() {
         if (dateEnd == null) {
@@ -1372,6 +1374,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Return true if the campaign is ready for use. For this, the title in the default language must exists and there must be at least one question
      *
+     * @return a boolean
      */
     @JsonIgnore
     public boolean isReady() {
@@ -1408,8 +1411,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      */
     @Override
     public boolean isEmpty(Locale locale) {
-        return StringUtils.isBlank(getDescription(locale.getLanguage())) &&
-                StringUtils.isBlank(getTitle(locale.getLanguage()));
+        return StringUtils.isBlank(getDescription(locale.getLanguage()))
+                && StringUtils.isBlank(getTitle(locale.getLanguage()));
     }
 
     /**
@@ -1417,6 +1420,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      *
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
      * @param piToIgnore a {@link java.lang.String} object.
+     * @param user
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1427,19 +1431,19 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
                 .filter(result -> !result.equals(piToIgnore))
                 .filter(result -> isRecordStatus(result, status))
                 .filter(result -> isEligibleToEdit(result, status, user))
-                .collect(Collectors.toList());
+                .toList();
         if (pis.isEmpty()) {
             return "";
         }
-        String pi = pis.get(random.nextInt(pis.size()));
-        return pi;
+        return pis.get(RANDOM.nextInt(pis.size()));
     }
 
     /**
      * Get the targetIdentifier to a random PI from the Solr query result list.
      *
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
-     * @param piToIgnore a {@link java.lang.String} object.
+     * @param currentPi a {@link java.lang.String} object.
+     * @param user
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1448,7 +1452,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         List<String> piList = getSolrQueryResults().stream()
                 .filter(result -> isRecordStatus(result, status))
                 .filter(result -> isEligibleToEdit(result, status, user))
-                .collect(Collectors.toList());
+                .toList();
         int currentIndex = piList.indexOf(currentPi);
         if (piList.isEmpty()) {
             return "";
@@ -1463,7 +1467,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return
+     * @return the solrQueryResults
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -1474,11 +1478,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
             try {
                 SolrQueryValidator.getHitCount(solrQuery);
                 query += " +(" + solrQuery + ")";
-            } catch (SolrServerException e) {
-                logger.error(e.getMessage());
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-            } catch (RemoteSolrException e) {
+            } catch (IOException | RemoteSolrException | SolrServerException e) {
                 logger.error(e.getMessage());
             }
             this.solrQueryResults = DataManager.getInstance()
@@ -1587,14 +1587,14 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @param result
+     * @param pi
+     * @param status
      * @return true if record status for the given pi equals status; false otherwise. If no record
      */
     boolean isRecordStatus(String pi, CrowdsourcingStatus status) {
-        boolean ret = Optional.ofNullable(statistics.get(pi))
+        return Optional.ofNullable(statistics.get(pi))
                 .map(stat -> StatisticMode.RECORD.equals(this.statisticMode) ? status.equals(stat.getStatus()) : stat.containsPageStatus(status))
                 .orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
-        return ret;
     }
 
     /**
@@ -1618,7 +1618,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
 
     /**
      *
-     * @return
+     * @return true if this {@link Campaign} is limited to a {@link UserGroup}; false otherwise
      * @should return true if boolean true and userGroup not null
      * @should return false if boolean false
      * @should return false if userGroup null
@@ -1669,7 +1669,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * @param user
      */
     public void setRecordPageStatus(String pi, int page, CrowdsourcingStatus status, Optional<User> user) {
-        // logger.trace("setRecordPageStatus: {}/{}", pi, page); // Sonar considers this log msg a security issue, so leave it commented out when not needed
+        // logger.trace("setRecordPageStatus: {}/{}", pi, page); //NOSONAR Debug
         LocalDateTime now = LocalDateTime.now();
         CampaignRecordStatistic statistic = statistics.get(pi);
         if (statistic == null) {
@@ -1912,7 +1912,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return
+     * @return {@link String}
      */
     public String getAccessConditionValue() {
         return getTitle(IPolyglott.getDefaultLocale().getLanguage());

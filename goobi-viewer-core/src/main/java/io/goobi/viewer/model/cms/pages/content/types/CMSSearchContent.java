@@ -64,13 +64,16 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     @Column(name = "displayEmptySearchResults")
     private boolean displayEmptySearchResults = false;
-    
+
     @Column(name = "elements_per_page")
     private int elementsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
-    
+
     @Column(name = "view")
     private HitListView view = HitListView.DETAILS;
     
+    @Column(name = "sort_field", length = 40)
+    private String sortField = DataManager.getInstance().getConfiguration().getDefaultSortField("");
+
     @Column(name = "sort_field", length = 40)
     private String sortField = DataManager.getInstance().getConfiguration().getDefaultSortField("");
 
@@ -86,7 +89,8 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
         this.searchPrefix = orig.searchPrefix;
         this.displayEmptySearchResults = orig.displayEmptySearchResults;
         this.sortField = orig.sortField;
-        this.elementsPerPage = orig.elementsPerPage;
+        this.elementsPerPage =
+                orig.elementsPerPage < 1 ? DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue() : orig.elementsPerPage;
         this.view = orig.view;
     }
 
@@ -121,11 +125,10 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
         return search;
     }
 
-    
     public HitListView getView() {
         return view;
     }
-    
+
     public void setView(HitListView view) {
         this.view = view;
     }
@@ -157,7 +160,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {
                 searchBean.getFacets().resetSliderRange();
-                                
+
                 if (!component.getBooleanAttributeValue("useSearchGroups", true)) {
                     searchBean.setActiveResultGroup(SearchResultGroup.createDefaultGroup());
                 } else if (resetResults) {
@@ -167,7 +170,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
                     searchBean.resetSearchAction();
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
                 }
-                if(searchBean.getSearchSortingOption().isDefaultOption()) {                    
+                if (searchBean.getSearchSortingOption().isDefaultOption()) {
                     searchBean.setSortString(this.sortField);
                 }
                 searchBean.setHitsPerPage(this.elementsPerPage);
@@ -209,7 +212,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     /**
      * Alias for {@link #getSearch()}. Used in legacy templates
      * 
-     * @return
+     * @return {@link Functionality}
      */
     public Functionality getFunctionality() {
         return getSearch();
@@ -227,6 +230,22 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
         return sortField;
     }
     
+    public void setSortField(String sortField) {
+        this.sortField = sortField;
+    }
+
+    public int getElementsPerPage() {
+        return elementsPerPage;
+    }
+
+    public void setElementsPerPage(int elementsPerPage) {
+        this.elementsPerPage = elementsPerPage;
+    }
+
+    public String getSortField() {
+        return sortField;
+    }
+
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }

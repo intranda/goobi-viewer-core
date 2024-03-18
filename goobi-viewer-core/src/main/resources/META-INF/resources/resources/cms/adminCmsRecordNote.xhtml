@@ -345,6 +345,38 @@
 									</h:form>
 
 								</div>
+								
+								<!-- ADD CSS CLASS FOR THIS CMS PAGE -->
+								<div class="admin__default-block">
+									<h2>#{msg.cms_wrapperElementClass}</h2>
+
+									<div class="admin__form-help-text in mb-3">#{msg.cms__recordnote__css__help}</div>
+									<h:form>
+										<!-- AREA FOR AJAX REFRESH -->
+										<h:panelGroup id="cssClassGroup">
+											<!-- VALIDATION MESSAGE -->
+											<div class="cms-module__option-message">
+												<h:messages for="cssClass"
+													infoClass="cms-module__option-message-status success"
+													warnClass="cms-module__option-message-status warning"
+													errorClass="cms-module__option-message-status danger" />
+	
+												<div class="cms-module__option-message-mark">
+													<i class="fa fa-check" aria-hidden="true"></i> <i
+														class="fa fa-exclamation" aria-hidden="true"></i>
+												</div>
+											</div>
+	
+											<!-- INPUT TEXT -->
+											<h:inputText id="cssClass"
+												value="#{note.styleClass}"
+												styleClass="form-control"
+												pt:data-target="quickCSSInputField">
+												<f:ajax></f:ajax>
+												</h:inputText>
+										</h:panelGroup>
+									</h:form>
+								</div>
 
 								<!-- RECORD INFOS + DISPLAY LINK -->
 								<ui:fragment rendered="#{cmsRecordNoteEditBean.isSingleRecordNote()}">

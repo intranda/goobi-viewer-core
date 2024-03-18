@@ -12,7 +12,6 @@
 	<composite:interface>
 		<composite:attribute name="component" required="true" type="io.goobi.viewer.model.cms.pages.content.CMSComponent" />
 		<composite:attribute name="random" required="false" default="false" type="java.lang.Boolean"/>
-		<composite:attribute name="paged" required="false" default="true" type="java.lang.Boolean" />
 	</composite:interface>
 
     
@@ -41,7 +40,7 @@
                 <div class="tpl-news-overview__list">
                     <div class="row">
 
-                    	<ui:repeat var="subPage" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.random, cc.attrs.paged, cmsBean.templateManager)}">
+                    	<ui:repeat var="subPage" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.random, cmsBean.templateManager)}">
 							
 							<div class="tpl-news-overview__list-item clearfix">
 							
@@ -84,11 +83,6 @@
 							</div>
 							
 						</ui:repeat>
-                        <!-- PAGINATOR -->
-						<viewerComponent:simplePaginator 
-							itemCount="#{cc.attrs.component.getContentItem('list01').content.nestedPagesCount}" 
-							itemActive="#{cc.attrs.component.owningPage.listPage}"
-							urlPrefix="#{cmsBean.getUrl(cc.attrs.component.owningPage)}" />
                     </div>
                 </div>
 			</div>

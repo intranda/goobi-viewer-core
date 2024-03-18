@@ -612,10 +612,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * @throws DAOException
      */
     private AccessPermission isHasPrivilegeForRecord(String pi, String licenseType, String privilegeName,
-            Map<String, AccessPermission> alreadyCheckedPiMap)
+            final Map<String, AccessPermission> alreadyCheckedPiMap)
             throws PresentationException, IndexUnreachableException, DAOException {
         if (alreadyCheckedPiMap == null) {
-            alreadyCheckedPiMap = new HashMap<>();
+            throw new IllegalArgumentException("alreadyCheckedPiMap may not be null");
         }
         if (alreadyCheckedPiMap.containsKey(pi)) {
             return alreadyCheckedPiMap.get(pi);
@@ -1648,11 +1648,11 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                     uploadedFile.getInputStream(),
                     destFile,
                     StandardCopyOption.REPLACE_EXISTING);
-            if(!Files.exists(destFile)) {
+            if (!Files.exists(destFile)) {
                 throw new IOException("Uploaded file does not exist");
-            } else if(!isValidImageFile(destFile)) {
+            } else if (!isValidImageFile(destFile)) {
                 throw new IOException("Uploaded file is not a valid image file");
-            } else {                
+            } else {
                 this.localAvatarUpdated = System.currentTimeMillis();
             }
         } catch (IOException e) {
@@ -1662,9 +1662,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
     }
 
-    private boolean isValidImageFile(Path file) throws IOException {
+    private static boolean isValidImageFile(Path file) throws IOException {
         String contentType1 = FileTools.probeContentType(PathConverter.toURI(file));
-        String contentType2 = FileTools.getMimeTypeFromFile(file);
+        // String contentType2 = FileTools.getMimeTypeFromFile(file);
         return contentType1.startsWith("image/");
     }
 

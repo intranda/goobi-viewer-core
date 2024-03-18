@@ -21,21 +21,29 @@
  */
 package io.goobi.viewer.model.search;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
 
 class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -135,5 +143,20 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR",
                 "foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar", Locale.ENGLISH, null, null);
         Assertions.assertEquals("foo  bar", be.getFulltextForHtml());
+    }
+    
+    @Test 
+    void test_createMultiLanguageLabel() throws IndexUnreachableException {
+        BrowseElement browseElement = new BrowseElement("PI", 0, "bla", "text", Locale.ENGLISH, "/data/1", "url");
+        StructElement structElement = new StructElement(new SolrDocument(Map.of(
+                    SolrConstants.IDDOC, Long.valueOf(12345),
+                    "MD_TITLE_LANG_DE", "Mein Titel",
+                    "MD_TITLE_LANG_EN", "My title",
+                    "MD_TITLE_LANG_FR", "Mon titre"
+                )));
+        IMetadataValue label = browseElement.createMultiLanguageLabel(structElement);
+        assertEquals("Mein Titel", label.getValueOrFallback(Locale.GERMAN));
+        assertEquals("My title", label.getValueOrFallback(Locale.ENGLISH));
+        assertEquals("Mon titre", label.getValueOrFallback(Locale.FRENCH));
     }
 }

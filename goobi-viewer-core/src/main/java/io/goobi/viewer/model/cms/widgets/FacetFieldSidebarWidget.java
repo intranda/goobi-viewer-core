@@ -119,9 +119,9 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
                 }
             })
                     .orElse("");
-            if(StringUtils.isNoneBlank(searchPrefix, this.filterQuery)) {
+            if (StringUtils.isNoneBlank(searchPrefix, this.filterQuery)) {
                 return String.format("+(%s) +(%s)", searchPrefix, this.filterQuery);
-            } else if(StringUtils.isNotBlank(searchPrefix)) {
+            } else if (StringUtils.isNotBlank(searchPrefix)) {
                 return searchPrefix;
             } else {
                 return filterQuery;

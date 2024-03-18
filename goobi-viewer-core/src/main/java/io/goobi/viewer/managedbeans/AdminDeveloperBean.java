@@ -25,6 +25,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
@@ -48,6 +49,7 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
+import io.goobi.viewer.controller.variablereplacer.VariableReplacer;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
@@ -62,6 +64,9 @@ public class AdminDeveloperBean implements Serializable {
     private static final long serialVersionUID = 9068383748390523908L;
 
     private static final Logger logger = LogManager.getLogger(AdminDeveloperBean.class);
+
+    private static final String SCRIPT_PURPOSE_CREATE_PACKAGE = "create-package";
+    private static final String SCRIPT_PURPOSE_PULL_THEME = "theme-pull";
 
     private static final String SQL_STATEMENT_CREATE_USERS = "DROP TABLE IF EXISTS `users`;\n"
             + "CREATE TABLE `users` (\n"
@@ -95,6 +100,8 @@ public class AdminDeveloperBean implements Serializable {
 
     private static final String[] FILES_TO_INCLUDE = new String[] { "config_viewer-module-crowdsourcing.xml", "messages_*.properties" };
 
+    private static final long CREATE_DEVELOPER_PACKAGE_TIMEOUT = 120_000; //2 min
+
     @Inject
     @Push
     private PushContext downloadContext;
@@ -127,21 +134,58 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     public void downloadDeveloperArchive() {
+        Path zipPath;
         try {
             sendDownloadProgressUpdate(0);
-            byte[] zip = createDeveloperArchive(p -> sendDownloadProgressUpdate(0.1f + p * 0.8f));
-            logger.debug("Sending file...");
-            Faces.sendFile(zip, this.viewerThemeName + "_developer.zip", true);
-            logger.debug("Done sending file");
-            sendDownloadFinished();
+            zipPath = createZipFile(DataManager.getInstance().getConfiguration().getCreateDeveloperPackageScriptPath());
+            if (Files.exists(zipPath)) {
+                sendDownloadProgressUpdate(1);
+            } else {
+                throw new IOException("Failed to create file " + zipPath);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.error("Bean thread interrupted while waiting for bash call to finish");
             sendDownloadError("Backing thread interrupted");
-        } catch (IOException | JDOMException e) {
+            return;
+        } catch (IOException e) {
             logger.error("Error creating zip archive: {}", e.toString());
-            sendDownloadError("Error creating zip archive: " + e.toString());
+            sendDownloadError("Error creating zip archive: " + e.getMessage());
+            return;
         }
+        try {
+            logger.debug("Sending file...");
+            Faces.sendFile(zipPath, this.viewerThemeName + "_developer.zip", true);
+            logger.debug("Done sending file");
+            sendDownloadFinished();
+        } catch (IOException e) {
+            logger.error("Error creating zip archive: {}", e.toString());
+            sendDownloadError("Error creating zip archive: " + e.getMessage());
+        }
+    }
+
+    private static byte[] createZipArchive(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
+        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
+        ShellCommand command = new ShellCommand(commandString.split("\\s+"));
+        int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
+        String out = command.getOutput();
+        String error = command.getErrorOutput();
+        if (ret > 0) {
+            throw new IOException(error);
+        }
+        return out.getBytes("utf-8");
+    }
+
+    private static Path createZipFile(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
+        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
+        ShellCommand command = new ShellCommand(commandString.split("\\s+"));
+        int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
+        String out = command.getOutput().trim();
+        String error = command.getErrorOutput().trim();
+        if (ret > 0) {
+            throw new IOException(error);
+        }
+        return Path.of(out);
     }
 
     public void activateAutopull() throws DAOException {
@@ -153,12 +197,19 @@ public class AdminDeveloperBean implements Serializable {
     public void triggerPullTheme() throws MessageQueueException {
         sendPullThemeUpdate(0f);
         ViewerMessage message = new ViewerMessage(TaskType.PULL_THEME.name());
+        message.setMaxRetries(1);
         queueManager.addToQueue(message);
     }
 
     public boolean isAutopullActive() throws DAOException {
-        RecurringTaskTrigger trigger = DataManager.getInstance().getDao().getRecurringTaskTriggerForTask(TaskType.PULL_THEME);
-        return trigger != null && trigger.getStatus() == TaskTriggerStatus.RUNNING;
+        List<ViewerMessage> messages = DataManager.getInstance()
+                .getDao()
+                .getViewerMessages(0, 1, "lastUpdateTime", true,
+                        Map.of("taskName", TaskType.PULL_THEME.name()));
+        if (!messages.isEmpty()) {
+            return messages.get(0).getMessageStatus() == MessageStatus.FINISH;
+        }
+        return false;
     }
 
     public boolean isAutopullError() throws DAOException {
@@ -299,12 +350,12 @@ public class AdminDeveloperBean implements Serializable {
         downloadContext.send(json.toString());
     }
 
-    public void sendPullThemeFinished() {
-        updatePullThemeProgress("finished", Optional.empty(), 1.0f);
+    public void sendPullThemeFinished(String message) {
+        updatePullThemeProgress("finished", Optional.ofNullable(message).filter(StringUtils::isNotBlank), 1.0f);
     }
 
     public void sendPullThemeError(String message) {
-        updatePullThemeProgress("error", Optional.of(message), 0);
+        updatePullThemeProgress("error", Optional.of(message).filter(StringUtils::isNotBlank), 0);
     }
 
     public void sendPullThemeUpdate(float progress) {

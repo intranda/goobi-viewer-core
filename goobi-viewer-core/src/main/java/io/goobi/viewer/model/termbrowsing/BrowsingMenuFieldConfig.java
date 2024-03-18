@@ -43,8 +43,9 @@ public class BrowsingMenuFieldConfig implements Serializable {
     private final String field;
     private final String sortField;
     private final List<String> filterQueries = new ArrayList<>(3);
-    private final boolean translate;
-    private final boolean alwaysApplyFilter;
+    private boolean translate;
+    private boolean alwaysApplyFilter;
+    private boolean skipInWidget;
 
     /**
      * Constructor.
@@ -52,22 +53,15 @@ public class BrowsingMenuFieldConfig implements Serializable {
      * @param field a {@link java.lang.String} object.
      * @param sortField a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
-     * @param translate
-     * @param recordsAndAnchorsOnly a boolean.
-     * @param alwaysApplyFilter If true, no unfiltered browsing will be allowed
      * @should add doctype filter if field MD or MD2
      */
-    public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, boolean translate,
-            @Deprecated boolean recordsAndAnchorsOnly, boolean alwaysApplyFilter) {
+    public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery) {
         this.field = field;
         this.sortField = sortField;
         if (StringUtils.isNotEmpty(filterQuery)) {
             filterQueries.add(filterQuery);
         }
 
-        this.translate = translate;
-        this.alwaysApplyFilter = alwaysApplyFilter;
-        setRecordsAndAnchorsOnly(recordsAndAnchorsOnly);
         addDoctypeFilterQuery();
     }
 
@@ -85,8 +79,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
         }
 
         switch (field) {
-            case SolrConstants.DC:
-            case SolrConstants.DOCSTRCT:
+            case SolrConstants.DC, SolrConstants.DOCSTRCT:
                 filterQueries.add("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name());
                 break;
             default:
@@ -111,7 +104,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * 
      * @param language
-     * @return
+     * @return Language specific variant of field if it contains a placeholder; otherwise unaltered field
      */
     public String getFieldForLanguage(String language) {
         if (field != null && field.endsWith(SolrConstants.MIDFIX_LANG + "{}")) {
@@ -150,6 +143,15 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
+     * @param translate the translate to set
+     * @return this
+     */
+    public BrowsingMenuFieldConfig setTranslate(boolean translate) {
+        this.translate = translate;
+        return this;
+    }
+
+    /**
      * @return the alwaysApplyFilter
      */
     public boolean isAlwaysApplyFilter() {
@@ -157,8 +159,33 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
+     * @param alwaysApplyFilter the alwaysApplyFilter to set
+     * @return this
+     */
+    public BrowsingMenuFieldConfig setAlwaysApplyFilter(boolean alwaysApplyFilter) {
+        this.alwaysApplyFilter = alwaysApplyFilter;
+        return this;
+    }
+
+    /**
+     * @return the skipInWidget
+     */
+    public boolean isSkipInWidget() {
+        return skipInWidget;
+    }
+
+    /**
+     * @param skipInWidget the skipInWidget to set
+     * @return this;
+     */
+    public BrowsingMenuFieldConfig setSkipInWidget(boolean skipInWidget) {
+        this.skipInWidget = skipInWidget;
+        return this;
+    }
+
+    /**
      *
-     * @return
+     * @return a boolean
      */
     public boolean isRecordsAndAnchorsOnly() {
         return filterQueries.contains(SearchHelper.ALL_RECORDS_QUERY);
@@ -167,11 +194,14 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      *
      * @param recordsAndAnchorsOnly
+     * @return this
      * @should create filter query correctly
      */
-    void setRecordsAndAnchorsOnly(boolean recordsAndAnchorsOnly) {
+    public BrowsingMenuFieldConfig setRecordsAndAnchorsOnly(boolean recordsAndAnchorsOnly) {
         if (recordsAndAnchorsOnly) {
             filterQueries.add(SearchHelper.ALL_RECORDS_QUERY);
         }
+
+        return this;
     }
 }

@@ -83,9 +83,9 @@ public class CMSPageTemplate implements Serializable {
     private boolean mayHaveTopBarSlider = false;
 
     private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
-    
-    private final Map<String, CMSComponentAttribute> attributes = new HashMap<String, CMSComponentAttribute>();
-    
+
+    private final Map<String, CMSComponentAttribute> attributes = new HashMap<>();
+
     private boolean themeTemplate = false;
 
     /**
@@ -126,7 +126,7 @@ public class CMSPageTemplate implements Serializable {
 
                 String itemId = eleContentItem.getAttributeValue("id");
                 if ("preview01".equals(itemId)) {
-                    continue;//preview texts are directly in cmsPage. They should not be loaded as content item
+                    continue; //preview texts are directly in cmsPage. They should not be loaded as content item
                 }
 
                 CMSContentItemType type = CMSContentItemType.getByName(eleContentItem.getAttributeValue("type"));
@@ -161,7 +161,7 @@ public class CMSPageTemplate implements Serializable {
                 template.setMayHaveTopBarSlider(parseBoolean(options.getChildText("topBarSlider"), false));
             }
             Element attributes = root.getChild("attributes");
-            if(attributes != null) {
+            if (attributes != null) {
                 List<Element> attributeElements = attributes.getChildren("attribute");
                 for (Element element : attributeElements) {
                     CMSComponentAttribute attr = CMSComponentAttribute.loadFromXML(element);
@@ -421,6 +421,8 @@ public class CMSPageTemplate implements Serializable {
         switch (itemId) {
             case CMSPage.TOPBAR_SLIDER_ID:
                 return new CMSContentItemTemplate(CMSContentItemType.SLIDER);
+            default:
+                break;
         }
         return null;
     }
@@ -546,7 +548,7 @@ public class CMSPageTemplate implements Serializable {
     public static boolean parseBoolean(String text) {
         return parseBoolean(text, false);
     }
-    
+
     public Map<String, CMSComponentAttribute> getAttributes() {
         return attributes;
     }

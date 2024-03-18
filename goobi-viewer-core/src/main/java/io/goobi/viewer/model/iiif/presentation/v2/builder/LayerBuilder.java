@@ -27,16 +27,17 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.oa.Motivation;
@@ -68,7 +69,7 @@ public class LayerBuilder extends AbstractBuilder {
      * Constructor for LayerBuilder.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param apiUrlManager
      */
     public LayerBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -106,8 +107,7 @@ public class LayerBuilder extends AbstractBuilder {
         }
         URI annoListURI = getAnnotationListURI(pi, type);
         AnnotationList annoList = createAnnotationList(annotations, annoListURI, type);
-        Layer layer = generateLayer(pi, Collections.singletonMap(type, Collections.singletonList(annoList)), type);
-        return layer;
+        return generateLayer(pi, Collections.singletonMap(type, Collections.singletonList(annoList)), type);
     }
 
     /**
@@ -177,7 +177,7 @@ public class LayerBuilder extends AbstractBuilder {
     public Layer generateLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, AnnotationType annoType) throws URISyntaxException {
         Layer layer = new Layer(getLayerURI(pi, annoType));
         if (annoLists.get(annoType) != null) {
-            annoLists.get(annoType).stream().forEach(al -> layer.addOtherContent(al));
+            annoLists.get(annoType).stream().forEach(layer::addOtherContent);
         }
         return layer;
     }
@@ -194,16 +194,16 @@ public class LayerBuilder extends AbstractBuilder {
      */
     public Map<AnnotationType, AnnotationList> mergeAnnotationLists(String pi, Map<AnnotationType, List<AnnotationList>> annoLists)
             throws URISyntaxException {
-        Map<AnnotationType, AnnotationList> map = new HashMap<>();
-        for (AnnotationType annoType : annoLists.keySet()) {
-            AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
-            content.setLabel(getLabel(annoType.name()));
-            annoLists.get(annoType)
+        Map<AnnotationType, AnnotationList> map = new EnumMap<>(AnnotationType.class);
+        for (Entry<AnnotationType, List<AnnotationList>> entry : annoLists.entrySet()) {
+            AnnotationList content = new AnnotationList(getAnnotationListURI(pi, entry.getKey()));
+            content.setLabel(getLabel(entry.getKey().name()));
+            entry.getValue()
                     .stream()
                     .filter(al -> al.getResources() != null)
                     .flatMap(al -> al.getResources().stream())
-                    .forEach(annotation -> content.addResource(annotation));
-            map.put(annoType, content);
+                    .forEach(content::addResource);
+            map.put(entry.getKey(), content);
         }
         return map;
     }
@@ -216,7 +216,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param filename a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
      */
-    private Optional<String> getLanguage(String filename) {
+    private static Optional<String> getLanguage(String filename) {
         String regex = "([a-z]{1,3})\\.[a-z]+";
         Matcher matcher = Pattern.compile(regex).matcher(filename);
         if (matcher.find()) {

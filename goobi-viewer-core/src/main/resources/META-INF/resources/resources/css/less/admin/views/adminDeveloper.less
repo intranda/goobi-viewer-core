@@ -9,9 +9,10 @@
 		padding: 10px 20px;
 		background-color: #fff;
  		border: 1px solid #ccc;
-		margin-bottom: 30px;
-		display: inline-flex;
+		margin-bottom: 0px;
+		// display: inline-flex;
 		flex-direction: column;
+		min-width: 275px;
 	}
 	&__developer-autopull-status-wrapper {
 		position: relative;
@@ -93,15 +94,22 @@
 		
 	}
 	&__developer-download-wrapper {
-		 margin-bottom: 30px;
+		display: flex;
+	  align-items: flex-start;
+	  justify-content: space-between;
+	 flex-wrap: wrap;
 	}
 	&__developer-download-button {
 		display: inline-flex;
 		gap: 10px;
 		align-items: center;
 		color: white;
+		margin-bottom: 15px;
 	}
 	&__developer-download-info-text {
+		flex-basis: 250px;
+		flex-grow: 1;
+		margin-right: 10px;
 		ul {
 			padding-left: 12px;
 			li {
@@ -118,9 +126,13 @@
 	  font-size: 16px;
 	  line-height: 1.2;
 	  margin-top: 20px;
-	position: relative;
+	  position: relative;
 		code {
 			white-space: pre;
+			overflow-x: auto;
+			  max-width: 100%;
+			  display: block;
+			  padding-bottom: 2px;
 		}
 	}
 	&__developer-copy-to-clipboard {

@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.pages.content.types;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_BY_CATEGORY;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,7 +79,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     private int importantImagesPerView;
 
     @Transient
-    List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
+    private List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
 
     public CMSImageListContent() {
         super();
@@ -111,12 +112,12 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     }
 
     private void createSelectableCategories() throws DAOException {
-        this.selectableCategories = DataManager.getInstance()
+        this.selectableCategories = new ArrayList<>(DataManager.getInstance()
                 .getDao()
                 .getAllCategories()
                 .stream()
                 .map(cat -> new CheckboxSelectable<>(this.categories, cat, CMSCategory::getName))
-                .collect(Collectors.toList());
+                .toList());
     }
 
     public int getImagesPerView() {
@@ -142,7 +143,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     public List<MediaItem> getMediaItems(boolean random) throws DAOException {
         return new CMSMediaLister(DataManager.getInstance().getDao())
                 .getMediaItems(
-                        this.categories.stream().map(CMSCategory::getName).collect(Collectors.toList()),
+                        this.categories.stream().map(CMSCategory::getName).toList(),
                         this.imagesPerView,
                         this.importantImagesPerView,
                         Boolean.TRUE.equals(random), BeanUtils.getRequest())
@@ -154,13 +155,12 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
      * getTileGridUrl.
      * </p>
      *
-     * @param itemId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      */
     public String getTileGridUrl() throws IllegalRequestException {
 
-        String tags = this.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
+        String tags = this.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining("..."));
 
         return DataManager.getInstance()
                 .getRestApiManager()
@@ -169,19 +169,25 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
                 .orElse(getLegacyTileGridUrl());
     }
 
-    private static String buildTilegridUrl(AbstractApiUrlManager urls, String tags, int imagesPerView, int priorityImagesPerView) {
-        ApiPath path = urls.path(CMS_MEDIA)
+    /**
+     * 
+     * @param urls
+     * @param tags
+     * @param imagesPerView
+     * @param priorityImagesPerView
+     * @return Generated URL
+     */
+    private static String buildTilegridUrl(AbstractApiUrlManager urls, final String tags, int imagesPerView, int priorityImagesPerView) {
+        ApiPath path = urls.path(CMS_MEDIA, CMS_MEDIA_BY_CATEGORY)
+                .params(StringUtils.isBlank(tags) ? "-" : tags)
                 .query("max", imagesPerView)
                 .query("prioritySlots", priorityImagesPerView)
                 .query("random", "true");
-        if (StringUtils.isNotBlank(tags)) {
-            path = path.query("tags", tags);
-        }
         return path.build();
     }
 
     /**
-     * @return
+     * @return Generated URL
      */
     private String getLegacyTileGridUrl() {
         StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
