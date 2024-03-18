@@ -517,7 +517,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     /**
      * whether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself
      * 
-     * @return true if scope is set to PREVIEW; false otherwise
+     * @return true if scope is CMSComponentScope.PREVIEW; false otherwise
      */
     public boolean isPreview() {
         return CMSComponentScope.PREVIEW.equals(this.scope);

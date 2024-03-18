@@ -262,7 +262,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             rtl = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_DIRECTION_RTL));
             // Load shape metadata
             // TODO use indicator field in doc to avoid this extra search for non-shape elements
-            String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+            String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse(null);
             if (iddoc != null) {
                 SolrDocumentList shapeDocs =
                         MetadataTools.getGroupedMetadata(iddoc, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), null);
@@ -919,6 +919,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fields, sortFields);
             if (docVolume == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
+            } else {
+                String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
+                if (StringUtils.isNotBlank(iddoc)) {
+                    return new StructElement(Long.parseLong(iddoc), docVolume);
+                }
+            }
+        } else if (isGroup()) {
+            List<StringPair> sortFields = DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(getDocStructType());
+
+            SolrDocument docVolume = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(new StringBuilder("GROUPID_SERIES_2").append(':').append(this.pi).toString(), fields, sortFields);
+            if (docVolume == null) {
+                logger.warn("Group has no child element: Cannot determine appropriate value");
             } else {
                 String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {

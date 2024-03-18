@@ -58,6 +58,7 @@ import jakarta.persistence.Table;
 public class ViewerMessage {
 
     public static final String MESSAGE_PROPERTY_ERROR = "error";
+    public static final String MESSAGE_PROPERTY_INFO = "result";
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -87,6 +88,9 @@ public class ViewerMessage {
 
     @Column(name = "retry_count")
     private int retryCount = 1;
+    
+    @Column(name = "max_retries")
+    private int maxRetries = 10;
 
     @Column(name = "last_update_time")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -175,4 +179,17 @@ public class ViewerMessage {
                 .registerModule(new JavaTimeModule())
                 .readValue(json, ViewerMessage.class);
     }
+    
+    public int getMaxRetries() {
+        return maxRetries;
+    }
+    
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
+    }
+    
+    public boolean shouldRetry() {
+        return this.retryCount < this.maxRetries;
+    }
+    
 }

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Set;
 
@@ -72,6 +73,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
@@ -513,13 +515,16 @@ public class BrowseElement implements Serializable {
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
-        for (Locale loc : ViewerResourceBundle.getAllLocales()) {
+        List<Locale> usedLocales = Optional.ofNullable(SolrTools.getAllUsedLocales(structElement))
+                .filter(l -> !l.isEmpty())
+                .orElse(ViewerResourceBundle.getAllLocales());
+        for (Locale loc : usedLocales) {
             StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, loc));
             String subtitle = structElement.getMetadataValueForLanguage(SolrConstants.SUBTITLE, loc.getLanguage());
             if (StringUtils.isNotEmpty(subtitle)) {
                 sbLabel.append(" : ").append(subtitle);
             }
-            value.setValue(sbLabel.toString(), locale);
+            value.setValue(sbLabel.toString(), loc);
         }
 
         return value;

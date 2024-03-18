@@ -265,7 +265,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getCiteLinkDocstruct_shouldReturnCorrectUrl() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         viewManager.setCurrentImageOrder(10);
 
         String purl = viewManager.getCiteLinkDocstruct();
@@ -278,7 +278,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getCiteLinkPage_shouldReturnCorrectUrl() throws Exception {
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         viewManager.setCurrentImageOrder(2);
 
         String purl = viewManager.getCiteLinkPage();
@@ -298,7 +298,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
-        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
 
         String purl = viewManager.getCiteLinkWork();
         Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/1/", purl);
