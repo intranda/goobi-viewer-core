@@ -46,6 +46,7 @@ io.goobi.viewer.controller.imaging
 io.goobi.viewer.controller.model
 io.goobi.viewer.controller.mq
 io.goobi.viewer.controller.shell
+io.goobi.viewer.controller.variablereplacer
 io.goobi.viewer.dao
 io.goobi.viewer.dao.converter
 io.goobi.viewer.dao.impl
