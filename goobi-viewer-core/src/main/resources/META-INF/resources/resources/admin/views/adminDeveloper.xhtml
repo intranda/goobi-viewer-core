@@ -97,13 +97,7 @@
 										data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__unzip_file_code, navigationHelper.theme)}">
 										<i class="fa fa-clipboard" aria-hidden="true"></i>
 									</div>
-									<code data-target="sqlCode">
-										<h:outputFormat
-											value="#{msg.admin__developer__unzip_file_code}"
-											escape="false">
-											<f:param value="#{navigationHelper.theme}" />
-										</h:outputFormat>
-									</code>
+									<code data-target="sqlCode"><h:outputFormat value="#{msg.admin__developer__unzip_file_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
 								</div>
 							</h:form>
@@ -127,12 +121,7 @@
 									data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__sql_commands, navigationHelper.theme)}">
 									<i class="fa fa-clipboard" aria-hidden="true"></i>
 								</div>
-								<code data-target="code">
-									<h:outputFormat value="#{msg.admin__developer__sql_commands}"
-										escape="false">
-										<f:param value="#{navigationHelper.theme}" />
-									</h:outputFormat>
-								</code>
+								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__sql_commands}" escape="false"><f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
 							</div>
 						</div>
@@ -151,13 +140,7 @@
 									data-copy-value="#{msg.admin__developer__local_messages_config_code}">
 									<i class="fa fa-clipboard" aria-hidden="true"></i>
 								</div>
-								<code data-target="code">
-									<h:outputFormat
-										value="#{msg.admin__developer__local_messages_config_code}"
-										escape="false">
-										<f:param value="#{navigationHelper.theme}" />
-									</h:outputFormat>
-								</code>
+								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__local_messages_config_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
 							</div>
 
@@ -170,7 +153,6 @@
 								<h:outputFormat
 									value="#{msg.admin__developer__settings_info_text}"
 									escape="false" />
-
 							</div>
 						</div>
 
