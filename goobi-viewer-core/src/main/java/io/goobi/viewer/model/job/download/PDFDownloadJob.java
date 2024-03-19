@@ -123,15 +123,6 @@ public class PDFDownloadJob extends DownloadJob {
         return "PDF";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#triggerCreation(java.lang.String, java.lang.String, java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    protected void triggerCreation() throws PresentationException, IndexUnreachableException {
-        triggerCreation(pi, logId, identifier);
-    }
-
     /**
      * <p>
      * triggerCreation.
@@ -203,26 +194,11 @@ public class PDFDownloadJob extends DownloadJob {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public int getQueuePosition() {
-        switch (status) {
-            case ERROR:
-                return -1;
-            case READY:
-                return 0;
-            default:
-                return getPDFJobsInQueue(identifier);
-        }
-    }
-
-    /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getRestApiPath()
      */
     @Override
     protected String getRestApiPath() {
         return "/viewerpdf";
     }
+
 }

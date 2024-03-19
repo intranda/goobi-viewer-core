@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
@@ -39,7 +40,7 @@ public class IndexUsageHandler implements MessageHandler<MessageStatus> {
     private static final Logger logger = LogManager.getLogger(IndexUsageHandler.class);
 
     @Override
-    public MessageStatus call(ViewerMessage message) {
+    public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
         try {
             new StatisticsIndexTask().startTask();
         } catch (DAOException | IOException e) {

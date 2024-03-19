@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>24.02-SNAPSHOT</version>
+	<version>24.03-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -78,12 +78,11 @@
 		<buildDate>${maven.build.timestamp}</buildDate>
 
 		<!-- intranda libraries -->
-		<alto.version>1.5.12</alto.version>
-		<ics.version>3.10-SNAPSHOT</ics.version>
-		<tei-conversion.version>1.3.0</tei-conversion.version>
-
-		<iiif-api-model.version>2.6.1</iiif-api-model.version>
-		<normdataimporter.version>1.10.6</normdataimporter.version>
+		<alto.version>1.5.13</alto.version>
+		<ics.version>3.10</ics.version>
+		<tei-conversion.version>1.3.1</tei-conversion.version>
+		<iiif-api-model.version>2.6.2</iiif-api-model.version>
+		<normdataimporter.version>1.10.9</normdataimporter.version>
 
         <!-- other libraries -->
         <angus-mail.version>2.0.3</angus-mail.version>
@@ -91,7 +90,7 @@
 		<citeproc-java.version>3.0.0-beta.2</citeproc-java.version>
 		<commons-codec.version>1.16.1</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
-		<commons-configuration2.version>2.9.0</commons-configuration2.version>
+		<commons-configuration2.version>2.10.0</commons-configuration2.version>
 		<commons-io.version>2.15.1</commons-io.version>
 		<commons-jxpath.version>1.3</commons-jxpath.version>
 		<commons-lang3.version>3.14.0</commons-lang3.version>
@@ -105,7 +104,7 @@
 		<httpmime.version>4.5.14</httpmime.version>
 		<icu.version>74.2</icu.version>
 		<inject.version>1</inject.version>
-		<jackson.version>2.16.2</jackson.version>
+		<jackson.version>2.17.0</jackson.version>
 		<jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
 		<jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
 		<javax.annotation.version>1.3.2</javax.annotation.version>
@@ -144,7 +143,7 @@
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
 		<activemq.version>5.18.3</activemq.version>
-		<spring.version>5.3.32</spring.version>
+		<spring.version>5.3.33</spring.version>
 		<reflections.version>0.10.2</reflections.version>
 		<quartz.version>2.3.2</quartz.version>
 		<cron-expression-descriptor.version>1.2.8</cron-expression-descriptor.version>
@@ -1113,7 +1112,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.14.1</version>
+						<version>10.14.2</version>
 					</dependency>
 				</dependencies>
 				<executions>

@@ -155,16 +155,24 @@ public class AdminDeveloperBean implements Serializable {
         }
         try {
             logger.debug("Sending file...");
+
             Faces.sendFile(zipPath, this.viewerThemeName + "_developer.zip", true);
             logger.debug("Done sending file");
             sendDownloadFinished();
         } catch (IOException e) {
             logger.error("Error creating zip archive: {}", e.toString());
             sendDownloadError("Error creating zip archive: " + e.getMessage());
+        } finally {
+            try {
+                Files.deleteIfExists(zipPath);
+            } catch (IOException e) {
+                logger.error("Failed to delete developer zip archive {}. Please delete manually", zipPath);
+                sendDownloadError("Failed to delete developer zip archive " + zipPath + ". Please delete manually");
+            }
         }
     }
 
-    private static byte[] createZipArchive(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
+    private byte[] createZipArchive(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
         String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
@@ -172,8 +180,9 @@ public class AdminDeveloperBean implements Serializable {
         String error = command.getErrorOutput();
         if (ret > 0) {
             throw new IOException(error);
+        } else {
+            return out.getBytes("utf-8");
         }
-        return out.getBytes("utf-8");
     }
 
     private static Path createZipFile(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
@@ -184,8 +193,9 @@ public class AdminDeveloperBean implements Serializable {
         String error = command.getErrorOutput().trim();
         if (ret > 0) {
             throw new IOException(error);
+        } else {
+            return Path.of(out);
         }
-        return Path.of(out);
     }
 
     public void activateAutopull() throws DAOException {

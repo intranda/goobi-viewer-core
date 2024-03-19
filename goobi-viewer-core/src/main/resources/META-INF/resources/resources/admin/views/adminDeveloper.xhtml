@@ -54,8 +54,7 @@
 									<button
 										jsf:action="#{adminDeveloperBean.downloadDeveloperArchive()}"
 										class="btn btn--full admin__developer-download-button">
-										<i class="fa fa-download" aria-hidden="true"></i> <span>Herunterladen</span>
-										<f:ajax />
+										<i class="fa fa-download" aria-hidden="true"></i> <span>#{msg.downloadButton}</span>
 									</button>
 									<!-- START: zip archive progress monitor -->
 									<span class="admin__developer_download_archive__loader"
@@ -185,9 +184,7 @@
 								<div class="admin__developer-autopull-status-wrapper">
 									<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
 									<div class="admin__developer-autopull-status-text">
-										Pull theme
-										<!-- 								#{adminDeveloperBean.autopullActive ? 'ON' : 'OFF'} -->
-										#{adminDeveloperBean.autopullError ? '(failed)' : ''}
+										#{msg.admin__developer__pull_theme} #{adminDeveloperBean.autopullError ? '(failed)' : ''}
 									</div>
 									<div
 										class="admin__developer-autopull-status-icon #{adminDeveloperBean.autopullError ? '-isError' : ''} #{adminDeveloperBean.autopullActive ? '-isActive' : '-isOff'}"></div>
@@ -211,13 +208,13 @@
 									<o:commandScript name="updateTheme" render="updateThemeGroup"></o:commandScript>
 									<h:commandButton styleClass="btn btn--default mt-3"
 										action="#{adminDeveloperBean.triggerPullTheme}"
-										value="Pull theme">
+										value="#{msg.admin__developer__pull_theme}">
 										<f:ajax render="@form"></f:ajax>
 									</h:commandButton>
 
 									<!-- START: zip archive progress monitor -->
 									<span class="admin__developer_download_archive__loader"
-										id="pullThemeLoader"> <!-- 				   		<progress id="pullThemeProgressBar" value="0" max="1"/> -->
+										id="pullThemeLoader">
 										<img
 										src="#{request.contextPath}/resources/images/ajax_preloader.gif"
 										class="img-fluid" alt="Download developer archive loader" />

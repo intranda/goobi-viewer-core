@@ -38,7 +38,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
  * @author florian
- *
+ * @param <T>
  */
 public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnotation> {
 

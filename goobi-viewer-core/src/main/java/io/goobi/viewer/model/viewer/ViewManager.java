@@ -2938,13 +2938,14 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayContentDownloadMenu() {
-        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads()) {
+        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetAdditionalFiles()) {
+            logger.trace("additional files disabled");
             return false;
         }
         try {
             return !listDownloadableContent().isEmpty();
         } catch (PresentationException | IndexUnreachableException | DAOException | IOException e) {
-            logger.warn("Error listing downloadable content: {}", e.toString());
+            logger.warn("Error listing downloadable content: {}", e.getMessage());
         }
 
         return false;
@@ -3952,6 +3953,7 @@ public class ViewManager implements Serializable {
      * Creates an instance of ViewManager loaded with the record with the given identifier.
      *
      * @param pi Record identifier
+     * @param loadPages
      * @return Created {@link ViewManager}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -3959,7 +3961,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws RecordNotFoundException
      */
-    public static ViewManager createViewManager(String pi)
+    public static ViewManager createViewManager(String pi, boolean loadPages)
             throws PresentationException, IndexUnreachableException, DAOException, RecordNotFoundException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
@@ -3972,7 +3974,7 @@ public class ViewManager implements Serializable {
 
         long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
         StructElement topDocument = new StructElement(iddoc, doc);
-        return new ViewManager(topDocument, AbstractPageLoader.create(topDocument), iddoc, null, null, null);
+        return new ViewManager(topDocument, AbstractPageLoader.create(topDocument, loadPages), iddoc, null, null, null);
     }
 
     /**

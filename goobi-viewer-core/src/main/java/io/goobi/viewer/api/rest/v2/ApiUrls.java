@@ -91,6 +91,7 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String RECORDS_PAGES = "/records/{pi}/pages/{pageNo}";
     public static final String RECORDS_PAGES_CANVAS = "/canvas";
+    public static final String RECORDS_PAGES_MANIFEST = "/manifest";
     public static final String RECORDS_PAGES_MEDIA = "/media";
     public static final String RECORDS_PAGES_NER_TAGS = "/ner/tags";
     public static final String RECORDS_PAGES_ANNOTATIONS = "/annotations";
@@ -126,14 +127,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST = "/contentassist";
-
-    public static final String DOWNLOADS = "/downloads";
-    public static final String DOWNLOADS_EPUB = "/epub";
-    public static final String DOWNLOADS_PDF = "/pdf";
-    public static final String DOWNLOADS_EPUB_RECORD = "/epub/records/{pi}";
-    public static final String DOWNLOADS_PDF_RECORD = "/pdf/records/{pi}";
-    public static final String DOWNLOADS_EPUB_SECTION = "/epub/records/{pi}/sections/{divId}";
-    public static final String DOWNLOADS_PDF_SECTION = "/pdf/records/{pi}/sections/{divId}";
 
     public static final String USERS = "/users";
     public static final String USERS_USERID = "/users/{userId}";

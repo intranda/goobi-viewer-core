@@ -1,110 +1,105 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-    
-    <composite:interface />
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
-    <composite:implementation>
- 
-                    <!-- STRUCT ELEMENT -->
-					<ui:fragment
-						rendered="#{activeDocumentBean.viewManager.currentStructElementIddoc != activeDocumentBean.viewManager.topStructElementIddoc}">
-						<h3 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h3>
+	<composite:interface />
 
-						<!-- STRUCT ELEMENT DOWNLOADS -->
-						<div class="widget-usage__struct-downloads">
-						
-							<!-- PDF (STRUCT ELEMENT) -->
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
+	<composite:implementation>
+
+		<!-- STRUCT ELEMENT -->
+		<ui:fragment
+			rendered="#{activeDocumentBean.viewManager.currentStructElementIddoc != activeDocumentBean.viewManager.topStructElementIddoc}">
+
+
+			<!-- STRUCT ELEMENT DOWNLOADS -->
+			<div class="widget-usage__struct-downloads widget__badge-container">
+				<h3 id="titlePage"
+					class="widget-usage__subtitle widget__badge-container-heading"
+					title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h3>
+
+				<!-- PDF (STRUCT ELEMENT) -->
+				<ui:fragment
+					rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
 							                         !activeDocumentBean.viewManager.filesOnly and 
 							                         activeDocumentBean.viewManager.hasPages and 
 							                         activeDocumentBean.accessPermissionPdf}">
-	                            <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
-	                                <c:set scope="request" var="hasPrerenderedPagePdfs" value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}"/>
-	                            	<ui:fragment rendered="#{hasPrerenderedPagePdfs}">
-	                            		<a 
-		                                    href="#{activeDocumentBean.viewManager.getPdfStructDownloadLink([['usePdfSource', 'true']])}" 
-		                                    id="pdfStruct-small" 
-		                                    class="badge badge-dark widget-usage__work-download-pdf" 
-		                                    title="#{msg.label__pdf_download_section} (#{msg.label__pdf_download_small})"
-											data-toggle="tooltip"
-											data-placement="top"
-											data-trigger="hover"
-		                                    target="_blank" rel="nofollow noopener"
-		                                    aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
-	                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-	                                    #{msg.label__pdf_download} (#{msg.label__pdf_download_small})</a>
-	                                    <a 
-		                                    href="#{activeDocumentBean.viewManager.getPdfStructDownloadLink([['usePdfSource', 'false']])}" 
-		                                    id="pdfStruct-full" 
-		                                    class="badge badge-dark widget-usage__work-download-pdf" 
-		                                    title="#{msg.label__pdf_download_section} (#{msg.label__pdf_download_full})"
-											data-toggle="tooltip"
-											data-placement="top"
-											data-trigger="hover"
-		                                    target="_blank" rel="nofollow noopener"
-		                                    aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
-	                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-	                                    #{msg.label__pdf_download} (#{msg.label__pdf_download_full})</a>
-	                            	</ui:fragment>
-	                            	<ui:fragment rendered="#{!hasPrerenderedPagePdfs}">
-	                            		<a 
-		                                    href="#{activeDocumentBean.viewManager.pdfStructDownloadLink}" 
-		                                    id="pdfStruct" 
-		                                    class="badge badge-dark widget-usage__struct-download-pdf" 
-		                                    title="#{msg.label__pdf_download_section}"
-	                                        data-toggle="tooltip"
-										    data-placement="top"
-										    data-trigger="hover"
-	                                        target="_blank" rel="nofollow noopener"
-	                                        aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
-	                                    	<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-		                                    #{msg.label__pdf_download}</a>
-	                            	</ui:fragment>
-	                            </ui:fragment>
-	                            <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
-	                                <a 
-	                                    href="#" 
-	                                    id="pdfStruct" 
-	                                    class="badge badge-dark widget-usage__struct-download-pdf download-modal-widget" 
-	                                    data-type="pdf" 
-	                                    data-title="#{activeDocumentBean.titleBarLabel}" 
-	                                    data-id="#{activeDocumentBean.viewManager.currentStructElement.logid}"
-	                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
-                                        title="#{msg.label__pdf_download_section}"
-                                        data-toggle="tooltip"
-									    data-placement="top"
-									    data-trigger="hover"
-                                        aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
-	                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-	                                    #{msg.label__pdf_download}
-	                                </a>    
-	                            </ui:fragment>
-                            </ui:fragment>
-                            <!-- RIS (current) -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentStructElement.accessPermissionDownloadMetadata}">
-                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/sections/#{activeDocumentBean.viewManager.currentStructElement.logid}/ris/"
-                                    id="risCurrent"
-                                    class="badge badge-dark widget-usage__struct-download-ris" 
-                                    title="#{msg.risLinkTopstruct}"
-                                    data-toggle="tooltip"
-									data-placement="top"
-									data-trigger="hover"
-                                    rel="nofollow"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.risLinkTopstruct}">
-                                    #{msg.risLinkTopstruct}
-                                </a>
-                            </ui:fragment>
-                        
-						</div>
-                    </ui:fragment>
-                    
-                    
+					<ui:fragment
+						rendered="#{!configurationBean.generatePdfInTaskManager}">
+						<c:set scope="request" var="hasPrerenderedPagePdfs"
+							value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
+						<ui:fragment rendered="#{hasPrerenderedPagePdfs}">
+							<a
+								href="#{activeDocumentBean.viewManager.getPdfStructDownloadLink([['usePdfSource', 'true']])}"
+								id="pdfStruct-small"
+								class="badge badge-dark widget-usage__work-download-pdf"
+								title="#{msg.label__pdf_download_section} (#{msg.label__pdf_download_small})"
+								data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								target="_blank" rel="nofollow noopener"
+								aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
+								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+								#{msg.label__pdf_download} (#{msg.label__pdf_download_small})
+							</a>
+							<a
+								href="#{activeDocumentBean.viewManager.getPdfStructDownloadLink([['usePdfSource', 'false']])}"
+								id="pdfStruct-full"
+								class="badge badge-dark widget-usage__work-download-pdf"
+								title="#{msg.label__pdf_download_section} (#{msg.label__pdf_download_full})"
+								data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								target="_blank" rel="nofollow noopener"
+								aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
+								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+								#{msg.label__pdf_download} (#{msg.label__pdf_download_full})
+							</a>
+						</ui:fragment>
+						<ui:fragment rendered="#{!hasPrerenderedPagePdfs}">
+							<a href="#{activeDocumentBean.viewManager.pdfStructDownloadLink}"
+								id="pdfStruct"
+								class="badge badge-dark widget-usage__struct-download-pdf"
+								title="#{msg.label__pdf_download_section}" data-toggle="tooltip"
+								data-placement="top" data-trigger="hover" target="_blank"
+								rel="nofollow noopener"
+								aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
+								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+								#{msg.label__pdf_download}
+							</a>
+						</ui:fragment>
+					</ui:fragment>
+					<ui:fragment
+						rendered="#{configurationBean.generatePdfInTaskManager}">
+						<a href="#" id="pdfStruct"
+							class="badge badge-dark widget-usage__struct-download-pdf download-modal-widget"
+							data-type="pdf" data-title="#{activeDocumentBean.titleBarLabel}"
+							data-id="#{activeDocumentBean.viewManager.currentStructElement.logid}"
+							data-pi="#{activeDocumentBean.viewManager.pi}"
+							title="#{msg.label__pdf_download_section}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover"
+							aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
+							<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+							#{msg.label__pdf_download}
+						</a>
+					</ui:fragment>
+				</ui:fragment>
+				<!-- RIS (current) -->
+				<ui:fragment
+					rendered="#{activeDocumentBean.viewManager.currentStructElement.accessPermissionDownloadMetadata}">
+					<a
+						href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/sections/#{activeDocumentBean.viewManager.currentStructElement.logid}/ris/"
+						id="risCurrent"
+						class="badge badge-dark widget-usage__struct-download-ris"
+						title="#{msg.risLinkTopstruct}" data-toggle="tooltip"
+						data-placement="top" data-trigger="hover" rel="nofollow"
+						aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.risLinkTopstruct}">
+						#{msg.risLinkTopstruct} </a>
+				</ui:fragment>
+
+			</div>
+		</ui:fragment>
+
+
 	</composite:implementation>
 </ui:composition>

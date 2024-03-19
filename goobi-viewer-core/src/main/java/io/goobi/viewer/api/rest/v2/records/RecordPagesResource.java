@@ -25,6 +25,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_MANIFEST;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_MEDIA;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_TEXT;
 
@@ -37,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -48,7 +50,6 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
@@ -59,8 +60,9 @@ import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.CanvasBuilder;
+import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -160,10 +162,8 @@ public class RecordPagesResource {
         AnnotationPage annoPage = new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForPage(pi, pageNo, uri).getFirst();
         if (annoPage != null) {
             return annoPage;
-        } else {
-            return new AnnotationPage(uri);
         }
-        //        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false);
+        return new AnnotationPage(uri);
     }
 
     @GET
@@ -174,6 +174,23 @@ public class RecordPagesResource {
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(pi, pageNo);
         URI uri = URI.create(apiPath.build());
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForPageComments(pi, pageNo, uri);
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_PAGES_MANIFEST)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
+    @IIIFPresentationBinding
+    public IPresentationModelElement getManifest(
+            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
+            @Parameter(
+                    description = "Build mode for manifest to select type of resources to include."
+                            + " Default is 'iiif' which returns the full IIIF manifest with all resources."
+                            + " 'thumbs' Does not read width and height of canvas resources and 'iiif_simple'"
+                            + " ignores all resources from files") @QueryParam("mode") String mode)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+            DAOException, ContentLibException {
+        return new ManifestBuilder(urls).build(pi, pageNo, servletRequest);
     }
 
 }

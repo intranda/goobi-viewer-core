@@ -540,7 +540,7 @@ var viewerJS = ( function( viewer ) {
 	    } else {
 	        return -1;
 	    }
-	}
+	} 
 
 	viewer.helper.initRestrictedInputFields = () => {
 		let $inputs = $("[data-input-restricted='url']");
@@ -557,6 +557,31 @@ var viewerJS = ( function( viewer ) {
 				}
 			});
 		});
+	}
+	
+	/**
+	 * Creates a repeating cancellable promise with a specified delay between repetitions.
+	 *
+	 * @param {Promise} promise - The promise to repeat.
+	 * @param {number} delay - The delay (in milliseconds) between repetitions. The delay timer starts after a promise is returned
+	 * @returns {object} - An object with methods for cancellation and result handling.
+	 */
+	viewer.helper.repeatPromise = (promise, delay) => {
+		const cancelSubject = new rxjs.Subject();
+		const observable = rxjs.of(null).pipe(rxjs.operators.flatMap(promise), rxjs.operators.delay(delay), rxjs.operators.repeat(), rxjs.operators.takeUntil(cancelSubject));
+		return {
+			/**
+		     * Cancels the repeating promise, preventing further repetitions.
+		     */
+			cancel: () => cancelSubject.next(),
+			/**
+		     * Subscribes to the observable and executes the provided function
+		     * with the result of the promise each time it resolves.
+		     *
+		     * @param {function} f - The function to execute with the result of the promise.
+		     */
+			then: f => observable.subscribe(result => f(result))
+		}
 	}
 
     

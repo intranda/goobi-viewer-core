@@ -13,8 +13,10 @@
     <composite:implementation>
 
                     <!-- WORK DOWNLOADS -->
-                    <div class="widget-usage__work-downloads">     
-                    
+                    <div class="widget-usage__work-downloads widget__badge-container">     
+
+                    	<h3 id="titleWork" class="widget-usage__subtitle widget__badge-container-heading">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
+
                         <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
                         

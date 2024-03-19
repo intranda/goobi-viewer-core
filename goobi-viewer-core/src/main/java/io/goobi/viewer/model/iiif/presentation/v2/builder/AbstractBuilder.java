@@ -21,25 +21,7 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -410,7 +392,7 @@ public abstract class AbstractBuilder {
 
     /**
      * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or are the anchor themselves). Works are sorted by a
-     * {@link io.goobi.viewer.model.iiif.presentation.v2.builder.StructElementComparator} If no hits are found, an empty list is returned
+     * {@link io.goobi.viewer.model.iiif.presentation.v2.builder.StructElementComparator} If no hits are found, an empty list is returned.
      *
      * @param pi a {@link java.lang.String} object.
      * @return A list of all docstructs with the given pi or children thereof. An empty list if no hits are found
@@ -644,6 +626,20 @@ public abstract class AbstractBuilder {
      */
     public URI getManifestURI(String pi) {
         String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
+        return URI.create(urlString);
+    }
+
+    /**
+     * <p>
+     * getManifestURI for page
+     * </p>
+     *
+     * @param pi Persistent identifier of a record
+     * @param pageNo 1-based page order within the record
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getPageManifestURI(String pi, int pageNo) {
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_MANIFEST).params(pi, pageNo).build();
         return URI.create(urlString);
     }
 

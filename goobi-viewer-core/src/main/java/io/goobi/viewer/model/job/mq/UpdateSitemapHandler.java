@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -39,7 +40,7 @@ public class UpdateSitemapHandler implements MessageHandler<MessageStatus> {
     private static final Logger logger = LogManager.getLogger(UpdateSitemapHandler.class);
 
     @Override
-    public MessageStatus call(ViewerMessage message) {
+    public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
         String outputPath = message.getProperties().get("baseurl");
         String viewerRootUrl = message.getProperties().get("viewerRootUrl");

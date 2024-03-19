@@ -76,6 +76,41 @@
       display: none;
     }
   }
+  &__badge-container {
+	margin-bottom: 18px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	align-items: flex-start;
+	&:last-child,
+	&:nth-last-child(2) + .widget__badge-container {
+		margin-bottom: 5px;
+	}
+	a, form, button {
+
+	}
+	.badge {
+		padding: 0.5rem 0.7rem;
+		// line-height: 1.2rem; 
+		min-height: 24px;
+		display: inline-flex;
+		font-size: 12px;
+		border: none;
+		align-items: center;
+		gap: 4px;
+		&:hover,  
+		&:active,
+		&:focus {
+			color: @white; 
+			background-color: @labelHoverGray;
+		}
+	}
+  }
+  &__badge-container-heading {
+	 margin-bottom: 0px;
+	 flex: 0 0 100%;
+	 max-width: 100%;
+  }
 }
 
 @{RTL} .widget {

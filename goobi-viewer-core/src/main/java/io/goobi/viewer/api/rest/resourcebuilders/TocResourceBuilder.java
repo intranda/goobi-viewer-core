@@ -85,7 +85,7 @@ public class TocResourceBuilder {
 
         ViewManager viewManager;
         try {
-            viewManager = ViewManager.createViewManager(pi);
+            viewManager = ViewManager.createViewManager(pi, false);
         } catch (RecordNotFoundException e) {
             throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND + ": " + pi);
         }

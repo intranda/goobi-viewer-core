@@ -282,6 +282,28 @@ public class AnnotationsResourceBuilder {
         }
         return collection;
     }
+    
+    /**
+     * @param pi
+     * @param pageNo
+     * @param uri
+     * @return {@link AnnotationCollection}
+     * @throws DAOException
+     */
+    public AnnotationCollection getWebAnnotationCollectionForPageComments(String pi, int pageNo, URI uri) throws DAOException {
+        List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
+
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
+        AnnotationCollection collection = builder.setItemsPerPage(data.size()).buildCollection();
+        if (!data.isEmpty()) {
+            try {
+                collection.setFirst(getWebAnnotationPageForPageComments(pi, uri, pageNo, 1));
+            } catch (IllegalRequestException e) {
+                //no items
+            }
+        }
+        return collection;
+    }
 
     /**
      * 
@@ -307,6 +329,23 @@ public class AnnotationsResourceBuilder {
                                 .map(converter::getAsWebAnnotation)
                                 .collect(Collectors.toList()),
                         page);
+    }
+    
+    public AnnotationPage getWebAnnotationPageForPageComments(String pi, URI uri, Integer pageNo, Integer collectionPage) throws DAOException, IllegalRequestException {
+        if (collectionPage == null || collectionPage < 1) {
+            throw new IllegalRequestException("Page number must be at least 1");
+        }
+        List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
+        if (data.isEmpty()) {
+            throw new IllegalRequestException("Page number is out of bounds");
+        }
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
+        return builder.setItemsPerPage(data.size())
+                .buildPage(
+                        data.stream()
+                                .map(converter::getAsWebAnnotation)
+                                .collect(Collectors.toList()),
+                                collectionPage);
     }
 
     /**
@@ -352,7 +391,7 @@ public class AnnotationsResourceBuilder {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
         AnnotationPage page = new AnnotationPage(uri);
         data.stream()
-                .map(converter::getAsOpenAnnotation)
+                .map(converter::getAsWebAnnotation)
                 .collect(Collectors.toList())
                 .forEach(c -> page.addItem(c));
 

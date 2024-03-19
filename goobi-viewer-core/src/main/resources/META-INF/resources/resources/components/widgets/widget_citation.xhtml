@@ -1,0 +1,168 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" >
+
+    <composite:interface />
+
+    <composite:implementation>
+        <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
+            <div id="widgetCitation" class="widget widget-citation">
+
+	            <div class="widget-citation__topbar">
+	                <!-- WIDGET TITLE -->
+					<h2
+						tabindex="0"
+						role="button"
+						class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
+	                    <span>#{msg.widget_citation}</span>
+	                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+	                </h2>
+				</div>
+
+                <!-- WIDGET BODY -->
+				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
+                    <!-- INTRODUCTION TEXT -->
+                    <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']) > 0}">
+                        <p id="introductionText" class="widget-citation__license-text">
+                            <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']}" escape="false" />
+                        </p>
+                    </ui:fragment>
+                    
+                    <!-- WORK DOWNLOADS -->
+                    <div class="widget-citation__work-downloads widget__badge-container">  
+                    
+                    	<h3 id="titleWork" class="widget-citation__subtitle widget__badge-container-heading">#{msg.widget__citation__complete_record}</h3>
+
+                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
+                        <ui:fragment 
+                            rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')) > 0}">
+                            <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
+                                    
+                                <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
+                                    <button type="button" 
+                                    	id="citeLinkUrl"
+                                        class="badge badge-dark"
+                                        data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                        data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                        aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+                                        #{msg[link.label]}</button>
+                                </ui:fragment>
+                                     
+                                <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+                                    <button type="button"
+                                    	id="citeLinkInternal"
+                                        class="badge badge-dark"
+                                        data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                        data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                        aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+                                       #{msg[link.label]}</button>
+                                </ui:fragment>
+                                    
+                            </c:forEach>
+                        </ui:fragment>      
+
+                        <!-- RIS (topstruct) -->
+                        <ui:fragment>
+                            <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris/"
+                                id="ris"
+                                class="badge badge-dark widget-citation__work-download-ris" 
+                                title="#{msg.risLinkTopstruct}"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                data-trigger="hover"
+                                rel="nofollow"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.risLinkTopstruct}"> 
+                                #{msg.risLinkTopstruct} 
+                            </a>
+                        </ui:fragment>
+                   
+                    </div>
+
+
+                    <!-- PAGE -->
+                    <ui:fragment>
+
+                        <!-- PAGE DOWNLOADS -->
+                        <div class="widget-citation__page-downloads widget__badge-container">
+                        
+                            <h3 id="titleImage" class="widget-citation__subtitle widget__badge-container-heading">#{msg.widget__citation__this_page}</h3>
+
+                            <ui:fragment
+                                rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and 
+                                            !activeDocumentBean.viewManager.doublePageMode and 
+                                            fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')) > 0}">
+                                <c:forEach var="link" varStatus="index" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
+                                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
+                                        <button type="button" 
+                                        	id="citeLinkUrn#{index.count}"
+                                            class="badge badge-dark"
+                                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+                                             #{msg[link.label]}</button>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+                                        <button type="button" 
+                                        	id="citeLinkUrnPage"
+                                            class="badge badge-dark"
+                                            data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+                                            data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+                                             #{msg[link.label]}</button>
+                                    </ui:fragment>
+                                </c:forEach>
+                            </ui:fragment>
+                            
+                        </div>
+                        
+                    </ui:fragment>
+
+
+                    
+
+					<viewerComponent:downloadsCitations showCiteLinksButton="false"/>
+ 
+                </div>
+            </div>
+
+            <!-- Set up download modal for work and struct PDF -->
+            <script>
+            	var downloadModalConfig = {
+                    downloadBtn: $( ".download-modal-widget" ),
+                    path: "#{navigationHelper.applicationUrl}",
+                    iiifPath: "#{configurationBean.iiifApiUrl}",
+                    userEmail: $( "#userEmail" ).val(),
+                    useReCaptcha: #{configurationBean.useReCaptcha},
+                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
+                    messages: {
+                        downloadInfo: {
+                            text: "#{msg.downloadInfoText}",
+                            title: "#{msg.downloadInfoTitle}",
+                            part: "#{msg.downloadInfoPart}",
+                            fileSize: "#{msg.downloadInfoFileSize}"
+                        },
+                        reCaptchaText: "#{msg.downloadReCaptchaText}",
+                        rcInvalid: "#{msg.downloadRcInvalid}",
+                        rcValid: "#{msg.downloadRcValid}",
+                        eMailText: "#{msg.downloadEMailText}",
+                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
+                        eMail: "#{msg.downloadEmail}",
+                        closeBtn: "#{msg.downloadCloseModal}",
+                        saveBtn: "#{msg.downloadGenerateFile}",
+                    }
+                };
+
+                viewerJS.downloadModal.init( downloadModalConfig );
+                viewerJS.clipboard.init();
+            </script>
+        </ui:fragment>
+    </composite:implementation>
+</ui:composition>

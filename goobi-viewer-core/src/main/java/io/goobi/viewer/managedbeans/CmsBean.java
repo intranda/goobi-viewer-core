@@ -1461,7 +1461,7 @@ public class CmsBean implements Serializable {
             throw new IllegalStateException("Item " + item + " does not define a solr query");
         }
         SolrDocument doc =
-                DataManager.getInstance().getSearchIndex().getFirstDoc(item.getSolrQuery(), Arrays.asList(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
+                DataManager.getInstance().getSearchIndex().getFirstDoc(item.getSolrQuery(), new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
         if (doc != null) {
             return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, width, height);
         }
@@ -1511,7 +1511,6 @@ public class CmsBean implements Serializable {
                     .filter(field -> !field.startsWith("SORT_") && !field.startsWith("FACET_") && !field.endsWith("_UNTOKENIZED")
                             && !field.matches(".*_LANG_\\w{2,3}"))
                     .collect(Collectors.toList());
-            //                this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
             Collections.sort(solrGroupFields);
         }
         return this.solrGroupFields;
@@ -1569,8 +1568,6 @@ public class CmsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Long getLastEditedTimestamp(long pageId) throws DAOException {
-        //        return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
-
         CMSPage page = getCMSPage(pageId);
         if (page == null || page.getDateUpdated() == null) {
             return null;

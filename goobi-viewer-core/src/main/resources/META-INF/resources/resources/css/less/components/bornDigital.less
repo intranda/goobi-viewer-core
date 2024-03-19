@@ -15,7 +15,7 @@
 		}
 	}
 	&__box {
-		padding-bottom: 1.5rem;
+		padding: 1.5rem;
 	}
 	h2 {
 		margin-bottom: 1rem;
@@ -27,15 +27,17 @@
 		grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
 		grid-gap: 0px;
 	  	grid-column: span 5;
-		padding: 0.5rem 1.5rem;
 		grid-gap: 5px;
+		padding: 0 15px;
+		margin-left: -15px;
+		margin-right: -15px;
 	}
 	&__items { 
 	}
 	&__head-wrapper {
 		display: grid;
 		grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
-		padding: 1.5rem;
+		// padding: 1.5rem;
 		padding-bottom: 0;
 		grid-gap: 5px;
 	}
@@ -57,6 +59,11 @@
 		position: relative;
 		word-wrap: anywhere;
 		place-self: center start;
+		&-download-last {
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+		}
 	}   
 	&__item-order-label {
 		display: block;
@@ -73,6 +80,76 @@
 	}
 }
 
+.download-external-resource {
+	&__wrapper {
+
+	}
+	&__heading {
+		font-size: 14px;
+		margin: 0;
+		font-weight: 700;
+		margin-top: 5px;
+	}
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+	}
+	&__item {
+	}
+	&__error_wrapper {
+		display: none;
+		color: red;
+		&.-active {
+			display:block;
+		}
+	}
+	&__inner-wrapper {
+		display: none;
+		&.-active {
+			display: flex;
+			align-items: center;
+		}
+	}
+	&__label {
+		margin-right: auto;
+		display: block;
+	}
+	&__order {
+		display: none;
+		&.-active {
+			display:block;
+		}
+	}
+	&__waiting_animation {
+		display: none;
+		&.-active {
+			display:block;
+		}
+	}
+	&__loading_animation {
+		display: none;
+		&.-active {
+			display:block;
+		}
+	}
+	&__cancel_download {
+		display: none;
+		&.-active {
+			display:block;
+		}
+	}
+	&__results {
+		display: none;
+		&.-active {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+	}
+
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
@@ -85,7 +162,6 @@
 		grid-template-columns: 1fr;
 		grid-gap: 0px;
 		// margin-bottom: 1.5rem;
-		padding: 1.5rem;
 		&:last-child {
 			margin-bottom: 0;
 		}
@@ -99,10 +175,36 @@
 	.born-digital__head-wrapper {
 		display: none;
 	}
+	.born-digital {
+		&__box {
+			padding: 0 15px;
+			padding-bottom: 15px;
+		}
+		&__items-wrapper {
+			padding: 10px 15px;
+		}
+		&__item {
+			&-download-last {
+				justify-content: flex-start;
+			}
+		}
+	}
+	.download-external-resource {
+		&__inner-wrapper {
+			&.-active {
+				flex-direction: column;
+				gap: 10px;
+				align-items: flex-start; 	
+			}
+
+		}
+	}
 }
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

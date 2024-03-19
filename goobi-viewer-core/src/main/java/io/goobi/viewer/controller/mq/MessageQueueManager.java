@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.ExportException;
 import java.rmi.server.RMIServerSocketFactory;
@@ -43,6 +44,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -61,6 +68,7 @@ import javax.management.remote.rmi.RMIConnectorServer;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ScheduledMessage;
 import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.jmx.QueueViewMBean;
@@ -113,6 +121,9 @@ public class MessageQueueManager {
     private RMIConnectorServer rmiServer = null;
     private BrokerService broker = null;
     private List<DefaultQueueListener> listeners = new ArrayList<>();
+    @Inject
+    private BeanManager beanManager;
+    private CreationalContext<MessageHandler<MessageStatus>> creationalContext;
 
     public MessageQueueManager() throws DAOException, IOException {
         this.instances = generateTicketHandlers();
@@ -134,6 +145,20 @@ public class MessageQueueManager {
         this.instances = instances;
         this.dao = dao;
         this.config = config;
+    }
+
+    @PostConstruct
+    public void init() {
+        if (beanManager != null) {
+            creationalContext = this.injectMessageHandlerDependencies(beanManager);
+        }
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        if (creationalContext != null) {
+            creationalContext.release();
+        }
     }
 
     /**
@@ -160,12 +185,7 @@ public class MessageQueueManager {
     public static String getQueueForMessageType(String taskName) {
         try {
             TaskType type = TaskType.valueOf(taskName);
-            switch (type) {
-                case PRERENDER_PDF:
-                    return QUEUE_NAME_PDF;
-                default:
-                    return QUEUE_NAME_VIEWER;
-            }
+            return type == TaskType.PRERENDER_PDF ? QUEUE_NAME_PDF : QUEUE_NAME_VIEWER;
         } catch (NullPointerException | IllegalArgumentException e) {
             logger.error("Error parsing TaskType for name {}", taskName);
             return QUEUE_NAME_VIEWER;
@@ -194,7 +214,7 @@ public class MessageQueueManager {
         if (handler == null) {
             return MessageStatus.ERROR;
         }
-        MessageStatus rv = handler.call(message);
+        MessageStatus rv = handler.call(message, this);
         updateMessageStatus(message, rv);
 
         return rv;
@@ -209,11 +229,7 @@ public class MessageQueueManager {
         // JMX/RMI part taken from: https://vafer.org/blog/20061010091658/
         try {
             RMIServerSocketFactory serverFactory = new RMIServerSocketFactoryImpl(InetAddress.getByName(address));
-            try {
-                LocateRegistry.createRegistry(namingPort, null, serverFactory);
-            } catch (ExportException e) {
-                logger.trace("Cannot create registry, already in use");
-            }
+            createRegistry(namingPort, serverFactory);
 
             StringBuilder url = new StringBuilder();
             url.append("service:jmx:");
@@ -264,6 +280,14 @@ public class MessageQueueManager {
         return true;
     }
 
+    public void createRegistry(int namingPort, RMIServerSocketFactory serverFactory) throws RemoteException {
+        try {
+            LocateRegistry.createRegistry(namingPort, null, serverFactory);
+        } catch (ExportException e) {
+            logger.trace("Cannot create registry, already in use");
+        }
+    }
+
     public void closeMessageServer() {
         try {
             for (DefaultQueueListener l : listeners) {
@@ -305,12 +329,25 @@ public class MessageQueueManager {
             try {
                 MessageHandler<MessageStatus> handler = clazz.getDeclaredConstructor().newInstance();
                 handlers.put(handler.getMessageHandlerName(), handler);
+
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException
                     | SecurityException e) {
                 logger.error(e);
             }
         }
         return handlers;
+    }
+
+    private CreationalContext<MessageHandler<MessageStatus>> injectMessageHandlerDependencies(BeanManager beanManager) {
+        CreationalContext<MessageHandler<MessageStatus>> ctx = beanManager.createCreationalContext(null);
+        for (MessageHandler<MessageStatus> handler : instances.values()) {
+            @SuppressWarnings("unchecked")
+            InjectionTarget<MessageHandler<MessageStatus>> injectionTarget = (InjectionTarget<MessageHandler<MessageStatus>>) beanManager
+                    .getInjectionTargetFactory(beanManager.createAnnotatedType(handler.getClass()))
+                    .createInjectionTarget(null);
+            injectionTarget.inject(handler, ctx);
+        }
+        return ctx;
     }
 
     private static String submitTicket(ViewerMessage ticket, String queueName, Connection conn, String ticketType)
@@ -325,7 +362,9 @@ public class MessageQueueManager {
         // we still need a fifo queue for message deduplication, though.
         // See: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-additional-fifo-queue-recommendations.html
         message.setStringProperty("JMSXGroupID", UUID.randomUUID().toString());
-
+        if (ticket.getDelay() > 0) {
+            message.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, ticket.getDelay());
+        }
         message.setText(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(ticket));
         message.setStringProperty("JMSType", ticketType);
         for (Map.Entry<String, String> entry : ticket.getProperties().entrySet()) {
@@ -489,12 +528,16 @@ public class MessageQueueManager {
     }
 
     public boolean deleteMessage(ViewerMessage ticket) {
+        return deleteMessage(ticket.getTaskName(), ticket.getMessageId());
+    }
+
+    public boolean deleteMessage(String taskName, String messageId) {
         try {
-            String queueName = getQueueForMessageType(ticket.getTaskName());
+            String queueName = getQueueForMessageType(taskName);
             ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
             QueueViewMBean mbean = (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-            int removed = mbean.removeMatchingMessages("JMSMessageID='" + ticket.getMessageId() + "'");
-            logger.debug("Removed {} messages with id {} from queue", removed, ticket.getMessageId());
+            int removed = mbean.removeMatchingMessages("JMSMessageID='" + messageId + "'");
+            logger.debug("Removed {} messages with id {} from queue", removed, messageId);
             return removed > 0;
         } catch (Exception e) {
             logger.error(e);

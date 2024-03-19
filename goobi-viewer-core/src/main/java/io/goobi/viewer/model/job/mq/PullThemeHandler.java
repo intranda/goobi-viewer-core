@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
@@ -55,7 +56,7 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     private AdminDeveloperBean developerBean;
 
     @Override
-    public MessageStatus call(ViewerMessage ticket) {
+    public MessageStatus call(ViewerMessage ticket, MessageQueueManager queueManager) {
         updateProgress(0.1f);
         if (DataManager.getInstance().getConfiguration().getThemeRootPath() != null) {
                 try {
@@ -138,4 +139,5 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     public String getMessageHandlerName() {
         return TaskType.PULL_THEME.name();
     }
+
 }

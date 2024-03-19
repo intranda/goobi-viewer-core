@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -39,7 +40,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -69,6 +73,12 @@ public final class JsonTools {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
+    static {
+        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+    }
+
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_STATUS = "status";
 
@@ -76,7 +86,6 @@ public final class JsonTools {
      * Private constructor.
      */
     private JsonTools() {
-        //
     }
 
     /**
@@ -158,6 +167,10 @@ public final class JsonTools {
 
     public static String getAsJson(Object object) throws JsonProcessingException {
         return mapper.writeValueAsString(object);
+    }
+
+    public static <T> T getAsObject(String json, Class<T> clazz) throws IOException {
+        return mapper.createParser(json).readValueAs(clazz);
     }
 
     public static Object getAsObjectForJson(Object value) {
