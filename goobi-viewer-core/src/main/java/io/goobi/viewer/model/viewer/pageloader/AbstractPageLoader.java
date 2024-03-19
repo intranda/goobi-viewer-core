@@ -100,6 +100,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
     public static AbstractPageLoader create(StructElement topStructElement, boolean loadPages)
             throws IndexUnreachableException, PresentationException, DAOException {
         if (!loadPages) {
+            // Page loader that skips loading any pages for speed (e.g. TOC creation via REST)
             return new EmptyPageLoader(topStructElement);
         }
         
@@ -110,7 +111,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * 
      * @param topStructElement
      * @param pageNosToLoad List of page numbers to load; empty list means all pages
-     * @return
+     * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
