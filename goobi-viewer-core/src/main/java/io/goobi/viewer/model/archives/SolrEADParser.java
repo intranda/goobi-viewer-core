@@ -92,6 +92,10 @@ public class SolrEADParser extends ArchiveParser {
         String dbName = DATABASE_NAME;
         for (SolrDocument doc : docs) {
             String resourceName = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+            if (resourceName == null) {
+                logger.warn("Indexed archive tree is missing field: {}", SolrConstants.TITLE);
+                resourceName = SolrConstants.TITLE + " NOT FOUND";
+            }
             String resourceIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
             String lastUpdated = formatDate(SolrTools.getSingleFieldLongValue(doc, SolrConstants.DATEUPDATED));
             String size = "0";
