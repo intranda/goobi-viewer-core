@@ -102,6 +102,21 @@ public abstract class AbstractPageLoader implements IPageLoader {
         if (!loadPages) {
             return new EmptyPageLoader(topStructElement);
         }
+        
+        return create(topStructElement, Collections.emptyList());
+    }
+
+    /**
+     * 
+     * @param topStructElement
+     * @param pageNosToLoad List of page numbers to load; empty list means all pages
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    public static AbstractPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad)
+            throws IndexUnreachableException, PresentationException, DAOException {
         int numPages = topStructElement.getNumPages();
         if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
             return new EagerPageLoader(topStructElement);
