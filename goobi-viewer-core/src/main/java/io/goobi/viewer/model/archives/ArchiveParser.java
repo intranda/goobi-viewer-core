@@ -46,6 +46,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 public abstract class ArchiveParser {
 
@@ -80,7 +81,8 @@ public abstract class ArchiveParser {
             throws PresentationException, IndexUnreachableException {
         if (searchIndex != null) {
             return searchIndex
-                    .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*",
+                    .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":* +" + SolrConstants.PI + ":* +" + SolrConstants.DOCTYPE + ":"
+                            + DocType.DOCSTRCT.name(),
                             Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
                     .stream()
                     .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)),
