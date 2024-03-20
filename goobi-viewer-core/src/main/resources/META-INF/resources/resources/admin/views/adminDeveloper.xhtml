@@ -171,18 +171,9 @@
 									<div
 										class="admin__developer-autopull-status-icon #{adminDeveloperBean.autopullError ? '-isError' : ''} #{adminDeveloperBean.autopullActive ? '-isActive' : '-isOff'}"></div>
 								</div>
-								<div class="admin__developer-autopull-last-pull">
-									<h:outputText value="#{adminDeveloperBean.lastAutopull}">
-										<f:converter converterId="localDateTimeConverter" />
-										<f:attribute name="pattern"
-											value="#{navigationHelper.dateTimePattern}" />
-									</h:outputText>
-								</div>
 								<div class="admin__developer-autopull-version-info">
-
 									<c:set scope="request" var="versionInfo"
-										value="#{adminDeveloperBean.themeVersion}" />
-									<!-- 					<div class="admin__developer-autopull-application-name">#{versionInfo.applicationName}</div> -->
+										value="#{adminDeveloperBean.lastVersionInfo}" />
 									<div class="admin__developer-autopull-build-date">#{versionInfo.buildDate}</div>
 									<div class="admin__developer-autopull-git-revision">#{versionInfo.gitRevision}</div>
 									<div class="admin__developer-autopull-release-version">#{versionInfo.releaseVersion}</div>

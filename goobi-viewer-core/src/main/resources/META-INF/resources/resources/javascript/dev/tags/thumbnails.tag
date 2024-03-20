@@ -41,9 +41,9 @@ this.on("mount", () => {
 	if(viewerJS.isString(source)) {
 		fetch(source)
 		.then(response => response.json())
-		.then(json => this.loadThumbnails(json, this.type));
+		.then(json => this.loadThumbnails(json, this.type))
 		.catch(e => {
-			console.error("Error reading manifes from ", source);
+			console.error("Error reading manifest from ", source);
 		})
 	} else {
 		this.loadThumbnails(source, this.type);
@@ -66,12 +66,33 @@ loadThumbnails(source, type) {
 	if(source) {
 		switch(type) {
 			case "structures":
-				rxjs.from(source.structures)
-				.pipe(
-						rxjs.operators.map(range => this.getFirstCanvas(range, true)),
-						rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
-						)
-				.subscribe(item => this.addThumbnail(item));
+				console.log("structures", source.structures);
+				let promises = source.structures
+				.map(range => this.getFirstCanvas(range, true))
+				.map(canvas => {
+					console.log("canvas ", canvas);
+					return canvas;
+				})
+				.map(canvas => fetch(viewerJS.iiif.getId(canvas)))
+				console.log("canvases ", promises);
+				
+				Promise.all(promises)
+				.then(results => {
+					results.forEach(r => {
+						r.json()
+						.then(json => {
+							console.log("response ", json);
+							this.addThumbnail(json);
+						})
+					})
+				})
+				
+// 				rxjs.from(source.structures)
+// 				.pipe(
+// 						rxjs.operators.map(range => this.getFirstCanvas(range, true)),
+// 						rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
+// 						)
+// 				.subscribe(item => this.addThumbnail(item));
 				break;
 			case "sequence":
 				this.createThumbnails(source.sequences[0].canvases);
