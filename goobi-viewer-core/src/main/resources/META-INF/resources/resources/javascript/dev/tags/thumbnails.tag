@@ -29,7 +29,7 @@ this.thumbnails = [];
 this._debug = false;
 
 this.on("mount", () => {
-	//console.log("mount ", this.opts);
+	console.log("mount ", this.opts);
 	this.type = opts.type ? opts.type : "items";
 	this.language = opts.language ? opts.language : "en";
 	this.imageSize = opts.imagesize;
@@ -38,7 +38,6 @@ this.on("mount", () => {
 	if(viewerJS.isString(source)) {
 		fetch(source)
 		.then(response => response.json())
-		// .then(data => console.log(data))
 		.then(json => this.loadThumbnails(json, this.type));
 	} else {
 		this.loadThumbnails(source, this.type);
