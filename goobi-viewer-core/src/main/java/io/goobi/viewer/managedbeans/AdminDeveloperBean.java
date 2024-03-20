@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,6 +41,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jdom2.JDOMException;
 import org.json.JSONObject;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
@@ -59,7 +61,9 @@ import io.goobi.viewer.controller.variablereplacer.VariableReplacer;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.mq.PullThemeHandler;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
 
@@ -190,14 +194,36 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     public LocalDateTime getLastAutopull() throws DAOException {
-        List<ViewerMessage> messages = DataManager.getInstance()
+
+        return getLastSuccessfullTask().map(ViewerMessage::getLastUpdateTime).orElse(null);
+
+    }
+
+    public VersionInfo getLastVersionInfo() throws DAOException, IOException {
+        return getLastSuccessfullTask()
+                .map(m -> {
+                    try {
+                        return PullThemeHandler.getVersionInfo(m.getProperties().get(ViewerMessage.MESSAGE_PROPERTY_INFO),
+                                m.getLastUpdateTime().format(getDateTimeFormatter()));
+                    } catch (JDOMException e) {
+                        logger.error("Error reading version info from message {}: {}", m, e.toString());
+                        return null;
+                    }
+                })
+                .orElse(this.getThemeVersion());
+    }
+
+    private DateTimeFormatter getDateTimeFormatter() {
+        return DateTimeFormatter.ofPattern(BeanUtils.getNavigationHelper().getDateTimePattern());
+    }
+
+    private Optional<ViewerMessage> getLastSuccessfullTask() throws DAOException {
+        return DataManager.getInstance()
                 .getDao()
                 .getViewerMessages(0, 1, "lastUpdateTime", true,
-                        Map.of("taskName", TaskType.PULL_THEME.name(), "messageStatus", MessageStatus.FINISH.name()));
-        if (!messages.isEmpty()) {
-            return messages.get(0).getLastUpdateTime();
-        }
-        return null;
+                        Map.of("taskName", TaskType.PULL_THEME.name(), "messageStatus", MessageStatus.FINISH.name()))
+                .stream()
+                .findAny();
     }
 
     public String getThemeName() {
