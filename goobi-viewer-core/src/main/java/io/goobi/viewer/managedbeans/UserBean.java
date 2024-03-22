@@ -540,6 +540,8 @@ public class UserBean implements Serializable {
             }
             session.removeAttribute("user");
 
+            this.reset();
+
             // Remove priv maps
             AccessConditionUtils.clearSessionPermissions(session);
 
@@ -560,6 +562,13 @@ public class UserBean implements Serializable {
                 logger.warn(e.getMessage());
             }
         }
+    }
+
+    /**
+     * Reset session dependend properties after a login or logout
+     */
+    private void reset() {
+        this.hasAdminBackendAccess = null;
     }
 
     /**
