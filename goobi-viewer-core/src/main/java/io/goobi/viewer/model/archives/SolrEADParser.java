@@ -60,7 +60,7 @@ public class SolrEADParser extends ArchiveParser {
     public static final String DATABASE_NAME = "EAD";
 
     private static final List<String> SOLR_FIELDS_DATABASES =
-            Arrays.asList(SolrConstants.DATEUPDATED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
+            Arrays.asList(SolrConstants.DATEINDEXED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
     private static final String[] SOLR_FIELDS_ENTRIES = { SolrConstants.IDDOC,
             SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_ID, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.TITLE };
 
