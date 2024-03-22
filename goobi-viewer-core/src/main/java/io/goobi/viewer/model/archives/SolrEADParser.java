@@ -97,7 +97,13 @@ public class SolrEADParser extends ArchiveParser {
                 resourceName = SolrConstants.TITLE + " NOT FOUND";
             }
             String resourceIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
-            String lastUpdated = formatDate(SolrTools.getSingleFieldLongValue(doc, SolrConstants.DATEUPDATED));
+            String lastUpdated = null;
+            List<String> lastUpdatedList = SolrTools.getMetadataValues(doc, SolrConstants.DATEINDEXED);
+            if (!lastUpdatedList.isEmpty()) {
+                lastUpdated = formatDate(Long.parseLong(lastUpdatedList.get(lastUpdatedList.size() - 1)));
+                logger.trace("Last updated: {}", lastUpdated);
+            }
+
             String size = "0";
             ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, resourceIdentifier, lastUpdated, size);
             ret.add(eadResource);

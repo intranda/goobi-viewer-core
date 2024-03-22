@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author florian
  *
@@ -56,7 +58,11 @@ public class ArchiveResource implements Serializable {
         this.databaseName = databaseName;
         this.resourceName = resourceName;
         this.resourceId = resourceId;
-        this.modifiedDate = LocalDateTime.parse(modifiedDate, DATE_TIME_FORMATTER);
+        if (StringUtils.isNotEmpty(modifiedDate)) {
+            this.modifiedDate = LocalDateTime.parse(modifiedDate, DATE_TIME_FORMATTER);
+        } else {
+            this.modifiedDate = LocalDateTime.of(1970, 1, 1, 0, 0);
+        }
         this.size = Long.parseLong(size);
     }
 

@@ -174,16 +174,16 @@ public class ArchiveManager implements Serializable {
     private boolean initArchives(ArchiveParser eadParser) throws IOException, HTTPException, PresentationException, IndexUnreachableException {
         logger.trace("initArchives");
         //initialize archives with 'null' archive tree values
-        List<ArchiveResource> databases = eadParser.getPossibleDatabases();
         Map<ArchiveResource, ArchiveTree> cachedDatabases = this.archives;
         this.archives = new HashMap<>();
         boolean updated = false;
-        for (ArchiveResource db : databases) {
+        for (ArchiveResource db : eadParser.getPossibleDatabases()) {
             ArchiveResource cachedResource =
                     cachedDatabases.keySet().stream().filter(res -> res.getCombinedId().equals(db.getCombinedId())).findAny().orElse(null);
             ArchiveTree cachedTree = cachedDatabases.get(cachedResource);
 
             if (cachedTree == null || cachedResource == null || isOutdated(cachedResource, db)) {
+                logger.trace("Archive {} is not yet loaded or outdated, (re)loading...", db.getResourceName());
                 this.archives.put(db, null);
                 updated = true;
             } else {
@@ -468,6 +468,7 @@ public class ArchiveManager implements Serializable {
         if (resource != null) {
             try {
                 if (this.archives.get(resource) == null || isOutdated(resource)) {
+                    logger.trace("Archive {} is not yet loaded or outdated, (re)loading...", resource.getResourceName());
                     ArchiveTree archiveTree = loadDatabase(eadParser, resource);
                     if (archiveTree != null) {
                         this.archives.put(resource, archiveTree);
@@ -488,11 +489,11 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * Check if the given resource is outdated compared to the last updated date from the basex server
+     * Check if the given resource is outdated compared to the last updated date from the server
      *
      * @param resource
-     * @return true if the resource in basex is newer than the given one
-     * @throws IOException if the basex server is not reachable
+     * @return true if the resource in the database is newer than the given one
+     * @throws IOException if the the database server is not reachable
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
