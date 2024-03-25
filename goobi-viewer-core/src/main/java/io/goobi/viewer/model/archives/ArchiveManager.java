@@ -181,7 +181,6 @@ public class ArchiveManager implements Serializable {
             ArchiveResource cachedResource =
                     cachedDatabases.keySet().stream().filter(res -> res.getCombinedId().equals(db.getCombinedId())).findAny().orElse(null);
             ArchiveTree cachedTree = cachedDatabases.get(cachedResource);
-
             if (cachedTree == null || cachedResource == null || isOutdated(cachedResource, db)) {
                 logger.trace("Archive {} is not yet loaded or outdated, (re)loading...", db.getResourceName());
                 this.archives.put(db, null);
@@ -209,6 +208,8 @@ public class ArchiveManager implements Serializable {
         } else if (currentResource == null) {
             return true;
         } else {
+            logger.trace("Loaded resource date: {}", currentResource.getModifiedDate());
+            logger.trace("Cached resource date: {}", cachedResource.getModifiedDate());
             return currentResource.getModifiedDate().isAfter(cachedResource.getModifiedDate());
         }
     }
@@ -224,6 +225,7 @@ public class ArchiveManager implements Serializable {
      */
     public ArchiveTree getArchiveTree(String archiveId, String resourceId)
             throws IllegalStateException, PresentationException, IndexUnreachableException {
+        logger.trace("getArchiveTree: {}", archiveId);
         ArchiveResource resource = getArchive(archiveId, resourceId);
         this.initializeArchiveTree(resource);
         return this.archives.get(resource);
