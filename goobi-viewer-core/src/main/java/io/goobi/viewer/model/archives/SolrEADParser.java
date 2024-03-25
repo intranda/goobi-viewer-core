@@ -1,5 +1,5 @@
 /*
- * This file is part of the Goobi viewer - a content presentation and management
+  * This file is part of the Goobi viewer - a content presentation and management
  * application for digitized objects.
  *
  * Visit these websites for more information.
@@ -86,7 +86,7 @@ public class SolrEADParser extends ArchiveParser {
     public List<ArchiveResource> getPossibleDatabases() throws PresentationException, IndexUnreachableException {
         List<SolrDocument> docs = DataManager.getInstance()
                 .getSearchIndex()
-                .search("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name(), SOLR_FIELDS_DATABASES);
+                .search("+" + SolrConstants.PI + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name(), SOLR_FIELDS_DATABASES);
 
         List<ArchiveResource> ret = new ArrayList<>();
         String dbName = DATABASE_NAME;
