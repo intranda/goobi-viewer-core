@@ -178,12 +178,16 @@ public class StatisticsBean implements Serializable {
         try {
             QueryResponse resp = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(new StringBuilder(SolrConstants.PI).append(":*")
-                            .append(" AND (")
+                    .search(new StringBuilder("+").append(SolrConstants.PI).append(":*")
+                            .append(" +(")
                             .append(SolrConstants.ISWORK)
-                            .append(":true OR ")
+                            .append(":true ")
                             .append(SolrConstants.ISANCHOR)
                             .append(":true)")
+                            .append(" +")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":")
+                            .append(DocType.DOCSTRCT.name())
                             .append(SearchHelper.getAllSuffixes())
                             .toString(), 0, 0, null, Collections.singletonList(SolrConstants.DOCSTRCT), "count",
                             Collections.singletonList(SolrConstants.DOCSTRCT), null, null);
