@@ -43,6 +43,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -153,7 +154,7 @@ public class SolrEADParser extends ArchiveParser {
             solrFields.addAll(additionalMetadataFields);
 
             SolrDocumentList archiveDocs = searchIndex.search(SolrConstants.PI_TOPSTRUCT + ":\"" + database.getResourceId() + "\" -"
-                    + SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
+                    + SolrConstants.PI + ":\"" + database.getResourceId() + '"' + SearchHelper.getAllSuffixes(), solrFields);
             Map<String, List<SolrDocument>> archiveDocMap = new HashMap<>();
             for (SolrDocument doc : archiveDocs) {
                 String iddocParent = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
@@ -235,8 +236,6 @@ public class SolrEADParser extends ArchiveParser {
         entry.setDescriptionLevel(SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_LEVEL));
 
         // get child elements
-        //        SolrDocumentList clist =
-        //                searchIndex.getDocs(SolrConstants.IDDOC_PARENT + ":" + SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), null);
         String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
         if (archiveDocMap.containsKey(iddoc)) {
             // logger.trace("found {} children", clist.size()); //NOSONAR Debug
