@@ -46,7 +46,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataElement;
+import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -212,7 +214,7 @@ public class MetadataBean {
         while (!metadataElementList.get(i).isHasSidebarMetadata() && i > 0) {
             i--;
         }
-        
+
         return metadataElementList.get(i);
     }
 
@@ -361,5 +363,52 @@ public class MetadataBean {
         }
 
         return List.of("MD_DATESTART", "MD_DATEEND", "MD_TYPE");
+    }
+
+    /**
+     * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code> where the subfield
+     * value of MD_ORDER matches the given <code>order</code> value.
+     * 
+     * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
+     * @param fieldName Name metadata field
+     * @param language Optional metadata field language
+     * @param subFieldName Child metadata field
+     * @param order Page number
+     * @return Metadata values of subFieldName; empty list if none found
+     */
+    public List<String> getMetadataValuesForPage(int metadataViewIndex, String mainFieldName, String language, String subFieldName, int order) {
+        List<MetadataElement> metadataElements = getMetadataElementList(metadataViewIndex);
+        if (metadataElements != null && !metadataElements.isEmpty()) {
+            Metadata md = metadataElements.get(0).getMetadata(mainFieldName, language);
+            if (md != null && md.isGroup() && !md.isBlank()) {
+                for (MetadataValue val : md.getValues()) {
+                    if (String.valueOf(order).equals(val.getParamValue("MD_ORDER"))) {
+                        return val.getParamValues(subFieldName);
+                    }
+                }
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code> where the subfield
+     * value of MD_ORDER matches the given <code>order</code> value.
+     * 
+     * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
+     * @param fieldName Name metadata field
+     * @param language Optional metadata field language
+     * @param subFieldName Child metadata field
+     * @param order Page number
+     * @return First value of subFieldName; null if none found
+     */
+    public String getFirstMetadataValueForPage(int metadataViewIndex, String mainFieldName, String language, String subFieldName, int order) {
+        List<String> values = getMetadataValuesForPage(metadataViewIndex, mainFieldName, language, subFieldName, order);
+        if (!values.isEmpty()) {
+            return values.get(0);
+        }
+
+        return null;
     }
 }
