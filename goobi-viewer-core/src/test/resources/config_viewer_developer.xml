@@ -2,6 +2,9 @@
 
 <config>
 
+    <!-- stopwordsFile: location of the stopword.txt file used in Solr -->
+    <stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
+
 	<urls>
 
 		<rest>https://example.com/viewer/api/v1/</rest>
