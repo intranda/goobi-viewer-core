@@ -61,6 +61,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -322,7 +323,7 @@ public class ArchiveManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId) throws PresentationException, IndexUnreachableException {
-        String query = SolrConstants.EAD_NODE_ID + ":*";
+        String query = "+" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
         List<StringPair> sortFields = Collections.singletonList(new StringPair(SolrConstants.PI, "asc"));
         List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.EAD_NODE_ID);
 
