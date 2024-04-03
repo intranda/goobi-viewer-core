@@ -322,9 +322,9 @@ public class ArchiveManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId) throws PresentationException, IndexUnreachableException {
-        String query = SolrConstants.ARCHIVE_ENTRY_ID + ":*";
+        String query = SolrConstants.EAD_NODE_ID + ":*";
         List<StringPair> sortFields = Collections.singletonList(new StringPair(SolrConstants.PI, "asc"));
-        List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.ARCHIVE_ENTRY_ID);
+        List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.EAD_NODE_ID);
 
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
@@ -335,10 +335,10 @@ public class ArchiveManager implements Serializable {
         ListIterator<SolrDocument> iter = docs.listIterator();
         while (iter.hasNext()) {
             SolrDocument doc = iter.next();
-            String id = SolrTools.getSingleFieldStringValue(doc, SolrConstants.ARCHIVE_ENTRY_ID);
+            String id = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
             if (id.equals(entryId)) {
                 if (iter.hasNext()) {
-                    String nextId = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.ARCHIVE_ENTRY_ID);
+                    String nextId = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.EAD_NODE_ID);
                     next = Optional.of(nextId);
                 }
                 break;
@@ -407,7 +407,7 @@ public class ArchiveManager implements Serializable {
     private ArchiveResource getArchiveForEntrySolr(String identifier) throws PresentationException, IndexUnreachableException {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
-                .getFirstDoc(SolrConstants.ARCHIVE_ENTRY_ID + ":\"" + identifier + '"', Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
+                .getFirstDoc(SolrConstants.EAD_NODE_ID + ":\"" + identifier + '"', Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
         if (doc != null) {
             String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
             return getArchive(SolrEADParser.DATABASE_NAME, pi);

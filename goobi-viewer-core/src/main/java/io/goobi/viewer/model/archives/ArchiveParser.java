@@ -81,11 +81,11 @@ public abstract class ArchiveParser {
             throws PresentationException, IndexUnreachableException {
         if (searchIndex != null) {
             return searchIndex
-                    .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":* +" + SolrConstants.PI + ":* +" + SolrConstants.DOCTYPE + ":"
+                    .search("+" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.PI + ":* +" + SolrConstants.DOCTYPE + ":"
                             + DocType.DOCSTRCT.name(),
-                            Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
+                            Arrays.asList(SolrConstants.EAD_NODE_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
                     .stream()
-                    .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)),
+                    .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.EAD_NODE_ID)),
                             doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)),
                                     SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
         }

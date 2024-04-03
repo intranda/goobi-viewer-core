@@ -77,7 +77,7 @@ public final class SolrTools {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrTools.class);
 
-    private static final int MIN_SCHEMA_VERSION = 20230110;
+    private static final int MIN_SCHEMA_VERSION = 20240403;
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
 
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";

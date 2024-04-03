@@ -139,6 +139,8 @@ public final class SolrConstants {
     public static final String DOCTYPE = "DOCTYPE";
     /** Constant <code>DOWNLOAD_URL_EXTERNAL="MD2_DOWNLOAD_URL"</code> */
     public static final String DOWNLOAD_URL_EXTERNAL = "MD2_DOWNLOAD_URL";
+    /** Constant <code>EAD_NODE_ID="EAD_NODE_ID"</code> */
+    public static final String EAD_NODE_ID = "EAD_NODE_ID";
     /** Constant <code>EVENTDATE="EVENTDATE"</code> */
     public static final String EVENTDATE = "EVENTDATE";
     /** Constant <code>EVENTDATESTART="EVENTDATESTART"</code> */
@@ -249,8 +251,6 @@ public final class SolrConstants {
     public static final String SUPERFULLTEXT = "SUPERFULLTEXT";
     /** Constant <code>SUPERUGCTERMS="SUPERUGCTERMS"</code> */
     public static final String SUPERUGCTERMS = "SUPERUGCTERMS";
-    /** Constant <code>TECTONICS_ID="MD_ARCHIVE_ENTRY_ID"</code> */
-    public static final String ARCHIVE_ENTRY_ID = "MD_ARCHIVE_ENTRY_ID";
     /** Constant <code>TITLE="MD_TITLE"</code> */
     public static final String TITLE = "MD_TITLE";
     /** Constant <code>THUMBNAIL="THUMBNAIL"</code> */

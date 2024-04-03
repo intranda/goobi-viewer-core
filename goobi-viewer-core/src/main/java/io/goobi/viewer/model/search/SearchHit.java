@@ -436,7 +436,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             ownerDocs.put(iddoc, childDoc);
                             hitsPopulated++;
                             //Check and add link to record, if exists
-                            String entryId = SolrTools.getSingleFieldStringValue(childDoc, "MD_ARCHIVE_ENTRY_ID");
+                            String entryId = SolrTools.getSingleFieldStringValue(childDoc, SolrConstants.EAD_NODE_ID);
                             if (StringUtils.isNotEmpty(entryId)) {
                                 childHit.url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected";
                                 // Related record link 
@@ -444,8 +444,8 @@ public class SearchHit implements Comparable<SearchHit> {
                                         DataManager.getInstance()
                                                 .getSearchIndex()
                                                 .getFirstDoc(
-                                                        '+' + SolrConstants.DOCTYPE + ':' + DocType.DOCSTRCT.name() + " +MD_ARCHIVE_ENTRY_ID:\""
-                                                                + entryId + '"',
+                                                        '+' + SolrConstants.DOCTYPE + ':' + DocType.DOCSTRCT.name() + " +" + SolrConstants.EAD_NODE_ID
+                                                                + ":\"" + entryId + '"',
                                                         Arrays.asList(SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT));
                                 if (relatedRecordDoc != null) {
                                     childHit.setAltUrl(

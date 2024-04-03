@@ -56,14 +56,13 @@ public class SolrEADParser extends ArchiveParser {
 
     private static final Logger logger = LogManager.getLogger(SolrEADParser.class);
 
-    private static final String FIELD_ARCHIVE_ENTRY_ID = "MD_ARCHIVE_ENTRY_ID";
     private static final String FIELD_ARCHIVE_ENTRY_LEVEL = "MD_ARCHIVE_ENTRY_LEVEL";
     public static final String DATABASE_NAME = "EAD";
 
     private static final List<String> SOLR_FIELDS_DATABASES =
             Arrays.asList(SolrConstants.DATEINDEXED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
     private static final String[] SOLR_FIELDS_ENTRIES = { SolrConstants.IDDOC,
-            SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_ID, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.TITLE };
+            SolrConstants.IDDOC_PARENT, SolrConstants.EAD_NODE_ID, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.TITLE };
 
     /**
      *
@@ -208,7 +207,7 @@ public class SolrEADParser extends ArchiveParser {
             addFieldToEntry(entry, emf, stringValues);
         }
 
-        String id = SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_ID);
+        String id = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
         if (StringUtils.isNotEmpty(id)) {
             entry.setId(id);
         }
