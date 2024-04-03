@@ -429,13 +429,13 @@ public class SearchHit implements Comparable<SearchHit> {
                     case ARCHIVE:
                         // EAD archive
                         iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
-                        if (!ownerHits.containsKey(iddoc)) {
+                        if (!ownerHits.containsKey(iddoc) && DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
                             SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
                             children.add(childHit);
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
                             hitsPopulated++;
-                            //Check and add link to record, if exists
+                            // Check and add link to record, if exists
                             String entryId = SolrTools.getSingleFieldStringValue(childDoc, SolrConstants.EAD_NODE_ID);
                             if (StringUtils.isNotEmpty(entryId)) {
                                 childHit.url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected";

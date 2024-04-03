@@ -832,41 +832,51 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
+     * @verifies add archive filter suffix
+     */
+    @Test
+    void getAllSuffixes_shoulAddArchiveFilterSuffix() throws Exception {
+        String suffix = SearchHelper.getAllSuffixes(null, true, false, false, IPrivilegeHolder.PRIV_LIST);
+        Assertions.assertNotNull(suffix);
+        assertTrue(suffix.contains(" -DOCTYPE:ARCHIVE"));
+    }
+
+    /**
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies add static suffix
      */
     @Test
     void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, true, false);
+        String suffix = SearchHelper.getAllSuffixes(null, false, true, false, IPrivilegeHolder.PRIV_LIST);
         Assertions.assertNotNull(suffix);
         Assertions.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean)
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies not add static suffix if not requested
      */
     @Test
     void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, false, false, false, IPrivilegeHolder.PRIV_LIST);
         Assertions.assertNotNull(suffix);
         Assertions.assertFalse(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies add collection blacklist suffix
      */
     @Test
     void getAllSuffixes_shouldAddCollectionBlacklistSuffix() throws Exception {
-
-        String suffix = SearchHelper.getAllSuffixes();
+        String suffix = SearchHelper.getAllSuffixes(null, false, false, true, IPrivilegeHolder.PRIV_LIST);
         Assertions.assertNotNull(suffix);
         Assertions.assertTrue(suffix.contains(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2"));
     }
 
     //    /**
-    //     * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)
+    //     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
     //     * @verifies add discriminator value suffix
     //     */
     //    @Test

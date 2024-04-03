@@ -485,17 +485,10 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param addStaticQuerySuffix a boolean.
-     * @param addCollectionBlacklistSuffix a boolean.
      * @return a {@link java.lang.String} object.
-     * @should add static suffix
-     * @should not add static suffix if not requested
-     * @should add collection blacklist suffix
-     * @should add discriminator value suffix
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
-        return getAllSuffixes(request, addStaticQuerySuffix, addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
+    public static String getAllSuffixes() {
+        return getAllSuffixes(BeanUtils.getRequest(), true, true);
     }
 
     /**
@@ -504,16 +497,34 @@ public final class SearchHelper {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
+        return getAllSuffixes(request, !DataManager.getInstance().getConfiguration().isArchivesEnabled(), addStaticQuerySuffix,
+                addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
+    }
+
+    /**
+     * Returns all suffixes relevant to search filtering.
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @para addArchiveFilterSuffix
+     * @param addStaticQuerySuffix a boolean.
+     * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
+     * @should add archive filter suffix
      * @should add static suffix
      * @should not add static suffix if not requested
      * @should add collection blacklist suffix
      * @should add discriminator value suffix
      * @return a {@link java.lang.String} object.
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
-            String privilege) {
+    public static String getAllSuffixes(HttpServletRequest request, boolean addArchiveFilterSuffix, boolean addStaticQuerySuffix,
+            boolean addCollectionBlacklistSuffix, String privilege) {
         StringBuilder sbSuffix = new StringBuilder("");
+        if (addArchiveFilterSuffix) {
+            sbSuffix.append(" -").append(SolrConstants.DOCTYPE).append(':').append(DocType.ARCHIVE.toString());
+        }
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
             String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
             if (staticSuffix.charAt(0) != ' ') {
@@ -531,15 +542,6 @@ public final class SearchHelper {
         }
 
         return sbSuffix.toString();
-    }
-
-    /**
-     * Returns all suffixes relevant to search filtering.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getAllSuffixes() {
-        return getAllSuffixes(BeanUtils.getRequest(), true, true);
     }
 
     /**
@@ -1125,7 +1127,7 @@ public final class SearchHelper {
         if (user != null && user.isSuperuser()) {
             return "";
         }
-        
+
         // No restrictions for localhost, if so configured
         if (NetTools.isIpAddressLocalhost(ipAddress) && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
             return "";
@@ -3134,7 +3136,7 @@ public final class SearchHelper {
         }
 
         // Suffixes
-        String suffixes = getAllSuffixes(request, true, true, IPrivilegeHolder.PRIV_LIST);
+        String suffixes = getAllSuffixes(request, true, true);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
