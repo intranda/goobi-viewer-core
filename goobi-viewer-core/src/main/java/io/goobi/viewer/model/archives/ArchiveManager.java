@@ -400,15 +400,17 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param identifier
+     * @param identifier EAD node ID
      * @return {@link ArchiveResource}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     private ArchiveResource getArchiveForEntrySolr(String identifier) throws PresentationException, IndexUnreachableException {
+        // logger.trace("getArchiveForEntrySolr: {}", identifier); //NOSONAR Debug
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
-                .getFirstDoc(SolrConstants.EAD_NODE_ID + ":\"" + identifier + '"', Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
+                .getFirstDoc("+" + SolrConstants.EAD_NODE_ID + ":\"" + identifier + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name(),
+                        Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
         if (doc != null) {
             String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
             return getArchive(SolrEADParser.DATABASE_NAME, pi);
