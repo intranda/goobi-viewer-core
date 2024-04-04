@@ -25,9 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 
-class VariableReplacerTest {
+class VariableReplacerTest extends AbstractTest {
 
     private static final String PULL_THEME = "{config-folder-path}/script_theme-pull.sh {theme-path}";
     private static final String CREATE_DEVELOPER_PACKAGE = "{config-folder-path}/script_create_package.sh viewer {base-path} /var/www {solr-url}";
