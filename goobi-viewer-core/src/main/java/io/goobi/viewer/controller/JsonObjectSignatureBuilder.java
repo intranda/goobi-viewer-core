@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
-import io.goobi.viewer.websockets.DownloadTaskEndpoint;
 import io.goobi.viewer.websockets.DownloadTaskEndpoint.SocketMessage;
 
 public class JsonObjectSignatureBuilder {
@@ -43,7 +42,7 @@ public class JsonObjectSignatureBuilder {
 
         return Arrays.stream(clazz.getDeclaredFields())
                 .map(Field.class::cast)
-                .filter(field -> field.getName() != "this$0")
+                .filter(field -> !"this$0".equals(field.getName()))
                 .collect(Collectors.toMap(
                         Field::getName,
                         field -> getJSONType(field.getType())));
@@ -65,7 +64,7 @@ public class JsonObjectSignatureBuilder {
     public static void main(String[] args) throws IOException {
         String json = "{\"action\":\"update\",\"pi\":\"34192383\",\"url\":\"http://d-nb.info/1303371537/34\"}";
         SocketMessage message = JsonTools.getAsObject(json, SocketMessage.class);
-        System.out.println(message);
+        //System.out.println(message);
     }
 
 }

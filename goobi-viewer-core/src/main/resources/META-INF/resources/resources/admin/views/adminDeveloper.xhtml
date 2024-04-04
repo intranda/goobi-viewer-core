@@ -97,13 +97,7 @@
 										data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__unzip_file_code, navigationHelper.theme)}">
 										<i class="fa fa-clipboard" aria-hidden="true"></i>
 									</div>
-									<code data-target="sqlCode">
-										<h:outputFormat
-											value="#{msg.admin__developer__unzip_file_code}"
-											escape="false">
-											<f:param value="#{navigationHelper.theme}" />
-										</h:outputFormat>
-									</code>
+									<code data-target="sqlCode"><h:outputFormat value="#{msg.admin__developer__unzip_file_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
 								</div>
 							</h:form>
@@ -127,12 +121,7 @@
 									data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__sql_commands, navigationHelper.theme)}">
 									<i class="fa fa-clipboard" aria-hidden="true"></i>
 								</div>
-								<code data-target="code">
-									<h:outputFormat value="#{msg.admin__developer__sql_commands}"
-										escape="false">
-										<f:param value="#{navigationHelper.theme}" />
-									</h:outputFormat>
-								</code>
+								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__sql_commands}" escape="false"><f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
 							</div>
 						</div>
@@ -151,13 +140,7 @@
 									data-copy-value="#{msg.admin__developer__local_messages_config_code}">
 									<i class="fa fa-clipboard" aria-hidden="true"></i>
 								</div>
-								<code data-target="code">
-									<h:outputFormat
-										value="#{msg.admin__developer__local_messages_config_code}"
-										escape="false">
-										<f:param value="#{navigationHelper.theme}" />
-									</h:outputFormat>
-								</code>
+								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__local_messages_config_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
 							</div>
 
@@ -170,7 +153,6 @@
 								<h:outputFormat
 									value="#{msg.admin__developer__settings_info_text}"
 									escape="false" />
-
 							</div>
 						</div>
 
@@ -189,18 +171,9 @@
 									<div
 										class="admin__developer-autopull-status-icon #{adminDeveloperBean.autopullError ? '-isError' : ''} #{adminDeveloperBean.autopullActive ? '-isActive' : '-isOff'}"></div>
 								</div>
-								<div class="admin__developer-autopull-last-pull">
-									<h:outputText value="#{adminDeveloperBean.lastAutopull}">
-										<f:converter converterId="localDateTimeConverter" />
-										<f:attribute name="pattern"
-											value="#{navigationHelper.dateTimePattern}" />
-									</h:outputText>
-								</div>
 								<div class="admin__developer-autopull-version-info">
-
 									<c:set scope="request" var="versionInfo"
-										value="#{adminDeveloperBean.themeVersion}" />
-									<!-- 					<div class="admin__developer-autopull-application-name">#{versionInfo.applicationName}</div> -->
+										value="#{adminDeveloperBean.lastVersionInfo}" />
 									<div class="admin__developer-autopull-build-date">#{versionInfo.buildDate}</div>
 									<div class="admin__developer-autopull-git-revision">#{versionInfo.gitRevision}</div>
 									<div class="admin__developer-autopull-release-version">#{versionInfo.releaseVersion}</div>

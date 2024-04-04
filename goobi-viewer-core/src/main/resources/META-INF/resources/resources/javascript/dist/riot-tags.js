@@ -4529,17 +4529,22 @@ this.thumbnails = [];
 this._debug = false;
 
 this.on("mount", () => {
-
+	if(this._debug)console.log("mount ", this.opts);
 	this.type = opts.type ? opts.type : "items";
 	this.language = opts.language ? opts.language : "en";
 	this.imageSize = opts.imagesize;
+	if(this.opts.index === undefined) {
+		this.opts.index = 0;
+	}
 
 	let source = opts.source;
 	if(viewerJS.isString(source)) {
 		fetch(source)
 		.then(response => response.json())
-
-		.then(json => this.loadThumbnails(json, this.type));
+		.then(json => this.loadThumbnails(json, this.type))
+		.catch(e => {
+			console.error("Error reading manifest from ", source);
+		})
 	} else {
 		this.loadThumbnails(source, this.type);
 	}
@@ -4558,22 +4563,40 @@ this.on("updated", () => {
 
 this.loadThumbnails = function(source, type) {
     if(this._debug)console.log("Loading thumbnails from ", source);
+	if(source) {
+		switch(type) {
+			case "structures":
+				console.log("structures", source.structures);
+				let promises = source.structures
+				.map(range => this.getFirstCanvas(range, true))
+				.map(canvas => {
+					console.log("canvas ", canvas);
+					return canvas;
+				})
+				.map(canvas => fetch(viewerJS.iiif.getId(canvas)))
+				console.log("canvases ", promises);
 
-	switch(type) {
-		case "structures":
-			rxjs.from(source.structures)
-			.pipe(
-					rxjs.operators.map(range => this.getFirstCanvas(range, true)),
-					rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
-					)
-			.subscribe(item => this.addThumbnail(item));
-			break;
-		case "sequence":
-			this.createThumbnails(source.sequences[0].canvases);
-			break;
-		case "items":
-		case "default":
-			this.createThumbnails(source.items)
+				Promise.all(promises)
+				.then(results => {
+					results.forEach(r => {
+						r.json()
+						.then(json => {
+							console.log("response ", json);
+							this.addThumbnail(json);
+						})
+					})
+				})
+
+				break;
+			case "sequence":
+				this.createThumbnails(source.sequences[0].canvases);
+				break;
+			case "items":
+			case "default":
+				this.createThumbnails(source.items)
+		}
+	} else {
+		throw "source manifest not defined";
 	}
 
 }.bind(this)
