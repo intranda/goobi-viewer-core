@@ -45,12 +45,6 @@ public class ArchiveMetadataField {
      */
     private Integer type;
 
-    /** contains a relative path to the ead value. The root of the xpath is either the {@code<ead>} element or the {@code<c>} element */
-    private String xpath;
-
-    /** type of the xpath return value, can be text, attribute, element (default) */
-    private String xpathType;
-
     /** Index field containing the metadata value. */
     private String indexField;
 
@@ -65,15 +59,11 @@ public class ArchiveMetadataField {
      * 
      * @param label
      * @param type
-     * @param xpath
-     * @param xpathType
      * @param indexField
      */
-    public ArchiveMetadataField(String label, Integer type, String xpath, String xpathType, String indexField) {
+    public ArchiveMetadataField(String label, Integer type, String indexField) {
         this.label = label;
         this.type = type;
-        this.xpath = xpath;
-        this.xpathType = xpathType;
         this.indexField = indexField;
     }
 
@@ -132,20 +122,6 @@ public class ArchiveMetadataField {
     }
 
     /**
-     * @return the xpathType
-     */
-    public String getXpathType() {
-        return xpathType;
-    }
-
-    /**
-     * @param xpathType the xpathType to set
-     */
-    public void setXpathType(String xpathType) {
-        this.xpathType = xpathType;
-    }
-
-    /**
      * @return the indexField
      */
     public String getIndexField() {
@@ -179,20 +155,6 @@ public class ArchiveMetadataField {
      */
     public void setValues(List<FieldValue> values) {
         this.values = values;
-    }
-
-    /**
-     * @return the xpath
-     */
-    public String getXpath() {
-        return xpath;
-    }
-
-    /**
-     * @param xpath the xpath to set
-     */
-    public void setXpath(String xpath) {
-        this.xpath = xpath;
     }
 
     /**

@@ -76,7 +76,7 @@ public class SolrEADParser extends ArchiveParser {
     }
 
     /**
-     * Get the database names and file names from the basex databases
+     * Get the database names.
      *
      * @return List<ArchiveResource>
      * @throws IndexUnreachableException

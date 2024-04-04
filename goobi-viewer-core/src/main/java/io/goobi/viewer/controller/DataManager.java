@@ -555,9 +555,7 @@ public final class DataManager {
     public ArchiveManager getArchiveManager() {
         if (archiveManager == null) {
             synchronized (LOCK) {
-                archiveManager = new ArchiveManager(getConfiguration().isArchivesEnabled() ? getConfiguration().getBaseXUrl() : "",
-                        getConfiguration().getArchiveNodeTypes(),
-                        getSearchIndex());
+                archiveManager = new ArchiveManager(getSearchIndex(), getConfiguration().getArchiveNodeTypes());
             }
         }
         return archiveManager;

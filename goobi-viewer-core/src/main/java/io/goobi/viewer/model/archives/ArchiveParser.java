@@ -31,10 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.tree.ImmutableNode;
-import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,10 +40,11 @@ import org.jdom2.JDOMException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
-import io.goobi.viewer.solr.SolrConstants.DocType;
 
 public abstract class ArchiveParser {
 
@@ -126,10 +124,10 @@ public abstract class ArchiveParser {
      * @param stringValues
      */
     protected static void addFieldToEntry(ArchiveEntry entry, ArchiveMetadataField emf, List<String> stringValues) {
-        if (StringUtils.isBlank(entry.getLabel()) && emf.getXpath().contains("unittitle") && stringValues != null && !stringValues.isEmpty()) {
+        if (StringUtils.isBlank(entry.getLabel()) && emf.getLabel().equals("unittitle") && stringValues != null && !stringValues.isEmpty()) {
             entry.setLabel(stringValues.get(0));
         }
-        ArchiveMetadataField toAdd = new ArchiveMetadataField(emf.getLabel(), emf.getType(), emf.getXpath(), emf.getXpathType(), emf.getIndexField());
+        ArchiveMetadataField toAdd = new ArchiveMetadataField(emf.getLabel(), emf.getType(), emf.getIndexField());
         toAdd.setEadEntry(entry);
 
         if (stringValues != null && !stringValues.isEmpty()) {
@@ -200,22 +198,17 @@ public abstract class ArchiveParser {
      * @return {@link ArchiveParser}
      * @throws ConfigurationException
      */
-    public ArchiveParser readConfiguration(HierarchicalConfiguration<ImmutableNode> metadataConfig) throws ConfigurationException {
+    public ArchiveParser readConfiguration(List<Metadata> metadataConfig) throws ConfigurationException {
         if (metadataConfig == null) {
-            throw new ConfigurationException("No basexMetadata configurations found");
+            throw new ConfigurationException("No archive metadata configurations found");
         }
-        // metadataConfig.setListDelimiter('&');
-        metadataConfig.setExpressionEngine(new XPathExpressionEngine());
 
-        List<HierarchicalConfiguration<ImmutableNode>> configurations = metadataConfig.configurationsAt("/metadata");
-        if (configurations == null) {
-            throw new ConfigurationException("Error reading basexMetadata configuration: No basexMetadata configurations found");
-        }
-        configuredFields = new ArrayList<>(configurations.size());
-        for (HierarchicalConfiguration<ImmutableNode> hc : configurations) {
-            ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("@label"), hc.getInt("@type"), hc.getString("@xpath"),
-                    hc.getString("@xpathType", "element"), hc.getString("@indexField"));
-            configuredFields.add(field);
+        configuredFields = new ArrayList<>(metadataConfig.size());
+        for (Metadata md : metadataConfig) {
+            if (!md.getParams().isEmpty()) {
+                ArchiveMetadataField field = new ArchiveMetadataField(md.getLabel(), md.getType(), md.getParams().get(0).getKey());
+                configuredFields.add(field);
+            }
         }
 
         return this;

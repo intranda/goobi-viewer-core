@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.Messages;
@@ -117,7 +116,6 @@ public class ArchiveBean implements Serializable {
     /**
      *
      * @return the archiveTree
-     * @throws BaseXException
      */
     public ArchiveTree getArchiveTree() {
         return archiveTree;
@@ -274,7 +272,6 @@ public class ArchiveBean implements Serializable {
      * Setter for the URL parameter. Loads the entry that has the given ID. Loads the tree, if this is a new sessions.
      *
      * @param id Entry ID
-     * @throws BaseXException
      */
     public void setSelectedEntryId(final String id) {
         logger.trace("setSelectedEntryId: {}", id);

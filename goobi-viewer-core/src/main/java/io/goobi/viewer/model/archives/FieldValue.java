@@ -38,11 +38,10 @@ public class FieldValue {
     }
 
     public void setValue(String value) {
-        if (field.getXpath().contains("unittitle")) {
+        if (field.getLabel().equals("unittitle")) {
             field.getEadEntry().setLabel(value);
         } else {
             this.value = value;
         }
-
     }
 }

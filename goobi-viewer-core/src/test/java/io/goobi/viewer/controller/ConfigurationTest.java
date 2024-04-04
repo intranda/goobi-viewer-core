@@ -3540,13 +3540,4 @@ class ConfigurationTest extends AbstractTest {
     void isArchivesEnabled_shouldReturnCorrectValue() throws Exception {
         Assertions.assertTrue(DataManager.getInstance().getConfiguration().isArchivesEnabled());
     }
-
-    /**
-     * @see Configuration#getArchivesType()
-     * @verifies return correct value
-     */
-    @Test
-    void getArchivesType_shouldReturnCorrectValue() throws Exception {
-        assertEquals("basex", DataManager.getInstance().getConfiguration().getArchivesType());
-    }
 }

@@ -578,6 +578,19 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns the list of configured metadata for the archives.
+     *
+     * @param template Template name (currently not in use)
+     * @return List of configured metadata for configured fields
+     * @should return correct template configuration
+     * @should return empty list if template not found
+     * @should return empty list if template is null
+     */
+    public List<Metadata> getArchiveMetadataForTemplate(String template) {
+        return getMetadataConfigurationForTemplate("archive", template, false, false);
+    }
+
+    /**
      * Reads metadata configuration for the given template name if it's contained in the given template list.
      *
      * @param template Requested template name
@@ -5684,28 +5697,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return Configured value
-     */
-    public String getBaseXUrl() {
-        return getLocalString("urls.basex");
-    }
-
-    /**
      * 
      * @return Configured value
      * @should return correct value
      */
     public boolean isArchivesEnabled() {
         return getLocalBoolean("archives[@enabled]", false);
-    }
-
-    /**
-     * 
-     * @return Configured value
-     * @should return correct value
-     */
-    public String getArchivesType() {
-        return getLocalString("archives[@type]", "solr").toLowerCase();
     }
 
     public Map<String, String> getArchiveNodeTypes() {
@@ -5716,12 +5713,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return Configured value
+     * 
+     * @return a boolean
      */
-    public HierarchicalConfiguration<ImmutableNode> getArchiveMetadataConfig() {
-        return getLocalConfigurationAt("archives.metadataList");
-    }
-
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
     }
