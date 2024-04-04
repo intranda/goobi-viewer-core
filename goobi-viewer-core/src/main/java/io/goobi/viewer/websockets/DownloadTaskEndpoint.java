@@ -24,15 +24,14 @@ package io.goobi.viewer.websockets;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.EndpointConfig;
@@ -164,7 +163,7 @@ public class DownloadTaskEndpoint {
             answer.files = filePaths.stream()
                     .map(p -> new ResourceFile(p.toString(), getDownloadUrl(message.pi, taskId, p).toString(), description, getMimetype(p.toString()),
                             calculateSize(downloadFolder.resolve(p))))
-                    .collect(Collectors.toList());
+                    .toList();
         } else {
             answer.files = Collections.emptyList();
         }
@@ -184,10 +183,14 @@ public class DownloadTaskEndpoint {
             if (job.isError()) {
                 answer.errorMessage = job.getErrorMessage();
                 answer.status = Status.ERROR;
-                storageBean.remove(message.url); //reset the status so a new download attempt is possible
+                if (storageBean != null) {
+                    storageBean.remove(message.url); //reset the status so a new download attempt is possible
+                }
             } else if (job.getProgress().complete() && !isFilesExist(message.pi, message.url)) {
                 //download task has completed but files are no longer available. remove job from storage bean and return waiting status
-                storageBean.remove(message.url);
+                if (storageBean != null) {
+                    storageBean.remove(message.url);
+                }
                 answer.status = Status.WAITING;
             } else {
                 answer.messageQueueId = job.getMessageId();
@@ -216,7 +219,9 @@ public class DownloadTaskEndpoint {
             if (Files.exists(resourceFolder)) {
                 FileUtils.deleteDirectory(resourceFolder.toFile());
             }
-            storageBean.remove(message.url);
+            if (storageBean != null) {
+                storageBean.remove(message.url);
+            }
             if (deleted) {
                 sendMessage(SocketMessage.buildAnswer(message, Status.CANCELED));
             } else {
@@ -255,35 +260,32 @@ public class DownloadTaskEndpoint {
     public List<Path> getDownloadedFiles(String pi, String downloadUrl) throws PresentationException, IndexUnreachableException {
         Path resourceFolder = getDownloadFolder(pi, downloadUrl);
         if (Files.exists(resourceFolder)) {
-            return FileUtils.listFiles(resourceFolder.toFile(), DownloadExternalResourceHandler.ALLOWED_FILE_EXTENSIONS, true)
+            return new ArrayList<>(FileUtils.listFiles(resourceFolder.toFile(), DownloadExternalResourceHandler.ALLOWED_FILE_EXTENSIONS, true)
                     .stream()
                     .map(File::toPath)
                     .map(resourceFolder::relativize)
-                    .collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
+                    .toList());
         }
+        return Collections.emptyList();
     }
 
     public Path getDownloadFolder(String pi, String downloadUrl) throws PresentationException, IndexUnreachableException {
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
-        Path resourceFolder = downloadFolder.resolve(getDownloadId(pi, downloadUrl));
-        return resourceFolder;
+        return downloadFolder.resolve(getDownloadId(pi, downloadUrl));
     }
 
-    private URI getDownloadUrl(String pi, String taskId, Path p) {
+    private static URI getDownloadUrl(String pi, String taskId, Path p) {
         URI uri = toUri(p);
-        URI ret = DataManager.getInstance()
+        return DataManager.getInstance()
                 .getRestApiManager()
                 .getDataApiManager()
                 .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH)
                         .params(pi, taskId, uri)
                         .buildURI())
                 .orElse(null);
-        return ret;
     }
 
-    private URI toUri(Path p) {
+    private static URI toUri(Path p) {
         UriBuilder builder = UriBuilder.fromPath("");
         for (int i = 0; i < p.getNameCount(); i++) {
             builder.path(p.getName(i).toString());
@@ -291,7 +293,7 @@ public class DownloadTaskEndpoint {
         return builder.build();
     }
 
-    private String getDownloadId(String pi, String downloadUrl) {
+    private static String getDownloadId(String pi, String downloadUrl) {
         return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), pi,
                 downloadUrl);
     }
@@ -309,7 +311,7 @@ public class DownloadTaskEndpoint {
         }
     }
 
-    private String calculateSize(Path path) {
+    private static String calculateSize(Path path) {
         try {
             return FileSizeCalculator.formatSize(FileSizeCalculator.getFileSize(path));
         } catch (IOException e) {
@@ -410,7 +412,6 @@ public class DownloadTaskEndpoint {
         public Map<String, String> getJsonSignature() {
             return JsonObjectSignatureBuilder.listProperties(getClass());
         }
-        
 
         public Action getAction() {
             return action;
