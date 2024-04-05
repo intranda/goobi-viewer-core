@@ -646,7 +646,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getMetadataListTypes_shouldReturnAllMetadataListTypesIfPrefixEmpty() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes(null);
-        assertEquals(4, result.size());
+        assertEquals(5, result.size());
     }
 
     /**
