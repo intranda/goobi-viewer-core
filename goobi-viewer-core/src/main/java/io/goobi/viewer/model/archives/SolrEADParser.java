@@ -81,6 +81,7 @@ public class SolrEADParser extends ArchiveParser {
      * @return List<ArchiveResource>
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should return all resources
      */
     @Override
     public List<ArchiveResource> getPossibleDatabases() throws PresentationException, IndexUnreachableException {

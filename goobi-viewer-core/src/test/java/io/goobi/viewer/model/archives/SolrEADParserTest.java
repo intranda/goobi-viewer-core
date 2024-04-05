@@ -21,16 +21,51 @@
  */
 package io.goobi.viewer.model.archives;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.jdom2.Document;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 
 class SolrEADParserTest extends AbstractSolrEnabledTest {
+
+    private SolrEADParser eadParser;
+
+    @BeforeEach
+    void before() {
+        try {
+            eadParser = new SolrEADParser(DataManager.getInstance().getSearchIndex());
+        } catch (PresentationException | IndexUnreachableException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * @see SolrEADParser#getPossibleDatabases()
+     * @verifies return all resources
+     */
+    @Test
+    void getPossibleDatabases_shouldReturnAllResources() throws Exception {
+        List<ArchiveResource> resources = eadParser.getPossibleDatabases();
+        assertNotNull(resources);
+        assertEquals(1, resources.size());
+        ArchiveResource resource = resources.get(0);
+        assertEquals(SolrEADParser.DATABASE_NAME, resource.getDatabaseName());
+        assertEquals("Akte_Koch_-_Humboldt_Universitaet", resource.getResourceId());
+        assertEquals("Koch, Robert", resource.getResourceName());
+        assertEquals(0, resource.getSize());
+    }
 
     /**
      * @see SolrEADParser#formatDate(Document)

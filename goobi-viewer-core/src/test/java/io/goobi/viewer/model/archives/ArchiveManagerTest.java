@@ -33,7 +33,6 @@ import java.util.List;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -52,40 +51,39 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         try {
             SolrEADParser tempParser = new SolrEADParser(DataManager.getInstance().getSearchIndex());
             tempParser.readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate(""));
-            ArchiveResource resource = new ArchiveResource("", "", "", "", "");
-            ArchiveEntry root = tempParser.loadDatabase(resource);
+            List<ArchiveResource> tempDatabases = tempParser.getPossibleDatabases();
+            if (!tempDatabases.isEmpty()) {
+                ArchiveEntry root = tempParser.loadDatabase(tempDatabases.get(0));
 
-            possibleDatabases = new ArrayList<>();
-            possibleDatabases.add(new ArchiveResource("database 1", "resource 1", "r1",
-                    ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
-            possibleDatabases
-                    .add(new ArchiveResource("database 1", "resource 2", "r2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER),
-                            "10"));
+                possibleDatabases = new ArrayList<>();
+                possibleDatabases.add(new ArchiveResource("database 1", "resource 1", "r1",
+                        ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+                possibleDatabases
+                        .add(new ArchiveResource("database 1", "resource 2", "r2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER),
+                                "10"));
 
-            eadParser = new SolrEADParser(DataManager.getInstance().getSearchIndex()) {
-                public List<ArchiveResource> getPossibleDatabases() {
-                    return possibleDatabases;
-                }
+                eadParser = new SolrEADParser(DataManager.getInstance().getSearchIndex()) {
+                    public List<ArchiveResource> getPossibleDatabases() {
+                        return possibleDatabases;
+                    }
 
-                public ArchiveEntry loadDatabase(ArchiveResource database) {
-                    return root;
-                }
-            };
-
+                    public ArchiveEntry loadDatabase(ArchiveResource database) {
+                        return root;
+                    }
+                };
+            }
         } catch (PresentationException | IndexUnreachableException | ConfigurationException e) {
             fail(e.toString());
         }
     }
 
     @Test
-    @Disabled("Test index contains no archives")
     void testGetDatabases() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
         assertEquals(2, archiveManager.getDatabases().size());
     }
 
     @Test
-    @Disabled("Test index contains no archives")
     void testGetDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
@@ -105,7 +103,6 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    @Disabled("Test index contains no archives")
     void testUpdateDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
@@ -122,7 +119,6 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    @Disabled("Test index contains no archives")
     void testAddNewArchive() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
 
@@ -135,12 +131,23 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    @Disabled("Test index contains no archives")
     void testRemoveArchive() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
         possibleDatabases.remove(1);
         assertNotNull(archiveManager.getArchive("database 1", "r2"));
         archiveManager.updateArchiveList();
         assertNull(archiveManager.getArchive("database 1", "r2"));
+    }
+
+    /**
+     * @see ArchiveManager#loadTree(ArchiveEntry)
+     * @verifies load tree correctly
+     */
+    @Test
+    void loadTree_shouldLoadTreeCorrectly() throws Exception {
+        ArchiveEntry entry = eadParser.loadDatabase(possibleDatabases.get(0));
+        assertNotNull(entry);
+        ArchiveTree tree = ArchiveManager.loadTree(entry);
+        assertNotNull(tree);
     }
 }

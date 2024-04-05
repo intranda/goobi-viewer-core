@@ -490,8 +490,9 @@ public class ArchiveManager implements Serializable {
      * 
      * @param rootElement
      * @return {@link ArchiveTree}
+     * @should load tree correctly
      */
-    private static ArchiveTree loadTree(ArchiveEntry rootElement) {
+    static ArchiveTree loadTree(ArchiveEntry rootElement) {
         ArchiveTree ret = new ArchiveTree();
         ret.generate(rootElement);
         if (ret.getSelectedEntry() == null) {
