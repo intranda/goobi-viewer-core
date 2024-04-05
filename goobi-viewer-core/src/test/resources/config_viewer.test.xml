@@ -795,6 +795,38 @@
                 </metadata>
             </template>
         </metadataList>
+        
+        <metadataList type="archive">
+            <template name="_DEFAULT">
+                <metadata label="MD_SHELFMARK" type="1">
+                    <param key="MD_UNITID" type="field" />
+                </metadata>
+                <metadata label="Number" type="1">
+                    <param key="MD_UNITID_NUMBER" type="field" />
+                </metadata>
+                <metadata label="Shelfmark" type="1">
+                    <param key="MD_SHELFMARK" type="field" />
+                </metadata>
+                <metadata label="unitdate" type="1">
+                    <param key="MD_DATECREATED" type="field" />
+                </metadata>
+                <metadata label="physdesc" type="1">
+                    <param key="MD_PHYSICALDESCRIPTIONEXTENT" type="field" />
+                </metadata>
+                <metadata label="origination" type="2">
+                    <param key="MD_PROVENIENCE" type="field" />
+                </metadata>
+                <metadata label="role" type="2">
+                    <param key="MD_ODD_HEAD" type="field" />
+                </metadata>
+                <metadata label="person" type="2">
+                    <param key="MD_ODD_P" type="field" />
+                </metadata>
+                <metadata label="oddnote" type="6">
+                    <param key="MD_ODD" type="field" />
+                </metadata>
+            </template>
+        </metadataList>
 		
         <!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
         <normdataList>

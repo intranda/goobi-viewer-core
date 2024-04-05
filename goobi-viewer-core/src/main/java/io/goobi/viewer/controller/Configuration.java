@@ -582,12 +582,10 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param template Template name (currently not in use)
      * @return List of configured metadata for configured fields
-     * @should return correct template configuration
-     * @should return empty list if template not found
-     * @should return empty list if template is null
+     * @should return default template configuration if template not found
      */
     public List<Metadata> getArchiveMetadataForTemplate(String template) {
-        return getMetadataConfigurationForTemplate("archive", template, false, false);
+        return getMetadataConfigurationForTemplate("archive", StringConstants.DEFAULT_NAME, true, false);
     }
 
     /**

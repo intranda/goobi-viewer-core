@@ -403,6 +403,15 @@ class ConfigurationTest extends AbstractTest {
     void getMainMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
         assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, null).size());
     }
+    
+    /**
+     * @see Configuration#getArchiveMetadataForTemplate(String)
+     * @verifies return default template configuration if template not found
+     */
+    @Test
+    void getArchiveMetadataForTemplate_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() throws Exception {
+        assertEquals(9, DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("nonexisting").size());
+    }
 
     /**
      * @see Configuration#getTocLabelConfiguration(String)
