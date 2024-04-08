@@ -18,6 +18,7 @@ public class ZipUnpacker {
 
     private static final long DEFAULT_MAX_ARCHIVE_SIZE = 10_000_000_000l; //10GB
     private static final long DEFAULT_MAX_ENTRY_SIZE = 10_000_000_000l; //10GB
+    private static final double COMPRESSION_RATION_THRESHOLD = 100;
 
     private static final Logger logger = LogManager.getLogger(ZipUnpacker.class);
 
@@ -47,7 +48,7 @@ public class ZipUnpacker {
                     Files.createDirectories(entryFile.getParent());
                 }
                 try {
-                    currentArchiveSize = writeFile(entryFile, zis, currentArchiveSize);
+                    currentArchiveSize = writeFile(entryFile, zis, currentArchiveSize, entry.getCompressedSize());
                 } catch (ArchiveSizeExceededException e) {
                     throw new ArchiveSizeExceededException("Aborted writing archive at entry " + entry.getName() + ": " + e.getMessage());
                 }
@@ -56,12 +57,13 @@ public class ZipUnpacker {
         return destination;
     }
 
-    private long writeFile(Path entryFile, InputStream zis, long currentArchiveSize) throws IOException, ArchiveSizeExceededException {
+    private long writeFile(Path entryFile, InputStream zis, long currentArchiveSize, long entryCompressedSize)
+            throws IOException, ArchiveSizeExceededException {
         Files.deleteIfExists(entryFile);
-        return copy(zis, entryFile, currentArchiveSize, this.maxEntrySize, this.maxArchiveSize);
+        return copy(zis, entryFile, currentArchiveSize, entryCompressedSize, this.maxEntrySize, this.maxArchiveSize);
     }
 
-    private long copy(InputStream in, Path outputPath, long currentArchiveSize, long maxEntrySize, long maxArchiveSize)
+    private long copy(InputStream in, Path outputPath, long currentArchiveSize, long entryCompressedSize, long maxEntrySize, long maxArchiveSize)
             throws IOException, ArchiveSizeExceededException {
 
         long currentEntrySize = 0;
@@ -72,10 +74,14 @@ public class ZipUnpacker {
                 out.write(buffer, 0, nBytes);
                 currentEntrySize += nBytes;
                 currentArchiveSize += nBytes;
+                double compressionRatio = currentEntrySize / entryCompressedSize;
                 if (currentEntrySize > maxEntrySize) {
                     throw new ArchiveSizeExceededException("Maximum allowed size {} for zip entry exceeded", maxEntrySize);
                 } else if (currentArchiveSize > maxArchiveSize) {
                     throw new ArchiveSizeExceededException("Maximum allowed size {} for extraced zip archive exceeded", maxArchiveSize);
+                } else if (compressionRatio > COMPRESSION_RATION_THRESHOLD) {
+                    throw new ArchiveSizeExceededException("Maximum allowed compression ratio {} for zip entry exceeded", maxEntrySize);
+
                 }
             }
         }
