@@ -95,7 +95,7 @@ public class ZipUnpacker {
                 out.write(buffer, 0, nBytes);
                 currentEntrySize += nBytes;
                 currentArchiveSize += nBytes;
-                double compressionRatio = currentEntrySize / entryCompressedSize;
+                double compressionRatio = currentEntrySize / (double) (entryCompressedSize == 0 ? 1 : entryCompressedSize);
                 if (currentEntrySize > maxEntrySize) {
                     throw new ArchiveSizeExceededException("Maximum allowed size {} for zip entry exceeded", maxEntrySize);
                 } else if (currentArchiveSize > maxArchiveSize) {
