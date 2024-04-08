@@ -35,15 +35,19 @@
     viewer.WebSocket.PATH_SESSION_SOCKET = "/session.socket";
     viewer.WebSocket.PATH_CAMPAIGN_SOCKET = "/crowdsourcing/campaign.socket";
     viewer.WebSocket.PATH_CONFIG_EDITOR_SOCKET = "/admin/config/edit.socket";
+    viewer.WebSocket.PATH_DOWNLOAD_TASK = "/tasks/download/monitor.socket";
 
     //prototype methods
     viewer.WebSocket.prototype.sendMessage = function(message) {
-        if(_debug)console.log("send ", message);
+        if(_debug)console.log("send ", message, " open: ", this.isOpen());
         this.socket.send(message);
     };
     viewer.WebSocket.prototype.close = function(reason, statusCode) {
         this.socket.close(statusCode, reason);
-    };       
+    };     
+    viewer.WebSocket.prototype.isOpen = function() {
+        return this.socket && this.socket.readyState === WebSocket.OPEN;
+    };     
      
     return viewer;
     

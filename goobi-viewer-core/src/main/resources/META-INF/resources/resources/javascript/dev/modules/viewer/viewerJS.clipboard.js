@@ -22,89 +22,94 @@
  * @module viewerJS.clipboard
  * @requires jQuery
  */
-var viewerJS = ( function( viewer ) {
-    'use strict';
-    
-    const _defaultSelector ="[data-copy-value]";
+var viewerJS = (function(viewer) {
+	'use strict';
+
+	const _defaultSelector = "[data-copy-value]";
+
+	viewer.clipboard = {
+		init: function(selector, dataTarget) {
+
+			/* SYNTAX TO DEFINE NON STANDARD TARGET SELECTOR/VALUE:
+				viewerJS.clipboard.init("[data-copy-special-selector]", "data-copy-special-value");
+				first the data attribute as selector for the tooltip + then the data attribute for the value
+			*/
+
+			if (!selector) {
+				var tooltipValueSelector = _defaultSelector;
+			}
+			else {
+				var tooltipValueSelector = selector;
+			}
 
 
+			// ACTIVATE TOOLTIP ONLY IF DATA COPY VALUE SELECTORS AVAILABLE
+			$(tooltipValueSelector).tooltip();
 
-    viewer.clipboard = {
-            init : function(selector, dataSelectorName) {
+			// COPY BUTTON VAR
+			var copyClipboardButton = $(tooltipValueSelector);
 
-                if(!selector) {
-                	var tooltipValueSelector = _defaultSelector;
-                }
-				else {
-					var tooltipValueSelector = selector;
+			$(copyClipboardButton).click(function() {
+
+				var thisCopyButton = $(this);
+
+				// GET VALUE OF DATA ATTRIBUTE COPY VALUE
+				// define dataTarget to get other data attribute value than data-copy-value
+				if (!dataTarget) {
+					var copyValue = $(this).data('copy-value');
+					// console.log('datatarget is OFF ' + dataTarget);
 				}
-                
-                // ACTIVATE TOOLTIP ONLY IF DATA COPY VALUE SELECTORS AVAILABLE
-                $(tooltipValueSelector).tooltip();
-                
-                // COPY BUTTON VAR
-                var copyClipboardButton = $(tooltipValueSelector);
-                
-                $(copyClipboardButton).click(function () {
-                	
-                	var thisCopyButton = $(this);
-                	
-					// GET VALUE OF DATA ATTRIBUTE COPY VALUE
-					// define dataSelectorName to get other data attribute value than data-copy-value of THIS Element
-	                if(!dataSelectorName) {
-	                	var copyValue = $(this).data('copy-value');
-	                }
-					else {
-						var copyValue = $(this).attr(dataSelectorName);
-						console.log('dataSelectorName is on ' + dataSelectorName);
-						console.log('value of special: ' + copyValue);
-					}
-					
-					// var copyValue = $(this).data('copy-value');
-					// console.log(copyValue);
-					
-					// CREATE TEMPORARY TEXTAREA TO COPY VALUE INTO CLIPBOARD
-					var $temp = $("<textarea />");
-					$("body").append($temp);
-					$temp.val(copyValue).select();
-					document.execCommand("copy");
-					$temp.remove();
+				else {
+					var copyValue = $(this).attr(dataTarget);
+					// console.log('datatarget is ON ' + dataTarget);
+					// console.log('value of special: ' + copyValue);
+				}
 
-					// CHANGE TOOLTIP TO COPY DONE MESSAGE
-					var copyThisMessage = $(thisCopyButton).data('original-title');
-					
-					// IF NO COPY DONE MSG FOUND JUST USE STANDARD TEXT
-					if (!$(this).data('copy-done-msg')) {
-						// TO DO: TRANSLATE MSG KEY
-						var copyDoneMessage = 'Copied to clipboard';
-					}
-					else {
-						var copyDoneMessage = $(thisCopyButton).data('copy-done-msg');
-					}
+				// var copyValue = $(this).data('copy-value');
+				// console.log(copyValue);
 
-			    	 $(thisCopyButton).tooltip('hide');
-			    	 $(thisCopyButton).tooltip('dispose');
-					 $(thisCopyButton).tooltip({trigger: "manual", placement: "top", title: 'Copy'}); 
-			    	 $(thisCopyButton).attr('data-original-title', copyDoneMessage);
-			    	 $(thisCopyButton).tooltip('show');
-					
-			    	 // KEEP COPIED SUCCESS MSG FOR 2 SECONDS THEN REENABLE NORMAL TOOLTIP 
-					setTimeout(function () {
-					
-					   $(thisCopyButton).tooltip('hide');
-					   $(thisCopyButton).on('hidden.bs.tooltip', function () {
-					   $(thisCopyButton).tooltip('dispose');
-					   $(thisCopyButton).attr('data-original-title', copyThisMessage);
-					   $(thisCopyButton).tooltip({trigger: "hover", placement: "top", title: copyThisMessage}); 
-					    })
-					
-					}, 2000);
+				// CREATE TEMPORARY TEXTAREA TO COPY VALUE INTO CLIPBOARD
+				var $temp = $("<textarea />");
+				$("body").append($temp);
+				$temp.val(copyValue).select();
+				document.execCommand("copy");
+				$temp.remove();
 
-                });
+				// CHANGE TOOLTIP TO COPY DONE MESSAGE
+				var copyThisMessage = $(thisCopyButton).data('original-title');
 
-            }
-    }
-        
-    return viewer;
-    
-} )( viewerJS || {}, jQuery );
+				// IF NO COPY DONE MSG FOUND JUST USE STANDARD TEXT
+				if (!$(this).data('copy-done-msg')) {
+					// TO DO: TRANSLATE MSG KEY
+					var copyDoneMessage = 'Copied to clipboard';
+				}
+				else {
+					var copyDoneMessage = $(thisCopyButton).data('copy-done-msg');
+				}
+
+				$(thisCopyButton).tooltip('hide');
+				$(thisCopyButton).tooltip('dispose');
+				$(thisCopyButton).tooltip({ trigger: "manual", placement: "top", title: 'Copy' });
+				$(thisCopyButton).attr('data-original-title', copyDoneMessage);
+				$(thisCopyButton).tooltip('show');
+
+				// KEEP COPIED SUCCESS MSG FOR 2 SECONDS THEN REENABLE NORMAL TOOLTIP 
+				setTimeout(function() {
+
+					$(thisCopyButton).tooltip('hide');
+					$(thisCopyButton).on('hidden.bs.tooltip', function() {
+						$(thisCopyButton).tooltip('dispose');
+						$(thisCopyButton).attr('data-original-title', copyThisMessage);
+						$(thisCopyButton).tooltip({ trigger: "hover", placement: "top", title: copyThisMessage });
+					})
+
+				}, 2000);
+
+			});
+
+		}
+	}
+
+	return viewer;
+
+})(viewerJS || {}, jQuery);

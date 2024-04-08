@@ -43,6 +43,7 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -70,7 +71,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
     }
 
     @Override
-    public MessageStatus call(ViewerMessage ticket) {
+    public MessageStatus call(ViewerMessage ticket, MessageQueueManager queueManager) {
 
         String pi = ticket.getProperties().get("pi");
         String configVariant = ticket.getProperties().get("variant");

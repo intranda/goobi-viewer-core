@@ -37,6 +37,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Tools to create SelectItem collections to use in jsf components
@@ -61,7 +62,7 @@ public final class SelectItemBuilder {
         Map<String, List<T>> unsortedMap = items.stream()
                 .collect(Collectors.toMap(
                         i -> Optional.ofNullable(sortValueSupplier.apply(i))
-                                .map(s -> s.substring(0, 1))
+                                .map(s -> StringUtils.isEmpty(s) ? s : s.substring(0, 1))
                                 .map(String::toUpperCase)
                                 .orElse(i.toString()), //key is the first character of the sortValue 
                         Arrays::asList, //values are lists of <T>
@@ -77,6 +78,7 @@ public final class SelectItemBuilder {
      * @param valueSupplier
      * @param labelSupplier
      * @param descriptionSupplier
+     * @param disabledPredicate
      * @return List<SelectItem>
      */
     public static <T> List<SelectItem> getAsGroupedSelectItems(Map<String, List<T>> map, Function<T, Object> valueSupplier,

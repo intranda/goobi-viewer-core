@@ -1,20 +1,35 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.managedbeans;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,14 +37,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.json.JSONObject;
 import org.omnifaces.cdi.Push;
@@ -42,9 +53,6 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
@@ -53,7 +61,9 @@ import io.goobi.viewer.controller.variablereplacer.VariableReplacer;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.mq.PullThemeHandler;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
 
@@ -64,41 +74,6 @@ public class AdminDeveloperBean implements Serializable {
     private static final long serialVersionUID = 9068383748390523908L;
 
     private static final Logger logger = LogManager.getLogger(AdminDeveloperBean.class);
-
-    private static final String SCRIPT_PURPOSE_CREATE_PACKAGE = "create-package";
-    private static final String SCRIPT_PURPOSE_PULL_THEME = "theme-pull";
-
-    private static final String SQL_STATEMENT_CREATE_USERS = "DROP TABLE IF EXISTS `users`;\n"
-            + "CREATE TABLE `users` (\n"
-            + "  `user_id` bigint(20) NOT NULL AUTO_INCREMENT,\n"
-            + "  `activation_key` varchar(255) DEFAULT NULL,\n"
-            + "  `active` tinyint(1) NOT NULL DEFAULT 0,\n"
-            + "  `comments` varchar(255) DEFAULT NULL,\n"
-            + "  `email` varchar(255) NOT NULL,\n"
-            + "  `first_name` varchar(255) DEFAULT NULL,\n"
-            + "  `last_login` datetime DEFAULT NULL,\n"
-            + "  `last_name` varchar(255) DEFAULT NULL,\n"
-            + "  `nickname` varchar(255) DEFAULT NULL,\n"
-            + "  `password_hash` varchar(255) DEFAULT NULL,\n"
-            + "  `score` bigint(20) DEFAULT NULL,\n"
-            + "  `superuser` tinyint(1) NOT NULL DEFAULT 0,\n"
-            + "  `suspended` tinyint(1) NOT NULL DEFAULT 0,\n"
-            + "  `agreed_to_terms_of_use` tinyint(1) DEFAULT 0,\n"
-            + "  `avatar_type` varchar(255) DEFAULT NULL,\n"
-            + "  `local_avatar_updated` bigint(20) DEFAULT NULL,\n"
-            + "  PRIMARY KEY (`user_id`),\n"
-            + "  KEY `index_users_email` (`email`)\n"
-            + ") ENGINE=InnoDB AUTO_INCREMENT=191 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;\n"
-            + "";
-
-    private static final String SQL_STATEMENT_ADD_SUPERUSER =
-            "INSERT INTO users (active,email,password_hash,score,superuser) VALUES (1,\"goobi@intranda.com\","
-                    + "\"$2a$10$Z5GTNKND9ZbuHt0ayDh0Remblc7pKUNlqbcoCxaNgKza05fLtkuYO\",0,1);";
-
-    private static final String BASH_STATEMENT_CREATE_SQL_DUMP =
-            "mysqldump $VIEWERDBNAME --ignore-table=viewer.crowdsourcing_fulltexts --ignore-table=viewer.users";
-
-    private static final String[] FILES_TO_INCLUDE = new String[] { "config_viewer-module-crowdsourcing.xml", "messages_*.properties" };
 
     private static final long CREATE_DEVELOPER_PACKAGE_TIMEOUT = 120_000; //2 min
 
@@ -115,8 +90,6 @@ public class AdminDeveloperBean implements Serializable {
     private transient Scheduler scheduler = null;
 
     private final String viewerThemeName;
-    private final String viewerDatabaseName;
-    private final String viewerConfigDirectory;
 
     public AdminDeveloperBean() {
         this(DataManager.getInstance().getConfiguration(), "viewer");
@@ -124,8 +97,6 @@ public class AdminDeveloperBean implements Serializable {
 
     public AdminDeveloperBean(Configuration config, String persistenceUnitName) {
         viewerThemeName = config.getTheme();
-        viewerDatabaseName = persistenceUnitName;
-        viewerConfigDirectory = config.getConfigLocalPath();
         try {
             this.scheduler = new StdSchedulerFactory().getScheduler();
         } catch (SchedulerException e) {
@@ -154,26 +125,24 @@ public class AdminDeveloperBean implements Serializable {
             return;
         }
         try {
-            logger.debug("Sending file...");
-            Faces.sendFile(zipPath, this.viewerThemeName + "_developer.zip", true);
-            logger.debug("Done sending file");
+            String uploadFilename = this.viewerThemeName + "_developer.zip";
+            logger.debug("Sending file {} as {}", zipPath, uploadFilename);
+            Faces.sendFile(zipPath, uploadFilename, true);
+            logger.debug("File {} sent successfully", zipPath);
             sendDownloadFinished();
         } catch (IOException e) {
             logger.error("Error creating zip archive: {}", e.toString());
             sendDownloadError("Error creating zip archive: " + e.getMessage());
+        } finally {
+            try {
+                logger.debug("Deleting file {}", zipPath);
+                Files.deleteIfExists(zipPath);
+                logger.debug("File {} deleted successfully", zipPath);
+            } catch (IOException e) {
+                logger.error("Failed to delete developer zip archive {}. Please delete manually", zipPath);
+                sendDownloadError("Failed to delete developer zip archive " + zipPath + ". Please delete manually");
+            }
         }
-    }
-
-    private static byte[] createZipArchive(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
-        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
-        ShellCommand command = new ShellCommand(commandString.split("\\s+"));
-        int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
-        String out = command.getOutput();
-        String error = command.getErrorOutput();
-        if (ret > 0) {
-            throw new IOException(error);
-        }
-        return out.getBytes("utf-8");
     }
 
     private static Path createZipFile(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
@@ -184,8 +153,9 @@ public class AdminDeveloperBean implements Serializable {
         String error = command.getErrorOutput().trim();
         if (ret > 0) {
             throw new IOException(error);
+        } else {
+            return Path.of(out);
         }
-        return Path.of(out);
     }
 
     public void activateAutopull() throws DAOException {
@@ -224,90 +194,40 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     public LocalDateTime getLastAutopull() throws DAOException {
-        List<ViewerMessage> messages = DataManager.getInstance()
+
+        return getLastSuccessfullTask().map(ViewerMessage::getLastUpdateTime).orElse(null);
+
+    }
+
+    public VersionInfo getLastVersionInfo() throws DAOException, IOException {
+        return getLastSuccessfullTask()
+                .map(m -> {
+                    try {
+                        return PullThemeHandler.getVersionInfo(m.getProperties().get(ViewerMessage.MESSAGE_PROPERTY_INFO),
+                                m.getLastUpdateTime().format(getDateTimeFormatter()));
+                    } catch (JDOMException e) {
+                        logger.error("Error reading version info from message {}: {}", m, e.toString());
+                        return null;
+                    }
+                })
+                .orElse(this.getThemeVersion());
+    }
+
+    private DateTimeFormatter getDateTimeFormatter() {
+        return DateTimeFormatter.ofPattern(BeanUtils.getNavigationHelper().getDateTimePattern());
+    }
+
+    private Optional<ViewerMessage> getLastSuccessfullTask() throws DAOException {
+        return DataManager.getInstance()
                 .getDao()
                 .getViewerMessages(0, 1, "lastUpdateTime", true,
-                        Map.of("taskName", TaskType.PULL_THEME.name(), "messageStatus", MessageStatus.FINISH.name()));
-        if (!messages.isEmpty()) {
-            return messages.get(0).getLastUpdateTime();
-        }
-        return null;
+                        Map.of("taskName", TaskType.PULL_THEME.name(), "messageStatus", MessageStatus.FINISH.name()))
+                .stream()
+                .findAny();
     }
 
     public String getThemeName() {
         return this.viewerThemeName;
-    }
-
-    protected byte[] createDeveloperArchive(Consumer<Float> progressMonitor) throws InterruptedException, JDOMException, IOException {
-
-        Map<Path, String> zipEntryMap = new HashMap<>();
-        FilenameFilter filter = WildcardFileFilter.builder().setWildcards(FILES_TO_INCLUDE).get();
-
-        zipEntryMap.put(Path.of("viewer/config/config_viewer.xml"), XmlTools.getStringFromElement(
-                createDeveloperViewerConfig(Path.of(viewerConfigDirectory, "config_viewer.xml")).getRootElement(), StringTools.DEFAULT_ENCODING));
-        progressMonitor.accept(0.2f);
-        try {
-            zipEntryMap.put(Path.of("viewer/config/viewer.sql"), createSqlDump());
-            progressMonitor.accept(0.5f);
-        } catch (IOException e) {
-            logger.error("Error creating sql dump of viewer database: {}", e.toString());
-        }
-        for (File file : Path.of(viewerConfigDirectory).toFile().listFiles(filter)) {
-            Path zipEntryPath = Path.of("viewer/config", file.getName());
-            zipEntryMap.put(zipEntryPath, FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING));
-        }
-        progressMonitor.accept(0.7f);
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            FileTools.compressZip(out, zipEntryMap, 9);
-            return out.toByteArray();
-        } finally {
-            progressMonitor.accept(1f);
-        }
-    }
-
-    protected String createSqlDump() throws IOException, InterruptedException {
-        String createSqlDumpStatement = BASH_STATEMENT_CREATE_SQL_DUMP.replace("$VIEWERDBNAME", this.viewerDatabaseName);
-        ShellCommand command = new ShellCommand(createSqlDumpStatement.split("\\s+"));
-        int ret = command.exec();
-        if (ret < 1) {
-            String output = command.getOutput();
-            return new StringBuilder(output).append(SQL_STATEMENT_CREATE_USERS).append(SQL_STATEMENT_ADD_SUPERUSER).toString();
-        }
-        throw new IOException("Error executing command '" + createSqlDumpStatement + "':\t" + command.getErrorOutput());
-    }
-
-    protected Document createDeveloperViewerConfig(Path viewerConfigPath) throws IOException, JDOMException {
-        Document configDoc = XmlTools.readXmlFile(viewerConfigPath);
-        replaceSolrUrl(configDoc);
-        renameElement(configDoc, "//config/urls/rest", "iiif");
-        XmlTools.evaluateToFirstElement("//config/urls/iiif", configDoc.getRootElement(), Collections.emptyList())
-                .ifPresent(ele -> ele.setAttribute("useForCmsMedia", "true"));
-        addElement(configDoc, "//config/urls", "rest", "http://localhost:8080/viewer/api/v1/");
-        return configDoc;
-    }
-
-    private static void replaceSolrUrl(Document configDoc) {
-        Optional<String> restUrl = XmlTools.evaluateToFirstString("//config/urls/rest", configDoc.getRootElement(), Collections.emptyList());
-        Optional<Element> solrElement = XmlTools.evaluateToFirstElement("//config/urls/solr", configDoc.getRootElement(), Collections.emptyList());
-        restUrl.ifPresent(rest -> {
-            String solrPath = solrElement.map(Element::getText).map(URI::create).map(URI::getPath).orElse("/solr/collection1");
-            URI modifiedSolr = UriBuilder.fromUri(rest).replacePath(solrPath).build();
-            solrElement.ifPresent(solrEle -> solrEle.setText(modifiedSolr.toString()));
-        });
-    }
-
-    private static void renameElement(Document configDoc, String path, String newName) {
-        Optional<Element> restUrl = XmlTools.evaluateToFirstElement(path, configDoc.getRootElement(), Collections.emptyList());
-        restUrl.ifPresent(rest -> rest.setName(newName));
-    }
-
-    private static void addElement(Document configDoc, String parentPath, String name, String value) {
-        Optional<Element> urlElement = XmlTools.evaluateToFirstElement(parentPath, configDoc.getRootElement(), Collections.emptyList());
-        urlElement.ifPresent(urls -> {
-            Element ele = new Element(name);
-            ele.setText(value);
-            urls.addContent(ele);
-        });
     }
 
     private void pauseJob(TaskType taskType) {

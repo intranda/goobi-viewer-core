@@ -482,10 +482,12 @@ var viewerJS = (function () {
     		let $widgetTitles = $widgetUsage.find(".widget-usage__subtitle");
     		$widgetTitles.each((index,element) => {
     			let $title = $(element);
-    			let $options = $title.next("div").children();
+    			let $options = $title.next();
     			if($options.length == 0) {
     				$title.hide();
-    			}
+    			} else {
+					// console.log('not empty!');
+				}
     		});
     	}
     }

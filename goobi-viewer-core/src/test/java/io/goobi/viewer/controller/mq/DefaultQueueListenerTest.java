@@ -59,7 +59,7 @@ class DefaultQueueListenerTest extends AbstractDatabaseEnabledTest {
         Mockito.when(dao.updateViewerMessage(Mockito.any())).thenReturn(true);
 
         PdfMessageHandler pdfHandler = Mockito.mock(PdfMessageHandler.class);
-        Mockito.when(pdfHandler.call(Mockito.any())).thenReturn(MessageStatus.FINISH);
+        Mockito.when(pdfHandler.call(Mockito.any(), Mockito.any())).thenReturn(MessageStatus.FINISH);
         ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));
         MessageQueueManager tempBroker = new MessageQueueManager(activeMQConfig, this.dao, Map.of(TaskType.DOWNLOAD_PDF.name(), pdfHandler));
         broker = Mockito.spy(tempBroker);

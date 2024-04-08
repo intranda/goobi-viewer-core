@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -34,8 +35,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -251,7 +252,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
         se.setPi(pi);
         ret.setStructElement(se);
         if (se.isAnchor() || se.isGroup()) {
-            StructElement seChild = se.getFirstVolume(Arrays.asList(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
+            StructElement seChild = se.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
             PhysicalElement pe = AbstractPageLoader.loadPage(seChild, page);
             ret.setPhysicalElement(pe);
         } else {

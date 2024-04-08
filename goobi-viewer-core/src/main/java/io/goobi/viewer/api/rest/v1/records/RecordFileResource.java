@@ -27,6 +27,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_CMDI;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,6 +44,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
@@ -212,6 +215,44 @@ public class RecordFileResource {
         }
 
         throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
+    @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public StreamingOutput getDownloadedResource(
+            @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
+            @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException {
+
+        //TODO: check access conditions for some download action
+
+        Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
+        Path taskFolder = downloadFolder.resolve(taskId);
+        Path resourceFile = taskFolder.resolve(Path.of(path));
+        if (Files.isRegularFile(resourceFile)) {
+            try {
+                servletResponse.setHeader("Content-Disposition",
+                        new StringBuilder("attachment;filename=").append(resourceFile.getFileName()).toString());
+                servletResponse.setHeader("Content-Length", String.valueOf(Files.size(resourceFile)));
+                String contentType = Files.probeContentType(resourceFile);
+                logger.trace("content type: {}", contentType);
+                if (StringUtils.isNotBlank(contentType)) {
+                    servletResponse.setContentType(contentType);
+                }
+            } catch (IOException e) {
+                logger.error("Failed to probe file content type");
+            }
+            return out -> {
+                try (InputStream in = Files.newInputStream(resourceFile)) {
+                    IOUtils.copy(in, out);
+                }
+            };
+        } else {
+            throw new ContentNotFoundException("No resource found at " + resourceFile);
+        }
+
     }
 
     /**

@@ -22,62 +22,67 @@
 package io.goobi.viewer.model.job.mq;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
 import io.goobi.viewer.controller.variablereplacer.VariableReplacer;
 import io.goobi.viewer.managedbeans.AdminDeveloperBean;
+import io.goobi.viewer.managedbeans.AdminDeveloperBean.VersionInfo;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
 
 public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(PullThemeHandler.class);
-    
-    private static final int MAX_RETRIES = 0;
-
-    private static final String BASH_STATEMENT_PULL_THEME_REPOSITORY =
-            "git -C $VIEWERTHEMEPATH pull";
-    private static final String ALREADY_UP_TO_DATE_REGEX = ".*[Aa]lready[\\s-]+up[\\s-]+to[\\s-]+date.?\\s*";
 
     @Inject
     private AdminDeveloperBean developerBean;
 
     @Override
-    public MessageStatus call(ViewerMessage ticket) {
+    public MessageStatus call(ViewerMessage ticket, MessageQueueManager queueManager) {
         updateProgress(0.1f);
         if (DataManager.getInstance().getConfiguration().getThemeRootPath() != null) {
-                try {
-                    String result = pullThemeRepository();
-                    ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_INFO, result);
-                    sendProgressFinished(result);
-                    return MessageStatus.FINISH;
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    logger.error("Message handler thread interrupted while waiting for bash call to finish");
-                    ticket.getProperties()
-                            .put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Message handler thread interrupted while waiting for bash call to finish");
-                    sendProgressError("Message handler thread interrupted while waiting for bash call to finish");
-                    return MessageStatus.ERROR;
-                } catch (IOException e) {
-                    logger.error("Error pulling theme: {}", e.toString());
-                    String errorMessage = "Error pulling theme: " + e.toString();
-                    errorMessage = errorMessage.substring(0, 255);
-                    ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, errorMessage);
-                    sendProgressError("Error pulling theme: " + e.toString());
-                    return MessageStatus.ERROR;
-                }
+            String result = "";
+            try {
+                result = pullThemeRepository();
+                ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_INFO, result);
+                sendProgressFinished(PullThemeHandler.getMessage(result));
+                return MessageStatus.FINISH;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.error("Message handler thread interrupted while waiting for bash call to finish");
+                ticket.getProperties()
+                        .put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "Message handler thread interrupted while waiting for bash call to finish");
+                sendProgressError("Message handler thread interrupted while waiting for bash call to finish");
+                return MessageStatus.ERROR;
+            } catch (IOException e) {
+                logger.error("Error pulling theme: {}", e.toString());
+                String errorMessage = "Error pulling theme: " + e.toString();
+                errorMessage = errorMessage.substring(0, 255);
+                ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, errorMessage);
+                sendProgressError("Error pulling theme: " + e.toString());
+                return MessageStatus.ERROR;
+            } catch (JDOMException e) {
+                logger.error("Error Reading pull result '{}'; {}", result, e.toString());
+                String errorMessage = "Error Reading pull result: " + e.toString();
+                errorMessage = errorMessage.substring(0, 255);
+                ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, errorMessage);
+                sendProgressError("Error Reading pull result: " + e.toString());
+                return MessageStatus.ERROR;
+            }
         }
         ticket.getProperties().put(ViewerMessage.MESSAGE_PROPERTY_ERROR, "No theme root path configured");
         sendProgressError("No theme root path configured");
@@ -94,7 +99,7 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
             developerBean.sendPullThemeError(message);
         }
     }
-    
+
     private void sendProgressFinished(String message) {
         developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);
         if (developerBean != null) {
@@ -118,9 +123,9 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     }
 
     private String pullThemeRepository() throws IOException, InterruptedException {
-        
+
         String scriptTemplate = DataManager.getInstance().getConfiguration().getThemePullScriptPath();
-        String commandString =  new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(scriptTemplate);
+        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(scriptTemplate);
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec();
         String output = command.getOutput();
@@ -129,7 +134,7 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
             throw new IOException("Error executing command '" + commandString + "': " + error);
         } else if (StringUtils.isNotBlank(error)) {
             throw new IOException("Error calling git pull: " + error);
-        }  else {
+        } else {
             return output;
         }
     }
@@ -138,4 +143,26 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     public String getMessageHandlerName() {
         return TaskType.PULL_THEME.name();
     }
+
+    public static VersionInfo getVersionInfo(String resultString, String buildDate) throws JDOMException {
+        try {
+            Document doc = XmlTools.getDocumentFromString(resultString, "utf-8");
+            String branch = doc.getRootElement().getChildText("branch");
+            String revision = doc.getRootElement().getChildText("revision");
+            return new VersionInfo(DataManager.getInstance().getConfiguration().getName(), buildDate, revision, branch);
+        } catch (IOException e) {
+            throw new JDOMException(e.toString(), e);
+        }
+    }
+
+    public static String getMessage(String resultString) throws JDOMException {
+        try {
+            Document doc = XmlTools.getDocumentFromString(resultString, "utf-8");
+            return doc.getRootElement().getChildText("message");
+        } catch (IOException e) {
+            throw new JDOMException(e.toString(), e);
+        }
+
+    }
+
 }

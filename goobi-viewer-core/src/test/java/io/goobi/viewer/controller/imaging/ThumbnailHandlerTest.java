@@ -361,6 +361,11 @@ class ThumbnailHandlerTest extends AbstractTest {
     void getSize_shouldReturnMaxIfBothZero() throws Exception {
         Assertions.assertEquals("max", ThumbnailHandler.getSize(0, 0));
     }
+    
+    @Test
+    void getSize_shouldReturnMaxIfBothNull() throws Exception {
+        Assertions.assertEquals("max", ThumbnailHandler.getSize(null, null));
+    }
 
     /**
      * @see ThumbnailHandler#getImagePath(PhysicalElement)

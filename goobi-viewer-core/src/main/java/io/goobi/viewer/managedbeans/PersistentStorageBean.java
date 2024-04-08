@@ -24,8 +24,10 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -37,6 +39,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.omnifaces.cdi.Eager;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DataStorage;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
@@ -52,7 +55,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 @Named("applicationBean")
 @Eager
 @ApplicationScoped
-public class PersistentStorageBean implements Serializable {
+public class PersistentStorageBean implements DataStorage, Serializable {
 
     private static final long serialVersionUID = -5127431137772735598L;
 
@@ -75,16 +78,22 @@ public class PersistentStorageBean implements Serializable {
         //
     }
 
-    public synchronized Object get(String key) {
-        return map.get(key).getLeft();
+    public Object get(String key) {
+        synchronized (map) {
+            return Optional.ofNullable(map.get(key)).map(Pair::getLeft).orElse(null);
+        }
     }
 
-    public synchronized boolean olderThan(String key, Instant time) {
-        return map.get(key).getRight().isBefore(time);
+    public boolean olderThan(String key, Instant time) {
+        synchronized (map) {
+            return Optional.ofNullable(map.get(key)).map(Pair::getRight).map(i -> i.isBefore(time)).orElse(true);
+        }
     }
 
-    public synchronized Object put(String key, Object object) {
-        return map.put(key, Pair.of(object, Instant.now()));
+    public void put(String key, Object object) {
+        synchronized (map) {
+            map.put(key, Pair.of(object, Instant.now()));
+        }
     }
 
     /**
@@ -94,18 +103,51 @@ public class PersistentStorageBean implements Serializable {
      * @param <T>
      * @param key the identifier under which to store the object
      * @param object the object to store under the given key if the key doesn't exist yet or is older than timeToLiveMinutes
+     * @param timeToLive the maximum age in the given time unit the stored object may have to be returned. If it's older, it will be replaced with the
+     *            passed object
+     * @param unit  The {@link TemporalUnit} in which the timeToLive parameter is given
+     * @return the object stored under the given key if viable, otherwise the given object
+     */
+    @SuppressWarnings("unchecked")
+    public synchronized <T> T getIfRecentOrPut(String key, T object, long timeToLive, TemporalUnit unit) {
+        Instant oldestViable = Instant.now().minus(timeToLive, unit);
+        if (contains(key) && !olderThan(key, oldestViable)) {
+            return (T) get(key);
+        } else {
+            put(key, object);
+            return object;
+        }
+    }
+    
+    /**
+     * If the given key exists and the entry is no older than the given timeToLiveMinutes, return the object stored under the key, otherwise store the
+     * given object under the given key and return it
+     * 
+     * @param key the identifier under which to store the object
+     * @param object the object to store under the given key if the key doesn't exist yet or is older than timeToLiveMinutes
      * @param timeToLiveMinutes the maximum age in minutes the stored object may have to be returned. If it's older, it will be replaced with the
      *            passed object
      * @return the object stored under the given key if viable, otherwise the given object
      */
     @SuppressWarnings("unchecked")
     public synchronized <T> T getIfRecentOrPut(String key, T object, long timeToLiveMinutes) {
-        Instant oldestViable = Instant.now().minus(timeToLiveMinutes, ChronoUnit.MINUTES);
+        return getIfRecentOrPut(key, object, timeToLiveMinutes, ChronoUnit.MINUTES);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public synchronized <T> Optional<T> getIfRecentOrRemove(String key, long timeToLiveMinutes) {
+        return getIfRecentOrRemove(key, timeToLiveMinutes, ChronoUnit.MINUTES);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public synchronized <T> Optional<T> getIfRecentOrRemove(String key, long timeToLive, TemporalUnit unit) {
+        Instant oldestViable = Instant.now().minus(timeToLive, unit);
         if (contains(key) && !olderThan(key, oldestViable)) {
-            return (T) get(key);
+            return Optional.ofNullable((T) get(key));
+        } else {
+            remove(key);
+            return Optional.empty();
         }
-        put(key, object);
-        return object;
     }
 
     public boolean contains(String key) {
@@ -126,5 +168,11 @@ public class PersistentStorageBean implements Serializable {
 
     public void setMessageBroker(MessageQueueManager messageBroker) {
         this.messageBroker = messageBroker;
+    }
+
+    public void remove(String key) {
+        synchronized (map) {
+            this.map.remove(key);
+        }
     }
 }

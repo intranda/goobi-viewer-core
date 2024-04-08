@@ -200,11 +200,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Initializes class properties from the given doc.
      *
-     * @param doc SolrDocument
+     * @param solrDoc SolrDocument
      * @throws IndexUnreachableException
      */
-    private final void init(SolrDocument doc) throws IndexUnreachableException {
+    private final void init(final SolrDocument solrDoc) throws IndexUnreachableException {
         try {
+            SolrDocument doc = solrDoc;
             if (doc == null) {
                 doc = getDocument();
             }

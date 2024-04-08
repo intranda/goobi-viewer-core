@@ -70,7 +70,7 @@ class PrerenderPdfMessageHandlerTest {
         ticket.getProperties().put("pi", pi);
         ticket.getProperties().put("variant", "small");
         ticket.getProperties().put("force", "true");
-        assertEquals(MessageStatus.FINISH, handler.call(ticket));
+        assertEquals(MessageStatus.FINISH, handler.call(ticket, null));
 
         List<Path> pdfFiles = FileTools.listFiles(pdfFolder, FileTools.PDF_NAME_FILTER);
 

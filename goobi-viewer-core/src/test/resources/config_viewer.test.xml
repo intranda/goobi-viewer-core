@@ -944,14 +944,14 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
 	
-		<!-- @enabled: If true, the download widget within a records 
+		<!-- sidebarWidgetAdditionalFiles/@enabled: If true, the download widget within a records 
 			view for additional files from the source directory is displayed. Default 
 			is true. -->
-		<sidebarWidgetDownloads enabled="true">
+		<sidebarWidgetAdditionalFiles enabled="true">
 			<!-- hideFileRegex: If a regular expression is defined, files matching 
 				it are hidden from the widget display. The download is still possible. -->
 			<hideFileRegex>(wug_.*|AK_.*)</hideFileRegex>
-		</sidebarWidgetDownloads>
+		</sidebarWidgetAdditionalFiles>
 	
 	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->
         <sidebarBrowsingTerms enabled="false" />

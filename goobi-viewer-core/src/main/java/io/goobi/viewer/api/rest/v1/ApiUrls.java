@@ -102,6 +102,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PAGES = "/records/{pi}/pages";
     public static final String RECORDS_PAGES_SEQUENCE = "/sequence/base";
     public static final String RECORDS_PAGES_CANVAS = "/{pageNo}/canvas";
+    public static final String RECORDS_PAGES_MANIFEST = "/{pageNo}/manifest";
     public static final String RECORDS_PAGES_NER_TAGS = "/{pageNo}/ner/tags";
     public static final String RECORDS_PAGES_ANNOTATIONS = "/{pageNo}/annotations";
     public static final String RECORDS_PAGES_COMMENTS = "/{pageNo}/comments";
@@ -113,6 +114,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_ALTO = "/alto/{filename}";
     public static final String RECORDS_FILES_CMDI = "/cmdi/{filename}";
     public static final String RECORDS_FILES_TEI = "/tei/{filename}";
+    public static final String RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD = "/resources/{taskId}/{path: .+}";
+    public static final String RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH = "/resources/{taskId}/{path}";
+
 
     public static final String RECORDS_FILES_SOURCE = "/source/{filename}";
     public static final String RECORDS_FILES_AUDIO = "/audio/{mimetype}/{filename}";
@@ -136,14 +140,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST = "/contentassist";
-
-    public static final String DOWNLOADS = "/downloads";
-    public static final String DOWNLOADS_EPUB = "/epub";
-    public static final String DOWNLOADS_PDF = "/pdf";
-    public static final String DOWNLOADS_EPUB_RECORD = "/epub/records/{pi}";
-    public static final String DOWNLOADS_PDF_RECORD = "/pdf/records/{pi}";
-    public static final String DOWNLOADS_EPUB_SECTION = "/epub/records/{pi}/sections/{divId}";
-    public static final String DOWNLOADS_PDF_SECTION = "/pdf/records/{pi}/sections/{divId}";
 
     public static final String USERS = "/users";
     public static final String USERS_USERID = "/users/{userId}";

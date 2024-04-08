@@ -44,10 +44,8 @@
         </rule>
         <rule groupId="jakarta.annotation" artifactId="jakarta.annotation-api">
             <ignoreVersions>
-                <ignoreVersion>2.0.0</ignoreVersion>
-                <ignoreVersion>2.1.0-B1</ignoreVersion>
-                <ignoreVersion>2.1.0</ignoreVersion>
-                <ignoreVersion>2.1.1</ignoreVersion>
+                <ignoreVersion type="regex">2.*</ignoreVersion>
+                <ignoreVersion type="regex">3.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="jakarta.servlet" artifactId="jakarta.servlet-api">

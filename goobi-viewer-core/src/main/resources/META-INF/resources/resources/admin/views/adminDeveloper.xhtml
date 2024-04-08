@@ -54,7 +54,7 @@
 									<button
 										jsf:action="#{adminDeveloperBean.downloadDeveloperArchive()}"
 										class="btn btn--full admin__developer-download-button">
-										<i class="fa fa-download" aria-hidden="true"></i> <span>Herunterladen</span>
+										<i class="fa fa-download" aria-hidden="true"></i> <span>#{msg.downloadButton}</span>
 									</button>
 									<!-- START: zip archive progress monitor -->
 									<span class="admin__developer_download_archive__loader"
@@ -97,13 +97,7 @@
 										data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__unzip_file_code, navigationHelper.theme)}">
 										<i class="fa fa-clipboard" aria-hidden="true"></i>
 									</div>
-									<code data-target="sqlCode">
-										<h:outputFormat
-											value="#{msg.admin__developer__unzip_file_code}"
-											escape="false">
-											<f:param value="#{navigationHelper.theme}" />
-										</h:outputFormat>
-									</code>
+									<code data-target="sqlCode"><h:outputFormat value="#{msg.admin__developer__unzip_file_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
 								</div>
 							</h:form>
@@ -127,12 +121,7 @@
 									data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__sql_commands, navigationHelper.theme)}">
 									<i class="fa fa-clipboard" aria-hidden="true"></i>
 								</div>
-								<code data-target="code">
-									<h:outputFormat value="#{msg.admin__developer__sql_commands}"
-										escape="false">
-										<f:param value="#{navigationHelper.theme}" />
-									</h:outputFormat>
-								</code>
+								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__sql_commands}" escape="false"><f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
 							</div>
 						</div>
@@ -151,13 +140,7 @@
 									data-copy-value="#{msg.admin__developer__local_messages_config_code}">
 									<i class="fa fa-clipboard" aria-hidden="true"></i>
 								</div>
-								<code data-target="code">
-									<h:outputFormat
-										value="#{msg.admin__developer__local_messages_config_code}"
-										escape="false">
-										<f:param value="#{navigationHelper.theme}" />
-									</h:outputFormat>
-								</code>
+								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__local_messages_config_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
 							</div>
 
@@ -170,7 +153,6 @@
 								<h:outputFormat
 									value="#{msg.admin__developer__settings_info_text}"
 									escape="false" />
-
 							</div>
 						</div>
 
@@ -184,25 +166,14 @@
 								<div class="admin__developer-autopull-status-wrapper">
 									<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
 									<div class="admin__developer-autopull-status-text">
-										Pull theme
-										<!-- 								#{adminDeveloperBean.autopullActive ? 'ON' : 'OFF'} -->
-										#{adminDeveloperBean.autopullError ? '(failed)' : ''}
+										#{msg.admin__developer__pull_theme} #{adminDeveloperBean.autopullError ? '(failed)' : ''}
 									</div>
 									<div
 										class="admin__developer-autopull-status-icon #{adminDeveloperBean.autopullError ? '-isError' : ''} #{adminDeveloperBean.autopullActive ? '-isActive' : '-isOff'}"></div>
 								</div>
-								<div class="admin__developer-autopull-last-pull">
-									<h:outputText value="#{adminDeveloperBean.lastAutopull}">
-										<f:converter converterId="localDateTimeConverter" />
-										<f:attribute name="pattern"
-											value="#{navigationHelper.dateTimePattern}" />
-									</h:outputText>
-								</div>
 								<div class="admin__developer-autopull-version-info">
-
 									<c:set scope="request" var="versionInfo"
-										value="#{adminDeveloperBean.themeVersion}" />
-									<!-- 					<div class="admin__developer-autopull-application-name">#{versionInfo.applicationName}</div> -->
+										value="#{adminDeveloperBean.lastVersionInfo}" />
 									<div class="admin__developer-autopull-build-date">#{versionInfo.buildDate}</div>
 									<div class="admin__developer-autopull-git-revision">#{versionInfo.gitRevision}</div>
 									<div class="admin__developer-autopull-release-version">#{versionInfo.releaseVersion}</div>
@@ -210,13 +181,13 @@
 									<o:commandScript name="updateTheme" render="updateThemeGroup"></o:commandScript>
 									<h:commandButton styleClass="btn btn--default mt-3"
 										action="#{adminDeveloperBean.triggerPullTheme}"
-										value="Pull theme">
+										value="#{msg.admin__developer__pull_theme}">
 										<f:ajax render="@form"></f:ajax>
 									</h:commandButton>
 
 									<!-- START: zip archive progress monitor -->
 									<span class="admin__developer_download_archive__loader"
-										id="pullThemeLoader"> <!-- 				   		<progress id="pullThemeProgressBar" value="0" max="1"/> -->
+										id="pullThemeLoader">
 										<img
 										src="#{request.contextPath}/resources/images/ajax_preloader.gif"
 										class="img-fluid" alt="Download developer archive loader" />

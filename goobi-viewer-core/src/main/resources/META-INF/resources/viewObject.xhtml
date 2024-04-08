@@ -214,13 +214,15 @@
         
         <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
-        <widgetComponent:widget_usage />
+        <widgetComponent:widget_downloads />
+         
+        <widgetComponent:widget_citation />
 
         <widgetComponent:widget_relatedGroups />
 
         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
 
-        <widgetComponent:widget_download />
+<!--         <widgetComponent:widget_additionalFiles /> -->
 
         <widgetComponent:widget_versionHistory />
 

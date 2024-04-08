@@ -22,10 +22,10 @@
 							or activeDocumentBean.viewManager.currentPage.teiAvailable 
 							or activeDocumentBean.viewManager.currentPage.displayFulltext)
 					    and !activeDocumentBean.viewManager.doublePageMode}">
-						<h3 id="titleImage" class="widget-usage__subtitle">#{msg.image}</h3>
 
 						<!-- PAGE DOWNLOADS -->
-						<div class="widget-usage__page-downloads">
+						<div class="widget-usage__page-downloads widget__badge-container">
+							<h3 id="titleImage" class="widget-usage__subtitle widget__badge-container-heading">#{msg.image}</h3>
 						
 							<!-- PDF (PAGE) -->
 							<ui:fragment rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
@@ -129,6 +129,43 @@
                                 <!-- PURL -->
 
 							</ui:fragment>
+							
+							                        <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest}">   
+                        
+                            <!-- IIIF MANIFEST -->
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
+	                           <button 
+                                   id="iiifManifest"
+                                   class="badge badge-dark widget-usage__page-download-iiif" 
+	                               data-copy-value="#{imageDelivery.iiifPageManifest}" 
+	                               data-copy-done-msg="#{msg.copyUrlDone}"
+                                   title="#{msg.copyUrl}"
+                                   aria-label="#{msg.image}: #{msg.iiif}"
+                                   tabindex="0"> 
+	                               #{msg.iiif}
+	                           </button> 
+	                       </ui:fragment>      
+	                    
+                            <!-- MIRADOR -->
+                            <ui:fragment
+                                rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
+                                    <a
+                                        href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}" 
+                                        id="mirador" 
+                                        class="badge badge-dark widget-usage__page-link-mirador-viewer" 
+                                        title="#{msg.action__view_in_mirador__tooltip}"
+										data-toggle="tooltip"
+										data-placement="top"
+										data-trigger="hover"
+                                        target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg.image}: #{msg.action__view_in_mirador}"> 
+                                        #{msg.action__view_in_mirador}
+                                    </a> 
+                            </ui:fragment>
+                        
+                        </ui:fragment>
+							
 						</div>
 						
 						<!-- POPOVER FOR IMAGE DOWNLOAD -->
@@ -205,19 +242,19 @@
 					
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-						<div class="widget-usage__image-fragment__wrapper">
+						<div class="widget-usage__image-fragment-wrapper" data-fragment-link="wrapper">
 							<h3 id="imgFragment" class="widget-usage__subtitle">#{msg.image_fragment}</h3>
 	
 							<div class="widget-usage__image-fragment">
 							
-								<a class="badge badge-dark widget-usage__image-fragment-page"  id="imageFragmentPage" 
+								<a class="badge badge-dark widget-usage__image-fragment-page"  id="imageFragmentPage" data-fragment-link="page"
 									data-copy-share-image="image-region-page"
 									data-copy-done-msg="#{msg.copyUrlDone}"
                                     title="#{msg.copyUrl}" 
                                     aria-label="#{msg.image}: #{msg.label__share_image_region_page}">
                                     #{msg.label__share_image_region_page}
                                 </a>
-								<a class="badge badge-dark widget-usage__image-fragment-image"  id="imageFragmentImage" 
+								<a class="badge badge-dark widget-usage__image-fragment-image"  id="imageFragmentImage"  data-fragment-link="iiif"
 									data-copy-share-image="image-region-image"
 									data-copy-done-msg="#{msg.copyUrlDone}"
                                     title="#{msg.copyUrl}" 

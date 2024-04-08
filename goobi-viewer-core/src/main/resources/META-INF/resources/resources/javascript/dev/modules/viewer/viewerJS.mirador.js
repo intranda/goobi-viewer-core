@@ -68,6 +68,13 @@ var viewerJS = ( function( viewer ) {
             if(!this.config.manifestEndpoint) {
             	this.config.manifestEndpoint = this.config.restEndpoint;
             }
+            if(this.config.startPage == undefined) {				
+	            const startPage = _getPageFromQueryParameter();
+	            if(startPage) {
+					this.config.startPage = startPage;
+				}
+			}
+            
             
             var manifests = _getManifestsFromUrlQuery(this.config);
             
@@ -210,6 +217,12 @@ var viewerJS = ( function( viewer ) {
 		return params.getAll(variable).flatMap(s => s.split(/[,$]/)).filter(s => s && s.length > 0);
 	}
 	
+	function _getPageFromQueryParameter()  {
+				let query = window.location.search;
+				let params = new URLSearchParams(query);
+				let page = params.get("page");
+				return page;
+			}	
 	   
     function _getMiradorConfigForManifestUrls(manifests, config) {
         var columns = Math.ceil(Math.sqrt(manifests.length));

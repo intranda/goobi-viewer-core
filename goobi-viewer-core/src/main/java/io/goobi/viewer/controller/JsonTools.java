@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -38,8 +39,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -69,6 +73,12 @@ public final class JsonTools {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
+    static {
+        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+    }
+
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_STATUS = "status";
 
@@ -76,7 +86,6 @@ public final class JsonTools {
      * Private constructor.
      */
     private JsonTools() {
-        //
     }
 
     /**
@@ -160,14 +169,28 @@ public final class JsonTools {
         return mapper.writeValueAsString(object);
     }
 
+    /**
+     * 
+     * @param <T>
+     * @param json
+     * @param clazz
+     * @return T
+     * @throws IOException
+     */
+    public static <T> T getAsObject(String json, Class<T> clazz) throws IOException {
+        try (JsonParser parser = mapper.createParser(json)) {
+            return parser.readValueAs(clazz);
+        }
+    }
+
     public static Object getAsObjectForJson(Object value) {
         if (value == null) {
             return null;
         }
         if (value instanceof String) {
             return value;
-        } else if (value instanceof IMetadataValue && ((IMetadataValue) value).getNumberOfUniqueTranslations() == 1) {
-            return ((IMetadataValue) value).getValue().orElse("");
+        } else if (value instanceof IMetadataValue metadataValue && metadataValue.getNumberOfUniqueTranslations() == 1) {
+            return metadataValue.getValue().orElse("");
         } else {
             try {
                 String s = getAsJson(value);
@@ -202,8 +225,8 @@ public final class JsonTools {
             Object value = object.get(name);
             String trName = Messages.translate(name, locale);
             Object trValue;
-            if (value instanceof String) {
-                trValue = Messages.translate((String) value, locale);
+            if (value instanceof String s) {
+                trValue = Messages.translate(s, locale);
             } else {
                 trValue = value;
             }
@@ -241,7 +264,7 @@ public final class JsonTools {
                     requiredAccessConditionSet.add((String) o);
                 }
                 boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
-                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi.toString(), request).isGranted();
+                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi, request).isGranted();
                 if (!access) {
                     logger.debug("User may not list {}", pi);
                     continue;
@@ -299,11 +322,9 @@ public final class JsonTools {
      * @param language a {@link java.lang.String} object.
      * @param thumbs
      * @return a {@link org.json.JSONObject} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should add all metadata
      */
-    public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language, ThumbnailHandler thumbs)
-            throws ViewerConfigurationException {
+    public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language, ThumbnailHandler thumbs) {
         JSONObject jsonObj = new JSONObject();
 
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
