@@ -37,7 +37,7 @@ public class ZipUnpacker {
     public Path extractZip(Path destination, ZipInputStream zis) throws IOException, ArchiveSizeExceededException {
         ZipEntry entry = null;
         long currentArchiveSize = 0;
-        while ((entry = zis.getNextEntry()) != null) {
+        while ((entry = zis.getNextEntry()) != null) { //NOSONAR   entry is tested for size while extracting it
             Path entryFile = destination.resolve(entry.getName());
             if (entry.isDirectory()) {
                 logger.trace("Creating directory {}", entryFile);
