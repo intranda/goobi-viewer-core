@@ -24,13 +24,10 @@ package io.goobi.viewer.model.job.download;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -38,9 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.exceptions.DownloadException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 
 class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -75,41 +69,6 @@ class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(hash, DownloadJob.generateDownloadJobId(crit1, crit2));
         Assertions.assertEquals(hash, DownloadJob.generateDownloadJobId(crit1, crit2));
         Assertions.assertEquals(hash, DownloadJob.generateDownloadJobId(crit1, crit2));
-    }
-
-    @Test
-    @Disabled("why?")
-    void testSendJobToTaskManager() throws PresentationException, IndexUnreachableException {
-        boolean triggered = false;
-        try {
-            PDFDownloadJob.triggerCreation("18979459_1830", "LOG_0003", "6c685d274f44f6e3ab8ef3f1c640bd01");
-            triggered = true;
-        } catch (DownloadException e) {
-            //
-        }
-        Assertions.assertTrue(triggered, "TaskManager job not triggered");
-    }
-
-    @Test
-    @Disabled("why?")
-    void testTaskManagerQueue() throws InterruptedException, PresentationException, IndexUnreachableException {
-        List<String> logs = new ArrayList<>();
-        logs.add("");
-        logs.add("LOG_0004");
-        logs.add("LOG_0005");
-        logs.add("LOG_0006");
-        logs.add("LOG_0007");
-        logs.add("LOG_0008");
-        String pi = "18979459_1830";
-        for (String logId : logs) {
-            PDFDownloadJob.triggerCreation(pi, logId, DownloadJob.generateDownloadJobId(pi, logId));
-        }
-        Thread.sleep(500);
-        for (String logId : logs) {
-            String id = DownloadJob.generateDownloadJobId(pi, logId);
-            int jobsUntil = PDFDownloadJob.getPDFJobsInQueue(id);
-            assertEquals(4, jobsUntil, 3);
-        }
     }
 
     @Test
