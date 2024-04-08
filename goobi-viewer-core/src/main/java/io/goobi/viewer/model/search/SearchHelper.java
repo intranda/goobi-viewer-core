@@ -497,11 +497,25 @@ public final class SearchHelper {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
-     * @return a {@link java.lang.String} object.
+     * @return Generated Solr query suffix
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
         return getAllSuffixes(request, !DataManager.getInstance().getConfiguration().isArchivesEnabled(), addStaticQuerySuffix,
                 addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
+    }
+
+    /**
+     * 
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param addStaticQuerySuffix a boolean.
+     * @param addCollectionBlacklistSuffix a boolean.
+     * @param privilege Privilege to check (Connector checks a different privilege)
+     * @return Generated Solr query suffix
+     */
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
+            String privilege) {
+        return getAllSuffixes(request, !DataManager.getInstance().getConfiguration().isArchivesEnabled(), addStaticQuerySuffix,
+                addCollectionBlacklistSuffix, privilege);
     }
 
     /**
@@ -512,12 +526,12 @@ public final class SearchHelper {
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
+     * @return Generated Solr query suffix
      * @should add archive filter suffix
      * @should add static suffix
      * @should not add static suffix if not requested
      * @should add collection blacklist suffix
      * @should add discriminator value suffix
-     * @return a {@link java.lang.String} object.
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addArchiveFilterSuffix, boolean addStaticQuerySuffix,
             boolean addCollectionBlacklistSuffix, String privilege) {
