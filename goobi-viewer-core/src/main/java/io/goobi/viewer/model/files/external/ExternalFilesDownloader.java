@@ -31,6 +31,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.controller.files.ZipUnpacker;
+import io.goobi.viewer.exceptions.ArchiveSizeExceededException;
 
 public class ExternalFilesDownloader {
 
@@ -117,13 +119,16 @@ public class ExternalFilesDownloader {
             Path target = this.destinationFolder.resolve(sourcePath.getFileName());
             try (InputStream in = Files.newInputStream(sourcePath)) {
                 return extractContentToPath(target, in, Files.probeContentType(sourcePath), Files.size(sourcePath));
+            } catch (ArchiveSizeExceededException e) {
+                throw new IOException(
+                        "Aborted extraction of archive at " + uri + " because of maximum archive size violation: " + e.getMessage());
             }
         } else {
             throw new IOException("No file resource found at " + uri);
         }
     }
 
-    public Path downloadHttpResource(URI uri) throws IOException, ClientProtocolException {
+    public Path downloadHttpResource(URI uri) throws IOException {
         final CloseableHttpClient client = createHttpClient();
         final CloseableHttpResponse response = createHttpGetResponse(client, uri);
         final int statusCode = response.getStatusLine().getStatusCode();
@@ -132,8 +137,13 @@ public class ExternalFilesDownloader {
                 String filename = getFilename(uri, response);
                 if (response.getEntity() != null) {
                     long length = response.getEntity().getContentLength();
-                    return extractContentToPath(this.destinationFolder.resolve(filename), response.getEntity().getContent(),
-                            response.getEntity().getContentType().getValue(), length);
+                    try {
+                        return extractContentToPath(this.destinationFolder.resolve(filename), response.getEntity().getContent(),
+                                response.getEntity().getContentType().getValue(), length);
+                    } catch (ArchiveSizeExceededException e) {
+                        throw new IOException(
+                                "Aborted extraction of archive at " + uri + " because of maximum archive size violation: " + e.getMessage());
+                    }
                 }
             case 401:
             default:
@@ -143,14 +153,14 @@ public class ExternalFilesDownloader {
     }
 
     private Path extractContentToPath(Path destination, InputStream input, String contentMimeType, long size)
-            throws IOException {
+            throws IOException, ArchiveSizeExceededException {
         switch (contentMimeType) {
             case "application/zip":
                 Path targetFolder = prepareNewFolder(destination);
                 logger.trace("Writing to output folder {}", destination);
                 try (ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor));
                         ZipInputStream zis = new ZipInputStream(monitored)) {
-                    return extractZip(targetFolder, zis);
+                    return new ZipUnpacker().extractZip(targetFolder, zis);
                 }
             default://assume normal file
                 try (ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor))) {
@@ -159,10 +169,9 @@ public class ExternalFilesDownloader {
         }
     }
 
-    public Path extractZip(Path destination, ZipInputStream zis) throws IOException {
+    private Path extractZip(Path destination, ZipInputStream zis) throws IOException {
         ZipEntry entry = null;
         while ((entry = zis.getNextEntry()) != null) {
-            String name = entry.getName();
             Path entryFile = destination.resolve(entry.getName());
             if (entry.isDirectory()) {
                 logger.trace("Creating directory {}", entryFile);
