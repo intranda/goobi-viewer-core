@@ -22,7 +22,6 @@ io.goobi.viewer.api.rest.v1.clients
 io.goobi.viewer.api.rest.v1.cms
 io.goobi.viewer.api.rest.v1.collections
 io.goobi.viewer.api.rest.v1.crowdsourcing
-io.goobi.viewer.api.rest.v1.downloads
 io.goobi.viewer.api.rest.v1.index
 io.goobi.viewer.api.rest.v1.localization
 io.goobi.viewer.api.rest.v1.media
@@ -42,6 +41,7 @@ io.goobi.viewer.api.rest.v2.media
 io.goobi.viewer.api.rest.v2.records
 io.goobi.viewer.api.rest.v2.records.media
 io.goobi.viewer.controller
+io.goobi.viewer.controller.files
 io.goobi.viewer.controller.imaging
 io.goobi.viewer.controller.model
 io.goobi.viewer.controller.mq
@@ -89,6 +89,7 @@ io.goobi.viewer.model.crowdsourcing.campaigns
 io.goobi.viewer.model.crowdsourcing.questions
 io.goobi.viewer.model.email
 io.goobi.viewer.model.export
+io.goobi.viewer.model.files.external
 io.goobi.viewer.model.glossary
 io.goobi.viewer.model.iiif.discovery
 io.goobi.viewer.model.iiif.presentation.v2.builder
