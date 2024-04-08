@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -188,24 +187,6 @@ public class ExternalFilesDownloader {
                     return writeFile(destination, monitored);
                 }
         }
-    }
-
-    private Path extractZip(Path destination, ZipInputStream zis) throws IOException {
-        ZipEntry entry = null;
-        while ((entry = zis.getNextEntry()) != null) {
-            Path entryFile = destination.resolve(entry.getName());
-            if (entry.isDirectory()) {
-                logger.trace("Creating directory {}", entryFile);
-                Files.createDirectory(entryFile);
-            } else {
-                logger.trace("Writing file {}", entryFile);
-                if (!Files.isDirectory(entryFile.getParent())) {
-                    Files.createDirectories(entryFile.getParent());
-                }
-                writeFile(entryFile, zis);
-            }
-        }
-        return destination;
     }
 
     private Path writeFile(Path entryFile, InputStream zis) throws IOException {
