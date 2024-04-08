@@ -35,7 +35,6 @@ import javax.ws.rs.core.Response;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
@@ -91,19 +90,16 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    @Disabled("why?")
     void testGetImageInformationFromBaseUrl() {
         String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
-        String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
+        String id = urls.path(RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals(200, response.getStatus(), "Should return status 200");
-            assertNotNull(response.getEntity(), "Should return user object as JSON");
-            String responseString = response.readEntity(String.class);
-            JSONObject info = new JSONObject(responseString);
-            assertTrue(info.getString("id").endsWith(id), "@id should end with '" + id + " but was: " + info.getString("id"));
+            assertEquals(302, response.getStatus(), "Should return status 302");
+            assertTrue(response.getHeaderString("Location").endsWith(id),
+                    "Expected \"" + id + "\". But was \"" + response.getHeaderString("Location") + "\"");
         }
     }
 

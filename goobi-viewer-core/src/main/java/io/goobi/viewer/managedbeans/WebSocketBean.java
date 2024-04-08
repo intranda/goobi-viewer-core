@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
@@ -38,7 +59,6 @@ public class WebSocketBean implements Serializable {
     private transient MessageQueueManager queueManager;
     private transient Scheduler scheduler = null;
 
-
     public WebSocketBean() {
         try {
             this.scheduler = new StdSchedulerFactory().getScheduler();
@@ -47,17 +67,16 @@ public class WebSocketBean implements Serializable {
         }
     }
 
-    public Map<String, String> receiveMessage(String...parameters) {
+    public Map<String, String> receiveMessage(String... parameters) {
         return Arrays.stream(parameters).map(p -> {
-            return new String[] {p, Faces.getRequestParameter(p)};
+            return new String[] { p, Faces.getRequestParameter(p) };
         }).collect(Collectors.toMap(a -> a[0], a -> a[1]));
-        
+
     }
-    
+
     public void sendMessage(Object message) {
         logger.debug("sending message '{}'", message);
         pushChannel.send(message).stream().forEach(f -> logger.debug("message sent"));
     }
-
 
 }

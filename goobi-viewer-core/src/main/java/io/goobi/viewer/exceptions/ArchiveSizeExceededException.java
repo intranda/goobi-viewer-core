@@ -21,14 +21,26 @@
  */
 package io.goobi.viewer.exceptions;
 
-public class ArchiveConnectionException extends ArchiveException {
+public class ArchiveSizeExceededException extends PresentationException {
 
-    public ArchiveConnectionException(String message, String resourceName, String resourceLocation, Throwable e) {
-        super(message, resourceName, resourceLocation, e);
+    private static final long serialVersionUID = -8493147783169699313L;
+
+    public ArchiveSizeExceededException(String string, Throwable e) {
+        super(string, e);
     }
 
-    public ArchiveConnectionException(String message, String resourceName, String resourceLocation) {
-        super(message, resourceName, resourceLocation);
+    public ArchiveSizeExceededException(String string) {
+        super(string);
+    }
+
+    public ArchiveSizeExceededException(String string, Object... args) {
+        super(string, args);
+        // TODO Auto-generated constructor stub
+    }
+
+    public ArchiveSizeExceededException(Throwable e, String string, Object... args) {
+        super(e, string, args);
+        // TODO Auto-generated constructor stub
     }
 
 }

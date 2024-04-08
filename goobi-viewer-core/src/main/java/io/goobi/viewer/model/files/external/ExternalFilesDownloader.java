@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.files.external;
 
 import java.io.IOException;
@@ -10,7 +31,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +51,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.controller.files.ZipUnpacker;
+import io.goobi.viewer.exceptions.ArchiveSizeExceededException;
 
 public class ExternalFilesDownloader {
 
@@ -117,13 +139,16 @@ public class ExternalFilesDownloader {
             Path target = this.destinationFolder.resolve(sourcePath.getFileName());
             try (InputStream in = Files.newInputStream(sourcePath)) {
                 return extractContentToPath(target, in, Files.probeContentType(sourcePath), Files.size(sourcePath));
+            } catch (ArchiveSizeExceededException e) {
+                throw new IOException(
+                        "Aborted extraction of archive at " + uri + " because of maximum archive size violation: " + e.getMessage());
             }
         } else {
             throw new IOException("No file resource found at " + uri);
         }
     }
 
-    public Path downloadHttpResource(URI uri) throws IOException, ClientProtocolException {
+    public Path downloadHttpResource(URI uri) throws IOException {
         final CloseableHttpClient client = createHttpClient();
         final CloseableHttpResponse response = createHttpGetResponse(client, uri);
         final int statusCode = response.getStatusLine().getStatusCode();
@@ -132,8 +157,13 @@ public class ExternalFilesDownloader {
                 String filename = getFilename(uri, response);
                 if (response.getEntity() != null) {
                     long length = response.getEntity().getContentLength();
-                    return extractContentToPath(this.destinationFolder.resolve(filename), response.getEntity().getContent(),
-                            response.getEntity().getContentType().getValue(), length);
+                    try {
+                        return extractContentToPath(this.destinationFolder.resolve(filename), response.getEntity().getContent(),
+                                response.getEntity().getContentType().getValue(), length);
+                    } catch (ArchiveSizeExceededException e) {
+                        throw new IOException(
+                                "Aborted extraction of archive at " + uri + " because of maximum archive size violation: " + e.getMessage());
+                    }
                 }
             case 401:
             default:
@@ -143,39 +173,20 @@ public class ExternalFilesDownloader {
     }
 
     private Path extractContentToPath(Path destination, InputStream input, String contentMimeType, long size)
-            throws IOException {
+            throws IOException, ArchiveSizeExceededException {
         switch (contentMimeType) {
             case "application/zip":
                 Path targetFolder = prepareNewFolder(destination);
                 logger.trace("Writing to output folder {}", destination);
                 try (ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor));
                         ZipInputStream zis = new ZipInputStream(monitored)) {
-                    return extractZip(targetFolder, zis);
+                    return new ZipUnpacker().extractZip(targetFolder, zis);
                 }
             default://assume normal file
                 try (ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor))) {
                     return writeFile(destination, monitored);
                 }
         }
-    }
-
-    public Path extractZip(Path destination, ZipInputStream zis) throws IOException {
-        ZipEntry entry = null;
-        while ((entry = zis.getNextEntry()) != null) {
-            String name = entry.getName();
-            Path entryFile = destination.resolve(entry.getName());
-            if (entry.isDirectory()) {
-                logger.trace("Creating directory {}", entryFile);
-                Files.createDirectory(entryFile);
-            } else {
-                logger.trace("Writing file {}", entryFile);
-                if (!Files.isDirectory(entryFile.getParent())) {
-                    Files.createDirectories(entryFile.getParent());
-                }
-                writeFile(entryFile, zis);
-            }
-        }
-        return destination;
     }
 
     private Path writeFile(Path entryFile, InputStream zis) throws IOException {
