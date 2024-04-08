@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.search;
 
 import java.util.Locale;
@@ -11,9 +32,9 @@ public enum HitType {
     PAGE,
     METADATA, // grouped metadata
     UGC, // user-generated content
-    LOCATION,   //metadata type location
-    SHAPE,      //metadata type shape
-    SUBJECT,    //metadata type subject
+    LOCATION, //metadata type location
+    SHAPE, //metadata type shape
+    SUBJECT, //metadata type subject
     PERSON, // UGC/metadata person
     CORPORATION, // UGC/meadata corporation
     ADDRESS, // UGC address
@@ -48,4 +69,3 @@ public enum HitType {
         return ViewerResourceBundle.getTranslation(new StringBuilder("doctype_").append(name()).toString(), locale);
     }
 }
-
