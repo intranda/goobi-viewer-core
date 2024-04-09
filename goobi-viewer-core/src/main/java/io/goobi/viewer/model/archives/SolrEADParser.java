@@ -43,7 +43,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -142,14 +144,12 @@ public class SolrEADParser extends ArchiveParser {
         logger.trace("loadDatabase: {}", database.getResourceId());
         List<String> solrFields = new ArrayList<>(Arrays.asList(SOLR_FIELDS_ENTRIES));
         SolrDocument topDoc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("");
         if (topDoc != null) {
             // Collect mapped metadata field names
             Set<String> additionalMetadataFields = new HashSet<>();
-            for (ArchiveMetadataField amf : configuredFields) {
-                if (StringUtils.isNotEmpty(amf.getIndexField())) {
-                    additionalMetadataFields.add(amf.getIndexField());
-                    // logger.trace("added md field: {}", amf.getIndexField()); //NOSONAR Debug
-                }
+            for (Metadata md : metadataList) {
+                additionalMetadataFields.addAll(md.getParamFieldNames());
             }
             solrFields.addAll(additionalMetadataFields);
 
@@ -164,7 +164,7 @@ public class SolrEADParser extends ArchiveParser {
                 }
             }
             try {
-                return loadHierarchyFromIndex(1, 0, topDoc, archiveDocMap, configuredFields, associatedRecordMap);
+                return loadHierarchyFromIndex(1, 0, topDoc, archiveDocMap, metadataList, associatedRecordMap);
             } finally {
                 logger.trace("Database loaded.");
             }
@@ -176,36 +176,31 @@ public class SolrEADParser extends ArchiveParser {
     /**
      * @param order
      * @param hierarchy
-     * @param topDoc
+     * @param doc
      * @param archiveDocMap
-     * @param configuredFields
+     * @param metadataList
      * @param associatedPIs
      * @return {@link ArchiveEntry}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     private ArchiveEntry loadHierarchyFromIndex(int order, int hierarchy, SolrDocument doc, Map<String, List<SolrDocument>> archiveDocMap,
-            List<ArchiveMetadataField> configuredFields,
-            Map<String, Entry<String, Boolean>> associatedPIs) throws PresentationException, IndexUnreachableException {
+            List<Metadata> metadataList, Map<String, Entry<String, Boolean>> associatedPIs) throws PresentationException, IndexUnreachableException {
+        // logger.trace("loadHierarchyFromIndex: {}", order);
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
-        }
-        if (configuredFields == null) {
-            throw new IllegalArgumentException("configuredFields may not be null");
         }
 
         ArchiveEntry entry = new ArchiveEntry(order, hierarchy);
 
         // Collect metadata
-        for (ArchiveMetadataField emf : configuredFields) {
-            List<String> stringValues = new ArrayList<>();
-            if (StringUtils.isNotEmpty(emf.getIndexField())) {
-                for (String value : SolrTools.getMetadataValues(doc, emf.getIndexField())) {
-                    stringValues.add(value);
+        if (metadataList != null) {
+            StructElement se = new StructElement(doc);
+            for (Metadata md : metadataList) {
+                if (md.populate(se, null, null, null)) {
+                    addFieldToEntry(entry, md);
                 }
             }
-
-            addFieldToEntry(entry, emf, stringValues);
         }
 
         String id = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
@@ -242,7 +237,8 @@ public class SolrEADParser extends ArchiveParser {
             int subOrder = 0;
             int subHierarchy = hierarchy + 1;
             for (SolrDocument c : archiveDocMap.get(iddoc)) {
-                ArchiveEntry child = loadHierarchyFromIndex(subOrder, subHierarchy, c, archiveDocMap, configuredFields, associatedPIs);
+                ArchiveEntry child = loadHierarchyFromIndex(subOrder, subHierarchy, c, archiveDocMap,
+                        DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate(""), associatedPIs);
                 entry.addSubEntry(child);
                 child.setParentNode(entry);
                 if (child.isContainsImage()) {

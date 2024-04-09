@@ -31,6 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.model.metadata.Metadata;
+
 public class ArchiveEntry {
 
     private static final Logger logger = LogManager.getLogger(ArchiveEntry.class);
@@ -75,21 +77,21 @@ public class ArchiveEntry {
     //    Date(s)
     //    Level of description
     //    Extent and medium of the unit of description (quantity, bulk, or size)
-    private List<ArchiveMetadataField> identityStatementAreaList = new ArrayList<>();
+    private List<Metadata> identityStatementAreaList = new ArrayList<>();
 
     /* 2. Context Area */
     //    Name of creator(s)
     //    Administrative | Biographical history
     //    Archival history
     //    Immediate source of acquisition or transfer
-    private List<ArchiveMetadataField> contextAreaList = new ArrayList<>();
+    private List<Metadata> contextAreaList = new ArrayList<>();
 
     /* 3. Content and Structure Area */
     //    Scope and content
     //    Appraisal, destruction and scheduling information
     //    Accruals
     //    System of arrangement
-    private List<ArchiveMetadataField> contentAndStructureAreaAreaList = new ArrayList<>();
+    private List<Metadata> contentAndStructureAreaAreaList = new ArrayList<>();
 
     /* 4. Condition of Access and Use Area */
     //    Conditions governing access
@@ -97,24 +99,24 @@ public class ArchiveEntry {
     //    Language | Scripts of material
     //    Physical characteristics and technical requirements
     //    Finding aids
-    private List<ArchiveMetadataField> accessAndUseAreaList = new ArrayList<>();
+    private List<Metadata> accessAndUseAreaList = new ArrayList<>();
 
     /* 5. Allied Materials Area */
     //    Existence and location of originals
     //    Existence and location of copies
     //    Related units of description
     //    Publication note
-    private List<ArchiveMetadataField> alliedMaterialsAreaList = new ArrayList<>();
+    private List<Metadata> alliedMaterialsAreaList = new ArrayList<>();
 
     /* 6. Note Area */
     //    Note
-    private List<ArchiveMetadataField> notesAreaList = new ArrayList<>();
+    private List<Metadata> notesAreaList = new ArrayList<>();
 
     /* 7. Description Control Area */
     //    Archivist's Note
     //    Rules or Conventions
     //    Date(s) of descriptions
-    private List<ArchiveMetadataField> descriptionControlAreaList = new ArrayList<>();
+    private List<Metadata> descriptionControlAreaList = new ArrayList<>();
 
     public ArchiveEntry(Integer order, Integer hierarchy) {
         this.orderNumber = order;
@@ -533,19 +535,20 @@ public class ArchiveEntry {
         }
     }
 
+    @Deprecated
     public ArchiveMetadataField getIdentityStatementAreaField(String name) {
-        for (ArchiveMetadataField field : identityStatementAreaList) {
-            if (field.getLabel().equals(name)) {
-                return field;
-            }
-        }
+//        for (ArchiveMetadataField field : identityStatementAreaList) {
+//            if (field.getLabel().equals(name)) {
+//                return field;
+//            }
+//        }
 
         return null;
     }
 
-    public List<ArchiveMetadataField> getAllAreaLists() {
+    public List<Metadata> getAllAreaLists() {
         // logger.trace("getAllAreaLists ({})", id);
-        List<ArchiveMetadataField> ret = new ArrayList<>(getIdentityStatementAreaList().size()
+        List<Metadata> ret = new ArrayList<>(getIdentityStatementAreaList().size()
                 + getContextAreaList().size()
                 + getContentAndStructureAreaAreaList().size()
                 + getAccessAndUseAreaList().size()
@@ -567,7 +570,7 @@ public class ArchiveEntry {
     /**
      * @return the identityStatementAreaList
      */
-    public List<ArchiveMetadataField> getIdentityStatementAreaList() {
+    public List<Metadata> getIdentityStatementAreaList() {
         // logger.trace("getIdentityStatementAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return identityStatementAreaList;
     }
@@ -575,14 +578,14 @@ public class ArchiveEntry {
     /**
      * @param identityStatementAreaList the identityStatementAreaList to set
      */
-    public void setIdentityStatementAreaList(List<ArchiveMetadataField> identityStatementAreaList) {
+    public void setIdentityStatementAreaList(List<Metadata> identityStatementAreaList) {
         this.identityStatementAreaList = identityStatementAreaList;
     }
 
     /**
      * @return the contextAreaList
      */
-    public List<ArchiveMetadataField> getContextAreaList() {
+    public List<Metadata> getContextAreaList() {
         // logger.trace("getContextAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return contextAreaList;
     }
@@ -590,14 +593,14 @@ public class ArchiveEntry {
     /**
      * @param contextAreaList the contextAreaList to set
      */
-    public void setContextAreaList(List<ArchiveMetadataField> contextAreaList) {
+    public void setContextAreaList(List<Metadata> contextAreaList) {
         this.contextAreaList = contextAreaList;
     }
 
     /**
      * @return the contentAndStructureAreaAreaList
      */
-    public List<ArchiveMetadataField> getContentAndStructureAreaAreaList() {
+    public List<Metadata> getContentAndStructureAreaAreaList() {
         // logger.trace("getContentAndStructureAreaAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return contentAndStructureAreaAreaList;
     }
@@ -605,14 +608,14 @@ public class ArchiveEntry {
     /**
      * @param contentAndStructureAreaAreaList the contentAndStructureAreaAreaList to set
      */
-    public void setContentAndStructureAreaAreaList(List<ArchiveMetadataField> contentAndStructureAreaAreaList) {
+    public void setContentAndStructureAreaAreaList(List<Metadata> contentAndStructureAreaAreaList) {
         this.contentAndStructureAreaAreaList = contentAndStructureAreaAreaList;
     }
 
     /**
      * @return the accessAndUseAreaList
      */
-    public List<ArchiveMetadataField> getAccessAndUseAreaList() {
+    public List<Metadata> getAccessAndUseAreaList() {
         // logger.trace("getAccessAndUseAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return accessAndUseAreaList;
     }
@@ -620,14 +623,14 @@ public class ArchiveEntry {
     /**
      * @param accessAndUseAreaList the accessAndUseAreaList to set
      */
-    public void setAccessAndUseAreaList(List<ArchiveMetadataField> accessAndUseAreaList) {
+    public void setAccessAndUseAreaList(List<Metadata> accessAndUseAreaList) {
         this.accessAndUseAreaList = accessAndUseAreaList;
     }
 
     /**
      * @return the alliedMaterialsAreaList
      */
-    public List<ArchiveMetadataField> getAlliedMaterialsAreaList() {
+    public List<Metadata> getAlliedMaterialsAreaList() {
         // logger.trace("getAlliedMaterialsAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return alliedMaterialsAreaList;
     }
@@ -635,14 +638,14 @@ public class ArchiveEntry {
     /**
      * @param alliedMaterialsAreaList the alliedMaterialsAreaList to set
      */
-    public void setAlliedMaterialsAreaList(List<ArchiveMetadataField> alliedMaterialsAreaList) {
+    public void setAlliedMaterialsAreaList(List<Metadata> alliedMaterialsAreaList) {
         this.alliedMaterialsAreaList = alliedMaterialsAreaList;
     }
 
     /**
      * @return the notesAreaList
      */
-    public List<ArchiveMetadataField> getNotesAreaList() {
+    public List<Metadata> getNotesAreaList() {
         // logger.trace("getNotesAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return notesAreaList;
     }
@@ -650,14 +653,14 @@ public class ArchiveEntry {
     /**
      * @param notesAreaList the notesAreaList to set
      */
-    public void setNotesAreaList(List<ArchiveMetadataField> notesAreaList) {
+    public void setNotesAreaList(List<Metadata> notesAreaList) {
         this.notesAreaList = notesAreaList;
     }
 
     /**
      * @return the descriptionControlAreaList
      */
-    public List<ArchiveMetadataField> getDescriptionControlAreaList() {
+    public List<Metadata> getDescriptionControlAreaList() {
         // logger.trace("getDescriptionControlAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return descriptionControlAreaList;
     }
@@ -665,7 +668,7 @@ public class ArchiveEntry {
     /**
      * @param descriptionControlAreaList the descriptionControlAreaList to set
      */
-    public void setDescriptionControlAreaList(List<ArchiveMetadataField> descriptionControlAreaList) {
+    public void setDescriptionControlAreaList(List<Metadata> descriptionControlAreaList) {
         this.descriptionControlAreaList = descriptionControlAreaList;
     }
 
@@ -783,7 +786,7 @@ public class ArchiveEntry {
     public String getFieldValue(String field) {
         return getAllAreaLists().stream()
                 .filter(entry -> entry.getLabel().equals(field))
-                .map(ArchiveMetadataField::getValue)
+                .map(Metadata::getFirstValue)
                 .filter(StringUtils::isNotBlank)
                 .findAny()
                 .orElse(null);

@@ -31,7 +31,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -50,7 +49,6 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     void before() {
         try {
             SolrEADParser tempParser = new SolrEADParser(DataManager.getInstance().getSearchIndex());
-            tempParser.readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate(""));
             List<ArchiveResource> tempDatabases = tempParser.getPossibleDatabases();
             if (!tempDatabases.isEmpty()) {
                 ArchiveEntry root = tempParser.loadDatabase(tempDatabases.get(0));
@@ -72,7 +70,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
                     }
                 };
             }
-        } catch (PresentationException | IndexUnreachableException | ConfigurationException e) {
+        } catch (PresentationException | IndexUnreachableException e) {
             fail(e.toString());
         }
     }

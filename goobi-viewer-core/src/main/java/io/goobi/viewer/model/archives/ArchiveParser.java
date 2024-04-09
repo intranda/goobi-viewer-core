@@ -23,7 +23,6 @@ package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,8 +49,6 @@ public abstract class ArchiveParser {
     private static final Logger logger = LogManager.getLogger(ArchiveParser.class);
 
     protected final SolrSearchIndex searchIndex;
-
-    protected List<ArchiveMetadataField> configuredFields;
 
     protected Map<String, Entry<String, Boolean>> associatedRecordMap;
 
@@ -117,58 +113,48 @@ public abstract class ArchiveParser {
             throws PresentationException, IndexUnreachableException, IllegalStateException, IOException, HTTPException, JDOMException;
 
     /**
-     * Add the metadata to the configured level
+     * Add the metadata to the configured level.
      *
      * @param entry
-     * @param emf
-     * @param stringValues
+     * @param metadata
      */
-    protected static void addFieldToEntry(ArchiveEntry entry, ArchiveMetadataField emf, List<String> stringValues) {
-        if (StringUtils.isBlank(entry.getLabel()) && emf.getLabel().equals("unittitle") && stringValues != null && !stringValues.isEmpty()) {
-            entry.setLabel(stringValues.get(0));
+    protected static void addFieldToEntry(ArchiveEntry entry, Metadata metadata) {
+        if (entry == null) {
+            throw new IllegalArgumentException("entry may not be null");
         }
-        ArchiveMetadataField toAdd = new ArchiveMetadataField(emf.getLabel(), emf.getType(), emf.getIndexField());
-        toAdd.setEadEntry(entry);
-
-        if (stringValues != null && !stringValues.isEmpty()) {
-
-            // split single value into multiple fields
-            for (String stringValue : stringValues) {
-                FieldValue fv = new FieldValue(toAdd);
-                fv.setValue(stringValue);
-                toAdd.addFieldValue(fv);
-            }
-        } else {
-            FieldValue fv = new FieldValue(toAdd);
-            toAdd.addFieldValue(fv);
+        if (metadata == null) {
+            throw new IllegalArgumentException("metadata may not be null");
         }
 
-        switch (toAdd.getType()) {
+        if (StringUtils.isBlank(entry.getLabel()) && metadata.getLabel().equals("unittitle")) {
+            entry.setLabel(metadata.getFirstValue());
+        }
+
+        switch (metadata.getType()) {
             case 1:
-                entry.getIdentityStatementAreaList().add(toAdd);
+                entry.getIdentityStatementAreaList().add(metadata);
                 break;
             case 2:
-                entry.getContextAreaList().add(toAdd);
+                entry.getContextAreaList().add(metadata);
                 break;
             case 3:
-                entry.getContentAndStructureAreaAreaList().add(toAdd);
+                entry.getContentAndStructureAreaAreaList().add(metadata);
                 break;
             case 4:
-                entry.getAccessAndUseAreaList().add(toAdd);
+                entry.getAccessAndUseAreaList().add(metadata);
                 break;
             case 5:
-                entry.getAlliedMaterialsAreaList().add(toAdd);
+                entry.getAlliedMaterialsAreaList().add(metadata);
                 break;
             case 6:
-                entry.getNotesAreaList().add(toAdd);
+                entry.getNotesAreaList().add(metadata);
                 break;
             case 7:
-                entry.getDescriptionControlAreaList().add(toAdd);
+                entry.getDescriptionControlAreaList().add(metadata);
                 break;
             default:
                 break;
         }
-
     }
 
     /**
@@ -189,29 +175,6 @@ public abstract class ArchiveParser {
                 searchInNode(child, searchValue);
             }
         }
-    }
-
-    /**
-     * Loads fields from the given configuration node.
-     *
-     * @param metadataConfig
-     * @return {@link ArchiveParser}
-     * @throws ConfigurationException
-     */
-    public ArchiveParser readConfiguration(List<Metadata> metadataConfig) throws ConfigurationException {
-        if (metadataConfig == null) {
-            throw new ConfigurationException("No archive metadata configurations found");
-        }
-
-        configuredFields = new ArrayList<>(metadataConfig.size());
-        for (Metadata md : metadataConfig) {
-            if (!md.getParams().isEmpty()) {
-                ArchiveMetadataField field = new ArchiveMetadataField(md.getLabel(), md.getType(), md.getParams().get(0).getKey());
-                configuredFields.add(field);
-            }
-        }
-
-        return this;
     }
 
     public static String getIdForName(String name) {
