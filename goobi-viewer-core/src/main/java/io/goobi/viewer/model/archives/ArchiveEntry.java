@@ -556,6 +556,42 @@ public class ArchiveEntry {
         return ret;
     }
 
+    public List<Metadata> getAreaList(int index) {
+        switch (index) {
+            case 0:
+                return getIdentityStatementAreaList();
+            case 1:
+                return getContextAreaList();
+            case 2:
+                return getContentAndStructureAreaAreaList();
+            case 3:
+                return getAccessAndUseAreaList();
+            case 4:
+                return getAlliedMaterialsAreaList();
+            case 5:
+                return getNotesAreaList();
+            case 6:
+                return getDescriptionControlAreaList();
+            default:
+                return Collections.emptyList();
+        }
+    }
+    
+    public String getAreaListLabel(int index) {
+        switch (index) {
+            case 0:
+                return "archives__archive_area_identity";
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            default:
+                return "TODO";
+        }
+    }
+
     /**
      * @return the identityStatementAreaList
      */

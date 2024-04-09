@@ -153,6 +153,10 @@ public class ArchiveManager implements Serializable {
      */
     private boolean initArchives(ArchiveParser eadParser) throws IOException, HTTPException, PresentationException, IndexUnreachableException {
         logger.trace("initArchives");
+        if(eadParser == null) {
+            logger.error("eadParser is null; cannot init archives");
+            return false;
+        }
         //initialize archives with 'null' archive tree values
         Map<ArchiveResource, ArchiveTree> cachedDatabases = this.archives;
         this.archives = new HashMap<>();
