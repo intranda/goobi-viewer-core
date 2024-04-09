@@ -535,17 +535,6 @@ public class ArchiveEntry {
         }
     }
 
-    @Deprecated
-    public ArchiveMetadataField getIdentityStatementAreaField(String name) {
-//        for (ArchiveMetadataField field : identityStatementAreaList) {
-//            if (field.getLabel().equals(name)) {
-//                return field;
-//            }
-//        }
-
-        return null;
-    }
-
     public List<Metadata> getAllAreaLists() {
         // logger.trace("getAllAreaLists ({})", id);
         List<Metadata> ret = new ArrayList<>(getIdentityStatementAreaList().size()
