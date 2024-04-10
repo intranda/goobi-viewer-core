@@ -556,6 +556,11 @@ public class ArchiveEntry {
         return ret;
     }
 
+    /**
+     * 
+     * @param index Area list index
+     * @return Appropriate metadata list for the given index
+     */
     public List<Metadata> getAreaList(int index) {
         switch (index) {
             case 0:
@@ -576,17 +581,28 @@ public class ArchiveEntry {
                 return Collections.emptyList();
         }
     }
-    
+
+    /**
+     * 
+     * @param index Area list index
+     * @return Appropriate message key for the given index
+     */
     public String getAreaListLabel(int index) {
         switch (index) {
             case 0:
                 return "archives__archive_area_identity";
             case 1:
+                return "archives__archive_area_context";
             case 2:
+                return "archives__archive_area_content";
             case 3:
+                return "archives__archive_area_access";
             case 4:
+                return "archives__archive_area_materials";
             case 5:
+                return "archives__archive_area_notes";
             case 6:
+                return "archives__archive_area_descriptionControl";
             default:
                 return "TODO";
         }

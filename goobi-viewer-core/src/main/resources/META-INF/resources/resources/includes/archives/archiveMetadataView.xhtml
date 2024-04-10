@@ -19,8 +19,7 @@
 			<ui:repeat begin="0" end="6" var="index">
 			
 			<!-- Identity statement metadata -->
-			<c:if
-				test="#{archiveEntry.getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
+			<ui:fragment rendered="#{archiveEntry.getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
 				<div class="archives__object-block-label">#{msg[archiveEntry.getAreaListLabel(index)]}</div>
 				<ui:repeat var="metadata" value="#{archiveEntry.getAreaList(index)}">
 <!--                    <h:panelGroup layout="block" -->
@@ -67,7 +66,7 @@
                     </h:panelGroup>
                     
 				</ui:repeat>
-			</c:if>
+			</ui:fragment>
 			
 			</ui:repeat>
 			
