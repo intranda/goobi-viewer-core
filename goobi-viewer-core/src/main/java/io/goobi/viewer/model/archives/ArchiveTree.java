@@ -33,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.DataManager;
+
 /**
  * Table of contents and associated functionality for a record.
  */
@@ -232,13 +234,23 @@ public class ArchiveTree implements Serializable {
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getId() : null);
         this.selectedEntry = selectedEntry;
+        if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
+            selectedEntry.loadMetadata();
+        }
     }
 
+    /**
+     * 
+     * @param selectedEntry
+     */
     public void toggleSelectedEntry(ArchiveEntry selectedEntry) {
         if (selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
             this.selectedEntry = null;
         } else {
             this.selectedEntry = selectedEntry;
+            if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
+                selectedEntry.loadMetadata();
+            }
         }
     }
 

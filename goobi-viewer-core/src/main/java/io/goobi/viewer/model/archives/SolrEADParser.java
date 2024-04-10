@@ -45,7 +45,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -191,17 +190,7 @@ public class SolrEADParser extends ArchiveParser {
             throw new IllegalArgumentException("doc may not be null");
         }
 
-        ArchiveEntry entry = new ArchiveEntry(order, hierarchy);
-
-        // Collect metadata
-        if (metadataList != null) {
-            StructElement se = new StructElement(doc);
-            for (Metadata md : metadataList) {
-                if (md.populate(se, null, null, null)) {
-                    addFieldToEntry(entry, md);
-                }
-            }
-        }
+        ArchiveEntry entry = new ArchiveEntry(order, hierarchy, doc);
 
         String id = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
         if (StringUtils.isNotEmpty(id)) {

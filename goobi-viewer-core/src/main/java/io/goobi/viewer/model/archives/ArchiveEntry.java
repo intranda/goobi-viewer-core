@@ -30,8 +30,13 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.viewer.StructElement;
 
 public class ArchiveEntry {
 
@@ -69,6 +74,10 @@ public class ArchiveEntry {
     private String associatedRecordPi;
 
     private boolean containsImage = false;
+
+    private SolrDocument doc;
+
+    private boolean metadataLoaded = false;
 
     /* 1. metadata for Identity Statement Area */
     //    Reference code(s)
@@ -118,11 +127,23 @@ public class ArchiveEntry {
     //    Date(s) of descriptions
     private List<Metadata> descriptionControlAreaList = new ArrayList<>();
 
-    public ArchiveEntry(Integer order, Integer hierarchy) {
+    /**
+     * 
+     * @param order
+     * @param hierarchy
+     * @param doc
+     */
+    public ArchiveEntry(Integer order, Integer hierarchy, SolrDocument doc) {
         this.orderNumber = order;
         this.hierarchyLevel = hierarchy;
+        this.doc = doc;
     }
 
+    /**
+     * 
+     * @param orig
+     * @param parent
+     */
     public ArchiveEntry(ArchiveEntry orig, ArchiveEntry parent) {
         this.parentNode = parent;
 
@@ -150,6 +171,7 @@ public class ArchiveEntry {
         this.searchHit = orig.searchHit;
         this.displayChildren = orig.displayChildren;
         this.displaySearch = orig.displaySearch;
+        this.doc = orig.doc;
     }
 
     public void addSubEntry(ArchiveEntry other) {
@@ -188,71 +210,6 @@ public class ArchiveEntry {
 
     public boolean isHasChildren() {
         return !subEntryList.isEmpty();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        ArchiveEntry other = (ArchiveEntry) obj;
-        if (hierarchyLevel == null) {
-            if (other.hierarchyLevel != null) {
-                return false;
-            }
-        } else if (!hierarchyLevel.equals(other.hierarchyLevel)) {
-            return false;
-        }
-        if (orderNumber == null) {
-            if (other.orderNumber != null) {
-                return false;
-            }
-        } else if (!orderNumber.equals(other.orderNumber)) {
-            return false;
-        }
-        if (label != null && !label.equals(other.getLabel())) {
-            return false;
-        }
-        if (parentNode == null && other.parentNode == null) {
-            return true;
-        }
-        if (parentNode == null && other.parentNode != null) {
-            return false;
-        }
-        if (parentNode != null && other.parentNode == null) {
-            return false;
-        }
-        if (parentNode != null && other.parentNode != null) {
-            if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
-                return false;
-            }
-            if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
-                return false;
-            }
-            if (!parentNode.equals(other.parentNode)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((hierarchyLevel == null) ? 0 : hierarchyLevel.hashCode());
-        result = prime * result + ((orderNumber == null) ? 0 : orderNumber.hashCode());
-        result = prime * result + ((parentNode == null) ? 0 : parentNode.getHierarchyLevel().hashCode());
-        result = prime * result + ((parentNode == null) ? 0 : parentNode.getOrderNumber().hashCode());
-        result = prime * result + ((label == null) ? 0 : label.hashCode());
-        return result;
     }
 
     public void updateHierarchy() {
@@ -378,6 +335,68 @@ public class ArchiveEntry {
             if (sub.isExpanded() && sub.isHasChildren()) {
                 sub.setChildrenVisibility(visible);
             }
+        }
+    }
+
+    public void loadMetadata() {
+        logger.trace("loadMetadata ({})", label);
+        try {
+            List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("");
+            // Collect metadata
+            if (doc != null && metadataList != null && !metadataList.isEmpty()) {
+                StructElement se = new StructElement(doc);
+                for (Metadata md : metadataList) {
+                    if (md.populate(se, null, null, null)) {
+                        addMetadataField(md);
+                    }
+                }
+            }
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.error(e.getMessage());
+        } finally {
+            metadataLoaded = true;
+        }
+    }
+
+    /**
+     * Add the metadata to the configured level.
+     *
+     * @param entry
+     * @param metadata
+     */
+    void addMetadataField(Metadata metadata) {
+        if (metadata == null) {
+            throw new IllegalArgumentException("metadata may not be null");
+        }
+
+        if (StringUtils.isBlank(getLabel()) && metadata.getLabel().equals("unittitle")) {
+            setLabel(metadata.getFirstValue());
+        }
+
+        switch (metadata.getType()) {
+            case 1:
+                getIdentityStatementAreaList().add(metadata);
+                break;
+            case 2:
+                getContextAreaList().add(metadata);
+                break;
+            case 3:
+                getContentAndStructureAreaAreaList().add(metadata);
+                break;
+            case 4:
+                getAccessAndUseAreaList().add(metadata);
+                break;
+            case 5:
+                getAlliedMaterialsAreaList().add(metadata);
+                break;
+            case 6:
+                getNotesAreaList().add(metadata);
+                break;
+            case 7:
+                getDescriptionControlAreaList().add(metadata);
+                break;
+            default:
+                break;
         }
     }
 
@@ -811,17 +830,19 @@ public class ArchiveEntry {
         return ancestors;
     }
 
-    @Override
-    public String toString() {
-        return id;
-    }
-
     public boolean isContainsImage() {
         return this.containsImage;
     }
 
     public void setContainsImage(boolean containsImage) {
         this.containsImage = containsImage;
+    }
+
+    /**
+     * @return the metadataLoaded
+     */
+    public boolean isMetadataLoaded() {
+        return metadataLoaded;
     }
 
     public String getFieldValue(String field) {
@@ -831,5 +852,75 @@ public class ArchiveEntry {
                 .filter(StringUtils::isNotBlank)
                 .findAny()
                 .orElse(null);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ArchiveEntry other = (ArchiveEntry) obj;
+        if (hierarchyLevel == null) {
+            if (other.hierarchyLevel != null) {
+                return false;
+            }
+        } else if (!hierarchyLevel.equals(other.hierarchyLevel)) {
+            return false;
+        }
+        if (orderNumber == null) {
+            if (other.orderNumber != null) {
+                return false;
+            }
+        } else if (!orderNumber.equals(other.orderNumber)) {
+            return false;
+        }
+        if (label != null && !label.equals(other.getLabel())) {
+            return false;
+        }
+        if (parentNode == null && other.parentNode == null) {
+            return true;
+        }
+        if (parentNode == null && other.parentNode != null) {
+            return false;
+        }
+        if (parentNode != null && other.parentNode == null) {
+            return false;
+        }
+        if (parentNode != null && other.parentNode != null) {
+            if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
+                return false;
+            }
+            if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
+                return false;
+            }
+            if (!parentNode.equals(other.parentNode)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((hierarchyLevel == null) ? 0 : hierarchyLevel.hashCode());
+        result = prime * result + ((orderNumber == null) ? 0 : orderNumber.hashCode());
+        result = prime * result + ((parentNode == null) ? 0 : parentNode.getHierarchyLevel().hashCode());
+        result = prime * result + ((parentNode == null) ? 0 : parentNode.getOrderNumber().hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 }

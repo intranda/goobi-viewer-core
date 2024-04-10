@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
@@ -38,7 +37,6 @@ import org.jdom2.JDOMException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -111,51 +109,6 @@ public abstract class ArchiveParser {
      */
     public abstract ArchiveEntry loadDatabase(ArchiveResource database)
             throws PresentationException, IndexUnreachableException, IllegalStateException, IOException, HTTPException, JDOMException;
-
-    /**
-     * Add the metadata to the configured level.
-     *
-     * @param entry
-     * @param metadata
-     */
-    protected static void addFieldToEntry(ArchiveEntry entry, Metadata metadata) {
-        if (entry == null) {
-            throw new IllegalArgumentException("entry may not be null");
-        }
-        if (metadata == null) {
-            throw new IllegalArgumentException("metadata may not be null");
-        }
-
-        if (StringUtils.isBlank(entry.getLabel()) && metadata.getLabel().equals("unittitle")) {
-            entry.setLabel(metadata.getFirstValue());
-        }
-
-        switch (metadata.getType()) {
-            case 1:
-                entry.getIdentityStatementAreaList().add(metadata);
-                break;
-            case 2:
-                entry.getContextAreaList().add(metadata);
-                break;
-            case 3:
-                entry.getContentAndStructureAreaAreaList().add(metadata);
-                break;
-            case 4:
-                entry.getAccessAndUseAreaList().add(metadata);
-                break;
-            case 5:
-                entry.getAlliedMaterialsAreaList().add(metadata);
-                break;
-            case 6:
-                entry.getNotesAreaList().add(metadata);
-                break;
-            case 7:
-                entry.getDescriptionControlAreaList().add(metadata);
-                break;
-            default:
-                break;
-        }
-    }
 
     /**
      *
