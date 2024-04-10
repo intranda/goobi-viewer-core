@@ -60,30 +60,45 @@ public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
                 throw new PresentationException("DAO not loaded. Cannot load CMS Geomaps");
             } else {
                 for (GeoMap geomap : dao.getAllGeoMaps()) {
-                    for (FeatureSet featureSet : geomap.getFeatureSets()) {
-                        featureSet.getFeaturesAsString();
-                        applicationBean.getIfRecentOrPut("cms_geomap_" + geomap.getId(), geomap, 0);
-                    }
+                    updateMapInCache(applicationBean, geomap);
                 }
-                return MessageStatus.FINISH;
             }
+            return MessageStatus.FINISH;
         } catch (PresentationException | DAOException e) {
             logger.error("Error updating cms geomaps: {}", e.toString());
             return MessageStatus.ERROR;
         }
     }
 
+    public static void updateMapInCache(GeoMap geomap) throws PresentationException {
+        PersistentStorageBean applicationBean = BeanUtils.getPersistentStorageBean();
+        if (applicationBean == null) {
+            throw new PresentationException("PersistentStorageBean not loaded. Cannot store geomaps");
+        } else {
+            updateMapInCache(applicationBean, geomap);
+        }
+    }
+
+    private static void updateMapInCache(PersistentStorageBean applicationBean, GeoMap geomap) throws PresentationException {
+        for (FeatureSet featureSet : geomap.getFeatureSets()) {
+            featureSet.getFeaturesAsString();
+        }
+        applicationBean.put("cms_geomap_" + geomap.getId(), geomap);
+    }
+
     @Override
     public String getMessageHandlerName() {
         return TaskType.CACHE_GEOMAPS.name();
     }
-    
+
     public static boolean shouldUpdateGeomaps() throws DAOException {
         IDAO dao = DataManager.getInstance().getDao();
         boolean useHeatmap = DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps();
-        return !useHeatmap && dao.getAllGeoMaps().stream()
-        .map(GeoMap::getFeatureSets).flatMap(List::stream)
-        .anyMatch(FeatureSet::isQueryResultSet);
+        return !useHeatmap && dao.getAllGeoMaps()
+                .stream()
+                .map(GeoMap::getFeatureSets)
+                .flatMap(List::stream)
+                .anyMatch(FeatureSet::isQueryResultSet);
     }
 
     public static long getGeoMapTimeToLive() {
