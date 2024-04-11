@@ -310,7 +310,7 @@ public class AdminDeveloperBean implements Serializable {
         if (Files.exists(path)) {
             return VersionInfo.getFromManifest(Files.readString(path));
         }
-        return new VersionInfo("goobi-viewer-theme-" + this.viewerThemeName, "unknown", "unknown", "unknown");
+        return new VersionInfo("goobi-viewer-theme-" + this.viewerThemeName, "unknown", "unknown", "unknown", "");
     }
 
     public static class VersionInfo {
@@ -318,12 +318,14 @@ public class AdminDeveloperBean implements Serializable {
         private final String buildDate;
         private final String gitRevision;
         private final String releaseVersion;
+        private final String commitMessage;
 
-        public VersionInfo(String applicationName, String buildDate, String gitRevision, String releaseVersion) {
+        public VersionInfo(String applicationName, String buildDate, String gitRevision, String releaseVersion, String commitMessage) {
             this.applicationName = applicationName;
             this.buildDate = buildDate;
             this.gitRevision = gitRevision;
             this.releaseVersion = releaseVersion;
+            this.commitMessage = commitMessage;
         }
 
         public static VersionInfo getFromManifest(String manifest) {
@@ -331,7 +333,7 @@ public class AdminDeveloperBean implements Serializable {
                     getInfo("ApplicationName", manifest),
                     getInfo("Implementation-Build-Date", manifest),
                     getInfo("Implementation-Version", manifest),
-                    getInfo("version", manifest));
+                    getInfo("version", manifest), "");
         }
 
         private static String getInfo(String label, String infoText) {
@@ -358,6 +360,10 @@ public class AdminDeveloperBean implements Serializable {
 
         public String getReleaseVersion() {
             return releaseVersion;
+        }
+
+        public String getCommitMessage() {
+            return commitMessage;
         }
 
     }
