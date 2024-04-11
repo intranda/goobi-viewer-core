@@ -118,6 +118,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /** Physical ID from the METS file. */
     private final String physId;
     private final String filePath;
+    private String filePathTiff;
+    private String filePathJpeg;
     private String fileName;
     private String fileIdRoot;
     private long fileSize = 0;
@@ -442,6 +444,26 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * 
+     * @return filePath if mime type is image; alternative file path otherwise
+     * @should return filePath if mime type image
+     * @should return tiff if available
+     * @should return jpeg if availabel
+     */
+    public String getImageFilepath() {
+        if (!BaseMimeType.IMAGE.name().equals(getBaseMimeType())) {
+            if (filePathTiff != null) {
+                return filePathTiff;
+            }
+            if (filePathJpeg != null) {
+                return filePathJpeg;
+            }
+        }
+
+        return getFilepath();
+    }
+
+    /**
      * <p>
      * getFilepath.
      * </p>
@@ -450,6 +472,38 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public String getFilepath() {
         return filePath;
+    }
+
+    /**
+     * @return the filePathTiff
+     */
+    public String getFilePathTiff() {
+        return filePathTiff;
+    }
+
+    /**
+     * @param filePathTiff the filePathTiff to set
+     * @return this
+     */
+    public PhysicalElement setFilePathTiff(String filePathTiff) {
+        this.filePathTiff = filePathTiff;
+        return this;
+    }
+
+    /**
+     * @return the filePathJpeg
+     */
+    public String getFilePathJpeg() {
+        return filePathJpeg;
+    }
+
+    /**
+     * @param filePathJpeg the filePathJpeg to set
+     * @return this
+     */
+    public PhysicalElement setFilePathJpeg(String filePathJpeg) {
+        this.filePathJpeg = filePathJpeg;
+        return this;
     }
 
     /**
