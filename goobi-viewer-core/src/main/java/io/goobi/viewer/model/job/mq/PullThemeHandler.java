@@ -145,11 +145,17 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     }
 
     public static VersionInfo getVersionInfo(String resultString, String buildDate) throws JDOMException {
+        if (StringUtils.isBlank(resultString)) {
+            return new VersionInfo("goobi-viewer-theme-" + DataManager.getInstance().getConfiguration().getName(), "unknown", "unknown", "unknown",
+                    "");
+
+        }
         try {
             Document doc = XmlTools.getDocumentFromString(resultString, "utf-8");
             String branch = doc.getRootElement().getChildText("branch");
             String revision = doc.getRootElement().getChildText("revision");
-            return new VersionInfo(DataManager.getInstance().getConfiguration().getName(), buildDate, revision, branch);
+            String message = doc.getRootElement().getChildText("message");
+            return new VersionInfo(DataManager.getInstance().getConfiguration().getTheme(), buildDate, revision, branch, message);
         } catch (IOException e) {
             throw new JDOMException(e.toString(), e);
         }
