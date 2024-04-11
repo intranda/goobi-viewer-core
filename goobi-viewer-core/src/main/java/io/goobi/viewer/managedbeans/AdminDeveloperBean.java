@@ -310,7 +310,7 @@ public class AdminDeveloperBean implements Serializable {
         if (Files.exists(path)) {
             return VersionInfo.getFromManifest(Files.readString(path));
         }
-        return new VersionInfo("goobi-viewer-theme-" + this.viewerThemeName, "unknown", "unknown", "unknown", "");
+        return new VersionInfo("goobi-viewer-theme-" + this.viewerThemeName, "unknown", "unknown", "unknown", "unknown");
     }
 
     public static class VersionInfo {
@@ -333,7 +333,7 @@ public class AdminDeveloperBean implements Serializable {
                     getInfo("ApplicationName", manifest),
                     getInfo("Implementation-Build-Date", manifest),
                     getInfo("Implementation-Version", manifest),
-                    getInfo("version", manifest), "");
+                    getInfo("version", manifest), "unknown");
         }
 
         private static String getInfo(String label, String infoText) {

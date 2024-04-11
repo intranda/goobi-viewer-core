@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.job.mq;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -147,14 +148,14 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     public static VersionInfo getVersionInfo(String resultString, String buildDate) throws JDOMException {
         if (StringUtils.isBlank(resultString)) {
             return new VersionInfo("goobi-viewer-theme-" + DataManager.getInstance().getConfiguration().getName(), "unknown", "unknown", "unknown",
-                    "");
+                    "unknown");
 
         }
         try {
             Document doc = XmlTools.getDocumentFromString(resultString, "utf-8");
-            String branch = doc.getRootElement().getChildText("branch");
-            String revision = doc.getRootElement().getChildText("revision");
-            String message = doc.getRootElement().getChildText("message");
+            String branch = Optional.ofNullable(doc.getRootElement().getChildText("branch")).orElse("unknown");
+            String revision = Optional.ofNullable(doc.getRootElement().getChildText("revision")).orElse("unknown");
+            String message = Optional.ofNullable(doc.getRootElement().getChildText("message")).orElse("unknown");
             return new VersionInfo(DataManager.getInstance().getConfiguration().getTheme(), buildDate, revision, branch, message);
         } catch (IOException e) {
             throw new JDOMException(e.toString(), e);
