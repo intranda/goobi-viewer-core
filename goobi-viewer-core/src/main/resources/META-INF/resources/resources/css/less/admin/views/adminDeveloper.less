@@ -15,11 +15,13 @@
 		min-width: 275px;
 	}
 	&__developer-autopull-status-wrapper {
+		width: 100%;
 		position: relative;
 		line-height: 1.2;
 		display: inline-flex;
 		gap: 15px;
 		align-items: center;
+		justify-content: space-between;
 	}
 	&__developer-autopull-status-icon {
 		position: relative;
@@ -38,14 +40,14 @@
 			margin-left: -1px;
   			margin-top: -1px;
 		}
-		&:before {
-			  content: "";
-  				animation: bounce 1.5s infinite;
-		}
-		&:after {
-  			content: "";
-  			animation: bounce 1.5s -0.4s infinite;
-		}
+//		&:before {
+//			  content: "";
+//  				animation: bounce 1.5s infinite;
+//		}
+//		&:after {
+//  			content: "";
+//  			animation: bounce 1.5s -0.4s infinite;
+//		}
 		&.-isActive {
  			background: #2ECC71;
 			&:before,
@@ -87,11 +89,18 @@
 		font-size: 20px;
 		font-weight: 600;
 	}
+	&__developer-autopull-version-info-label {
+		font-weight: 700;
+	}
 	&__developer-autopull-last-pull {
 		
 	}
 	&__developer-autopull-branch-name {
 		
+	}
+	&__developer-autopull-status-button-wrapper {
+		display: flex;
+		justify-content: center;
 	}
 	&__developer-download-wrapper {
 		display: flex;
