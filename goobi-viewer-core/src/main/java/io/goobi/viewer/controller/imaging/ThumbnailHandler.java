@@ -748,13 +748,13 @@ public class ThumbnailHandler {
                 thumbnailUrl = page.getFilepath();
                 break;
             case "video", "text":
-                thumbnailUrl = page.getFilepath();
+                thumbnailUrl = page.getImageFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
                 }
                 break;
             case "audio":
-                thumbnailUrl = page.getFilepath();
+                thumbnailUrl = page.getImageFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
                 }

@@ -133,7 +133,8 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(BaseMimeType.VIDEO.getName(), new PhysicalElementBuilder().setMimeType("video/webm").build().getBaseMimeType());
         Assertions.assertEquals(BaseMimeType.APPLICATION.getName(),
                 new PhysicalElementBuilder().setMimeType("application/pdf").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(), new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(),
+                new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
         Assertions.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/gltf+json").build().getBaseMimeType());
         Assertions.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/object").build().getBaseMimeType());
     }
@@ -147,4 +148,32 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
     }
 
+    /**
+     * @see PhysicalElement#getImageFilepath()
+     * @verifies return filePath if mime type image
+     */
+    @Test
+    void getImageFilepath_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
+        Assertions.assertEquals("001.tif", new PhysicalElementBuilder().setMimeType("image/tiff").setFilePath("001.tif").build().getImageFilepath());
+    }
+    
+    /**
+     * @see PhysicalElement#getImageFilepath()
+     * @verifies return tiff if available
+     */
+    @Test
+    void getImageFilepath_shouldReturnTiffIfAvailable() throws Exception {
+        Assertions.assertEquals("001.tif",
+                new PhysicalElementBuilder().setMimeType("audio/mpeg").setFilePath("001.mp3").build().setFilePathTiff("001.tif").getImageFilepath());
+    }
+    
+    /**
+     * @see PhysicalElement#getImageFilepath()
+     * @verifies return jpeg if available
+     */
+    @Test
+    void getImageFilepath_shouldReturnJpegIfAvailable() throws Exception {
+        Assertions.assertEquals("001.jpg",
+                new PhysicalElementBuilder().setMimeType("video/mpeg").setFilePath("001.mp4").build().setFilePathTiff("001.jpg").getImageFilepath());
+    }
 }
