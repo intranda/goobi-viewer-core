@@ -67,7 +67,7 @@
         	global: {
         		divId: "imageMap",
         		bottomMargin: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
-        		adaptContainerHeight: #{activeDocumentBean.viewManager.currentPage.adaptImageViewHeight},
+        		adaptContainerHeightThresholds: #{activeDocumentBean.viewManager.currentPage.imageHeightRationThresholds},
         		persistZoom: #{configurationBean.rememberImageZoom},
         		persistRotation: #{configurationBean.rememberImageRotation},
         		persistenceId: "#{activeDocumentBean.topDocumentIddoc}" + "_" + "#{navigationHelper.currentPage}",

@@ -1823,6 +1823,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return true;
     }
 
+    public List<Float> getImageHeightRationThresholds() {
+        float lowerThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold();
+        float upperThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold();
+        return List.of(lowerThreshold, upperThreshold);
+    }
+
     /**
      * List of struct elements that start on this page. For example, if a page contains multiple elements that only cover a certain area of the page
      * (using coordinates), this method can be used to get all shape coordinates for these elemets for visualization.
