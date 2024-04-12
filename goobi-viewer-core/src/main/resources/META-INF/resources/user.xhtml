@@ -13,9 +13,9 @@
 			<f:event type="preRenderView"
 				listener="#{navigationHelper.setCurrentPageUser()}" />
 			<f:event type="preRenderView"
-				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.admin__user_profile, request.contextPath.concat('/user/'), 1)}" />
+				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('admin__user_profile', request.contextPath.concat('/user/'), 1)}" />
 			<f:event type="preRenderView"
-				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.accountSettings, 2)}" />
+				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('accountSettings', 2)}" />
 			<f:viewAction onPostback="false"
 				action="#{userBean.createBackupOfCurrentUser()}" />
 		</f:metadata>
